@@ -1,39 +1,39 @@
-import { Metadata } from "next"
-import Image from "next/image"
-import { CounterClockwiseClockIcon } from "@radix-ui/react-icons"
+import { Metadata } from "next";
+import Image from "next/image";
+import { CounterClockwiseClockIcon } from "@radix-ui/react-icons";
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/app/board/components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/components/ui/hover-card"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
+} from "@/app/board/components/ui/hover-card";
+import { Label } from "@/app/board/components/ui/label";
+import { Separator } from "@/app/board/components/ui/separator";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/components/ui/tabs"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/app/board/components/ui/tabs";
+import { Textarea } from "@/app/board/components/ui/textarea";
 
-import { CodeViewer } from "./components/code-viewer"
-import { MaxLengthSelector } from "./components/maxlength-selector"
-import { ModelSelector } from "./components/model-selector"
-import { PresetActions } from "./components/preset-actions"
-import { PresetSave } from "./components/preset-save"
-import { PresetSelector } from "./components/preset-selector"
-import { PresetShare } from "./components/preset-share"
-import { TemperatureSelector } from "./components/temperature-selector"
-import { TopPSelector } from "./components/top-p-selector"
-import { models, types } from "./data/models"
-import { presets } from "./data/presets"
+import { CodeViewer } from "./components/code-viewer";
+import { MaxLengthSelector } from "./components/maxlength-selector";
+import { ModelSelector } from "./components/model-selector";
+import { PresetActions } from "./components/preset-actions";
+import { PresetSave } from "./components/preset-save";
+import { PresetSelector } from "./components/preset-selector";
+import { PresetShare } from "./components/preset-share";
+import { TemperatureSelector } from "./components/temperature-selector";
+import { TopPSelector } from "./components/top-p-selector";
+import { models, types } from "./data/models";
+import { presets } from "./data/presets";
 
 export const metadata: Metadata = {
   title: "Playground",
   description: "The OpenAI Playground built using the components.",
-}
+};
 
 export default function PlaygroundPage() {
   return (
@@ -325,5 +325,5 @@ export default function PlaygroundPage() {
         </Tabs>
       </div>
     </>
-  )
+  );
 }

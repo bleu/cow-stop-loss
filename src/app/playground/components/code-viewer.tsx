@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+import { Button } from "@/app/board/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/app/board/components/ui/dialog";
 
 export function CodeViewer() {
   return (
@@ -85,5 +85,5 @@ export function CodeViewer() {
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

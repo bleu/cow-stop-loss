@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Dialog } from "@radix-ui/react-dialog"
-import { DotsHorizontalIcon } from "@radix-ui/react-icons"
+import * as React from "react";
+import { Dialog } from "@radix-ui/react-dialog";
+import { DotsHorizontalIcon } from "@radix-ui/react-icons";
 
 import {
   AlertDialog,
@@ -12,29 +12,29 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
+} from "@/app/board/components/ui/alert-dialog";
+import { Button } from "@/app/board/components/ui/button";
 import {
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
+} from "@/app/board/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Label } from "@/components/ui/label"
-import { Switch } from "@/components/ui/switch"
-import { toast } from "@/components/ui/use-toast"
+} from "@/app/board/components/ui/dropdown-menu";
+import { Label } from "@/app/board/components/ui/label";
+import { Switch } from "@/app/board/components/ui/switch";
+import { toast } from "@/app/board/components/ui/use-toast";
 
 export function PresetActions() {
-  const [open, setIsOpen] = React.useState(false)
-  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false)
+  const [open, setIsOpen] = React.useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = React.useState(false);
 
   return (
     <>
@@ -106,10 +106,10 @@ export function PresetActions() {
             <Button
               variant="destructive"
               onClick={() => {
-                setShowDeleteDialog(false)
+                setShowDeleteDialog(false);
                 toast({
                   description: "This preset has been deleted.",
-                })
+                });
               }}
             >
               Delete
@@ -118,5 +118,5 @@ export function PresetActions() {
         </AlertDialogContent>
       </AlertDialog>
     </>
-  )
+  );
 }

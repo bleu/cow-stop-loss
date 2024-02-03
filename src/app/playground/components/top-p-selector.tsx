@@ -1,22 +1,22 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { SliderProps } from "@radix-ui/react-slider"
+import * as React from "react";
+import { SliderProps } from "@radix-ui/react-slider";
 
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/components/ui/hover-card"
-import { Label } from "@/components/ui/label"
-import { Slider } from "@/components/ui/slider"
+} from "@/app/board/components/ui/hover-card";
+import { Label } from "@/app/board/components/ui/label";
+import { Slider } from "@/app/board/components/ui/slider";
 
 interface TopPSelectorProps {
-  defaultValue: SliderProps["defaultValue"]
+  defaultValue: SliderProps["defaultValue"];
 }
 
 export function TopPSelector({ defaultValue }: TopPSelectorProps) {
-  const [value, setValue] = React.useState(defaultValue)
+  const [value, setValue] = React.useState(defaultValue);
 
   return (
     <div className="grid gap-2 pt-2">
@@ -50,5 +50,5 @@ export function TopPSelector({ defaultValue }: TopPSelectorProps) {
         </HoverCardContent>
       </HoverCard>
     </div>
-  )
+  );
 }

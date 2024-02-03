@@ -11,6 +11,7 @@ const config = {
     './src/**/*.{ts,tsx}',
 	],
   prefix: "",
+  important: true,
   theme: {
     container: {
       center: true,
