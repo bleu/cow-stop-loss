@@ -6,7 +6,7 @@ import { PopoverProps } from "@radix-ui/react-popover";
 
 import { cn } from "@/lib/utils";
 import { useMutationObserver } from "@/hooks/use-mutation-observer";
-import { Button } from "@/app/board/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -14,18 +14,18 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/app/board/components/ui/command";
+} from "@/components/ui/command";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/app/board/components/ui/hover-card";
-import { Label } from "@/app/board/components/ui/label";
+} from "@/components/ui/hover-card";
+import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/app/board/components/ui/popover";
+} from "@/components/ui/popover";
 
 import { Model, ModelType } from "../data/models";
 

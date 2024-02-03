@@ -1,4 +1,4 @@
-import { Button } from "@/app/board/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/app/board/components/ui/dialog";
+} from "@/components/ui/dialog";
 
 export function CodeViewer() {
   return (

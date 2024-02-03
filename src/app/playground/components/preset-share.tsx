@@ -1,13 +1,13 @@
 import { CopyIcon } from "@radix-ui/react-icons";
 
-import { Button } from "@/app/board/components/ui/button";
-import { Input } from "@/app/board/components/ui/input";
-import { Label } from "@/app/board/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/app/board/components/ui/popover";
+} from "@/components/ui/popover";
 
 export function PresetShare() {
   return (

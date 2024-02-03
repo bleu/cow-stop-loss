@@ -1,4 +1,4 @@
-import { Button } from "@/app/board/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,9 +7,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/app/board/components/ui/dialog";
-import { Input } from "@/app/board/components/ui/input";
-import { Label } from "@/app/board/components/ui/label";
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export function PresetSave() {
   return (

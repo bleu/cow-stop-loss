@@ -1,22 +1,23 @@
+import Board from "@/components/Board";
 import { Metadata } from "next";
 import Image from "next/image";
 import { CounterClockwiseClockIcon } from "@radix-ui/react-icons";
 
-import { Button } from "@/app/board/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from "@/app/board/components/ui/hover-card";
-import { Label } from "@/app/board/components/ui/label";
-import { Separator } from "@/app/board/components/ui/separator";
+} from "@/components/ui/hover-card";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
-} from "@/app/board/components/ui/tabs";
-import { Textarea } from "@/app/board/components/ui/textarea";
+} from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 
 import { CodeViewer } from "./components/code-viewer";
 import { MaxLengthSelector } from "./components/maxlength-selector";
@@ -257,10 +258,9 @@ export default function PlaygroundPage() {
               <div className="md:order-1">
                 <TabsContent value="complete" className="mt-0 border-0 p-0">
                   <div className="flex h-full flex-col space-y-4">
-                    <Textarea
-                      placeholder="Write a tagline for an ice cream shop"
-                      className="min-h-[400px] flex-1 p-4 md:min-h-[700px] lg:min-h-[700px]"
-                    />
+                    <div className="h-[80vh]">
+                      <Board/>
+                    </div>
                     <div className="flex items-center space-x-2">
                       <Button>Submit</Button>
                       <Button variant="secondary">

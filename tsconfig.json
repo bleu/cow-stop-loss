@@ -21,6 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/app/board/components/CustomNode.tsx", "src/app/board/components/Board.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/components/CustomNode.tsx", "src/components/Board.tsx"],
   "exclude": ["node_modules"]
 }
