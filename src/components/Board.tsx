@@ -111,9 +111,7 @@ const Flow = () => {
         edgesUpdatable={false}
         edgesFocusable={false}
         nodesDraggable={false}
-        defaultEdgeOptions={{
-          selected: false,
-        }}
+        // defaultEdgeOptions={}
         nodesConnectable={false}
         nodesFocusable={false}
         draggable={false}
