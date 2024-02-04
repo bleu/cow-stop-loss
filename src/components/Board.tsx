@@ -112,13 +112,10 @@ const Flow = ({
       edgesUpdatable={false}
       edgesFocusable={false}
       nodesDraggable={false}
-      defaultEdgeOptions={{
-        selected: false,
-      }}
+      // defaultEdgeOptions={}
       nodesConnectable={false}
       nodesFocusable={false}
       draggable={false}
-      // @ts-ignore
       onNodeClick={(event, node) => setSelected(node)}
       panOnDrag={false}
       zoomOnPinch={false}

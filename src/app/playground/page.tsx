@@ -53,7 +53,7 @@ export default function PlaygroundPage() {
             <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_200px]">
               <div className="hidden flex-col space-y-4 sm:flex md:order-2">
                 {/* @ts-ignore */}
-                <span>{selected.data.name}</span>
+                <span>{selected?.data?.name}</span>
               </div>
               <div className="md:order-1">
                 <TabsContent value="complete" className="mt-0 border-0 p-0">
