@@ -1,12 +1,10 @@
 "use client";
 
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useEffect } from "react";
 import ReactFlow, {
   useNodesState,
   useEdgesState,
   addEdge,
-  Controls,
-  useOnSelectionChange,
   ReactFlowProvider,
 } from "reactflow";
 
@@ -43,9 +41,13 @@ export const useSelectedNode = () => {
   return selected;
 };
 
-const Flow = () => {
-  const [selected, setSelected] = React.useState({ id: null });
-
+const Flow = ({
+  selected,
+  setSelected,
+}: {
+  selected: any;
+  setSelected: any;
+}) => {
   const initNodes = React.useMemo(
     () => [
       {
@@ -99,32 +101,31 @@ const Flow = () => {
   }, [selected]);
 
   return (
-    <ReactFlowProvider>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        nodeTypes={nodeTypes}
-        fitView
-        edgesUpdatable={false}
-        edgesFocusable={false}
-        nodesDraggable={false}
-        defaultEdgeOptions={{
-          selected: false,
-        }}
-        nodesConnectable={false}
-        nodesFocusable={false}
-        draggable={false}
-        onNodeClick={(event, node) => setSelected(node)}
-        panOnDrag={false}
-        zoomOnPinch={false}
-        zoomOnDoubleClick={false}
-        zoomOnScroll={false}
-        className="bg-teal-50"
-      ></ReactFlow>
-    </ReactFlowProvider>
+    <ReactFlow
+      nodes={nodes}
+      edges={edges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
+      onConnect={onConnect}
+      nodeTypes={nodeTypes}
+      fitView
+      edgesUpdatable={false}
+      edgesFocusable={false}
+      nodesDraggable={false}
+      defaultEdgeOptions={{
+        selected: false,
+      }}
+      nodesConnectable={false}
+      nodesFocusable={false}
+      draggable={false}
+      // @ts-ignore
+      onNodeClick={(event, node) => setSelected(node)}
+      panOnDrag={false}
+      zoomOnPinch={false}
+      zoomOnDoubleClick={false}
+      zoomOnScroll={false}
+      className="bg-teal-50"
+    />
   );
 };
 
