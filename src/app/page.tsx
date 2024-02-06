@@ -1,9 +1,5 @@
-import Board from "@/components/Board";
+import { redirect } from "next/navigation";
 
-export default function Home() {
-  return (
-    <div className="w-screen h-screen">
-      <Board />
-    </div>
-  );
+export default function Page() {
+  redirect("/playground");
 }

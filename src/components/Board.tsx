@@ -1,31 +1,23 @@
 "use client";
 
-import React, { useCallback, useEffect } from "react";
-import ReactFlow, {
-  useNodesState,
-  useEdgesState,
-  addEdge,
-  ReactFlowProvider,
-} from "reactflow";
+import React, { useCallback } from "react";
+import ReactFlow, { useNodesState, useEdgesState, addEdge } from "reactflow";
 
 import "reactflow/dist/base.css";
-
-import CustomNode from "./CustomNode";
+import SwapNode from "./nodes/SwapNode";
+import StopLossNode from "./nodes/StopLossNode";
+import { INode, IStopLossRecipeData } from "@/lib/types";
 
 const nodeTypes = {
-  custom: CustomNode,
+  swap: SwapNode,
+  stopLoss: StopLossNode,
 };
 
 const initEdges = [
   {
-    id: "e1-2",
+    id: "e1",
     source: "1",
     target: "2",
-  },
-  {
-    id: "e1-3",
-    source: "1",
-    target: "3",
   },
 ];
 
@@ -45,43 +37,26 @@ const Flow = ({
   selected,
   setSelected,
 }: {
-  selected: any;
+  selected?: INode;
   setSelected: any;
 }) => {
   const initNodes = React.useMemo(
     () => [
       {
         id: "1",
-        type: "custom",
+        type: "stopLoss",
         data: {
-          name: "Jane Doe",
-          job: "CEO",
-          emoji: "😎",
-          selected: selected.id === "1",
+          ...selected?.data,
         },
-        position: { x: 0, y: 50 },
+        position: { x: 0, y: 0 },
       },
       {
         id: "2",
-        type: "custom",
+        type: "swap",
         data: {
-          name: "Tyler Weary",
-          job: "Designer",
-          emoji: "🤓",
-          selected: selected.id === "2",
+          ...selected?.data,
         },
-        position: { x: -200, y: 200 },
-      },
-      {
-        id: "3",
-        type: "custom",
-        data: {
-          name: "Kristi Price",
-          job: "Developer",
-          emoji: "🤩",
-          selected: selected.id === "3",
-        },
-        position: { x: 200, y: 200 },
+        position: { x: 0, y: 200 },
       },
     ],
     [selected]
@@ -96,10 +71,6 @@ const Flow = ({
     []
   );
 
-  useEffect(() => {
-    console.log({ selected });
-  }, [selected]);
-
   return (
     <ReactFlow
       nodes={nodes}
@@ -112,7 +83,6 @@ const Flow = ({
       edgesUpdatable={false}
       edgesFocusable={false}
       nodesDraggable={false}
-      // defaultEdgeOptions={}
       nodesConnectable={false}
       nodesFocusable={false}
       draggable={false}
