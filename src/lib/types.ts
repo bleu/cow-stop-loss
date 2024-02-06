@@ -1,12 +1,9 @@
 export type Address = `0x${string}`;
 
 export interface IToken {
-  name: string;
-  chainId: number;
   symbol: string;
   decimals: number;
   address: Address;
-  logoURI: string;
 }
 
 export interface INodeData {
@@ -17,20 +14,21 @@ export type nodeTypes = "swap" | "stopLoss";
 
 export type timeOptions = "15 minutes" | "1 hour" | "1 day";
 
+export const timeOptionsValues = ["15 minutes", "1 hour", "1 day"];
+
 export interface ISwapData {
   tokenSell: IToken;
   tokenBuy: IToken;
-  sellAmount: string;
-  buyAmount: string;
+  amount: number;
+  allowedSlippage: number;
   isSellOrder: boolean;
   validityBucketTime: timeOptions;
   isPartiallyFillable: boolean;
   receiver: Address;
-  appData: Address;
 }
 
 export interface IStopLossConditionData {
-  strikePrice: string;
+  strikePrice: number;
   tokenSellOracle: Address;
   tokenBuyOracle: Address;
   tokenSell: IToken;
@@ -43,6 +41,5 @@ export type IStopLossRecipeData = ISwapData & IStopLossConditionData;
 export interface INode {
   id: string;
   type: nodeTypes;
-  data: IStopLossRecipeData;
   position?: { x: number; y: number };
 }

@@ -15,9 +15,9 @@ function StopLossNode({
         <div className="ml-2">
           <div className="text-md font-bold">Swap</div>
           <div className="text-sm text-gray-500">
-            {data.isSellOrder
-              ? `Sell ${data.sellAmount} ${data.tokenSell.symbol} for at least ${data.buyAmount} ${data.tokenBuy.symbol}`
-              : `Buy ${data.buyAmount} ${data.tokenBuy.symbol} for maximum of ${data.sellAmount} ${data.tokenSell.symbol}`}
+            {`${data.isSellOrder ? "Sell" : "Buy"} ${data.amount} ${
+              data.tokenSell.symbol
+            } for ${data.tokenBuy.symbol}`}
           </div>
         </div>
       </div>

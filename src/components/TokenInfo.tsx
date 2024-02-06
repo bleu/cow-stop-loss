@@ -1,6 +1,6 @@
-import { cowTokenList } from "@/lib/utils/cowTokenList";
-import { formatNumber } from "@/lib/utils/formatNumber";
-import { truncateAddress } from "@/lib/utils/truncate";
+import { cowTokenList } from "@/lib/cowTokenList";
+import { formatNumber } from "@/lib/data/formatNumber";
+import { truncateAddress } from "@/lib/data/truncate";
 import Image from "next/image";
 
 export function TokenInfo({

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useCallback } from "react";
-import ReactFlow, { useNodesState, useEdgesState, addEdge } from "reactflow";
+import React, { useCallback, useEffect } from "react";
+import ReactFlow, { useEdgesState, useNodesState } from "reactflow";
 
 import "reactflow/dist/base.css";
 import SwapNode from "./nodes/SwapNode";
@@ -36,9 +36,11 @@ export const useSelectedNode = () => {
 const Flow = ({
   selected,
   setSelected,
+  data,
 }: {
   selected?: INode;
   setSelected: any;
+  data: IStopLossRecipeData;
 }) => {
   const initNodes = React.useMemo(
     () => [
@@ -46,7 +48,8 @@ const Flow = ({
         id: "1",
         type: "stopLoss",
         data: {
-          ...selected?.data,
+          ...data,
+          selected: selected?.id === "1",
         },
         position: { x: 0, y: 0 },
       },
@@ -54,7 +57,8 @@ const Flow = ({
         id: "2",
         type: "swap",
         data: {
-          ...selected?.data,
+          ...data,
+          selected: selected?.id === "2",
         },
         position: { x: 0, y: 200 },
       },
@@ -63,21 +67,12 @@ const Flow = ({
   );
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initEdges);
-
-  const onConnect = useCallback(
-    // @ts-ignore
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    []
-  );
 
   return (
     <ReactFlow
       nodes={nodes}
-      edges={edges}
+      edges={initEdges}
       onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onConnect={onConnect}
       nodeTypes={nodeTypes}
       fitView
       edgesUpdatable={false}
@@ -86,7 +81,10 @@ const Flow = ({
       nodesConnectable={false}
       nodesFocusable={false}
       draggable={false}
-      onNodeClick={(event, node) => setSelected(node)}
+      onNodeClick={(event, node) =>
+        setSelected({ id: node.id, type: node.type })
+      }
+      onPaneClick={() => setSelected(null)}
       panOnDrag={false}
       zoomOnPinch={false}
       zoomOnDoubleClick={false}
