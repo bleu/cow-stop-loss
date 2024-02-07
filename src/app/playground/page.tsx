@@ -2,12 +2,12 @@
 
 import Board from "@/components/Board";
 
-import { Separator } from "@bleu-fi/ui";
 import { ReactFlowProvider } from "reactflow";
 import { useState } from "react";
 import { INode, IStopLossRecipeData, IToken } from "@/lib/types";
 import { cowTokenList } from "@/lib/cowTokenList";
 import Menu from "@/components/menus";
+import { Separator } from "@/components/ui/separator";
 
 export default function PlaygroundPage() {
   const [selected, setSelected] = useState<INode>();
@@ -15,10 +15,10 @@ export default function PlaygroundPage() {
   const [data, setData] = useState<IStopLossRecipeData>({
     strikePrice: 1000,
     tokenSell: cowTokenList.findLast(
-      (token) => token.symbol === "WETH" && token.chainId === 11155111,
+      (token) => token.symbol === "WETH" && token.chainId === 11155111
     ) as IToken,
     tokenBuy: cowTokenList.findLast(
-      (token) => token.symbol === "USDC" && token.chainId === 11155111,
+      (token) => token.symbol === "USDC" && token.chainId === 11155111
     ) as IToken,
     tokenBuyOracle: "0x",
     tokenSellOracle: "0x",
