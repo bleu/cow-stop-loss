@@ -3,7 +3,7 @@ const moduleExports = {
   async headers() {
     return [
       {
-        source: "public/manifest.json",
+        source: "/manifest.json",
         headers: [
           { key: "Access-Control-Allow-Origin", value: "*" },
           { key: "Access-Control-Allow-Methods", value: "GET" },
@@ -76,3 +76,5 @@ const moduleExports = {
     ],
   },
 };
+
+export default moduleExports

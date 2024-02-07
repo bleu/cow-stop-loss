@@ -21,7 +21,7 @@ export const formatNumber = (
   decimals = 1,
   style = "decimal",
   notation: Notation = "compact",
-  lessThanThresholdToReplace = 0.001
+  lessThanThresholdToReplace = 0.001,
 ) => {
   if (number === 0) return "0";
   if (Math.abs(Number(number)) < lessThanThresholdToReplace) {
@@ -215,8 +215,8 @@ const networksNamesOnBalancer = [
 
 export const networksOnBalancer = Object.fromEntries(
   Object.entries(networkIdEnumMap).filter(([key]) =>
-    networksNamesOnBalancer.includes(key)
-  )
+    networksNamesOnBalancer.includes(key),
+  ),
 );
 
 export function networkFor(key?: string | number) {
@@ -236,7 +236,7 @@ export function networkIdFor(name?: string) {
 
 export function unsafeNetworkIdFor(name: string) {
   return Object.keys(networkIdEnumMap).find(
-    (key) => networkIdEnumMap[key as keyof typeof networkIdEnumMap] === name
+    (key) => networkIdEnumMap[key as keyof typeof networkIdEnumMap] === name,
   );
 }
 

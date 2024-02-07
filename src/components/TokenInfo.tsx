@@ -1,6 +1,5 @@
 import { cowTokenList } from "@/lib/cowTokenList";
-import { formatNumber } from "@/lib/data/formatNumber";
-import { truncateAddress } from "@/lib/data/truncate";
+import { formatNumber, truncateAddress } from "@/lib/utils";
 import Image from "next/image";
 
 export function TokenInfo({
@@ -15,7 +14,7 @@ export function TokenInfo({
   amount?: number | string;
 }) {
   const tokenLogoUri = cowTokenList.find(
-    (token) => token.address === id && token.chainId === chainId
+    (token) => token.address === id && token.chainId === chainId,
   )?.logoURI;
   return (
     <div className="flex items-center gap-x-1">

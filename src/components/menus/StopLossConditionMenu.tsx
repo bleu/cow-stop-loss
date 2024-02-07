@@ -1,4 +1,4 @@
-import { IStopLossRecipeData } from "@/lib/types";
+import { IStopLossRecipeData, timeOptionsValues } from "@/lib/types";
 import { Input } from "../Input";
 import {
   Accordion,
@@ -6,7 +6,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion";
-import { UseFormReturn } from "react-hook-form";
+import { Controller, UseFormReturn } from "react-hook-form";
+import { Select, SelectItem } from "../Select";
 
 export function StopLossConditionMenu({
   data,
@@ -15,6 +16,8 @@ export function StopLossConditionMenu({
   data: IStopLossRecipeData;
   form: UseFormReturn;
 }) {
+  const { control } = form;
+
   return (
     <div>
       <span className="text-md font-bold mb-3">Stop Loss Condition</span>
@@ -36,6 +39,24 @@ export function StopLossConditionMenu({
                 name="maxTimeSinceLastOracleUpdate"
                 label="Max Time Since Last Oracle Update"
               />
+              <div className="flex flex-col">
+                <label className="mb-2 block text-sm">
+                  Maximium Time Since Last Oracle Update
+                </label>
+                <Controller
+                  control={control}
+                  name="validityBucketTime"
+                  render={({ field: { onChange, value, ref } }) => (
+                    <Select onValueChange={onChange} value={value} ref={ref}>
+                      {timeOptionsValues.map((timeOption) => (
+                        <SelectItem key={timeOption} value={timeOption}>
+                          {timeOption}
+                        </SelectItem>
+                      ))}
+                    </Select>
+                  )}
+                />
+              </div>
             </div>
           </AccordionContent>
         </AccordionItem>

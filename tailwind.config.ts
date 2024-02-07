@@ -1,15 +1,25 @@
-import type { Config } from "tailwindcss"
-const { fontFamily } = require("tailwindcss/defaultTheme")
+import type { Config } from "tailwindcss";
+const { fontFamily } = require("tailwindcss/defaultTheme");
+const {
+  blackA,
+  blueDark,
+  tomatoDark,
+  slateDark,
+  amberDark,
+  cyanDark,
+  mintDark,
+  greenDark,
+} = require("@radix-ui/colors");
 
 /** @type {import('tailwindcss').Config} */
 const config = {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   important: true,
   theme: {
@@ -58,6 +68,14 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        ...blackA,
+        ...slateDark,
+        ...blueDark,
+        ...amberDark,
+        ...tomatoDark,
+        ...cyanDark,
+        ...mintDark,
+        ...greenDark,
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -81,6 +99,6 @@ const config = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-} satisfies Config
+} satisfies Config;
 
-export default config
+export default config;

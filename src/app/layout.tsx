@@ -24,8 +24,8 @@ export default function Layout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable
+          "h-screen bg-background font-sans antialiased",
+          fontSans.variable,
         )}
       >
         <RootLayout>{children}</RootLayout>

@@ -12,10 +12,10 @@ function StopLossNode({
   return (
     <BaseNode selected={selected} isStart>
       <div className="flex flex-col">
-        <span className="text-md font-bold">Stop Loss</span>
+        <span className="text-md font-bold">Stop Loss Condition</span>
         <span className="text-sm text-gray-500">
-          Sell {data.tokenSell.symbol} if price falls below {data.strikePrice}{" "}
-          {data.tokenBuy.symbol}
+          If the {data.tokenSell.symbol} / {data.tokenBuy.symbol} falls below{" "}
+          {data.strikePrice}
         </span>
       </div>
     </BaseNode>

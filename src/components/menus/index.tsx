@@ -25,7 +25,7 @@ export default function Menu({
   const form = useForm<FieldValues>({ defaultValues: data });
   if (!selected) {
     return (
-      <div className="m-2 w-full h-full">
+      <div className="m-2 w-full max-h-[40rem] overflow-y-scroll">
         <StopLossRecipeMenu data={data} />
       </div>
     );
@@ -39,10 +39,12 @@ export default function Menu({
         setSelected(undefined);
       }}
     >
-      <div className="m-2 w-full h-full">
+      <div className="m-2 w-full max-h-[50rem] overflow-y-scroll">
         <MenuComponent data={data} form={form} />
+        <Button type="submit" className="bg-blue9 hover:bg-blue7 my-2">
+          Save
+        </Button>
       </div>
-      <Button type="submit">Save</Button>
     </Form>
   );
 }

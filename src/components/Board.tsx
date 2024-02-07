@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useCallback, useEffect } from "react";
-import ReactFlow, { useEdgesState, useNodesState } from "reactflow";
+import React, { useEffect } from "react";
+import ReactFlow, { useNodesState } from "reactflow";
 
 import "reactflow/dist/base.css";
 import SwapNode from "./nodes/SwapNode";
 import StopLossNode from "./nodes/StopLossNode";
-import { INode, IStopLossRecipeData } from "@/lib/types";
+import { IStopLossRecipeData } from "@/lib/types";
 
 const nodeTypes = {
   swap: SwapNode,
@@ -18,55 +18,39 @@ const initEdges = [
     id: "e1",
     source: "1",
     target: "2",
+    animated: true,
   },
 ];
 
-export const SelectedNodeContext = React.createContext(null);
-
-export const useSelectedNode = () => {
-  const selected = React.useContext(SelectedNodeContext);
-  if (!selected) {
-    throw new Error(
-      "useSelectedNode must be used within a SelectedNodeContext"
-    );
-  }
-  return selected;
-};
+const createInitNodes = (data: IStopLossRecipeData) => [
+  {
+    id: "1",
+    type: "stopLoss",
+    data,
+    position: { x: 0, y: 0 },
+  },
+  {
+    id: "2",
+    type: "swap",
+    data,
+    position: { x: 0, y: 200 },
+  },
+];
 
 const Flow = ({
-  selected,
   setSelected,
   data,
 }: {
-  selected?: INode;
   setSelected: any;
   data: IStopLossRecipeData;
 }) => {
-  const initNodes = React.useMemo(
-    () => [
-      {
-        id: "1",
-        type: "stopLoss",
-        data: {
-          ...data,
-          selected: selected?.id === "1",
-        },
-        position: { x: 0, y: 0 },
-      },
-      {
-        id: "2",
-        type: "swap",
-        data: {
-          ...data,
-          selected: selected?.id === "2",
-        },
-        position: { x: 0, y: 200 },
-      },
-    ],
-    [selected]
-  );
+  const [nodes, setNodes, onNodesChange] = useNodesState(createInitNodes(data));
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(initNodes);
+  useEffect(() => {
+    setNodes(nodes.map((node) => ({ ...node, data })));
+    console.log("updates node");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setNodes, data]);
 
   return (
     <ReactFlow
@@ -81,15 +65,14 @@ const Flow = ({
       nodesConnectable={false}
       nodesFocusable={false}
       draggable={false}
-      onNodeClick={(event, node) =>
-        setSelected({ id: node.id, type: node.type })
-      }
+      onNodeClick={(_, node) => setSelected({ id: node.id, type: node.type })}
       onPaneClick={() => setSelected(null)}
       panOnDrag={false}
       zoomOnPinch={false}
       zoomOnDoubleClick={false}
       zoomOnScroll={false}
-      className="bg-teal-50"
+      defaultMarkerColor=""
+      className="bg-blue2 h-full w-full rounded-md shadow-md"
     />
   );
 };
