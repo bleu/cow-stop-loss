@@ -5,15 +5,23 @@ import { Address, IStopLossRecipeData, IToken } from "./types";
 import { composableCowAbi } from "./abis/composableCow";
 import { generateSalt } from "./generateSalt";
 import { stopLossArgsEncoder } from "./handlerEncoder";
+import { signatureVerifierMuxerAbi } from "./abis/signatureVerifierMuxer";
 
 // Composable COW and StopLoss address is the same for all chains supported chains (mainnet and goerli)
 export const COMPOSABLE_COW_ADDRESS =
-  "0xfdaFc9d1902f4e0b84f65F49f244b32b31013b74";
-export const STOP_LOSS_ADDRESS = "0xE8212F30C28B4AAB467DF3725C14d6e89C2eB967";
+  "0xfdaFc9d1902f4e0b84f65F49f244b32b31013b74" as const;
+export const STOP_LOSS_ADDRESS =
+  "0xE8212F30C28B4AAB467DF3725C14d6e89C2eB967" as const;
+export const SETTLEMENT_CONTRACT =
+  "0x9008D19f58AAbD9eD0D60971565AA8510560ab41" as const;
+export const EXTENSIBLE_FALLBACK_ADDRESS =
+  "0x2f55e8b20D0B9FEFA187AA7d00B6Cbe563605bF5" as const;
 
 export enum TRANSACTION_TYPES {
   ERC20_APPROVE = "ERC20_APPROVE",
   STOP_LOSS_ORDER = "STOP_LOSS_ORDER",
+  SET_FALLBACK_HANDLER = "SET_FALLBACK_HANDLER",
+  SET_DOMAIN_VERIFIER = "SET_DOMAIN_VERIFIER",
 }
 
 export interface BaseArgs {
@@ -31,6 +39,15 @@ export type StopLossOrderArgs = {
   type: TRANSACTION_TYPES.STOP_LOSS_ORDER;
 } & BaseArgs &
   IStopLossRecipeData;
+
+export interface setFallbackHandlerArgs extends BaseArgs {
+  safeAddress: Address;
+}
+
+export interface setDomainVerifierArgs extends BaseArgs {
+  safeAddress: Address;
+  domainSeparator: Address;
+}
 
 interface ITransaction<T> {
   createRawTx(args: T): BaseTransaction;
@@ -72,9 +89,42 @@ class StopLossOrderTx implements ITransaction<StopLossOrderArgs> {
   }
 }
 
+class SetFallbackHandlerTx implements ITransaction<setFallbackHandlerArgs> {
+  createRawTx({ safeAddress }: setFallbackHandlerArgs): BaseTransaction {
+    return {
+      to: safeAddress,
+      value: "0",
+      data: encodeFunctionData({
+        abi: signatureVerifierMuxerAbi,
+        functionName: "setFallbackHandler",
+        args: [EXTENSIBLE_FALLBACK_ADDRESS],
+      }),
+    };
+  }
+}
+
+class setDomainVerifierTx implements ITransaction<setDomainVerifierArgs> {
+  createRawTx({
+    safeAddress,
+    domainSeparator,
+  }: setDomainVerifierArgs): BaseTransaction {
+    return {
+      to: safeAddress,
+      value: "0",
+      data: encodeFunctionData({
+        abi: signatureVerifierMuxerAbi,
+        functionName: "setDomainVerifier",
+        args: [domainSeparator, COMPOSABLE_COW_ADDRESS],
+      }),
+    };
+  }
+}
+
 export interface TransactionBindings {
   [TRANSACTION_TYPES.ERC20_APPROVE]: ERC20ApproveArgs;
   [TRANSACTION_TYPES.STOP_LOSS_ORDER]: StopLossOrderArgs;
+  [TRANSACTION_TYPES.SET_FALLBACK_HANDLER]: setFallbackHandlerArgs;
+  [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: setDomainVerifierArgs;
 }
 
 export type AllTransactionArgs = TransactionBindings[keyof TransactionBindings];
@@ -86,6 +136,8 @@ const TRANSACTION_CREATORS: {
 } = {
   [TRANSACTION_TYPES.ERC20_APPROVE]: ERC20ApproveRawTx,
   [TRANSACTION_TYPES.STOP_LOSS_ORDER]: StopLossOrderTx,
+  [TRANSACTION_TYPES.SET_FALLBACK_HANDLER]: SetFallbackHandlerTx,
+  [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: setDomainVerifierTx,
 };
 
 export class TransactionFactory {

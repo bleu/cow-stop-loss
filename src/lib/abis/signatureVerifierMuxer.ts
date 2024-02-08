@@ -1,4 +1,4 @@
-export const SignatureVerifierMuxerAbi = [
+export const signatureVerifierMuxerAbi = [
   {
     inputs: [
       {
