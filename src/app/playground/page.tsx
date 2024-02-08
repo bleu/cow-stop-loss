@@ -2,13 +2,13 @@
 
 import Board from "@/components/Board";
 
-import { Separator } from "@bleu-fi/ui";
 import { ReactFlowProvider } from "reactflow";
 import { useState } from "react";
 import { Address, INode, IStopLossRecipeData, IToken } from "@/lib/types";
 import { cowTokenList } from "@/lib/cowTokenList";
 import Menu from "@/components/menus";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { Separator } from "@/components/ui/separator";
 
 export default function PlaygroundPage() {
   const [selected, setSelected] = useState<INode>();

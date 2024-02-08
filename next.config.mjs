@@ -19,9 +19,6 @@ const moduleExports = {
     domains: [
       "assets.coingecko.com",
       "raw.githubusercontent.com",
-      "assets-cdn.trustwallet.com",
-      "beethoven-assets.s3.eu-central-1.amazonaws.com",
-      "assets.coingecko.com"
     ],
     remotePatterns: [
       {
@@ -56,22 +53,9 @@ const moduleExports = {
       },
       {
         protocol: "https",
-        hostname: "cdn.sanity.io",
-        port: "",
-        pathname:
-          "/images/r2mka0oi/production/bf37b9c7fb36c7d3c96d3d05b45c76d89072b777-1800x1800.png",
-      },
-      {
-        protocol: "https",
         hostname: "gnosis.mypinata.cloud",
         port: "",
         pathname: "/ipfs/**",
-      },
-      {
-        protocol: "https",
-        hostname: "app.stakewise.io",
-        port: "",
-        pathname: "/static/images/currencies/**",
       },
     ],
   },
