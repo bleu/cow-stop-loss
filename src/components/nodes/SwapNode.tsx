@@ -2,13 +2,7 @@ import { memo } from "react";
 import { BaseNode } from ".";
 import { ISwapData } from "@/lib/types";
 
-function StopLossNode({
-  selected,
-  data,
-}: {
-  selected: boolean;
-  data: ISwapData;
-}) {
+function SwapNode({ selected, data }: { selected: boolean; data: ISwapData }) {
   return (
     <BaseNode selected={selected} isEnd>
       <div className="flex">
@@ -25,4 +19,4 @@ function StopLossNode({
   );
 }
 
-export default memo(StopLossNode);
+export default memo(SwapNode);
