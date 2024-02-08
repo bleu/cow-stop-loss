@@ -6,9 +6,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "format:check": "prettier --check \"**/*.{md,html,mjml,json,yml,css,scss}\"",
+    "format": "prettier --write \"**/*.{md,html,mjml,json,yml,css,scss,ts,tsx,js,jsx}\"",
+    "lint": "eslint 'app/javascript/**/*.{js,jsx,ts,tsx}' --max-warnings 0",
+    "lint:fix": "eslint 'app/javascript/**/*.{js,jsx,ts,tsx}' --fix",
+    "link:bleu-ui": "npx yalc link @bleu-fi/ui"
   },
   "dependencies": {
+    "@gnosis.pm/safe-apps-react-sdk": "^4.6.2",
+    "@gnosis.pm/safe-apps-sdk": "^7.8.0",
+    "@radix-ui/colors": "^3.0.0",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
     "@radix-ui/react-aspect-ratio": "^1.0.3",
@@ -37,15 +44,19 @@
     "@radix-ui/react-toggle": "^1.0.3",
     "@radix-ui/react-toggle-group": "^1.0.4",
     "@radix-ui/react-tooltip": "^1.0.7",
+    "@wagmi/core": "^2.6.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "cmdk": "^0.2.1",
     "next": "14.1.0",
+    "prettier": "^3.2.5",
     "react": "^18",
     "react-dom": "^18",
+    "react-hook-form": "^7.50.0",
+    "reactflow": "^11.10.3",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
-    "reactflow": "^11.10.3"
+    "viem": "^2.7.6"
   },
   "devDependencies": {
     "@types/node": "^20",

@@ -1,127 +1,78 @@
 "use client";
 
-import React, { useCallback, useEffect } from "react";
-import ReactFlow, {
-  useNodesState,
-  useEdgesState,
-  addEdge,
-  ReactFlowProvider,
-} from "reactflow";
+import React, { useEffect } from "react";
+import ReactFlow, { useNodesState } from "reactflow";
 
 import "reactflow/dist/base.css";
-
-import CustomNode from "./CustomNode";
+import SwapNode from "./nodes/SwapNode";
+import StopLossNode from "./nodes/StopLossNode";
+import { IStopLossRecipeData } from "@/lib/types";
 
 const nodeTypes = {
-  custom: CustomNode,
+  swap: SwapNode,
+  stopLoss: StopLossNode,
 };
 
 const initEdges = [
   {
-    id: "e1-2",
+    id: "e1",
     source: "1",
     target: "2",
-  },
-  {
-    id: "e1-3",
-    source: "1",
-    target: "3",
+    animated: true,
   },
 ];
 
-export const SelectedNodeContext = React.createContext(null);
-
-export const useSelectedNode = () => {
-  const selected = React.useContext(SelectedNodeContext);
-  if (!selected) {
-    throw new Error(
-      "useSelectedNode must be used within a SelectedNodeContext"
-    );
-  }
-  return selected;
-};
+const createInitNodes = (data: IStopLossRecipeData) => [
+  {
+    id: "1",
+    type: "stopLoss",
+    data,
+    position: { x: 0, y: 0 },
+  },
+  {
+    id: "2",
+    type: "swap",
+    data,
+    position: { x: 0, y: 200 },
+  },
+];
 
 const Flow = ({
-  selected,
   setSelected,
+  data,
 }: {
-  selected: any;
   setSelected: any;
+  data: IStopLossRecipeData;
 }) => {
-  const initNodes = React.useMemo(
-    () => [
-      {
-        id: "1",
-        type: "custom",
-        data: {
-          name: "Jane Doe",
-          job: "CEO",
-          emoji: "😎",
-          selected: selected.id === "1",
-        },
-        position: { x: 0, y: 50 },
-      },
-      {
-        id: "2",
-        type: "custom",
-        data: {
-          name: "Tyler Weary",
-          job: "Designer",
-          emoji: "🤓",
-          selected: selected.id === "2",
-        },
-        position: { x: -200, y: 200 },
-      },
-      {
-        id: "3",
-        type: "custom",
-        data: {
-          name: "Kristi Price",
-          job: "Developer",
-          emoji: "🤩",
-          selected: selected.id === "3",
-        },
-        position: { x: 200, y: 200 },
-      },
-    ],
-    [selected]
-  );
-
-  const [nodes, setNodes, onNodesChange] = useNodesState(initNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initEdges);
-
-  const onConnect = useCallback(
-    // @ts-ignore
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    []
-  );
+  const [nodes, setNodes, onNodesChange] = useNodesState(createInitNodes(data));
 
   useEffect(() => {
-    console.log({ selected });
-  }, [selected]);
+    setNodes(nodes.map((node) => ({ ...node, data })));
+    console.log("updates node");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setNodes, data]);
 
   return (
     <ReactFlow
       nodes={nodes}
-      edges={edges}
+      edges={initEdges}
       onNodesChange={onNodesChange}
-      onEdgesChange={onEdgesChange}
-      onConnect={onConnect}
       nodeTypes={nodeTypes}
       fitView
       edgesUpdatable={false}
       edgesFocusable={false}
       nodesDraggable={false}
-      // defaultEdgeOptions={}
       nodesConnectable={false}
       nodesFocusable={false}
       draggable={false}
-      onNodeClick={(event, node) => setSelected(node)}
+      onNodeClick={(_, node) => setSelected({ id: node.id, type: node.type })}
+      onPaneClick={() => setSelected(null)}
       panOnDrag={false}
       zoomOnPinch={false}
       zoomOnDoubleClick={false}
       zoomOnScroll={false}
-      className="bg-teal-50"
+      defaultMarkerColor=""
+      className="bg-blue2 h-full w-full rounded-md shadow-md"
     />
   );
 };
