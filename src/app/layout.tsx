@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { NetworksContextProvider } from "./contexts/networks";
 import { RootLayout } from "@/components/RootLayout";
 
-export const fontSans = FontSans({
+const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
 });
