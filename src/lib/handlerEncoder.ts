@@ -59,7 +59,7 @@ const stopLossDataStructure = [
 ];
 
 export function stopLossArgsEncoder(data: IStopLossRecipeData): `0x${string}` {
-  const appData = "0x"; // TODO: encode appData using CoW lib
+  const appData = "0x".concat(...Array(64).fill("0")); // TODO: encode appData using CoW lib
   const validityBucketSeconds = timeOptionsToSeconds(data.validityBucketTime);
   const maxTimeSinceLastOracleUpdateSeconds = timeOptionsToSeconds(
     data.maxTimeSinceLastOracleUpdate

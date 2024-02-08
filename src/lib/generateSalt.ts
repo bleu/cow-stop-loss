@@ -1,6 +1,6 @@
 export function generateSalt(): `0x${string}` {
   const characters = "abcdef0123456789";
-  const sault = [...Array(32).keys()]
+  const sault = [...Array(64).keys()]
     .map((i) =>
       characters.charAt(Math.floor(Math.random() * characters.length))
     )

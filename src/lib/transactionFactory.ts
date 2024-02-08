@@ -1,7 +1,7 @@
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
 import { encodeFunctionData, erc20Abi } from "viem";
 
-import { Address, IStopLossRecipeData } from "./types";
+import { Address, IStopLossRecipeData, IToken } from "./types";
 import { composableCowAbi } from "./abis/composableCow";
 import { generateSalt } from "./generateSalt";
 import { stopLossArgsEncoder } from "./handlerEncoder";
@@ -22,9 +22,9 @@ export interface BaseArgs {
 
 export interface ERC20ApproveArgs extends BaseArgs {
   type: TRANSACTION_TYPES.ERC20_APPROVE;
-  tokenAddress: Address;
+  token: IToken;
   spender: Address;
-  amount: bigint;
+  amount: number;
 }
 
 export type StopLossOrderArgs = {
@@ -37,18 +37,15 @@ interface ITransaction<T> {
 }
 
 class ERC20ApproveRawTx implements ITransaction<ERC20ApproveArgs> {
-  createRawTx({
-    tokenAddress,
-    spender,
-    amount,
-  }: ERC20ApproveArgs): BaseTransaction {
+  createRawTx({ token, spender, amount }: ERC20ApproveArgs): BaseTransaction {
+    const amountBigInt = BigInt(amount * 10 ** token.decimals);
     return {
-      to: tokenAddress,
+      to: token.address,
       value: "0",
       data: encodeFunctionData({
         abi: erc20Abi,
         functionName: "approve",
-        args: [spender, amount],
+        args: [spender, amountBigInt],
       }),
     };
   }

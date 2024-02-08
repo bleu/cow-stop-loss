@@ -48,7 +48,6 @@ const Flow = ({
 
   useEffect(() => {
     setNodes(nodes.map((node) => ({ ...node, data })));
-    console.log("updates node");
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setNodes, data]);
 

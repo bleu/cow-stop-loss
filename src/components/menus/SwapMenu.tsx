@@ -22,6 +22,9 @@ export function SwapMenu({
 
   const isSellOrder = watch("isSellOrder");
   const isPartiallyFillable = watch("isPartiallyFillable");
+  const amountDecimals = isSellOrder
+    ? data.tokenSell.decimals
+    : data.tokenBuy.decimals;
   return (
     <div>
       <span className="text-md font-bold mb-3">Swap</span>
@@ -30,6 +33,7 @@ export function SwapMenu({
           name="amount"
           label={`Amount to ${isSellOrder ? "sell" : "buy"}`}
           type="number"
+          step={1 / 10 ** amountDecimals}
         />
         <TokenSelect
           selectedToken={data.tokenSell}
