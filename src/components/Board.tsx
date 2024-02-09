@@ -5,7 +5,7 @@ import "reactflow/dist/base.css";
 import React, { useEffect } from "react";
 import ReactFlow, { useNodesState } from "reactflow";
 
-import { IStopLossRecipeData } from "#/lib/types";
+import { INode, IStopLossRecipeData, nodeTypes } from "#/lib/types";
 
 import StopLossNode from "./nodes/StopLossNode";
 import SwapNode from "./nodes/SwapNode";
@@ -43,7 +43,7 @@ const Flow = ({
   setSelected,
   data,
 }: {
-  setSelected: (node: { id: string; type?: string } | null) => void;
+  setSelected: (node: INode | undefined) => void;
   data: IStopLossRecipeData;
 }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState(createInitNodes(data));
@@ -65,8 +65,10 @@ const Flow = ({
       nodesConnectable={false}
       nodesFocusable={false}
       draggable={false}
-      onNodeClick={(_, node) => setSelected({ id: node.id, type: node.type })}
-      onPaneClick={() => setSelected(null)}
+      onNodeClick={(_, node) =>
+        setSelected({ id: node.id, type: node.type as nodeTypes })
+      }
+      onPaneClick={() => setSelected(undefined)}
       panOnDrag={false}
       zoomOnPinch={false}
       zoomOnDoubleClick={false}
