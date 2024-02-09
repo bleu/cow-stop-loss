@@ -1,4 +1,4 @@
-import { IStopLossConditionData, timeOptionsValues } from "@/lib/types";
+import { IStopLossConditionData, TIME_OPTIONS } from "@/lib/types";
 import {
   Accordion,
   AccordionContent,
@@ -22,6 +22,9 @@ export function SwapMenu({
 
   const isSellOrder = watch("isSellOrder");
   const isPartiallyFillable = watch("isPartiallyFillable");
+  const amountDecimals = isSellOrder
+    ? data.tokenSell.decimals
+    : data.tokenBuy.decimals;
   return (
     <div>
       <span className="text-md font-bold mb-3">Swap</span>
@@ -30,6 +33,7 @@ export function SwapMenu({
           name="amount"
           label={`Amount to ${isSellOrder ? "sell" : "buy"}`}
           type="number"
+          step={1 / 10 ** amountDecimals}
         />
         <TokenSelect
           selectedToken={data.tokenSell}
@@ -79,9 +83,9 @@ export function SwapMenu({
                     name="validityBucketTime"
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value} ref={ref}>
-                        {timeOptionsValues.map((timeOption) => (
-                          <SelectItem key={timeOption} value={timeOption}>
-                            {timeOption}
+                        {Object.entries(TIME_OPTIONS).map(([key, value]) => (
+                          <SelectItem key={key} value={String(value)}>
+                            {key}
                           </SelectItem>
                         ))}
                       </Select>

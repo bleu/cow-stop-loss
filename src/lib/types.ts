@@ -12,17 +12,24 @@ export interface INodeData {
 
 export type nodeTypes = "swap" | "stopLoss";
 
-export type timeOptions = "15 minutes" | "1 hour" | "1 day";
+export enum TIME_OPTIONS {
+  MINUTE_15 = "1 minute",
+  HOUR = "1 hour",
+  DAY = "1 day",
+}
 
-export const timeOptionsValues = ["15 minutes", "1 hour", "1 day"];
-
+export const TIME_OPTIONS_SECONDS = {
+  [TIME_OPTIONS.MINUTE_15]: 60 * 15,
+  [TIME_OPTIONS.HOUR]: 60 * 60,
+  [TIME_OPTIONS.DAY]: 60 * 60 * 24,
+};
 export interface ISwapData {
   tokenSell: IToken;
   tokenBuy: IToken;
   amount: number;
   allowedSlippage: number;
   isSellOrder: boolean;
-  validityBucketTime: timeOptions;
+  validityBucketTime: TIME_OPTIONS;
   isPartiallyFillable: boolean;
   receiver: Address;
 }
@@ -33,7 +40,7 @@ export interface IStopLossConditionData {
   tokenBuyOracle: Address;
   tokenSell: IToken;
   tokenBuy: IToken;
-  maxTimeSinceLastOracleUpdate: timeOptions;
+  maxTimeSinceLastOracleUpdate: TIME_OPTIONS;
 }
 
 export type IStopLossRecipeData = ISwapData & IStopLossConditionData;

@@ -14,8 +14,8 @@ function StopLossNode({
       <div className="flex flex-col">
         <span className="text-md font-bold">Stop Loss Condition</span>
         <span className="text-sm text-gray-500">
-          If the {data.tokenSell.symbol} / {data.tokenBuy.symbol} falls below{" "}
-          {data.strikePrice}
+          If the {data.tokenSell.symbol} price falls bellow to{" "}
+          {data.strikePrice} {data.tokenBuy.symbol}
         </span>
       </div>
     </BaseNode>
