@@ -12,22 +12,24 @@ export function StopLossRecipeMenu({ data }: { data: IStopLossRecipeData }) {
   return (
     <div>
       <Tabs className="h-full overscroll-auto" defaultValue="preview">
-        <TabsList>
-          <TabsTrigger value="preview" defaultChecked>
+        <TabsList className="flex w-full">
+          <TabsTrigger value="preview" className="w-full" defaultChecked>
             Preview
           </TabsTrigger>
-          <TabsTrigger value="detailed">Detailed</TabsTrigger>
+          <TabsTrigger value="detailed" className="w-full">
+            Detailed
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="preview">
           <div className="flex flex-col gap-y-2">
-            <div className="flex flex-row gap-x-2">
+            <div className="flex flex-row gap-x-2 justify-between">
               <span>Condition:</span>
               <span>
                 {data.strikePrice} {data.tokenSell.symbol} /
                 {data.tokenBuy.symbol}
               </span>
             </div>
-            <div className="flex flex-row gap-x-2 items-center">
+            <div className="flex flex-row gap-x-2 justify-between items-center">
               <span>Sell ({data.isSellOrder ? "exact" : "max"}):</span>
               <TokenInfo
                 id={data.tokenSell.address}
@@ -36,7 +38,7 @@ export function StopLossRecipeMenu({ data }: { data: IStopLossRecipeData }) {
                 chainId={chainId}
               />
             </div>
-            <div className="flex flex-row gap-x-2 items-center overscroll-auto">
+            <div className="flex flex-row gap-x-2 justify-between items-center overscroll-auto">
               <span>Buy ({data.isSellOrder ? "min" : "exact"}):</span>
               <TokenInfo
                 id={data.tokenBuy.address}

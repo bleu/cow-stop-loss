@@ -21,7 +21,12 @@ export function StopLossConditionMenu({
   return (
     <div>
       <span className="text-md font-bold mb-3">Stop Loss Condition</span>
-      <Input name="strikePrice" label="Strike Price" type="number" />
+      <Input
+        name="strikePrice"
+        label="Strike Price"
+        type="number"
+        step={1e-18}
+      />
       <Accordion className="w-full" type="single" collapsible>
         <AccordionItem value="advancedOptions" key="advancedOption">
           <AccordionTrigger>Advanced Options</AccordionTrigger>
