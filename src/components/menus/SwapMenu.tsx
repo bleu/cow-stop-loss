@@ -1,4 +1,4 @@
-import { IStopLossConditionData, timeOptionsValues } from "@/lib/types";
+import { IStopLossConditionData, TIME_OPTIONS } from "@/lib/types";
 import {
   Accordion,
   AccordionContent,
@@ -83,9 +83,9 @@ export function SwapMenu({
                     name="validityBucketTime"
                     render={({ field: { onChange, value, ref } }) => (
                       <Select onValueChange={onChange} value={value} ref={ref}>
-                        {timeOptionsValues.map((timeOption) => (
-                          <SelectItem key={timeOption} value={timeOption}>
-                            {timeOption}
+                        {Object.entries(TIME_OPTIONS).map(([key, value]) => (
+                          <SelectItem key={key} value={String(value)}>
+                            {key}
                           </SelectItem>
                         ))}
                       </Select>

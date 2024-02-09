@@ -1,13 +1,12 @@
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
-import { encodeFunctionData, erc20Abi } from "viem";
+import { encodeFunctionData, erc20Abi, pad, parseUnits } from "viem";
 
 import { Address, IStopLossRecipeData, IToken } from "./types";
 import { composableCowAbi } from "./abis/composableCow";
-import { generateSalt } from "./generateSalt";
 import { stopLossArgsEncoder } from "./handlerEncoder";
 import { signatureVerifierMuxerAbi } from "./abis/signatureVerifierMuxer";
 
-// Composable COW and StopLoss address is the same for all chains supported chains (mainnet and goerli)
+// These addresses are the same for all supported chains (mainnet and goerli)
 export const COMPOSABLE_COW_ADDRESS =
   "0xfdaFc9d1902f4e0b84f65F49f244b32b31013b74" as const;
 export const STOP_LOSS_ADDRESS =
@@ -35,10 +34,9 @@ export interface ERC20ApproveArgs extends BaseArgs {
   amount: number;
 }
 
-export type StopLossOrderArgs = {
+export interface StopLossOrderArgs extends BaseArgs, IStopLossRecipeData {
   type: TRANSACTION_TYPES.STOP_LOSS_ORDER;
-} & BaseArgs &
-  IStopLossRecipeData;
+}
 
 export interface setFallbackHandlerArgs extends BaseArgs {
   safeAddress: Address;
@@ -55,7 +53,7 @@ interface ITransaction<T> {
 
 class ERC20ApproveRawTx implements ITransaction<ERC20ApproveArgs> {
   createRawTx({ token, spender, amount }: ERC20ApproveArgs): BaseTransaction {
-    const amountBigInt = BigInt(amount * 10 ** token.decimals);
+    const amountBigInt = parseUnits(String(amount), 18);
     return {
       to: token.address,
       value: "0",
@@ -79,7 +77,7 @@ class StopLossOrderTx implements ITransaction<StopLossOrderArgs> {
         args: [
           {
             handler: STOP_LOSS_ADDRESS,
-            salt: generateSalt(),
+            salt: `0x${Date.now().toString(16).padEnd(64, "0")}`,
             staticInput: stopLossArgsEncoder(data),
           },
           true,

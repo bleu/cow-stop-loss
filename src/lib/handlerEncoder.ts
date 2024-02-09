@@ -1,7 +1,6 @@
-import { encodeAbiParameters } from "viem";
+import { encodeAbiParameters, parseUnits } from "viem";
 import { calculateAmounts } from "./calculateAmounts";
-import { IStopLossRecipeData } from "./types";
-import { timeOptionsToSeconds } from "./timeOptions";
+import { IStopLossRecipeData, TIME_OPTIONS_SECONDS } from "./types";
 
 const stopLossDataStructure = [
   {
@@ -60,17 +59,15 @@ const stopLossDataStructure = [
 
 export function stopLossArgsEncoder(data: IStopLossRecipeData): `0x${string}` {
   const appData = "0x".concat(...Array(64).fill("0")); // TODO: encode appData using CoW lib
-  const validityBucketSeconds = timeOptionsToSeconds(data.validityBucketTime);
-  const maxTimeSinceLastOracleUpdateSeconds = timeOptionsToSeconds(
-    data.maxTimeSinceLastOracleUpdate
-  );
   const strikePriceWithDecimals = BigInt(data.strikePrice * 10 ** 18);
   const [sellAmount, buyAmount] = calculateAmounts(data);
-  const sellAmountWithDecimals = BigInt(
-    sellAmount * 10 ** data.tokenSell.decimals
+  const sellAmountWithDecimals = parseUnits(
+    String(sellAmount),
+    data.tokenSell.decimals
   );
-  const buyAmountWithDecimals = BigInt(
-    buyAmount * 10 ** data.tokenBuy.decimals
+  const buyAmountWithDecimals = parseUnits(
+    String(buyAmount),
+    data.tokenBuy.decimals
   );
   return encodeAbiParameters(stopLossDataStructure, [
     data.tokenSell.address,
@@ -81,10 +78,10 @@ export function stopLossArgsEncoder(data: IStopLossRecipeData): `0x${string}` {
     data.receiver,
     data.isSellOrder,
     data.isPartiallyFillable,
-    validityBucketSeconds,
+    TIME_OPTIONS_SECONDS[data.validityBucketTime],
     data.tokenSellOracle,
     data.tokenBuyOracle,
     strikePriceWithDecimals,
-    maxTimeSinceLastOracleUpdateSeconds,
+    TIME_OPTIONS_SECONDS[data.maxTimeSinceLastOracleUpdate],
   ]);
 }
