@@ -4,7 +4,13 @@ import Board from "@/components/Board";
 
 import { ReactFlowProvider } from "reactflow";
 import { useState } from "react";
-import { Address, INode, IStopLossRecipeData, IToken } from "@/lib/types";
+import {
+  Address,
+  INode,
+  IStopLossRecipeData,
+  IToken,
+  TIME_OPTIONS,
+} from "@/lib/types";
 import { cowTokenList } from "@/lib/cowTokenList";
 import Menu from "@/components/menus";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
@@ -30,8 +36,8 @@ export default function PlaygroundPage() {
     isSellOrder: true,
     isPartiallyFillable: false,
     amount: 1,
-    validityBucketTime: "15 minutes",
-    maxTimeSinceLastOracleUpdate: "1 hour",
+    validityBucketTime: TIME_OPTIONS.HOUR,
+    maxTimeSinceLastOracleUpdate: TIME_OPTIONS.HOUR,
     allowedSlippage: 1,
     receiver: safeAddress as Address,
   });
