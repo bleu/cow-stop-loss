@@ -22,7 +22,7 @@ export function RootLayout({ children }: React.PropsWithChildren) {
 
 function SafeLoader() {
   return (
-    <div className="flex size-full flex-col justify-center  items-center rounded-3xl px-12 py-16 md:py-20 text-slate12">
+    <div className="bg-blue1 flex size-full flex-col justify-center items-center px-12 py-16 md:py-20 text-slate12">
       <div className="text-center text-3xl">This is a Safe (wallet) App</div>
       <p className="text-xl">
         To access please use this
