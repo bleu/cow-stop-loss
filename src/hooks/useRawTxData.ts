@@ -1,8 +1,9 @@
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+
 import {
   AllTransactionArgs,
   TransactionFactory,
 } from "#/lib/transactionFactory";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 
 export function useRawTxData() {
   const { safe, sdk } = useSafeAppsSDK();

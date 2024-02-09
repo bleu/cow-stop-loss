@@ -1,3 +1,8 @@
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { SafeInfo } from "@gnosis.pm/safe-apps-sdk";
+import { useEffect, useState } from "react";
+import { Address } from "viem";
+
 import { gpV2SettlementAbi } from "#/lib/abis/gpv2Settlement";
 import { signatureVerifierMuxerAbi } from "#/lib/abis/signatureVerifierMuxer";
 import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
@@ -5,10 +10,6 @@ import {
   COMPOSABLE_COW_ADDRESS,
   SETTLEMENT_CONTRACT,
 } from "#/lib/transactionFactory";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { SafeInfo } from "@gnosis.pm/safe-apps-sdk";
-import { useEffect, useState } from "react";
-import { Address } from "viem";
 
 export enum FALLBACK_STATES {
   HAS_DOMAIN_VERIFIER = "HAS_DOMAIN_VERIFIER",

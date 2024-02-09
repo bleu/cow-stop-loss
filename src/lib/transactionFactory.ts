@@ -1,10 +1,10 @@
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
-import { encodeFunctionData, erc20Abi, pad, parseUnits } from "viem";
+import { encodeFunctionData, erc20Abi, parseUnits } from "viem";
 
-import { Address, IStopLossRecipeData, IToken } from "./types";
 import { composableCowAbi } from "./abis/composableCow";
-import { stopLossArgsEncoder } from "./handlerEncoder";
 import { signatureVerifierMuxerAbi } from "./abis/signatureVerifierMuxer";
+import { stopLossArgsEncoder } from "./handlerEncoder";
+import { Address, IStopLossRecipeData, IToken } from "./types";
 
 // These addresses are the same for all supported chains (mainnet and goerli)
 export const COMPOSABLE_COW_ADDRESS =
@@ -141,7 +141,7 @@ const TRANSACTION_CREATORS: {
 export class TransactionFactory {
   static createRawTx<T extends TRANSACTION_TYPES>(
     type: T,
-    args: TransactionBindings[T],
+    args: TransactionBindings[T]
   ): BaseTransaction {
     const TransactionCreator = TRANSACTION_CREATORS[type];
     const txCreator = new TransactionCreator();

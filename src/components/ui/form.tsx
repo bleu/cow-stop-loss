@@ -1,6 +1,5 @@
 "use client";
 
-import { cn } from "#/lib/utils";
 import * as LabelPrimitive from "@radix-ui/react-label";
 import { Slot } from "@radix-ui/react-slot";
 import clsx from "clsx";
@@ -14,6 +13,9 @@ import {
   useFormContext,
   UseFormReturn,
 } from "react-hook-form";
+
+import { cn } from "#/lib/utils";
+
 import { Label } from "./label";
 
 type FormProps<T extends FieldValues> = {

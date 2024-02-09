@@ -1,23 +1,25 @@
-import { Address, INode, IStopLossRecipeData } from "#/lib/types";
-import { StopLossConditionMenu } from "./StopLossConditionMenu";
-import { SwapMenu } from "./SwapMenu";
-import { StopLossRecipeMenu } from "./StopLossRecipeMenu";
-import { Form } from "../ui/form";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import { Button } from "../ui/button";
+
+import { FALLBACK_STATES, useFallbackState } from "#/hooks/useFallbackState";
+import { useRawTxData } from "#/hooks/useRawTxData";
 import { calculateSellAmount } from "#/lib/calculateAmounts";
 import {
-  TRANSACTION_TYPES,
   setDomainVerifierArgs,
   setFallbackHandlerArgs,
+  TRANSACTION_TYPES,
 } from "#/lib/transactionFactory";
-import { useRawTxData } from "#/hooks/useRawTxData";
-import { FALLBACK_STATES, useFallbackState } from "#/hooks/useFallbackState";
+import { Address, INode, IStopLossRecipeData } from "#/lib/types";
+
 import { AlertCard } from "../AlertCard";
-import { useState } from "react";
 import { Checkbox } from "../Checkbox";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { Spinner } from "../Spinner";
+import { Button } from "../ui/button";
+import { Form } from "../ui/form";
+import { StopLossConditionMenu } from "./StopLossConditionMenu";
+import { StopLossRecipeMenu } from "./StopLossRecipeMenu";
+import { SwapMenu } from "./SwapMenu";
 
 const nodeMenus = {
   stopLoss: StopLossConditionMenu,

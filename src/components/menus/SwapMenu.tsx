@@ -1,15 +1,17 @@
+import { Controller, UseFormReturn } from "react-hook-form";
+
 import { IStopLossConditionData, TIME_OPTIONS } from "#/lib/types";
+
+import { Checkbox } from "../Checkbox";
+import { Input } from "../Input";
+import { Select, SelectItem } from "../Select";
+import { TokenSelect } from "../TokenSelect";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion";
-import { Input } from "../Input";
-import { Controller, UseFormReturn } from "react-hook-form";
-import { Select, SelectItem } from "../Select";
-import { Checkbox } from "../Checkbox";
-import { TokenSelect } from "../TokenSelect";
 
 export function SwapMenu({
   data,

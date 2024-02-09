@@ -1,8 +1,13 @@
 "use client";
 
-import { ReactFlowProvider } from "reactflow";
-import { useState } from "react";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { useState } from "react";
+import { ReactFlowProvider } from "reactflow";
+
+import Board from "#/components/Board";
+import Menu from "#/components/menus";
+import { Separator } from "#/components/ui/separator";
+import { cowTokenList } from "#/lib/cowTokenList";
 import {
   Address,
   INode,
@@ -10,10 +15,6 @@ import {
   IToken,
   TIME_OPTIONS,
 } from "#/lib/types";
-import { cowTokenList } from "#/lib/cowTokenList";
-import { Separator } from "#/components/ui/separator";
-import Menu from "#/components/menus";
-import Board from "#/components/Board";
 
 export default function PlaygroundPage() {
   const [selected, setSelected] = useState<INode>();
@@ -48,7 +49,7 @@ export default function PlaygroundPage() {
           <h2 className="text-lg font-semibold">Stop Loss</h2>
         </div>
         <Separator />
-        <div className="container h-full w-full py-6">
+        <div className="container size-full py-6">
           <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_300px]">
             <div className="hidden flex-col space-y-4 sm:flex md:order-2">
               <Menu

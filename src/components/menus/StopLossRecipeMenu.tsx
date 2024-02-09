@@ -1,8 +1,10 @@
-import { IStopLossRecipeData } from "#/lib/types";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
-import { TokenInfo } from "../TokenInfo";
-import { calculateAmounts } from "#/lib/calculateAmounts";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+
+import { calculateAmounts } from "#/lib/calculateAmounts";
+import { IStopLossRecipeData } from "#/lib/types";
+
+import { TokenInfo } from "../TokenInfo";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 
 export function StopLossRecipeMenu({ data }: { data: IStopLossRecipeData }) {
   const [sellAmount, buyAmount] = calculateAmounts(data);

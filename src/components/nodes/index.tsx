@@ -1,6 +1,7 @@
-import { cn } from "#/lib/utils";
 import React from "react";
 import { Handle, Position } from "reactflow";
+
+import { cn } from "#/lib/utils";
 
 interface IBaseNode {
   children: React.ReactNode;

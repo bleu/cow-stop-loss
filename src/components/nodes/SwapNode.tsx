@@ -1,6 +1,8 @@
 import { memo } from "react";
-import { BaseNode } from ".";
+
 import { ISwapData } from "#/lib/types";
+
+import { BaseNode } from ".";
 
 function SwapNode({ selected, data }: { selected: boolean; data: ISwapData }) {
   return (

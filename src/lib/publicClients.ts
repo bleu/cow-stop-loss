@@ -1,5 +1,5 @@
 import { createPublicClient, http } from "viem";
-import { gnosis, goerli, mainnet, sepolia } from "viem/chains";
+import { gnosis, mainnet, sepolia } from "viem/chains";
 
 export type ChainType = typeof mainnet | typeof gnosis | typeof sepolia;
 

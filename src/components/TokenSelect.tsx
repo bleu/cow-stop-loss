@@ -1,7 +1,5 @@
 "use client";
 
-import { IToken } from "#/lib/types";
-import { Address } from "#/lib/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { TokenBalance, TokenType } from "@gnosis.pm/safe-apps-sdk";
 import {
@@ -11,15 +9,19 @@ import {
 } from "@radix-ui/react-icons";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { Dialog } from "./Dialog";
-import { tokenLogoUri } from "../../public/tokens/logoUri";
-import { cowTokenList } from "#/lib/cowTokenList";
-import { useSafeBalances } from "@/hooks/useSafeBalances";
-import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
 import { erc20Abi, formatUnits, isAddress } from "viem";
-import { Button } from "./ui/button";
+
+import { useSafeBalances } from "@/hooks/useSafeBalances";
+import { cowTokenList } from "#/lib/cowTokenList";
+import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
+import { IToken } from "#/lib/types";
+import { Address } from "#/lib/utils";
+
+import { tokenLogoUri } from "../../public/tokens/logoUri";
+import { Dialog } from "./Dialog";
 import Table from "./Table";
 import { Toast } from "./Toast";
+import { Button } from "./ui/button";
 
 export function TokenSelect({
   onSelectToken,
@@ -231,7 +233,7 @@ function TokenModal({
   }
   return (
     <div className="max-h-[30rem] divide-y divide-slate7 overflow-y-scroll text-white scrollbar-thin scrollbar-track-blue3 scrollbar-thumb-slate12">
-      <div className="flex h-full w-full flex-col items-center justify-center gap-y-4 py-4">
+      <div className="flex size-full flex-col items-center justify-center gap-y-4 py-4">
         <div className="text-xl">Token Search</div>
         <div className="flex w-full items-center px-10">
           <input

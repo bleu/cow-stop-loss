@@ -1,13 +1,15 @@
+import { Controller, UseFormReturn } from "react-hook-form";
+
 import { IStopLossRecipeData, TIME_OPTIONS } from "#/lib/types";
+
 import { Input } from "../Input";
+import { Select, SelectItem } from "../Select";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion";
-import { Controller, UseFormReturn } from "react-hook-form";
-import { Select, SelectItem } from "../Select";
 
 export function StopLossConditionMenu({
   data,

@@ -1,9 +1,10 @@
 "use client";
 
-import { Network, networkFor } from "#/lib/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
+
+import { Network, networkFor } from "#/lib/utils";
 
 export function getNetwork(chainName?: string) {
   if (!chainName) return Network.Ethereum;

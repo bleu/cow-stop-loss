@@ -1,12 +1,14 @@
 "use client";
 
+import "reactflow/dist/base.css";
+
 import React, { useEffect } from "react";
 import ReactFlow, { useNodesState } from "reactflow";
 
-import "reactflow/dist/base.css";
-import SwapNode from "./nodes/SwapNode";
-import StopLossNode from "./nodes/StopLossNode";
 import { IStopLossRecipeData } from "#/lib/types";
+
+import StopLossNode from "./nodes/StopLossNode";
+import SwapNode from "./nodes/SwapNode";
 
 const nodeTypes = {
   swap: SwapNode,
@@ -41,14 +43,13 @@ const Flow = ({
   setSelected,
   data,
 }: {
-  setSelected: any;
+  setSelected: (node: { id: string; type?: string } | null) => void;
   data: IStopLossRecipeData;
 }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState(createInitNodes(data));
 
   useEffect(() => {
     setNodes(nodes.map((node) => ({ ...node, data })));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setNodes, data]);
 
   return (
@@ -71,7 +72,7 @@ const Flow = ({
       zoomOnDoubleClick={false}
       zoomOnScroll={false}
       defaultMarkerColor=""
-      className="bg-blue2 h-full w-full rounded-md shadow-md"
+      className="bg-blue2 size-full rounded-md shadow-md"
     />
   );
 };

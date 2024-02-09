@@ -1,15 +1,15 @@
-import type { Config } from "tailwindcss";
-const { fontFamily } = require("tailwindcss/defaultTheme");
-const {
+import {
+  amberDark,
   blackA,
   blueDark,
-  tomatoDark,
-  slateDark,
-  amberDark,
   cyanDark,
-  mintDark,
   greenDark,
-} = require("@radix-ui/colors");
+  mintDark,
+  slateDark,
+  tomatoDark,
+} from "@radix-ui/colors";
+import type { Config } from "tailwindcss";
+import { fontFamily } from "tailwindcss/defaultTheme";
 
 /** @type {import('tailwindcss').Config} */
 const config = {
