@@ -1,7 +1,7 @@
 import {
   AllTransactionArgs,
   TransactionFactory,
-} from "@/lib/transactionFactory";
+} from "#/lib/transactionFactory";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 
 export function useRawTxData() {

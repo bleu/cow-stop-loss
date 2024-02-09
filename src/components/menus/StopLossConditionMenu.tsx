@@ -1,4 +1,4 @@
-import { IStopLossRecipeData, TIME_OPTIONS } from "@/lib/types";
+import { IStopLossRecipeData, TIME_OPTIONS } from "#/lib/types";
 import { Input } from "../Input";
 import {
   Accordion,

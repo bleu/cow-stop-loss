@@ -1,20 +1,19 @@
 "use client";
 
-import Board from "@/components/Board";
-
 import { ReactFlowProvider } from "reactflow";
 import { useState } from "react";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import {
   Address,
   INode,
   IStopLossRecipeData,
   IToken,
   TIME_OPTIONS,
-} from "@/lib/types";
-import { cowTokenList } from "@/lib/cowTokenList";
-import Menu from "@/components/menus";
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { Separator } from "@/components/ui/separator";
+} from "#/lib/types";
+import { cowTokenList } from "#/lib/cowTokenList";
+import { Separator } from "#/components/ui/separator";
+import Menu from "#/components/menus";
+import Board from "#/components/Board";
 
 export default function PlaygroundPage() {
   const [selected, setSelected] = useState<INode>();
@@ -26,10 +25,10 @@ export default function PlaygroundPage() {
   const [data, setData] = useState<IStopLossRecipeData>({
     strikePrice: 50,
     tokenSell: cowTokenList.findLast(
-      (token) => token.symbol === "WETH" && token.chainId === chainId
+      (token) => token.symbol === "WETH" && token.chainId === chainId,
     ) as IToken,
     tokenBuy: cowTokenList.findLast(
-      (token) => token.symbol === "USDC" && token.chainId === chainId
+      (token) => token.symbol === "USDC" && token.chainId === chainId,
     ) as IToken,
     tokenSellOracle: "0xEd2D417d759b1E77fe6A8920C79AE4CE6D6930F7",
     tokenBuyOracle: "0x57Cb700070Cb1b0475E2D668FA8E89cF0Dda9509",

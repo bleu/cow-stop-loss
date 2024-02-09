@@ -63,11 +63,11 @@ export function stopLossArgsEncoder(data: IStopLossRecipeData): `0x${string}` {
   const [sellAmount, buyAmount] = calculateAmounts(data);
   const sellAmountWithDecimals = parseUnits(
     String(sellAmount),
-    data.tokenSell.decimals
+    data.tokenSell.decimals,
   );
   const buyAmountWithDecimals = parseUnits(
     String(buyAmount),
-    data.tokenBuy.decimals
+    data.tokenBuy.decimals,
   );
   return encodeAbiParameters(stopLossDataStructure, [
     data.tokenSell.address,

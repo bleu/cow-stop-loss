@@ -1,7 +1,7 @@
 "use client";
 
-import { IToken } from "@/lib/types";
-import { Address } from "@/lib/utils";
+import { IToken } from "#/lib/types";
+import { Address } from "#/lib/utils";
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { TokenBalance, TokenType } from "@gnosis.pm/safe-apps-sdk";
 import {
@@ -13,9 +13,9 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { Dialog } from "./Dialog";
 import { tokenLogoUri } from "../../public/tokens/logoUri";
-import { cowTokenList } from "@/lib/cowTokenList";
+import { cowTokenList } from "#/lib/cowTokenList";
 import { useSafeBalances } from "@/hooks/useSafeBalances";
-import { ChainId, publicClientsFromIds } from "@/lib/publicClients";
+import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
 import { erc20Abi, formatUnits, isAddress } from "viem";
 import { Button } from "./ui/button";
 import Table from "./Table";

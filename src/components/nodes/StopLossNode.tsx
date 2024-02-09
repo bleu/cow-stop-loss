@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { BaseNode } from ".";
-import { IStopLossConditionData } from "@/lib/types";
+import { IStopLossConditionData } from "#/lib/types";
 
 function StopLossNode({
   selected,

@@ -6,7 +6,7 @@ import ReactFlow, { useNodesState } from "reactflow";
 import "reactflow/dist/base.css";
 import SwapNode from "./nodes/SwapNode";
 import StopLossNode from "./nodes/StopLossNode";
-import { IStopLossRecipeData } from "@/lib/types";
+import { IStopLossRecipeData } from "#/lib/types";
 
 const nodeTypes = {
   swap: SwapNode,

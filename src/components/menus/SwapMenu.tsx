@@ -1,4 +1,4 @@
-import { IStopLossConditionData, TIME_OPTIONS } from "@/lib/types";
+import { IStopLossConditionData, TIME_OPTIONS } from "#/lib/types";
 import {
   Accordion,
   AccordionContent,

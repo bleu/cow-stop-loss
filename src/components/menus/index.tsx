@@ -1,18 +1,18 @@
-import { Address, INode, IStopLossRecipeData } from "@/lib/types";
+import { Address, INode, IStopLossRecipeData } from "#/lib/types";
 import { StopLossConditionMenu } from "./StopLossConditionMenu";
 import { SwapMenu } from "./SwapMenu";
 import { StopLossRecipeMenu } from "./StopLossRecipeMenu";
 import { Form } from "../ui/form";
 import { FieldValues, useForm } from "react-hook-form";
 import { Button } from "../ui/button";
-import { calculateSellAmount } from "@/lib/calculateAmounts";
+import { calculateSellAmount } from "#/lib/calculateAmounts";
 import {
   TRANSACTION_TYPES,
   setDomainVerifierArgs,
   setFallbackHandlerArgs,
-} from "@/lib/transactionFactory";
-import { useRawTxData } from "@/hooks/useRawTxData";
-import { FALLBACK_STATES, useFallbackState } from "@/hooks/useFallbackState";
+} from "#/lib/transactionFactory";
+import { useRawTxData } from "#/hooks/useRawTxData";
+import { FALLBACK_STATES, useFallbackState } from "#/hooks/useFallbackState";
 import { AlertCard } from "../AlertCard";
 import { useState } from "react";
 import { Checkbox } from "../Checkbox";
