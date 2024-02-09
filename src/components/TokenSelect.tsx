@@ -11,7 +11,7 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { erc20Abi, formatUnits, isAddress } from "viem";
 
-import { useSafeBalances } from "@/hooks/useSafeBalances";
+import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { cowTokenList } from "#/lib/cowTokenList";
 import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
 import { IToken } from "#/lib/types";
@@ -147,7 +147,7 @@ function TokenModal({
               },
             };
           })
-      : [],
+      : []
   );
 
   const { assets, loaded } = useSafeBalances();
@@ -205,7 +205,7 @@ function TokenModal({
         abi: erc20Abi,
         address: tokenSearchQuery,
         functionName: functionName,
-      }),
+      })
     );
     const data = await publicClient.multicall({ contracts: tokensContracts });
 
@@ -272,14 +272,14 @@ function TokenModal({
             .sort((a, b) =>
               formatUnits(
                 BigInt(a!.balance),
-                a!.tokenInfo.decimals ? a!.tokenInfo.decimals : 0,
+                a!.tokenInfo.decimals ? a!.tokenInfo.decimals : 0
               ) <
               formatUnits(
                 BigInt(b!.balance),
-                b!.tokenInfo.decimals ? b!.tokenInfo.decimals : 0,
+                b!.tokenInfo.decimals ? b!.tokenInfo.decimals : 0
               )
                 ? 1
-                : -1,
+                : -1
             )
             .map((token) => {
               if (token) {
@@ -356,7 +356,7 @@ function TokenRow({
         {token.balance
           ? formatUnits(
               BigInt(token.balance),
-              token.tokenInfo.decimals ? token.tokenInfo.decimals : 0,
+              token.tokenInfo.decimals ? token.tokenInfo.decimals : 0
             )
           : ""}
       </Table.BodyCell>

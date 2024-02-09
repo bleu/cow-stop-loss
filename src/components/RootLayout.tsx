@@ -4,7 +4,7 @@ import SafeProvider from "@gnosis.pm/safe-apps-react-sdk";
 import Link from "next/link";
 import React from "react";
 
-import { NetworksContextProvider } from "@/app/contexts/networks";
+import { NetworksContextProvider } from "#/app/contexts/networks";
 
 import { ToastProvider } from "./Toast";
 
