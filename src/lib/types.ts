@@ -6,11 +6,7 @@ export interface IToken {
   address: Address;
 }
 
-export interface INodeData {
-  selected: boolean;
-}
-
-export type nodeTypes = "swap" | "stopLoss";
+export type nodeTypes = "swap" | "stopLoss" | "hookMultisend" | "addPreHook";
 
 export enum TIME_OPTIONS {
   MINUTE_15 = "1 minute",
@@ -45,8 +41,5 @@ export interface IStopLossConditionData {
 
 export type IStopLossRecipeData = ISwapData & IStopLossConditionData;
 
-export interface INode {
-  id: string;
-  type: nodeTypes;
-  position?: { x: number; y: number };
-}
+export type INodeData = IStopLossRecipeData;
+export interface INodesData extends IStopLossRecipeData {}

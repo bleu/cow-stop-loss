@@ -39,7 +39,7 @@ export default function Menu({
   setData: (data: IStopLossRecipeData) => void;
   setSelected: (node: INode | undefined) => void;
 }) {
-  if (!selected) {
+  if (!selected || !nodeMenus[selected?.type]) {
     return <DefaultMenu data={data} />;
   }
   return (
