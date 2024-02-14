@@ -1,6 +1,8 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
+import { Node } from "reactflow";
+import { Address } from "viem";
 
 import { FALLBACK_STATES, useFallbackState } from "#/hooks/useFallbackState";
 import { useRawTxData } from "#/hooks/useRawTxData";
@@ -10,13 +12,14 @@ import {
   setFallbackHandlerArgs,
   TRANSACTION_TYPES,
 } from "#/lib/transactionFactory";
-import { Address, INode, IStopLossRecipeData } from "#/lib/types";
+import { INodeData, IStopLossRecipeData } from "#/lib/types";
 
 import { AlertCard } from "../AlertCard";
 import { Checkbox } from "../Checkbox";
 import { Spinner } from "../Spinner";
 import { Button } from "../ui/button";
 import { Form } from "../ui/form";
+import { MultiSendMenu } from "./MultiSendMenu";
 import { StopLossConditionMenu } from "./StopLossConditionMenu";
 import { StopLossRecipeMenu } from "./StopLossRecipeMenu";
 import { SwapMenu } from "./SwapMenu";
@@ -24,6 +27,7 @@ import { SwapMenu } from "./SwapMenu";
 const nodeMenus = {
   stopLoss: StopLossConditionMenu,
   swap: SwapMenu,
+  multisend: MultiSendMenu,
 };
 
 const spender = "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110" as Address;
@@ -34,12 +38,12 @@ export default function Menu({
   setData,
   setSelected,
 }: {
-  selected?: INode;
+  selected?: Node<INodeData>;
   data: IStopLossRecipeData;
   setData: (data: IStopLossRecipeData) => void;
-  setSelected: (node: INode | undefined) => void;
+  setSelected: (node: Node<INodeData> | undefined) => void;
 }) {
-  if (!selected || !nodeMenus[selected?.type]) {
+  if (!selected || !nodeMenus[selected?.type as keyof typeof nodeMenus]) {
     return <DefaultMenu data={data} />;
   }
   return (
@@ -144,13 +148,13 @@ function SelectedMenu({
   setData,
   setSelected,
 }: {
-  selected: INode;
+  selected: Node<INodeData>;
   data: IStopLossRecipeData;
   setData: (data: IStopLossRecipeData) => void;
-  setSelected: (node: INode | undefined) => void;
+  setSelected: (node: Node<INodeData> | undefined) => void;
 }) {
   const form = useForm<FieldValues>({ defaultValues: data });
-  const MenuComponent = nodeMenus[selected?.type];
+  const MenuComponent = nodeMenus[selected?.type as keyof typeof nodeMenus];
   return (
     <Form
       {...form}

@@ -1,4 +1,4 @@
-export type Address = `0x${string}`;
+import { Address } from "viem";
 
 export interface IToken {
   symbol: string;
@@ -6,7 +6,7 @@ export interface IToken {
   address: Address;
 }
 
-export type nodeTypes = "swap" | "stopLoss" | "hookMultisend" | "addPreHook";
+export type nodeNames = "swap" | "stopLoss" | "hookMultiSend";
 
 export enum TIME_OPTIONS {
   MINUTE_15 = "1 minute",
@@ -34,12 +34,17 @@ export interface IStopLossConditionData {
   strikePrice: number;
   tokenSellOracle: Address;
   tokenBuyOracle: Address;
-  tokenSell: IToken;
-  tokenBuy: IToken;
   maxTimeSinceLastOracleUpdate: TIME_OPTIONS;
 }
 
-export type IStopLossRecipeData = ISwapData & IStopLossConditionData;
+export interface IMultiSendData {
+  token: IToken;
+  amounts: number[];
+  receivers: Address[];
+}
 
-export type INodeData = IStopLossRecipeData;
-export interface INodesData extends IStopLossRecipeData {}
+export interface IStopLossRecipeData extends ISwapData, IStopLossConditionData {
+  preHooks: IMultiSendData[];
+}
+
+export type INodeData = ISwapData | IStopLossRecipeData | IMultiSendData;

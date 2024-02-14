@@ -2,44 +2,27 @@
 
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { useState } from "react";
-import { ReactFlowProvider } from "reactflow";
+import { Node, ReactFlowProvider } from "reactflow";
+import { Address } from "viem";
 
 import Board from "#/components/Board";
 import Menu from "#/components/menus";
+import { defaultStopLossData } from "#/components/nodes/StopLossNode";
+import { getDefaultSwapData } from "#/components/nodes/SwapNode";
 import { Separator } from "#/components/ui/separator";
-import { cowTokenList } from "#/lib/cowTokenList";
-import {
-  Address,
-  INode,
-  IStopLossRecipeData,
-  IToken,
-  TIME_OPTIONS,
-} from "#/lib/types";
+import { INodeData, IStopLossRecipeData } from "#/lib/types";
 
 export default function PlaygroundPage() {
-  const [selected, setSelected] = useState<INode>();
+  const [selected, setSelected] = useState<Node<INodeData>>();
 
   const {
     safe: { safeAddress, chainId },
   } = useSafeAppsSDK();
 
   const [data, setData] = useState<IStopLossRecipeData>({
-    strikePrice: 50,
-    tokenSell: cowTokenList.findLast(
-      (token) => token.symbol === "WETH" && token.chainId === chainId,
-    ) as IToken,
-    tokenBuy: cowTokenList.findLast(
-      (token) => token.symbol === "USDC" && token.chainId === chainId,
-    ) as IToken,
-    tokenSellOracle: "0xEd2D417d759b1E77fe6A8920C79AE4CE6D6930F7",
-    tokenBuyOracle: "0x57Cb700070Cb1b0475E2D668FA8E89cF0Dda9509",
-    isSellOrder: true,
-    isPartiallyFillable: false,
-    amount: 1,
-    validityBucketTime: TIME_OPTIONS.HOUR,
-    maxTimeSinceLastOracleUpdate: TIME_OPTIONS.HOUR,
-    allowedSlippage: 1,
-    receiver: safeAddress as Address,
+    ...getDefaultSwapData(chainId, safeAddress as Address),
+    ...defaultStopLossData,
+    preHooks: [],
   });
 
   return (

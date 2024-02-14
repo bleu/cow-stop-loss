@@ -2,142 +2,126 @@
 
 import "reactflow/dist/base.css";
 
-import ELK, { ElkExtendedEdge } from "elkjs/lib/elk.bundled.js";
-import React, { useCallback, useEffect, useLayoutEffect } from "react";
+import dagre from "dagre";
+import React, { useEffect } from "react";
 import ReactFlow, {
+  Edge,
   Node,
+  Position,
   useEdgesState,
   useNodesState,
   useReactFlow,
 } from "reactflow";
 
-import { INodesData, IStopLossRecipeData, nodeTypes } from "#/lib/types";
+import {
+  INodeData,
+  IStopLossConditionData,
+  IStopLossRecipeData,
+} from "#/lib/types";
 
-import { AddPreHookNode } from "./nodes/AddPreHookNode";
-import StopLossNode from "./nodes/StopLossNode";
-import SwapNode from "./nodes/SwapNode";
+import { defaultEdgeProps } from "./edges";
+import { AddPreHook } from "./edges/AddPreHook";
+import { defaultNodeProps } from "./nodes";
+import { MultiSendNode } from "./nodes/MultiSendNode";
+import { StopLossNode } from "./nodes/StopLossNode";
+import { SwapNode } from "./nodes/SwapNode";
 
 const nodeTypes = {
   swap: SwapNode,
   stopLoss: StopLossNode,
-  addPreHook: AddPreHookNode,
+  hookMultiSend: MultiSendNode,
 };
 
-const elk = new ELK();
+const edgeTypes = {
+  addPreHook: AddPreHook,
+};
 
-const initialPosition = { x: 0, y: 0 };
+const dagreGraph = new dagre.graphlib.Graph();
+dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-const elkOptions = {
-  "elk.algorithm": "layered",
-  "elk.layered.spacing.nodeNodeBetweenLayers": "100",
-  "elk.spacing.nodeNode": "80",
-  "elk.direction": "DOWN",
-  "elk.radial.centerOnRoot": "true",
+const nodeWidth = 172;
+const nodeHeight = 100;
+
+export const getLayoutedElements = (
+  nodes: Node<INodeData>[],
+  edges: Edge[]
+) => {
+  dagreGraph.setGraph({ rankdir: "TD" });
+
+  nodes.forEach((node) => {
+    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
+  });
+
+  edges.forEach((edge) => {
+    dagreGraph.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(dagreGraph);
+
+  nodes.forEach((node) => {
+    const nodeWithPosition = dagreGraph.node(node.id);
+    node.targetPosition = Position.Top;
+    node.sourcePosition = Position.Bottom;
+
+    node.position = {
+      x: nodeWithPosition.x - nodeWidth / 2,
+      y: nodeWithPosition.y - nodeHeight / 2,
+    };
+    return node;
+  });
+
+  return { nodes, edges };
 };
 
 const initEdges = [
   {
-    id: "e1",
-    source: "stopLossCondition",
-    target: "addPreHook",
-    animated: true,
-  },
-  {
-    id: "e2",
-    source: "addPreHook",
+    id: "condition-swap",
+    source: "condition",
     target: "swap",
-    animated: true,
+    type: "addPreHook",
+    ...defaultEdgeProps,
   },
 ];
 
 const createInitNodes = (data: IStopLossRecipeData) =>
   [
     {
-      id: "stopLossCondition",
+      id: "condition",
       type: "stopLoss",
-      position: initialPosition,
-      data,
-    },
-    {
-      id: "addPreHook",
-      type: "addPreHook",
-      position: initialPosition,
-      data,
+      data: data as IStopLossConditionData,
+      ...defaultNodeProps,
     },
     {
       id: "swap",
       type: "swap",
-      position: initialPosition,
-      data,
+      data: data as IStopLossRecipeData,
+      ...defaultNodeProps,
     },
-  ] as Node<IStopLossRecipeData>[];
-
-const getLayoutedElements = (
-  nodes: Node<INodesData>[],
-  edges: ElkExtendedEdge[],
-  options = {}
-) => {
-  const graph = {
-    id: "root",
-    layoutOptions: options,
-    children: nodes.map((node: Node<INodesData>) => ({
-      ...node,
-      targetPosition: "top",
-      sourcePosition: "bottom",
-      width: 50,
-      height: 50,
-    })),
-    edges: edges,
-  };
-
-  return elk.layout(graph).then((layoutedGraph) => {
-    return {
-      nodes: layoutedGraph.children?.map((node) => ({
-        ...node,
-        position: { x: node.x, y: node.y },
-      })),
-    };
-  });
-};
+  ] as Node<INodeData>[];
 
 const Flow = ({
   setSelected,
   data,
 }: {
-  setSelected: (node: Node<INodesData> | undefined) => void;
+  setSelected: (node: Node<INodeData> | undefined) => void;
   data: IStopLossRecipeData;
 }) => {
   const { fitView } = useReactFlow();
-  const [nodes, setNodes, onNodesChange] = useNodesState<IStopLossRecipeData>(
-    createInitNodes(data)
+  const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
+    createInitNodes(data),
+    initEdges
   );
-  const [edges, _setEdges, onEdgesChange] =
-    useEdgesState<IStopLossRecipeData>(initEdges);
 
-  const onLayout = useCallback(() => {
-    getLayoutedElements(
-      // @ts-ignore
-      nodes,
-      // @ts-ignore
-      edges,
-      elkOptions
-    ).then(({ nodes: layoutedNodes }) => {
-      // @ts-ignore
-      setNodes(layoutedNodes);
-      // @ts-ignore
-    });
-  }, [nodes]);
+  const [nodes, setNodes, onNodesChange] =
+    useNodesState<INodeData>(layoutedNodes);
+  const [edges, _setEdges, onEdgesChange] = useEdgesState(layoutedEdges);
 
   useEffect(() => {
     setNodes(nodes.map((node) => ({ ...node, data })));
   }, [data]);
 
-  useLayoutEffect(() => {
-    onLayout();
-  }, []);
-
   useEffect(() => {
-    fitView({ nodes, duration: 1000 });
+    fitView({ duration: 1000 });
   }, [nodes]);
 
   return (
@@ -147,6 +131,7 @@ const Flow = ({
       onEdgesChange={onEdgesChange}
       onNodesChange={onNodesChange}
       nodeTypes={nodeTypes}
+      edgeTypes={edgeTypes}
       fitView
       edgesUpdatable={false}
       edgesFocusable={false}

@@ -1,10 +1,10 @@
 import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
-import { encodeFunctionData, erc20Abi, parseUnits } from "viem";
+import { Address, encodeFunctionData, erc20Abi, parseUnits } from "viem";
 
 import { composableCowAbi } from "./abis/composableCow";
 import { signatureVerifierMuxerAbi } from "./abis/signatureVerifierMuxer";
 import { stopLossArgsEncoder } from "./handlerEncoder";
-import { Address, IStopLossRecipeData, IToken } from "./types";
+import { IStopLossRecipeData, IToken } from "./types";
 
 // These addresses are the same for all supported chains (mainnet and goerli)
 export const COMPOSABLE_COW_ADDRESS =

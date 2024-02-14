@@ -10,6 +10,8 @@ export interface IBaseNode {
   isStart?: boolean;
 }
 
+export const defaultNodeProps = { position: { x: 0, y: 0 } };
+
 export function BaseNode({
   children,
   selected,

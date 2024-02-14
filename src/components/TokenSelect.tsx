@@ -9,13 +9,12 @@ import {
 } from "@radix-ui/react-icons";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { erc20Abi, formatUnits, isAddress } from "viem";
+import { Address, erc20Abi, formatUnits, isAddress } from "viem";
 
 import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { cowTokenList } from "#/lib/cowTokenList";
 import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
 import { IToken } from "#/lib/types";
-import { Address } from "#/lib/utils";
 
 import { tokenLogoUri } from "../../public/tokens/logoUri";
 import { Dialog } from "./Dialog";

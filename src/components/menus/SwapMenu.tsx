@@ -1,6 +1,6 @@
 import { Controller, UseFormReturn } from "react-hook-form";
 
-import { IStopLossConditionData, TIME_OPTIONS } from "#/lib/types";
+import { ISwapData, TIME_OPTIONS } from "#/lib/types";
 
 import { Checkbox } from "../Checkbox";
 import { Input } from "../Input";
@@ -17,7 +17,7 @@ export function SwapMenu({
   data,
   form,
 }: {
-  data: IStopLossConditionData;
+  data: ISwapData;
   form: UseFormReturn;
 }) {
   const { control, watch, setValue } = form;
