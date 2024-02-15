@@ -1,4 +1,6 @@
-import { IMultiSendData, IToken } from "#/lib/types";
+import { Address } from "viem";
+
+import { HOOK_TYPES, IMultiSendData, IToken } from "#/lib/types";
 
 import { BaseNode } from ".";
 
@@ -15,7 +17,7 @@ export function MultiSendNode({
         <div className="ml-2">
           <div className="text-sm font-bold">Multi send</div>
           <div className="text-xs text-gray-500">
-            {`Send a total of ${data.amount} ${data.token.symbol} to ${data.receivers.length} receivers`}
+            {`Send a total of ${data.amountPerReceiver * data.receivers.length} ${data.token.symbol} to ${data.receivers.length} receivers`}
           </div>
         </div>
       </div>
@@ -23,10 +25,12 @@ export function MultiSendNode({
   );
 }
 
-export function getDefaultMultiSendData(token: IToken) {
+export function getDefaultMultiSendData(token: IToken, safeAddress: Address) {
   return {
     receivers: [],
     token: token,
-    amount: 1,
+    amountPerReceiver: 1,
+    safeAddress,
+    type: HOOK_TYPES.MULTI_SEND,
   } as IMultiSendData;
 }

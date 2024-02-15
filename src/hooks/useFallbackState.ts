@@ -5,11 +5,8 @@ import { Address } from "viem";
 
 import { gpV2SettlementAbi } from "#/lib/abis/gpv2Settlement";
 import { signatureVerifierMuxerAbi } from "#/lib/abis/signatureVerifierMuxer";
+import { COMPOSABLE_COW_ADDRESS, SETTLEMENT_CONTRACT } from "#/lib/contracts";
 import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
-import {
-  COMPOSABLE_COW_ADDRESS,
-  SETTLEMENT_CONTRACT,
-} from "#/lib/transactionFactory";
 
 export enum FALLBACK_STATES {
   HAS_DOMAIN_VERIFIER = "HAS_DOMAIN_VERIFIER",

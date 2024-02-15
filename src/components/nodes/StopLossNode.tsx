@@ -30,5 +30,5 @@ export const defaultStopLossData: IStopLossConditionData = {
   strikePrice: 50,
   tokenSellOracle: "0xEd2D417d759b1E77fe6A8920C79AE4CE6D6930F7",
   tokenBuyOracle: "0x57Cb700070Cb1b0475E2D668FA8E89cF0Dda9509",
-  maxTimeSinceLastOracleUpdate: TIME_OPTIONS.HOUR,
+  maxTimeSinceLastOracleUpdate: TIME_OPTIONS.YEAR,
 } as const;

@@ -12,7 +12,7 @@ import {
   setFallbackHandlerArgs,
   TRANSACTION_TYPES,
 } from "#/lib/transactionFactory";
-import { INodeData, IStopLossRecipeData } from "#/lib/types";
+import { IHooks, INodeData, IStopLossRecipeData } from "#/lib/types";
 
 import { AlertCard } from "../AlertCard";
 import { Checkbox } from "../Checkbox";
@@ -34,18 +34,29 @@ const spender = "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110" as Address;
 
 export default function Menu() {
   const [selected, setSelected] = useState<Node<INodeData>>();
+  const {
+    safe: { chainId },
+  } = useSafeAppsSDK();
   const [recipeData, setRecipeData] = useState<IStopLossRecipeData>();
-  const { getNodes } = useReactFlow();
+  const { getNodes, getNode } = useReactFlow();
 
   useOnSelectionChange({
     onChange: ({ nodes }) => {
-      const data = getNodes().reduce((acc, node) => {
-        if (node.type === "stopLoss" || node.type === "swap") {
-          return { ...acc, ...node.data };
-        }
-        return { ...acc, preHooks: [...acc.preHooks, node.data] };
-      }, {} as IStopLossRecipeData);
-      setRecipeData(data);
+      const recipeData = {
+        ...getNode("condition")?.data,
+        ...getNode("swap")?.data,
+      };
+      const hooksData = getNodes()
+        .filter((node) => node.type?.includes("hook"))
+        .reduce((acc, node) => {
+          return [...acc, node.data];
+        }, [] as IHooks[]);
+
+      setRecipeData({
+        ...recipeData,
+        chainId,
+        preHooks: hooksData,
+      } as IStopLossRecipeData);
       if (nodes.length === 0) {
         setSelected(undefined);
         return;
