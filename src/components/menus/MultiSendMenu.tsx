@@ -2,28 +2,34 @@ import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 
-import { IMultiSendData, IStopLossRecipeData, IToken } from "#/lib/types";
-
 import { Input } from "../Input";
 import Table from "../Table";
+import { TokenSelect } from "../TokenSelect";
 import { Button } from "../ui/button";
 
-export function MultiSendMenu({
-  data,
-  form,
-}: {
-  data: IStopLossRecipeData;
-  form: UseFormReturn;
-}) {
-  const { register, setValue } = form;
+export function MultiSendMenu({ form }: { form: UseFormReturn }) {
+  const { register, setValue, watch } = form;
   const [lengthOfArguments, setLengthOfArguments] = useState(1);
+  const formData = watch();
 
   return (
     <div className="flex flex-col w-full gap-y-2 mt-2">
+      <TokenSelect
+        selectedToken={formData.token}
+        tokenType="send"
+        onSelectToken={(newToken) => {
+          setValue("token", newToken);
+        }}
+      />
+      <Input
+        type="number"
+        step={1 / 10 ** (formData.token.decimals || 18)}
+        label="Total amount to send"
+        {...register(`amount`)}
+      />
       <Table color="blue" shade="darkWithBorder">
         <Table.HeaderRow>
-          <Table.HeaderCell>Receiver</Table.HeaderCell>
-          <Table.HeaderCell>Amount</Table.HeaderCell>
+          <Table.HeaderCell>Receivers</Table.HeaderCell>
           <Table.HeaderCell>
             <Button
               type="button"
@@ -41,27 +47,18 @@ export function MultiSendMenu({
             return (
               <Table.BodyRow key={index}>
                 <Table.BodyCell>
-                  <Input {...register(``)} />
+                  <Input {...register(`receivers.${index}`)} />
                 </Table.BodyCell>
                 <Table.BodyCell>
-                  <Input
-                    type={arg.inputType}
-                    key={argName}
-                    defaultValue={defaultValues?.[argName]}
-                    step={arg.step}
-                    {...register(argName)}
-                  />
-                </Table.BodyCell>
-                <Table.BodyCell>
-                  <div className="flex items-center justify-center gap-x-2">
+                  <div className="flex items-center justify-center">
                     <button
                       className="justify-self-center text-tomato9 hover:text-tomato10"
                       type="button"
                       onClick={() => {
-                        arrayArguments.forEach((arg) => {
-                          setValue(arg.name, [
-                            ...formData[arg.name].slice(0, index),
-                            ...formData[arg.name].slice(index + 1),
+                        [`receivers`, `amounts`].forEach((arg) => {
+                          setValue(arg, [
+                            ...formData[arg].slice(0, index),
+                            ...formData[arg].slice(index + 1),
                           ]);
                           setLengthOfArguments(lengthOfArguments - 1);
                         });
@@ -79,10 +76,3 @@ export function MultiSendMenu({
     </div>
   );
 }
-
-export const getDefaultSwapData = (token: IToken) =>
-  ({
-    receivers: [],
-    token: token,
-    amounts: [],
-  }) as IMultiSendData;

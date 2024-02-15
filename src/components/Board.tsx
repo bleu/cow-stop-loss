@@ -2,16 +2,20 @@
 
 import "reactflow/dist/base.css";
 
-import dagre from "dagre";
-import React, { useEffect } from "react";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import React, { useCallback } from "react";
 import ReactFlow, {
-  Edge,
+  EdgeChange,
+  getConnectedEdges,
+  getIncomers,
+  getOutgoers,
   Node,
-  Position,
+  NodeChange,
   useEdgesState,
   useNodesState,
   useReactFlow,
 } from "reactflow";
+import { Address } from "viem";
 
 import {
   INodeData,
@@ -23,8 +27,8 @@ import { defaultEdgeProps } from "./edges";
 import { AddPreHook } from "./edges/AddPreHook";
 import { defaultNodeProps } from "./nodes";
 import { MultiSendNode } from "./nodes/MultiSendNode";
-import { StopLossNode } from "./nodes/StopLossNode";
-import { SwapNode } from "./nodes/SwapNode";
+import { defaultStopLossData, StopLossNode } from "./nodes/StopLossNode";
+import { getDefaultSwapData, SwapNode } from "./nodes/SwapNode";
 
 const nodeTypes = {
   swap: SwapNode,
@@ -36,41 +40,11 @@ const edgeTypes = {
   addPreHook: AddPreHook,
 };
 
-const dagreGraph = new dagre.graphlib.Graph();
-dagreGraph.setDefaultEdgeLabel(() => ({}));
-
-const nodeWidth = 172;
-const nodeHeight = 100;
-
-export const getLayoutedElements = (
-  nodes: Node<INodeData>[],
-  edges: Edge[]
-) => {
-  dagreGraph.setGraph({ rankdir: "TD" });
-
-  nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: nodeWidth, height: nodeHeight });
-  });
-
-  edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target);
-  });
-
-  dagre.layout(dagreGraph);
-
-  nodes.forEach((node) => {
-    const nodeWithPosition = dagreGraph.node(node.id);
-    node.targetPosition = Position.Top;
-    node.sourcePosition = Position.Bottom;
-
-    node.position = {
-      x: nodeWithPosition.x - nodeWidth / 2,
-      y: nodeWithPosition.y - nodeHeight / 2,
-    };
-    return node;
-  });
-
-  return { nodes, edges };
+export const getLayoutedNodes = (nodes: Node<INodeData>[]) => {
+  return nodes.map((node, index) => ({
+    ...node,
+    position: { x: 0, y: index * 150 },
+  }));
 };
 
 const initEdges = [
@@ -99,48 +73,94 @@ const createInitNodes = (data: IStopLossRecipeData) =>
     },
   ] as Node<INodeData>[];
 
-const Flow = ({
-  setSelected,
-  data,
-}: {
-  setSelected: (node: Node<INodeData> | undefined) => void;
-  data: IStopLossRecipeData;
-}) => {
-  const { fitView } = useReactFlow();
-  const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-    createInitNodes(data),
-    initEdges
+export const Board = () => {
+  const {
+    safe: { safeAddress, chainId },
+  } = useSafeAppsSDK();
+  const layoutedNodes = getLayoutedNodes(
+    createInitNodes({
+      ...getDefaultSwapData(chainId, safeAddress as Address),
+      ...defaultStopLossData,
+      preHooks: [],
+    }),
   );
 
-  const [nodes, setNodes, onNodesChange] =
+  const [nodes, _setNodes, onNodesChange] =
     useNodesState<INodeData>(layoutedNodes);
-  const [edges, _setEdges, onEdgesChange] = useEdgesState(layoutedEdges);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initEdges);
+  const { fitView } = useReactFlow();
 
-  useEffect(() => {
-    setNodes(nodes.map((node) => ({ ...node, data })));
-  }, [data]);
+  const onNodesDelete = useCallback(
+    (deleted: Node<INodeData>[]) => {
+      if (deleted.some((node) => node.id === "swap" || node.id === "condition"))
+        return;
+      setEdges(
+        deleted.reduce((acc, node) => {
+          const incomers = getIncomers(node, nodes, edges);
+          const outgoers = getOutgoers(node, nodes, edges);
+          const connectedEdges = getConnectedEdges([node], edges);
 
-  useEffect(() => {
+          const remainingEdges = acc.filter(
+            (edge) => !connectedEdges.includes(edge),
+          );
+
+          const createdEdges = incomers.flatMap(({ id: source }) =>
+            outgoers.map(({ id: target }) => ({
+              id: `${source}-${target}`,
+              source,
+              target,
+            })),
+          );
+
+          return [...remainingEdges, ...createdEdges];
+        }, edges),
+      );
+    },
+    [nodes, edges],
+  );
+
+  function handleNodesChange(changes: NodeChange[]) {
+    const nextChanges = changes.reduce((acc, change) => {
+      // prevent removing the swap and stop loss nodes
+      if (change.type === "remove") {
+        if (change.id !== "swap" && change.id !== "condition") {
+          return [...acc, change];
+        }
+        return acc;
+      }
+      return [...acc, change];
+    }, [] as NodeChange[]);
     fitView({ duration: 1000 });
-  }, [nodes]);
+    onNodesChange(nextChanges);
+  }
+
+  function handleEdgeChange(changes: EdgeChange[]) {
+    const nextChanges = changes.reduce((acc, change) => {
+      // prevent removing the swap and stop loss nodes
+      if (change.type === "remove") {
+        return acc;
+      }
+      return [...acc, change];
+    }, [] as EdgeChange[]);
+    onEdgesChange(nextChanges);
+  }
 
   return (
     <ReactFlow
       nodes={nodes}
       edges={edges}
-      onEdgesChange={onEdgesChange}
-      onNodesChange={onNodesChange}
+      onEdgesChange={handleEdgeChange}
+      onNodesChange={handleNodesChange}
+      fitView
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
-      fitView
       edgesUpdatable={false}
+      onNodesDelete={onNodesDelete}
       edgesFocusable={false}
       nodesDraggable={false}
       nodesConnectable={false}
       nodesFocusable={false}
       draggable={false}
-      onNodeClick={(_, node) => setSelected(node)}
-      onPaneClick={() => setSelected(undefined)}
       panOnDrag={false}
       zoomOnPinch={false}
       zoomOnDoubleClick={false}
@@ -150,4 +170,4 @@ const Flow = ({
   );
 };
 
-export default Flow;
+export function Flow() {}

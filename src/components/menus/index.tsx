@@ -1,7 +1,7 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import { Node } from "reactflow";
+import { Node, useOnSelectionChange, useReactFlow } from "reactflow";
 import { Address } from "viem";
 
 import { FALLBACK_STATES, useFallbackState } from "#/hooks/useFallbackState";
@@ -27,30 +27,45 @@ import { SwapMenu } from "./SwapMenu";
 const nodeMenus = {
   stopLoss: StopLossConditionMenu,
   swap: SwapMenu,
-  multisend: MultiSendMenu,
+  hookMultiSend: MultiSendMenu,
 };
 
 const spender = "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110" as Address;
 
-export default function Menu({
-  selected,
-  data,
-  setData,
-  setSelected,
-}: {
-  selected?: Node<INodeData>;
-  data: IStopLossRecipeData;
-  setData: (data: IStopLossRecipeData) => void;
-  setSelected: (node: Node<INodeData> | undefined) => void;
-}) {
-  if (!selected || !nodeMenus[selected?.type as keyof typeof nodeMenus]) {
-    return <DefaultMenu data={data} />;
+export default function Menu() {
+  const [selected, setSelected] = useState<Node<INodeData>>();
+  const [recipeData, setRecipeData] = useState<IStopLossRecipeData>();
+  const { getNodes } = useReactFlow();
+
+  useOnSelectionChange({
+    onChange: ({ nodes }) => {
+      const data = getNodes().reduce((acc, node) => {
+        if (node.type === "stopLoss" || node.type === "swap") {
+          return { ...acc, ...node.data };
+        }
+        return { ...acc, preHooks: [...acc.preHooks, node.data] };
+      }, {} as IStopLossRecipeData);
+      setRecipeData(data);
+      if (nodes.length === 0) {
+        setSelected(undefined);
+        return;
+      }
+      setSelected(nodes[0]);
+    },
+  });
+
+  if (!recipeData) {
+    return <Spinner />;
   }
+
+  if (!selected || !nodeMenus[selected?.type as keyof typeof nodeMenus]) {
+    return <DefaultMenu data={recipeData} />;
+  }
+
   return (
     <SelectedMenu
+      data={recipeData}
       selected={selected}
-      data={data}
-      setData={setData}
       setSelected={setSelected}
     />
   );
@@ -144,22 +159,28 @@ function DefaultMenu({ data }: { data: IStopLossRecipeData }) {
 
 function SelectedMenu({
   selected,
-  data,
-  setData,
   setSelected,
+  data,
 }: {
   selected: Node<INodeData>;
-  data: IStopLossRecipeData;
-  setData: (data: IStopLossRecipeData) => void;
   setSelected: (node: Node<INodeData> | undefined) => void;
+  data: IStopLossRecipeData;
 }) {
-  const form = useForm<FieldValues>({ defaultValues: data });
+  const form = useForm<FieldValues>({ defaultValues: selected.data });
+
+  const { setNodes, getNodes } = useReactFlow();
   const MenuComponent = nodeMenus[selected?.type as keyof typeof nodeMenus];
   return (
     <Form
       {...form}
       onSubmit={(formData: FieldValues) => {
-        setData({ ...data, ...formData });
+        const newNodes = getNodes().map((node) => {
+          if (node.id === selected.id) {
+            return { ...node, data: { ...node.data, ...formData } };
+          }
+          return node;
+        });
+        setNodes(newNodes);
         setSelected(undefined);
       }}
     >

@@ -4,12 +4,13 @@ import {
   EdgeLabelRenderer,
   EdgeProps,
   getBezierPath,
+  Node,
   useReactFlow,
 } from "reactflow";
 
-import { IToken, nodeNames } from "#/lib/types";
+import { INodeData, IToken, nodeNames } from "#/lib/types";
 
-import { getLayoutedElements } from "../Board";
+import { getLayoutedNodes } from "../Board";
 import { Dialog } from "../Dialog";
 import { defaultNodeProps } from "../nodes";
 import { getDefaultMultiSendData } from "../nodes/MultiSendNode";
@@ -42,17 +43,20 @@ export function AddPreHook({
 
   const onHookSelect = (nodeName: nodeNames) => {
     const newNodeId = `${Math.random().toString(36).substring(7)}`;
-    const tokenSell = getNode(target)?.data?.tokenSell;
-    if (!tokenSell) return;
-    const defaultData = getDefaultMultiSendData(tokenSell as IToken);
+    const targetNode = getNode(target) as Node<INodeData>;
+    if (!targetNode || !("tokenSell" in targetNode.data)) return;
+    const defaultData = getDefaultMultiSendData(
+      targetNode.data.tokenSell as IToken
+    );
     const newNodes = [
-      ...getNodes(),
+      ...getNodes().filter((n) => n.id !== target),
       {
         id: newNodeId,
         type: nodeName,
         data: defaultData,
         ...defaultNodeProps,
       },
+      targetNode,
     ];
 
     const newEdges = [
@@ -72,12 +76,8 @@ export function AddPreHook({
       },
     ];
 
-    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-      newNodes,
-      newEdges
-    );
-    setNodes([...layoutedNodes]);
-    setEdges([...layoutedEdges]);
+    setNodes(getLayoutedNodes(newNodes));
+    setEdges(newEdges);
   };
 
   return (

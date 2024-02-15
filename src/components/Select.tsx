@@ -27,7 +27,7 @@ const baseLight =
 export const Select = forwardRef<HTMLButtonElement, ISelect>(
   (
     { children, theme = "dark", className = "", placeholder = null, ...props },
-    forwardedRef
+    forwardedRef,
   ) => {
     const baseTheme = theme === "dark" ? baseDark : baseLight;
     return (
@@ -39,7 +39,7 @@ export const Select = forwardRef<HTMLButtonElement, ISelect>(
             theme === "dark"
               ? "shadow-blue1/10 border-blue6 border hover:bg-blue4 focus:shadow-[0_0_0_2px] focus:shadow-blue1 disabled:bg-blackA9 shadow-[0_2px_10px]"
               : "",
-            className
+            className,
           )}
           ref={forwardedRef}
         >
@@ -52,13 +52,13 @@ export const Select = forwardRef<HTMLButtonElement, ISelect>(
           <SelectPrimitive.Content
             className={cn(
               "overflow-hidden rounded-md  shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]",
-              baseTheme
+              baseTheme,
             )}
           >
             <SelectPrimitive.ScrollUpButton
               className={cn(
                 "flex h-[25px] cursor-default items-center justify-center",
-                baseTheme
+                baseTheme,
               )}
             >
               <ChevronUpIcon />
@@ -69,7 +69,7 @@ export const Select = forwardRef<HTMLButtonElement, ISelect>(
             <SelectPrimitive.ScrollDownButton
               className={cn(
                 "flex h-[25px] cursor-default items-center justify-center",
-                baseTheme
+                baseTheme,
               )}
             >
               <ChevronDownIcon />
@@ -78,7 +78,7 @@ export const Select = forwardRef<HTMLButtonElement, ISelect>(
         </SelectPrimitive.Portal>
       </SelectPrimitive.Root>
     );
-  }
+  },
 );
 
 export const SelectItem = forwardRef<HTMLDivElement, ISelectItem>(
@@ -89,7 +89,7 @@ export const SelectItem = forwardRef<HTMLDivElement, ISelectItem>(
         className={cn(
           "data-[disabled]:text-blue3 relative flex h-[25px] select-none items-center rounded-[3px] pr-[35px] pl-[25px] text-[13px] leading-none data-[disabled]:pointer-events-none data-[highlighted]:outline-none",
           baseTheme,
-          className
+          className,
         )}
         {...props}
         ref={forwardedRef}
@@ -100,5 +100,5 @@ export const SelectItem = forwardRef<HTMLDivElement, ISelectItem>(
         </SelectPrimitive.ItemIndicator>
       </SelectPrimitive.Item>
     );
-  }
+  },
 );

@@ -39,7 +39,7 @@ export interface IStopLossConditionData {
 
 export interface IMultiSendData {
   token: IToken;
-  amounts: number[];
+  amount: number;
   receivers: Address[];
 }
 
