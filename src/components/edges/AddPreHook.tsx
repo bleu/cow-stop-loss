@@ -116,16 +116,24 @@ export function ChooseHookDialog({
   onHookSelect: (nodeName: nodeNames) => void;
 }) {
   return (
-    <div className="flex flex-row gap-2">
+    <div className="grid grid-cols-3 gap-2">
       <Button
         onClick={() => {
           onHookSelect("hookMultiSend");
         }}
-        className="bg-blue9 hover:bg-blue7 my-2"
+        className="bg-blue9 hover:bg-blue7"
       >
         Multisend
       </Button>
-      <Button className="bg-blue9 hover:bg-blue7 my-2">Aave withdraw</Button>
+      <Button className="bg-blue9 hover:bg-blue7" disabled>
+        Aave withdraw
+      </Button>
+      <Button className="bg-blue9 hover:bg-blue7" disabled>
+        Claim vesting
+      </Button>
+      <Button className="bg-blue9 hover:bg-blue7" disabled>
+        Exit pool
+      </Button>
     </div>
   );
 }
