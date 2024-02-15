@@ -29,16 +29,17 @@ export function MultiSendMenu({ form }: { form: UseFormReturn }) {
       />
       <Table color="blue" shade="darkWithBorder">
         <Table.HeaderRow>
-          <Table.HeaderCell>Receivers</Table.HeaderCell>
-          <Table.HeaderCell>
+          <Table.HeaderCell classNames="px-4 py-2">Receivers</Table.HeaderCell>
+          <Table.HeaderCell classNames="px-4 py-2">
             <Button
               type="button"
-              className="px-5 py-2"
+              size="sm"
+              className="px-2 bg-blue9 hover:bg-blue7 text-white rounded-md h-6"
               onClick={() => {
                 setLengthOfArguments(lengthOfArguments + 1);
               }}
             >
-              <PlusIcon className="size-5 items-end" />
+              <PlusIcon className="size-3 items-end" />
             </Button>
           </Table.HeaderCell>
         </Table.HeaderRow>
@@ -46,10 +47,10 @@ export function MultiSendMenu({ form }: { form: UseFormReturn }) {
           {[...Array(lengthOfArguments).keys()].map((index) => {
             return (
               <Table.BodyRow key={index}>
-                <Table.BodyCell>
+                <Table.BodyCell padding="px-4 py-2">
                   <Input {...register(`receivers.${index}`)} />
                 </Table.BodyCell>
-                <Table.BodyCell>
+                <Table.BodyCell padding="px-4 pt-2">
                   <div className="flex items-center justify-center">
                     <button
                       className="justify-self-center text-tomato9 hover:text-tomato10"
@@ -64,7 +65,7 @@ export function MultiSendMenu({ form }: { form: UseFormReturn }) {
                         });
                       }}
                     >
-                      <TrashIcon className="size-7" />
+                      <TrashIcon className="size-6" />
                     </button>
                   </div>
                 </Table.BodyCell>
