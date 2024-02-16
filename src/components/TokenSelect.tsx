@@ -9,13 +9,12 @@ import {
 } from "@radix-ui/react-icons";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { erc20Abi, formatUnits, isAddress } from "viem";
+import { Address, erc20Abi, formatUnits, isAddress } from "viem";
 
 import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { cowTokenList } from "#/lib/cowTokenList";
 import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
 import { IToken } from "#/lib/types";
-import { Address } from "#/lib/utils";
 
 import { tokenLogoUri } from "../../public/tokens/logoUri";
 import { Dialog } from "./Dialog";
@@ -30,7 +29,7 @@ export function TokenSelect({
   disabeld = false,
 }: {
   onSelectToken: (token: IToken) => void;
-  tokenType: "sell" | "buy";
+  tokenType: "sell" | "buy" | "send";
   selectedToken?: IToken;
   disabeld?: boolean;
 }) {
@@ -78,7 +77,7 @@ export function TokenSelectButton({
   onClick,
   disabeld = false,
 }: {
-  tokenType: "sell" | "buy";
+  tokenType: "sell" | "buy" | "send";
   token?: IToken;
   disabeld?: boolean;
   onClick?: () => void;
@@ -123,7 +122,7 @@ function TokenModal({
   tokenType,
 }: {
   onSelectToken: (token: TokenBalance) => void;
-  tokenType: "sell" | "buy";
+  tokenType: "sell" | "buy" | "send";
 }) {
   const {
     safe: { chainId },
@@ -147,7 +146,7 @@ function TokenModal({
               },
             };
           })
-      : []
+      : [],
   );
 
   const { assets, loaded } = useSafeBalances();
@@ -205,7 +204,7 @@ function TokenModal({
         abi: erc20Abi,
         address: tokenSearchQuery,
         functionName: functionName,
-      })
+      }),
     );
     const data = await publicClient.multicall({ contracts: tokensContracts });
 
@@ -272,14 +271,14 @@ function TokenModal({
             .sort((a, b) =>
               formatUnits(
                 BigInt(a!.balance),
-                a!.tokenInfo.decimals ? a!.tokenInfo.decimals : 0
+                a!.tokenInfo.decimals ? a!.tokenInfo.decimals : 0,
               ) <
               formatUnits(
                 BigInt(b!.balance),
-                b!.tokenInfo.decimals ? b!.tokenInfo.decimals : 0
+                b!.tokenInfo.decimals ? b!.tokenInfo.decimals : 0,
               )
                 ? 1
-                : -1
+                : -1,
             )
             .map((token) => {
               if (token) {
@@ -356,7 +355,7 @@ function TokenRow({
         {token.balance
           ? formatUnits(
               BigInt(token.balance),
-              token.tokenInfo.decimals ? token.tokenInfo.decimals : 0
+              token.tokenInfo.decimals ? token.tokenInfo.decimals : 0,
             )
           : ""}
       </Table.BodyCell>

@@ -65,13 +65,16 @@
     "viem": "^2.7.6"
   },
   "devDependencies": {
+    "@next/eslint-plugin-next": "^14.0.4",
+    "@types/dagre": "^0.7.52",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
-    "@next/eslint-plugin-next": "^14.0.4",
     "@typescript-eslint/parser": "^6.17.0",
+    "autoprefixer": "^10.0.1",
     "eslint": "^8.56.0",
+    "eslint-config-next": "14.1.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.1",
     "eslint-plugin-compat": "latest",
@@ -81,11 +84,9 @@
     "eslint-plugin-react-hooks": "latest",
     "eslint-plugin-simple-import-sort": "latest",
     "eslint-plugin-tailwindcss": "^3.13.1",
+    "postcss": "^8",
     "prettier": "^3.1.1",
     "prettier-plugin-tailwindcss": "^0.5.10",
-    "autoprefixer": "^10.0.1",
-    "eslint-config-next": "14.1.0",
-    "postcss": "^8",
     "tailwindcss": "^3.3.0",
     "typescript": "^5"
   }

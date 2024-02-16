@@ -160,6 +160,9 @@ devDependencies:
   '@next/eslint-plugin-next':
     specifier: ^14.0.4
     version: 14.1.0
+  '@types/dagre':
+    specifier: ^0.7.52
+    version: 0.7.52
   '@types/node':
     specifier: ^20
     version: 20.11.16
@@ -2801,6 +2804,10 @@ packages:
       '@types/d3-transition': 3.0.8
       '@types/d3-zoom': 3.0.8
     dev: false
+
+  /@types/dagre@0.7.52:
+    resolution: {integrity: sha512-XKJdy+OClLk3hketHi9Qg6gTfe1F3y+UFnHxKA2rn9Dw+oXa4Gb378Ztz9HlMgZKSxpPmn4BNVh9wgkpvrK1uw==}
+    dev: true
 
   /@types/geojson@7946.0.14:
     resolution: {integrity: sha512-WCfD5Ht3ZesJUsONdhvm84dmzWOiOzOAqOncN0++w0lBw1o8OuDNJF2McvvCef/yBqb/HYRahp1BYtODFQ8bRg==}

@@ -1,6 +1,8 @@
 import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
+import { Node, useOnSelectionChange, useReactFlow } from "reactflow";
+import { Address } from "viem";
 
 import { FALLBACK_STATES, useFallbackState } from "#/hooks/useFallbackState";
 import { useRawTxData } from "#/hooks/useRawTxData";
@@ -10,13 +12,14 @@ import {
   setFallbackHandlerArgs,
   TRANSACTION_TYPES,
 } from "#/lib/transactionFactory";
-import { Address, INode, IStopLossRecipeData } from "#/lib/types";
+import { INodeData, IStopLossRecipeData } from "#/lib/types";
 
 import { AlertCard } from "../AlertCard";
 import { Checkbox } from "../Checkbox";
 import { Spinner } from "../Spinner";
 import { Button } from "../ui/button";
 import { Form } from "../ui/form";
+import { MultiSendMenu } from "./MultiSendMenu";
 import { StopLossConditionMenu } from "./StopLossConditionMenu";
 import { StopLossRecipeMenu } from "./StopLossRecipeMenu";
 import { SwapMenu } from "./SwapMenu";
@@ -24,29 +27,45 @@ import { SwapMenu } from "./SwapMenu";
 const nodeMenus = {
   stopLoss: StopLossConditionMenu,
   swap: SwapMenu,
+  hookMultiSend: MultiSendMenu,
 };
 
 const spender = "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110" as Address;
 
-export default function Menu({
-  selected,
-  data,
-  setData,
-  setSelected,
-}: {
-  selected?: INode;
-  data: IStopLossRecipeData;
-  setData: (data: IStopLossRecipeData) => void;
-  setSelected: (node: INode | undefined) => void;
-}) {
-  if (!selected) {
-    return <DefaultMenu data={data} />;
+export default function Menu() {
+  const [selected, setSelected] = useState<Node<INodeData>>();
+  const [recipeData, setRecipeData] = useState<IStopLossRecipeData>();
+  const { getNodes } = useReactFlow();
+
+  useOnSelectionChange({
+    onChange: ({ nodes }) => {
+      const data = getNodes().reduce((acc, node) => {
+        if (node.type === "stopLoss" || node.type === "swap") {
+          return { ...acc, ...node.data };
+        }
+        return { ...acc, preHooks: [...acc.preHooks, node.data] };
+      }, {} as IStopLossRecipeData);
+      setRecipeData(data);
+      if (nodes.length === 0) {
+        setSelected(undefined);
+        return;
+      }
+      setSelected(nodes[0]);
+    },
+  });
+
+  if (!recipeData) {
+    return <Spinner />;
   }
+
+  if (!selected || !nodeMenus[selected?.type as keyof typeof nodeMenus]) {
+    return <DefaultMenu data={recipeData} />;
+  }
+
   return (
     <SelectedMenu
+      data={recipeData}
       selected={selected}
-      data={data}
-      setData={setData}
       setSelected={setSelected}
     />
   );
@@ -140,22 +159,28 @@ function DefaultMenu({ data }: { data: IStopLossRecipeData }) {
 
 function SelectedMenu({
   selected,
-  data,
-  setData,
   setSelected,
+  data,
 }: {
-  selected: INode;
+  selected: Node<INodeData>;
+  setSelected: (node: Node<INodeData> | undefined) => void;
   data: IStopLossRecipeData;
-  setData: (data: IStopLossRecipeData) => void;
-  setSelected: (node: INode | undefined) => void;
 }) {
-  const form = useForm<FieldValues>({ defaultValues: data });
-  const MenuComponent = nodeMenus[selected?.type];
+  const form = useForm<FieldValues>({ defaultValues: selected.data });
+
+  const { setNodes, getNodes } = useReactFlow();
+  const MenuComponent = nodeMenus[selected?.type as keyof typeof nodeMenus];
   return (
     <Form
       {...form}
       onSubmit={(formData: FieldValues) => {
-        setData({ ...data, ...formData });
+        const newNodes = getNodes().map((node) => {
+          if (node.id === selected.id) {
+            return { ...node, data: { ...node.data, ...formData } };
+          }
+          return node;
+        });
+        setNodes(newNodes);
         setSelected(undefined);
       }}
     >

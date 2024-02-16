@@ -2,81 +2,172 @@
 
 import "reactflow/dist/base.css";
 
-import React, { useEffect } from "react";
-import ReactFlow, { useNodesState } from "reactflow";
+import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import React, { useCallback } from "react";
+import ReactFlow, {
+  EdgeChange,
+  getConnectedEdges,
+  getIncomers,
+  getOutgoers,
+  Node,
+  NodeChange,
+  useEdgesState,
+  useNodesState,
+  useReactFlow,
+} from "reactflow";
+import { Address } from "viem";
 
-import { INode, IStopLossRecipeData, nodeTypes } from "#/lib/types";
+import {
+  INodeData,
+  IStopLossConditionData,
+  IStopLossRecipeData,
+} from "#/lib/types";
 
-import StopLossNode from "./nodes/StopLossNode";
-import SwapNode from "./nodes/SwapNode";
+import { defaultEdgeProps } from "./edges";
+import { AddPreHook } from "./edges/AddPreHook";
+import { defaultNodeProps } from "./nodes";
+import { MultiSendNode } from "./nodes/MultiSendNode";
+import { defaultStopLossData, StopLossNode } from "./nodes/StopLossNode";
+import { getDefaultSwapData, SwapNode } from "./nodes/SwapNode";
 
 const nodeTypes = {
   swap: SwapNode,
   stopLoss: StopLossNode,
+  hookMultiSend: MultiSendNode,
+};
+
+const edgeTypes = {
+  addPreHook: AddPreHook,
+};
+
+export const getLayoutedNodes = (nodes: Node<INodeData>[]) => {
+  return nodes.map((node, index) => ({
+    ...node,
+    position: { x: 0, y: index * 150 },
+  }));
 };
 
 const initEdges = [
   {
-    id: "e1",
-    source: "1",
-    target: "2",
-    animated: true,
+    id: "condition-swap",
+    source: "condition",
+    target: "swap",
+    type: "addPreHook",
+    ...defaultEdgeProps,
   },
 ];
 
-const createInitNodes = (data: IStopLossRecipeData) => [
-  {
-    id: "1",
-    type: "stopLoss",
-    data,
-    position: { x: 0, y: 0 },
-  },
-  {
-    id: "2",
-    type: "swap",
-    data,
-    position: { x: 0, y: 200 },
-  },
-];
+const createInitNodes = (data: IStopLossRecipeData) =>
+  [
+    {
+      id: "condition",
+      type: "stopLoss",
+      data: data as IStopLossConditionData,
+      ...defaultNodeProps,
+    },
+    {
+      id: "swap",
+      type: "swap",
+      data: data as IStopLossRecipeData,
+      ...defaultNodeProps,
+    },
+  ] as Node<INodeData>[];
 
-const Flow = ({
-  setSelected,
-  data,
-}: {
-  setSelected: (node: INode | undefined) => void;
-  data: IStopLossRecipeData;
-}) => {
-  const [nodes, setNodes, onNodesChange] = useNodesState(createInitNodes(data));
+export const Board = () => {
+  const {
+    safe: { safeAddress, chainId },
+  } = useSafeAppsSDK();
+  const layoutedNodes = getLayoutedNodes(
+    createInitNodes({
+      ...getDefaultSwapData(chainId, safeAddress as Address),
+      ...defaultStopLossData,
+      preHooks: [],
+    }),
+  );
 
-  useEffect(() => {
-    setNodes(nodes.map((node) => ({ ...node, data })));
-  }, [setNodes, data]);
+  const [nodes, _setNodes, onNodesChange] =
+    useNodesState<INodeData>(layoutedNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(initEdges);
+  const { fitView } = useReactFlow();
+
+  const onNodesDelete = useCallback(
+    (deleted: Node<INodeData>[]) => {
+      if (deleted.some((node) => node.id === "swap" || node.id === "condition"))
+        return;
+      setEdges(
+        deleted.reduce((acc, node) => {
+          const incomers = getIncomers(node, nodes, edges);
+          const outgoers = getOutgoers(node, nodes, edges);
+          const connectedEdges = getConnectedEdges([node], edges);
+
+          const remainingEdges = acc.filter(
+            (edge) => !connectedEdges.includes(edge),
+          );
+
+          const createdEdges = incomers.flatMap(({ id: source }) =>
+            outgoers.map(({ id: target }) => ({
+              id: `${source}-${target}`,
+              source,
+              target,
+            })),
+          );
+
+          return [...remainingEdges, ...createdEdges];
+        }, edges),
+      );
+    },
+    [nodes, edges],
+  );
+
+  function handleNodesChange(changes: NodeChange[]) {
+    const nextChanges = changes.reduce((acc, change) => {
+      // prevent removing the swap and stop loss nodes
+      if (change.type === "remove") {
+        if (change.id !== "swap" && change.id !== "condition") {
+          return [...acc, change];
+        }
+        return acc;
+      }
+      return [...acc, change];
+    }, [] as NodeChange[]);
+    fitView({ duration: 1000 });
+    onNodesChange(nextChanges);
+  }
+
+  function handleEdgeChange(changes: EdgeChange[]) {
+    const nextChanges = changes.reduce((acc, change) => {
+      // prevent removing the swap and stop loss nodes
+      if (change.type === "remove") {
+        return acc;
+      }
+      return [...acc, change];
+    }, [] as EdgeChange[]);
+    onEdgesChange(nextChanges);
+  }
 
   return (
     <ReactFlow
       nodes={nodes}
-      edges={initEdges}
-      onNodesChange={onNodesChange}
-      nodeTypes={nodeTypes}
+      edges={edges}
+      onEdgesChange={handleEdgeChange}
+      onNodesChange={handleNodesChange}
       fitView
+      nodeTypes={nodeTypes}
+      edgeTypes={edgeTypes}
       edgesUpdatable={false}
+      onNodesDelete={onNodesDelete}
       edgesFocusable={false}
       nodesDraggable={false}
       nodesConnectable={false}
       nodesFocusable={false}
       draggable={false}
-      onNodeClick={(_, node) =>
-        setSelected({ id: node.id, type: node.type as nodeTypes })
-      }
-      onPaneClick={() => setSelected(undefined)}
       panOnDrag={false}
       zoomOnPinch={false}
       zoomOnDoubleClick={false}
       zoomOnScroll={false}
-      defaultMarkerColor=""
       className="bg-blue2 size-full rounded-md shadow-md"
     />
   );
 };
 
-export default Flow;
+export function Flow() {}
