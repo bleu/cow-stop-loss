@@ -47,8 +47,13 @@ export default function Menu() {
       ...(nodes.find((node) => node.id === "swap")
         ?.data as IStopLossRecipeData),
     };
-    const hooksData = nodes
-      .filter((node) => node.type?.includes("hook"))
+    const preHooksData = nodes
+      .filter((node) => node.type?.includes("preHook"))
+      .reduce((acc, node) => {
+        return [...acc, node.data as IHooks];
+      }, [] as IHooks[]);
+    const postHooksData = nodes
+      .filter((node) => node.type?.includes("postHook"))
       .reduce((acc, node) => {
         return [...acc, node.data as IHooks];
       }, [] as IHooks[]);
@@ -56,7 +61,8 @@ export default function Menu() {
     setRecipeData({
       ...recipeData,
       chainId,
-      preHooks: hooksData,
+      preHooks: preHooksData,
+      postHooks: postHooksData,
     } as IStopLossRecipeData);
   }, [nodes]);
 
