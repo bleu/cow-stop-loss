@@ -67,12 +67,14 @@ export async function stopLossArgsEncoder(
   data: IStopLossRecipeData
 ): Promise<`0x${string}`> {
   const preHooks = HookFactory.createCoWHooks(data.preHooks);
+  const postHooks = HookFactory.createCoWHooks(data.postHooks);
   const metadataApi = new MetadataApi();
 
   const appDataDoc = await metadataApi.generateAppDataDoc({
     metadata: {
       hooks: {
         pre: preHooks,
+        post: postHooks,
       },
     },
   });
