@@ -25,8 +25,9 @@ import {
 } from "#/lib/types";
 
 import { defaultEdgeProps } from "./edges";
-import { AddPreHook } from "./edges/AddPreHook";
+import { AddHook } from "./edges/AddHook";
 import { defaultNodeProps } from "./nodes";
+import { EndNode } from "./nodes/EndNode";
 import { MultiSendNode } from "./nodes/MultiSendNode";
 import { defaultStopLossData, StopLossNode } from "./nodes/StopLossNode";
 import { getDefaultSwapData, SwapNode } from "./nodes/SwapNode";
@@ -35,10 +36,11 @@ const nodeTypes = {
   swap: SwapNode,
   stopLoss: StopLossNode,
   hookMultiSend: MultiSendNode,
+  endNode: EndNode,
 };
 
 const edgeTypes = {
-  addPreHook: AddPreHook,
+  addHook: AddHook,
 };
 
 export const getLayoutedNodes = (nodes: Node<INodeData>[]) => {
@@ -53,7 +55,14 @@ const initEdges = [
     id: "condition-swap",
     source: "condition",
     target: "swap",
-    type: "addPreHook",
+    type: "addHook",
+    ...defaultEdgeProps,
+  },
+  {
+    id: "swap-end",
+    source: "swap",
+    target: "end",
+    type: "addHook",
     ...defaultEdgeProps,
   },
 ];
@@ -70,6 +79,12 @@ const createInitNodes = (data: IStopLossRecipeData) =>
       id: "swap",
       type: "swap",
       data: data as IStopLossRecipeData,
+      ...defaultNodeProps,
+    },
+    {
+      id: "end",
+      type: "endNode",
+      selectable: false,
       ...defaultNodeProps,
     },
   ] as Node<INodeData>[];

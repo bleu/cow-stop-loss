@@ -13,7 +13,7 @@ export function SwapNode({
   data: ISwapData;
 }) {
   return (
-    <BaseNode selected={selected} isEnd>
+    <BaseNode selected={selected}>
       <div className="flex">
         <div className="ml-2">
           <div className="text-sm font-bold">Swap</div>
