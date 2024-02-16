@@ -1,4 +1,4 @@
-import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
+import { BaseTransaction } from "@safe-global/safe-apps-sdk";
 import { Address, encodeFunctionData, erc20Abi, parseUnits } from "viem";
 
 import { composableCowAbi } from "./abis/composableCow";

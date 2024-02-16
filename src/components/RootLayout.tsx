@@ -1,6 +1,6 @@
 "use client";
 
-import SafeProvider from "@gnosis.pm/safe-apps-react-sdk";
+import SafeProvider from "@safe-global/safe-apps-react-sdk";
 import Link from "next/link";
 import React from "react";
 

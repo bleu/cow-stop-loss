@@ -1,5 +1,5 @@
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { SafeInfo } from "@gnosis.pm/safe-apps-sdk";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
+import { SafeInfo } from "@safe-global/safe-apps-sdk";
 import { useEffect, useState } from "react";
 import { Address } from "viem";
 

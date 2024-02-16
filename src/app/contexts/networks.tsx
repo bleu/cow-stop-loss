@@ -1,6 +1,6 @@
 "use client";
 
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
@@ -28,7 +28,7 @@ interface NetworksContextI {
 }
 
 export const NetworksContext = React.createContext<NetworksContextI>(
-  {} as NetworksContextI,
+  {} as NetworksContextI
 );
 
 export const NetworksContextProvider = ({

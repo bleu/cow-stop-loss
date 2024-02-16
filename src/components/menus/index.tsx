@@ -1,4 +1,4 @@
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { Node, useNodes, useReactFlow } from "reactflow";

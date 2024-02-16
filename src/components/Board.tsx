@@ -2,7 +2,7 @@
 
 import "reactflow/dist/base.css";
 
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React, { useCallback } from "react";
 import ReactFlow, {
   EdgeChange,
