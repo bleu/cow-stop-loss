@@ -3,7 +3,7 @@ import { HOOK_TYPES, IHooks, IMultiSendData } from "./types";
 import { CoWHook } from "@cowprotocol/app-data/dist/generatedTypes/v0.11.0";
 import { SETTLEMENT_CONTRACT } from "./contracts";
 
-const GAS_LIMIT = "1000000";
+const GAS_LIMIT = String(parseUnits("1", 18));
 
 interface IHook<T> {
   createCoWHooks(args: T): CoWHook[];
@@ -16,6 +16,7 @@ class MultiSendHook implements IHook<IMultiSendData> {
     amountPerReceiver,
     safeAddress,
   }: IMultiSendData): CoWHook[] {
+    // TODO: This hook doesn't work as expected. The approve will is done from the trampoline contract to the settlement. This means that the multisend will fail
     const amountPerReceiverWithDecimals = parseUnits(
       amountPerReceiver.toString(),
       token.decimals
@@ -34,8 +35,9 @@ class MultiSendHook implements IHook<IMultiSendData> {
       }),
       gasLimit: GAS_LIMIT,
     };
+
     const multiSend = receivers.map((receiver) => ({
-      target: SETTLEMENT_CONTRACT,
+      target: token.address,
       callData: encodeFunctionData({
         abi: erc20Abi,
         functionName: "transferFrom",

@@ -1,10 +1,12 @@
+"use client";
+
 import { encodeAbiParameters, parseUnits } from "viem";
 
 import { calculateAmounts } from "./calculateAmounts";
 import { IStopLossRecipeData, TIME_OPTIONS_SECONDS } from "./types";
 import { HookFactory } from "./hooksFactory";
 import { MetadataApi } from "@cowprotocol/app-data";
-import { OrderBookApi, SupportedChainId } from "@cowprotocol/cow-sdk";
+import { uploadAppData } from "./uploadAppData";
 
 const stopLossDataStructure = [
   {
@@ -64,12 +66,8 @@ const stopLossDataStructure = [
 export async function stopLossArgsEncoder(
   data: IStopLossRecipeData
 ): Promise<`0x${string}`> {
-  console.log("encoding started");
   const preHooks = HookFactory.createCoWHooks(data.preHooks);
   const metadataApi = new MetadataApi();
-  const orderBookApi = new OrderBookApi({
-    chainId: data.chainId,
-  });
 
   const appDataDoc = await metadataApi.generateAppDataDoc({
     metadata: {
@@ -78,15 +76,14 @@ export async function stopLossArgsEncoder(
       },
     },
   });
-  console.log({ appDataDoc });
   const { appDataHex, appDataContent } =
     await metadataApi.appDataToCid(appDataDoc);
-  // const fullAppData = await orderBookApi.uploadAppData(
-  //   appDataHex,
-  //   appDataContent
-  // );
 
-  // console.log({ fullAppData });
+  await uploadAppData({
+    fullAppData: appDataContent,
+    appDataHex,
+    chainId: data.chainId,
+  });
 
   const strikePriceWithDecimals = parseUnits(String(data.strikePrice), 18);
   const [sellAmount, buyAmount] = calculateAmounts(data);

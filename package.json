@@ -91,5 +91,13 @@
     "prettier-plugin-tailwindcss": "^0.5.11",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.3.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "cross-fetch@>=3.0.0 <3.1.5": ">=3.1.5",
+      "ws@>=7.0.0 <7.4.6": ">=7.4.6",
+      "node-fetch@<2.6.7": ">=2.6.7",
+      "minimatch@<3.0.5": ">=3.0.5"
+    }
   }
 }

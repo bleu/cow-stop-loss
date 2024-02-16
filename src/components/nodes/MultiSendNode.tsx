@@ -29,7 +29,7 @@ export function getDefaultMultiSendData(token: IToken, safeAddress: Address) {
   return {
     receivers: [],
     token: token,
-    amountPerReceiver: 1,
+    amountPerReceiver: 0.1,
     safeAddress,
     type: HOOK_TYPES.MULTI_SEND,
   } as IMultiSendData;
