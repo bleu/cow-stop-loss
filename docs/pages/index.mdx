@@ -1,0 +1,61 @@
+# Stop Loss Documentation
+
+## Introduction 
+
+The stop loss is design to sell a token if it price drops below a certain threshold. It uses the [Composable CoW framework](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/composable-cow) to post an order on CoW Protocol. In order to check if the price of the token has dropped below the threshold, the stop loss uses the Chainlink price feed. In the UI, the oracles should be defined automated to ensure security price checking execution (WIP), unless the user define an oracle manually or tokens that are not supported on our token list.
+
+## Requirements
+- Order must be created from a `Safe`
+- The `Safe Multisig` must have the token to be sold on the order creation time
+- The `Safe` has its fallback handler set to `ExtensibleFallbackHandler`
+- The `Safe` has set the domainVerifier for the `GPv2Settlement.domainSeparator()` to ComposableCoW
+
+## Contracts
+
+- `ComposableCoW` : `0xfdaFc9d1902f4e0b84f65F49f244b32b31013b74`
+- `ExtensibleFallbackHandler` : `0x2f55e8b20D0B9FEFA187AA7d00B6Cbe563605bF5`
+- `StopLoss` : `0xE8212F30C28B4AAB467DF3725C14d6e89C2eB967`
+
+## Hooks
+
+In addition to the stop loss order, the user can add additional hooks to be executed before and after the order execution. Hooks execution isn't garanteed, this means that if the hook fails, the order can still be executed. The hooks are executed in the order they are added. For more information about the hooks, check the [CoW Hooks](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/hooks-trampoline) documentation.
+
+This actions are static, meaning that all hook parameters must be defined at the time of the order creation.
+
+### Pre Hooks
+
+Pre Hooks are the blockchain actions that will be executed before the order is posted. The user can add multiple pre hooks to the order. The pre hooks are executed in the order they are added. In the case of partiable fill orders, the pre hooks will be executed just before the first order.
+
+### Post Hooks
+
+Post Hooks are the blockchain actions that will be executed after the order is posted. The user can add multiple post hooks to the order. The post hooks are executed in the order they are added. In the case of partiable fill orders, the post hooks will be executed after all orders.
+
+### Hooks Types
+
+- Multisend (WIP): Use this hook to send a token to multiple addresses. The hook will send the same amount of tokens to all the addresses.
+
+## FAQ
+
+:::details[All hooks are executed in the same transaction?]
+Yes, all hooks are executed in the same transaction among the swap execution.
+:::
+
+:::details[The hooks are executed in the same order that I set them?]
+Yes, the hooks are executed in the same order that you set them.
+:::
+
+:::details[What happens if a hook fails?]
+If a hook fails it will be skipped. So the next hooks and the swap still be executed.
+:::
+
+:::details[In partiable fillable orders the hooks are executed for each part?]
+Pre hooks are executed in the fisrt one and the post hooks in all hooks.
+:::
+
+:::details[Can I cancel an order?]
+Yes, if the order isn't posted yet. You can cancel it from the UI (WIP).
+:::
+
+:::details[Will my tokens be hold by a third party?]
+No, your tokens remaing in your wallet until the order execution.
+:::
