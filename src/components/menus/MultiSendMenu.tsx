@@ -2,10 +2,10 @@ import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 
+import Button from "../Button";
 import { Input } from "../Input";
 import Table from "../Table";
 import { TokenSelect } from "../TokenSelect";
-import { Button } from "../ui/button";
 
 export function MultiSendMenu({ form }: { form: UseFormReturn }) {
   const { register, setValue, watch } = form;
@@ -33,13 +33,12 @@ export function MultiSendMenu({ form }: { form: UseFormReturn }) {
           <Table.HeaderCell classNames="px-4 py-2">
             <Button
               type="button"
-              size="sm"
-              className="px-2 bg-blue9 hover:bg-blue7 text-white rounded-md h-6"
+              className="px-2 h-6"
               onClick={() => {
                 setLengthOfArguments(lengthOfArguments + 1);
               }}
             >
-              <PlusIcon className="size-3 items-end" />
+              <PlusIcon className="size-4" />
             </Button>
           </Table.HeaderCell>
         </Table.HeaderRow>

@@ -1,6 +1,9 @@
 import { Controller, UseFormReturn } from "react-hook-form";
+import { formatUnits } from "viem";
 
+import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { ISwapData, TIME_OPTIONS } from "#/lib/types";
+import { convertAndRoundDown, formatNumber } from "#/lib/utils";
 
 import { Checkbox } from "../Checkbox";
 import { Input } from "../Input";
@@ -20,23 +23,52 @@ export function SwapMenu({
   data: ISwapData;
   form: UseFormReturn;
 }) {
+  const { fetchBalance } = useSafeBalances();
   const { control, watch, setValue } = form;
 
-  const isSellOrder = watch("isSellOrder");
-  const isPartiallyFillable = watch("isPartiallyFillable");
-  const amountDecimals = isSellOrder
-    ? data.tokenSell.decimals
-    : data.tokenBuy.decimals;
+  const formData = watch();
+
+  const amountDecimals = formData.isSellOrder
+    ? formData.tokenSell.decimals
+    : formData.tokenBuy.decimals;
+  const amountAddress = formData.isSellOrder
+    ? formData.tokenSell.address
+    : formData.tokenBuy.address;
+
+  const walletAmount = formatUnits(
+    BigInt(fetchBalance(amountAddress || "")),
+    amountDecimals
+  );
+
   return (
     <div>
       <span className="text-md font-bold mb-3">Swap</span>
       <div className="flex flex-col gap-y-2">
-        <Input
-          name="amount"
-          label={`Amount to ${isSellOrder ? "sell" : "buy"}`}
-          type="number"
-          step={1 / 10 ** amountDecimals}
-        />
+        <div className="flex flex-col gap-y-1">
+          <Input
+            name="amount"
+            label={`Amount to ${formData.isSellOrder ? "sell" : "buy"}`}
+            type="number"
+            step={1 / 10 ** amountDecimals}
+          />
+          <div className="flex gap-x-1 text-xs">
+            <span className="text-slate10">
+              <span>
+                Wallet Balance:{" "}
+                {formatNumber(walletAmount, 4, "decimal", "standard", 0.0001)}
+              </span>
+            </span>
+            <button
+              type="button"
+              className="text-blue9 outline-none hover:text-amber9"
+              onClick={() => {
+                setValue("amount", convertAndRoundDown(walletAmount));
+              }}
+            >
+              Max
+            </button>
+          </div>
+        </div>
         <TokenSelect
           selectedToken={data.tokenSell}
           tokenType="sell"
@@ -64,17 +96,22 @@ export function SwapMenu({
                 <Input name="receiver" label="Receiver" />
                 <Checkbox
                   id="isPartiallyFillable"
-                  checked={isPartiallyFillable}
+                  checked={formData.isPartiallyFillable}
                   label="Is Partially Fillable"
                   onChange={() =>
-                    setValue("isPartiallyFillable", !isPartiallyFillable)
+                    setValue(
+                      "isPartiallyFillable",
+                      !formData.isPartiallyFillable
+                    )
                   }
                 />
                 <Checkbox
                   id="isSellOrder"
-                  checked={isSellOrder}
+                  checked={formData.isSellOrder}
                   label="Is Sell Order"
-                  onChange={() => setValue("isSellOrder", !isSellOrder)}
+                  onChange={() =>
+                    setValue("isSellOrder", !formData.isSellOrder)
+                  }
                 />
                 <div className="flex flex-col">
                   <label className="mb-2 block text-sm text-slate12">
