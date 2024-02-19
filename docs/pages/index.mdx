@@ -2,7 +2,7 @@
 
 ## Introduction 
 
-The stop loss is design to sell a token if it price drops below a certain threshold. It uses the [Composable CoW framework](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/composable-cow) to post an order on CoW Protocol. In order to check if the price of the token has dropped below the threshold, the stop loss uses the Chainlink price feed. In the UI, the oracles should be defined automated to ensure security price checking execution (WIP), unless the user define an oracle manually or tokens that are not supported on our token list.
+The stop loss is designed to sell a token if its price drops below a certain threshold. It uses the [Composable CoW framework](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/composable-cow) to post an order on CoW Protocol. To check if the price of the token has dropped below the threshold, the stop loss uses the Chainlink price feed. In the UI, the oracles should be defined automated to ensure security price checking execution (WIP), unless the user defines an oracle manually or tokens that are not supported on our token list.
 
 ## Requirements
 - Order must be created from a `Safe`
@@ -18,17 +18,17 @@ The stop loss is design to sell a token if it price drops below a certain thresh
 
 ## Hooks
 
-In addition to the stop loss order, the user can add additional hooks to be executed before and after the order execution. Hooks execution isn't garanteed, this means that if the hook fails, the order can still be executed. The hooks are executed in the order they are added. For more information about the hooks, check the [CoW Hooks](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/hooks-trampoline) documentation.
+In addition to the stop loss order, the user can add additional hooks to be executed before and after the order execution. Hooks execution isn't guaranteed, this means that if the hook fails, the order can still be executed. The hooks are executed in the order they are added. For more information about the hooks, check the [CoW Hooks](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/hooks-trampoline) documentation.
 
-This actions are static, meaning that all hook parameters must be defined at the time of the order creation.
+These actions are static, meaning that all hook parameters must be defined at the time of the order creation.
 
 ### Pre Hooks
 
-Pre Hooks are the blockchain actions that will be executed before the order is posted. The user can add multiple pre hooks to the order. The pre hooks are executed in the order they are added. In the case of partiable fill orders, the pre hooks will be executed just before the first order.
+Pre Hooks are the blockchain actions that will be executed before the order is posted. The user can add multiple pre hooks to the order. The pre hooks are executed in the order they are added. In the case of partial fill orders, the pre hooks will be executed just before the first order.
 
 ### Post Hooks
 
-Post Hooks are the blockchain actions that will be executed after the order is posted. The user can add multiple post hooks to the order. The post hooks are executed in the order they are added. In the case of partiable fill orders, the post hooks will be executed after all orders.
+Post Hooks are the blockchain actions that will be executed after the order is posted. The user can add multiple post hooks to the order. The post hooks are executed in the order they are added. In the case of partial fill orders, the post hooks will be executed after all orders.
 
 ### Hooks Types
 
@@ -49,7 +49,7 @@ If a hook fails it will be skipped. So the next hooks and the swap still be exec
 :::
 
 :::details[In partiable fillable orders the hooks are executed for each part?]
-Pre hooks are executed in the fisrt one and the post hooks in all hooks.
+Pre hooks are executed in the first one and the post hooks in all hooks.
 :::
 
 :::details[Can I cancel an order?]
@@ -57,5 +57,5 @@ Yes, if the order isn't posted yet. You can cancel it from the UI (WIP).
 :::
 
 :::details[Will my tokens be hold by a third party?]
-No, your tokens remaing in your wallet until the order execution.
+No, your tokens remain in your wallet until the order execution.
 :::
