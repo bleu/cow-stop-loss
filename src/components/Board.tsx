@@ -25,7 +25,7 @@ import {
 } from "#/lib/types";
 
 import { defaultEdgeProps } from "./edges";
-import { AddHook } from "./edges/AddHook";
+import { AddHookEdge } from "./edges/AddHookEdgeHookEdge";
 import { defaultNodeProps } from "./nodes";
 import { EndNode } from "./nodes/EndNode";
 import { MultiSendNode } from "./nodes/MultiSendNode";
@@ -40,7 +40,7 @@ const nodeTypes = {
 };
 
 const edgeTypes = {
-  addHook: AddHook,
+  addHook: AddHookEdge,
 };
 
 export const getLayoutedNodes = (nodes: Node<INodeData>[]) => {
