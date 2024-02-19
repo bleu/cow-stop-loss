@@ -25,7 +25,7 @@ import {
 } from "#/lib/types";
 
 import { defaultEdgeProps } from "./edges";
-import { AddHookEdge } from "./edges/AddHookEdgeHookEdge";
+import { AddHookEdge } from "./edges/AddHookEdge";
 import { defaultNodeProps } from "./nodes";
 import { EndNode } from "./nodes/EndNode";
 import { MultiSendNode } from "./nodes/MultiSendNode";
