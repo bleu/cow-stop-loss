@@ -1,12 +1,12 @@
 "use client";
 
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import { TokenBalance, TokenType } from "@safe-global/safe-apps-sdk";
 import {
   ChevronDownIcon,
   MagnifyingGlassIcon,
   PlusIcon,
 } from "@radix-ui/react-icons";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
+import { TokenBalance, TokenType } from "@safe-global/safe-apps-sdk";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { Address, erc20Abi, formatUnits, isAddress } from "viem";
