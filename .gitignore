@@ -37,3 +37,6 @@ next-env.d.ts
 
 # link with bleu-ui
 .yalc/*
+
+# docs build
+/docs/dist
