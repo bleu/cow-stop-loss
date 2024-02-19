@@ -1,7 +1,12 @@
+"use client";
+
 import { encodeAbiParameters, parseUnits } from "viem";
 
 import { calculateAmounts } from "./calculateAmounts";
 import { IStopLossRecipeData, TIME_OPTIONS_SECONDS } from "./types";
+import { HookFactory } from "./hooksFactory";
+import { MetadataApi } from "@cowprotocol/app-data";
+import { uploadAppData } from "./uploadAppData";
 
 const stopLossDataStructure = [
   {
@@ -58,24 +63,44 @@ const stopLossDataStructure = [
   },
 ];
 
-export function stopLossArgsEncoder(data: IStopLossRecipeData): `0x${string}` {
-  const appData = "0x".concat(...Array(64).fill("0")); // TODO: encode appData using CoW lib
-  const strikePriceWithDecimals = BigInt(data.strikePrice * 10 ** 18);
+export async function stopLossArgsEncoder(
+  data: IStopLossRecipeData
+): Promise<`0x${string}`> {
+  const preHooks = HookFactory.createCoWHooks(data.preHooks);
+  const metadataApi = new MetadataApi();
+
+  const appDataDoc = await metadataApi.generateAppDataDoc({
+    metadata: {
+      hooks: {
+        pre: preHooks,
+      },
+    },
+  });
+  const { appDataHex, appDataContent } =
+    await metadataApi.appDataToCid(appDataDoc);
+
+  await uploadAppData({
+    fullAppData: appDataContent,
+    appDataHex,
+    chainId: data.chainId,
+  });
+
+  const strikePriceWithDecimals = parseUnits(String(data.strikePrice), 18);
   const [sellAmount, buyAmount] = calculateAmounts(data);
   const sellAmountWithDecimals = parseUnits(
     String(sellAmount),
-    data.tokenSell.decimals,
+    data.tokenSell.decimals
   );
   const buyAmountWithDecimals = parseUnits(
     String(buyAmount),
-    data.tokenBuy.decimals,
+    data.tokenBuy.decimals
   );
   return encodeAbiParameters(stopLossDataStructure, [
     data.tokenSell.address,
     data.tokenBuy.address,
     sellAmountWithDecimals,
     buyAmountWithDecimals,
-    appData as `0x${string}`,
+    appDataHex,
     data.receiver,
     data.isSellOrder,
     data.isPartiallyFillable,

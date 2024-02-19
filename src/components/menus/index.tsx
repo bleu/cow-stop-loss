@@ -1,7 +1,7 @@
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { useState } from "react";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
+import { useEffect, useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
-import { Node, useOnSelectionChange, useReactFlow } from "reactflow";
+import { Node, useNodes, useReactFlow } from "reactflow";
 import { Address } from "viem";
 
 import { FALLBACK_STATES, useFallbackState } from "#/hooks/useFallbackState";
@@ -12,7 +12,7 @@ import {
   setFallbackHandlerArgs,
   TRANSACTION_TYPES,
 } from "#/lib/transactionFactory";
-import { INodeData, IStopLossRecipeData } from "#/lib/types";
+import { IHooks, INodeData, IStopLossRecipeData } from "#/lib/types";
 
 import { AlertCard } from "../AlertCard";
 import { Checkbox } from "../Checkbox";
@@ -33,26 +33,32 @@ const nodeMenus = {
 const spender = "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110" as Address;
 
 export default function Menu() {
-  const [selected, setSelected] = useState<Node<INodeData>>();
+  const {
+    safe: { chainId },
+  } = useSafeAppsSDK();
   const [recipeData, setRecipeData] = useState<IStopLossRecipeData>();
-  const { getNodes } = useReactFlow();
+  const nodes = useNodes<INodeData>();
+  const selected = nodes.find((node) => node.selected);
 
-  useOnSelectionChange({
-    onChange: ({ nodes }) => {
-      const data = getNodes().reduce((acc, node) => {
-        if (node.type === "stopLoss" || node.type === "swap") {
-          return { ...acc, ...node.data };
-        }
-        return { ...acc, preHooks: [...acc.preHooks, node.data] };
-      }, {} as IStopLossRecipeData);
-      setRecipeData(data);
-      if (nodes.length === 0) {
-        setSelected(undefined);
-        return;
-      }
-      setSelected(nodes[0]);
-    },
-  });
+  useEffect(() => {
+    const recipeData = {
+      ...(nodes.find((node) => node.id === "condition")
+        ?.data as IStopLossRecipeData),
+      ...(nodes.find((node) => node.id === "swap")
+        ?.data as IStopLossRecipeData),
+    };
+    const hooksData = nodes
+      .filter((node) => node.type?.includes("hook"))
+      .reduce((acc, node) => {
+        return [...acc, node.data as IHooks];
+      }, [] as IHooks[]);
+
+    setRecipeData({
+      ...recipeData,
+      chainId,
+      preHooks: hooksData,
+    } as IStopLossRecipeData);
+  }, [nodes]);
 
   if (!recipeData) {
     return <Spinner />;
@@ -62,13 +68,7 @@ export default function Menu() {
     return <DefaultMenu data={recipeData} />;
   }
 
-  return (
-    <SelectedMenu
-      data={recipeData}
-      selected={selected}
-      setSelected={setSelected}
-    />
-  );
+  return <SelectedMenu data={recipeData} selected={selected} />;
 }
 
 function DefaultMenu({ data }: { data: IStopLossRecipeData }) {
@@ -159,31 +159,32 @@ function DefaultMenu({ data }: { data: IStopLossRecipeData }) {
 
 function SelectedMenu({
   selected,
-  setSelected,
   data,
 }: {
   selected: Node<INodeData>;
-  setSelected: (node: Node<INodeData> | undefined) => void;
   data: IStopLossRecipeData;
 }) {
   const form = useForm<FieldValues>({ defaultValues: selected.data });
 
   const { setNodes, getNodes } = useReactFlow();
   const MenuComponent = nodeMenus[selected?.type as keyof typeof nodeMenus];
+
+  const onSubmit = (formData: FieldValues) => {
+    const newNodes = getNodes().map((node) => {
+      if (node.id === selected.id) {
+        return {
+          ...node,
+          data: { ...node.data, ...formData },
+          selected: false,
+        };
+      }
+      return node;
+    });
+    setNodes(newNodes);
+  };
+
   return (
-    <Form
-      {...form}
-      onSubmit={(formData: FieldValues) => {
-        const newNodes = getNodes().map((node) => {
-          if (node.id === selected.id) {
-            return { ...node, data: { ...node.data, ...formData } };
-          }
-          return node;
-        });
-        setNodes(newNodes);
-        setSelected(undefined);
-      }}
-    >
+    <Form {...form} onSubmit={onSubmit}>
       <div className="m-2 w-full max-h-[50rem] overflow-y-scroll">
         <MenuComponent data={data} form={form} />
         <Button type="submit" className="bg-blue9 hover:bg-blue7 my-2">

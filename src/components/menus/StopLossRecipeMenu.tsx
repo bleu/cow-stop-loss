@@ -1,16 +1,21 @@
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { IStopLossRecipeData } from "#/lib/types";
 
+import { Spinner } from "../Spinner";
 import { TokenInfo } from "../TokenInfo";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 
-export function StopLossRecipeMenu({ data }: { data: IStopLossRecipeData }) {
-  const [sellAmount, buyAmount] = calculateAmounts(data);
+export function StopLossRecipeMenu({ data }: { data?: IStopLossRecipeData }) {
   const {
     safe: { chainId },
   } = useSafeAppsSDK();
+  if (!data) {
+    return <Spinner />;
+  }
+
+  const [sellAmount, buyAmount] = calculateAmounts(data);
   return (
     <div>
       <Tabs className="h-full overscroll-auto" defaultValue="preview">

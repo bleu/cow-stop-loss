@@ -1,20 +1,15 @@
-import { BaseTransaction } from "@gnosis.pm/safe-apps-sdk";
+import { BaseTransaction } from "@safe-global/safe-apps-sdk";
 import { Address, encodeFunctionData, erc20Abi, parseUnits } from "viem";
 
 import { composableCowAbi } from "./abis/composableCow";
 import { signatureVerifierMuxerAbi } from "./abis/signatureVerifierMuxer";
 import { stopLossArgsEncoder } from "./handlerEncoder";
 import { IStopLossRecipeData, IToken } from "./types";
-
-// These addresses are the same for all supported chains (mainnet and goerli)
-export const COMPOSABLE_COW_ADDRESS =
-  "0xfdaFc9d1902f4e0b84f65F49f244b32b31013b74" as const;
-export const STOP_LOSS_ADDRESS =
-  "0xE8212F30C28B4AAB467DF3725C14d6e89C2eB967" as const;
-export const SETTLEMENT_CONTRACT =
-  "0x9008D19f58AAbD9eD0D60971565AA8510560ab41" as const;
-export const EXTENSIBLE_FALLBACK_ADDRESS =
-  "0x2f55e8b20D0B9FEFA187AA7d00B6Cbe563605bF5" as const;
+import {
+  COMPOSABLE_COW_ADDRESS,
+  EXTENSIBLE_FALLBACK_ADDRESS,
+  STOP_LOSS_ADDRESS,
+} from "./contracts";
 
 export enum TRANSACTION_TYPES {
   ERC20_APPROVE = "ERC20_APPROVE",
@@ -48,11 +43,15 @@ export interface setDomainVerifierArgs extends BaseArgs {
 }
 
 interface ITransaction<T> {
-  createRawTx(args: T): BaseTransaction;
+  createRawTx(args: T): Promise<BaseTransaction>;
 }
 
 class ERC20ApproveRawTx implements ITransaction<ERC20ApproveArgs> {
-  createRawTx({ token, spender, amount }: ERC20ApproveArgs): BaseTransaction {
+  async createRawTx({
+    token,
+    spender,
+    amount,
+  }: ERC20ApproveArgs): Promise<BaseTransaction> {
     const amountBigInt = parseUnits(String(amount), 18);
     return {
       to: token.address,
@@ -67,7 +66,7 @@ class ERC20ApproveRawTx implements ITransaction<ERC20ApproveArgs> {
 }
 
 class StopLossOrderTx implements ITransaction<StopLossOrderArgs> {
-  createRawTx(data: StopLossOrderArgs): BaseTransaction {
+  async createRawTx(data: StopLossOrderArgs): Promise<BaseTransaction> {
     return {
       to: COMPOSABLE_COW_ADDRESS,
       value: "0",
@@ -78,7 +77,7 @@ class StopLossOrderTx implements ITransaction<StopLossOrderArgs> {
           {
             handler: STOP_LOSS_ADDRESS,
             salt: `0x${Date.now().toString(16).padEnd(64, "0")}`,
-            staticInput: stopLossArgsEncoder(data),
+            staticInput: await stopLossArgsEncoder(data),
           },
           true,
         ],
@@ -88,7 +87,9 @@ class StopLossOrderTx implements ITransaction<StopLossOrderArgs> {
 }
 
 class SetFallbackHandlerTx implements ITransaction<setFallbackHandlerArgs> {
-  createRawTx({ safeAddress }: setFallbackHandlerArgs): BaseTransaction {
+  async createRawTx({
+    safeAddress,
+  }: setFallbackHandlerArgs): Promise<BaseTransaction> {
     return {
       to: safeAddress,
       value: "0",
@@ -102,10 +103,10 @@ class SetFallbackHandlerTx implements ITransaction<setFallbackHandlerArgs> {
 }
 
 class setDomainVerifierTx implements ITransaction<setDomainVerifierArgs> {
-  createRawTx({
+  async createRawTx({
     safeAddress,
     domainSeparator,
-  }: setDomainVerifierArgs): BaseTransaction {
+  }: setDomainVerifierArgs): Promise<BaseTransaction> {
     return {
       to: safeAddress,
       value: "0",
@@ -139,10 +140,10 @@ const TRANSACTION_CREATORS: {
 };
 
 export class TransactionFactory {
-  static createRawTx<T extends TRANSACTION_TYPES>(
+  static async createRawTx<T extends TRANSACTION_TYPES>(
     type: T,
     args: TransactionBindings[T]
-  ): BaseTransaction {
+  ): Promise<BaseTransaction> {
     const TransactionCreator = TRANSACTION_CREATORS[type];
     const txCreator = new TransactionCreator();
     return txCreator.createRawTx(args);

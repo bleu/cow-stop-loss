@@ -1,5 +1,5 @@
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
-import { TokenBalance } from "@gnosis.pm/safe-apps-sdk";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
+import { TokenBalance } from "@safe-global/safe-apps-sdk";
 import { useEffect, useState } from "react";
 
 export function useSafeBalances(): { assets: TokenBalance[]; loaded: boolean } {
@@ -15,8 +15,8 @@ export function useSafeBalances(): { assets: TokenBalance[]; loaded: boolean } {
       setAssets(
         balances.items.filter(
           (item) =>
-            parseInt(item.balance) > 0 && item.tokenInfo.type === "ERC20",
-        ),
+            parseInt(item.balance) > 0 && item.tokenInfo.type === "ERC20"
+        )
       );
       setLoaded(true);
     }

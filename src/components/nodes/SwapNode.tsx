@@ -36,7 +36,7 @@ export const getDefaultSwapData = (chainId: number, safeAddress: Address) =>
     tokenBuy: cowTokenList.findLast(
       (token) => token.symbol === "USDC" && token.chainId === chainId
     ) as IToken,
-    amount: 1,
+    amount: 0.1,
     allowedSlippage: 1,
     isSellOrder: true,
     validityBucketTime: TIME_OPTIONS.HOUR,

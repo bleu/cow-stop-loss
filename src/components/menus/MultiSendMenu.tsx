@@ -23,9 +23,9 @@ export function MultiSendMenu({ form }: { form: UseFormReturn }) {
       />
       <Input
         type="number"
-        step={1 / 10 ** (formData.token.decimals || 18)}
-        label="Total amount to send"
-        {...register(`amount`)}
+        step={1 / 10 ** (formData.token?.decimals || 18)}
+        label="Amount per receiver"
+        {...register(`amountPerReceiver`)}
       />
       <Table color="blue" shade="darkWithBorder">
         <Table.HeaderRow>

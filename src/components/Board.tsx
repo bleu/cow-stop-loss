@@ -2,7 +2,7 @@
 
 import "reactflow/dist/base.css";
 
-import { useSafeAppsSDK } from "@gnosis.pm/safe-apps-react-sdk";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React, { useCallback } from "react";
 import ReactFlow, {
   EdgeChange,
@@ -17,6 +17,7 @@ import ReactFlow, {
 } from "reactflow";
 import { Address } from "viem";
 
+import { ChainId } from "#/lib/publicClients";
 import {
   INodeData,
   IStopLossConditionData,
@@ -82,7 +83,8 @@ export const Board = () => {
       ...getDefaultSwapData(chainId, safeAddress as Address),
       ...defaultStopLossData,
       preHooks: [],
-    }),
+      chainId: chainId as ChainId,
+    })
   );
 
   const [nodes, _setNodes, onNodesChange] =
@@ -101,7 +103,7 @@ export const Board = () => {
           const connectedEdges = getConnectedEdges([node], edges);
 
           const remainingEdges = acc.filter(
-            (edge) => !connectedEdges.includes(edge),
+            (edge) => !connectedEdges.includes(edge)
           );
 
           const createdEdges = incomers.flatMap(({ id: source }) =>
@@ -109,14 +111,14 @@ export const Board = () => {
               id: `${source}-${target}`,
               source,
               target,
-            })),
+            }))
           );
 
           return [...remainingEdges, ...createdEdges];
-        }, edges),
+        }, edges)
       );
     },
-    [nodes, edges],
+    [nodes, edges]
   );
 
   function handleNodesChange(changes: NodeChange[]) {

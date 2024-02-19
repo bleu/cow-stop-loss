@@ -1,3 +1,4 @@
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React, { useState } from "react";
 import {
   BaseEdge,
@@ -7,6 +8,7 @@ import {
   Node,
   useReactFlow,
 } from "reactflow";
+import { Address } from "viem";
 
 import { INodeData, IToken, nodeNames } from "#/lib/types";
 
@@ -32,6 +34,9 @@ export function AddPreHook({
   const [open, setOpen] = useState(false);
 
   const { setEdges, setNodes, getNodes, getNode, getEdges } = useReactFlow();
+  const {
+    safe: { safeAddress },
+  } = useSafeAppsSDK();
   const [edgePath, labelX, labelY] = getBezierPath({
     sourceX,
     sourceY,
@@ -46,7 +51,8 @@ export function AddPreHook({
     const targetNode = getNode(target) as Node<INodeData>;
     if (!targetNode || !("tokenSell" in targetNode.data)) return;
     const defaultData = getDefaultMultiSendData(
-      targetNode.data.tokenSell as IToken
+      targetNode.data.tokenSell as IToken,
+      safeAddress as Address
     );
     const newNodes = [
       ...getNodes().filter((n) => n.id !== target),
