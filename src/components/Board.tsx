@@ -98,11 +98,12 @@ export const Board = () => {
       ...getDefaultSwapData(chainId, safeAddress as Address),
       ...defaultStopLossData,
       preHooks: [],
+      postHooks: [],
       chainId: chainId as ChainId,
     })
   );
 
-  const [nodes, _setNodes, onNodesChange] =
+  const [nodes, setNodes, onNodesChange] =
     useNodesState<INodeData>(layoutedNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initEdges);
   const { fitView } = useReactFlow();
@@ -111,6 +112,7 @@ export const Board = () => {
     (deleted: Node<INodeData>[]) => {
       if (deleted.some((node) => node.id === "swap" || node.id === "condition"))
         return;
+
       setEdges(
         deleted.reduce((acc, node) => {
           const incomers = getIncomers(node, nodes, edges);
@@ -126,11 +128,19 @@ export const Board = () => {
               id: `${source}-${target}`,
               source,
               target,
+              type: "addHook",
+              ...defaultEdgeProps,
             }))
           );
 
           return [...remainingEdges, ...createdEdges];
         }, edges)
+      );
+
+      setNodes(
+        getLayoutedNodes(
+          nodes.filter((node) => !deleted.map((n) => n.id).includes(node.id))
+        )
       );
     },
     [nodes, edges]
