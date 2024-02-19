@@ -25,8 +25,9 @@ import {
 } from "#/lib/types";
 
 import { defaultEdgeProps } from "./edges";
-import { AddPreHook } from "./edges/AddPreHook";
+import { AddHookEdge } from "./edges/AddHookEdge";
 import { defaultNodeProps } from "./nodes";
+import { EndNode } from "./nodes/EndNode";
 import { MultiSendNode } from "./nodes/MultiSendNode";
 import { defaultStopLossData, StopLossNode } from "./nodes/StopLossNode";
 import { getDefaultSwapData, SwapNode } from "./nodes/SwapNode";
@@ -35,10 +36,11 @@ const nodeTypes = {
   swap: SwapNode,
   stopLoss: StopLossNode,
   hookMultiSend: MultiSendNode,
+  endNode: EndNode,
 };
 
 const edgeTypes = {
-  addPreHook: AddPreHook,
+  addHook: AddHookEdge,
 };
 
 export const getLayoutedNodes = (nodes: Node<INodeData>[]) => {
@@ -53,7 +55,14 @@ const initEdges = [
     id: "condition-swap",
     source: "condition",
     target: "swap",
-    type: "addPreHook",
+    type: "addHook",
+    ...defaultEdgeProps,
+  },
+  {
+    id: "swap-end",
+    source: "swap",
+    target: "end",
+    type: "addHook",
     ...defaultEdgeProps,
   },
 ];
@@ -72,6 +81,12 @@ const createInitNodes = (data: IStopLossRecipeData) =>
       data: data as IStopLossRecipeData,
       ...defaultNodeProps,
     },
+    {
+      id: "end",
+      type: "endNode",
+      selectable: false,
+      ...defaultNodeProps,
+    },
   ] as Node<INodeData>[];
 
 export const Board = () => {
@@ -83,11 +98,12 @@ export const Board = () => {
       ...getDefaultSwapData(chainId, safeAddress as Address),
       ...defaultStopLossData,
       preHooks: [],
+      postHooks: [],
       chainId: chainId as ChainId,
     })
   );
 
-  const [nodes, _setNodes, onNodesChange] =
+  const [nodes, setNodes, onNodesChange] =
     useNodesState<INodeData>(layoutedNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initEdges);
   const { fitView } = useReactFlow();
@@ -96,6 +112,7 @@ export const Board = () => {
     (deleted: Node<INodeData>[]) => {
       if (deleted.some((node) => node.id === "swap" || node.id === "condition"))
         return;
+
       setEdges(
         deleted.reduce((acc, node) => {
           const incomers = getIncomers(node, nodes, edges);
@@ -111,11 +128,19 @@ export const Board = () => {
               id: `${source}-${target}`,
               source,
               target,
+              type: "addHook",
+              ...defaultEdgeProps,
             }))
           );
 
           return [...remainingEdges, ...createdEdges];
         }, edges)
+      );
+
+      setNodes(
+        getLayoutedNodes(
+          nodes.filter((node) => !deleted.map((n) => n.id).includes(node.id))
+        )
       );
     },
     [nodes, edges]

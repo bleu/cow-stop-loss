@@ -59,6 +59,7 @@ export interface IMultiSendData extends BaseHook {
 export type IHooks = IMultiSendData;
 export interface IStopLossRecipeData extends ISwapData, IStopLossConditionData {
   preHooks: IMultiSendData[];
+  postHooks: IMultiSendData[];
   chainId: ChainId;
 }
 

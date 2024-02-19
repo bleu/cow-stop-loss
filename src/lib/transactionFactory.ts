@@ -3,7 +3,7 @@ import { Address, encodeFunctionData, erc20Abi, parseUnits } from "viem";
 
 import { composableCowAbi } from "./abis/composableCow";
 import { signatureVerifierMuxerAbi } from "./abis/signatureVerifierMuxer";
-import { stopLossArgsEncoder } from "./handlerEncoder";
+import { stopLossArgsEncoder } from "./staticInputEncoder";
 import { IStopLossRecipeData, IToken } from "./types";
 import {
   COMPOSABLE_COW_ADDRESS,
