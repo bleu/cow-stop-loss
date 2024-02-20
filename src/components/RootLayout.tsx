@@ -4,7 +4,7 @@ import SafeProvider from "@safe-global/safe-apps-react-sdk";
 import Link from "next/link";
 import React from "react";
 
-import { NetworksContextProvider } from "#/app/contexts/networks";
+import { NetworksContextProvider } from "#/contexts/networks";
 
 import { ToastProvider } from "./Toast";
 

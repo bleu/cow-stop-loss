@@ -17,10 +17,10 @@ import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
 import { IToken } from "#/lib/types";
 
 import { tokenLogoUri } from "../../public/tokens/logoUri";
+import Button from "./Button";
 import { Dialog } from "./Dialog";
 import Table from "./Table";
 import { Toast } from "./Toast";
-import { Button } from "./ui/button";
 
 export function TokenSelect({
   onSelectToken,

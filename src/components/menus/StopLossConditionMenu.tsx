@@ -42,17 +42,13 @@ export function StopLossConditionMenu({
                 name="tokenBuyOracle"
                 label={`${data.tokenBuy?.symbol} Oracle`}
               />
-              <Input
-                name="maxTimeSinceLastOracleUpdate"
-                label="Max Time Since Last Oracle Update"
-              />
               <div className="flex flex-col">
                 <label className="mb-2 block text-sm">
                   Maximium Time Since Last Oracle Update
                 </label>
                 <Controller
                   control={control}
-                  name="validityBucketTime"
+                  name="maxTimeSinceLastOracleUpdate"
                   render={({ field: { onChange, value, ref } }) => (
                     <Select onValueChange={onChange} value={value} ref={ref}>
                       {Object.entries(TIME_OPTIONS).map(([key, value]) => (

@@ -259,3 +259,11 @@ export function formatDate(date: Date): string {
     timeZone: "UTC",
   });
 }
+
+export function convertAndRoundDown(value: string) {
+  const num = parseFloat(value);
+  const integerPartLength = Math.floor(num).toString().length;
+  const maxDecimalPlaces = Math.max(0, 15 - integerPartLength);
+  const scale = Math.pow(10, maxDecimalPlaces);
+  return Math.floor(num * scale) / scale;
+}

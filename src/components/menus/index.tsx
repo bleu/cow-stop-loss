@@ -15,9 +15,9 @@ import {
 import { IHooks, INodeData, IStopLossRecipeData } from "#/lib/types";
 
 import { AlertCard } from "../AlertCard";
+import Button from "../Button";
 import { Checkbox } from "../Checkbox";
 import { Spinner } from "../Spinner";
-import { Button } from "../ui/button";
 import { Form } from "../ui/form";
 import { MultiSendMenu } from "./MultiSendMenu";
 import { StopLossConditionMenu } from "./StopLossConditionMenu";
@@ -133,7 +133,7 @@ function DefaultMenu({ data }: { data: IStopLossRecipeData }) {
   const sellAmount = calculateSellAmount(data);
   return (
     <div>
-      <div className="flex flex-col m-2 w-full max-h-[40rem] overflow-y-scroll gap-y-2">
+      <div className="flex flex-col m-2 w-full max-h-[39rem] overflow-y-scroll gap-y-2">
         <StopLossRecipeMenu data={data} />
         {needFallbackSetting && (
           <AlertCard style="warning" title="Fallback Setting">
@@ -154,7 +154,6 @@ function DefaultMenu({ data }: { data: IStopLossRecipeData }) {
           type={"submit"}
           disabled={needFallbackSetting && !fallbackSetupApprove}
           onClick={createOrder}
-          className="bg-blue9 hover:bg-blue7"
         >
           Create Order
         </Button>
@@ -191,9 +190,9 @@ function SelectedMenu({
 
   return (
     <Form {...form} onSubmit={onSubmit}>
-      <div className="m-2 w-full max-h-[50rem] overflow-y-scroll">
+      <div className="m-2 w-full max-h-[39rem] overflow-y-scroll">
         <MenuComponent data={data} form={form} />
-        <Button type="submit" className="bg-blue9 hover:bg-blue7 my-2">
+        <Button type="submit" className="my-2 w-full">
           Save
         </Button>
       </div>

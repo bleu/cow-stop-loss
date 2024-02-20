@@ -13,10 +13,10 @@ import { Address } from "viem";
 import { INodeData, IToken } from "#/lib/types";
 
 import { getLayoutedNodes } from "../Board";
+import Button from "../Button";
 import { Dialog } from "../Dialog";
 import { defaultNodeProps } from "../nodes";
 import { getDefaultMultiSendData } from "../nodes/MultiSendNode";
-import { Button } from "../ui/button";
 import { defaultEdgeProps } from ".";
 
 export const MAX_NODES = 7;
@@ -144,17 +144,17 @@ export function ChooseHookDialog({
           };
           setNodesAndEdges(newNode);
         }}
-        className="bg-blue9 hover:bg-blue7"
+        className="p-2"
       >
         Multisend
       </Button>
-      <Button className="bg-blue9 hover:bg-blue7" disabled>
+      <Button className="p-2" disabled>
         Aave withdraw
       </Button>
-      <Button className="bg-blue9 hover:bg-blue7" disabled>
+      <Button className="p-2" disabled>
         Claim vesting
       </Button>
-      <Button className="bg-blue9 hover:bg-blue7" disabled>
+      <Button className="p-2" disabled>
         Exit pool
       </Button>
     </div>
