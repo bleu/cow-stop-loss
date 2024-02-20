@@ -21,7 +21,7 @@ import { defaultEdgeProps } from ".";
 
 export const MAX_NODES = 7;
 
-export function AddHook({
+export function AddHookEdge({
   id,
   source,
   sourceX,
