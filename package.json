@@ -3,10 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "format:check": "prettier --check \"**/*.{md,html,mjml,json,yml,css,scss}\"",
+    "dev": "pnpm npm-run-all -l --parallel dev:**",
+    "build": "pnpm npm-run-all -l --parallel build:**",
+    "dev:docs": "vocs dev",
+    "build:docs": "vocs build",
+    "preview:docs": "vocs preview",
+    "dev:next": "next dev",
+    "build:next": "next build",
+    "start:next": "next start",
+    "check:next": "prettier --check \"**/*.{md,html,mjml,json,yml,css,scss}\"",
     "format": "prettier --write \"**/*.{md,html,mjml,json,yml,css,scss,ts,tsx,js,jsx}\"",
     "lint": "eslint '**/*.{ts,tsx}'",
     "lint:fix": "eslint '**/*.{ts,tsx}' --fix",
@@ -52,6 +57,7 @@
     "embla-carousel-react": "8.0.0-rc22",
     "next": "14.1.0",
     "next-themes": "^0.2.1",
+    "npm-run-all": "^4.1.5",
     "prettier": "^3.2.5",
     "react": "^18.2.0",
     "react-day-picker": "^8.10.0",
@@ -63,7 +69,8 @@
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.0",
-    "viem": "^2.7.9"
+    "viem": "^2.7.9",
+    "vocs": "1.0.0-alpha.38"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^14.1.0",
