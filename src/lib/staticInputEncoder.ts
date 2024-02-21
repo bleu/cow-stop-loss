@@ -6,7 +6,7 @@ import { calculateAmounts } from "./calculateAmounts";
 import { IStopLossRecipeData, TIME_OPTIONS_SECONDS } from "./types";
 import { HookFactory } from "./hooksFactory";
 import { MetadataApi } from "@cowprotocol/app-data";
-import { uploadAppData } from "./uploadAppData";
+import { uploadAppData } from "./cowApi/uploadAppData";
 
 const stopLossDataStructure = [
   {
