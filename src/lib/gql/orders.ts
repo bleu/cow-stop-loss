@@ -1,7 +1,7 @@
 import { gql } from "graphql-tag";
 
 gql(`
-query MyQuery {
+query AllOrders {
     orders {
       items {
         blockNumber
@@ -9,9 +9,9 @@ query MyQuery {
         chainId
         decodedSuccess
         id
-        orderContract
+        handler 
         user
-        orderParameters {
+        stopLossParameters {
           appData
           buyTokenPriceOracle
           id

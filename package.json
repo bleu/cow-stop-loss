@@ -54,6 +54,7 @@
     "@radix-ui/react-tooltip": "^1.0.7",
     "@safe-global/safe-apps-react-sdk": "^4.7.1",
     "@safe-global/safe-apps-sdk": "^9.0.0",
+    "@safe-global/safe-gateway-typescript-sdk": "^3.18.0",
     "@wagmi/core": "^2.6.5",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",

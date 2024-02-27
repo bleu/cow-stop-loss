@@ -18,32 +18,122 @@ export type Scalars = {
   BigInt: { input: any; output: any; }
 };
 
+export type CowAmmParameters = {
+  __typename?: 'CowAmmParameters';
+  appData: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  minTradedToken0: Scalars['BigInt']['output'];
+  orderId: Scalars['String']['output'];
+  priceOracle: Scalars['String']['output'];
+  priceOracleData: Scalars['String']['output'];
+  token0: Token;
+  token0Id: Scalars['String']['output'];
+  token1: Token;
+  token1Id: Scalars['String']['output'];
+};
+
+export type CowAmmParametersFilter = {
+  AND?: InputMaybe<Array<InputMaybe<CowAmmParametersFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<CowAmmParametersFilter>>>;
+  appData?: InputMaybe<Scalars['String']['input']>;
+  appData_gt?: InputMaybe<Scalars['String']['input']>;
+  appData_gte?: InputMaybe<Scalars['String']['input']>;
+  appData_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  appData_lt?: InputMaybe<Scalars['String']['input']>;
+  appData_lte?: InputMaybe<Scalars['String']['input']>;
+  appData_not?: InputMaybe<Scalars['String']['input']>;
+  appData_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  id_contains?: InputMaybe<Scalars['String']['input']>;
+  id_ends_with?: InputMaybe<Scalars['String']['input']>;
+  id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_not?: InputMaybe<Scalars['String']['input']>;
+  id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  id_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  id_starts_with?: InputMaybe<Scalars['String']['input']>;
+  minTradedToken0?: InputMaybe<Scalars['BigInt']['input']>;
+  minTradedToken0_gt?: InputMaybe<Scalars['BigInt']['input']>;
+  minTradedToken0_gte?: InputMaybe<Scalars['BigInt']['input']>;
+  minTradedToken0_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  minTradedToken0_lt?: InputMaybe<Scalars['BigInt']['input']>;
+  minTradedToken0_lte?: InputMaybe<Scalars['BigInt']['input']>;
+  minTradedToken0_not?: InputMaybe<Scalars['BigInt']['input']>;
+  minTradedToken0_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
+  orderId?: InputMaybe<Scalars['String']['input']>;
+  orderId_contains?: InputMaybe<Scalars['String']['input']>;
+  orderId_ends_with?: InputMaybe<Scalars['String']['input']>;
+  orderId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  orderId_not?: InputMaybe<Scalars['String']['input']>;
+  orderId_not_contains?: InputMaybe<Scalars['String']['input']>;
+  orderId_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  orderId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  orderId_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  orderId_starts_with?: InputMaybe<Scalars['String']['input']>;
+  priceOracle?: InputMaybe<Scalars['String']['input']>;
+  priceOracleData?: InputMaybe<Scalars['String']['input']>;
+  priceOracleData_gt?: InputMaybe<Scalars['String']['input']>;
+  priceOracleData_gte?: InputMaybe<Scalars['String']['input']>;
+  priceOracleData_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  priceOracleData_lt?: InputMaybe<Scalars['String']['input']>;
+  priceOracleData_lte?: InputMaybe<Scalars['String']['input']>;
+  priceOracleData_not?: InputMaybe<Scalars['String']['input']>;
+  priceOracleData_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  priceOracle_gt?: InputMaybe<Scalars['String']['input']>;
+  priceOracle_gte?: InputMaybe<Scalars['String']['input']>;
+  priceOracle_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  priceOracle_lt?: InputMaybe<Scalars['String']['input']>;
+  priceOracle_lte?: InputMaybe<Scalars['String']['input']>;
+  priceOracle_not?: InputMaybe<Scalars['String']['input']>;
+  priceOracle_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  token0Id?: InputMaybe<Scalars['String']['input']>;
+  token0Id_contains?: InputMaybe<Scalars['String']['input']>;
+  token0Id_ends_with?: InputMaybe<Scalars['String']['input']>;
+  token0Id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  token0Id_not?: InputMaybe<Scalars['String']['input']>;
+  token0Id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  token0Id_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  token0Id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  token0Id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  token0Id_starts_with?: InputMaybe<Scalars['String']['input']>;
+  token1Id?: InputMaybe<Scalars['String']['input']>;
+  token1Id_contains?: InputMaybe<Scalars['String']['input']>;
+  token1Id_ends_with?: InputMaybe<Scalars['String']['input']>;
+  token1Id_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  token1Id_not?: InputMaybe<Scalars['String']['input']>;
+  token1Id_not_contains?: InputMaybe<Scalars['String']['input']>;
+  token1Id_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  token1Id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  token1Id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  token1Id_starts_with?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CowAmmParametersPage = {
+  __typename?: 'CowAmmParametersPage';
+  items: Array<CowAmmParameters>;
+  pageInfo: PageInfo;
+};
+
 export type Order = {
   __typename?: 'Order';
-  OrderParametersId?: Maybe<Scalars['String']['output']>;
   blockNumber: Scalars['BigInt']['output'];
   blockTimestamp: Scalars['BigInt']['output'];
   chainId: Scalars['Int']['output'];
+  cowAmmParameters?: Maybe<CowAmmParameters>;
+  cowAmmParametersId?: Maybe<Scalars['String']['output']>;
   decodedSuccess: Scalars['Boolean']['output'];
+  handler: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  orderContract: Scalars['String']['output'];
-  orderParameters?: Maybe<OrderParameters>;
+  staticInput: Scalars['String']['output'];
+  stopLossParameters?: Maybe<StopLossParameters>;
+  stopLossParametersId?: Maybe<Scalars['String']['output']>;
   user: Scalars['String']['output'];
 };
 
 export type OrderFilter = {
   AND?: InputMaybe<Array<InputMaybe<OrderFilter>>>;
   OR?: InputMaybe<Array<InputMaybe<OrderFilter>>>;
-  OrderParametersId?: InputMaybe<Scalars['String']['input']>;
-  OrderParametersId_contains?: InputMaybe<Scalars['String']['input']>;
-  OrderParametersId_ends_with?: InputMaybe<Scalars['String']['input']>;
-  OrderParametersId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  OrderParametersId_not?: InputMaybe<Scalars['String']['input']>;
-  OrderParametersId_not_contains?: InputMaybe<Scalars['String']['input']>;
-  OrderParametersId_not_ends_with?: InputMaybe<Scalars['String']['input']>;
-  OrderParametersId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  OrderParametersId_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  OrderParametersId_starts_with?: InputMaybe<Scalars['String']['input']>;
   blockNumber?: InputMaybe<Scalars['BigInt']['input']>;
   blockNumber_gt?: InputMaybe<Scalars['BigInt']['input']>;
   blockNumber_gte?: InputMaybe<Scalars['BigInt']['input']>;
@@ -68,10 +158,28 @@ export type OrderFilter = {
   chainId_lte?: InputMaybe<Scalars['Int']['input']>;
   chainId_not?: InputMaybe<Scalars['Int']['input']>;
   chainId_not_in?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  cowAmmParametersId?: InputMaybe<Scalars['String']['input']>;
+  cowAmmParametersId_contains?: InputMaybe<Scalars['String']['input']>;
+  cowAmmParametersId_ends_with?: InputMaybe<Scalars['String']['input']>;
+  cowAmmParametersId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  cowAmmParametersId_not?: InputMaybe<Scalars['String']['input']>;
+  cowAmmParametersId_not_contains?: InputMaybe<Scalars['String']['input']>;
+  cowAmmParametersId_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  cowAmmParametersId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  cowAmmParametersId_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  cowAmmParametersId_starts_with?: InputMaybe<Scalars['String']['input']>;
   decodedSuccess?: InputMaybe<Scalars['Boolean']['input']>;
   decodedSuccess_in?: InputMaybe<Array<InputMaybe<Scalars['Boolean']['input']>>>;
   decodedSuccess_not?: InputMaybe<Scalars['Boolean']['input']>;
   decodedSuccess_not_in?: InputMaybe<Array<InputMaybe<Scalars['Boolean']['input']>>>;
+  handler?: InputMaybe<Scalars['String']['input']>;
+  handler_gt?: InputMaybe<Scalars['String']['input']>;
+  handler_gte?: InputMaybe<Scalars['String']['input']>;
+  handler_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  handler_lt?: InputMaybe<Scalars['String']['input']>;
+  handler_lte?: InputMaybe<Scalars['String']['input']>;
+  handler_not?: InputMaybe<Scalars['String']['input']>;
+  handler_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   id?: InputMaybe<Scalars['String']['input']>;
   id_contains?: InputMaybe<Scalars['String']['input']>;
   id_ends_with?: InputMaybe<Scalars['String']['input']>;
@@ -82,14 +190,24 @@ export type OrderFilter = {
   id_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   id_not_starts_with?: InputMaybe<Scalars['String']['input']>;
   id_starts_with?: InputMaybe<Scalars['String']['input']>;
-  orderContract?: InputMaybe<Scalars['String']['input']>;
-  orderContract_gt?: InputMaybe<Scalars['String']['input']>;
-  orderContract_gte?: InputMaybe<Scalars['String']['input']>;
-  orderContract_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  orderContract_lt?: InputMaybe<Scalars['String']['input']>;
-  orderContract_lte?: InputMaybe<Scalars['String']['input']>;
-  orderContract_not?: InputMaybe<Scalars['String']['input']>;
-  orderContract_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  staticInput?: InputMaybe<Scalars['String']['input']>;
+  staticInput_gt?: InputMaybe<Scalars['String']['input']>;
+  staticInput_gte?: InputMaybe<Scalars['String']['input']>;
+  staticInput_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  staticInput_lt?: InputMaybe<Scalars['String']['input']>;
+  staticInput_lte?: InputMaybe<Scalars['String']['input']>;
+  staticInput_not?: InputMaybe<Scalars['String']['input']>;
+  staticInput_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  stopLossParametersId?: InputMaybe<Scalars['String']['input']>;
+  stopLossParametersId_contains?: InputMaybe<Scalars['String']['input']>;
+  stopLossParametersId_ends_with?: InputMaybe<Scalars['String']['input']>;
+  stopLossParametersId_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  stopLossParametersId_not?: InputMaybe<Scalars['String']['input']>;
+  stopLossParametersId_not_contains?: InputMaybe<Scalars['String']['input']>;
+  stopLossParametersId_not_ends_with?: InputMaybe<Scalars['String']['input']>;
+  stopLossParametersId_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  stopLossParametersId_not_starts_with?: InputMaybe<Scalars['String']['input']>;
+  stopLossParametersId_starts_with?: InputMaybe<Scalars['String']['input']>;
   user?: InputMaybe<Scalars['String']['input']>;
   user_contains?: InputMaybe<Scalars['String']['input']>;
   user_ends_with?: InputMaybe<Scalars['String']['input']>;
@@ -108,8 +226,115 @@ export type OrderPage = {
   pageInfo: PageInfo;
 };
 
-export type OrderParameters = {
-  __typename?: 'OrderParameters';
+export type PageInfo = {
+  __typename?: 'PageInfo';
+  endCursor?: Maybe<Scalars['String']['output']>;
+  hasNextPage: Scalars['Boolean']['output'];
+  hasPreviousPage: Scalars['Boolean']['output'];
+  startCursor?: Maybe<Scalars['String']['output']>;
+};
+
+export type Query = {
+  __typename?: 'Query';
+  cowAmmParameters?: Maybe<CowAmmParameters>;
+  cowAmmParameterss: CowAmmParametersPage;
+  order?: Maybe<Order>;
+  orders: OrderPage;
+  stopLossParameters?: Maybe<StopLossParameters>;
+  stopLossParameterss: StopLossParametersPage;
+  token?: Maybe<Token>;
+  tokens: TokenPage;
+  user?: Maybe<User>;
+  users: UserPage;
+};
+
+
+export type QueryCowAmmParametersArgs = {
+  id: Scalars['String']['input'];
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryCowAmmParameterssArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<CowAmmParametersFilter>;
+};
+
+
+export type QueryOrderArgs = {
+  id: Scalars['String']['input'];
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryOrdersArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<OrderFilter>;
+};
+
+
+export type QueryStopLossParametersArgs = {
+  id: Scalars['String']['input'];
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryStopLossParameterssArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<StopLossParametersFilter>;
+};
+
+
+export type QueryTokenArgs = {
+  id: Scalars['String']['input'];
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryTokensArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<TokenFilter>;
+};
+
+
+export type QueryUserArgs = {
+  id: Scalars['String']['input'];
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QueryUsersArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<Scalars['String']['input']>;
+  orderDirection?: InputMaybe<Scalars['String']['input']>;
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<UserFilter>;
+};
+
+export type StopLossParameters = {
+  __typename?: 'StopLossParameters';
   appData: Scalars['String']['output'];
   buyTokenPriceOracle: Scalars['String']['output'];
   id: Scalars['String']['output'];
@@ -129,9 +354,9 @@ export type OrderParameters = {
   validityBucketSeconds: Scalars['BigInt']['output'];
 };
 
-export type OrderParametersFilter = {
-  AND?: InputMaybe<Array<InputMaybe<OrderParametersFilter>>>;
-  OR?: InputMaybe<Array<InputMaybe<OrderParametersFilter>>>;
+export type StopLossParametersFilter = {
+  AND?: InputMaybe<Array<InputMaybe<StopLossParametersFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<StopLossParametersFilter>>>;
   appData?: InputMaybe<Scalars['String']['input']>;
   appData_gt?: InputMaybe<Scalars['String']['input']>;
   appData_gte?: InputMaybe<Scalars['String']['input']>;
@@ -254,98 +479,10 @@ export type OrderParametersFilter = {
   validityBucketSeconds_not_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
 };
 
-export type OrderParametersPage = {
-  __typename?: 'OrderParametersPage';
-  items: Array<OrderParameters>;
+export type StopLossParametersPage = {
+  __typename?: 'StopLossParametersPage';
+  items: Array<StopLossParameters>;
   pageInfo: PageInfo;
-};
-
-export type PageInfo = {
-  __typename?: 'PageInfo';
-  endCursor?: Maybe<Scalars['String']['output']>;
-  hasNextPage: Scalars['Boolean']['output'];
-  hasPreviousPage: Scalars['Boolean']['output'];
-  startCursor?: Maybe<Scalars['String']['output']>;
-};
-
-export type Query = {
-  __typename?: 'Query';
-  order?: Maybe<Order>;
-  orderParameters?: Maybe<OrderParameters>;
-  orderParameterss: OrderParametersPage;
-  orders: OrderPage;
-  token?: Maybe<Token>;
-  tokens: TokenPage;
-  user?: Maybe<User>;
-  users: UserPage;
-};
-
-
-export type QueryOrderArgs = {
-  id: Scalars['String']['input'];
-  timestamp?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type QueryOrderParametersArgs = {
-  id: Scalars['String']['input'];
-  timestamp?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type QueryOrderParameterssArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Scalars['String']['input']>;
-  orderDirection?: InputMaybe<Scalars['String']['input']>;
-  timestamp?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<OrderParametersFilter>;
-};
-
-
-export type QueryOrdersArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Scalars['String']['input']>;
-  orderDirection?: InputMaybe<Scalars['String']['input']>;
-  timestamp?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<OrderFilter>;
-};
-
-
-export type QueryTokenArgs = {
-  id: Scalars['String']['input'];
-  timestamp?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type QueryTokensArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Scalars['String']['input']>;
-  orderDirection?: InputMaybe<Scalars['String']['input']>;
-  timestamp?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<TokenFilter>;
-};
-
-
-export type QueryUserArgs = {
-  id: Scalars['String']['input'];
-  timestamp?: InputMaybe<Scalars['Int']['input']>;
-};
-
-
-export type QueryUsersArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<Scalars['String']['input']>;
-  orderDirection?: InputMaybe<Scalars['String']['input']>;
-  timestamp?: InputMaybe<Scalars['Int']['input']>;
-  where?: InputMaybe<UserFilter>;
 };
 
 export type Token = {
@@ -480,14 +617,14 @@ export type UserPage = {
   pageInfo: PageInfo;
 };
 
-export type MyQueryQueryVariables = Exact<{ [key: string]: never; }>;
+export type AllOrdersQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MyQueryQuery = { __typename?: 'Query', orders: { __typename?: 'OrderPage', items: Array<{ __typename?: 'Order', blockNumber: any, blockTimestamp: any, chainId: number, decodedSuccess: boolean, id: string, orderContract: string, user: string, orderParameters?: { __typename?: 'OrderParameters', appData: string, buyTokenPriceOracle: string, id: string, isPartiallyFillable: boolean, isSellOrder: boolean, maxTimeSinceLastOracleUpdate: any, orderId: string, sellTokenPriceOracle: string, strike: any, to: string, tokenAmountIn: any, tokenAmountOut: any, tokenInId: string, tokenOutId: string, validityBucketSeconds: any } | null }> } };
+export type AllOrdersQuery = { __typename?: 'Query', orders: { __typename?: 'OrderPage', items: Array<{ __typename?: 'Order', blockNumber: any, blockTimestamp: any, chainId: number, decodedSuccess: boolean, id: string, handler: string, user: string, stopLossParameters?: { __typename?: 'StopLossParameters', appData: string, buyTokenPriceOracle: string, id: string, isPartiallyFillable: boolean, isSellOrder: boolean, maxTimeSinceLastOracleUpdate: any, orderId: string, sellTokenPriceOracle: string, strike: any, to: string, tokenAmountIn: any, tokenAmountOut: any, tokenInId: string, tokenOutId: string, validityBucketSeconds: any } | null }> } };
 
 
-export const MyQueryDocument = gql`
-    query MyQuery {
+export const AllOrdersDocument = gql`
+    query AllOrders {
   orders {
     items {
       blockNumber
@@ -495,9 +632,9 @@ export const MyQueryDocument = gql`
       chainId
       decodedSuccess
       id
-      orderContract
+      handler
       user
-      orderParameters {
+      stopLossParameters {
         appData
         buyTokenPriceOracle
         id
@@ -526,8 +663,8 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-    MyQuery(variables?: MyQueryQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<MyQueryQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<MyQueryQuery>(MyQueryDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'MyQuery', 'query', variables);
+    AllOrders(variables?: AllOrdersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<AllOrdersQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<AllOrdersQuery>(AllOrdersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'AllOrders', 'query', variables);
     }
   };
 }
