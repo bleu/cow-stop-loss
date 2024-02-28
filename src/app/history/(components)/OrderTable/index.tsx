@@ -1,11 +1,19 @@
 "use client";
 
+import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
+import { useUserOrders } from "#/hooks/useOrders";
 
-import { TableRowTransaction } from "./TableRowTransaction";
+import { TableRowOrder } from "./TableRowOrder";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function OrderTable({ orders }: { orders: any[] }) {
+export function OrderTable() {
+  const { orders, loaded } = useUserOrders();
+
+  if (!loaded) {
+    return <Spinner />;
+  }
+
   return (
     <Table
       color="blue"
@@ -18,15 +26,11 @@ export function OrderTable({ orders }: { orders: any[] }) {
         </Table.HeaderCell>
         <Table.HeaderCell>Tx Datetime</Table.HeaderCell>
         <Table.HeaderCell>Sell Token</Table.HeaderCell>
-        <Table.HeaderCell>Price limit</Table.HeaderCell>
-        <Table.HeaderCell>Sell Amount</Table.HeaderCell>
         <Table.HeaderCell>Buy Token</Table.HeaderCell>
         <Table.HeaderCell>Status</Table.HeaderCell>
       </Table.HeaderRow>
       <Table.Body classNames="overflow-y-auto">
-        {orders?.map((transaction) => (
-          <TableRowTransaction key={transaction.id} transaction={transaction} />
-        ))}
+        {orders?.map((order) => <TableRowOrder key={order.id} order={order} />)}
         {orders?.length === 0 && (
           <Table.BodyRow>
             <Table.BodyCell colSpan={6}>

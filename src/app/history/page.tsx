@@ -1,4 +1,4 @@
-import { OrderTableWrapper } from "./(components)/OrderTableWrapper";
+import { OrderTable } from "./(components)/OrderTable";
 
 export default function HistoryPage() {
   return (
@@ -9,7 +9,7 @@ export default function HistoryPage() {
             <h1 className="text-3xl text-slate12">My Stop Loss orders</h1>
           </div>
         </div>
-        <OrderTableWrapper />
+        <OrderTable />
       </div>
     </div>
   );

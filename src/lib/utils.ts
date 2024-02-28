@@ -260,6 +260,15 @@ export function formatDate(date: Date): string {
   });
 }
 
+export function formatDateToLocalDatetime(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${year}-${month}-${day}T${hours}:${minutes}`;
+}
+
 export function convertAndRoundDown(value: string) {
   const num = parseFloat(value);
   const integerPartLength = Math.floor(num).toString().length;
@@ -267,3 +276,12 @@ export function convertAndRoundDown(value: string) {
   const scale = Math.pow(10, maxDecimalPlaces);
   return Math.floor(num * scale) / scale;
 }
+
+/* eslint-disable @typescript-eslint/ban-types */
+export type GetDeepProp<T extends object, K extends string> = K extends keyof T
+  ? T[K]
+  : { [P in keyof T]: GetDeepProp<Extract<T[P], object>, K> }[keyof T];
+
+export type ArrElement<ArrType> = ArrType extends readonly (infer ElementType)[]
+  ? ElementType
+  : never;
