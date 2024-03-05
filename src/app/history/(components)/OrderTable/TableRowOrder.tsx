@@ -14,9 +14,7 @@ export function TableRowOrder({ order }: { order: StopLossOrderType }) {
           <span className="sr-only"></span>
         </Table.HeaderCell>
         <Table.BodyCell>
-          {order?.blockTimestamp
-            ? formatDateToLocalDatetime(new Date(order?.blockTimestamp * 1000))
-            : "Pending..."}
+          {formatDateToLocalDatetime(new Date(order?.blockTimestamp * 1000))}
         </Table.BodyCell>
         <Table.BodyCell>
           <TokenInfo
