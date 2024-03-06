@@ -10,7 +10,7 @@ export interface IToken {
 export type nodeNames = "swap" | "stopLoss" | "hookMultiSend";
 
 export enum TIME_OPTIONS {
-  MINUTE_15 = "15 minute",
+  MINUTE_15 = "15 minutes",
   HOUR = "1 hour",
   DAY = "1 day",
   YEAR = "1 year",
