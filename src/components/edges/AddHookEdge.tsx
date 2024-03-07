@@ -125,6 +125,8 @@ export function ChooseHookDialog({
   return (
     <div className="grid grid-cols-3 gap-2">
       <Button
+        className="p-2"
+        disabled
         onClick={() => {
           const targetNode = getNode(target) as Node<INodeData>;
           const swapNode = getNode("swap") as Node<INodeData>;
@@ -144,7 +146,6 @@ export function ChooseHookDialog({
           };
           setNodesAndEdges(newNode);
         }}
-        className="p-2"
       >
         Multisend
       </Button>
