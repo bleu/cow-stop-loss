@@ -23,20 +23,22 @@ export function Checkbox({
   tooltipText,
 }: ICheckbox) {
   return (
-    <div className="flex items-center">
-      <CheckboxPrimitive.Root
-        className="flex size-[15px] appearance-none items-center justify-center rounded-[4px] bg-white shadow-[0_2px_10px] shadow-blackA7 outline-none hover:bg-slate12 focus:shadow-[0_0_0_2px_black]"
-        checked={checked}
-        onClick={() => onChange()}
-        id={id}
-      >
-        <CheckboxPrimitive.Indicator className="text-slate3">
-          <CheckIcon />
-        </CheckboxPrimitive.Indicator>
-      </CheckboxPrimitive.Root>
-      <label htmlFor={id} className="pl-[15px] text-[15px] leading-8">
-        {label}
-      </label>
+    <div className="flex items-center justify-between">
+      <div className="flex items-center">
+        <CheckboxPrimitive.Root
+          className="flex size-[15px] appearance-none items-center justify-center rounded-[4px] bg-white shadow-[0_2px_10px] shadow-blackA7 outline-none hover:bg-slate12 focus:shadow-[0_0_0_2px_black]"
+          checked={checked}
+          onClick={() => onChange()}
+          id={id}
+        >
+          <CheckboxPrimitive.Indicator className="text-slate3">
+            <CheckIcon />
+          </CheckboxPrimitive.Indicator>
+        </CheckboxPrimitive.Root>
+        <label htmlFor={id} className="pl-[15px] text-[15px] leading-8">
+          {label}
+        </label>
+      </div>
       {tooltipText && (
         <Tooltip content={tooltipText}>
           {tooltipLink ? (

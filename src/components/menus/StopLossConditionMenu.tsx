@@ -53,6 +53,7 @@ export function StopLossConditionMenu({
             label={`Strike Price (${data.tokenSell?.symbol}/${data.tokenBuy?.symbol})`}
             type="number"
             step={1e-18}
+            tooltipText="If the price of the selling relative to the buying tokens is less than this value"
           />
           <Accordion className="w-full" type="single" collapsible>
             <AccordionItem value="advancedOptions" key="advancedOption">
