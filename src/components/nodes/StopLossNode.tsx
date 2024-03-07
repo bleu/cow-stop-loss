@@ -1,8 +1,4 @@
-import {
-  IStopLossConditionData,
-  IStopLossRecipeData,
-  TIME_OPTIONS,
-} from "#/lib/types";
+import { IStopLossConditionData, TIME_OPTIONS } from "#/lib/types";
 
 import { BaseNode } from ".";
 
@@ -11,15 +7,14 @@ export function StopLossNode({
   data,
 }: {
   selected: boolean;
-  data: IStopLossRecipeData;
+  data: IStopLossConditionData;
 }) {
   return (
     <BaseNode selected={selected} isStart>
       <div className="flex flex-col">
         <span className="text-sm font-bold">Stop Loss Condition</span>
         <span className="text-xs text-gray-500">
-          If the {data.tokenSell.symbol} price falls bellow to{" "}
-          {data.strikePrice} {data.tokenBuy.symbol}
+          If the sell token price falls bellow {data.strikePrice}
         </span>
       </div>
     </BaseNode>

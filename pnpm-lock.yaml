@@ -20,6 +20,9 @@ dependencies:
   '@graphql-codegen/typescript-operations':
     specifier: ^4.2.0
     version: 4.2.0(graphql@15.8.0)
+  '@hookform/resolvers':
+    specifier: ^3.3.4
+    version: 3.3.4(react-hook-form@7.50.1)
   '@radix-ui/colors':
     specifier: ^3.0.0
     version: 3.0.0
@@ -109,16 +112,16 @@ dependencies:
     version: 1.0.7(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)
   '@safe-global/safe-apps-react-sdk':
     specifier: ^4.7.1
-    version: 4.7.1(react@18.2.0)(typescript@5.3.3)
+    version: 4.7.1(react@18.2.0)(typescript@5.3.3)(zod@3.22.4)
   '@safe-global/safe-apps-sdk':
     specifier: ^9.0.0
-    version: 9.0.0(typescript@5.3.3)
+    version: 9.0.0(typescript@5.3.3)(zod@3.22.4)
   '@safe-global/safe-gateway-typescript-sdk':
     specifier: ^3.18.0
     version: 3.18.0
   '@wagmi/core':
     specifier: ^2.6.5
-    version: 2.6.5(@types/react@18.2.55)(react@18.2.0)(typescript@5.3.3)(viem@2.7.9)
+    version: 2.6.5(@types/react@18.2.55)(react@18.2.0)(typescript@5.3.3)(viem@2.7.9)(zod@3.22.4)
   class-variance-authority:
     specifier: ^0.7.0
     version: 0.7.0
@@ -184,10 +187,13 @@ dependencies:
     version: 0.9.0(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)
   viem:
     specifier: ^2.7.9
-    version: 2.7.9(typescript@5.3.3)
+    version: 2.7.9(typescript@5.3.3)(zod@3.22.4)
   vocs:
     specifier: 1.0.0-alpha.38
     version: 1.0.0-alpha.38(@types/node@20.11.19)(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)(rollup@4.12.0)(typescript@5.3.3)
+  zod:
+    specifier: ^3.22.4
+    version: 3.22.4
 
 devDependencies:
   '@graphql-codegen/cli':
@@ -394,8 +400,8 @@ packages:
       lru-cache: 5.1.1
       semver: 6.3.1
 
-  /@babel/helper-create-class-features-plugin@7.23.10(@babel/core@7.23.9):
-    resolution: {integrity: sha512-2XpP2XhkXzgxecPNEEK8Vz8Asj9aRxt08oKOqtiZoqV2UGZ5T+EkyP9sXQ9nwMxBIG34a7jmasVqoMop7VdPUw==}
+  /@babel/helper-create-class-features-plugin@7.24.0(@babel/core@7.23.9):
+    resolution: {integrity: sha512-QAH+vfvts51BCsNZ2PhY6HAggnlS6omLLFTsIpeqZk/MmJ6cW7tgz5yRv0fMJThcr6FmbMrENh1RgrWPTYA76g==}
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0
@@ -537,7 +543,7 @@ packages:
       '@babel/core': ^7.0.0-0
     dependencies:
       '@babel/core': 7.23.9
-      '@babel/helper-create-class-features-plugin': 7.23.10(@babel/core@7.23.9)
+      '@babel/helper-create-class-features-plugin': 7.24.0(@babel/core@7.23.9)
       '@babel/helper-plugin-utils': 7.22.5
 
   /@babel/plugin-proposal-object-rest-spread@7.20.7(@babel/core@7.23.9):
@@ -1801,7 +1807,7 @@ packages:
     dependencies:
       '@ardatan/sync-fetch': 0.0.1
       '@graphql-tools/utils': 10.1.0(graphql@15.8.0)
-      '@whatwg-node/fetch': 0.9.16
+      '@whatwg-node/fetch': 0.9.17
       graphql: 15.8.0
       tslib: 2.6.2
     transitivePeerDependencies:
@@ -1905,7 +1911,7 @@ packages:
     dependencies:
       '@graphql-tools/utils': 10.1.0(graphql@15.8.0)
       '@repeaterjs/repeater': 3.0.5
-      '@whatwg-node/fetch': 0.9.16
+      '@whatwg-node/fetch': 0.9.17
       extract-files: 11.0.0
       graphql: 15.8.0
       meros: 1.3.0(@types/node@20.11.19)
@@ -1973,7 +1979,7 @@ packages:
       '@graphql-tools/executor-http': 1.0.9(@types/node@20.11.19)(graphql@15.8.0)
       '@graphql-tools/graphql-tag-pluck': 8.3.0(graphql@15.8.0)
       '@graphql-tools/utils': 10.1.0(graphql@15.8.0)
-      '@whatwg-node/fetch': 0.9.16
+      '@whatwg-node/fetch': 0.9.17
       graphql: 15.8.0
       tslib: 2.6.2
       value-or-promise: 1.0.12
@@ -2153,7 +2159,7 @@ packages:
       '@graphql-tools/utils': 10.1.0(graphql@15.8.0)
       '@types/js-yaml': 4.0.9
       '@types/json-stable-stringify': 1.0.36
-      '@whatwg-node/fetch': 0.9.16
+      '@whatwg-node/fetch': 0.9.17
       chalk: 4.1.2
       debug: 4.3.4
       dotenv: 16.4.5
@@ -2246,14 +2252,14 @@ packages:
       graphql: 15.8.0
       graphql-ws: 4.9.0(graphql@15.8.0)
       is-promise: 4.0.0
-      isomorphic-ws: 4.0.1(ws@8.16.0)
+      isomorphic-ws: 4.0.1(ws@8.13.0)
       lodash: 4.17.21
       meros: 1.1.4(@types/node@20.11.19)
       subscriptions-transport-ws: 0.9.19(graphql@15.8.0)
       sync-fetch: 0.3.0
       tslib: 2.2.0
       valid-url: 1.0.9
-      ws: 8.16.0
+      ws: 8.13.0
     transitivePeerDependencies:
       - '@types/node'
       - bufferutil
@@ -2275,7 +2281,7 @@ packages:
       '@graphql-tools/utils': 10.1.0(graphql@15.8.0)
       '@graphql-tools/wrap': 10.0.2(graphql@15.8.0)
       '@types/ws': 8.5.10
-      '@whatwg-node/fetch': 0.9.16
+      '@whatwg-node/fetch': 0.9.17
       graphql: 15.8.0
       isomorphic-ws: 5.0.0(ws@8.13.0)
       tslib: 2.6.2
@@ -2367,6 +2373,14 @@ packages:
   /@hono/node-server@1.8.1:
     resolution: {integrity: sha512-9ondWs/5EuyZOd/iyiRp0GQfMEq+IA+IbV8Wy2bgdr5+cC55I3xbQrqtXKprw7jJhfvq3IVw7ALiuvCEmLdCAA==}
     engines: {node: '>=18.14.1'}
+    dev: false
+
+  /@hookform/resolvers@3.3.4(react-hook-form@7.50.1):
+    resolution: {integrity: sha512-o5cgpGOuJYrd+iMKvkttOclgwRW86EsWJZZRC23prf0uU2i48Htq4PuT73AVb9ionFyZrwYEITuOFGF+BydEtQ==}
+    peerDependencies:
+      react-hook-form: ^7.0.0
+    dependencies:
+      react-hook-form: 7.50.1(react@18.2.0)
     dev: false
 
   /@humanwhocodes/config-array@0.11.14:
@@ -4353,12 +4367,12 @@ packages:
     resolution: {integrity: sha512-RbhOOTCNoCrbfkRyoXODZp75MlpiHMgbE5MEBZAnnnLyQNgrigEj4p0lzsMDyc1zVsJDLrivB58tgg3emX0eEA==}
     dev: true
 
-  /@safe-global/safe-apps-react-sdk@4.7.1(react@18.2.0)(typescript@5.3.3):
+  /@safe-global/safe-apps-react-sdk@4.7.1(react@18.2.0)(typescript@5.3.3)(zod@3.22.4):
     resolution: {integrity: sha512-sbVroIUxYy9XOzN7769wCTR2ytk6LMp8ECmFlc+d23/7EHOuX5Yw8Si+tf5SYbYhS9ygdSsMcVRQeNvKOhZnEw==}
     peerDependencies:
       react: 16.x.x || 17.x.x || 18.x.x
     dependencies:
-      '@safe-global/safe-apps-sdk': 9.0.0(typescript@5.3.3)
+      '@safe-global/safe-apps-sdk': 9.0.0(typescript@5.3.3)(zod@3.22.4)
       react: 18.2.0
     transitivePeerDependencies:
       - bufferutil
@@ -4367,11 +4381,11 @@ packages:
       - zod
     dev: false
 
-  /@safe-global/safe-apps-sdk@9.0.0(typescript@5.3.3):
+  /@safe-global/safe-apps-sdk@9.0.0(typescript@5.3.3)(zod@3.22.4):
     resolution: {integrity: sha512-fEqmQBU3JqTjORSl3XYrcaxdxkUqeeM39qsQjqCzzTHioN8DEfg3JCLq6EBoXzcKTVOYi8SPzLV7KJccdDw+4w==}
     dependencies:
       '@safe-global/safe-gateway-typescript-sdk': 3.18.0
-      viem: 1.21.4(typescript@5.3.3)
+      viem: 1.21.4(typescript@5.3.3)(zod@3.22.4)
     transitivePeerDependencies:
       - bufferutil
       - typescript
@@ -5052,7 +5066,7 @@ packages:
       - supports-color
     dev: false
 
-  /@wagmi/core@2.6.5(@types/react@18.2.55)(react@18.2.0)(typescript@5.3.3)(viem@2.7.9):
+  /@wagmi/core@2.6.5(@types/react@18.2.55)(react@18.2.0)(typescript@5.3.3)(viem@2.7.9)(zod@3.22.4):
     resolution: {integrity: sha512-DLyrc0o+dx05oIhBJuxnS7ekS5e6rB5mytlqPme+Km7aLdeBdcfYB4yJyYCyWoi93OLa7M5sbflTttz3o56bKw==}
     peerDependencies:
       '@tanstack/query-core': '>=5.0.0'
@@ -5065,9 +5079,9 @@ packages:
         optional: true
     dependencies:
       eventemitter3: 5.0.1
-      mipd: 0.0.5(typescript@5.3.3)
+      mipd: 0.0.5(typescript@5.3.3)(zod@3.22.4)
       typescript: 5.3.3
-      viem: 2.7.9(typescript@5.3.3)
+      viem: 2.7.9(typescript@5.3.3)(zod@3.22.4)
       zustand: 4.4.1(@types/react@18.2.55)(react@18.2.0)
     transitivePeerDependencies:
       - '@types/react'
@@ -5097,11 +5111,11 @@ packages:
       web-streams-polyfill: 3.3.3
     dev: true
 
-  /@whatwg-node/fetch@0.9.16:
-    resolution: {integrity: sha512-mqasZiUNquRe3ea9+aCAuo81BR6vq5opUKprPilIHTnrg8a21Z1T1OrI+KiMFX8OmwO5HUJe/vro47lpj2JPWQ==}
+  /@whatwg-node/fetch@0.9.17:
+    resolution: {integrity: sha512-TDYP3CpCrxwxpiNY0UMNf096H5Ihf67BK1iKGegQl5u9SlpEDYrvnV71gWBGJm+Xm31qOy8ATgma9rm8Pe7/5Q==}
     engines: {node: '>=16.0.0'}
     dependencies:
-      '@whatwg-node/node-fetch': 0.5.6
+      '@whatwg-node/node-fetch': 0.5.7
       urlpattern-polyfill: 10.0.0
     dev: true
 
@@ -5115,8 +5129,8 @@ packages:
       tslib: 2.6.2
     dev: true
 
-  /@whatwg-node/node-fetch@0.5.6:
-    resolution: {integrity: sha512-cmAsGMHoI0S3AHi3CmD3ma1Q234ZI2JNmXyDyM9rLtbXejBKxU3ZWdhS+mzRIAyUxZCMGlFW1tHmROv0MDdxpw==}
+  /@whatwg-node/node-fetch@0.5.7:
+    resolution: {integrity: sha512-YZA+N3JcW1eh2QRi7o/ij+M07M0dqID73ltgsOEMRyEc2UYVDbyomaih+CWCEZqBIDHw4KMDveXvv4SBZ4TLIw==}
     engines: {node: '>=16.0.0'}
     dependencies:
       '@kamilkisiela/fast-url-parser': 1.1.4
@@ -5126,7 +5140,7 @@ packages:
       tslib: 2.6.2
     dev: true
 
-  /abitype@0.9.8(typescript@5.3.3):
+  /abitype@0.9.8(typescript@5.3.3)(zod@3.22.4):
     resolution: {integrity: sha512-puLifILdm+8sjyss4S+fsUN09obiT1g2YW6CtcQF+QDzxR0euzgEB29MZujC6zMk2a6SVmtttq1fc6+YFA7WYQ==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -5138,9 +5152,10 @@ packages:
         optional: true
     dependencies:
       typescript: 5.3.3
+      zod: 3.22.4
     dev: false
 
-  /abitype@1.0.0(typescript@5.3.3):
+  /abitype@1.0.0(typescript@5.3.3)(zod@3.22.4):
     resolution: {integrity: sha512-NMeMah//6bJ56H5XRj8QCV4AwuW6hB6zqz2LnhhLdcWVQOsXki6/Pn3APeqxCma62nXIcmZWdu1DlHWS74umVQ==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -5152,6 +5167,7 @@ packages:
         optional: true
     dependencies:
       typescript: 5.3.3
+      zod: 3.22.4
     dev: false
 
   /abort-controller@3.0.0:
@@ -5643,7 +5659,7 @@ packages:
     resolution: {integrity: sha512-gxGWBrTT1JuMx6R+o5PTXMmUnhnVzLQ9SNutD4YqKtI6ap897t3tKECYla6gCWEkplXnlNybEkZg9GEGxKFCgw==}
     dependencies:
       pascal-case: 3.1.2
-      tslib: 2.6.2
+      tslib: 2.2.0
 
   /camelcase-css@2.0.1:
     resolution: {integrity: sha512-QOSvevhslijgYwRx6Rv7zKdMF8lbRmx+uQGx2+vDc+KI/eBnsy9kit5aj23AgGu3pa4t9AgwbnXWqS+iOY+2aA==}
@@ -8197,12 +8213,12 @@ packages:
   /isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
 
-  /isomorphic-ws@4.0.1(ws@8.16.0):
+  /isomorphic-ws@4.0.1(ws@8.13.0):
     resolution: {integrity: sha512-BhBvN2MBpWTaSHdWRb/bwdZJ1WaehQ2L1KngkCkfLUGF0mAWAT1sQUQacEmQ0jXkFw/czDXPNQSL5u2/Krsz1w==}
     peerDependencies:
       ws: '>=7.4.6'
     dependencies:
-      ws: 8.16.0
+      ws: 8.13.0
     dev: true
 
   /isomorphic-ws@5.0.0(ws@8.13.0):
@@ -8554,7 +8570,7 @@ packages:
   /lower-case@2.0.2:
     resolution: {integrity: sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==}
     dependencies:
-      tslib: 2.6.2
+      tslib: 2.2.0
 
   /lru-cache@10.2.0:
     resolution: {integrity: sha512-2bIM8x+VAf6JT4bKAljS1qUWgMsqZRPGJS6FSahIMPVvctcNhyVp7AJu7quxOW9jwkryBReKZY5tY5JYv2n/7Q==}
@@ -9330,7 +9346,7 @@ packages:
     resolution: {integrity: sha512-ihFnidEeU8iXzcVHy74dhkxh/dn8Dc08ERl0xwoMMGqp4+LvRSCgicb+zGqWthVokQKvCSxITlh3P08OzdTYCQ==}
     dev: false
 
-  /mipd@0.0.5(typescript@5.3.3):
+  /mipd@0.0.5(typescript@5.3.3)(zod@3.22.4):
     resolution: {integrity: sha512-gbKA784D2WKb5H/GtqEv+Ofd1S9Zj+Z/PGDIl1u1QAbswkxD28BQ5bSXQxkeBzPBABg1iDSbiwGG1XqlOxRspA==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -9339,7 +9355,7 @@ packages:
         optional: true
     dependencies:
       typescript: 5.3.3
-      viem: 1.21.4(typescript@5.3.3)
+      viem: 1.21.4(typescript@5.3.3)(zod@3.22.4)
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -9499,7 +9515,7 @@ packages:
     resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
     dependencies:
       lower-case: 2.0.2
-      tslib: 2.6.2
+      tslib: 2.2.0
 
   /node-fetch@2.7.0:
     resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
@@ -9829,7 +9845,7 @@ packages:
     resolution: {integrity: sha512-uWlGT3YSnK9x3BQJaOdcZwrnV6hPpd8jFH1/ucpiLRPh/2zCVJKS19E4GvYHvaCcACn3foXZ0cLB9Wrx1KGe5g==}
     dependencies:
       no-case: 3.0.4
-      tslib: 2.6.2
+      tslib: 2.2.0
 
   /path-case@3.0.4:
     resolution: {integrity: sha512-qO4qCFjXqVTrcbPt/hQfhTQ+VhFsqNKOPtytgNKkKxSoEp3XPUQ8ObFuePylOIok5gjn69ry8XiULxCwot3Wfg==}
@@ -11208,7 +11224,7 @@ packages:
       graphql: 15.8.0
       iterall: 1.3.0
       symbol-observable: 1.2.0
-      ws: 8.16.0
+      ws: 8.13.0
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -11459,7 +11475,6 @@ packages:
 
   /tslib@2.2.0:
     resolution: {integrity: sha512-gS9GVHRU+RGn5KQM2rllAlR3dU6m7AcpJKdtH8gFvQiC4Otgk98XnmMU+nZenHt/+VhnBPWwgrJsyrdcw6i23w==}
-    dev: true
 
   /tslib@2.4.1:
     resolution: {integrity: sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==}
@@ -11839,7 +11854,7 @@ packages:
       vfile-message: 4.0.2
     dev: false
 
-  /viem@1.21.4(typescript@5.3.3):
+  /viem@1.21.4(typescript@5.3.3)(zod@3.22.4):
     resolution: {integrity: sha512-BNVYdSaUjeS2zKQgPs+49e5JKocfo60Ib2yiXOWBT6LuVxY1I/6fFX3waEtpXvL1Xn4qu+BVitVtMh9lyThyhQ==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -11852,7 +11867,7 @@ packages:
       '@noble/hashes': 1.3.2
       '@scure/bip32': 1.3.2
       '@scure/bip39': 1.2.1
-      abitype: 0.9.8(typescript@5.3.3)
+      abitype: 0.9.8(typescript@5.3.3)(zod@3.22.4)
       isows: 1.0.3(ws@8.13.0)
       typescript: 5.3.3
       ws: 8.13.0
@@ -11862,7 +11877,7 @@ packages:
       - zod
     dev: false
 
-  /viem@2.7.9(typescript@5.3.3):
+  /viem@2.7.9(typescript@5.3.3)(zod@3.22.4):
     resolution: {integrity: sha512-iDfc8TwaZFp1K95zlsxYh6Cs0OWCt35Tqs8uYgXKSxtz7w075mZ0H5SJ8zSyJGoEaticVDhtdmRRX6TtcW9EeQ==}
     peerDependencies:
       typescript: '>=5.0.4'
@@ -11875,7 +11890,7 @@ packages:
       '@noble/hashes': 1.3.2
       '@scure/bip32': 1.3.2
       '@scure/bip39': 1.2.1
-      abitype: 1.0.0(typescript@5.3.3)
+      abitype: 1.0.0(typescript@5.3.3)(zod@3.22.4)
       isows: 1.0.3(ws@8.13.0)
       typescript: 5.3.3
       ws: 8.13.0

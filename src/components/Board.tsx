@@ -22,6 +22,7 @@ import {
   INodeData,
   IStopLossConditionData,
   IStopLossRecipeData,
+  ISwapData,
 } from "#/lib/types";
 
 import { defaultEdgeProps } from "./edges";
@@ -78,7 +79,7 @@ const createInitNodes = (data: IStopLossRecipeData) =>
     {
       id: "swap",
       type: "swap",
-      data: data as IStopLossRecipeData,
+      data: data as ISwapData,
       ...defaultNodeProps,
     },
     {

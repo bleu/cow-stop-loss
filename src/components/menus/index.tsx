@@ -1,6 +1,6 @@
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect, useState } from "react";
-import { FieldValues, useForm } from "react-hook-form";
+import { FieldValues } from "react-hook-form";
 import { Node, useNodes, useReactFlow } from "reactflow";
 import { Address } from "viem";
 
@@ -18,7 +18,6 @@ import { AlertCard } from "../AlertCard";
 import Button from "../Button";
 import { Checkbox } from "../Checkbox";
 import { Spinner } from "../Spinner";
-import { Form } from "../ui/form";
 import { MultiSendMenu } from "./MultiSendMenu";
 import { StopLossConditionMenu } from "./StopLossConditionMenu";
 import { StopLossRecipeMenu } from "./StopLossRecipeMenu";
@@ -169,10 +168,9 @@ function SelectedMenu({
   selected: Node<INodeData>;
   data: IStopLossRecipeData;
 }) {
-  const form = useForm<FieldValues>({ defaultValues: selected.data });
+  const MenuComponent = nodeMenus[selected?.type as keyof typeof nodeMenus];
 
   const { setNodes, getNodes } = useReactFlow();
-  const MenuComponent = nodeMenus[selected?.type as keyof typeof nodeMenus];
 
   const onSubmit = (formData: FieldValues) => {
     const newNodes = getNodes().map((node) => {
@@ -189,13 +187,10 @@ function SelectedMenu({
   };
 
   return (
-    <Form {...form} onSubmit={onSubmit}>
-      <div className="m-2 w-full max-h-[39rem] overflow-y-scroll">
-        <MenuComponent data={data} form={form} />
-        <Button type="submit" className="my-2 w-full">
-          Save
-        </Button>
-      </div>
-    </Form>
+    <MenuComponent
+      data={data}
+      defaultValues={selected.data}
+      onSubmit={onSubmit}
+    />
   );
 }
