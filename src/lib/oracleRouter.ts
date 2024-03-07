@@ -27,7 +27,7 @@ export interface IOracleRouterArgs {
 }
 
 export interface IGnosisPriceFeedItem {
-  address: Address;
+  contractAddress: Address;
   pair: [string, string];
 }
 
@@ -70,7 +70,11 @@ abstract class OracleRouter {
   }
 }
 
-class MainnetRouter extends OracleRouter {
+export const WETH_MAINNET_ADDRESS =
+  "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+export const WETH_GNOSIS_ADDRESS = "0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1";
+
+export class MainnetRouter extends OracleRouter {
   ETH_REGISTER_REFERENCE: Address;
   USD_REGISTER_REFERENCE: Address;
 
@@ -97,15 +101,20 @@ class MainnetRouter extends OracleRouter {
 
   async findOracles({ chainId, token }: OracleFinderArgs): Promise<Oracles> {
     const publicClient = publicClientsFromIds[chainId];
+    // WETH is a special case, it`s not on the registry so we should use the ETH reference
+    const addressToFind =
+      token.address.toLowerCase() === WETH_MAINNET_ADDRESS.toLowerCase()
+        ? this.ETH_REGISTER_REFERENCE
+        : token.address;
     const [ETH_ORACLE, USD_ORACLE] = await Promise.all([
       this.getOracleFromRegistry(
         publicClient,
-        token.address,
+        addressToFind,
         this.ETH_REGISTER_REFERENCE
       ),
       this.getOracleFromRegistry(
         publicClient,
-        token.address,
+        addressToFind,
         this.USD_REGISTER_REFERENCE
       ),
     ]);
@@ -125,7 +134,7 @@ class MainnetRouter extends OracleRouter {
   }
 }
 
-class GnosisRouter extends OracleRouter {
+export class GnosisRouter extends OracleRouter {
   PRICE_FEEDS_URL: string;
 
   constructor(args: IOracleRouterArgs) {
@@ -140,16 +149,22 @@ class GnosisRouter extends OracleRouter {
   }
 
   async findOracle(token: IToken): Promise<Oracles> {
+    // WETH is a special case, it`s not on the price feeds so we should use ETH
+    const symbolToFind =
+      token.address.toLowerCase() === WETH_GNOSIS_ADDRESS.toLowerCase()
+        ? "ETH"
+        : token.symbol;
     const feeds = await this.fetchPriceFeeds();
     const ETH_ORACLE = feeds.find(
-      (feed) => feed.pair.includes("ETH") && feed.pair.includes(token.symbol)
+      (feed) => feed.pair[0] === symbolToFind && feed.pair[1] === "ETH"
     );
     const USD_ORACLE = feeds.find(
-      (feed) => feed.pair.includes("USD") && feed.pair.includes(token.symbol)
+      (feed) => feed.pair[0] === symbolToFind && feed.pair[1] === "USD"
     );
+
     return {
-      ETH: ETH_ORACLE?.address,
-      USD: USD_ORACLE?.address,
+      ETH: ETH_ORACLE?.contractAddress,
+      USD: USD_ORACLE?.contractAddress,
     };
   }
 
@@ -162,7 +177,8 @@ class GnosisRouter extends OracleRouter {
   }
 }
 
-class SepoliaRouter extends OracleRouter {
+export class SepoliaRouter extends OracleRouter {
+  // Sepolia is a testnet, so we always return the same oracles for testing purposes
   async findBuyOracle(): Promise<Oracles> {
     return { ETH: "0xEd2D417d759b1E77fe6A8920C79AE4CE6D6930F7" };
   }
@@ -172,16 +188,11 @@ class SepoliaRouter extends OracleRouter {
   }
 }
 
-// export const CHAINS_ORACLE_ROUTER_FACTORY: Record<
-//   ChainId,
-//   new (args: IOracleRouterArgs) => OracleRouter
-// > = {
-//   [mainnet.id]: MainnetRouter,
-//   [sepolia.id]: SepoliaRouter,
-//   [gnosis.id]: GnosisRouter,
-// };
-export const CHAINS_ORACLE_ROUTER_FACTORY = {
+export const CHAINS_ORACLE_ROUTER_FACTORY: Record<
+  ChainId,
+  new (args: IOracleRouterArgs) => OracleRouter
+> = {
   [mainnet.id]: MainnetRouter,
-  // [sepolia.id]: SepoliaRouter,
-  // [gnosis.id]: GnosisRouter,
+  [sepolia.id]: SepoliaRouter,
+  [gnosis.id]: GnosisRouter,
 };
