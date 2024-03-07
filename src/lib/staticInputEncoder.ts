@@ -1,6 +1,6 @@
 "use client";
 
-import { encodeAbiParameters, parseUnits } from "viem";
+import { Address, encodeAbiParameters, parseUnits } from "viem";
 
 import { calculateAmounts } from "./calculateAmounts";
 import { IStopLossRecipeData, TIME_OPTIONS_SECONDS } from "./types";
@@ -64,7 +64,8 @@ const stopLossDataStructure = [
 ];
 
 export async function stopLossArgsEncoder(
-  data: IStopLossRecipeData
+  data: IStopLossRecipeData,
+  salt: Address
 ): Promise<`0x${string}`> {
   const preHooks = HookFactory.createCoWHooks(data.preHooks);
   const postHooks = HookFactory.createCoWHooks(data.postHooks);
@@ -76,11 +77,14 @@ export async function stopLossArgsEncoder(
         pre: preHooks,
         post: postHooks,
       },
+      widget: {
+        appCode: "Stop Loss",
+       "ponderId": `${salt}-${data.receiver}`
+      }
     },
   });
   const { appDataHex, appDataContent } =
     await metadataApi.appDataToCid(appDataDoc);
-
   await uploadAppData({
     fullAppData: appDataContent,
     appDataHex,
