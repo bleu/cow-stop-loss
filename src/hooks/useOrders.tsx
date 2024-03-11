@@ -17,7 +17,7 @@ export interface StopLossOrderType extends StopLossOrderTypeRaw {
   status: string;
 }
 
-interface CowOrder {
+export interface CowOrder {
   appData: string
   availableBalance: string
   buyAmount: string
