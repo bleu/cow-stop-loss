@@ -1,11 +1,13 @@
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import gql from "graphql-tag";
 import { useEffect, useState } from "react";
+import { Address } from "viem";
 
+import { getCowOrders } from "#/lib/cowApi/fetchCowOrder";
 import { UserStopLossOrdersQuery } from "#/lib/gql/generated";
 import { composableCowSubgraph } from "#/lib/gql/sdk";
 import { ChainId } from "#/lib/publicClients";
-import { ArrElement, GetDeepProp } from "#/lib/utils";
+import { ArrElement, GetDeepProp } from "#/utils";
 
 export type StopLossOrderType = ArrElement<
   GetDeepProp<UserStopLossOrdersQuery, "items">
@@ -56,6 +58,7 @@ gql(
   `,
 );
 
+
 export function useUserOrders() {
   const { safe } = useSafeAppsSDK();
   const [loaded, setLoaded] = useState(false);
@@ -74,7 +77,7 @@ export function useUserOrders() {
         const [processedOrders] = await Promise.all([
           getProcessedStopLossOrders({
             chainId: safe.chainId as ChainId,
-            address: safe.safeAddress,
+            address: safe.safeAddress as Address,
           }),
         ]);
         if (processedOrders !== undefined) {
@@ -102,10 +105,15 @@ async function getProcessedStopLossOrders({
   address,
 }: {
   chainId: ChainId;
-  address: string;
+  address: Address;
 }): Promise<StopLossOrderType[]> {
   const rawOrdersData = await composableCowSubgraph.UserStopLossOrders({
     user: `${address}-${chainId}`,
   });
+
+  //TODO: use this on COW-100
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const orderFromCowApi = await getCowOrders(address, chainId);
+
   return rawOrdersData.orders.items;
 }

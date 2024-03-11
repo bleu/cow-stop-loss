@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ReactNode } from "react";
 
-import { NetworkChainId, truncateAddress } from "#/lib/utils";
+import { NetworkChainId, truncateAddress } from "#/utils";
 
 interface IHeader {
   linkUrl: string;

@@ -4,7 +4,7 @@ import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 
-import { Network, networkFor } from "#/lib/utils";
+import { Network, networkFor } from "#/utils";
 
 export function getNetwork(chainName?: string) {
   if (!chainName) return Network.Ethereum;
