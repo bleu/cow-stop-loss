@@ -31,7 +31,8 @@ const ALLOWED_SLIPPAGE_TOOLTIP_TEXT =
 const IS_PARTIALLY_FILLABLE_TOOLTIP_TEXT =
   "If checked, the order can be divided into smaller orders and executed separately.";
 
-const VALIDITY_BUCKET_TIME_TOOLTIP_TEXT = "TODO";
+const VALIDITY_BUCKET_TIME_TOOLTIP_TEXT =
+  "How long the order will be valid, after placed on the orderbook.";
 
 export function SwapMenu({
   data,
@@ -154,7 +155,7 @@ export function SwapMenu({
                       onChange={() =>
                         setValue(
                           "isPartiallyFillable",
-                          !formData.isPartiallyFillable,
+                          !formData.isPartiallyFillable
                         )
                       }
                     />
