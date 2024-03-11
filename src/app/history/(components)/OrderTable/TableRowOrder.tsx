@@ -3,10 +3,9 @@ import { TrashIcon } from "@radix-ui/react-icons";
 import Table from "#/components/Table";
 import { TokenInfo } from "#/components/TokenInfo";
 import { StopLossOrderType } from "#/hooks/useOrders";
-import { formatDateToLocalDatetime } from "#/lib/utils";
+import { capitalize, formatDateToLocalDatetime } from "#/lib/utils";
 
 export function TableRowOrder({ order }: { order: StopLossOrderType }) {
-  const orderStatus = "Created";
   return (
     <>
       <Table.BodyRow key={order?.id}>
@@ -30,7 +29,7 @@ export function TableRowOrder({ order }: { order: StopLossOrderType }) {
             chainId={order?.chainId}
           />
         </Table.BodyCell>
-        <Table.BodyCell>{orderStatus}</Table.BodyCell>
+        <Table.BodyCell>{capitalize(order?.status)}</Table.BodyCell>
         <Table.BodyCell>
           <button type="button" className="flex items-center" disabled={true}>
             <TrashIcon className={"size-5 text-slate10"} />
