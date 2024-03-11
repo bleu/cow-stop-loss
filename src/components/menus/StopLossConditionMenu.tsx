@@ -3,8 +3,10 @@ import { slateDarkA } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { Controller, FieldValues, useForm } from "react-hook-form";
+import { useReactFlow } from "reactflow";
 
-import { stopLossConditionSchema } from "#/lib/schema";
+import { ChainId } from "#/lib/publicClients";
+import { generateStopLossConditionSchema } from "#/lib/schema";
 import { IStopLossRecipeData, TIME_OPTIONS } from "#/lib/types";
 import { buildBlockExplorerAddressURL } from "#/lib/utils";
 
@@ -26,22 +28,41 @@ const MAX_TIME_SINCE_LAST_ORACLE_UPDATE_TOOLTIP_TEXT =
   "If both oracle has not been updated within this time, the order will not be posted.";
 
 export function StopLossConditionMenu({
+  id,
   data,
   defaultValues,
-  onSubmit,
 }: {
+  id: string;
   data: IStopLossRecipeData;
   defaultValues: FieldValues;
-  onSubmit: (data: FieldValues) => void;
 }) {
+  const {
+    safe: { chainId },
+  } = useSafeAppsSDK();
+  const stopLossConditionSchema = generateStopLossConditionSchema({
+    chainId: chainId as ChainId,
+  });
   const form = useForm<typeof stopLossConditionSchema._type>({
     resolver: zodResolver(stopLossConditionSchema),
     defaultValues,
   });
   const { control } = form;
-  const {
-    safe: { chainId },
-  } = useSafeAppsSDK();
+
+  const { setNodes, getNodes } = useReactFlow();
+
+  const onSubmit = (formData: FieldValues) => {
+    const newNodes = getNodes().map((node) => {
+      if (node.id === id) {
+        return {
+          ...node,
+          data: { ...node.data, ...formData },
+          selected: false,
+        };
+      }
+      return node;
+    });
+    setNodes(newNodes);
+  };
 
   return (
     <Form {...form} onSubmit={onSubmit}>
@@ -64,10 +85,12 @@ export function StopLossConditionMenu({
                     name="tokenSellOracle"
                     label={`${data.tokenSell?.symbol} Oracle`}
                     tooltipLink={
-                      buildBlockExplorerAddressURL({
-                        chainId,
-                        address: data.tokenSellOracle,
-                      })?.url
+                      data.tokenSellOracle
+                        ? buildBlockExplorerAddressURL({
+                            chainId,
+                            address: data.tokenSellOracle,
+                          })?.url
+                        : undefined
                     }
                     tooltipText={ORACLE_TOOLTIP_TEXT}
                   />
@@ -75,10 +98,12 @@ export function StopLossConditionMenu({
                     name="tokenBuyOracle"
                     label={`${data.tokenBuy?.symbol} Oracle`}
                     tooltipLink={
-                      buildBlockExplorerAddressURL({
-                        chainId,
-                        address: data.tokenBuyOracle,
-                      })?.url
+                      data.tokenBuyOracle
+                        ? buildBlockExplorerAddressURL({
+                            chainId,
+                            address: data.tokenBuyOracle,
+                          })?.url
+                        : undefined
                     }
                     tooltipText={ORACLE_TOOLTIP_TEXT}
                   />

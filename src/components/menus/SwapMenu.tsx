@@ -3,9 +3,11 @@ import { slateDarkA } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { Controller, FieldValues, useForm } from "react-hook-form";
+import { useReactFlow } from "reactflow";
 import { Address, formatUnits } from "viem";
 
 import { useSafeBalances } from "#/hooks/useSafeBalances";
+import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
 import { ChainId } from "#/lib/publicClients";
 import { generateSwapSchema } from "#/lib/schema";
 import { ISwapData, TIME_OPTIONS } from "#/lib/types";
@@ -36,12 +38,10 @@ const VALIDITY_BUCKET_TIME_TOOLTIP_TEXT =
 
 export function SwapMenu({
   data,
-  onSubmit,
   defaultValues,
 }: {
   data: ISwapData;
   defaultValues: FieldValues;
-  onSubmit: (data: FieldValues) => void;
 }) {
   const { fetchBalance } = useSafeBalances();
   const {
@@ -72,6 +72,50 @@ export function SwapMenu({
     BigInt(fetchBalance((amountAddress || "0x") as Address)),
     amountDecimals
   );
+
+  const { setNodes, getNodes } = useReactFlow();
+
+  const oracleRouterFactory = CHAINS_ORACLE_ROUTER_FACTORY[chainId as ChainId];
+
+  const onSubmit = async (formData: FieldValues) => {
+    const oracleRouter = new oracleRouterFactory({
+      chainId: chainId as ChainId,
+      tokenSell: formData.tokenSell,
+      tokenBuy: formData.tokenBuy,
+    });
+
+    const oracles = await oracleRouter.findRoute().catch(() => {
+      return { tokenSellOracle: undefined, tokenBuyOracle: undefined };
+    });
+
+    const oracleError = !(oracles.tokenSellOracle && oracles.tokenBuyOracle);
+
+    const strikePrice = oracleError ? 0 : oracleRouter.calculatePrice(oracles);
+
+    const newNodes = getNodes().map((node) => {
+      if (node.id === "swap") {
+        return {
+          ...node,
+          data: { ...node.data, ...formData },
+          selected: false,
+        };
+      } else if (node.id === "condition") {
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            tokenSellOracle: oracles.tokenSellOracle,
+            tokenBuyOracle: oracles.tokenBuyOracle,
+            strikePrice,
+            oracleError,
+          },
+          selected: false,
+        };
+      }
+      return node;
+    });
+    setNodes(newNodes);
+  };
 
   return (
     <Form {...form} onSubmit={onSubmit}>

@@ -2,9 +2,9 @@
 
 import "reactflow/dist/base.css";
 
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React, { useCallback } from "react";
 import ReactFlow, {
+  Edge,
   EdgeChange,
   getConnectedEdges,
   getIncomers,
@@ -15,17 +15,15 @@ import ReactFlow, {
   useNodesState,
   useReactFlow,
 } from "reactflow";
-import { Address } from "viem";
 
-import { INodeData, IStopLossConditionData, ISwapData } from "#/lib/types";
+import { INodeData } from "#/lib/types";
 
 import { defaultEdgeProps } from "./edges";
 import { AddHookEdge } from "./edges/AddHookEdge";
-import { defaultNodeProps } from "./nodes";
 import { EndNode } from "./nodes/EndNode";
 import { MultiSendNode } from "./nodes/MultiSendNode";
-import { defaultStopLossData, StopLossNode } from "./nodes/StopLossNode";
-import { getDefaultSwapData, SwapNode } from "./nodes/SwapNode";
+import { StopLossNode } from "./nodes/StopLossNode";
+import { SwapNode } from "./nodes/SwapNode";
 
 const nodeTypes = {
   swap: SwapNode,
@@ -45,64 +43,19 @@ export const getLayoutedNodes = (nodes: Node<INodeData>[]) => {
   }));
 };
 
-const initEdges = [
-  {
-    id: "condition-swap",
-    source: "condition",
-    target: "swap",
-    type: "addHook",
-    ...defaultEdgeProps,
-  },
-  {
-    id: "swap-end",
-    source: "swap",
-    target: "end",
-    type: "addHook",
-    ...defaultEdgeProps,
-  },
-];
-
-const createInitNodes = (
-  conditionData: IStopLossConditionData,
-  swapData: ISwapData
-) => {
-  return [
-    {
-      id: "condition",
-      type: "stopLoss",
-      data: conditionData,
-      ...defaultNodeProps,
-    },
-    {
-      id: "swap",
-      type: "swap",
-      data: swapData,
-      ...defaultNodeProps,
-    },
-    {
-      id: "end",
-      type: "endNode",
-      selectable: false,
-      ...defaultNodeProps,
-    },
-  ] as Node<INodeData>[];
-};
-
-export const Board = () => {
-  const {
-    safe: { safeAddress, chainId },
-  } = useSafeAppsSDK();
-  const layoutedNodes = getLayoutedNodes(
-    createInitNodes(
-      defaultStopLossData,
-      getDefaultSwapData(chainId, safeAddress as Address)
-    )
-  );
-
-  const [nodes, setNodes, onNodesChange] =
-    useNodesState<INodeData>(layoutedNodes);
+export function Board({
+  initNodes,
+  initEdges,
+}: {
+  initNodes: Node<INodeData>[];
+  initEdges: Edge[];
+}) {
   const [edges, setEdges, onEdgesChange] = useEdgesState(initEdges);
   const { fitView } = useReactFlow();
+
+  const [nodes, setNodes, onNodesChange] = useNodesState<INodeData>(
+    getLayoutedNodes(initNodes)
+  );
 
   const onNodesDelete = useCallback(
     (deleted: Node<INodeData>[]) => {
@@ -191,6 +144,6 @@ export const Board = () => {
       className="bg-blue2 size-full rounded-md shadow-md"
     />
   );
-};
+}
 
 export function Flow() {}

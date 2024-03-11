@@ -1,9 +1,10 @@
-import { isAddress } from "viem";
+import { Address, isAddress } from "viem";
 import { z } from "zod";
 import { TIME_OPTIONS } from "./types";
-import { ChainId } from "./publicClients";
+import { ChainId, publicClientsFromIds } from "./publicClients";
 import { fetchCowQuote } from "./cowApi/fetchCowQuote";
 import { capitalize } from "./utils";
+import { oracleMinimalAbi } from "./abis/oracleMinimalAbi";
 
 const basicAddressSchema = z
   .string()
@@ -18,12 +19,42 @@ const basicTokenSchema = z.object({
   symbol: z.string(),
 });
 
-export const stopLossConditionSchema = z.object({
-  strikePrice: z.coerce.number().positive(),
-  tokenSellOracle: basicAddressSchema,
-  tokenBuyOracle: basicAddressSchema,
-  maxTimeSinceLastOracleUpdate: z.nativeEnum(TIME_OPTIONS),
-});
+const generateOracleSchema = ({ chainId }: { chainId: ChainId }) => {
+  const publicClient = publicClientsFromIds[chainId];
+
+  return basicAddressSchema.refine(
+    async (value) => {
+      return publicClient
+        .readContract({
+          address: value as Address,
+          abi: oracleMinimalAbi,
+          functionName: "latestRoundData",
+        })
+        .then(() => true)
+        .catch(() => false);
+    },
+    {
+      message: "Oracle contract not found",
+    }
+  );
+};
+
+export const generateStopLossConditionSchema = ({
+  chainId,
+}: {
+  chainId: ChainId;
+}) =>
+  z
+    .object({
+      strikePrice: z.coerce.number().positive(),
+      tokenSellOracle: generateOracleSchema({ chainId }),
+      tokenBuyOracle: generateOracleSchema({ chainId }),
+      maxTimeSinceLastOracleUpdate: z.nativeEnum(TIME_OPTIONS),
+    })
+    .refine((data) => data.tokenSellOracle != data.tokenBuyOracle, {
+      path: ["tokenBuyOracle"],
+      message: "Tokens sell and buy must be different",
+    });
 
 export const generateSwapSchema = ({ chainId }: { chainId: ChainId }) =>
   z

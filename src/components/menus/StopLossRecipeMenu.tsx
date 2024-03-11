@@ -2,6 +2,7 @@ import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { IStopLossRecipeData } from "#/lib/types";
+import { formatNumber } from "#/lib/utils";
 
 import { Spinner } from "../Spinner";
 import { TokenInfo } from "../TokenInfo";
@@ -32,7 +33,7 @@ export function StopLossRecipeMenu({ data }: { data?: IStopLossRecipeData }) {
             <div className="flex flex-row gap-x-2 justify-between">
               <span>Condition:</span>
               <span>
-                {data.strikePrice} {data.tokenSell.symbol} /
+                {formatNumber(data.strikePrice, 4)} {data.tokenSell.symbol} /{" "}
                 {data.tokenBuy.symbol}
               </span>
             </div>
