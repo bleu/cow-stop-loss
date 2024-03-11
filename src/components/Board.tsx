@@ -17,13 +17,7 @@ import ReactFlow, {
 } from "reactflow";
 import { Address } from "viem";
 
-import { ChainId } from "#/lib/publicClients";
-import {
-  INodeData,
-  IStopLossConditionData,
-  IStopLossRecipeData,
-  ISwapData,
-} from "#/lib/types";
+import { INodeData, IStopLossConditionData, ISwapData } from "#/lib/types";
 
 import { defaultEdgeProps } from "./edges";
 import { AddHookEdge } from "./edges/AddHookEdge";
@@ -68,18 +62,21 @@ const initEdges = [
   },
 ];
 
-const createInitNodes = (data: IStopLossRecipeData) =>
-  [
+const createInitNodes = (
+  conditionData: IStopLossConditionData,
+  swapData: ISwapData
+) => {
+  return [
     {
       id: "condition",
       type: "stopLoss",
-      data: data as IStopLossConditionData,
+      data: conditionData,
       ...defaultNodeProps,
     },
     {
       id: "swap",
       type: "swap",
-      data: data as ISwapData,
+      data: swapData,
       ...defaultNodeProps,
     },
     {
@@ -89,19 +86,17 @@ const createInitNodes = (data: IStopLossRecipeData) =>
       ...defaultNodeProps,
     },
   ] as Node<INodeData>[];
+};
 
 export const Board = () => {
   const {
     safe: { safeAddress, chainId },
   } = useSafeAppsSDK();
   const layoutedNodes = getLayoutedNodes(
-    createInitNodes({
-      ...getDefaultSwapData(chainId, safeAddress as Address),
-      ...defaultStopLossData,
-      preHooks: [],
-      postHooks: [],
-      chainId: chainId as ChainId,
-    })
+    createInitNodes(
+      defaultStopLossData,
+      getDefaultSwapData(chainId, safeAddress as Address)
+    )
   );
 
   const [nodes, setNodes, onNodesChange] =
