@@ -3,8 +3,8 @@ import { z } from "zod";
 import { TIME_OPTIONS } from "./types";
 import { ChainId, publicClientsFromIds } from "./publicClients";
 import { fetchCowQuote } from "./cowApi/fetchCowQuote";
-import { capitalize } from "./utils";
 import { oracleMinimalAbi } from "./abis/oracleMinimalAbi";
+import { capitalize } from "#/utils";
 
 const basicAddressSchema = z
   .string()

@@ -2,7 +2,7 @@ import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { IStopLossRecipeData } from "#/lib/types";
-import { formatNumber } from "#/lib/utils";
+import { formatNumber } from "#/utils";
 
 import { Spinner } from "../Spinner";
 import { TokenInfo } from "../TokenInfo";
