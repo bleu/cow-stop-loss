@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import { cowTokenList } from "#/lib/cowTokenList";
-import { formatNumber, truncateAddress } from "#/lib/utils";
+import { formatNumber, truncateAddress } from "#/utils";
 
 export function TokenInfo({
   symbol,

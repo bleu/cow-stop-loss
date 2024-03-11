@@ -1,15 +1,60 @@
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import gql from "graphql-tag";
 import { useEffect, useState } from "react";
+import { Address } from "viem";
 
+import { getCowOrders } from "#/lib/cowApi/fetchCowOrder";
 import { UserStopLossOrdersQuery } from "#/lib/gql/generated";
 import { composableCowSubgraph } from "#/lib/gql/sdk";
 import { ChainId } from "#/lib/publicClients";
-import { ArrElement, GetDeepProp } from "#/lib/utils";
+import { ArrElement, GetDeepProp } from "#/utils";
 
-export type StopLossOrderType = ArrElement<
+type StopLossOrderTypeRaw = ArrElement<
   GetDeepProp<UserStopLossOrdersQuery, "items">
 >;
+
+export interface StopLossOrderType extends StopLossOrderTypeRaw {
+  status: string;
+}
+
+export interface CowOrder {
+  appData: string
+  availableBalance: string
+  buyAmount: string
+  buyToken: string
+  buyTokenBalance: string
+  class: string
+  creationDate: string
+  executedBuyAmount:string
+  executedFeeAmount: string
+  executedSellAmount: string
+  executedSellAmountBeforeFees: string
+  executedSurplusFee: string
+  feeAmount: string
+  fullAppData: string
+fullFeeAmount: string
+  interactions: {
+    pre: Array<string>
+    post: Array<string>
+  }
+  invalidated: boolean
+  isLiquidityOrder: boolean
+  kind: string
+  owner: string
+  partiallyFillable: boolean
+  receiver: string
+  sellAmount: string
+  sellToken: string
+  sellTokenBalance: string
+  settlementContract: string
+  signature: string
+  signingScheme: string
+  solverFee: string
+  status: string
+  uid: string
+  validTo: number
+}
+
 
 gql(
   `query UserStopLossOrders($user: String!) {
@@ -56,6 +101,7 @@ gql(
   `,
 );
 
+
 export function useUserOrders() {
   const { safe } = useSafeAppsSDK();
   const [loaded, setLoaded] = useState(false);
@@ -74,7 +120,7 @@ export function useUserOrders() {
         const [processedOrders] = await Promise.all([
           getProcessedStopLossOrders({
             chainId: safe.chainId as ChainId,
-            address: safe.safeAddress,
+            address: safe.safeAddress as Address,
           }),
         ]);
         if (processedOrders !== undefined) {
@@ -102,10 +148,28 @@ async function getProcessedStopLossOrders({
   address,
 }: {
   chainId: ChainId;
-  address: string;
+  address: Address;
 }): Promise<StopLossOrderType[]> {
   const rawOrdersData = await composableCowSubgraph.UserStopLossOrders({
     user: `${address}-${chainId}`,
   });
-  return rawOrdersData.orders.items;
+
+  const orderFromCowApi = await getCowOrders(address, chainId);
+
+  const orderData = rawOrdersData.orders.items.map((order) => {
+    const match = orderFromCowApi.find((cowOrder: CowOrder) => cowOrder.appData === order.stopLossParameters?.appData);
+    if(match && match.status !== "expired") {
+      return {
+        ...order,
+        status: match.status,
+      }
+    } else {
+      return {
+        ...order,
+        status: "created",
+      }
+    } 
+  })
+
+  return orderData;
 }

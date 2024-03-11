@@ -8,7 +8,7 @@ import { useReactFlow } from "reactflow";
 import { ChainId } from "#/lib/publicClients";
 import { generateStopLossConditionSchema } from "#/lib/schema";
 import { IStopLossRecipeData, TIME_OPTIONS } from "#/lib/types";
-import { buildBlockExplorerAddressURL } from "#/lib/utils";
+import { buildBlockExplorerAddressURL } from "#/utils";
 
 import Button from "../Button";
 import { Input } from "../Input";

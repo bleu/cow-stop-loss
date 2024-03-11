@@ -1,12 +1,13 @@
 "use client";
 
-import { encodeAbiParameters, parseUnits } from "viem";
+import { Address, encodeAbiParameters, parseUnits } from "viem";
 
 import { calculateAmounts } from "./calculateAmounts";
 import { IStopLossRecipeData, TIME_OPTIONS_SECONDS } from "./types";
 import { HookFactory } from "./hooksFactory";
 import { MetadataApi } from "@cowprotocol/app-data";
 import { uploadAppData } from "./cowApi/uploadAppData";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 
 const stopLossDataStructure = [
   {
@@ -64,8 +65,10 @@ const stopLossDataStructure = [
 ];
 
 export async function stopLossArgsEncoder(
-  data: IStopLossRecipeData
+  data: IStopLossRecipeData,
+  salt: Address
 ): Promise<`0x${string}`> {
+  const { safe } = useSafeAppsSDK();
   const preHooks = HookFactory.createCoWHooks(data.preHooks);
   const postHooks = HookFactory.createCoWHooks(data.postHooks);
   const metadataApi = new MetadataApi();
@@ -76,11 +79,14 @@ export async function stopLossArgsEncoder(
         pre: preHooks,
         post: postHooks,
       },
+      widget: {
+        appCode: "Stop Loss",
+       "ponderId": `${salt}-${safe.safeAddress}-${safe.chainId}`
+      }
     },
   });
   const { appDataHex, appDataContent } =
     await metadataApi.appDataToCid(appDataDoc);
-
   await uploadAppData({
     fullAppData: appDataContent,
     appDataHex,
