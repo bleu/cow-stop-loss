@@ -12,13 +12,13 @@ export function createClientForChain(chain: ChainType) {
     chain,
     transport: http(),
   });
-}
+};
 
 export const publicClientsFromNames = {
   mainnet: createClientForChain(mainnet),
   sepolia: createClientForChain(sepolia),
   gnosis: createClientForChain(gnosis),
-};
+} as const;
 
 export const publicClientsFromIds = {
   [gnosis.id]: createClientForChain(gnosis),

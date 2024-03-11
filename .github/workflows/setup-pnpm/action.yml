@@ -1,0 +1,27 @@
+name: 'Setup JS Dependencies'
+description: 'Install JS dependencies using PNPM'
+inputs:
+  npm_token:
+    description: 'NPM token for authentication'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/checkout@v2
+      
+    - name: Setup PNPM
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: ".tool-versions"
+        cache: "pnpm"
+
+    - name: Install dependencies
+      run: pnpm install --frozen-lockfile
+      shell: bash
+      env:
+        NPM_TOKEN: ${{ inputs.npm_token }}

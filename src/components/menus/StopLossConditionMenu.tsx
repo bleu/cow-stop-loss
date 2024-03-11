@@ -1,19 +1,29 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { slateDarkA } from "@radix-ui/colors";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 
 import { stopLossConditionSchema } from "#/lib/schema";
 import { IStopLossRecipeData, TIME_OPTIONS } from "#/lib/types";
+import { buildBlockExplorerAddressURL } from "#/lib/utils";
 
 import Button from "../Button";
 import { Input } from "../Input";
 import { Select, SelectItem } from "../Select";
+import { Tooltip } from "../Tooltip";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion";
-import { Form } from "../ui/form";
+import { Form, FormLabel } from "../ui/form";
+
+const ORACLE_TOOLTIP_TEXT =
+  "Please take care when manually editing the address of the oracle contract, as it will determine if the order is ready to be posted and its price.";
+const MAX_TIME_SINCE_LAST_ORACLE_UPDATE_TOOLTIP_TEXT =
+  "If both oracle has not been updated within this time, the order will not be posted.";
 
 export function StopLossConditionMenu({
   data,
@@ -29,6 +39,9 @@ export function StopLossConditionMenu({
     defaultValues,
   });
   const { control } = form;
+  const {
+    safe: { chainId },
+  } = useSafeAppsSDK();
 
   return (
     <Form {...form} onSubmit={onSubmit}>
@@ -37,9 +50,10 @@ export function StopLossConditionMenu({
           <span className="text-md font-bold mb-3">Stop Loss Condition</span>
           <Input
             name="strikePrice"
-            label="Strike Price"
+            label={`Strike Price (${data.tokenSell?.symbol}/${data.tokenBuy?.symbol})`}
             type="number"
             step={1e-18}
+            tooltipText="If the price of the selling relative to the buying tokens is less than this value"
           />
           <Accordion className="w-full" type="single" collapsible>
             <AccordionItem value="advancedOptions" key="advancedOption">
@@ -49,15 +63,36 @@ export function StopLossConditionMenu({
                   <Input
                     name="tokenSellOracle"
                     label={`${data.tokenSell?.symbol} Oracle`}
+                    tooltipLink={
+                      buildBlockExplorerAddressURL({
+                        chainId,
+                        address: data.tokenSellOracle,
+                      })?.url
+                    }
+                    tooltipText={ORACLE_TOOLTIP_TEXT}
                   />
                   <Input
                     name="tokenBuyOracle"
                     label={`${data.tokenBuy?.symbol} Oracle`}
+                    tooltipLink={
+                      buildBlockExplorerAddressURL({
+                        chainId,
+                        address: data.tokenBuyOracle,
+                      })?.url
+                    }
+                    tooltipText={ORACLE_TOOLTIP_TEXT}
                   />
                   <div className="flex flex-col">
-                    <label className="mb-2 block text-sm">
-                      Maximium Time Since Last Oracle Update
-                    </label>
+                    <div className="flex flex-row justify-between">
+                      <FormLabel className="mb-2 block text-sm text-slate12">
+                        Max time since last oracle update
+                      </FormLabel>
+                      <Tooltip
+                        content={MAX_TIME_SINCE_LAST_ORACLE_UPDATE_TOOLTIP_TEXT}
+                      >
+                        <InfoCircledIcon color={slateDarkA.slateA11} />
+                      </Tooltip>
+                    </div>
                     <Controller
                       control={control}
                       name="maxTimeSinceLastOracleUpdate"
