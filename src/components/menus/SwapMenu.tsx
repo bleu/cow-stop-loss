@@ -90,7 +90,9 @@ export function SwapMenu({
 
     const oracleError = !(oracles.tokenSellOracle && oracles.tokenBuyOracle);
 
-    const strikePrice = oracleError ? 0 : oracleRouter.calculatePrice(oracles);
+    const strikePrice = oracleError
+      ? 0
+      : await oracleRouter.calculatePrice(oracles);
 
     const newNodes = getNodes().map((node) => {
       if (node.id === "swap") {
