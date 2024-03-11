@@ -14,7 +14,7 @@ import {
   UseFormReturn,
 } from "react-hook-form";
 
-import { cn } from "#/lib/utils";
+import { cn } from "#/utils";
 
 import { Label } from "./label";
 

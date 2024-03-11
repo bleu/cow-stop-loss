@@ -3,7 +3,7 @@ import { TrashIcon } from "@radix-ui/react-icons";
 import Table from "#/components/Table";
 import { TokenInfo } from "#/components/TokenInfo";
 import { StopLossOrderType } from "#/hooks/useOrders";
-import { capitalize, formatDateToLocalDatetime } from "#/lib/utils";
+import { formatDateToLocalDatetime } from "#/utils";
 
 export function TableRowOrder({ order }: { order: StopLossOrderType }) {
   return (

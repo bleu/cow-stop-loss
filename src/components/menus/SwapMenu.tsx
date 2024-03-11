@@ -1,4 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { slateDarkA } from "@radix-ui/colors";
+import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import { Address, formatUnits } from "viem";
@@ -7,20 +9,29 @@ import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { ChainId } from "#/lib/publicClients";
 import { generateSwapSchema } from "#/lib/schema";
 import { ISwapData, TIME_OPTIONS } from "#/lib/types";
-import { convertAndRoundDown, formatNumber } from "#/lib/utils";
+import { convertAndRoundDown, formatNumber } from "#/utils";
 
 import Button from "../Button";
 import { Checkbox } from "../Checkbox";
 import { Input } from "../Input";
 import { Select, SelectItem } from "../Select";
 import { TokenSelect } from "../TokenSelect";
+import { Tooltip } from "../Tooltip";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion";
-import { Form, FormMessage } from "../ui/form";
+import { Form, FormLabel, FormMessage } from "../ui/form";
+
+const ALLOWED_SLIPPAGE_TOOLTIP_TEXT =
+  "Used, in addition to the strike price, to determine the limit price of the order. The order will not be executed if the price of the token is outside of the limit price.";
+
+const IS_PARTIALLY_FILLABLE_TOOLTIP_TEXT =
+  "If checked, the order can be divided into smaller orders and executed separately.";
+
+const VALIDITY_BUCKET_TIME_TOOLTIP_TEXT = "TODO";
 
 export function SwapMenu({
   data,
@@ -131,16 +142,19 @@ export function SwapMenu({
                       name="allowedSlippage"
                       label={`Allowed Slippage (%)`}
                       type="number"
+                      tooltipText={ALLOWED_SLIPPAGE_TOOLTIP_TEXT}
+                      step={0.01}
                     />
                     <Input name="receiver" label="Receiver" />
                     <Checkbox
                       id="isPartiallyFillable"
                       checked={formData.isPartiallyFillable}
                       label="Is Partially Fillable"
+                      tooltipText={IS_PARTIALLY_FILLABLE_TOOLTIP_TEXT}
                       onChange={() =>
                         setValue(
                           "isPartiallyFillable",
-                          !formData.isPartiallyFillable
+                          !formData.isPartiallyFillable,
                         )
                       }
                     />
@@ -153,9 +167,14 @@ export function SwapMenu({
                       }
                     />
                     <div className="flex flex-col">
-                      <label className="mb-2 block text-sm text-slate12">
-                        Validity Bucket Time
-                      </label>
+                      <div className="flex flex-row justify-between">
+                        <FormLabel className="mb-2 block text-sm text-slate12">
+                          Validity Bucket Time
+                        </FormLabel>
+                        <Tooltip content={VALIDITY_BUCKET_TIME_TOOLTIP_TEXT}>
+                          <InfoCircledIcon color={slateDarkA.slateA11} />
+                        </Tooltip>
+                      </div>
                       <Controller
                         control={control}
                         name="validityBucketTime"
