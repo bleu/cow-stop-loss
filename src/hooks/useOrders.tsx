@@ -7,7 +7,7 @@ import { getCowOrders } from "#/lib/cowApi/fetchCowOrder";
 import { UserStopLossOrdersQuery } from "#/lib/gql/generated";
 import { composableCowSubgraph } from "#/lib/gql/sdk";
 import { ChainId } from "#/lib/publicClients";
-import { ArrElement, GetDeepProp } from "#/lib/utils";
+import { ArrElement, GetDeepProp } from "#/utils";
 
 export type StopLossOrderType = ArrElement<
   GetDeepProp<UserStopLossOrdersQuery, "items">

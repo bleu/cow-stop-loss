@@ -7,7 +7,7 @@ import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { ChainId } from "#/lib/publicClients";
 import { generateSwapSchema } from "#/lib/schema";
 import { ISwapData, TIME_OPTIONS } from "#/lib/types";
-import { convertAndRoundDown, formatNumber } from "#/lib/utils";
+import { convertAndRoundDown, formatNumber } from "#/utils";
 
 import Button from "../Button";
 import { Checkbox } from "../Checkbox";

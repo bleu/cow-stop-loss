@@ -1,6 +1,6 @@
 import cn from "clsx";
 
-import { capitalize } from "#/lib/utils";
+import { capitalize } from "#/utils";
 
 export function AlertCard({
   title,
