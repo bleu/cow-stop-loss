@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 import { FieldValues, useForm } from "react-hook-form";
+import { useReactFlow } from "reactflow";
 
 import { multiSendHookSchema } from "#/lib/schema";
 import { IToken } from "#/lib/types";
@@ -13,11 +14,11 @@ import { TokenSelect } from "../TokenSelect";
 import { Form } from "../ui/form";
 
 export function MultiSendMenu({
-  onSubmit,
+  id,
   defaultValues,
 }: {
+  id: string;
   defaultValues: FieldValues;
-  onSubmit: (data: FieldValues) => void;
 }) {
   const form = useForm<typeof multiSendHookSchema._type>({
     resolver: zodResolver(multiSendHookSchema),
@@ -26,6 +27,22 @@ export function MultiSendMenu({
   const { register, setValue, watch } = form;
   const [lengthOfArguments, setLengthOfArguments] = useState(1);
   const formData = watch();
+
+  const { setNodes, getNodes } = useReactFlow();
+
+  const onSubmit = (formData: FieldValues) => {
+    const newNodes = getNodes().map((node) => {
+      if (node.id === id) {
+        return {
+          ...node,
+          data: { ...node.data, ...formData },
+          selected: false,
+        };
+      }
+      return node;
+    });
+    setNodes(newNodes);
+  };
 
   return (
     <Form {...form} onSubmit={onSubmit}>

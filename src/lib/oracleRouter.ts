@@ -1,9 +1,10 @@
-import { Address, PublicClient } from "viem";
+import { Address, PublicClient, formatUnits } from "viem";
 import { IToken } from "./types";
 import { ChainId, publicClientsFromIds } from "./publicClients";
 import { PRICE_FEED_REGISTER } from "./contracts";
 import { gnosis, mainnet, sepolia } from "viem/chains";
 import { priceFeedRegisterAbi } from "./abis/priceFeedRegister";
+import { oracleMinimalAbi } from "./abis/oracleMinimalAbi";
 
 export interface OracleFinderArgs {
   chainId: ChainId;
@@ -22,8 +23,8 @@ export interface IRoute {
 
 export interface IOracleRouterArgs {
   chainId: ChainId;
-  sellToken: IToken;
-  buyToken: IToken;
+  tokenSell: IToken;
+  tokenBuy: IToken;
 }
 
 export interface IGnosisPriceFeedItem {
@@ -32,14 +33,16 @@ export interface IGnosisPriceFeedItem {
 }
 
 abstract class OracleRouter {
+  publicClient: PublicClient;
   chainId: ChainId;
-  sellToken: IToken;
-  buyToken: IToken;
+  tokenSell: IToken;
+  tokenBuy: IToken;
 
-  constructor({ chainId, sellToken, buyToken }: IOracleRouterArgs) {
+  constructor({ chainId, tokenSell, tokenBuy }: IOracleRouterArgs) {
     this.chainId = chainId;
-    this.sellToken = sellToken;
-    this.buyToken = buyToken;
+    this.publicClient = publicClientsFromIds[chainId];
+    this.tokenSell = tokenSell;
+    this.tokenBuy = tokenBuy;
   }
 
   abstract findBuyOracle(): Promise<Oracles>;
@@ -68,6 +71,30 @@ abstract class OracleRouter {
     ]);
     return this.matchOracles(tokenSellOracles, tokenBuyOracles);
   }
+
+  async fetchOraclePrice(oracle: Address): Promise<number> {
+    const [roundData, oracleDecimals] = await Promise.all([
+      this.publicClient.readContract({
+        address: oracle,
+        abi: oracleMinimalAbi,
+        functionName: "latestRoundData",
+      }) as Promise<[bigint, bigint, bigint, bigint, bigint]>,
+      this.publicClient.readContract({
+        address: oracle,
+        abi: oracleMinimalAbi,
+        functionName: "decimals",
+      }) as Promise<number>,
+    ]);
+    return Number(formatUnits(roundData[1], oracleDecimals));
+  }
+
+  async calculatePrice(route: IRoute): Promise<number> {
+    const [sellPrice, buyPrice] = await Promise.all([
+      this.fetchOraclePrice(route.tokenSellOracle),
+      this.fetchOraclePrice(route.tokenBuyOracle),
+    ]);
+    return sellPrice / buyPrice;
+  }
 }
 
 export const WETH_MAINNET_ADDRESS =
@@ -78,18 +105,14 @@ export class MainnetRouter extends OracleRouter {
   ETH_REGISTER_REFERENCE: Address;
   USD_REGISTER_REFERENCE: Address;
 
-  constructor({ chainId, sellToken, buyToken }: IOracleRouterArgs) {
-    super({ chainId, sellToken, buyToken });
+  constructor({ chainId, tokenSell, tokenBuy }: IOracleRouterArgs) {
+    super({ chainId, tokenSell, tokenBuy });
     this.ETH_REGISTER_REFERENCE = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
     this.USD_REGISTER_REFERENCE = "0x0000000000000000000000000000000000000348";
   }
 
-  async getOracleFromRegistry(
-    publicClient: PublicClient,
-    base: Address,
-    quote: Address
-  ) {
-    return publicClient
+  async getOracleFromRegistry(base: Address, quote: Address) {
+    return this.publicClient
       .readContract({
         address: PRICE_FEED_REGISTER[mainnet.id],
         abi: priceFeedRegisterAbi,
@@ -100,23 +123,14 @@ export class MainnetRouter extends OracleRouter {
   }
 
   async findOracles({ chainId, token }: OracleFinderArgs): Promise<Oracles> {
-    const publicClient = publicClientsFromIds[chainId];
     // WETH is a special case, it`s not on the registry so we should use the ETH reference
     const addressToFind =
       token.address.toLowerCase() === WETH_MAINNET_ADDRESS.toLowerCase()
         ? this.ETH_REGISTER_REFERENCE
         : token.address;
     const [ETH_ORACLE, USD_ORACLE] = await Promise.all([
-      this.getOracleFromRegistry(
-        publicClient,
-        addressToFind,
-        this.ETH_REGISTER_REFERENCE
-      ),
-      this.getOracleFromRegistry(
-        publicClient,
-        addressToFind,
-        this.USD_REGISTER_REFERENCE
-      ),
+      this.getOracleFromRegistry(addressToFind, this.ETH_REGISTER_REFERENCE),
+      this.getOracleFromRegistry(addressToFind, this.USD_REGISTER_REFERENCE),
     ]);
 
     return {
@@ -126,11 +140,11 @@ export class MainnetRouter extends OracleRouter {
   }
 
   async findBuyOracle(): Promise<Oracles> {
-    return this.findOracles({ chainId: this.chainId, token: this.buyToken });
+    return this.findOracles({ chainId: this.chainId, token: this.tokenBuy });
   }
 
   async findSellOracle(): Promise<Oracles> {
-    return this.findOracles({ chainId: this.chainId, token: this.sellToken });
+    return this.findOracles({ chainId: this.chainId, token: this.tokenSell });
   }
 }
 
@@ -169,11 +183,11 @@ export class GnosisRouter extends OracleRouter {
   }
 
   async findBuyOracle(): Promise<Oracles> {
-    return this.findOracle(this.buyToken);
+    return this.findOracle(this.tokenBuy);
   }
 
   async findSellOracle(): Promise<Oracles> {
-    return this.findOracle(this.sellToken);
+    return this.findOracle(this.tokenSell);
   }
 }
 

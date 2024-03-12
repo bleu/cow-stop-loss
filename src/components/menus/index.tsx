@@ -1,7 +1,6 @@
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect, useState } from "react";
-import { FieldValues } from "react-hook-form";
-import { Node, useNodes, useReactFlow } from "reactflow";
+import { Node, useNodes } from "reactflow";
 import { Address } from "viem";
 
 import { FALLBACK_STATES, useFallbackState } from "#/hooks/useFallbackState";
@@ -151,7 +150,9 @@ function DefaultMenu({ data }: { data: IStopLossRecipeData }) {
         )}
         <Button
           type={"submit"}
-          disabled={needFallbackSetting && !fallbackSetupApprove}
+          disabled={
+            (needFallbackSetting && !fallbackSetupApprove) || data.oracleError
+          }
           onClick={createOrder}
         >
           Create Order
@@ -170,27 +171,7 @@ function SelectedMenu({
 }) {
   const MenuComponent = nodeMenus[selected?.type as keyof typeof nodeMenus];
 
-  const { setNodes, getNodes } = useReactFlow();
-
-  const onSubmit = (formData: FieldValues) => {
-    const newNodes = getNodes().map((node) => {
-      if (node.id === selected.id) {
-        return {
-          ...node,
-          data: { ...node.data, ...formData },
-          selected: false,
-        };
-      }
-      return node;
-    });
-    setNodes(newNodes);
-  };
-
   return (
-    <MenuComponent
-      data={data}
-      defaultValues={selected.data}
-      onSubmit={onSubmit}
-    />
+    <MenuComponent data={data} id={selected.id} defaultValues={selected.data} />
   );
 }

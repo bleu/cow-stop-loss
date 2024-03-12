@@ -35,9 +35,10 @@ export interface ISwapData {
 
 export interface IStopLossConditionData {
   strikePrice: number;
-  tokenSellOracle: Address;
-  tokenBuyOracle: Address;
+  tokenSellOracle?: Address;
+  tokenBuyOracle?: Address;
   maxTimeSinceLastOracleUpdate: TIME_OPTIONS;
+  oracleError?: boolean;
 }
 
 export enum HOOK_TYPES {

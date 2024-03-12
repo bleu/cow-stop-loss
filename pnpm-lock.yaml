@@ -12,8 +12,8 @@ overrides:
 
 dependencies:
   '@bleu-fi/ui':
-    specifier: ^0.1.33
-    version: 0.1.33(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react-router-dom@6.22.1)(react@18.2.0)
+    specifier: ^0.1.48
+    version: 0.1.48(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react-hook-form@7.50.1)(react-router-dom@6.22.1)(react@18.2.0)
   '@cowprotocol/app-data':
     specifier: ^1.2.2
     version: 1.2.2(cross-fetch@4.0.0)(ethers@5.7.2)(ipfs-only-hash@4.0.0)(multiformats@9.9.0)
@@ -975,12 +975,13 @@ packages:
   /@bcoe/v8-coverage@0.2.3:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  /@bleu-fi/ui@0.1.33(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react-router-dom@6.22.1)(react@18.2.0):
-    resolution: {integrity: sha512-IYm1dWEDZI2U02KdU5cJDSHz2Grnn1wpFcjetHOtQ3I5xD30BlwjtfzlE0qTgH6JUufXp0P1h4EXnzXe0MP7VQ==, tarball: https://npm.pkg.github.com/download/@bleu-fi/ui/0.1.33/f582c712496414ca3b478a4178b0861c8da18ca5}
+  /@bleu-fi/ui@0.1.48(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react-hook-form@7.50.1)(react-router-dom@6.22.1)(react@18.2.0):
+    resolution: {integrity: sha512-Kt7UXc6ihT4rOS3LLW8lQ2YXgAKwEiGX+OQNAoCuXchuA3INuXNiH6e/8nVruc8csKiwH0qQlfaaDMLp+cuFdA==, tarball: https://npm.pkg.github.com/download/@bleu-fi/ui/0.1.48/dd1c252d8532f0dadb48fd881fc77a86aa571419}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: '>=18'
       react-dom: '>=18'
+      react-hook-form: ^7.50.1
       react-router-dom: ^6.21.0
     dependencies:
       '@radix-ui/react-accordion': 1.1.2(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)
@@ -1011,20 +1012,24 @@ packages:
       '@radix-ui/react-toggle': 1.0.3(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-toggle-group': 1.0.4(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-tooltip': 1.0.7(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)
-      '@tanstack/react-table': 8.12.0(react-dom@18.2.0)(react@18.2.0)
+      '@tanstack/react-table': 8.13.2(react-dom@18.2.0)(react@18.2.0)
       class-variance-authority: 0.7.0
       clsx: 2.1.0
       cmdk: 0.2.1(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)
       copy-to-clipboard: 3.3.3
       date-fns: 3.3.1
-      jodit: 4.0.6
-      jodit-react: 4.0.9(react-dom@18.2.0)(react@18.2.0)
+      i18next: 23.10.1
+      jodit: 4.0.18
+      jodit-react: 4.0.15(react-dom@18.2.0)(react@18.2.0)
       object-to-formdata: 4.5.1
       react: 18.2.0
       react-beautiful-dnd: 13.1.1(react-dom@18.2.0)(react@18.2.0)
+      react-colorful: 5.6.1(react-dom@18.2.0)(react@18.2.0)
       react-day-picker: 8.10.0(date-fns@3.3.1)(react@18.2.0)
       react-dom: 18.2.0(react@18.2.0)
-      react-router: 6.22.1(react@18.2.0)
+      react-hook-form: 7.50.1(react@18.2.0)
+      react-i18next: 14.1.0(i18next@23.10.1)(react-dom@18.2.0)(react@18.2.0)
+      react-router: 6.22.3(react@18.2.0)
       react-router-dom: 6.22.1(react-dom@18.2.0)(react@18.2.0)
       swr: 2.2.5(react@18.2.0)
       tailwind-merge: 2.2.1
@@ -4556,6 +4561,11 @@ packages:
     engines: {node: '>=14.0.0'}
     dev: false
 
+  /@remix-run/router@1.15.3:
+    resolution: {integrity: sha512-Oy8rmScVrVxWZVOpEF57ovlnhpZ8CCPlnIIumVcV9nFdiSIrus99+Lw78ekXyGvVDlIsFJbSfmSovJUhCWYV3w==}
+    engines: {node: '>=14.0.0'}
+    dev: false
+
   /@repeaterjs/repeater@3.0.5:
     resolution: {integrity: sha512-l3YHBLAol6d/IKnB9LhpD0cEZWAoe3eFKUyTYWmFmCO2Q/WOckxLQAUyMZWwZV2M/m3+4vgRoaolFqaII82/TA==}
     dev: true
@@ -4783,20 +4793,20 @@ packages:
       tslib: 2.6.2
     dev: false
 
-  /@tanstack/react-table@8.12.0(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-LlEQ1Gpz4bfpiET+qmle4BhKDgKN3Y/sssc+O/wLqX8HRtjV+nhusYbllZlutZfMR8oeef83whKTj/VhaV8EeA==}
+  /@tanstack/react-table@8.13.2(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-b6mR3mYkjRtJ443QZh9sc7CvGTce81J35F/XMr0OoWbx0KIM7TTTdyNP2XKObvkLpYnLpCrYDwI3CZnLezWvpg==}
     engines: {node: '>=12'}
     peerDependencies:
       react: '>=16'
       react-dom: '>=16'
     dependencies:
-      '@tanstack/table-core': 8.12.0
+      '@tanstack/table-core': 8.13.2
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /@tanstack/table-core@8.12.0:
-    resolution: {integrity: sha512-cq/ylWVrOwixmwNXQjgZaQw1Izf7+nPxjczum7paAnMtwPg1S2qRAJU+Jb8rEBUWm69voC/zcChmePlk2hc6ug==}
+  /@tanstack/table-core@8.13.2:
+    resolution: {integrity: sha512-/2saD1lWBUV6/uNAwrsg2tw58uvMJ07bO2F1IWMxjFRkJiXKQRuc3Oq2aufeobD3873+4oIM/DRySIw7+QsPPw==}
     engines: {node: '>=12'}
     dev: false
 
@@ -8443,6 +8453,12 @@ packages:
   /html-escaper@2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
 
+  /html-parse-stringify@3.0.1:
+    resolution: {integrity: sha512-KknJ50kTInJ7qIScF3jeaFRpMpE8/lfiTdzf/twXyPBLAGrLRTmkz3AdTnKeh40X8k9L2fdYwEp/42WGXIRGcg==}
+    dependencies:
+      void-elements: 3.1.0
+    dev: false
+
   /http-errors@2.0.0:
     resolution: {integrity: sha512-FtwrG/euBzaEjYeRqOgly7G0qviiXoJWnvEH2Z1plBdXgbyjv34pHTSb9zoeHMyDy33+DWy5Wt9Wo+TURtOYSQ==}
     engines: {node: '>= 0.8'}
@@ -8498,6 +8514,12 @@ packages:
   /human-signals@2.1.0:
     resolution: {integrity: sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==}
     engines: {node: '>=10.17.0'}
+
+  /i18next@23.10.1:
+    resolution: {integrity: sha512-NDiIzFbcs3O9PXpfhkjyf7WdqFn5Vq6mhzhtkXzj51aOcNuPNcTwuYNuXCpHsanZGHlHKL35G7huoFeVic1hng==}
+    dependencies:
+      '@babel/runtime': 7.23.9
+    dev: false
 
   /iconv-lite@0.4.24:
     resolution: {integrity: sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==}
@@ -9490,19 +9512,19 @@ packages:
     resolution: {integrity: sha512-gFqAIbuKyyso/3G2qhiO2OM6shY6EPP/R0+mkDbyspxKazh8BXDC5FiFsUjlczgdNz/vfra0da2y+aHrusLG/Q==}
     hasBin: true
 
-  /jodit-react@4.0.9(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-+Hlj8OMjyztMxtb5pukA+XquTJDsH+4UEm8QQvfmkLoxERB2kkoFyFXFL4E01AkWL0T+U0oL9+FqTxEi5N95pQ==}
+  /jodit-react@4.0.15(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-wcqz71yI8K2/ZIK9rMfUTRpRHZqe2Far+sd+waswADJkslxfnBhFZg/vz+9WIqT3lq42KbdZsqogMPU1JW9SrQ==}
     peerDependencies:
       react: ~0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
       react-dom: ~0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
     dependencies:
-      jodit: 4.0.6
+      jodit: 4.0.18
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
-  /jodit@4.0.6:
-    resolution: {integrity: sha512-UyWSwQyGhim30mmWo2GH5HKjSsQN5KdhEebajKun08PPKaglDJi7cTXOa5hEUKAgl1PLUsMVKrBWFZdRzcuG6A==}
+  /jodit@4.0.18:
+    resolution: {integrity: sha512-S2Eorn+7ZhIFEaPMDwoBpLhTwli/NP9FwSWY7AbsBvAy3nnltwczxRkcfXGCYyrdlqua1Mml3MPTuQtOT8SGBg==}
     dependencies:
       autobind-decorator: 2.4.0
     dev: false
@@ -11508,6 +11530,16 @@ packages:
       - react-native
     dev: false
 
+  /react-colorful@5.6.1(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-1exovf0uGTGyq5mXQT0zgQ80uvj2PCwvF8zY1RN9/vbJVSjSo3fsB/4L3ObbF7u70NduSiK4xu4Y6q1MHoUGEw==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
   /react-day-picker@8.10.0(date-fns@3.3.1)(react@18.2.0):
     resolution: {integrity: sha512-mz+qeyrOM7++1NCb1ARXmkjMkzWVh2GL9YiPbRjKe0zHccvekk4HE+0MPOZOrosn8r8zTHIIeOUXTmXRqmkRmg==}
     peerDependencies:
@@ -11551,6 +11583,26 @@ packages:
       react: ^16.8.0 || ^17 || ^18
     dependencies:
       react: 18.2.0
+    dev: false
+
+  /react-i18next@14.1.0(i18next@23.10.1)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-3KwX6LHpbvGQ+sBEntjV4sYW3Zovjjl3fpoHbUwSgFHf0uRBcbeCBLR5al6ikncI5+W0EFb71QXZmfop+J6NrQ==}
+    peerDependencies:
+      i18next: '>= 23.2.3'
+      react: '>= 16.8.0'
+      react-dom: '*'
+      react-native: '*'
+    peerDependenciesMeta:
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.23.9
+      html-parse-stringify: 3.0.1
+      i18next: 23.10.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /react-intersection-observer@9.8.0(react-dom@18.2.0)(react@18.2.0):
@@ -11687,6 +11739,16 @@ packages:
       react: '>=16.8'
     dependencies:
       '@remix-run/router': 1.15.1
+      react: 18.2.0
+    dev: false
+
+  /react-router@6.22.3(react@18.2.0):
+    resolution: {integrity: sha512-dr2eb3Mj5zK2YISHK++foM9w4eBnO23eKnZEDs7c880P6oKbrjz/Svg9+nxqtHQK+oMW4OtjZca0RqPglXxguQ==}
+    engines: {node: '>=14.0.0'}
+    peerDependencies:
+      react: '>=16.8'
+    dependencies:
+      '@remix-run/router': 1.15.3
       react: 18.2.0
     dev: false
 
@@ -13492,6 +13554,11 @@ packages:
       - terser
       - ts-node
       - typescript
+    dev: false
+
+  /void-elements@3.1.0:
+    resolution: {integrity: sha512-Dhxzh5HZuiHQhbvTW9AMetFfBHDMYpo23Uo9btPXgdYP+3T5S+p+jgNy7spra+veYhBP2dCSgxR/i2Y02h5/6w==}
+    engines: {node: '>=0.10.0'}
     dev: false
 
   /w3c-xmlserializer@4.0.0:
