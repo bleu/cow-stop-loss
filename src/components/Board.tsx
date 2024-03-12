@@ -92,15 +92,16 @@ const createInitNodes = (data: IStopLossRecipeData) =>
 
 export const Board = () => {
   const {
-    safe: { safeAddress, chainId },
+    safe,
   } = useSafeAppsSDK();
   const layoutedNodes = getLayoutedNodes(
     createInitNodes({
-      ...getDefaultSwapData(chainId, safeAddress as Address),
+      ...getDefaultSwapData(safe.chainId, safe.safeAddress as Address),
       ...defaultStopLossData,
       preHooks: [],
       postHooks: [],
-      chainId: chainId as ChainId,
+      chainId: safe.chainId as ChainId,
+      safeInfo: safe 
     })
   );
 
