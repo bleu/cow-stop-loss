@@ -32,7 +32,7 @@ export interface CowOrder {
   executedSurplusFee: string
   feeAmount: string
   fullAppData: string
-fullFeeAmount: string
+  fullFeeAmount: string
   interactions: {
     pre: Array<string>
     post: Array<string>
@@ -58,7 +58,7 @@ fullFeeAmount: string
 
 gql(
   `query UserStopLossOrders($user: String!) {
-    orders(where: {stopLossParametersId_not: null, user_in: [$user]}) {
+    orders(where: {stopLossParametersId_not: null, user_in: [$user]} orderBy: "blockTimestamp" orderDirection: "desc") {
       items {
         blockNumber
         blockTimestamp
@@ -67,6 +67,7 @@ gql(
         handler
         id
         user
+        hash
         staticInput
         stopLossParameters {
           appData
@@ -156,7 +157,7 @@ async function getProcessedStopLossOrders({
 
   const orderFromCowApi = await getCowOrders(address, chainId);
 
-  const orderData = rawOrdersData.orders.items.map((order) => {
+  const orderData = rawOrdersData?.orders?.items?.map((order) => {
     const match = orderFromCowApi.find((cowOrder: CowOrder) => cowOrder.appData === order.stopLossParameters?.appData);
     if(match && match.status !== "expired") {
       return {
@@ -170,6 +171,10 @@ async function getProcessedStopLossOrders({
       }
     } 
   })
+
+  if (orderData === undefined) {
+    return [];
+  }
 
   return orderData;
 }
