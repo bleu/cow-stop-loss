@@ -1,5 +1,6 @@
 import { Address } from "viem";
 import { ChainId } from "./publicClients";
+import { SafeInfo } from "@safe-global/safe-apps-sdk";
 
 export interface IToken {
   symbol: string;
@@ -61,6 +62,7 @@ export interface IStopLossRecipeData extends ISwapData, IStopLossConditionData {
   preHooks: IMultiSendData[];
   postHooks: IMultiSendData[];
   chainId: ChainId;
+  safeInfo: SafeInfo;
 }
 
 export type INodeData = ISwapData | IStopLossRecipeData | IMultiSendData;
