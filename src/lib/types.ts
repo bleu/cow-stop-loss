@@ -1,5 +1,6 @@
 import { Address } from "viem";
 import { ChainId } from "./publicClients";
+import { SafeInfo } from "@safe-global/safe-gateway-typescript-sdk";
 
 export interface IToken {
   symbol: string;
@@ -43,10 +44,18 @@ export interface IStopLossConditionData {
 
 export enum HOOK_TYPES {
   MULTI_SEND = "MULTI_SEND",
+  MINT_BAL = "MINT_BAL",
 }
 
 export interface BaseHook {
   type: HOOK_TYPES;
+}
+
+export interface IMintBalData extends BaseHook {
+  type: HOOK_TYPES.MINT_BAL;
+  gauges: Address[];
+  safeAddress: Address;
+  chainId: ChainId;
 }
 
 export interface IMultiSendData extends BaseHook {

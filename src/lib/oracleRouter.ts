@@ -1,7 +1,7 @@
 import { Address, PublicClient, formatUnits } from "viem";
 import { IToken } from "./types";
 import { ChainId, publicClientsFromIds } from "./publicClients";
-import { PRICE_FEED_REGISTER } from "./contracts";
+import { PRICE_FEED_REGISTER_ADDRESS } from "./contracts";
 import { gnosis, mainnet, sepolia } from "viem/chains";
 import { priceFeedRegisterAbi } from "./abis/priceFeedRegister";
 import { oracleMinimalAbi } from "./abis/oracleMinimalAbi";
@@ -114,7 +114,7 @@ export class MainnetRouter extends OracleRouter {
   async getOracleFromRegistry(base: Address, quote: Address) {
     return this.publicClient
       .readContract({
-        address: PRICE_FEED_REGISTER[mainnet.id],
+        address: PRICE_FEED_REGISTER_ADDRESS[mainnet.id],
         abi: priceFeedRegisterAbi,
         functionName: "getFeed",
         args: [base, quote],

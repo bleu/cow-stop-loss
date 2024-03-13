@@ -5,12 +5,7 @@ import { Address } from "viem";
 
 import { FALLBACK_STATES, useFallbackState } from "#/hooks/useFallbackState";
 import { useRawTxData } from "#/hooks/useRawTxData";
-import { calculateSellAmount } from "#/lib/calculateAmounts";
-import {
-  setDomainVerifierArgs,
-  setFallbackHandlerArgs,
-  TRANSACTION_TYPES,
-} from "#/lib/transactionFactory";
+import { createRawTxArgs } from "#/lib/transactionFactory";
 import { IHooks, INodeData, IStopLossRecipeData } from "#/lib/types";
 
 import { AlertCard } from "../AlertCard";
@@ -27,9 +22,6 @@ const nodeMenus = {
   swap: SwapMenu,
   hookMultiSend: MultiSendMenu,
 };
-
-const spender = "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110" as Address;
-
 export default function Menu() {
   const {
     safe: { chainId },
@@ -91,44 +83,16 @@ function DefaultMenu({ data }: { data: IStopLossRecipeData }) {
   }
 
   const createOrder = async () => {
-    const setFallbackTx = {
-      type: TRANSACTION_TYPES.SET_FALLBACK_HANDLER,
-      safeAddress,
-    } as setFallbackHandlerArgs;
-    const setDomainVerifierTx = {
-      type: TRANSACTION_TYPES.SET_DOMAIN_VERIFIER,
-      safeAddress,
-      domainSeparator,
-    } as setDomainVerifierArgs;
-
-    const setupTxs = (() => {
-      switch (fallbackState) {
-        case FALLBACK_STATES.HAS_NOTHING:
-          return [setFallbackTx, setDomainVerifierTx];
-        case FALLBACK_STATES.HAS_EXTENSIBLE_FALLBACK:
-          return [setDomainVerifierTx];
-        default:
-          return [];
-      }
-    })();
-
-    const rawTxs = [
-      ...setupTxs,
-      {
-        type: TRANSACTION_TYPES.ERC20_APPROVE as const,
-        token: data.tokenSell,
-        amount: sellAmount,
-        spender,
-      },
-      {
-        type: TRANSACTION_TYPES.STOP_LOSS_ORDER as const,
-        ...data,
-      },
-    ];
-    await sendTransactions(rawTxs);
+    await sendTransactions(
+      createRawTxArgs({
+        data,
+        safeAddress: safeAddress as Address,
+        domainSeparator,
+        fallbackState: fallbackState as FALLBACK_STATES,
+      })
+    );
   };
 
-  const sellAmount = calculateSellAmount(data);
   return (
     <div>
       <div className="flex flex-col m-2 w-full max-h-[39rem] overflow-y-scroll gap-y-2">

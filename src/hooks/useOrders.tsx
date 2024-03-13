@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { Address } from "viem";
 
 import { getCowOrders } from "#/lib/cowApi/fetchCowOrder";
-import { UserStopLossOrdersQuery } from "#/lib/gql/generated";
-import { composableCowSubgraph } from "#/lib/gql/sdk";
+import { UserStopLossOrdersQuery } from "#/lib/composableCowGql/generated";
+import { composableCowSubgraph } from "#/lib/composableCowGql/sdk";
 import { ChainId } from "#/lib/publicClients";
 import { ArrElement, GetDeepProp } from "#/utils";
 
@@ -18,43 +18,42 @@ export interface StopLossOrderType extends StopLossOrderTypeRaw {
 }
 
 export interface CowOrder {
-  appData: string
-  availableBalance: string
-  buyAmount: string
-  buyToken: string
-  buyTokenBalance: string
-  class: string
-  creationDate: string
-  executedBuyAmount:string
-  executedFeeAmount: string
-  executedSellAmount: string
-  executedSellAmountBeforeFees: string
-  executedSurplusFee: string
-  feeAmount: string
-  fullAppData: string
-fullFeeAmount: string
+  appData: string;
+  availableBalance: string;
+  buyAmount: string;
+  buyToken: string;
+  buyTokenBalance: string;
+  class: string;
+  creationDate: string;
+  executedBuyAmount: string;
+  executedFeeAmount: string;
+  executedSellAmount: string;
+  executedSellAmountBeforeFees: string;
+  executedSurplusFee: string;
+  feeAmount: string;
+  fullAppData: string;
+  fullFeeAmount: string;
   interactions: {
-    pre: Array<string>
-    post: Array<string>
-  }
-  invalidated: boolean
-  isLiquidityOrder: boolean
-  kind: string
-  owner: string
-  partiallyFillable: boolean
-  receiver: string
-  sellAmount: string
-  sellToken: string
-  sellTokenBalance: string
-  settlementContract: string
-  signature: string
-  signingScheme: string
-  solverFee: string
-  status: string
-  uid: string
-  validTo: number
+    pre: Array<string>;
+    post: Array<string>;
+  };
+  invalidated: boolean;
+  isLiquidityOrder: boolean;
+  kind: string;
+  owner: string;
+  partiallyFillable: boolean;
+  receiver: string;
+  sellAmount: string;
+  sellToken: string;
+  sellTokenBalance: string;
+  settlementContract: string;
+  signature: string;
+  signingScheme: string;
+  solverFee: string;
+  status: string;
+  uid: string;
+  validTo: number;
 }
-
 
 gql(
   `query UserStopLossOrders($user: String!) {
@@ -98,9 +97,8 @@ gql(
       }
     }
   } 
-  `,
+  `
 );
-
 
 export function useUserOrders() {
   const { safe } = useSafeAppsSDK();
@@ -157,19 +155,22 @@ async function getProcessedStopLossOrders({
   const orderFromCowApi = await getCowOrders(address, chainId);
 
   const orderData = rawOrdersData.orders.items.map((order) => {
-    const match = orderFromCowApi.find((cowOrder: CowOrder) => cowOrder.appData === order.stopLossParameters?.appData);
-    if(match && match.status !== "expired") {
+    const match = orderFromCowApi.find(
+      (cowOrder: CowOrder) =>
+        cowOrder.appData === order.stopLossParameters?.appData
+    );
+    if (match && match.status !== "expired") {
       return {
         ...order,
         status: match.status,
-      }
+      };
     } else {
       return {
         ...order,
         status: "created",
-      }
-    } 
-  })
+      };
+    }
+  });
 
   return orderData;
 }
