@@ -1,11 +1,10 @@
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import gql from "graphql-tag";
 import { useEffect, useState } from "react";
 import { Address } from "viem";
 
-import { getCowOrders } from "#/lib/cowApi/fetchCowOrder";
 import { UserStopLossOrdersQuery } from "#/lib/composableCowGql/generated";
 import { composableCowSubgraph } from "#/lib/composableCowGql/sdk";
+import { getCowOrders } from "#/lib/cowApi/fetchCowOrder";
 import { ChainId } from "#/lib/publicClients";
 import { ArrElement, GetDeepProp } from "#/utils";
 
@@ -54,51 +53,6 @@ export interface CowOrder {
   uid: string;
   validTo: number;
 }
-
-gql(
-  `query UserStopLossOrders($user: String!) {
-    orders(where: {stopLossParametersId_not: null, user_in: [$user]}) {
-      items {
-        blockNumber
-        blockTimestamp
-        chainId
-        decodedSuccess
-        handler
-        id
-        user
-        staticInput
-        stopLossParameters {
-          appData
-          buyTokenPriceOracle
-          id
-          isPartiallyFillable
-          isSellOrder
-          maxTimeSinceLastOracleUpdate
-          orderId
-          sellTokenPriceOracle
-          strike
-          to
-          tokenAmountIn
-          tokenAmountOut
-          tokenIn {
-            address
-            decimals
-            name
-            symbol
-          }
-          tokenOut {
-            address
-            decimals
-            name
-            symbol
-          }
-          validityBucketSeconds
-        }
-      }
-    }
-  } 
-  `
-);
 
 export function useUserOrders() {
   const { safe } = useSafeAppsSDK();
