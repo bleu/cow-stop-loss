@@ -10,12 +10,14 @@ import {
 } from "reactflow";
 import { Address } from "viem";
 
-import { INodeData, IToken } from "#/lib/types";
+import { ChainId } from "#/lib/publicClients";
+import { IHooks, INodeData, ISwapData } from "#/lib/types";
 
 import { getLayoutedNodes } from "../Board";
 import Button from "../Button";
 import { Dialog } from "../Dialog";
 import { defaultNodeProps } from "../nodes";
+import { getDefaultMintBalData } from "../nodes/MintBalNode";
 import { getDefaultMultiSendData } from "../nodes/MultiSendNode";
 import { defaultEdgeProps } from ".";
 
@@ -121,30 +123,52 @@ export function ChooseHookDialog({
   target: string;
   safeAddress: Address;
 }) {
+  const {
+    safe: { chainId },
+  } = useSafeAppsSDK();
   const { getNodes, getNode } = useReactFlow();
+
+  function addHookNode(type: string, data: IHooks) {
+    const targetNode = getNode(target) as Node<INodeData>;
+    const swapNode = getNode("swap") as Node<INodeData>;
+    const targetIndex = getNodes().findIndex((n) => n.id === target);
+    const swapNodeIndex = getNodes().findIndex((n) => n.id === "swap");
+    const isBeforeSwap = targetIndex <= swapNodeIndex;
+    const newNodeId = `${Math.random().toString(36).substring(7)}`;
+    if (!targetNode || !("tokenSell" in swapNode.data)) return;
+    const newNode = {
+      id: `${isBeforeSwap ? "preHook" : "postHook"}-${newNodeId}`,
+      type,
+      data,
+      ...defaultNodeProps,
+    };
+    setNodesAndEdges(newNode);
+  }
+
   return (
-    <div className="grid grid-cols-3 gap-2">
+    <div className="grid grid-cols-2 gap-2">
+      <Button
+        className="p-2"
+        onClick={() => {
+          getDefaultMintBalData(
+            chainId as ChainId,
+            safeAddress as Address
+          ).then((data) => {
+            addHookNode("hookMintBal", data);
+          });
+        }}
+      >
+        Mint BAL from gauges
+      </Button>
       <Button
         className="p-2"
         disabled
         onClick={() => {
-          const targetNode = getNode(target) as Node<INodeData>;
-          const swapNode = getNode("swap") as Node<INodeData>;
-          const targetIndex = getNodes().findIndex((n) => n.id === target);
-          const swapNodeIndex = getNodes().findIndex((n) => n.id === "swap");
-          const isBeforeSwap = targetIndex <= swapNodeIndex;
-          const newNodeId = `${Math.random().toString(36).substring(7)}`;
-          if (!targetNode || !("tokenSell" in swapNode.data)) return;
-          const newNode = {
-            id: `${isBeforeSwap ? "preHook" : "postHook"}-${newNodeId}`,
-            type: "hookMultiSend",
-            data: getDefaultMultiSendData(
-              swapNode.data.tokenSell as IToken,
-              safeAddress as Address
-            ),
-            ...defaultNodeProps,
-          };
-          setNodesAndEdges(newNode);
+          const swapNode = getNode("swap") as Node<ISwapData>;
+          addHookNode(
+            "hookMultiSend",
+            getDefaultMultiSendData(swapNode.data.tokenSell, safeAddress)
+          );
         }}
       >
         Multisend

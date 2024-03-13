@@ -2,9 +2,9 @@ import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect, useState } from "react";
 import { Address } from "viem";
 
-import { UserStopLossOrdersQuery } from "#/lib/composableCowGql/generated";
-import { composableCowSubgraph } from "#/lib/composableCowGql/sdk";
 import { getCowOrders } from "#/lib/cowApi/fetchCowOrder";
+import { composableCowApi } from "#/lib/gql/client";
+import { UserStopLossOrdersQuery } from "#/lib/gql/composable-cow/__generated__/1";
 import { ChainId } from "#/lib/publicClients";
 import { ArrElement, GetDeepProp } from "#/utils";
 
@@ -101,14 +101,14 @@ async function getProcessedStopLossOrders({
 }: {
   chainId: ChainId;
   address: Address;
-}): Promise<StopLossOrderType[]> {
-  const rawOrdersData = await composableCowSubgraph.UserStopLossOrders({
+}): Promise<StopLossOrderType[] | undefined> {
+  const rawOrdersData = await composableCowApi.gql(chainId).UserStopLossOrders({
     user: `${address}-${chainId}`,
   });
 
   const orderFromCowApi = await getCowOrders(address, chainId);
 
-  const orderData = rawOrdersData.orders.items.map((order) => {
+  const orderData = rawOrdersData.orders?.items?.map((order) => {
     const match = orderFromCowApi.find(
       (cowOrder: CowOrder) =>
         cowOrder.appData === order.stopLossParameters?.appData

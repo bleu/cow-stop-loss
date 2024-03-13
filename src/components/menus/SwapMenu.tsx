@@ -56,7 +56,7 @@ export function SwapMenu({
     control,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = form;
 
   const formData = watch();
@@ -248,8 +248,8 @@ export function SwapMenu({
             </Accordion>
           </div>
         </div>
-        <Button type="submit" className="my-2 w-full">
-          Save
+        <Button type="submit" className="my-2 w-full" disabled={isSubmitting}>
+          {isSubmitting ? "Saving" : "Save"}
         </Button>
       </div>
     </Form>

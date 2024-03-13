@@ -21,6 +21,7 @@ import { INodeData } from "#/lib/types";
 import { defaultEdgeProps } from "./edges";
 import { AddHookEdge } from "./edges/AddHookEdge";
 import { EndNode } from "./nodes/EndNode";
+import { MintBalNode } from "./nodes/MintBalNode";
 import { MultiSendNode } from "./nodes/MultiSendNode";
 import { StopLossNode } from "./nodes/StopLossNode";
 import { SwapNode } from "./nodes/SwapNode";
@@ -29,6 +30,7 @@ const nodeTypes = {
   swap: SwapNode,
   stopLoss: StopLossNode,
   hookMultiSend: MultiSendNode,
+  hookMintBal: MintBalNode,
   endNode: EndNode,
 };
 

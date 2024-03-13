@@ -12,19 +12,22 @@ import { AlertCard } from "../AlertCard";
 import Button from "../Button";
 import { Checkbox } from "../Checkbox";
 import { Spinner } from "../Spinner";
+import { MintBalMenu } from "./MintBalMenu";
 import { MultiSendMenu } from "./MultiSendMenu";
 import { StopLossConditionMenu } from "./StopLossConditionMenu";
 import { StopLossRecipeMenu } from "./StopLossRecipeMenu";
 import { SwapMenu } from "./SwapMenu";
 
-const nodeMenus = {
-  stopLoss: StopLossConditionMenu,
-  swap: SwapMenu,
-  hookMultiSend: MultiSendMenu,
-};
 export default function Menu() {
+  const nodeMenus = {
+    stopLoss: StopLossConditionMenu,
+    swap: SwapMenu,
+    hookMultiSend: MultiSendMenu,
+    hookMintBal: MintBalMenu,
+  };
+
   const {
-    safe: { chainId },
+    safe: { chainId, safeAddress },
   } = useSafeAppsSDK();
   const [recipeData, setRecipeData] = useState<IStopLossRecipeData>();
   const nodes = useNodes<INodeData>();
@@ -51,6 +54,7 @@ export default function Menu() {
     setRecipeData({
       ...recipeData,
       chainId,
+      safeAddress,
       preHooks: preHooksData,
       postHooks: postHooksData,
     } as IStopLossRecipeData);
@@ -64,7 +68,9 @@ export default function Menu() {
     return <DefaultMenu data={recipeData} />;
   }
 
-  return <SelectedMenu data={recipeData} selected={selected} />;
+  return (
+    <SelectedMenu data={recipeData} selected={selected} nodeMenus={nodeMenus} />
+  );
 }
 
 function DefaultMenu({ data }: { data: IStopLossRecipeData }) {
@@ -129,9 +135,18 @@ function DefaultMenu({ data }: { data: IStopLossRecipeData }) {
 function SelectedMenu({
   selected,
   data,
+  nodeMenus,
 }: {
   selected: Node<INodeData>;
   data: IStopLossRecipeData;
+  nodeMenus: Record<
+    string,
+    React.FC<{
+      data: IStopLossRecipeData;
+      id: string;
+      defaultValues: INodeData;
+    }>
+  >;
 }) {
   const MenuComponent = nodeMenus[selected?.type as keyof typeof nodeMenus];
 

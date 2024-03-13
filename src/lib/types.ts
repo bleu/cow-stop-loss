@@ -66,11 +66,16 @@ export interface IMultiSendData extends BaseHook {
   receivers: Address[];
 }
 
-export type IHooks = IMultiSendData;
+export type IHooks = IMultiSendData | IMintBalData;
 export interface IStopLossRecipeData extends ISwapData, IStopLossConditionData {
   preHooks: IMultiSendData[];
   postHooks: IMultiSendData[];
   chainId: ChainId;
+  safeAddress: Address;
 }
 
-export type INodeData = ISwapData | IStopLossRecipeData | IMultiSendData;
+export type INodeData =
+  | ISwapData
+  | IStopLossRecipeData
+  | IMultiSendData
+  | IMintBalData;

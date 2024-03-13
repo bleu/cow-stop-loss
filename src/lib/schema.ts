@@ -107,10 +107,3 @@ export const multiSendHookSchema = z.object({
   amountPerReceiver: z.coerce.number().positive(),
   receivers: basicAddressSchema.array().nonempty(),
 });
-
-export const mintBalHookSchema = z.object({
-  type: z.literal("MINT_BAL"),
-  safeAddress: basicAddressSchema,
-  chainId: z.number(),
-  gauges: basicAddressSchema.array().nonempty(),
-});
