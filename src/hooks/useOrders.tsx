@@ -57,6 +57,13 @@ export interface CowOrder {
   validTo: number
 }
 
+interface singleOrderReturn {
+  error?: Error;
+  result?: Address;
+  status: "success" | "failure";
+}
+
+
 
 gql(
   `query UserStopLossOrders($user: String!) {
@@ -113,8 +120,8 @@ export function useUserOrders() {
   const [orders, setOrders] = useState<StopLossOrderType[]>([]);
 
   const reload = ({ showSpinner }: { showSpinner: boolean }) => {
-    setLoaded(!showSpinner);
     setRetryCount(retryCount + 1);
+    setLoaded(!showSpinner);
   };
 
   useEffect(() => {
@@ -146,31 +153,55 @@ export function useUserOrders() {
   return { orders, loaded, error, reload };
 }
 
-async function getProcessedStopLossOrders({ chainId, address }: {chainId: ChainId, address: Address}) {
+async function getProcessedStopLossOrders({ chainId, address }: { chainId: ChainId, address: Address }) {
   const publicClient = publicClientsFromIds[chainId];
-  const rawOrdersData = await composableCowSubgraph.UserStopLossOrders({ user: `${address}-${chainId}`, });
+  const rawOrdersData = await composableCowSubgraph.UserStopLossOrders({ user: `${address}-${chainId}` });
   const cowOrders = await getCowOrders(address, chainId);
 
   if (!rawOrdersData?.orders?.items) {
     return [];
   }
 
-  return Promise.all(rawOrdersData.orders.items.map(order => processOrder({order, cowOrders, address, publicClient})));
+  const ordersNeedingCheck = rawOrdersData.orders.items.filter(order => {
+    const cowOrderMatch = cowOrders.find(cowOrder => cowOrder.appData === order.stopLossParameters?.appData);
+    return !cowOrderMatch || cowOrderMatch.status === "open";
+  });
+
+
+  let multicallResults: (singleOrderReturn)[] = [];
+
+  if (ordersNeedingCheck.length > 0) {
+    multicallResults = await publicClient.multicall({
+      contracts: ordersNeedingCheck.map(order => ({
+        address: COMPOSABLE_COW_ADDRESS,
+        abi: composableCowAbi,
+        functionName: "singleOrders",
+        args: [address, order.hash],
+      })),
+    });
+  }
+
+  const ordersWithStatus = rawOrdersData.orders.items.map((order) => {
+    const cowOrderMatch = cowOrders.find(cowOrder => cowOrder.appData === order.stopLossParameters?.appData);
+    let singleOrderResult;
+
+    const orderIndex = ordersNeedingCheck.findIndex(o => o.hash === order.hash);
+    if (orderIndex !== -1) {
+      singleOrderResult = multicallResults[orderIndex]?.result;
+    }
+
+    const status = getOrderStatus({ cowOrderMatch, singleOrder: singleOrderResult });
+    return {
+      ...order,
+      status: status,
+    };
+  });
+  return ordersWithStatus;
 }
 
-async function processOrder({order, cowOrders, address, publicClient} : {order: StopLossOrderType, cowOrders: CowOrder[], address: Address, publicClient: PublicClient}) {
-  const cowOrderMatch = cowOrders.find(cowOrder => cowOrder.appData === order.stopLossParameters?.appData);
-  const singleOrder = (cowOrderMatch && ["open"].includes(cowOrderMatch.status)) || !cowOrderMatch
-    ? await getSingleOrder(order.hash as Address, address, publicClient)
-    : null;
 
-  return {
-    ...order,
-    status: getOrderStatus({cowOrderMatch, singleOrder}),
-  };
-}
+function getOrderStatus({cowOrderMatch, singleOrder}: {cowOrderMatch: CowOrder | undefined, singleOrder: Address | undefined}) {
 
-function getOrderStatus({cowOrderMatch, singleOrder}: {cowOrderMatch: CowOrder | undefined, singleOrder: boolean | null}) {
   if ((cowOrderMatch && cowOrderMatch.status !== "fulfilled" && !singleOrder) || (!cowOrderMatch && !singleOrder)) {
     return "cancelled"
   } else if (cowOrderMatch) {
