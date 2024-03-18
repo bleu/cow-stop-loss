@@ -41,12 +41,12 @@ export default function Menu() {
         ?.data as IStopLossRecipeData),
     };
     const preHooksData = nodes
-      .filter((node) => node.type?.includes("preHook"))
+      .filter((node) => node.id?.includes("preHook"))
       .reduce((acc, node) => {
         return [...acc, node.data as IHooks];
       }, [] as IHooks[]);
     const postHooksData = nodes
-      .filter((node) => node.type?.includes("postHook"))
+      .filter((node) => node.id?.includes("postHook"))
       .reduce((acc, node) => {
         return [...acc, node.data as IHooks];
       }, [] as IHooks[]);

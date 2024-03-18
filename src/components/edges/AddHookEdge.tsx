@@ -1,3 +1,4 @@
+import { useToast } from "@bleu-fi/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React, { useState } from "react";
 import {
@@ -127,6 +128,7 @@ export function ChooseHookDialog({
     safe: { chainId },
   } = useSafeAppsSDK();
   const { getNodes, getNode } = useReactFlow();
+  const { toast } = useToast();
 
   function addHookNode(type: string, data: IHooks) {
     const targetNode = getNode(target) as Node<INodeData>;
@@ -149,13 +151,20 @@ export function ChooseHookDialog({
     <div className="grid grid-cols-2 gap-2">
       <Button
         className="p-2"
-        onClick={() => {
-          getDefaultMintBalData(
+        onClick={async () => {
+          const mintData = await getDefaultMintBalData(
             chainId as ChainId,
             safeAddress as Address
-          ).then((data) => {
-            addHookNode("hookMintBal", data);
-          });
+          );
+          if (!mintData.gauges.length) {
+            toast({
+              title: "No gauges found",
+              description: "This Safe has no gauges to mint from",
+              variant: "destructive",
+            });
+            return;
+          }
+          addHookNode("hookMintBal", mintData);
         }}
       >
         Mint BAL from gauges

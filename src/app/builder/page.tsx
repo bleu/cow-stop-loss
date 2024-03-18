@@ -1,5 +1,6 @@
 "use client";
 
+import { Toaster } from "@bleu-fi/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect, useState } from "react";
 import { Node, ReactFlowProvider } from "reactflow";
@@ -83,6 +84,7 @@ export default function PlaygroundPage() {
   return (
     <div className="hidden h-full flex-col md:flex text-white">
       <ReactFlowProvider>
+        <Toaster />
         <div className="container size-full py-6">
           <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_300px]">
             <div className="hidden flex-col space-y-4 sm:flex md:order-2">
