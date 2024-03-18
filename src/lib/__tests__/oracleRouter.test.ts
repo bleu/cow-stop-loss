@@ -97,7 +97,7 @@ describe("OracleRouter", () => {
       const feeds = await gnosisRouter.fetchPriceFeeds();
       feeds.forEach((feed) => {
         expect(feed.pair).toEqual([expect.any(String), expect.any(String)]);
-        expect(feed.contractAddress).toEqual(expect.any(String));
+        expect(feed.proxyAddress).toEqual(expect.any(String));
       });
     });
     it("should find BAL and LINK oracles on Gnosis", async () => {
