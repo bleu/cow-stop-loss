@@ -232,8 +232,8 @@ export function StrikePriceInput({
             <span
               className={
                 percentageOverOraclePrice > 0
-                  ? "block text-green10"
-                  : "block text-tomato10"
+                  ? "block text-tomato10"
+                  : "block text-green10"
               }
             >
               (
