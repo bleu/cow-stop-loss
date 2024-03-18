@@ -7,6 +7,7 @@ import { IStopLossRecipeData, TIME_OPTIONS_SECONDS } from "./types";
 import { HookFactory } from "./hooksFactory";
 import { MetadataApi } from "@cowprotocol/app-data";
 import { uploadAppData } from "./cowApi/uploadAppData";
+import { ChainId } from "./publicClients";
 
 const stopLossDataStructure = [
   {
@@ -88,7 +89,7 @@ export async function stopLossArgsEncoder(
   await uploadAppData({
     fullAppData: appDataContent,
     appDataHex,
-    chainId: data.chainId,
+    chainId: data.safeInfo.chainId as ChainId,
   });
 
   const strikePriceWithDecimals = parseUnits(String(data.strikePrice), 18);

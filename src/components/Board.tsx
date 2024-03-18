@@ -17,7 +17,6 @@ import ReactFlow, {
 } from "reactflow";
 import { Address } from "viem";
 
-import { ChainId } from "#/lib/publicClients";
 import {
   INodeData,
   IStopLossConditionData,
@@ -100,7 +99,6 @@ export const Board = () => {
       ...defaultStopLossData,
       preHooks: [],
       postHooks: [],
-      chainId: safe.chainId as ChainId,
       safeInfo: safe 
     })
   );
