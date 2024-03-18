@@ -110,10 +110,10 @@ describe("OracleRouter", () => {
       const oracles = await gnosisRouter.findRoute();
 
       expect(oracles.tokenSellOracle.toLowerCase()).toEqual(
-        "0x3F2BA1E94112120d11F1a525913134fBE510bF37".toLowerCase()
+        "0x1b723c855f7d2c2785f99486973271355e782d77".toLowerCase()
       );
       expect(oracles.tokenBuyOracle.toLowerCase()).toEqual(
-        "0x813a79EfDfd6a4352b7C583d8d38B2B5d1151d7E".toLowerCase()
+        "0xed322a5ac55bae091190dff9066760b86751947b".toLowerCase()
       );
     });
     it("should find WETH USD oracle", async () => {
