@@ -7,7 +7,7 @@ import { IStopLossRecipeData, TIME_OPTIONS_SECONDS } from "./types";
 import { HookFactory } from "./hooksFactory";
 import { MetadataApi } from "@cowprotocol/app-data";
 import { uploadAppData } from "./cowApi/uploadAppData";
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
+import { ChainId } from "./publicClients";
 
 const stopLossDataStructure = [
   {
@@ -66,9 +66,8 @@ const stopLossDataStructure = [
 
 export async function stopLossArgsEncoder(
   data: IStopLossRecipeData,
-  salt: Address
+  salt: Address,
 ): Promise<`0x${string}`> {
-  const { safe } = useSafeAppsSDK();
   const preHooks = HookFactory.createCoWHooks(data.preHooks);
   const postHooks = HookFactory.createCoWHooks(data.postHooks);
   const metadataApi = new MetadataApi();
@@ -81,7 +80,7 @@ export async function stopLossArgsEncoder(
       },
       widget: {
         appCode: "Stop Loss",
-       "ponderId": `${salt}-${safe.safeAddress}-${safe.chainId}`
+       "ponderId": `${salt}-${data.safeInfo.safeAddress}-${data.safeInfo.chainId}`
       }
     },
   });
@@ -90,7 +89,7 @@ export async function stopLossArgsEncoder(
   await uploadAppData({
     fullAppData: appDataContent,
     appDataHex,
-    chainId: data.chainId,
+    chainId: data.safeInfo.chainId as ChainId,
   });
 
   const strikePriceWithDecimals = parseUnits(String(data.strikePrice), 18);

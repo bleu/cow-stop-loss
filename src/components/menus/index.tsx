@@ -32,7 +32,7 @@ const spender = "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110" as Address;
 
 export default function Menu() {
   const {
-    safe: { chainId },
+    safe
   } = useSafeAppsSDK();
   const [recipeData, setRecipeData] = useState<IStopLossRecipeData>();
   const nodes = useNodes<INodeData>();
@@ -58,9 +58,10 @@ export default function Menu() {
 
     setRecipeData({
       ...recipeData,
-      chainId,
+      chainId: safe.chainId,
       preHooks: preHooksData,
       postHooks: postHooksData,
+      safeInfo: safe
     } as IStopLossRecipeData);
   }, [nodes]);
 

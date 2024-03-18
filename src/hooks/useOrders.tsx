@@ -1,12 +1,14 @@
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import gql from "graphql-tag";
 import { useEffect, useState } from "react";
-import { Address } from "viem";
+import { Address, PublicClient } from "viem";
 
+import { composableCowAbi } from "#/lib/abis/composableCow";
+import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 import { getCowOrders } from "#/lib/cowApi/fetchCowOrder";
 import { UserStopLossOrdersQuery } from "#/lib/gql/generated";
 import { composableCowSubgraph } from "#/lib/gql/sdk";
-import { ChainId } from "#/lib/publicClients";
+import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
 import { ArrElement, GetDeepProp } from "#/utils";
 
 type StopLossOrderTypeRaw = ArrElement<
@@ -14,7 +16,7 @@ type StopLossOrderTypeRaw = ArrElement<
 >;
 
 export interface StopLossOrderType extends StopLossOrderTypeRaw {
-  status: string;
+  status?: string;
 }
 
 export interface CowOrder {
@@ -32,7 +34,7 @@ export interface CowOrder {
   executedSurplusFee: string
   feeAmount: string
   fullAppData: string
-fullFeeAmount: string
+  fullFeeAmount: string
   interactions: {
     pre: Array<string>
     post: Array<string>
@@ -55,10 +57,17 @@ fullFeeAmount: string
   validTo: number
 }
 
+interface singleOrderReturn {
+  error?: Error;
+  result?: Address;
+  status: "success" | "failure";
+}
+
+
 
 gql(
   `query UserStopLossOrders($user: String!) {
-    orders(where: {stopLossParametersId_not: null, user_in: [$user]}) {
+    orders(where: {stopLossParametersId_not: null, user_in: [$user]} orderBy: "blockTimestamp" orderDirection: "desc") {
       items {
         blockNumber
         blockTimestamp
@@ -67,6 +76,7 @@ gql(
         handler
         id
         user
+        hash
         staticInput
         stopLossParameters {
           appData
@@ -110,8 +120,8 @@ export function useUserOrders() {
   const [orders, setOrders] = useState<StopLossOrderType[]>([]);
 
   const reload = ({ showSpinner }: { showSpinner: boolean }) => {
-    setLoaded(!showSpinner);
     setRetryCount(retryCount + 1);
+    setLoaded(!showSpinner);
   };
 
   useEffect(() => {
@@ -143,33 +153,75 @@ export function useUserOrders() {
   return { orders, loaded, error, reload };
 }
 
-async function getProcessedStopLossOrders({
-  chainId,
-  address,
-}: {
-  chainId: ChainId;
-  address: Address;
-}): Promise<StopLossOrderType[]> {
-  const rawOrdersData = await composableCowSubgraph.UserStopLossOrders({
-    user: `${address}-${chainId}`,
+async function getProcessedStopLossOrders({ chainId, address }: { chainId: ChainId, address: Address }) {
+  const publicClient = publicClientsFromIds[chainId];
+  const rawOrdersData = await composableCowSubgraph.UserStopLossOrders({ user: `${address}-${chainId}` });
+  const cowOrders = await getCowOrders(address, chainId);
+
+  if (!rawOrdersData?.orders?.items) {
+    return [];
+  }
+
+  const ordersNeedingCheck = rawOrdersData.orders.items.filter(order => {
+    const cowOrderMatch = cowOrders.find(cowOrder => cowOrder.appData === order.stopLossParameters?.appData);
+    return !cowOrderMatch || cowOrderMatch.status === "open";
   });
 
-  const orderFromCowApi = await getCowOrders(address, chainId);
 
-  const orderData = rawOrdersData.orders.items.map((order) => {
-    const match = orderFromCowApi.find((cowOrder: CowOrder) => cowOrder.appData === order.stopLossParameters?.appData);
-    if(match && match.status !== "expired") {
-      return {
-        ...order,
-        status: match.status,
-      }
-    } else {
-      return {
-        ...order,
-        status: "created",
-      }
-    } 
-  })
+  let multicallResults: (singleOrderReturn)[] = [];
 
-  return orderData;
+  if (ordersNeedingCheck.length > 0) {
+    multicallResults = await publicClient.multicall({
+      contracts: ordersNeedingCheck.map(order => ({
+        address: COMPOSABLE_COW_ADDRESS,
+        abi: composableCowAbi,
+        functionName: "singleOrders",
+        args: [address, order.hash],
+      })),
+    });
+  }
+
+  const ordersWithStatus = rawOrdersData.orders.items.map((order) => {
+    const cowOrderMatch = cowOrders.find(cowOrder => cowOrder.appData === order.stopLossParameters?.appData);
+    let singleOrderResult;
+
+    const orderIndex = ordersNeedingCheck.findIndex(o => o.hash === order.hash);
+    if (orderIndex !== -1) {
+      singleOrderResult = multicallResults[orderIndex]?.result;
+    }
+
+    const status = getOrderStatus({ cowOrderMatch, singleOrder: singleOrderResult });
+    return {
+      ...order,
+      status: status,
+    };
+  });
+  return ordersWithStatus;
 }
+
+
+function getOrderStatus({cowOrderMatch, singleOrder}: {cowOrderMatch: CowOrder | undefined, singleOrder: Address | undefined}) {
+
+  if ((cowOrderMatch && cowOrderMatch.status !== "fulfilled" && !singleOrder) || (!cowOrderMatch && !singleOrder)) {
+    return "cancelled"
+  } else if (cowOrderMatch) {
+    return cowOrderMatch.status === "open" ? "posted" : cowOrderMatch.status
+  } else {
+    return "created"
+  }
+}
+
+
+export async function getSingleOrder(
+  orderHash: Address,
+  userAddress: Address,
+  publicClient: PublicClient,
+) {
+  return publicClient.readContract({
+    address: COMPOSABLE_COW_ADDRESS,
+    abi: composableCowAbi,
+    functionName: "singleOrders",
+    args: [userAddress, orderHash],
+  });
+}
+
