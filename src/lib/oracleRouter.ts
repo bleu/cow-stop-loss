@@ -28,7 +28,7 @@ export interface IOracleRouterArgs {
 }
 
 export interface IGnosisPriceFeedItem {
-  contractAddress: Address;
+  proxyAddress: Address;
   pair: [string, string];
 }
 
@@ -177,8 +177,8 @@ export class GnosisRouter extends OracleRouter {
     );
 
     return {
-      ETH: ETH_ORACLE?.contractAddress,
-      USD: USD_ORACLE?.contractAddress,
+      ETH: ETH_ORACLE?.proxyAddress,
+      USD: USD_ORACLE?.proxyAddress,
     };
   }
 
