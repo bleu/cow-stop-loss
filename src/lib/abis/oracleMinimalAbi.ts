@@ -1,4 +1,4 @@
-const oracleMinimalAbi = [
+export const oracleMinimalAbi = [
   {
     inputs: [
       { internalType: "uint8", name: "_decimals", type: "uint8" },

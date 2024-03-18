@@ -1,4 +1,3 @@
-import { Address } from "viem";
 import {
   CHAINS_ORACLE_ROUTER_FACTORY,
   GnosisRouter,
@@ -48,8 +47,8 @@ describe("OracleRouter", () => {
     it("should find BAL and LINK oracles", async () => {
       const mainnetRouter = new mainnetRouterFactory({
         chainId: 1,
-        sellToken: BAL_MAINNET,
-        buyToken: LINK_MAINNET,
+        tokenSell: BAL_MAINNET,
+        tokenBuy: LINK_MAINNET,
       });
 
       const oracles = await mainnetRouter.findRoute();
@@ -64,8 +63,8 @@ describe("OracleRouter", () => {
     it("should raise error for gnosis tokens", async () => {
       const mainnetRouter = new mainnetRouterFactory({
         chainId: 1,
-        sellToken: BAL_GNOSIS,
-        buyToken: LINK_GNOSIS,
+        tokenSell: BAL_GNOSIS,
+        tokenBuy: LINK_GNOSIS,
       });
 
       await expect(mainnetRouter.findRoute()).rejects.toThrow(
@@ -75,8 +74,8 @@ describe("OracleRouter", () => {
     it("should find WETH USD oracle", async () => {
       const mainnetRouter = new mainnetRouterFactory({
         chainId: 1,
-        sellToken: WETH_MAINNET,
-        buyToken: BAL_MAINNET,
+        tokenSell: WETH_MAINNET,
+        tokenBuy: BAL_MAINNET,
       });
 
       const wethOracles = await mainnetRouter.findSellOracle();
@@ -87,8 +86,8 @@ describe("OracleRouter", () => {
     const gnosisRouterFactory = CHAINS_ORACLE_ROUTER_FACTORY[100];
     const gnosisRouter = new gnosisRouterFactory({
       chainId: 100,
-      sellToken: BAL_GNOSIS,
-      buyToken: LINK_GNOSIS,
+      tokenSell: BAL_GNOSIS,
+      tokenBuy: LINK_GNOSIS,
     }) as GnosisRouter;
     it("should fetch feeds from JSON", async () => {
       const feeds = await gnosisRouter.fetchPriceFeeds();
@@ -104,8 +103,8 @@ describe("OracleRouter", () => {
     it("should find BAL and LINK oracles on Gnosis", async () => {
       const gnosisRouter = new gnosisRouterFactory({
         chainId: 100,
-        sellToken: BAL_GNOSIS,
-        buyToken: LINK_GNOSIS,
+        tokenSell: BAL_GNOSIS,
+        tokenBuy: LINK_GNOSIS,
       });
 
       const oracles = await gnosisRouter.findRoute();
@@ -120,8 +119,8 @@ describe("OracleRouter", () => {
     it("should find WETH USD oracle", async () => {
       const gnosisRouter = new gnosisRouterFactory({
         chainId: 1,
-        sellToken: WETH_GNOSIS,
-        buyToken: BAL_GNOSIS,
+        tokenSell: WETH_GNOSIS,
+        tokenBuy: BAL_GNOSIS,
       });
 
       const wethOracles = await gnosisRouter.findSellOracle();
@@ -134,8 +133,8 @@ describe("OracleRouter", () => {
       const sepoliaRouterFactory = CHAINS_ORACLE_ROUTER_FACTORY[11155111];
       const sepoliaRouter = new sepoliaRouterFactory({
         chainId: 11155111,
-        sellToken: BAL_GNOSIS,
-        buyToken: BAL_GNOSIS,
+        tokenSell: BAL_GNOSIS,
+        tokenBuy: BAL_GNOSIS,
       });
 
       const oracles = await sepoliaRouter.findRoute();
