@@ -155,22 +155,29 @@ async function getProcessedStopLossOrders({ chainId, address }: {chainId: ChainI
     return [];
   }
 
-  return Promise.all(rawOrdersData.orders.items.map(order => processOrder({order, cowOrders, address, publicClient})));
+  const singleOrders = await publicClient.multicall({
+    contracts:  rawOrdersData.orders.items.map(order => ({
+      address: COMPOSABLE_COW_ADDRESS,
+      abi: composableCowAbi,
+      functionName: "singleOrders",
+      args: [address, order.hash],
+    })),
+  })
+
+  const orders = rawOrdersData.orders.items.map((order, index) => {
+    const singleOrderResult = singleOrders[index];
+    const cowOrderMatch = cowOrders.find(cowOrder => cowOrder.appData === order.stopLossParameters?.appData);
+    const status = getOrderStatus({ cowOrderMatch, singleOrder:singleOrderResult.result });
+    return {
+      ...order,
+      status: status,
+    };
+  });
+  return orders 
 }
 
-async function processOrder({order, cowOrders, address, publicClient} : {order: StopLossOrderType, cowOrders: CowOrder[], address: Address, publicClient: PublicClient}) {
-  const cowOrderMatch = cowOrders.find(cowOrder => cowOrder.appData === order.stopLossParameters?.appData);
-  const singleOrder = (cowOrderMatch && ["open"].includes(cowOrderMatch.status)) || !cowOrderMatch
-    ? await getSingleOrder(order.hash as Address, address, publicClient)
-    : null;
 
-  return {
-    ...order,
-    status: getOrderStatus({cowOrderMatch, singleOrder}),
-  };
-}
-
-function getOrderStatus({cowOrderMatch, singleOrder}: {cowOrderMatch: CowOrder | undefined, singleOrder: boolean | null}) {
+function getOrderStatus({cowOrderMatch, singleOrder}: {cowOrderMatch: CowOrder | undefined, singleOrder: Address | undefined}) {
   if ((cowOrderMatch && cowOrderMatch.status !== "fulfilled" && !singleOrder) || (!cowOrderMatch && !singleOrder)) {
     return "cancelled"
   } else if (cowOrderMatch) {
