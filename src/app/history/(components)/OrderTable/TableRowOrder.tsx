@@ -18,8 +18,7 @@ export function TableRowOrder({ order }: { order: StopLossOrderType }) {
 
     await sendTransactions(cancelTransactionsData);
   }
-  //change status name on COW-127 to open be posted
-  const disabled = order?.status != "created" && order?.status != "open";
+  const disabled = order?.status != "created" && order?.status != "posted";
 
   return (
     <>
@@ -44,7 +43,7 @@ export function TableRowOrder({ order }: { order: StopLossOrderType }) {
             chainId={order?.chainId}
           />
         </Table.BodyCell>
-        <Table.BodyCell>{capitalize(order?.status)}</Table.BodyCell>
+        <Table.BodyCell>{capitalize(order?.status as string)}</Table.BodyCell>
         <Table.BodyCell>
           <button type="button" className="flex items-center" onClick={CancelOrder} disabled={disabled}>
             <TrashIcon className={cn("size-5", disabled ? "text-slate10" : "text-tomato9 hover:text-tomato10")} />
