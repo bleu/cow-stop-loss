@@ -28,6 +28,7 @@ export enum TRANSACTION_TYPES {
   STOP_LOSS_ORDER = "STOP_LOSS_ORDER",
   SET_FALLBACK_HANDLER = "SET_FALLBACK_HANDLER",
   SET_DOMAIN_VERIFIER = "SET_DOMAIN_VERIFIER",
+  ORDER_CANCEL = "ORDER_CANCEL",
 }
 
 export interface BaseArgs {
@@ -52,6 +53,11 @@ export interface setFallbackHandlerArgs extends BaseArgs {
 export interface setDomainVerifierArgs extends BaseArgs {
   safeAddress: Address;
   domainSeparator: Address;
+}
+
+export interface OrderCancelArgs extends BaseArgs {
+  type: TRANSACTION_TYPES.ORDER_CANCEL;
+  hash: Address;
 }
 
 interface ITransaction<T> {
@@ -151,6 +157,19 @@ class BalMintSetupTx implements ITransaction<IMintBalData> {
     };
   }
 }
+class OrderCancelTx implements ITransaction<OrderCancelArgs> {
+  async createRawTx({ hash }: OrderCancelArgs): Promise<BaseTransaction> {
+    return {
+      to: COMPOSABLE_COW_ADDRESS,
+      value: "0",
+      data: encodeFunctionData({
+        abi: composableCowAbi,
+        functionName: "remove",
+        args: [hash],
+      }),
+    };
+  }
+}
 
 export interface TransactionBindings {
   [TRANSACTION_TYPES.ERC20_APPROVE]: ERC20ApproveArgs;
@@ -159,6 +178,7 @@ export interface TransactionBindings {
   [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: setDomainVerifierArgs;
   [HOOK_TYPES.MULTI_SEND]: IMultiSendData;
   [HOOK_TYPES.MINT_BAL]: IMintBalData;
+  [TRANSACTION_TYPES.ORDER_CANCEL]: OrderCancelArgs;
 }
 
 export type AllTransactionArgs = TransactionBindings[keyof TransactionBindings];
@@ -174,6 +194,7 @@ const TRANSACTION_CREATORS: {
   [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: DomainVerifierSetupTx,
   [HOOK_TYPES.MULTI_SEND]: MultiSendHookSetupTx,
   [HOOK_TYPES.MINT_BAL]: BalMintSetupTx,
+  [TRANSACTION_TYPES.ORDER_CANCEL]: OrderCancelTx,
 };
 
 export class TransactionFactory {

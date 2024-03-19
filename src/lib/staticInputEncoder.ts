@@ -80,7 +80,7 @@ export async function stopLossArgsEncoder(
       },
       widget: {
         appCode: "Stop Loss",
-        ponderId: `${salt}-${data.safeAddress}-${data.chainId}`,
+        ponderId: `${salt}-${data.safeInfo.safeAddress}-${data.safeInfo.chainId}`,
       },
     },
   });
@@ -89,7 +89,7 @@ export async function stopLossArgsEncoder(
   await uploadAppData({
     fullAppData: appDataContent,
     appDataHex,
-    chainId: data.chainId,
+    chainId: data.safeInfo.chainId as ChainId,
   });
 
   const strikePriceWithDecimals = parseUnits(String(data.strikePrice), 18);

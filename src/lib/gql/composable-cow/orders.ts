@@ -10,6 +10,7 @@ gql(
         decodedSuccess
         handler
         id
+        hash
         user
         staticInput
         stopLossParameters {

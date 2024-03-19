@@ -1,6 +1,6 @@
 import { Address } from "viem";
 import { ChainId } from "./publicClients";
-import { SafeInfo } from "@safe-global/safe-gateway-typescript-sdk";
+import { SafeInfo } from "@safe-global/safe-apps-sdk";
 
 export interface IToken {
   symbol: string;
@@ -70,8 +70,7 @@ export type IHooks = IMultiSendData | IMintBalData;
 export interface IStopLossRecipeData extends ISwapData, IStopLossConditionData {
   preHooks: IMultiSendData[];
   postHooks: IMultiSendData[];
-  chainId: ChainId;
-  safeAddress: Address;
+  safeInfo: SafeInfo;
 }
 
 export type INodeData =

@@ -630,7 +630,7 @@ export type UserStopLossOrdersQueryVariables = Exact<{
 }>;
 
 
-export type UserStopLossOrdersQuery = { __typename?: 'Query', orders?: { __typename?: 'OrderPage', items?: Array<{ __typename?: 'Order', blockNumber: any, blockTimestamp: any, chainId: number, decodedSuccess: boolean, handler: string, id: string, user: string, staticInput: string, stopLossParameters?: { __typename?: 'StopLossParameters', appData: string, buyTokenPriceOracle: string, id: string, isPartiallyFillable: boolean, isSellOrder: boolean, maxTimeSinceLastOracleUpdate: any, orderId: string, sellTokenPriceOracle: string, strike: any, to: string, tokenAmountIn: any, tokenAmountOut: any, validityBucketSeconds: any, tokenIn: { __typename?: 'Token', address: string, decimals: number, name: string, symbol: string }, tokenOut: { __typename?: 'Token', address: string, decimals: number, name: string, symbol: string } } | null }> | null } | null };
+export type UserStopLossOrdersQuery = { __typename?: 'Query', orders?: { __typename?: 'OrderPage', items?: Array<{ __typename?: 'Order', blockNumber: any, blockTimestamp: any, chainId: number, decodedSuccess: boolean, handler: string, id: string, hash: string, user: string, staticInput: string, stopLossParameters?: { __typename?: 'StopLossParameters', appData: string, buyTokenPriceOracle: string, id: string, isPartiallyFillable: boolean, isSellOrder: boolean, maxTimeSinceLastOracleUpdate: any, orderId: string, sellTokenPriceOracle: string, strike: any, to: string, tokenAmountIn: any, tokenAmountOut: any, validityBucketSeconds: any, tokenIn: { __typename?: 'Token', address: string, decimals: number, name: string, symbol: string }, tokenOut: { __typename?: 'Token', address: string, decimals: number, name: string, symbol: string } } | null }> | null } | null };
 
 
 export const UserStopLossOrdersDocument = gql`
@@ -643,6 +643,7 @@ export const UserStopLossOrdersDocument = gql`
       decodedSuccess
       handler
       id
+      hash
       user
       staticInput
       stopLossParameters {

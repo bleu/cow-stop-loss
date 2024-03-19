@@ -26,9 +26,7 @@ export default function Menu() {
     hookMintBal: MintBalMenu,
   };
 
-  const {
-    safe: { chainId, safeAddress },
-  } = useSafeAppsSDK();
+  const { safe } = useSafeAppsSDK();
   const [recipeData, setRecipeData] = useState<IStopLossRecipeData>();
   const nodes = useNodes<INodeData>();
   const selected = nodes.find((node) => node.selected);
@@ -53,10 +51,9 @@ export default function Menu() {
 
     setRecipeData({
       ...recipeData,
-      chainId,
-      safeAddress,
       preHooks: preHooksData,
       postHooks: postHooksData,
+      safeInfo: safe,
     } as IStopLossRecipeData);
   }, [nodes]);
 
