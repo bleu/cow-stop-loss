@@ -135,7 +135,6 @@ export function Board({
       edgesUpdatable={false}
       onNodesDelete={onNodesDelete}
       edgesFocusable={false}
-      nodesDraggable={false}
       nodesConnectable={false}
       nodesFocusable={false}
       draggable={false}
@@ -147,5 +146,3 @@ export function Board({
     />
   );
 }
-
-export function Flow() {}

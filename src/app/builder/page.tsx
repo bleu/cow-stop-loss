@@ -1,9 +1,8 @@
 "use client";
 
-import { Toaster } from "@bleu-fi/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect, useState } from "react";
-import { Node, ReactFlowProvider } from "reactflow";
+import { Node, useNodes } from "reactflow";
 import { Address } from "viem";
 
 import { Board } from "#/components/Board";
@@ -63,11 +62,13 @@ const initEdges = [
   },
 ];
 
-export default function PlaygroundPage() {
+export default function Page() {
   const {
     safe: { safeAddress, chainId },
   } = useSafeAppsSDK();
   const [initNodes, setInitNodes] = useState<Node<INodeData>[]>([]);
+  const [menuVisible, setMenuVisible] = useState(false);
+  const nodes = useNodes();
 
   useEffect(() => {
     createInitNodes(chainId as ChainId, safeAddress as Address).then(
@@ -77,29 +78,32 @@ export default function PlaygroundPage() {
     );
   }, [chainId, safeAddress]);
 
+  useEffect(() => {
+    setMenuVisible(nodes.some((node) => node.selected));
+  }, [nodes]);
+
   if (initNodes.length === 0) {
     return <Spinner />;
   }
 
   return (
     <div className="hidden h-full flex-col md:flex text-white">
-      <ReactFlowProvider>
-        <Toaster />
-        <div className="container size-full py-6">
-          <div className="grid h-full items-stretch gap-6 md:grid-cols-[1fr_300px]">
-            <div className="hidden flex-col space-y-4 sm:flex md:order-2">
-              <Menu />
-            </div>
-            <div className="md:order-1">
-              <div className="flex h-full flex-col space-y-4">
-                <div className="h-full">
-                  <Board initNodes={initNodes} initEdges={initEdges} />
-                </div>
+      <div className="container size-full py-6">
+        <div className="flex h-full items-stretch gap-6">
+          <div
+            className={`flex-col space-y-4 sm:flex md:order-2 transition-all duration-500 ${menuVisible ? "w-72 translate-x-0" : "w-0 translate-x-full"}`}
+          >
+            {menuVisible && <Menu />}
+          </div>
+          <div className={`flex flex-col flex-1`}>
+            <div className="flex h-full flex-col space-y-4">
+              <div className="h-full">
+                <Board initNodes={initNodes} initEdges={initEdges} />
               </div>
             </div>
           </div>
         </div>
-      </ReactFlowProvider>
+      </div>
     </div>
   );
 }
