@@ -1,6 +1,7 @@
 import { useToast } from "@bleu-fi/ui";
 import { EnterIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Handle, Position } from "reactflow";
 import { Address } from "viem";
@@ -17,6 +18,7 @@ export function SubmitNode() {
   const {
     safe: { safeAddress },
   } = useSafeAppsSDK();
+  const { push } = useRouter();
   const { sendTransactions } = useRawTxData();
   const { toast } = useToast();
   const { fallbackState, domainSeparator } = useFallbackState();
@@ -46,6 +48,7 @@ export function SubmitNode() {
     sendTransactions(rawArgs)
       .then(() => {
         setIsSubmitting(false);
+        push("/history");
       })
       .catch(() => {
         setIsSubmitting(false);
