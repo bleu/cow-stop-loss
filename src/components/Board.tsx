@@ -2,7 +2,10 @@
 
 import "reactflow/dist/base.css";
 
-import React, { useCallback } from "react";
+import { Button } from "@bleu-fi/ui";
+import { PlusIcon } from "@radix-ui/react-icons";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
+import React, { useCallback, useState } from "react";
 import ReactFlow, {
   Edge,
   EdgeChange,
@@ -11,27 +14,32 @@ import ReactFlow, {
   getOutgoers,
   Node,
   NodeChange,
+  Panel,
   useEdgesState,
   useNodesState,
   useReactFlow,
 } from "reactflow";
+import { Address } from "viem";
 
-import { INodeData } from "#/lib/types";
+import { getOrderDefaultNodesAndEdges } from "#/lib/getOrderDefaultData";
+import { ChainId } from "#/lib/publicClients";
+import { IEdgeData, INodeData } from "#/lib/types";
 
 import { defaultEdgeProps } from "./edges";
 import { AddHookEdge } from "./edges/AddHookEdge";
-import { EndNode } from "./nodes/EndNode";
 import { MintBalNode } from "./nodes/MintBalNode";
 import { MultiSendNode } from "./nodes/MultiSendNode";
 import { StopLossNode } from "./nodes/StopLossNode";
+import { SubmitNode } from "./nodes/SubmitNode";
 import { SwapNode } from "./nodes/SwapNode";
+import { Spinner } from "./Spinner";
 
 const nodeTypes = {
   swap: SwapNode,
   stopLoss: StopLossNode,
   hookMultiSend: MultiSendNode,
   hookMintBal: MintBalNode,
-  endNode: EndNode,
+  submitNode: SubmitNode,
 };
 
 const edgeTypes = {
@@ -39,10 +47,54 @@ const edgeTypes = {
 };
 
 export const getLayoutedNodes = (nodes: Node<INodeData>[]) => {
-  return nodes.map((node, index) => ({
-    ...node,
-    position: { x: 0, y: index * 150 },
-  }));
+  const gapBetweenNodes = {
+    x: 500,
+    y: 150,
+  };
+
+  const uniqueOrdersIds = Array.from(
+    new Set<number>(
+      nodes
+        .filter(({ data }) => data !== undefined)
+        .map((node) => node.data?.orderId as number)
+    )
+  );
+
+  const submitNode = nodes.find((node) => node.id === "submit");
+  const maxOrderIdNodesLenght = Math.max(
+    ...uniqueOrdersIds.map(
+      (orderId) => nodes.filter((node) => node.data?.orderId === orderId).length
+    )
+  );
+
+  const layoutedNodes = [
+    {
+      ...submitNode,
+      position: {
+        x: ((uniqueOrdersIds.length - 1) * gapBetweenNodes.x) / 2,
+        y: maxOrderIdNodesLenght * gapBetweenNodes.y,
+      },
+    },
+  ] as Node<INodeData>[];
+
+  uniqueOrdersIds.forEach((orderId, colIndex) => {
+    const nodesWithOrderId = nodes.filter(
+      (node) => node.data?.orderId === orderId
+    );
+    layoutedNodes.push(
+      ...nodesWithOrderId.map((node, rowIndex) => {
+        return {
+          ...node,
+          position: {
+            x: colIndex * gapBetweenNodes.x,
+            y: rowIndex * gapBetweenNodes.y,
+          },
+        };
+      })
+    );
+  });
+
+  return layoutedNodes;
 };
 
 export function Board({
@@ -52,17 +104,41 @@ export function Board({
   initNodes: Node<INodeData>[];
   initEdges: Edge[];
 }) {
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initEdges);
+  const {
+    safe: { chainId, safeAddress },
+  } = useSafeAppsSDK();
+  const [edges, setEdges, onEdgesChange] = useEdgesState<IEdgeData>(initEdges);
   const { fitView } = useReactFlow();
-
   const [nodes, setNodes, onNodesChange] = useNodesState<INodeData>(
     getLayoutedNodes(initNodes)
   );
+  const [isAddingOrder, setIsAddingOrder] = useState(false);
+
+  const orderIdsLenght = Array.from(
+    new Set<number>(
+      nodes
+        .filter(({ data }) => data !== undefined)
+        .map((node) => node.data?.orderId as number)
+    )
+  ).length;
 
   const onNodesDelete = useCallback(
     (deleted: Node<INodeData>[]) => {
-      if (deleted.some((node) => node.id === "swap" || node.id === "condition"))
+      if (deleted.some((node) => node.id === "submit")) return;
+      if (
+        deleted.some((node) => node.type === "swap") ||
+        deleted.some((node) => node.type === "stopLoss")
+      ) {
+        const nodesWithOrderId = nodes.filter(
+          (node) => node.data?.orderId === (deleted[0].data?.orderId as number)
+        );
+        const edgesWithOrderId = edges.filter((edge) =>
+          nodesWithOrderId.some((node) => node.id === edge.source)
+        );
+        setNodes(nodes.filter((node) => !nodesWithOrderId.includes(node)));
+        setEdges(edges.filter((edge) => !edgesWithOrderId.includes(edge)));
         return;
+      }
 
       setEdges(
         deleted.reduce((acc, node) => {
@@ -101,7 +177,7 @@ export function Board({
     const nextChanges = changes.reduce((acc, change) => {
       // prevent removing the swap and stop loss nodes
       if (change.type === "remove") {
-        if (change.id !== "swap" && change.id !== "condition") {
+        if (change.id !== "submit") {
           return [...acc, change];
         }
         return acc;
@@ -129,6 +205,11 @@ export function Board({
       edges={edges}
       onEdgesChange={handleEdgeChange}
       onNodesChange={handleNodesChange}
+      onNodeClick={() => {
+        setTimeout(() => {
+          fitView({ duration: 1000 });
+        }, 500);
+      }}
       fitView
       nodeTypes={nodeTypes}
       edgeTypes={edgeTypes}
@@ -143,6 +224,44 @@ export function Board({
       zoomOnDoubleClick={false}
       zoomOnScroll={false}
       className="bg-blue2 size-full rounded-md shadow-md"
-    />
+    >
+      <Panel position="top-left">
+        <div className="flex flex-row gap-4">
+          <Button
+            onClick={() => {
+              setIsAddingOrder(true);
+              getOrderDefaultNodesAndEdges(
+                chainId as ChainId,
+                safeAddress as Address,
+                nodes
+              ).then(({ orderEdges, orderNodes }) => {
+                setNodes(getLayoutedNodes([...nodes, ...orderNodes]));
+                setEdges([...edges, ...orderEdges]);
+                setIsAddingOrder(false);
+              });
+            }}
+            className="bg-blue9 hover:bg-blue10 text-white rounded-md"
+            disabled={isAddingOrder || orderIdsLenght >= 3}
+          >
+            {isAddingOrder ? (
+              <Spinner size="sm" />
+            ) : (
+              <div className="flex flex-row justify-center text-center items-center gap-4">
+                <PlusIcon />
+                Add order
+              </div>
+            )}
+          </Button>
+          <Button
+            onClick={() => {
+              fitView({ duration: 1000 });
+            }}
+            className="bg-blue9 hover:bg-blue10 text-white rounded-md"
+          >
+            Fit view
+          </Button>
+        </div>
+      </Panel>
+    </ReactFlow>
   );
 }

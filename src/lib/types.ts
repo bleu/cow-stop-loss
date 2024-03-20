@@ -23,7 +23,11 @@ export const TIME_OPTIONS_SECONDS = {
   [TIME_OPTIONS.DAY]: 60 * 60 * 24,
   [TIME_OPTIONS.YEAR]: 60 * 60 * 24 * 365,
 };
-export interface ISwapData {
+
+export interface BaseNode {
+  orderId: number;
+}
+export interface ISwapData extends BaseNode {
   tokenSell: IToken;
   tokenBuy: IToken;
   amount: number;
@@ -34,7 +38,7 @@ export interface ISwapData {
   receiver: Address;
 }
 
-export interface IStopLossConditionData {
+export interface IStopLossConditionData extends BaseNode {
   strikePrice: number;
   tokenSellOracle?: Address;
   tokenBuyOracle?: Address;
@@ -47,7 +51,7 @@ export enum HOOK_TYPES {
   MINT_BAL = "MINT_BAL",
 }
 
-export interface BaseHook {
+export interface BaseHook extends BaseNode {
   type: HOOK_TYPES;
 }
 
@@ -68,6 +72,7 @@ export interface IMultiSendData extends BaseHook {
 
 export type IHooks = IMultiSendData | IMintBalData;
 export interface IStopLossRecipeData extends ISwapData, IStopLossConditionData {
+  ordersData: ISwapData;
   preHooks: IMultiSendData[];
   postHooks: IMultiSendData[];
   safeInfo: SafeInfo;
@@ -77,4 +82,10 @@ export type INodeData =
   | ISwapData
   | IStopLossRecipeData
   | IMultiSendData
-  | IMintBalData;
+  | IMintBalData
+  | BaseNode
+  | undefined;
+
+export interface IEdgeData {
+  orderId: number;
+}

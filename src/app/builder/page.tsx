@@ -2,80 +2,41 @@
 
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect, useState } from "react";
-import { Node, useNodes } from "reactflow";
+import { Edge, Node, useNodes } from "reactflow";
 import { Address } from "viem";
 
 import { Board } from "#/components/Board";
-import { defaultEdgeProps } from "#/components/edges";
 import Menu from "#/components/menus";
 import { defaultNodeProps } from "#/components/nodes";
-import { getDefaultStopLossData } from "#/components/nodes/StopLossNode";
-import { getDefaultSwapData } from "#/components/nodes/SwapNode";
 import { Spinner } from "#/components/Spinner";
+import { getOrderDefaultNodesAndEdges } from "#/lib/getOrderDefaultData";
 import { ChainId } from "#/lib/publicClients";
-import { INodeData } from "#/lib/types";
+import { IEdgeData, INodeData } from "#/lib/types";
 
-const createInitNodes = async (chainId: ChainId, safeAddress: Address) => {
-  const swapData = getDefaultSwapData(chainId, safeAddress);
-  const conditionData = await getDefaultStopLossData({
-    chainId,
-    tokenBuy: swapData.tokenBuy,
-    tokenSell: swapData.tokenSell,
-  });
-
-  return [
-    {
-      id: "condition",
-      type: "stopLoss",
-      data: conditionData,
-      ...defaultNodeProps,
-    },
-    {
-      id: "swap",
-      type: "swap",
-      data: swapData,
-      ...defaultNodeProps,
-    },
-    {
-      id: "end",
-      type: "endNode",
-      selectable: false,
-      ...defaultNodeProps,
-    },
-  ] as Node<INodeData>[];
+const submitNode: Node<INodeData> = {
+  id: "submit",
+  type: "submitNode",
+  selectable: false,
+  ...defaultNodeProps,
+  data: undefined,
 };
-
-const initEdges = [
-  {
-    id: "condition-swap",
-    source: "condition",
-    target: "swap",
-    type: "addHook",
-    ...defaultEdgeProps,
-  },
-  {
-    id: "swap-end",
-    source: "swap",
-    target: "end",
-    type: "addHook",
-    ...defaultEdgeProps,
-  },
-];
 
 export default function Page() {
   const {
     safe: { safeAddress, chainId },
   } = useSafeAppsSDK();
   const [initNodes, setInitNodes] = useState<Node<INodeData>[]>([]);
+  const [initEdges, setInitEdges] = useState<Edge<IEdgeData>[]>([]);
   const [menuVisible, setMenuVisible] = useState(false);
   const nodes = useNodes();
 
   useEffect(() => {
-    createInitNodes(chainId as ChainId, safeAddress as Address).then(
-      (nodes) => {
-        setInitNodes(nodes);
-      }
-    );
+    getOrderDefaultNodesAndEdges(chainId as ChainId, safeAddress as Address, [
+      submitNode,
+    ]).then(({ orderEdges, orderNodes }) => {
+      setInitNodes([submitNode, ...orderNodes]);
+      setInitEdges(orderEdges);
+    });
   }, [chainId, safeAddress]);
 
   useEffect(() => {

@@ -1,4 +1,5 @@
 import { useToast } from "@bleu-fi/ui";
+import { EnterIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useState } from "react";
 import { Handle, Position } from "reactflow";
@@ -12,14 +13,14 @@ import { createRawTxArgs } from "#/lib/transactionFactory";
 import Button from "../Button";
 import { Dialog } from "../Dialog";
 
-export function EndNode() {
+export function SubmitNode() {
   const {
     safe: { safeAddress },
   } = useSafeAppsSDK();
   const { sendTransactions } = useRawTxData();
   const { toast } = useToast();
   const { fallbackState, domainSeparator } = useFallbackState();
-  const { recipeData } = useRecipeData();
+  const { ordersData } = useRecipeData();
   const [isOpen, setIsOpen] = useState(false);
   const needFallbackSetting =
     fallbackState === FALLBACK_STATES.HAS_NOTHING ||
@@ -27,13 +28,13 @@ export function EndNode() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const createOrder = async () => {
-    if (!recipeData || !domainSeparator) {
+    if (!ordersData || !domainSeparator) {
       return;
     }
     setIsSubmitting(true);
     sendTransactions(
       createRawTxArgs({
-        data: recipeData,
+        data: ordersData[0],
         safeAddress: safeAddress as Address,
         domainSeparator,
         fallbackState: fallbackState as FALLBACK_STATES,
@@ -85,7 +86,14 @@ export function EndNode() {
 
       <Button
         type={"submit"}
-        disabled={!recipeData || recipeData.oracleError || isSubmitting}
+        className="w-64"
+        disabled={
+          !ordersData ||
+          !ordersData[0] ||
+          ordersData[0].oracleError ||
+          isSubmitting ||
+          ordersData.length > 1
+        }
         onClick={() => {
           if (!needFallbackSetting) {
             createOrder();
@@ -94,7 +102,10 @@ export function EndNode() {
           setIsOpen(true);
         }}
       >
-        {isSubmitting ? "Creating Tx..." : "Submit Orders"}
+        <div className="flex flex-row justify-center text-center items-center gap-4">
+          <EnterIcon />
+          <p>{isSubmitting ? "Creating Tx..." : "Submit Orders"}</p>
+        </div>
       </Button>
       <Handle
         type="target"

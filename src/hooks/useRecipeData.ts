@@ -5,41 +5,67 @@ import { useNodes } from "reactflow";
 import { IHooks, INodeData, IStopLossRecipeData } from "#/lib/types";
 
 export function useRecipeData(): {
-  recipeData?: IStopLossRecipeData;
+  ordersData?: IStopLossRecipeData[];
   loaded: boolean;
+  getOrderDataByOrderId: (orderId: number) => IStopLossRecipeData | undefined;
 } {
   const { safe } = useSafeAppsSDK();
-  const [recipeData, setRecipeData] = useState<IStopLossRecipeData>();
+  const [ordersData, setOrdersData] = useState<IStopLossRecipeData[]>([]);
   const [loaded, setLoaded] = useState(false);
   const nodes = useNodes<INodeData>();
 
-  useEffect(() => {
-    const recipeData = {
-      ...(nodes.find((node) => node.id === "condition")
-        ?.data as IStopLossRecipeData),
-      ...(nodes.find((node) => node.id === "swap")
-        ?.data as IStopLossRecipeData),
-    };
-    const preHooksData = nodes
-      .filter((node) => node.id?.includes("preHook"))
-      .reduce((acc, node) => {
-        return [...acc, node.data as IHooks];
-      }, [] as IHooks[]);
-    const postHooksData = nodes
-      .filter((node) => node.id?.includes("postHook"))
-      .reduce((acc, node) => {
-        return [...acc, node.data as IHooks];
-      }, [] as IHooks[]);
+  const getOrderDataByOrderId = (orderId: number) => {
+    return ordersData.find((order) => order.orderId === orderId);
+  };
 
-    setRecipeData({
-      ...recipeData,
-      preHooks: preHooksData,
-      postHooks: postHooksData,
-      safeInfo: safe,
-    } as IStopLossRecipeData);
+  useEffect(() => {
+    const orderIds = Array.from(
+      new Set<number>(
+        nodes
+          .filter(({ data }) => data !== undefined)
+          .map((node) => node.data?.orderId as number)
+      )
+    );
+
+    setOrdersData(
+      orderIds.map((orderId) => {
+        const orderNodes = nodes.filter(
+          (node) => node.data?.orderId === orderId
+        );
+
+        const conditionNode = orderNodes.find(
+          (node) => node.type === "stopLoss"
+        );
+        const swapNode = orderNodes.find((node) => node.type === "swap");
+
+        const recipeData = {
+          ...(conditionNode?.data as IStopLossRecipeData),
+          ...(swapNode?.data as IStopLossRecipeData),
+        };
+
+        const preHooksData = nodes
+          .filter((node) => node.id?.includes("preHook"))
+          .reduce((acc, node) => {
+            return [...acc, node.data as IHooks];
+          }, [] as IHooks[]);
+
+        const postHooksData = nodes
+          .filter((node) => node.id?.includes("postHook"))
+          .reduce((acc, node) => {
+            return [...acc, node.data as IHooks];
+          }, [] as IHooks[]);
+
+        return {
+          ...recipeData,
+          preHooks: preHooksData,
+          postHooks: postHooksData,
+          safeInfo: safe,
+        } as IStopLossRecipeData;
+      })
+    );
 
     setLoaded(true);
   }, [safe, nodes]);
 
-  return { recipeData, loaded };
+  return { ordersData, loaded, getOrderDataByOrderId };
 }

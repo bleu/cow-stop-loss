@@ -17,22 +17,31 @@ export default function Menu() {
     hookMintBal: MintBalMenu,
   };
 
-  const { recipeData } = useRecipeData();
+  const { getOrderDataByOrderId, loaded } = useRecipeData();
   const nodes = useNodes<INodeData>();
-  const selected = nodes.find((node) => node.selected);
 
-  if (!recipeData) {
+  if (!loaded) {
     return <Spinner />;
   }
+  const selected = nodes.find((node) => node.selected);
 
-  if (!selected || !nodeMenus[selected?.type as keyof typeof nodeMenus]) {
+  if (
+    !selected ||
+    !selected.data ||
+    !nodeMenus[selected?.type as keyof typeof nodeMenus]
+  ) {
     return null;
   }
   const MenuComponent = nodeMenus[selected?.type as keyof typeof nodeMenus];
+  const orderData = getOrderDataByOrderId(selected.data.orderId);
+
+  if (!orderData) {
+    return null;
+  }
 
   return (
     <MenuComponent
-      data={recipeData}
+      data={orderData}
       id={selected.id}
       defaultValues={selected.data}
     />

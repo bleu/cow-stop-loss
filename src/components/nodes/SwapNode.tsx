@@ -1,7 +1,4 @@
-import { Address } from "viem";
-
-import { cowTokenList } from "#/lib/cowTokenList";
-import { ISwapData, IToken, TIME_OPTIONS } from "#/lib/types";
+import { ISwapData } from "#/lib/types";
 
 import { BaseNode } from ".";
 
@@ -27,19 +24,3 @@ export function SwapNode({
     </BaseNode>
   );
 }
-
-export const getDefaultSwapData = (chainId: number, safeAddress: Address) =>
-  ({
-    tokenSell: cowTokenList.findLast(
-      (token) => token.symbol === "WETH" && token.chainId === chainId
-    ) as IToken,
-    tokenBuy: cowTokenList.findLast(
-      (token) => token.symbol === "USDC" && token.chainId === chainId
-    ) as IToken,
-    amount: 0.1,
-    allowedSlippage: 1,
-    isSellOrder: true,
-    validityBucketTime: TIME_OPTIONS.HOUR,
-    isPartiallyFillable: false,
-    receiver: safeAddress,
-  }) as ISwapData;
