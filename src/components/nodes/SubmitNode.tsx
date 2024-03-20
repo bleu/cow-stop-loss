@@ -32,14 +32,18 @@ export function SubmitNode() {
       return;
     }
     setIsSubmitting(true);
-    sendTransactions(
-      createRawTxArgs({
-        data: ordersData[0],
-        safeAddress: safeAddress as Address,
-        domainSeparator,
-        fallbackState: fallbackState as FALLBACK_STATES,
-      })
-    )
+    const rawArgs = ordersData
+      .map((order) =>
+        createRawTxArgs({
+          data: order,
+          safeAddress: safeAddress as Address,
+          domainSeparator,
+          fallbackState: fallbackState as FALLBACK_STATES,
+        })
+      )
+      .flat();
+
+    sendTransactions(rawArgs)
       .then(() => {
         setIsSubmitting(false);
       })
@@ -91,8 +95,7 @@ export function SubmitNode() {
           !ordersData ||
           !ordersData[0] ||
           ordersData[0].oracleError ||
-          isSubmitting ||
-          ordersData.length > 1
+          isSubmitting
         }
         onClick={() => {
           if (!needFallbackSetting) {
