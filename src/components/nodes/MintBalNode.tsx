@@ -1,21 +1,21 @@
-import { IMultiSendData } from "#/lib/types";
+import { IMintBalData } from "#/lib/types";
 
 import { BaseNode } from ".";
 
-export function MultiSendNode({
+export function MintBalNode({
   selected,
   data,
 }: {
   selected: boolean;
-  data: IMultiSendData;
+  data: IMintBalData;
 }) {
   return (
     <BaseNode selected={selected}>
       <div className="flex">
         <div className="ml-2">
-          <div className="text-sm font-bold">Multi send</div>
+          <div className="text-sm font-bold">Mint BAL</div>
           <div className="text-xs text-gray-500">
-            {`Send a total of ${data.amountPerReceiver * data.receivers.length} ${data.token.symbol} to ${data.receivers.length} receivers`}
+            {`Mint all BAL from ${data.gauges.length} gauges`}
           </div>
         </div>
       </div>

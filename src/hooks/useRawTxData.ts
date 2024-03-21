@@ -1,4 +1,5 @@
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
+import { BaseTransaction } from "@safe-global/safe-apps-sdk";
 
 import {
   AllTransactionArgs,
@@ -14,7 +15,8 @@ export function useRawTxData() {
         return TransactionFactory.createRawTx(arg.type, arg);
       })
     );
-    await sdk.txs.send({ txs });
+    const txsToSend = txs.filter((tx) => tx !== null) as BaseTransaction[];
+    await sdk.txs.send({ txs: txsToSend });
   };
 
   return { safe, sendTransactions };
