@@ -2,18 +2,16 @@ import { gql } from "graphql-tag";
 
 gql(
   `query UserStopLossOrders($user: String!) {
-    orders(where: {stopLossParametersId_not: null, user_in: [$user]}) {
+    orders(where: {stopLossDataId_not: null, userId_in: [$user]}) {
       items {
         blockNumber
         blockTimestamp
         chainId
         decodedSuccess
-        handler
         id
         hash
-        user
         staticInput
-        stopLossParameters {
+        stopLossData {
           appData
           buyTokenPriceOracle
           id

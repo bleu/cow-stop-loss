@@ -122,7 +122,7 @@ async function getProcessedStopLossOrders({
 
   const ordersNeedingCheck = rawOrdersData.orders.items.filter((order) => {
     const cowOrderMatch = cowOrders.find(
-      (cowOrder) => cowOrder.appData === order.stopLossParameters?.appData
+      (cowOrder) => cowOrder.appData === order.stopLossData?.appData
     );
     return !cowOrderMatch || cowOrderMatch.status === "open";
   });
@@ -142,7 +142,7 @@ async function getProcessedStopLossOrders({
 
   const ordersWithStatus = rawOrdersData.orders.items.map((order) => {
     const cowOrderMatch = cowOrders.find(
-      (cowOrder) => cowOrder.appData === order.stopLossParameters?.appData
+      (cowOrder) => cowOrder.appData === order.stopLossData?.appData
     );
     let singleOrderResult;
 

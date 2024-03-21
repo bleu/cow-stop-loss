@@ -11,10 +11,12 @@ export function TableRowOrder({ order }: { order: StopLossOrderType }) {
   const { sendTransactions } = useRawTxData();
 
   async function CancelOrder() {
-    const cancelTransactionsData = [{
-      type: TRANSACTION_TYPES.ORDER_CANCEL,
-      hash: order?.hash,
-    } as OrderCancelArgs]
+    const cancelTransactionsData = [
+      {
+        type: TRANSACTION_TYPES.ORDER_CANCEL,
+        hash: order?.hash,
+      } as OrderCancelArgs,
+    ];
 
     await sendTransactions(cancelTransactionsData);
   }
@@ -31,22 +33,32 @@ export function TableRowOrder({ order }: { order: StopLossOrderType }) {
         </Table.BodyCell>
         <Table.BodyCell>
           <TokenInfo
-            id={order?.stopLossParameters?.tokenIn?.address}
-            symbol={order?.stopLossParameters?.tokenIn?.symbol}
+            id={order?.stopLossData?.tokenIn?.address}
+            symbol={order?.stopLossData?.tokenIn?.symbol}
             chainId={order?.chainId}
           />
         </Table.BodyCell>
         <Table.BodyCell>
           <TokenInfo
-            id={order?.stopLossParameters?.tokenOut?.address}
-            symbol={order?.stopLossParameters?.tokenOut?.symbol}
+            id={order?.stopLossData?.tokenOut?.address}
+            symbol={order?.stopLossData?.tokenOut?.symbol}
             chainId={order?.chainId}
           />
         </Table.BodyCell>
         <Table.BodyCell>{capitalize(order?.status as string)}</Table.BodyCell>
         <Table.BodyCell>
-          <button type="button" className="flex items-center" onClick={CancelOrder} disabled={disabled}>
-            <TrashIcon className={cn("size-5", disabled ? "text-slate10" : "text-tomato9 hover:text-tomato10")} />
+          <button
+            type="button"
+            className="flex items-center"
+            onClick={CancelOrder}
+            disabled={disabled}
+          >
+            <TrashIcon
+              className={cn(
+                "size-5",
+                disabled ? "text-slate10" : "text-tomato9 hover:text-tomato10"
+              )}
+            />
           </button>
         </Table.BodyCell>
       </Table.BodyRow>
