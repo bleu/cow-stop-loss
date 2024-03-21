@@ -1,8 +1,4 @@
-import { Address } from "viem";
-
-import { balancerGaugesApi } from "#/lib/gql/client";
-import { ChainId } from "#/lib/publicClients";
-import { HOOK_TYPES, IMintBalData } from "#/lib/types";
+import { IMintBalData } from "#/lib/types";
 
 import { BaseNode } from ".";
 
@@ -25,24 +21,4 @@ export function MintBalNode({
       </div>
     </BaseNode>
   );
-}
-
-export async function getDefaultMintBalData(
-  chainId: ChainId,
-  safeAddress: Address
-) {
-  const gaugesShares = await balancerGaugesApi
-    .gql(chainId)
-    .GaugeSharesByUser({ user: safeAddress.toLowerCase() });
-
-  const liveGauges = gaugesShares.gaugeShares
-    .filter(({ gauge }) => !gauge.isKilled)
-    .map(({ gauge }) => gauge.id);
-
-  return {
-    chainId: chainId,
-    safeAddress: safeAddress,
-    type: HOOK_TYPES.MINT_BAL,
-    gauges: liveGauges,
-  } as IMintBalData;
 }

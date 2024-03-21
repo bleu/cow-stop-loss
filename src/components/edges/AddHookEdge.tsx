@@ -11,6 +11,10 @@ import {
 } from "reactflow";
 import { Address } from "viem";
 
+import {
+  getDefaultMintBalData,
+  getDefaultMultiSendData,
+} from "#/lib/getOrderDefaultData";
 import { ChainId } from "#/lib/publicClients";
 import { IHooks, INodeData, ISwapData } from "#/lib/types";
 
@@ -18,8 +22,6 @@ import { getLayoutedNodes } from "../Board";
 import Button from "../Button";
 import { Dialog } from "../Dialog";
 import { defaultNodeProps } from "../nodes";
-import { getDefaultMintBalData } from "../nodes/MintBalNode";
-import { getDefaultMultiSendData } from "../nodes/MultiSendNode";
 import { defaultEdgeProps } from ".";
 
 export const MAX_NODES = 7;
@@ -95,6 +97,7 @@ export function AddHookEdge({
               <ChooseHookDialog
                 setNodesAndEdges={setNodesAndEdges}
                 target={target}
+                source={source}
                 safeAddress={safeAddress as Address}
               />
             }
@@ -117,11 +120,13 @@ export function AddHookEdge({
 
 export function ChooseHookDialog({
   setNodesAndEdges,
+  source,
   target,
   safeAddress,
 }: {
   setNodesAndEdges: (node: Node<INodeData>) => void;
   target: string;
+  source: string;
   safeAddress: Address;
 }) {
   const {
@@ -130,18 +135,34 @@ export function ChooseHookDialog({
   const { getNodes, getNode } = useReactFlow();
   const { toast } = useToast();
 
-  function addHookNode(type: string, data: IHooks) {
+  function getOrderId(
+    sourceNode: Node<INodeData>,
+    targetNode: Node<INodeData>
+  ): number {
+    if (targetNode.id === "submit") {
+      return sourceNode.data?.orderId as number;
+    }
+    return targetNode.data?.orderId as number;
+  }
+
+  function addHookNode(type: string, data: Omit<IHooks, "orderId">) {
     const targetNode = getNode(target) as Node<INodeData>;
-    const swapNode = getNode("swap") as Node<INodeData>;
+    const sourceNode = getNode(source) as Node<INodeData>;
+    const orderId = getOrderId(sourceNode, targetNode);
+    const swapNode = getNode(`${orderId}-swap`) as Node<INodeData>;
     const targetIndex = getNodes().findIndex((n) => n.id === target);
     const swapNodeIndex = getNodes().findIndex((n) => n.id === "swap");
     const isBeforeSwap = targetIndex <= swapNodeIndex;
-    const newNodeId = `${Math.random().toString(36).substring(7)}`;
-    if (!targetNode || !("tokenSell" in swapNode.data)) return;
+    const newNodeId = `${orderId}-hook-${Math.random().toString(36).substring(7)}`;
+    if (!targetNode || !swapNode.data || !("tokenSell" in swapNode.data))
+      return;
     const newNode = {
       id: `${isBeforeSwap ? "preHook" : "postHook"}-${newNodeId}`,
       type,
-      data,
+      data: {
+        ...data,
+        orderId,
+      },
       ...defaultNodeProps,
     };
     setNodesAndEdges(newNode);

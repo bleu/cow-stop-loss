@@ -1,6 +1,4 @@
-import { Address } from "viem";
-
-import { HOOK_TYPES, IMultiSendData, IToken } from "#/lib/types";
+import { IMultiSendData } from "#/lib/types";
 
 import { BaseNode } from ".";
 
@@ -23,14 +21,4 @@ export function MultiSendNode({
       </div>
     </BaseNode>
   );
-}
-
-export function getDefaultMultiSendData(token: IToken, safeAddress: Address) {
-  return {
-    receivers: [],
-    token: token,
-    amountPerReceiver: 0.1,
-    safeAddress,
-    type: HOOK_TYPES.MULTI_SEND,
-  } as IMultiSendData;
 }

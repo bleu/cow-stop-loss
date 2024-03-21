@@ -1,14 +1,17 @@
 "use client";
 
+import { Toaster } from "@bleu-fi/ui";
 import { ClockIcon } from "@radix-ui/react-icons";
 import SafeProvider from "@safe-global/safe-apps-react-sdk";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
+import { ReactFlowProvider } from "reactflow";
 
 import { NetworksContextProvider } from "#/contexts/networks";
 
 import Button from "./Button";
+import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { ToastProvider } from "./Toast";
 
@@ -31,10 +34,17 @@ export function RootLayout({ children }: React.PropsWithChildren) {
     <SafeProvider loader={<SafeLoader />}>
       <ToastProvider>
         <NetworksContextProvider>
-          <Header linkUrl={"/builder"} imageSrc={"/assets/stoploss.svg"}>
-            {path !== "/history" && <HistoryButton />}
-          </Header>
-          <div className="size-full bg-blue1">{children}</div>
+          <ReactFlowProvider>
+            <Toaster />
+            <Header linkUrl={"/builder"} imageSrc={"/assets/stoploss.svg"}>
+              {path !== "/history" && <HistoryButton />}
+            </Header>
+            <div className="size-full bg-blue1">{children}</div>
+            <Footer
+              githubLink="https://github.com/bleu-fi/composable-cow-hub"
+              discordLink="https://discord.gg/cowprotocol"
+            />
+          </ReactFlowProvider>
         </NetworksContextProvider>
       </ToastProvider>
     </SafeProvider>
