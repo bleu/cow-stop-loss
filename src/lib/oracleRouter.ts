@@ -1,7 +1,7 @@
 import { Address, PublicClient, formatUnits } from "viem";
 import { IToken } from "./types";
 import { ChainId, publicClientsFromIds } from "./publicClients";
-import { PRICE_FEED_REGISTER } from "./contracts";
+import { PRICE_FEED_REGISTER_ADDRESS } from "./contracts";
 import { gnosis, mainnet, sepolia } from "viem/chains";
 import { priceFeedRegisterAbi } from "./abis/priceFeedRegister";
 import { oracleMinimalAbi } from "./abis/oracleMinimalAbi";
@@ -28,7 +28,7 @@ export interface IOracleRouterArgs {
 }
 
 export interface IGnosisPriceFeedItem {
-  contractAddress: Address;
+  proxyAddress: Address;
   pair: [string, string];
 }
 
@@ -114,7 +114,7 @@ export class MainnetRouter extends OracleRouter {
   async getOracleFromRegistry(base: Address, quote: Address) {
     return this.publicClient
       .readContract({
-        address: PRICE_FEED_REGISTER[mainnet.id],
+        address: PRICE_FEED_REGISTER_ADDRESS[mainnet.id],
         abi: priceFeedRegisterAbi,
         functionName: "getFeed",
         args: [base, quote],
@@ -177,8 +177,8 @@ export class GnosisRouter extends OracleRouter {
     );
 
     return {
-      ETH: ETH_ORACLE?.contractAddress,
-      USD: USD_ORACLE?.contractAddress,
+      ETH: ETH_ORACLE?.proxyAddress,
+      USD: USD_ORACLE?.proxyAddress,
     };
   }
 

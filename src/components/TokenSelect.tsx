@@ -15,6 +15,7 @@ import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { cowTokenList } from "#/lib/cowTokenList";
 import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
 import { IToken } from "#/lib/types";
+import { formatNumber } from "#/utils";
 
 import { tokenLogoUri } from "../../public/tokens/logoUri";
 import Button from "./Button";
@@ -353,9 +354,11 @@ function TokenRow({
       <Table.BodyCell>{token.tokenInfo.symbol}</Table.BodyCell>
       <Table.BodyCell>
         {token.balance
-          ? formatUnits(
-              BigInt(token.balance),
-              token.tokenInfo.decimals ? token.tokenInfo.decimals : 0
+          ? formatNumber(
+              formatUnits(
+                BigInt(token.balance),
+                token.tokenInfo.decimals ? token.tokenInfo.decimals : 0
+              )
             )
           : ""}
       </Table.BodyCell>

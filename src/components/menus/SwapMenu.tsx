@@ -37,9 +37,11 @@ const VALIDITY_BUCKET_TIME_TOOLTIP_TEXT =
   "How long the order will be valid, after placed on the orderbook.";
 
 export function SwapMenu({
+  id,
   data,
   defaultValues,
 }: {
+  id: string;
   data: ISwapData;
   defaultValues: FieldValues;
 }) {
@@ -56,7 +58,7 @@ export function SwapMenu({
     control,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = form;
 
   const formData = watch();
@@ -73,7 +75,7 @@ export function SwapMenu({
     amountDecimals
   );
 
-  const { setNodes, getNodes } = useReactFlow();
+  const { setNodes, getNodes, getNode } = useReactFlow();
 
   const oracleRouterFactory = CHAINS_ORACLE_ROUTER_FACTORY[chainId as ChainId];
 
@@ -94,14 +96,16 @@ export function SwapMenu({
       ? 0
       : await oracleRouter.calculatePrice(oracles);
 
+    const orderId = getNode(id)?.data?.orderId;
+
     const newNodes = getNodes().map((node) => {
-      if (node.id === "swap") {
+      if (node.id === id) {
         return {
           ...node,
           data: { ...node.data, ...formData },
           selected: false,
         };
-      } else if (node.id === "condition") {
+      } else if (node.id === `${orderId}-condition`) {
         return {
           ...node,
           data: {
@@ -248,8 +252,8 @@ export function SwapMenu({
             </Accordion>
           </div>
         </div>
-        <Button type="submit" className="my-2 w-full">
-          Save
+        <Button type="submit" className="my-2 w-full" disabled={isSubmitting}>
+          {isSubmitting ? "Saving" : "Save"}
         </Button>
       </div>
     </Form>

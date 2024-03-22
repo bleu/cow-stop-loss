@@ -4,12 +4,24 @@ import { Address, encodeFunctionData, erc20Abi, parseUnits } from "viem";
 import { composableCowAbi } from "./abis/composableCow";
 import { signatureVerifierMuxerAbi } from "./abis/signatureVerifierMuxer";
 import { stopLossArgsEncoder } from "./staticInputEncoder";
-import { IStopLossRecipeData, IToken } from "./types";
 import {
+  HOOK_TYPES,
+  IMintBalData,
+  IMultiSendData,
+  IStopLossRecipeData,
+  IToken,
+} from "./types";
+import {
+  BALANCER_MINTER_ADDRESS,
   COMPOSABLE_COW_ADDRESS,
   EXTENSIBLE_FALLBACK_ADDRESS,
+  GPV2_VAULT_RELAYER_ADDRESS,
   STOP_LOSS_ADDRESS,
+  TRAMPOLINE_ADDRESS,
 } from "./contracts";
+import { FALLBACK_STATES } from "#/hooks/useFallbackState";
+import { calculateSellAmount } from "./calculateAmounts";
+import { balancerMinterAbi } from "./abis/balancerMinter";
 
 export enum TRANSACTION_TYPES {
   ERC20_APPROVE = "ERC20_APPROVE",
@@ -20,7 +32,7 @@ export enum TRANSACTION_TYPES {
 }
 
 export interface BaseArgs {
-  type: TRANSACTION_TYPES;
+  type: TRANSACTION_TYPES | HOOK_TYPES;
 }
 
 export interface ERC20ApproveArgs extends BaseArgs {
@@ -49,7 +61,7 @@ export interface OrderCancelArgs extends BaseArgs {
 }
 
 interface ITransaction<T> {
-  createRawTx(args: T): Promise<BaseTransaction>;
+  createRawTx(args: T): Promise<BaseTransaction | null>;
 }
 
 class ERC20ApproveRawTx implements ITransaction<ERC20ApproveArgs> {
@@ -93,7 +105,7 @@ class StopLossOrderTx implements ITransaction<StopLossOrderArgs> {
   }
 }
 
-class SetFallbackHandlerTx implements ITransaction<setFallbackHandlerArgs> {
+class FallbackHandlerSetupTx implements ITransaction<setFallbackHandlerArgs> {
   async createRawTx({
     safeAddress,
   }: setFallbackHandlerArgs): Promise<BaseTransaction> {
@@ -109,7 +121,7 @@ class SetFallbackHandlerTx implements ITransaction<setFallbackHandlerArgs> {
   }
 }
 
-class setDomainVerifierTx implements ITransaction<setDomainVerifierArgs> {
+class DomainVerifierSetupTx implements ITransaction<setDomainVerifierArgs> {
   async createRawTx({
     safeAddress,
     domainSeparator,
@@ -126,6 +138,25 @@ class setDomainVerifierTx implements ITransaction<setDomainVerifierArgs> {
   }
 }
 
+class MultiSendHookSetupTx implements ITransaction<IMultiSendData> {
+  async createRawTx({}: IMultiSendData): Promise<BaseTransaction | null> {
+    return null;
+  }
+}
+
+class BalMintSetupTx implements ITransaction<IMintBalData> {
+  async createRawTx({ chainId }: IMintBalData): Promise<BaseTransaction> {
+    return {
+      to: BALANCER_MINTER_ADDRESS[chainId],
+      value: "0",
+      data: encodeFunctionData({
+        abi: balancerMinterAbi,
+        functionName: "setMinterApproval",
+        args: [TRAMPOLINE_ADDRESS, true],
+      }),
+    };
+  }
+}
 class OrderCancelTx implements ITransaction<OrderCancelArgs> {
   async createRawTx({ hash }: OrderCancelArgs): Promise<BaseTransaction> {
     return {
@@ -145,6 +176,8 @@ export interface TransactionBindings {
   [TRANSACTION_TYPES.STOP_LOSS_ORDER]: StopLossOrderArgs;
   [TRANSACTION_TYPES.SET_FALLBACK_HANDLER]: setFallbackHandlerArgs;
   [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: setDomainVerifierArgs;
+  [HOOK_TYPES.MULTI_SEND]: IMultiSendData;
+  [HOOK_TYPES.MINT_BAL]: IMintBalData;
   [TRANSACTION_TYPES.ORDER_CANCEL]: OrderCancelArgs;
 }
 
@@ -157,18 +190,71 @@ const TRANSACTION_CREATORS: {
 } = {
   [TRANSACTION_TYPES.ERC20_APPROVE]: ERC20ApproveRawTx,
   [TRANSACTION_TYPES.STOP_LOSS_ORDER]: StopLossOrderTx,
-  [TRANSACTION_TYPES.SET_FALLBACK_HANDLER]: SetFallbackHandlerTx,
-  [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: setDomainVerifierTx,
+  [TRANSACTION_TYPES.SET_FALLBACK_HANDLER]: FallbackHandlerSetupTx,
+  [TRANSACTION_TYPES.SET_DOMAIN_VERIFIER]: DomainVerifierSetupTx,
+  [HOOK_TYPES.MULTI_SEND]: MultiSendHookSetupTx,
+  [HOOK_TYPES.MINT_BAL]: BalMintSetupTx,
   [TRANSACTION_TYPES.ORDER_CANCEL]: OrderCancelTx,
 };
 
 export class TransactionFactory {
-  static async createRawTx<T extends TRANSACTION_TYPES>(
+  static async createRawTx<T extends TRANSACTION_TYPES | HOOK_TYPES>(
     type: T,
     args: TransactionBindings[T]
-  ): Promise<BaseTransaction> {
+  ): Promise<BaseTransaction | null> {
     const TransactionCreator = TRANSACTION_CREATORS[type];
     const txCreator = new TransactionCreator();
     return txCreator.createRawTx(args);
   }
+}
+
+export function createRawTxArgs({
+  data,
+  safeAddress,
+  domainSeparator,
+  fallbackState,
+}: {
+  data: IStopLossRecipeData;
+  safeAddress: Address;
+  domainSeparator: Address;
+  fallbackState: FALLBACK_STATES;
+}) {
+  const sellAmount = calculateSellAmount(data);
+
+  const setFallbackTx = {
+    type: TRANSACTION_TYPES.SET_FALLBACK_HANDLER,
+    safeAddress,
+  } as setFallbackHandlerArgs;
+  const DomainVerifierSetupTx = {
+    type: TRANSACTION_TYPES.SET_DOMAIN_VERIFIER,
+    safeAddress,
+    domainSeparator,
+  } as setDomainVerifierArgs;
+
+  const setupTxs = (() => {
+    switch (fallbackState) {
+      case FALLBACK_STATES.HAS_NOTHING:
+        return [setFallbackTx, DomainVerifierSetupTx];
+      case FALLBACK_STATES.HAS_EXTENSIBLE_FALLBACK:
+        return [DomainVerifierSetupTx];
+      default:
+        return [];
+    }
+  })();
+
+  return [
+    ...setupTxs,
+    ...data.preHooks,
+    ...data.postHooks,
+    {
+      type: TRANSACTION_TYPES.ERC20_APPROVE as const,
+      token: data.tokenSell,
+      amount: sellAmount,
+      spender: GPV2_VAULT_RELAYER_ADDRESS,
+    },
+    {
+      type: TRANSACTION_TYPES.STOP_LOSS_ORDER as const,
+      ...data,
+    },
+  ];
 }

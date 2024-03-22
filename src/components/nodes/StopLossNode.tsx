@@ -1,9 +1,7 @@
 import { tomatoDark } from "@radix-ui/colors";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
-import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
-import { ChainId } from "#/lib/publicClients";
-import { IStopLossConditionData, IToken, TIME_OPTIONS } from "#/lib/types";
+import { IStopLossConditionData } from "#/lib/types";
 
 import { Tooltip } from "../Tooltip";
 import { BaseNode } from ".";
@@ -38,28 +36,3 @@ export function StopLossNode({
     </BaseNode>
   );
 }
-
-export const getDefaultStopLossData = async ({
-  chainId,
-  tokenBuy,
-  tokenSell,
-}: {
-  chainId: ChainId;
-  tokenSell: IToken;
-  tokenBuy: IToken;
-}): Promise<IStopLossConditionData> => {
-  const router = new CHAINS_ORACLE_ROUTER_FACTORY[chainId]({
-    chainId,
-    tokenBuy,
-    tokenSell,
-  });
-  const route = await router.findRoute();
-  const strikePrice = await router.calculatePrice(route);
-
-  return {
-    strikePrice,
-    tokenSellOracle: route.tokenSellOracle,
-    tokenBuyOracle: route.tokenBuyOracle,
-    maxTimeSinceLastOracleUpdate: TIME_OPTIONS.YEAR,
-  };
-};

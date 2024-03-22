@@ -48,15 +48,15 @@ export function TableRowOrder({
         </Table.BodyCell>
         <Table.BodyCell>
           <TokenInfo
-            id={order?.stopLossParameters?.tokenIn?.address}
-            symbol={order?.stopLossParameters?.tokenIn?.symbol}
+            id={order?.stopLossData?.tokenIn?.address}
+            symbol={order?.stopLossData?.tokenIn?.symbol}
             chainId={order?.chainId}
           />
         </Table.BodyCell>
         <Table.BodyCell>
           <TokenInfo
-            id={order?.stopLossParameters?.tokenOut?.address}
-            symbol={order?.stopLossParameters?.tokenOut?.symbol}
+            id={order?.stopLossData?.tokenOut?.address}
+            symbol={order?.stopLossData?.tokenOut?.symbol}
             chainId={order?.chainId}
           />
         </Table.BodyCell>

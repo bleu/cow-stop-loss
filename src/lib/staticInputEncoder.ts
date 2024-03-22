@@ -66,7 +66,7 @@ const stopLossDataStructure = [
 
 export async function stopLossArgsEncoder(
   data: IStopLossRecipeData,
-  salt: Address,
+  salt: Address
 ): Promise<`0x${string}`> {
   const preHooks = HookFactory.createCoWHooks(data.preHooks);
   const postHooks = HookFactory.createCoWHooks(data.postHooks);
@@ -80,8 +80,8 @@ export async function stopLossArgsEncoder(
       },
       widget: {
         appCode: "Stop Loss",
-       "ponderId": `${salt}-${data.safeInfo.safeAddress}-${data.safeInfo.chainId}`
-      }
+        ponderId: `${salt}-${data.safeInfo.safeAddress}-${data.safeInfo.chainId}`,
+      },
     },
   });
   const { appDataHex, appDataContent } =

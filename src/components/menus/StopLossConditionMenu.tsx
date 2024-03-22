@@ -64,7 +64,10 @@ export function StopLossConditionMenu({
 
   const [oraclePrice, setOraclesPrices] = useState<number>();
 
-  const { watch } = form;
+  const {
+    watch,
+    formState: { isSubmitting },
+  } = form;
 
   const formData = watch();
 
@@ -97,7 +100,7 @@ export function StopLossConditionMenu({
       if (node.id === id) {
         return {
           ...node,
-          data: { ...node.data, ...formData },
+          data: { ...node.data, ...formData, oracleError: false },
           selected: false,
         };
       }
@@ -170,7 +173,7 @@ export function StopLossConditionMenu({
                         >
                           {Object.entries(TIME_OPTIONS).map(([key, value]) => (
                             <SelectItem key={key} value={String(value)}>
-                              {key}
+                              {value}
                             </SelectItem>
                           ))}
                         </Select>
@@ -185,9 +188,9 @@ export function StopLossConditionMenu({
         <Button
           type="submit"
           className="my-2 w-full"
-          disabled={percentageOverOraclePrice > 0}
+          disabled={percentageOverOraclePrice > 0 || isSubmitting}
         >
-          Save
+          {isSubmitting ? "Saving" : "Save"}
         </Button>
       </div>
     </Form>
@@ -229,8 +232,8 @@ export function StrikePriceInput({
             <span
               className={
                 percentageOverOraclePrice > 0
-                  ? "block text-green10"
-                  : "block text-tomato10"
+                  ? "block text-tomato10"
+                  : "block text-green10"
               }
             >
               (

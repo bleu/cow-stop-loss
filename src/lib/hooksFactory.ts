@@ -1,15 +1,19 @@
 import { encodeFunctionData, erc20Abi, parseUnits } from "viem";
-import { HOOK_TYPES, IHooks, IMultiSendData } from "./types";
+import { HOOK_TYPES, IHooks, IMintBalData, IMultiSendData } from "./types";
 import { CoWHook } from "@cowprotocol/app-data/dist/generatedTypes/v0.11.0";
-import { SETTLEMENT_CONTRACT } from "./contracts";
+import {
+  BALANCER_MINTER_ADDRESS,
+  SETTLEMENT_CONTRACT_ADDRESS,
+} from "./contracts";
+import { balancerMinterAbi } from "./abis/balancerMinter";
 
 const GAS_LIMIT = String(parseUnits("1", 18));
 
-interface IHook<T> {
-  createCoWHooks(args: T): CoWHook[];
+interface IHookFactory {
+  createCoWHooks(args: IHooks): CoWHook[];
 }
 
-class MultiSendHook implements IHook<IMultiSendData> {
+class MultiSendHook implements IHookFactory {
   createCoWHooks({
     token,
     receivers,
@@ -31,7 +35,7 @@ class MultiSendHook implements IHook<IMultiSendData> {
       callData: encodeFunctionData({
         abi: erc20Abi,
         functionName: "approve",
-        args: [SETTLEMENT_CONTRACT, totalAmountWithDecimals],
+        args: [SETTLEMENT_CONTRACT_ADDRESS, totalAmountWithDecimals],
       }),
       gasLimit: GAS_LIMIT,
     };
@@ -49,16 +53,34 @@ class MultiSendHook implements IHook<IMultiSendData> {
   }
 }
 
+class MintBalHook implements IHookFactory {
+  createCoWHooks({ chainId, safeAddress, gauges }: IMintBalData): CoWHook[] {
+    return [
+      {
+        target: BALANCER_MINTER_ADDRESS[chainId],
+        callData: encodeFunctionData({
+          abi: balancerMinterAbi,
+          functionName: "mintManyFor",
+          args: [gauges, safeAddress],
+        }),
+        gasLimit: GAS_LIMIT,
+      },
+    ];
+  }
+}
+
 export interface HookBindings {
   [HOOK_TYPES.MULTI_SEND]: IMultiSendData;
+  [HOOK_TYPES.MINT_BAL]: IMintBalData;
 }
 
 export type AllTransactionArgs = HookBindings[keyof HookBindings];
 
 const HOOKS_CREATORS: {
-  [key in keyof HookBindings]: new () => IHook<HookBindings[key]>;
+  [key in keyof HookBindings]: new () => IHookFactory;
 } = {
   [HOOK_TYPES.MULTI_SEND]: MultiSendHook,
+  [HOOK_TYPES.MINT_BAL]: MintBalHook,
 };
 
 export class HookFactory {
