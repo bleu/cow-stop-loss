@@ -56,9 +56,7 @@ export function TokenSelect({
 
   return (
     <Dialog
-      content={
-        <TokenModal onSelectToken={handleSelectToken} tokenType={tokenType} />
-      }
+      content={<TokenModal onSelectToken={handleSelectToken} />}
       isOpen={open}
       setIsOpen={setOpen}
     >
@@ -120,34 +118,30 @@ export function TokenSelectButton({
 
 function TokenModal({
   onSelectToken,
-  tokenType,
 }: {
   onSelectToken: (token: TokenBalance) => void;
-  tokenType: "sell" | "buy" | "send";
 }) {
   const {
     safe: { chainId },
   } = useSafeAppsSDK();
   const [tokens, setTokens] = useState<(TokenBalance | undefined)[]>(
-    tokenType === "buy"
-      ? cowTokenList
-          .filter((token) => token.chainId === chainId)
-          .map((token) => {
-            return {
-              balance: "0",
-              fiatBalance: "0",
-              fiatConversion: "0",
-              tokenInfo: {
-                address: token.address,
-                decimals: token.decimals,
-                name: token.name,
-                symbol: token.symbol,
-                logoUri: token.logoURI,
-                type: TokenType.ERC20,
-              },
-            };
-          })
-      : []
+    cowTokenList
+      .filter((token) => token.chainId === chainId)
+      .map((token) => {
+        return {
+          balance: "0",
+          fiatBalance: "0",
+          fiatConversion: "0",
+          tokenInfo: {
+            address: token.address,
+            decimals: token.decimals,
+            name: token.name,
+            symbol: token.symbol,
+            logoUri: token.logoURI,
+            type: TokenType.ERC20,
+          },
+        };
+      })
   );
 
   const { assets, loaded } = useSafeBalances();
