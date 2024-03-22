@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { slateDarkA } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
+import { useEffect } from "react";
 import { Controller, FieldValues, useForm } from "react-hook-form";
 import { useReactFlow } from "reactflow";
 import { Address, formatUnits } from "viem";
@@ -13,7 +14,6 @@ import { generateSwapSchema } from "#/lib/schema";
 import { ISwapData, TIME_OPTIONS } from "#/lib/types";
 import { convertAndRoundDown, formatNumber } from "#/utils";
 
-import Button from "../Button";
 import { Checkbox } from "../Checkbox";
 import { Input } from "../Input";
 import { Select, SelectItem } from "../Select";
@@ -58,7 +58,8 @@ export function SwapMenu({
     control,
     watch,
     setValue,
-    formState: { errors, isSubmitting },
+    formState: { errors },
+    handleSubmit,
   } = form;
 
   const formData = watch();
@@ -92,10 +93,6 @@ export function SwapMenu({
 
     const oracleError = !(oracles.tokenSellOracle && oracles.tokenBuyOracle);
 
-    const strikePrice = oracleError
-      ? 0
-      : await oracleRouter.calculatePrice(oracles);
-
     const orderId = getNode(id)?.data?.orderId;
 
     const newNodes = getNodes().map((node) => {
@@ -103,7 +100,6 @@ export function SwapMenu({
         return {
           ...node,
           data: { ...node.data, ...formData },
-          selected: false,
         };
       } else if (node.id === `${orderId}-condition`) {
         return {
@@ -112,16 +108,19 @@ export function SwapMenu({
             ...node.data,
             tokenSellOracle: oracles.tokenSellOracle,
             tokenBuyOracle: oracles.tokenBuyOracle,
-            strikePrice,
             oracleError,
           },
-          selected: false,
         };
       }
       return node;
     });
     setNodes(newNodes);
   };
+
+  useEffect(() => {
+    const subscription = watch(() => handleSubmit(onSubmit)());
+    return () => subscription.unsubscribe();
+  }, [handleSubmit, watch]);
 
   return (
     <Form {...form} onSubmit={onSubmit}>
@@ -252,9 +251,6 @@ export function SwapMenu({
             </Accordion>
           </div>
         </div>
-        <Button type="submit" className="my-2 w-full" disabled={isSubmitting}>
-          {isSubmitting ? "Saving" : "Save"}
-        </Button>
       </div>
     </Form>
   );

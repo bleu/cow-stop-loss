@@ -19,7 +19,6 @@ import { generateStopLossConditionSchema } from "#/lib/schema";
 import { IStopLossRecipeData, TIME_OPTIONS } from "#/lib/types";
 import { buildBlockExplorerAddressURL, formatNumber } from "#/utils";
 
-import Button from "../Button";
 import { BaseInput, Input } from "../Input";
 import { Select, SelectItem } from "../Select";
 import { Tooltip } from "../Tooltip";
@@ -58,18 +57,34 @@ export function StopLossConditionMenu({
     resolver: zodResolver(stopLossConditionSchema),
     defaultValues,
   });
+
   const { control } = form;
 
   const { setNodes, getNodes } = useReactFlow();
 
   const [oraclePrice, setOraclesPrices] = useState<number>();
 
-  const {
-    watch,
-    formState: { isSubmitting },
-  } = form;
+  const { watch, handleSubmit } = form;
 
   const formData = watch();
+
+  const onSubmit = (formData: FieldValues) => {
+    const newNodes = getNodes().map((node) => {
+      if (node.id === id) {
+        return {
+          ...node,
+          data: { ...node.data, ...formData, oracleError: false },
+        };
+      }
+      return node;
+    });
+    setNodes(newNodes);
+  };
+
+  useEffect(() => {
+    const subscription = watch(() => handleSubmit(onSubmit)());
+    return () => subscription.unsubscribe();
+  }, [handleSubmit, watch]);
 
   useEffect(() => {
     if (data.tokenSellOracle && data.tokenBuyOracle) {
@@ -94,20 +109,6 @@ export function StopLossConditionMenu({
   const percentageOverOraclePrice = oraclePrice
     ? (formData.strikePrice / oraclePrice - 1) * 100
     : 0;
-
-  const onSubmit = (formData: FieldValues) => {
-    const newNodes = getNodes().map((node) => {
-      if (node.id === id) {
-        return {
-          ...node,
-          data: { ...node.data, ...formData, oracleError: false },
-          selected: false,
-        };
-      }
-      return node;
-    });
-    setNodes(newNodes);
-  };
 
   return (
     <Form {...form} onSubmit={onSubmit}>
@@ -185,13 +186,6 @@ export function StopLossConditionMenu({
             </AccordionItem>
           </Accordion>
         </div>
-        <Button
-          type="submit"
-          className="my-2 w-full"
-          disabled={percentageOverOraclePrice > 0 || isSubmitting}
-        >
-          {isSubmitting ? "Saving" : "Save"}
-        </Button>
       </div>
     </Form>
   );
