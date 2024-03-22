@@ -1,7 +1,6 @@
-import { GraphQLClient } from 'graphql-request';
+import { GraphQLClient, ClientError } from 'graphql-request';
 import { GraphQLClientRequestHeaders } from 'graphql-request/build/cjs/types';
 import gql from 'graphql-tag';
-import { ClientError } from 'graphql-request/dist/types';
 import useSWR, { SWRConfiguration as SWRConfigInterface, Key as SWRKeyInterface } from 'swr';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;

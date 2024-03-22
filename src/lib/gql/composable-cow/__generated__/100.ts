@@ -1,7 +1,6 @@
-import { GraphQLClient } from 'graphql-request';
+import { GraphQLClient, ClientError } from 'graphql-request';
 import { GraphQLClientRequestHeaders } from 'graphql-request/build/cjs/types';
 import gql from 'graphql-tag';
-import { ClientError } from 'graphql-request/dist/types';
 import useSWR, { SWRConfiguration as SWRConfigInterface, Key as SWRKeyInterface } from 'swr';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -713,11 +712,15 @@ export type UserStopLossOrdersQuery = { __typename?: 'Query', orders?: { __typen
 
 export const UserStopLossOrdersDocument = gql`
     query UserStopLossOrders($user: String!) {
+<<<<<<< Updated upstream
   orders(
     where: {stopLossDataId_not: null, userId_in: [$user]}
     orderBy: "blockTimestamp"
     orderDirection: "desc"
   ) {
+=======
+  orders(where: {stopLossDataId_not: null, userId_in: [$user]}) {
+>>>>>>> Stashed changes
     items {
       blockNumber
       blockTimestamp
