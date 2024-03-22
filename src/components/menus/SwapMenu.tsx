@@ -91,7 +91,11 @@ export function SwapMenu({
       return { tokenSellOracle: undefined, tokenBuyOracle: undefined };
     });
 
-    const oracleError = !(oracles.tokenSellOracle && oracles.tokenBuyOracle);
+    const oracleNotFind = !oracles.tokenSellOracle || !oracles.tokenBuyOracle;
+
+    const oraclePrice = oracleNotFind
+      ? 0
+      : await oracleRouter.calculatePrice(oracles);
 
     const orderId = getNode(id)?.data?.orderId;
 
@@ -102,13 +106,18 @@ export function SwapMenu({
           data: { ...node.data, ...formData },
         };
       } else if (node.id === `${orderId}-condition`) {
+        const error = oracleNotFind
+          ? "ORACLE_NOT_FOUND"
+          : oraclePrice < node.data.strikePrice
+            ? "STRIKE_PRICE_ABOVE_ORACLE_PRICE"
+            : undefined;
         return {
           ...node,
           data: {
             ...node.data,
             tokenSellOracle: oracles.tokenSellOracle,
             tokenBuyOracle: oracles.tokenBuyOracle,
-            oracleError,
+            error,
           },
         };
       }
@@ -123,7 +132,7 @@ export function SwapMenu({
   }, [handleSubmit, watch]);
 
   return (
-    <Form {...form} onSubmit={onSubmit}>
+    <Form {...form}>
       <div className="m-2 w-full max-h-[39rem] overflow-y-scroll">
         <div>
           <span className="text-md font-bold mb-3">Swap</span>

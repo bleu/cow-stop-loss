@@ -62,29 +62,33 @@ export function StopLossConditionMenu({
 
   const { setNodes, getNodes } = useReactFlow();
 
-  const [oraclePrice, setOraclesPrices] = useState<number>();
+  const [oraclePrice, setOraclePrices] = useState<number>();
 
   const { watch, handleSubmit } = form;
 
   const formData = watch();
 
-  const onSubmit = (formData: FieldValues) => {
-    const newNodes = getNodes().map((node) => {
-      if (node.id === id) {
-        return {
-          ...node,
-          data: { ...node.data, ...formData, oracleError: false },
-        };
-      }
-      return node;
-    });
-    setNodes(newNodes);
-  };
-
   useEffect(() => {
-    const subscription = watch(() => handleSubmit(onSubmit)());
+    const subscription = watch(() =>
+      handleSubmit((formData: FieldValues) => {
+        const newNodes = getNodes().map((node) => {
+          if (node.id === id) {
+            const error =
+              formData.strikePrice > (oraclePrice || 0)
+                ? "STRIKE_PRICE_ABOVE_ORACLE_PRICE"
+                : undefined;
+            return {
+              ...node,
+              data: { ...node.data, ...formData, error },
+            };
+          }
+          return node;
+        });
+        setNodes(newNodes);
+      })()
+    );
     return () => subscription.unsubscribe();
-  }, [handleSubmit, watch]);
+  }, [handleSubmit, watch, oraclePrice]);
 
   useEffect(() => {
     if (data.tokenSellOracle && data.tokenBuyOracle) {
@@ -101,7 +105,7 @@ export function StopLossConditionMenu({
           tokenSellOracle: data.tokenSellOracle,
         })
         .then((price) => {
-          setOraclesPrices(price);
+          setOraclePrices(price);
         });
     }
   }, [formData.tokenSellOracle, formData.tokenBuyOracle]);
@@ -111,7 +115,7 @@ export function StopLossConditionMenu({
     : 0;
 
   return (
-    <Form {...form} onSubmit={onSubmit}>
+    <Form {...form}>
       <div className="flex flex-col gap-3 m-2 w-full max-h-[39rem] overflow-y-scroll">
         <div>
           <span className="text-md font-bold mb-2">Stop Loss Condition</span>

@@ -96,8 +96,8 @@ export function SubmitNode() {
         className="w-64"
         disabled={
           !ordersData ||
-          !ordersData[0] ||
-          ordersData[0].oracleError ||
+          !ordersData.length ||
+          ordersData.some((orderData) => orderData.error) ||
           isSubmitting
         }
         onClick={() => {

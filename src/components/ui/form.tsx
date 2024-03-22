@@ -19,7 +19,7 @@ import { cn } from "#/utils";
 import { Label } from "./label";
 
 type FormProps<T extends FieldValues> = {
-  onSubmit: (data: T) => void;
+  onSubmit?: (data: T) => void;
   id?: string;
   className?: string;
 } & UseFormReturn<T>;
@@ -31,7 +31,7 @@ const Form = <T extends FieldValues>({
   id,
   ...formMethods
 }: React.PropsWithChildren<FormProps<T>>) => {
-  const onSubmit = formMethods.handleSubmit(onFormSubmit);
+  const onSubmit = formMethods.handleSubmit(onFormSubmit || (() => {}));
 
   return (
     <FormProvider {...formMethods}>
@@ -57,7 +57,7 @@ type FormFieldContextValue<
 };
 
 const FormFieldContext = React.createContext<FormFieldContextValue>(
-  {} as FormFieldContextValue,
+  {} as FormFieldContextValue
 );
 
 const FormField = <
@@ -101,7 +101,7 @@ type FormItemContextValue = {
 };
 
 const FormItemContext = React.createContext<FormItemContextValue>(
-  {} as FormItemContextValue,
+  {} as FormItemContextValue
 );
 
 const FormItem = React.forwardRef<

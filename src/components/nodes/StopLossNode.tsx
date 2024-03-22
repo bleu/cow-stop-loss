@@ -18,9 +18,9 @@ export function StopLossNode({
       <div className="flex flex-col">
         <div className="flex flex-row gap-2  items-center">
           <span className="text-sm font-bold">Stop Loss Condition</span>
-          {data.oracleError && (
+          {data.error && (
             <a href={"https://data.chain.link/feeds"} target="_blank">
-              <Tooltip content="Chainlink Oracle not found for selected tokens.">
+              <Tooltip content={data.error}>
                 <ExclamationTriangleIcon
                   className="size-3"
                   color={tomatoDark.tomato10}
