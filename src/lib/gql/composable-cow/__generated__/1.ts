@@ -712,15 +712,11 @@ export type UserStopLossOrdersQuery = { __typename?: 'Query', orders?: { __typen
 
 export const UserStopLossOrdersDocument = gql`
     query UserStopLossOrders($user: String!) {
-<<<<<<< Updated upstream
   orders(
     where: {stopLossDataId_not: null, userId_in: [$user]}
     orderBy: "blockTimestamp"
     orderDirection: "desc"
   ) {
-=======
-  orders(where: {stopLossDataId_not: null, userId_in: [$user]}) {
->>>>>>> Stashed changes
     items {
       blockNumber
       blockTimestamp
