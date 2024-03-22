@@ -9,7 +9,8 @@ import {
 import { TrashIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 
-import { useCancelOrders } from "#/hooks/useCancelOrders";
+import { useRawTxData } from "#/hooks/useRawTxData";
+import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 
 interface ICancelOrdersDialog {
   defaultOpen?: boolean;
@@ -25,7 +26,23 @@ export function CancelOrdersDialog({
   tableRow = false,
 }: ICancelOrdersDialog) {
   const [open, setOpen] = useState(false);
-  const { cancelOrders } = useCancelOrders();
+  const { sendTransactions } = useRawTxData();
+
+  async function cancelOrders(ordersHash: string[]) {
+    const ordersHashArray = Array.isArray(ordersHash)
+      ? ordersHash
+      : [ordersHash];
+
+    const cancelTransactionsData = ordersHashArray.map(
+      (orderHash) =>
+        ({
+          type: TRANSACTION_TYPES.ORDER_CANCEL,
+          hash: orderHash,
+        }) as OrderCancelArgs,
+    );
+
+    await sendTransactions(cancelTransactionsData);
+  }
   return (
     <Dialog
     defaultOpen={defaultOpen}
