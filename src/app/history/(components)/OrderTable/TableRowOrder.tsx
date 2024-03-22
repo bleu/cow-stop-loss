@@ -1,32 +1,47 @@
-import { TrashIcon } from "@radix-ui/react-icons";
+import { useState } from "react";
 
+import { Checkbox } from "#/components/Checkbox";
 import Table from "#/components/Table";
 import { TokenInfo } from "#/components/TokenInfo";
 import { StopLossOrderType } from "#/hooks/useOrders";
-import { useRawTxData } from "#/hooks/useRawTxData";
-import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
-import { capitalize, cn, formatDateToLocalDatetime } from "#/utils";
+import { capitalize, formatDateToLocalDatetime } from "#/utils";
 
-export function TableRowOrder({ order }: { order: StopLossOrderType }) {
-  const { sendTransactions } = useRawTxData();
+import { CancelOrdersDialog } from "./CancelOrdersDialog";
 
-  async function CancelOrder() {
-    const cancelTransactionsData = [
-      {
-        type: TRANSACTION_TYPES.ORDER_CANCEL,
-        hash: order?.hash,
-      } as OrderCancelArgs,
-    ];
+interface ITableRowOrder {
+  order: StopLossOrderType;
+  ordersToCancel: string[];
+  setOrdersToCancel: (orders: string[]) => void;
+}
 
-    await sendTransactions(cancelTransactionsData);
-  }
-  const disabled = order?.status != "created" && order?.status != "posted";
+export function TableRowOrder({
+  order,
+  ordersToCancel,
+  setOrdersToCancel,
+}: ITableRowOrder) {
+  const [rowIsSelected, setRowIsSelected] = useState(false);
 
   return (
     <>
       <Table.BodyRow key={order?.id}>
         <Table.HeaderCell>
           <span className="sr-only"></span>
+        </Table.HeaderCell>
+        <Table.HeaderCell>
+          <Checkbox
+            id="select-row"
+            onChange={() => {
+              setRowIsSelected(!rowIsSelected);
+              const newOrdersToCancel = !rowIsSelected
+                ? [...ordersToCancel, order.hash]
+                : ordersToCancel.filter(
+                    (orderHash) => orderHash !== order.hash,
+                  );
+              setOrdersToCancel(newOrdersToCancel);
+            }}
+            checked={rowIsSelected}
+            aria-label="Select row"
+          />
         </Table.HeaderCell>
         <Table.BodyCell>
           {formatDateToLocalDatetime(new Date(order?.blockTimestamp * 1000))}
@@ -47,19 +62,11 @@ export function TableRowOrder({ order }: { order: StopLossOrderType }) {
         </Table.BodyCell>
         <Table.BodyCell>{capitalize(order?.status as string)}</Table.BodyCell>
         <Table.BodyCell>
-          <button
-            type="button"
-            className="flex items-center"
-            onClick={CancelOrder}
-            disabled={disabled}
-          >
-            <TrashIcon
-              className={cn(
-                "size-5",
-                disabled ? "text-slate10" : "text-tomato9 hover:text-tomato10"
-              )}
-            />
-          </button>
+          <CancelOrdersDialog
+            tableRow
+            ordersToCancel={[order.hash]}
+            disabled={order?.status != "created" && order?.status != "posted"}
+          />
         </Table.BodyCell>
       </Table.BodyRow>
     </>

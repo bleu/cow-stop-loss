@@ -711,7 +711,11 @@ export type UserStopLossOrdersQuery = { __typename?: 'Query', orders?: { __typen
 
 export const UserStopLossOrdersDocument = gql`
     query UserStopLossOrders($user: String!) {
-  orders(where: {stopLossDataId_not: null, userId_in: [$user]}) {
+  orders(
+    where: {stopLossDataId_not: null, userId_in: [$user]}
+    orderBy: "blockTimestamp"
+    orderDirection: "desc"
+  ) {
     items {
       blockNumber
       blockTimestamp
