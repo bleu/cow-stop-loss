@@ -63,6 +63,7 @@ export function SubmitNode() {
     <>
       {needFallbackSetting ? (
         <Dialog
+          title="Fallback Settings"
           content={
             <div className="flex flex-col gap-3 text-background">
               <p className="text-justify">
@@ -81,13 +82,16 @@ export function SubmitNode() {
                 </a>
                 .
               </p>
-              <Button onClick={createOrder} type="submit">
-                I am aware and want to continue
-              </Button>
             </div>
           }
+          submitText="I am aware and want to continue"
+          onSubmit={createOrder}
         >
-          <SubmitButton ordersData={ordersData} isSubmitting={isSubmitting} />
+          <SubmitButton
+            ordersData={ordersData}
+            isSubmitting={isSubmitting}
+            onClick={createOrder}
+          />
         </Dialog>
       ) : (
         <SubmitButton

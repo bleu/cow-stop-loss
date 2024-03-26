@@ -1,4 +1,3 @@
-/* eslint-disable tailwindcss/no-custom-classname */
 import {
   Button,
   Command,
