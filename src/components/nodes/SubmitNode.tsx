@@ -112,8 +112,7 @@ export function SubmitButton({
 }) {
   return (
     <Button
-      type={"submit"}
-      variant="default"
+      type="submit"
       className="w-64"
       disabled={
         !ordersData ||

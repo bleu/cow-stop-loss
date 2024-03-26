@@ -1,11 +1,10 @@
-import { Form, FormControl, FormLabel, FormMessage } from "@bleu-fi/ui";
+import { Form, FormControl, FormMessage } from "@bleu-fi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { slateDarkA } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect, useState } from "react";
 import {
-  Controller,
   FieldError,
   FieldValues,
   useForm,
@@ -20,7 +19,7 @@ import { IStopLossRecipeData, TIME_OPTIONS } from "#/lib/types";
 import { buildBlockExplorerAddressURL, formatNumber } from "#/utils";
 
 import { BaseInput, Input } from "../Input";
-import { Select, SelectItem } from "../Select";
+import { SelectInput } from "../SelectInput";
 import { Tooltip } from "../Tooltip";
 import {
   Accordion,
@@ -57,13 +56,11 @@ export function StopLossConditionMenu({
     defaultValues,
   });
 
-  const { control } = form;
-
   const { setNodes, getNodes } = useReactFlow();
 
   const [oraclePrice, setOraclePrices] = useState<number>();
 
-  const { watch, handleSubmit } = form;
+  const { watch, handleSubmit, setValue } = form;
 
   const formData = watch();
 
@@ -115,9 +112,11 @@ export function StopLossConditionMenu({
 
   return (
     <Form {...form}>
-      <div className="flex text-foreground flex-col gap-3 m-2 w-full max-h-[39rem] overflow-y-scroll">
+      <div className="flex flex-col gap-3 w-full max-h-[39rem] overflow-y-scroll">
         <div>
-          <span className="text-lg font-bold mb-2">Stop Loss Condition</span>
+          <span className="text-lg font-bold text-highlight mb-2">
+            Stop Loss Condition
+          </span>
           <StrikePriceInput
             form={form}
             data={data}
@@ -155,35 +154,25 @@ export function StopLossConditionMenu({
                     }
                     tooltipText={ORACLE_TOOLTIP_TEXT}
                   />
-                  <div className="flex flex-col">
-                    <div className="flex flex-row justify-between">
-                      <FormLabel className="mb-2 block text-sm text-slate12">
-                        Max time since last oracle update
-                      </FormLabel>
-                      <Tooltip
-                        content={MAX_TIME_SINCE_LAST_ORACLE_UPDATE_TOOLTIP_TEXT}
-                      >
-                        <InfoCircledIcon color={slateDarkA.slateA11} />
-                      </Tooltip>
-                    </div>
-                    <Controller
-                      control={control}
-                      name="maxTimeSinceLastOracleUpdate"
-                      render={({ field: { onChange, value, ref } }) => (
-                        <Select
-                          onValueChange={onChange}
-                          value={value}
-                          ref={ref}
-                        >
-                          {Object.entries(TIME_OPTIONS).map(([key, value]) => (
-                            <SelectItem key={key} value={String(value)}>
-                              {value}
-                            </SelectItem>
-                          ))}
-                        </Select>
-                      )}
-                    />
-                  </div>
+
+                  <SelectInput
+                    name="maxTimeSinceLastOracleUpdate"
+                    onValueChange={(maxTimeSinceLastOracleUpdate) => {
+                      setValue(
+                        "maxTimeSinceLastOracleUpdate",
+                        maxTimeSinceLastOracleUpdate as TIME_OPTIONS
+                      );
+                    }}
+                    options={Object.entries(TIME_OPTIONS).map(
+                      ([key, value]) => ({
+                        id: key,
+                        value: String(value),
+                      })
+                    )}
+                    placeholder={formData.maxTimeSinceLastOracleUpdate}
+                    tooltipText={MAX_TIME_SINCE_LAST_ORACLE_UPDATE_TOOLTIP_TEXT}
+                    label="Max time since last oracle update"
+                  />
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -219,18 +208,18 @@ export function StrikePriceInput({
   const error = errors.strikePrice as FieldError | undefined;
   const errorMessage = error?.message;
   return (
-    <div className="flex flex-col">
-      <div className="flex flex-row justify-between mb-2">
-        <div className="flex flex-row gap-2 mb-2 items-center text-sm">
-          <span className="text-slate12">
+    <div className="flex flex-col gap-1">
+      <div className="flex flex-row justify-between">
+        <div className="flex flex-row gap-2 items-center text-sm">
+          <span>
             {`Strike Price (${data.tokenSell?.symbol}/${data.tokenBuy?.symbol})`}
           </span>
           {Math.abs(percentageOverOraclePrice) > 0.01 && (
             <span
               className={
                 percentageOverOraclePrice > 0
-                  ? "block text-tomato10"
-                  : "block text-green10"
+                  ? "block text-destructive"
+                  : "block text-success"
               }
             >
               (
@@ -255,17 +244,17 @@ export function StrikePriceInput({
             {...register("strikePrice")}
             type="number"
             step={1e-18}
-            className={errorMessage ? "border border-red-500" : ""}
+            className={errorMessage ? "border-destructive" : ""}
           />
         </FormControl>
         {oraclePrice && (
           <div className="flex gap-x-1 text-xs">
-            <span className="text-slate10">
+            <span>
               <span>Set back to oracle price:</span>
             </span>
             <button
               type="button"
-              className="text-blue9 outline-none hover:text-amber9"
+              className="text-accent outline-none hover:text-accent/70"
               onClick={() => {
                 setValue("strikePrice", oraclePrice);
               }}
@@ -276,7 +265,7 @@ export function StrikePriceInput({
         )}
       </div>
       {errorMessage && (
-        <FormMessage className="mt-1 h-6 text-sm text-tomato10">
+        <FormMessage className="mt-1 h-6 text-sm text-destructive">
           <span>{errorMessage}</span>
         </FormMessage>
       )}

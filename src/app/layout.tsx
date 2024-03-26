@@ -49,7 +49,7 @@ export default function Layout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-gull">
+    <html lang="en">
       <body
         className={cn(
           flechaS.variable,

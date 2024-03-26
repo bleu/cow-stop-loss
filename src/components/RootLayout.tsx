@@ -16,7 +16,7 @@ import { Header } from "./Header";
 function HistoryButton() {
   return (
     <Link href="/history">
-      <Button className="h-full">
+      <Button className="h-full" variant="default">
         <span className="flex items-center gap-x-2 ">
           <ClockIcon />
           History
