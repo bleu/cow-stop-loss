@@ -1,5 +1,6 @@
 "use client";
 
+import { FormControl, FormLabel, FormMessage } from "@bleu-fi/ui";
 import { slateDarkA } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import cn from "clsx";
@@ -7,7 +8,6 @@ import React, { HTMLProps } from "react";
 import { FieldError, RegisterOptions, useFormContext } from "react-hook-form";
 
 import { Tooltip } from "./Tooltip";
-import { FormControl, FormLabel, FormMessage } from "./ui/form";
 
 interface IInput extends Omit<HTMLProps<HTMLInputElement>, "name"> {
   name: string;
@@ -24,8 +24,8 @@ export const BaseInput = React.forwardRef<
     {...props}
     ref={ref}
     className={cn(
-      "w-full selection:color-white box-border inline-flex h-[35px] appearance-none items-center justify-center rounded-[4px] bg-blue4 px-[10px] text-[15px] leading-none text-slate12 shadow-[0_0_0_1px] shadow-blue6 outline-none selection:bg-blue9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blue1",
-      props.className,
+      "w-full selection:color-white box-border inline-flex h-[35px] appearance-none items-center justify-center  bg-blue4 px-[10px] text-[15px] leading-none text-slate12 shadow-[0_0_0_1px] shadow-blue6 outline-none selection:bg-foreground hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blue1",
+      props.className
     )}
   />
 ));
@@ -76,5 +76,5 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
         )}
       </div>
     );
-  },
+  }
 );

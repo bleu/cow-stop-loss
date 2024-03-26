@@ -28,7 +28,7 @@ export function Header({ linkUrl, imageSrc, children, onLinkClick }: IHeader) {
   };
 
   return (
-    <div className="flex h-20 w-full items-center border-b border-b-blue3 bg-blue2 p-4 text-white">
+    <div className="flex h-20 w-full items-center bg-background p-4 text-foreground">
       <div className="mr-auto flex justify-start">
         <Link
           href={linkUrl}
@@ -45,7 +45,7 @@ export function Header({ linkUrl, imageSrc, children, onLinkClick }: IHeader) {
       <div className="flex gap-x-4">
         {children && <div className="flex justify-center">{children}</div>}
         <div className="ml-auto flex justify-end">
-          <div className="bg-blue3 text-slate12 border-blue3 rounded-md text-center text-sm font-semibold border focus-visible:outline-blue7 focus-visible:outline-offset-2 disabled:opacity-40 py-3 px-5">
+          <div className="border-foreground text-center text-sm font-semibold border py-3 px-5">
             {`${networkAcronym[chainId]}:${truncateAddress(safeAddress)}`}
           </div>
         </div>

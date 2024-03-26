@@ -1,6 +1,15 @@
 "use client";
 
 import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableRow,
+  toast,
+} from "@bleu-fi/ui";
+import {
   ChevronDownIcon,
   MagnifyingGlassIcon,
   PlusIcon,
@@ -18,10 +27,12 @@ import { IToken } from "#/lib/types";
 import { formatNumber } from "#/utils";
 
 import { tokenLogoUri } from "../../public/tokens/logoUri";
-import Button from "./Button";
 import { Dialog } from "./Dialog";
-import Table from "./Table";
-import { Toast } from "./Toast";
+
+const TOKEN_IMPORTING_TOKEN_ERROR = {
+  title: "Error importing token",
+  content: "Check if the address is correct.",
+};
 
 export function TokenSelect({
   onSelectToken,
@@ -34,7 +45,6 @@ export function TokenSelect({
   selectedToken?: IToken;
   disabeld?: boolean;
 }) {
-  const [open, setOpen] = useState(false);
   const [token, setToken] = useState<IToken | undefined>(undefined);
 
   useEffect(() => {
@@ -51,20 +61,14 @@ export function TokenSelect({
     };
     onSelectToken(newToken);
     setToken(newToken);
-    setOpen(false);
   }
 
   return (
-    <Dialog
-      content={<TokenModal onSelectToken={handleSelectToken} />}
-      isOpen={open}
-      setIsOpen={setOpen}
-    >
+    <Dialog content={<TokenModal onSelectToken={handleSelectToken} />}>
       <TokenSelectButton
         tokenType={tokenType}
         token={token}
         disabeld={disabeld}
-        onClick={() => setOpen(true)}
       />
     </Dialog>
   );
@@ -89,7 +93,7 @@ export function TokenSelectButton({
       <button
         type="button"
         //same style as Input.tsx
-        className="px-2w-full selection:color-white box-border flex h-[35px] w-full appearance-none items-center justify-between gap-2 rounded-[4px] bg-blue4 px-[10px] py-1 text-[15px] leading-none text-slate12 shadow-[0_0_0_1px] shadow-blue6 outline-none selection:bg-blue9 hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blue1"
+        className="px-2w-full selection:color-white box-border flex h-[35px] w-full appearance-none items-center justify-between gap-2  bg-blue4 px-[10px] py-1 text-[15px] leading-none text-slate12 shadow-[0_0_0_1px] shadow-blue6 outline-none selection:bg-foreground hover:shadow-[0_0_0_1px_black] focus:shadow-[0_0_0_2px_black] disabled:bg-blue1"
         disabled={disabeld}
         onClick={onClick}
       >
@@ -171,7 +175,6 @@ function TokenModal({
   }, [loaded, assets]);
 
   const [tokenSearchQuery, setTokenSearchQuery] = useState("");
-  const [isNotifierOpen, setIsNotifierOpen] = useState(false);
   const publicClient = publicClientsFromIds[chainId as ChainId];
 
   function filterTokenInput({
@@ -190,7 +193,7 @@ function TokenModal({
 
   async function manuallyImportToken() {
     if (!isAddress(tokenSearchQuery)) {
-      setIsNotifierOpen(true);
+      toast(TOKEN_IMPORTING_TOKEN_ERROR);
       return;
     }
 
@@ -204,7 +207,7 @@ function TokenModal({
     const data = await publicClient.multicall({ contracts: tokensContracts });
 
     if (data.some((result) => result.error)) {
-      setIsNotifierOpen(true);
+      toast(TOKEN_IMPORTING_TOKEN_ERROR);
       return;
     }
 
@@ -226,7 +229,7 @@ function TokenModal({
     setTokens((prevTokens) => [token, ...prevTokens]);
   }
   return (
-    <div className="max-h-[30rem] divide-y divide-slate7 overflow-y-scroll text-white scrollbar-thin scrollbar-track-blue3 scrollbar-thumb-slate12">
+    <div className="max-h-[30rem] divide-y divide-slate7 overflow-y-scroll text-background scrollbar-thin scrollbar-track-blue3 scrollbar-thumb-slate12">
       <div className="flex size-full flex-col items-center justify-center gap-y-4 py-4">
         <div className="text-xl">Token Search</div>
         <div className="flex w-full items-center px-10">
@@ -253,14 +256,14 @@ function TokenModal({
         </div>
       </div>
       <Table color="blue">
-        <Table.HeaderRow>
-          <Table.HeaderCell>
+        <TableHeader>
+          <TableCell>
             <span className="sr-only">Token Logo</span>
-          </Table.HeaderCell>
-          <Table.HeaderCell>Token</Table.HeaderCell>
-          <Table.HeaderCell>Wallet Balance</Table.HeaderCell>
-        </Table.HeaderRow>
-        <Table.Body>
+          </TableCell>
+          <TableCell>Token</TableCell>
+          <TableCell>Wallet Balance</TableCell>
+        </TableHeader>
+        <TableBody>
           {tokens
             .filter((token) => filterTokenInput({ tokenSearchQuery, token }))
             .sort((a, b) =>
@@ -286,30 +289,8 @@ function TokenModal({
                 );
               }
             })}
-        </Table.Body>
+        </TableBody>
       </Table>
-      <Toast
-        content={<ToastContent />}
-        isOpen={isNotifierOpen}
-        setIsOpen={setIsNotifierOpen}
-        duration={5000}
-        variant="alert"
-      />
-    </div>
-  );
-}
-
-function ToastContent() {
-  return (
-    <div className="flex h-14 flex-row items-center justify-between px-4 py-8">
-      <div className="flex flex-col justify-between space-y-1">
-        <h1 className="text-md font-medium text-slate12">
-          Error importing token
-        </h1>
-        <h3 className="mb-2 text-sm leading-3 text-slate11">
-          Check if the address is correct.
-        </h3>
-      </div>
     </div>
   );
 }
@@ -322,12 +303,11 @@ function TokenRow({
   onSelectToken: (token: TokenBalance) => void;
 }) {
   return (
-    <Table.BodyRow
+    <TableRow
       key={token.tokenInfo.address}
-      classNames="hover:bg-blue4 hover:cursor-pointer"
       onClick={() => onSelectToken(token)}
     >
-      <Table.BodyCell customWidth="w-12">
+      <TableCell>
         <div className="flex items-center justify-center">
           <div className="rounded-full bg-white p-1">
             <Image
@@ -344,9 +324,9 @@ function TokenRow({
             />
           </div>
         </div>
-      </Table.BodyCell>
-      <Table.BodyCell>{token.tokenInfo.symbol}</Table.BodyCell>
-      <Table.BodyCell>
+      </TableCell>
+      <TableCell>{token.tokenInfo.symbol}</TableCell>
+      <TableCell>
         {token.balance
           ? formatNumber(
               formatUnits(
@@ -355,7 +335,7 @@ function TokenRow({
               )
             )
           : ""}
-      </Table.BodyCell>
-    </Table.BodyRow>
+      </TableCell>
+    </TableRow>
   );
 }

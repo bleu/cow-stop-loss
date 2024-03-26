@@ -221,7 +221,7 @@ export function Board({
       zoomOnPinch={false}
       zoomOnDoubleClick={false}
       zoomOnScroll={false}
-      className="bg-blue2 size-full rounded-md shadow-md"
+      className="bg-background size-full shadow-md"
     >
       <Panel position="top-left">
         <div className="flex flex-row gap-4">
@@ -239,7 +239,7 @@ export function Board({
                 setIsAddingOrder(false);
               });
             }}
-            className="bg-blue9 hover:bg-blue10 text-white rounded-md"
+            className="bg-foreground hover:bg-foreground/70 rounded-none text-background"
             disabled={isAddingOrder || orderIdsLenght >= 3}
           >
             {isAddingOrder ? (
