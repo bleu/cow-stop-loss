@@ -22,13 +22,14 @@ export function MintBalMenu({
     safe: { chainId },
   } = useSafeAppsSDK();
   return (
-    <div className="m-2 w-full max-h-[39rem] overflow-y-scroll">
-      <div className="flex flex-col w-full gap-y-2 mt-2">
-        <span className="text-md font-bold mb-2">BAL Mint Hook</span>
-
-        <Table color="blue">
-          <TableHeader>
-            <TableCell>Gauges Addresses</TableCell>
+    <div className="w-full max-h-[39rem] overflow-y-scroll">
+      <div className="flex flex-col w-full">
+        <span className="text-lg font-bold text-highlight mb-2">
+          BAL Mint Hook
+        </span>
+        <Table className="border border-foreground-primary rounded-md">
+          <TableHeader className="border-b">
+            <TableCell>Gauges to mint</TableCell>
           </TableHeader>
           <TableBody>
             {defaultValues.gauges.map((gauge: Address) => {
@@ -41,7 +42,7 @@ export function MintBalMenu({
                 <TableRow key={gauge}>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      {truncateAddress(gauge)}
+                      Address: {truncateAddress(gauge)}
                       <a
                         target="_blank"
                         href={contractExplorerUrl}
