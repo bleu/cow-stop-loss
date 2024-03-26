@@ -21,7 +21,7 @@ import { cowTokenList } from "#/lib/cowTokenList";
 import { ChainId } from "#/lib/publicClients";
 import { IToken } from "#/lib/types";
 
-import { TokenLogo } from "./TokenLogo";
+import { TokenInfo } from "./TokenInfo";
 
 export function TokenSelect({
   onSelectToken,
@@ -126,20 +126,17 @@ export function TokenSelect({
               disabled={disabled}
               onClick={() => setOpen(true)}
             >
-              <div className="flex items-center gap-1">
-                <div className="rounded-full bg-input p-[3px]">
-                  <TokenLogo
-                    tokenAddress={selectedValue?.address}
+              {
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                selectedValue ? (
+                  <TokenInfo
+                    token={selectedValue}
                     chainId={safe.chainId as ChainId}
-                    className="rounded-full"
-                    alt="Token Logo"
-                    height={22}
-                    width={22}
-                    quality={100}
                   />
-                </div>
-                <div>{selectedValue?.symbol || "Select Token"}</div>
-              </div>
+                ) : (
+                  "Select Token"
+                )
+              }
               {!disabled && <ChevronDownIcon />}
             </Button>
             {errorMessage && (
@@ -166,17 +163,14 @@ export function TokenSelect({
                 key={token.tokenInfo.address}
                 onSelect={() => handleSelectToken(token)}
               >
-                <div className="flex items-center">
-                  <TokenLogo
-                    tokenAddress={token.tokenInfo.address}
-                    chainId={safe.chainId as ChainId}
-                    alt="Token Logo"
-                    className="rounded-full"
-                    height={22}
-                    width={22}
-                  />
-                  <span className="ml-2">{token.tokenInfo.symbol}</span>
-                </div>
+                <TokenInfo
+                  token={{
+                    address: token.tokenInfo.address as Address,
+                    symbol: token.tokenInfo.symbol,
+                    decimals: token.tokenInfo.decimals,
+                  }}
+                  chainId={safe.chainId as ChainId}
+                />
               </CommandItem>
             ))}
           </Command>

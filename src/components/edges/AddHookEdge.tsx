@@ -1,4 +1,5 @@
 import { Button, useToast } from "@bleu-fi/ui";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React from "react";
 import {
@@ -99,9 +100,9 @@ export function AddHookEdge({
               />
             }
           >
-            <Button className="flex rounded-full text-xs size-3 py-1 px-0 justify-center items-center text-center leading-3">
-              +
-            </Button>
+            <button className="flex justify-center items-center text-foreground border-foreground hover:border-highlight hover:text-highlight bg-background">
+              <PlusCircledIcon className="size-4" />
+            </button>
           </Dialog>
         </div>
       </EdgeLabelRenderer>

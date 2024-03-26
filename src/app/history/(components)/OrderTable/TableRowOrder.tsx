@@ -4,7 +4,9 @@ import { TrashIcon } from "@radix-ui/react-icons";
 import { TokenInfo } from "#/components/TokenInfo";
 import { StopLossOrderType } from "#/hooks/useOrders";
 import { useRawTxData } from "#/hooks/useRawTxData";
+import { ChainId } from "#/lib/publicClients";
 import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
+import { IToken } from "#/lib/types";
 import { capitalize, cn, formatDateToLocalDatetime } from "#/utils";
 
 export function TableRowOrder({ order }: { order: StopLossOrderType }) {
@@ -32,18 +34,24 @@ export function TableRowOrder({ order }: { order: StopLossOrderType }) {
           {formatDateToLocalDatetime(new Date(order?.blockTimestamp * 1000))}
         </TableCell>
         <TableCell>
-          <TokenInfo
-            id={order?.stopLossData?.tokenIn?.address}
-            symbol={order?.stopLossData?.tokenIn?.symbol}
-            chainId={order?.chainId}
-          />
+          {order?.stopLossData?.tokenIn ? (
+            <TokenInfo
+              token={order.stopLossData.tokenIn as IToken}
+              chainId={order?.chainId as ChainId}
+            />
+          ) : (
+            "Error loading token"
+          )}
         </TableCell>
         <TableCell>
-          <TokenInfo
-            id={order?.stopLossData?.tokenOut?.address}
-            symbol={order?.stopLossData?.tokenOut?.symbol}
-            chainId={order?.chainId}
-          />
+          {order?.stopLossData?.tokenOut ? (
+            <TokenInfo
+              token={order.stopLossData.tokenOut as IToken}
+              chainId={order?.chainId as ChainId}
+            />
+          ) : (
+            "Error loading token"
+          )}
         </TableCell>
         <TableCell>{capitalize(order?.status as string)}</TableCell>
         <TableCell>
@@ -56,7 +64,9 @@ export function TableRowOrder({ order }: { order: StopLossOrderType }) {
             <TrashIcon
               className={cn(
                 "size-5",
-                disabled ? "text-slate10" : "text-tomato9 hover:text-tomato10"
+                disabled
+                  ? "text-foreground-primary/50"
+                  : "text-destructive hover:destructive/80"
               )}
             />
           </button>

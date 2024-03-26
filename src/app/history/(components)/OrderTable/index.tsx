@@ -26,7 +26,7 @@ export function OrderTable() {
     <div className="my-10 flex w-9/12 flex-col gap-y-5">
       <div className="flex items-center justify-between gap-x-8">
         <div className="flex justify-between w-full gap-1">
-          <h1 className="text-3xl text-slate12">My Stop Loss Orders</h1>
+          <h1 className="text-3xl text-accent">My Stop Loss Orders</h1>
           <Button
             onClick={() => {
               reload({ showSpinner: true });
@@ -39,8 +39,8 @@ export function OrderTable() {
           </Button>
         </div>
       </div>
-      <Table color="blue">
-        <TableHeader>
+      <Table className="bg-foreground text-primary-foreground rounded-lg">
+        <TableHeader className="border-b border-text-primary">
           <TableCell>
             <span className="sr-only"></span>
           </TableCell>
