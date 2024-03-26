@@ -1,4 +1,4 @@
-import { FormControl } from "@bleu-fi/ui";
+import { Form, FormControl, FormLabel, FormMessage } from "@bleu-fi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { slateDarkA } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
@@ -28,7 +28,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../ui/accordion";
-import { Form, FormLabel, FormMessage } from "../ui/form";
 
 const ORACLE_TOOLTIP_TEXT =
   "Please take care when manually editing the address of the oracle contract, as it will determine if the order is ready to be posted and its price.";
@@ -116,9 +115,9 @@ export function StopLossConditionMenu({
 
   return (
     <Form {...form}>
-      <div className="flex flex-col gap-3 m-2 w-full max-h-[39rem] overflow-y-scroll">
+      <div className="flex text-foreground flex-col gap-3 m-2 w-full max-h-[39rem] overflow-y-scroll">
         <div>
-          <span className="text-md font-bold mb-2">Stop Loss Condition</span>
+          <span className="text-lg font-bold mb-2">Stop Loss Condition</span>
           <StrikePriceInput
             form={form}
             data={data}

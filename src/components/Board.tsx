@@ -239,7 +239,6 @@ export function Board({
                 setIsAddingOrder(false);
               });
             }}
-            className="bg-foreground hover:bg-foreground/70 rounded-none text-background"
             disabled={isAddingOrder || orderIdsLenght >= 3}
           >
             {isAddingOrder ? (

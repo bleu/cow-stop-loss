@@ -1,9 +1,7 @@
-"use client";
-
 import {
-  Dialog as DialogPrimitive,
-  DialogContent,
-  DialogTrigger,
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogTrigger,
 } from "@bleu-fi/ui";
 
 export function Dialog({
@@ -15,9 +13,11 @@ export function Dialog({
   defaultOpen?: boolean;
 }>) {
   return (
-    <DialogPrimitive defaultOpen={defaultOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[550px]">{content}</DialogContent>
-    </DialogPrimitive>
+    <AlertDialog defaultOpen={defaultOpen}>
+      <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
+      <AlertDialogContent className="sm:max-w-[550px]">
+        {content}
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

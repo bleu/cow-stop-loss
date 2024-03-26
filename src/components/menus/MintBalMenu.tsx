@@ -1,11 +1,16 @@
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableRow,
+} from "@bleu-fi/ui";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { FieldValues } from "react-hook-form";
 import { Address } from "viem";
 
 import { buildBlockExplorerAddressURL, truncateAddress } from "#/utils";
-
-import Table from "../Table";
 
 export function MintBalMenu({
   defaultValues,
@@ -21,13 +26,11 @@ export function MintBalMenu({
       <div className="flex flex-col w-full gap-y-2 mt-2">
         <span className="text-md font-bold mb-2">BAL Mint Hook</span>
 
-        <Table color="blue" shade="darkWithBorder">
-          <Table.HeaderRow>
-            <Table.HeaderCell classNames="px-4 py-2">
-              Gauges Addresses
-            </Table.HeaderCell>
-          </Table.HeaderRow>
-          <Table.Body>
+        <Table color="blue">
+          <TableHeader>
+            <TableCell>Gauges Addresses</TableCell>
+          </TableHeader>
+          <TableBody>
             {defaultValues.gauges.map((gauge: Address) => {
               const contractExplorerUrl = buildBlockExplorerAddressURL({
                 chainId: chainId,
@@ -35,8 +38,8 @@ export function MintBalMenu({
               })?.url;
 
               return (
-                <Table.BodyRow key={gauge}>
-                  <Table.BodyCell padding="px-4 py-2">
+                <TableRow key={gauge}>
+                  <TableCell>
                     <div className="flex items-center gap-2">
                       {truncateAddress(gauge)}
                       <a
@@ -51,11 +54,11 @@ export function MintBalMenu({
                         />
                       </a>
                     </div>
-                  </Table.BodyCell>
-                </Table.BodyRow>
+                  </TableCell>
+                </TableRow>
               );
             })}
-          </Table.Body>
+          </TableBody>
         </Table>
       </div>
     </div>

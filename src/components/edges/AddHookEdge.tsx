@@ -1,6 +1,6 @@
-import { useToast } from "@bleu-fi/ui";
+import { Button, useToast } from "@bleu-fi/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import React, { useState } from "react";
+import React from "react";
 import {
   BaseEdge,
   EdgeLabelRenderer,
@@ -19,7 +19,6 @@ import { ChainId } from "#/lib/publicClients";
 import { IHooks, INodeData, ISwapData } from "#/lib/types";
 
 import { getLayoutedNodes } from "../Board";
-import Button from "../Button";
 import { Dialog } from "../Dialog";
 import { defaultNodeProps } from "../nodes";
 import { defaultEdgeProps } from ".";
@@ -38,8 +37,6 @@ export function AddHookEdge({
   targetPosition,
   markerEnd,
 }: EdgeProps) {
-  const [open, setOpen] = useState(false);
-
   const { setEdges, setNodes, getNodes, getEdges } = useReactFlow();
   const {
     safe: { safeAddress },
@@ -101,16 +98,10 @@ export function AddHookEdge({
                 safeAddress={safeAddress as Address}
               />
             }
-            isOpen={open}
-            setIsOpen={setOpen}
-            title="Choose the hook to add"
           >
-            <button
-              className="bg-slate9 hover:bg-slate7 rounded-full text-xs size-3 text-center leading-3"
-              onClick={() => setOpen(true)}
-            >
+            <Button className="flex rounded-full text-xs size-3 py-1 px-0 justify-center items-center text-center leading-3">
               +
-            </button>
+            </Button>
           </Dialog>
         </div>
       </EdgeLabelRenderer>
@@ -169,7 +160,7 @@ export function ChooseHookDialog({
   }
 
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-2 gap-2 bg-foreground">
       <Button
         className="p-2"
         onClick={async () => {
@@ -180,7 +171,7 @@ export function ChooseHookDialog({
           if (!mintData.gauges.length) {
             toast({
               title: "No gauges found",
-              description: "This Safe has no gauges to mint from",
+              content: "This Safe has no gauges to mint from",
               variant: "destructive",
             });
             return;

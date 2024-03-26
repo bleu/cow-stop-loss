@@ -1,6 +1,6 @@
+import { TableCell, TableRow } from "@bleu-fi/ui";
 import { TrashIcon } from "@radix-ui/react-icons";
 
-import Table from "#/components/Table";
 import { TokenInfo } from "#/components/TokenInfo";
 import { StopLossOrderType } from "#/hooks/useOrders";
 import { useRawTxData } from "#/hooks/useRawTxData";
@@ -24,29 +24,29 @@ export function TableRowOrder({ order }: { order: StopLossOrderType }) {
 
   return (
     <>
-      <Table.BodyRow key={order?.id}>
-        <Table.HeaderCell>
+      <TableRow key={order?.id}>
+        <TableCell>
           <span className="sr-only"></span>
-        </Table.HeaderCell>
-        <Table.BodyCell>
+        </TableCell>
+        <TableCell>
           {formatDateToLocalDatetime(new Date(order?.blockTimestamp * 1000))}
-        </Table.BodyCell>
-        <Table.BodyCell>
+        </TableCell>
+        <TableCell>
           <TokenInfo
             id={order?.stopLossData?.tokenIn?.address}
             symbol={order?.stopLossData?.tokenIn?.symbol}
             chainId={order?.chainId}
           />
-        </Table.BodyCell>
-        <Table.BodyCell>
+        </TableCell>
+        <TableCell>
           <TokenInfo
             id={order?.stopLossData?.tokenOut?.address}
             symbol={order?.stopLossData?.tokenOut?.symbol}
             chainId={order?.chainId}
           />
-        </Table.BodyCell>
-        <Table.BodyCell>{capitalize(order?.status as string)}</Table.BodyCell>
-        <Table.BodyCell>
+        </TableCell>
+        <TableCell>{capitalize(order?.status as string)}</TableCell>
+        <TableCell>
           <button
             type="button"
             className="flex items-center"
@@ -60,8 +60,8 @@ export function TableRowOrder({ order }: { order: StopLossOrderType }) {
               )}
             />
           </button>
-        </Table.BodyCell>
-      </Table.BodyRow>
+        </TableCell>
+      </TableRow>
     </>
   );
 }

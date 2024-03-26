@@ -48,12 +48,13 @@ export default function Page() {
   }
 
   return (
-    <div className="hidden h-full flex-col md:flex text-white">
+    <div className="hidden h-full flex-col md:flex text-background">
       <div className="container size-full py-6">
         <div className="flex h-full items-stretch gap-6">
           <div
-            className={`flex-col space-y-4 sm:flex md:order-2 transition-all duration-500 w-72 translate-x-0`}
+            className={`flex-col space-y-4 bg-foreground rounded-md text-primary-foreground sm:flex md:order-2 transition-all duration-500 w-72 translate-x-0 p-3`}
           >
+            <span className="text-3xl">Menu</span>
             {menuVisible && <Menu />}
           </div>
           <div className={`flex flex-col flex-1`}>
