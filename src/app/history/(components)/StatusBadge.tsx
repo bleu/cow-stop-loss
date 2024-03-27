@@ -3,7 +3,7 @@ import { Badge } from "@bleu-fi/ui";
 export function StatusBadge(status: string | undefined){
     switch (status) {
     case "created":
-      return <Badge className="border-yellow text-yellow bg-transparent" >Created</Badge>;
+      return <Badge className="text-black bg-yellow" >Created</Badge>;
     case "posted":
       return <Badge variant="successOutline">Posted</Badge>;
     case "fulfilled":
