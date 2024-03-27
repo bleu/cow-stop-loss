@@ -15,7 +15,7 @@ import { convertAndRoundDown, formatNumber } from "#/utils";
 
 import { Checkbox } from "../Checkbox";
 import { Input } from "../Input";
-import { SelectInput } from "../SelectInput";
+import { SelectInputForm } from "../SelectInputForm";
 import { TokenSelect } from "../TokenSelect";
 import {
   Accordion,
@@ -184,7 +184,7 @@ export function SwapMenu({
               <AccordionItem value="advancedOptions" key="advancedOption">
                 <AccordionTrigger>Advanced Options</AccordionTrigger>
                 <AccordionContent>
-                  <div className="flex flex-col gap-y-2 mx-2">
+                  <div className="flex flex-col gap-y-2">
                     <Input
                       name="allowedSlippage"
                       label={`Allowed Slippage (%)`}
@@ -213,7 +213,7 @@ export function SwapMenu({
                         setValue("isSellOrder", !formData.isSellOrder)
                       }
                     />
-                    <SelectInput
+                    <SelectInputForm
                       name="validityBucketTime"
                       label="Validity Bucket Time"
                       tooltipText={VALIDITY_BUCKET_TIME_TOOLTIP_TEXT}

@@ -18,7 +18,7 @@ import { IStopLossRecipeData, TIME_OPTIONS } from "#/lib/types";
 import { buildBlockExplorerAddressURL, formatNumber } from "#/utils";
 
 import { BaseInput, Input } from "../Input";
-import { SelectInput } from "../SelectInput";
+import { SelectInputForm } from "../SelectInputForm";
 import { Tooltip } from "../Tooltip";
 import {
   Accordion,
@@ -154,7 +154,7 @@ export function StopLossConditionMenu({
                     tooltipText={ORACLE_TOOLTIP_TEXT}
                   />
 
-                  <SelectInput
+                  <SelectInputForm
                     name="maxTimeSinceLastOracleUpdate"
                     onValueChange={(maxTimeSinceLastOracleUpdate) => {
                       setValue(
