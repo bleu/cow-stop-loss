@@ -43,7 +43,7 @@ export interface IStopLossConditionData extends BaseNode {
   tokenSellOracle?: Address;
   tokenBuyOracle?: Address;
   maxTimeSinceLastOracleUpdate: TIME_OPTIONS;
-  oracleError?: boolean;
+  error?: "ORACLE_NOT_FOUND" | "STRIKE_PRICE_ABOVE_ORACLE_PRICE";
 }
 
 export enum HOOK_TYPES {

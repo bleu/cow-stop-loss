@@ -2,7 +2,7 @@
 
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect, useState } from "react";
-import { Edge, Node, useNodes } from "reactflow";
+import { Edge, Node } from "reactflow";
 import { Address } from "viem";
 
 import { Board } from "#/components/Board";
@@ -27,8 +27,6 @@ export default function Page() {
   } = useSafeAppsSDK();
   const [initNodes, setInitNodes] = useState<Node<INodeData>[]>([]);
   const [initEdges, setInitEdges] = useState<Edge<IEdgeData>[]>([]);
-  const [menuVisible, setMenuVisible] = useState(false);
-  const nodes = useNodes();
 
   useEffect(() => {
     getOrderDefaultNodesAndEdges(chainId as ChainId, safeAddress as Address, [
@@ -39,22 +37,18 @@ export default function Page() {
     });
   }, [chainId, safeAddress]);
 
-  useEffect(() => {
-    setMenuVisible(nodes.some((node) => node.selected));
-  }, [nodes]);
-
   if (initNodes.length === 0) {
     return <Spinner />;
   }
 
   return (
-    <div className="hidden h-full flex-col md:flex text-white">
-      <div className="container size-full py-6">
-        <div className="flex h-full items-stretch gap-6">
+    <div className="hidden h-full flex-col md:flex text-background">
+      <div className="size-full py-6 px-3">
+        <div className="flex h-full gap-6">
           <div
-            className={`flex-col space-y-4 sm:flex md:order-2 transition-all duration-500 ${menuVisible ? "w-72 translate-x-0" : "w-0 translate-x-full"}`}
+            className={`flex-col space-y-4 bg-foreground rounded-md text-primary-foreground md:order-2 w-72 p-3`}
           >
-            {menuVisible && <Menu />}
+            <Menu />
           </div>
           <div className={`flex flex-col flex-1`}>
             <div className="flex h-full flex-col space-y-4">

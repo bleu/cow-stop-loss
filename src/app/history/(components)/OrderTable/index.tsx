@@ -1,11 +1,17 @@
 "use client";
 
-import { Button } from "@bleu-fi/ui";
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableHeader,
+  TableRow,
+} from "@bleu-fi/ui";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 
 import { Spinner } from "#/components/Spinner";
-import Table from "#/components/Table";
 import { useOrder } from "#/contexts/ordersContext";
 
 import { CancelOrdersDialog } from "../CancelOrdersDialog";
@@ -46,22 +52,20 @@ export function OrderTable() {
       </div>
       <Table
         color="blue"
-        shade="darkWithBorder"
-        classNames="overflow-y-auto max-h-[500px]"
       >
-        <Table.HeaderRow>
-          <Table.HeaderCell>
+        <TableHeader>
+          <TableCell>
             <span className="sr-only"></span>
-          </Table.HeaderCell>
-          <Table.HeaderCell>
+          </TableCell>
+          <TableCell>
             <span className="sr-only">Selected</span>
-          </Table.HeaderCell>
-          <Table.HeaderCell>Tx Datetime</Table.HeaderCell>
-          <Table.HeaderCell>Sell Token</Table.HeaderCell>
-          <Table.HeaderCell>Buy Token</Table.HeaderCell>
-          <Table.HeaderCell>Status</Table.HeaderCell>
-        </Table.HeaderRow>
-        <Table.Body classNames="overflow-y-auto">
+          </TableCell>
+          <TableCell>Tx Datetime</TableCell>
+          <TableCell>Sell Token</TableCell>
+          <TableCell>Buy Token</TableCell>
+          <TableCell>Status</TableCell>
+        </TableHeader>
+        <TableBody>
           {orders?.map((order) => (
             <TableRowOrder
               key={order.id}
@@ -71,15 +75,15 @@ export function OrderTable() {
             />
           ))}
           {orders?.length === 0 && (
-            <Table.BodyRow>
-              <Table.BodyCell colSpan={6}>
+            <TableRow>
+              <TableCell colSpan={6}>
                 <h1 className="text-md text-slate12 m-2 text-center w-full">
                   This address didn't made any Stop Loss order yet
                 </h1>
-              </Table.BodyCell>
-            </Table.BodyRow>
+              </TableCell>
+            </TableRow>
           )}
-        </Table.Body>
+        </TableBody>
       </Table>
     </div>
   );

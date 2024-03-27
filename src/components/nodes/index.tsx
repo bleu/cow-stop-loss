@@ -1,7 +1,8 @@
 import React from "react";
-import { Handle, Position } from "reactflow";
 
 import { cn } from "#/utils";
+
+import { Handle } from "../Handle";
 
 export interface IBaseNode {
   children: React.ReactNode;
@@ -21,31 +22,15 @@ export function BaseNode({
   return (
     <div
       className={cn(
-        "px-4 py-2 shadow-md rounded-md bg-blue3 border-2 w-64",
-        selected ? "border-amber9" : "border-slate6"
+        "px-4 py-2 shadow-md border-2 w-64 bg-foreground rounded-md text-primary-foreground transition-colors",
+        selected
+          ? "border-highlight"
+          : "border-foreground hover:border-highlight"
       )}
     >
       {children}
-      {!isEnd && (
-        <Handle
-          type="source"
-          position={Position.Bottom}
-          className={cn(
-            "w-2 h-2 rounded-full",
-            selected ? "bg-amber9" : "bg-slate6"
-          )}
-        />
-      )}
-      {!isStart && (
-        <Handle
-          type="target"
-          position={Position.Top}
-          className={cn(
-            "w-2 h-2 rounded-full",
-            selected ? "bg-amber9" : "bg-slate6"
-          )}
-        />
-      )}
+      {!isEnd && <Handle type="source" />}
+      {!isStart && <Handle type="target" />}
     </div>
   );
 }

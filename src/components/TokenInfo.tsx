@@ -1,39 +1,34 @@
-import Image from "next/image";
+import { ChainId } from "#/lib/publicClients";
+import { IToken } from "#/lib/types";
+import { formatNumber } from "#/utils";
 
-import { cowTokenList } from "#/lib/cowTokenList";
-import { formatNumber, truncateAddress } from "#/utils";
+import { TokenLogo } from "./TokenLogo";
 
 export function TokenInfo({
-  symbol,
-  id,
   chainId,
   amount,
+  token,
 }: {
-  symbol?: string | null;
-  id?: string;
-  chainId?: number;
+  token: IToken;
+  chainId?: ChainId;
   amount?: number | string;
 }) {
-  const tokenLogoUri = cowTokenList.find(
-    (token) => token.address === id && token.chainId === chainId
-  )?.logoURI;
   return (
     <div className="flex items-center gap-x-1">
-      <div className="w-12">
-        <div className="flex items-center justify-center">
-          <div className="rounded-full bg-white p-1">
-            <Image
-              src={tokenLogoUri || "/assets/generic-token-logo.png"}
-              className="rounded-full"
-              alt="Token Logo"
-              height={28}
-              width={28}
-              quality={100}
-            />
-          </div>
+      <div className="flex items-center justify-center">
+        <div className="rounded-full bg-white p-1">
+          <TokenLogo
+            tokenAddress={token.address}
+            chainId={chainId}
+            className="rounded-full"
+            alt="Token Logo"
+            height={22}
+            width={22}
+            quality={100}
+          />
         </div>
       </div>
-      {symbol ? symbol : truncateAddress(id)}{" "}
+      {token.symbol}
       {amount && `(${formatNumber(amount, 4, "decimal", "compact", 0.001)})`}
     </div>
   );
