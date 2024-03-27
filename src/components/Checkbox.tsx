@@ -25,7 +25,7 @@ export function Checkbox({
     <div className="flex items-center justify-between">
       <div className="flex items-center">
         <CheckboxPrimitive
-          className="flex size-[15px] appearance-none items-center justify-center  bg-white shadow-[0_2px_10px] outline-none"
+          className="flex size-[15px] appearance-none items-center justify-center bg-white outline-none border-primary-foreground"
           checked={checked}
           onClick={() => onChange()}
           id={id}
