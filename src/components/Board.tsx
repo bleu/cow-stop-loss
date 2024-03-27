@@ -221,6 +221,7 @@ export function Board({
       zoomOnPinch={false}
       zoomOnDoubleClick={false}
       zoomOnScroll={false}
+      proOptions={{ hideAttribution: true }}
       className="bg-background size-full"
     >
       <Panel position="top-left">
