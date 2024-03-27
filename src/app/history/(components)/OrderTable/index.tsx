@@ -49,41 +49,43 @@ export function OrderTable() {
           </div>
         </div>
       </div>
-      <Table className="bg-foreground text-primary-foreground rounded-lg">
-        <TableHeader>
-          <TableRow>
-            <TableCell>
-              <span className="sr-only"></span>
-            </TableCell>
-            <TableCell>
-              <span className="sr-only">Selected</span>
-            </TableCell>
-            <TableCell>Tx Datetime</TableCell>
-            <TableCell>Sell Token</TableCell>
-            <TableCell>Buy Token</TableCell>
-            <TableCell>Status</TableCell>
-          </TableRow>
-        </TableHeader>
-        <TableBody className="overflow-y-auto">
-          {orders?.map((order) => (
-            <TableRowOrder
-              key={order.id}
-              order={order}
-              setOrdersToCancel={setOrdersToCancel}
-              ordersToCancel={ordersToCancel}
-            />
-          ))}
-          {orders?.length === 0 && (
+      <div className="overflow-y-auto max-h-[550px] rounded-lg">
+        <Table className="bg-foreground text-primary-foreground rounded-lg">
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={6}>
-                <h1 className="text-md text-slate12 m-2 text-center w-full">
-                  This address didn't made any Stop Loss order yet
-                </h1>
+              <TableCell>
+                <span className="sr-only"></span>
               </TableCell>
+              <TableCell>
+                <span className="sr-only">Selected</span>
+              </TableCell>
+              <TableCell>Tx Datetime</TableCell>
+              <TableCell>Sell Token</TableCell>
+              <TableCell>Buy Token</TableCell>
+              <TableCell>Status</TableCell>
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody className="overflow-y-auto">
+            {orders?.map((order) => (
+              <TableRowOrder
+                key={order.id}
+                order={order}
+                setOrdersToCancel={setOrdersToCancel}
+                ordersToCancel={ordersToCancel}
+              />
+            ))}
+            {orders?.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={6}>
+                  <h1 className="text-md text-slate12 m-2 text-center w-full">
+                    This address didn't made any Stop Loss order yet
+                  </h1>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }
