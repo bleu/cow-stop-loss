@@ -40,7 +40,7 @@ export function OrderTable() {
         </div>
       </div>
       <Table className="bg-foreground text-primary-foreground rounded-lg">
-        <TableHeader className="border-b border-text-primary">
+        <TableHeader>
           <TableCell>
             <span className="sr-only"></span>
           </TableCell>
