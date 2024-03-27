@@ -1,9 +1,11 @@
+import { TableCell, TableRow } from "@bleu-fi/ui";
 import { useState } from "react";
 
 import { Checkbox } from "#/components/Checkbox";
-import Table from "#/components/Table";
 import { TokenInfo } from "#/components/TokenInfo";
 import { StopLossOrderType } from "#/hooks/useOrders";
+import { ChainId } from "#/lib/publicClients";
+import { IToken } from "#/lib/types";
 import { capitalize, formatDateToLocalDatetime } from "#/utils";
 
 import { CancelOrdersDialog } from "./CancelOrdersDialog";
@@ -23,11 +25,11 @@ export function TableRowOrder({
 
   return (
     <>
-      <Table.BodyRow key={order?.id}>
-        <Table.HeaderCell>
+      <TableRow key={order?.id}>
+        <TableCell>
           <span className="sr-only"></span>
-        </Table.HeaderCell>
-        <Table.HeaderCell>
+        </TableCell>
+        <TableCell>
           <Checkbox
             id="select-row"
             onChange={() => {
@@ -35,40 +37,47 @@ export function TableRowOrder({
               const newOrdersToCancel = !rowIsSelected
                 ? [...ordersToCancel, order.hash]
                 : ordersToCancel.filter(
-                    (orderHash) => orderHash !== order.hash,
+                    (orderHash) => orderHash !== order.hash
                   );
               setOrdersToCancel(newOrdersToCancel);
             }}
             checked={rowIsSelected}
             aria-label="Select row"
+            disabled={order?.status != "created" && order?.status != "posted"}
           />
-        </Table.HeaderCell>
-        <Table.BodyCell>
+        </TableCell>
+        <TableCell>
           {formatDateToLocalDatetime(new Date(order?.blockTimestamp * 1000))}
-        </Table.BodyCell>
-        <Table.BodyCell>
-          <TokenInfo
-            id={order?.stopLossData?.tokenIn?.address}
-            symbol={order?.stopLossData?.tokenIn?.symbol}
-            chainId={order?.chainId}
-          />
-        </Table.BodyCell>
-        <Table.BodyCell>
-          <TokenInfo
-            id={order?.stopLossData?.tokenOut?.address}
-            symbol={order?.stopLossData?.tokenOut?.symbol}
-            chainId={order?.chainId}
-          />
-        </Table.BodyCell>
-        <Table.BodyCell>{capitalize(order?.status as string)}</Table.BodyCell>
-        <Table.BodyCell>
+        </TableCell>
+        <TableCell>
+          {order?.stopLossData?.tokenIn ? (
+            <TokenInfo
+              token={order?.stopLossData?.tokenIn as IToken}
+              chainId={order?.chainId as ChainId}
+            />
+          ) : (
+            "Error loading token"
+          )}
+        </TableCell>
+        <TableCell>
+          {order?.stopLossData?.tokenOut ? (
+            <TokenInfo
+              token={order?.stopLossData?.tokenOut as IToken}
+              chainId={order?.chainId as ChainId}
+            />
+          ) : (
+            "Error loading token"
+          )}
+        </TableCell>
+        <TableCell>{capitalize(order?.status as string)}</TableCell>
+        <TableCell>
           <CancelOrdersDialog
             tableRow
             ordersToCancel={[order.hash]}
             disabled={order?.status != "created" && order?.status != "posted"}
           />
-        </Table.BodyCell>
-      </Table.BodyRow>
+        </TableCell>
+      </TableRow>
     </>
   );
 }

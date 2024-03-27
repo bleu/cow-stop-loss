@@ -28,13 +28,13 @@ export default function Menu() {
     !selected.data ||
     !nodeMenus[selected?.type as keyof typeof nodeMenus]
   ) {
-    return null;
+    return <DefaultMenu />;
   }
   const MenuComponent = nodeMenus[selected?.type as keyof typeof nodeMenus];
   const orderData = getOrderDataByOrderId(selected.data.orderId);
 
   if (!orderData) {
-    return null;
+    return <Spinner />;
   }
 
   return (
@@ -43,5 +43,14 @@ export default function Menu() {
       id={selected.id}
       defaultValues={selected.data}
     />
+  );
+}
+
+function DefaultMenu() {
+  return (
+    <div className="flex flex-col w-full">
+      <span className="text-lg font-bold text-highlight">Nodes menu</span>
+      <p>Select a node to see the menu and edit the parameters</p>
+    </div>
   );
 }

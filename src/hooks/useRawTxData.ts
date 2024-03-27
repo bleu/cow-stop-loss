@@ -16,7 +16,7 @@ export function useRawTxData() {
       })
     );
     const txsToSend = txs.filter((tx) => tx !== null) as BaseTransaction[];
-    await sdk.txs.send({ txs: txsToSend });
+    return await sdk.txs.send({ txs: txsToSend });
   };
 
   return { safe, sendTransactions };

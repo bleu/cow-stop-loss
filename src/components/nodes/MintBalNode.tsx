@@ -13,8 +13,8 @@ export function MintBalNode({
     <BaseNode selected={selected}>
       <div className="flex">
         <div className="ml-2">
-          <div className="text-sm font-bold">Mint BAL</div>
-          <div className="text-xs text-gray-500">
+          <div className="text-sm font-bold text-highlight">Mint BAL</div>
+          <div className="text-xs">
             {`Mint all BAL from ${data.gauges.length} gauges`}
           </div>
         </div>

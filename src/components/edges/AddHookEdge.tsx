@@ -1,6 +1,7 @@
-import { useToast } from "@bleu-fi/ui";
+import { Select, useToast } from "@bleu-fi/ui";
+import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import React, { useState } from "react";
+import React from "react";
 import {
   BaseEdge,
   EdgeLabelRenderer,
@@ -11,20 +12,38 @@ import {
 } from "reactflow";
 import { Address } from "viem";
 
-import {
-  getDefaultMintBalData,
-  getDefaultMultiSendData,
-} from "#/lib/getOrderDefaultData";
+import { getDefaultMintBalData } from "#/lib/getOrderDefaultData";
 import { ChainId } from "#/lib/publicClients";
-import { IHooks, INodeData, ISwapData } from "#/lib/types";
+import { IHooks, INodeData } from "#/lib/types";
 
 import { getLayoutedNodes } from "../Board";
-import Button from "../Button";
 import { Dialog } from "../Dialog";
 import { defaultNodeProps } from "../nodes";
 import { defaultEdgeProps } from ".";
 
 export const MAX_NODES = 7;
+export const HOOK_OPTIONS = [
+  {
+    label: "Mint BAL from gauges",
+    value: "hookMintBal",
+  },
+  {
+    label: "Multisend",
+    value: "hookMultiSend",
+  },
+  {
+    label: "Aave withdraw",
+    value: "hookAaveWithdraw",
+  },
+  {
+    label: "Claim vesting",
+    value: "hookClaimVesting",
+  },
+  {
+    label: "Exit pool",
+    value: "hookExitPool",
+  },
+];
 
 export function AddHookEdge({
   id,
@@ -38,8 +57,6 @@ export function AddHookEdge({
   targetPosition,
   markerEnd,
 }: EdgeProps) {
-  const [open, setOpen] = useState(false);
-
   const { setEdges, setNodes, getNodes, getEdges } = useReactFlow();
   const {
     safe: { safeAddress },
@@ -92,26 +109,12 @@ export function AddHookEdge({
             pointerEvents: "all",
           }}
         >
-          <Dialog
-            content={
-              <ChooseHookDialog
-                setNodesAndEdges={setNodesAndEdges}
-                target={target}
-                source={source}
-                safeAddress={safeAddress as Address}
-              />
-            }
-            isOpen={open}
-            setIsOpen={setOpen}
-            title="Choose the hook to add"
-          >
-            <button
-              className="bg-slate9 hover:bg-slate7 rounded-full text-xs size-3 text-center leading-3"
-              onClick={() => setOpen(true)}
-            >
-              +
-            </button>
-          </Dialog>
+          <ChooseHookDialog
+            setNodesAndEdges={setNodesAndEdges}
+            source={source}
+            target={target}
+            safeAddress={safeAddress as Address}
+          />
         </div>
       </EdgeLabelRenderer>
     </>
@@ -134,6 +137,7 @@ export function ChooseHookDialog({
   } = useSafeAppsSDK();
   const { getNodes, getNode } = useReactFlow();
   const { toast } = useToast();
+  const [hookSelected, setHookSelected] = React.useState<string>();
 
   function getOrderId(
     sourceNode: Node<INodeData>,
@@ -167,51 +171,71 @@ export function ChooseHookDialog({
     };
     setNodesAndEdges(newNode);
   }
+  const addMintBalHook = () => {
+    getDefaultMintBalData(chainId as ChainId, safeAddress as Address).then(
+      (mintData) => {
+        if (!mintData.gauges.length) {
+          toast({
+            title: "No gauges found",
+            content: "This Safe has no gauges to mint from",
+            variant: "destructive",
+          });
+          throw new Error("No gauges found");
+        }
+        addHookNode("hookMintBal", mintData);
+      }
+    );
+  };
 
   return (
-    <div className="grid grid-cols-2 gap-2">
-      <Button
-        className="p-2"
-        onClick={async () => {
-          const mintData = await getDefaultMintBalData(
-            chainId as ChainId,
-            safeAddress as Address
-          );
-          if (!mintData.gauges.length) {
-            toast({
-              title: "No gauges found",
-              description: "This Safe has no gauges to mint from",
-              variant: "destructive",
-            });
-            return;
-          }
-          addHookNode("hookMintBal", mintData);
-        }}
-      >
-        Mint BAL from gauges
-      </Button>
-      <Button
-        className="p-2"
-        disabled
-        onClick={() => {
-          const swapNode = getNode("swap") as Node<ISwapData>;
-          addHookNode(
-            "hookMultiSend",
-            getDefaultMultiSendData(swapNode.data.tokenSell, safeAddress)
-          );
-        }}
-      >
-        Multisend
-      </Button>
-      <Button className="p-2" disabled>
-        Aave withdraw
-      </Button>
-      <Button className="p-2" disabled>
-        Claim vesting
-      </Button>
-      <Button className="p-2" disabled>
-        Exit pool
-      </Button>
-    </div>
+    <Dialog
+      title="Choose and Add Hook"
+      submitText="Add Hook"
+      onSubmit={addMintBalHook}
+      disableSubmit={!hookSelected}
+      content={
+        <HookSelect
+          hookSelected={hookSelected}
+          onHookSelect={setHookSelected}
+        />
+      }
+    >
+      <button className="flex justify-center items-center text-foreground border-foreground hover:border-highlight hover:text-highlight bg-background">
+        <PlusCircledIcon className="size-4" />
+      </button>
+    </Dialog>
+  );
+}
+
+function HookSelect({
+  hookSelected,
+  onHookSelect,
+}: {
+  hookSelected?: string;
+  onHookSelect: (hook: string) => void;
+}) {
+  return (
+    <Select.SelectRoot onValueChange={onHookSelect} value={hookSelected}>
+      <Select.SelectTrigger className="h-[35px] inline-flex w-full items-center gap-[5px] bg-input border border-background">
+        <Select.SelectValue placeholder="Choose one of the available hooks" />
+      </Select.SelectTrigger>
+      <Select.SelectContent className="z-[10000] w-full overflow-hidden bg-input text-primary-foreground">
+        <Select.SelectGroup>
+          <Select.SelectLabel className="pl-4" />
+          {HOOK_OPTIONS.map((option) => {
+            const disabled = option.value != "hookMintBal";
+            return (
+              <Select.SelectItem
+                key={option.value}
+                value={option.value}
+                disabled={disabled}
+              >
+                {option.label} {disabled && "(Coming soon)"}
+              </Select.SelectItem>
+            );
+          })}
+        </Select.SelectGroup>
+      </Select.SelectContent>
+    </Select.SelectRoot>
   );
 }
