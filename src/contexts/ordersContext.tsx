@@ -91,7 +91,6 @@ const reload = ({ showSpinner }: { showSpinner: boolean }) => {
 
 
 useEffect(() => {
-  console.log("useEffect");
   async function loadOrders() {
     try {
       const [processedOrders] = await Promise.all([
