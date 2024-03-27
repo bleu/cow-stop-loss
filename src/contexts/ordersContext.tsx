@@ -176,12 +176,6 @@ async function getProcessedStopLossOrders({
       singleOrder: singleOrderResult,
     });
 
-  //     cowOrders.map((order) => {
-  //   if(order.appData === "0x739c554498eb148949429b70d47042f15abc42ab3f8fc07ce4f573c909ea81f1"){
-  //     console.log(cowOrderMatch)
-  //   }
-  // })
-
 
     
     return {
