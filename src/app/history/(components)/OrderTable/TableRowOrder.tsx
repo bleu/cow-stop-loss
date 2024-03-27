@@ -3,7 +3,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Checkbox } from "#/components/Checkbox";
-import Table from "#/components/Table";
 import { TokenInfo } from "#/components/TokenInfo";
 import { StopLossOrderType } from "#/contexts/ordersContext";
 import { ChainId } from "#/lib/publicClients";
@@ -31,6 +30,7 @@ export function TableRowOrder({
     <>
       <TableRow
        key={order?.id} 
+       className="border-transparent"
        onClick={
         () => router.push(`/history/order/${order?.hash}`)
         }
@@ -39,7 +39,7 @@ export function TableRowOrder({
         <TableCell>
           <span className="sr-only"></span>
         </TableCell>
-        <TableCell onClick={(e) => e.stopPropagation()} classNames="hover:cursor-default">
+        <TableCell onClick={(e) => e.stopPropagation()}>
           <Checkbox
             id="select-row"
             onChange={() => {
@@ -79,7 +79,7 @@ export function TableRowOrder({
           )}
         </TableCell>
         <TableCell>{capitalize(order?.status as string)}</TableCell>
-        <TableCell>
+        <TableCell onClick={(e) => e.stopPropagation()}>
           <CancelOrdersDialog
             tableRow
             ordersToCancel={[order.hash]}

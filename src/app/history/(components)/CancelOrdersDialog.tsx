@@ -43,6 +43,7 @@ export function CancelOrdersDialog({
 
     await sendTransactions(cancelTransactionsData);
   }
+
   return (
     <Dialog
     defaultOpen={defaultOpen}
@@ -52,24 +53,24 @@ export function CancelOrdersDialog({
       onOpenChange={setOpen}
     >
       <DialogTrigger asChild>
-        <Button
-          variant={tableRow ? "ghost" : "destructive"}
-          disabled={disabled}
-          className={cn(tableRow && "hover:bg-transparent")}
-        >
-          <span className="flex items-center gap-x-2">
-            <TrashIcon
-              className={cn(
-                "size-5",
-                disabled && tableRow
-                  ? "text-slate10"
-                  : "text-tomato9 hover:text-tomato10",
-                !tableRow && "text-white",
-              )}
-            />
-            {!tableRow && "Cancel Orders"}
-          </span>
-        </Button>
+          <Button
+            variant={tableRow ? "ghost" : "destructive"}
+            disabled={disabled}
+            className={cn(tableRow && "hover:bg-transparent")}
+          >
+            <span className="flex items-center gap-x-2">
+              <TrashIcon
+                className={cn(
+                  "size-5",
+                  disabled && tableRow
+                    ? "text-slate10"
+                    : "text-destructive/70 hover:text-destructive",
+                  !tableRow && "text-white",
+                )}
+              />
+              {!tableRow && "Cancel Orders"}
+            </span>
+          </Button>
       </DialogTrigger>
       <DialogContent className="bg-blue3 border-0 text-white flex flex-col items-center">
         <h2 className="text-xl font-semibold">Are you sure?</h2>

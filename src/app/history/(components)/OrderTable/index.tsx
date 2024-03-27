@@ -40,7 +40,6 @@ export function OrderTable() {
                 reload({ showSpinner: true });
                 setOrdersToCancel([]);
               }}
-              className="bg-blue9 text-slate12 hover:bg-blue10 border-blue9"
             >
               <span className="flex items-center gap-x-2">
                 <ReloadIcon />
@@ -50,20 +49,21 @@ export function OrderTable() {
           </div>
         </div>
       </div>
-      <Table
-        color="blue"
-      >
-        <TableHeader>
-          <TableCell>
+      <Table className="bg-foreground border-0 text-black rounded-md">
+        <TableHeader className="bg-primary">
+          <TableCell className="rounded-tl-md">
             <span className="sr-only"></span>
           </TableCell>
           <TableCell>
             <span className="sr-only">Selected</span>
           </TableCell>
-          <TableCell>Tx Datetime</TableCell>
+          <TableCell className="py-4">Tx Datetime</TableCell>
           <TableCell>Sell Token</TableCell>
           <TableCell>Buy Token</TableCell>
           <TableCell>Status</TableCell>
+          <TableCell className="rounded-tr-md">
+            <span className="sr-only">Cancel</span>
+          </TableCell>
         </TableHeader>
         <TableBody>
           {orders?.map((order) => (
