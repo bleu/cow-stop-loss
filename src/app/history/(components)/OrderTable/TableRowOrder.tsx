@@ -4,10 +4,10 @@ import { useState } from "react";
 import { Checkbox } from "#/components/Checkbox";
 import Table from "#/components/Table";
 import { TokenInfo } from "#/components/TokenInfo";
-import { StopLossOrderType } from "#/hooks/useOrders";
+import { StopLossOrderType } from "#/contexts/ordersContext";
 import { capitalize, formatDateToLocalDatetime } from "#/utils";
 
-import { CancelOrdersDialog } from "./CancelOrdersDialog";
+import { CancelOrdersDialog } from "../CancelOrdersDialog";
 
 
 interface ITableRowOrder {
@@ -29,15 +29,15 @@ export function TableRowOrder({
       <Table.BodyRow
        key={order?.id} 
        onClick={
-        () => router.push(`/history/order/${order?.id}`)
+        () => router.push(`/history/order/${order?.hash}`)
         }
-      classNames="hover:cursor-pointer hover:bg-blue4"
+      classNames="hover:cursor-pointer hover:bg-blue4 transition-colors duration-200 hover"
       >
 
         <Table.HeaderCell>
           <span className="sr-only"></span>
         </Table.HeaderCell>
-        <Table.HeaderCell>
+        <Table.HeaderCell onClick={(e) => e.stopPropagation()} classNames="hover:cursor-default">
           <Checkbox
             id="select-row"
             onChange={() => {

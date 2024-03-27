@@ -6,13 +6,13 @@ import { useState } from "react";
 
 import { Spinner } from "#/components/Spinner";
 import Table from "#/components/Table";
-import { useUserOrders } from "#/hooks/useOrders";
+import { useOrder } from "#/contexts/ordersContext";
 
-import { CancelOrdersDialog } from "./CancelOrdersDialog";
+import { CancelOrdersDialog } from "../CancelOrdersDialog";
 import { TableRowOrder } from "./TableRowOrder";
 
 export function OrderTable() {
-  const { orders, loaded, reload } = useUserOrders();
+  const { orders, loaded, reload } = useOrder()
   const [ordersToCancel, setOrdersToCancel] = useState<string[]>([]);
 
   if (!loaded) {

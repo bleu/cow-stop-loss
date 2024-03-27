@@ -2,7 +2,8 @@ import { Address } from "viem";
 import { ChainId } from "../publicClients";
 import { COW_API_URL_BY_CHAIN_ID } from "./api";
 import { fetcher } from "#/utils/fetcher";
-import { CowOrder } from "#/hooks/useOrders";
+import { CowOrder } from "#/contexts/ordersContext";
+
 
 export async function getCowOrders(
     userAddress: Address,

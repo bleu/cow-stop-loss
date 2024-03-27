@@ -9,6 +9,7 @@ import React from "react";
 import { ReactFlowProvider } from "reactflow";
 
 import { NetworksContextProvider } from "#/contexts/networks";
+import { OrderProvider } from "#/contexts/ordersContext";
 
 import Button from "./Button";
 import { Footer } from "./Footer";
@@ -35,15 +36,17 @@ export function RootLayout({ children }: React.PropsWithChildren) {
       <ToastProvider>
         <NetworksContextProvider>
           <ReactFlowProvider>
-            <Toaster />
-            <Header linkUrl={"/builder"} imageSrc={"/assets/stoploss.svg"}>
-              {path !== "/history" && <HistoryButton />}
-            </Header>
-            <div className="size-full bg-blue1">{children}</div>
-            <Footer
-              githubLink="https://github.com/bleu-fi/composable-cow-hub"
-              discordLink="https://discord.gg/cowprotocol"
-            />
+            <OrderProvider>
+              <Toaster />
+              <Header linkUrl={"/builder"} imageSrc={"/assets/stoploss.svg"}>
+                {path !== "/history" && <HistoryButton />}
+              </Header>
+              <div className="size-full bg-blue1">{children}</div>
+              <Footer
+                githubLink="https://github.com/bleu-fi/composable-cow-hub"
+                discordLink="https://discord.gg/cowprotocol"
+              />
+            </OrderProvider>
           </ReactFlowProvider>
         </NetworksContextProvider>
       </ToastProvider>
