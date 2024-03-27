@@ -121,7 +121,7 @@ export function TokenSelect({
             <Button
               variant="secondary"
               type="button"
-              className="px-2 justify-between border border-border bg-input hover:bg-input/20 hover:text-accent-foreground"
+              className="px-2 justify-between border text-primary-foreground border-border bg-input hover:bg-input/20 hover:text-accent-foreground"
               disabled={disabled}
               onClick={() => setOpen(true)}
             >
