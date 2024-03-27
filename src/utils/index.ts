@@ -285,3 +285,8 @@ export type GetDeepProp<T extends object, K extends string> = K extends keyof T
 export type ArrElement<ArrType> = ArrType extends readonly (infer ElementType)[]
   ? ElementType
   : never;
+
+
+  export const epochToDate = (epoch: number): Date => {
+    return new Date(epoch * 1000);
+  };

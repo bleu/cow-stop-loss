@@ -93,7 +93,7 @@ function HeaderCell({
 }: React.PropsWithChildren<{
   padding?: string;
   classNames?: string;
-  onClick?: () => void;
+  onClick?: (() => void) | ((e: React.MouseEvent<HTMLElement>) => void);
 }>) {
   useTableContext();
   return (
