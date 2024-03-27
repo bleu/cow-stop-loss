@@ -1,3 +1,4 @@
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Checkbox } from "#/components/Checkbox";
@@ -8,22 +9,31 @@ import { capitalize, formatDateToLocalDatetime } from "#/utils";
 
 import { CancelOrdersDialog } from "./CancelOrdersDialog";
 
+
 interface ITableRowOrder {
   order: StopLossOrderType;
   ordersToCancel: string[];
   setOrdersToCancel: (orders: string[]) => void;
 }
-
+  
 export function TableRowOrder({
   order,
   ordersToCancel,
   setOrdersToCancel,
 }: ITableRowOrder) {
+  const router = useRouter()
   const [rowIsSelected, setRowIsSelected] = useState(false);
 
   return (
     <>
-      <Table.BodyRow key={order?.id}>
+      <Table.BodyRow
+       key={order?.id} 
+       onClick={
+        () => router.push(`/history/order/${order?.id}`)
+        }
+      classNames="hover:cursor-pointer hover:bg-blue4"
+      >
+
         <Table.HeaderCell>
           <span className="sr-only"></span>
         </Table.HeaderCell>
