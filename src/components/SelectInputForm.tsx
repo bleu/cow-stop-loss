@@ -4,7 +4,7 @@ import React from "react";
 
 import { Tooltip } from "./Tooltip";
 
-const SelectInput = ({
+const SelectInputForm = ({
   label,
   name,
   options,
@@ -20,7 +20,7 @@ const SelectInput = ({
   tooltipText?: string;
 }) => (
   <div className="flex w-full flex-col justify-start">
-    <label className="block text-sm text-sand1" htmlFor={name}>
+    <label className="block text-sm text-primary-foreground" htmlFor={name}>
       <div className="flex flex-row justify-between">
         <FormLabel className="mb-2 block text-sm">{label}</FormLabel>
         {tooltipText && (
@@ -30,18 +30,14 @@ const SelectInput = ({
         )}
       </div>{" "}
       <Select.SelectRoot onValueChange={onValueChange} name={name}>
-        <Select.SelectTrigger className="h-[35px] inline-flex w-full items-center gap-[5px] bg-input">
+        <Select.SelectTrigger className="h-[35px] inline-flex w-full items-center gap-[5px] bg-input border border-background">
           <Select.SelectValue placeholder={placeholder} />
         </Select.SelectTrigger>
-        <Select.SelectContent className="z-[10000] w-full overflow-hidden bg-input text-foreground-primary">
+        <Select.SelectContent className="z-[10000] w-full overflow-hidden bg-input text-primary-foreground">
           <Select.SelectGroup>
             <Select.SelectLabel className="pl-4" />
             {options.map((option) => (
-              <Select.SelectItem
-                key={option.id}
-                value={option.id.toString()}
-                className="relative flex select-none items-center bg-input leading-none text-foreground-primary data-[highlighted]:bg-gray-300 data-[highlighted]:font-semibold data-[disabled]:text-foreground-primary/80 data-[highlighted]:outline-none"
-              >
+              <Select.SelectItem key={option.id} value={option.id.toString()}>
                 {option.value}
               </Select.SelectItem>
             ))}
@@ -52,4 +48,4 @@ const SelectInput = ({
   </div>
 );
 
-export { SelectInput };
+export { SelectInputForm };
