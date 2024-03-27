@@ -1,98 +1,5 @@
-//source: https://tokenlists.org/token-list?url=https://files.cow.fi/tokens/CowSwap.json
-//https://files.cow.fi/tokens/CowSwap.json
-//merged with goerli tokens
-//from https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/CowSwapGoerli.json
-export const cowTokenList = [
-  {
-    name: "Wrapped Ether",
-    chainId: 11155111,
-    symbol: "WETH",
-    decimals: 18,
-    address: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14",
-    logoURI:
-      "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2/logo.png",
-  },
-  {
-    name: "Uniswap",
-    chainId: 11155111,
-    symbol: "UNI",
-    decimals: 18,
-    address: "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
-    logoURI:
-      "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984/logo.png",
-  },
-  {
-    name: "USDC (test)",
-    chainId: 11155111,
-    symbol: "USDC",
-    decimals: 18,
-    address: "0xbe72E441BF55620febc26715db68d3494213D8Cb",
-    logoURI:
-      "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png",
-  },
-  {
-    name: "Gnosis",
-    chainId: 5,
-    symbol: "GNO",
-    decimals: 18,
-    address: "0x02abbdbaaa7b1bb64b5c878f7ac17f8dda169532",
-    logoURI:
-      "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6810e776880C02933D47DB1b9fc05908e5386b96/logo.png",
-  },
-  {
-    name: "CoW Protocol Token",
-    chainId: 5,
-    symbol: "COW",
-    decimals: 18,
-    address: "0x91056D4A53E1faa1A84306D4deAEc71085394bC8",
-    logoURI:
-      "https://gnosis.mypinata.cloud/ipfs/Qme9B6jRpGtZsRFcPjHvA5T4ugFuL4c3SzWfxyMPa59AMo",
-  },
-  {
-    name: "USD Coin",
-    chainId: 5,
-    symbol: "USDC",
-    decimals: 6,
-    address: "0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C",
-    logoURI:
-      "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png",
-  },
-  {
-    name: "DAI",
-    chainId: 5,
-    symbol: "DAI",
-    decimals: 18,
-    address: "0xdc31Ee1784292379Fbb2964b3B9C4124D8F89C60",
-    logoURI:
-      "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png",
-  },
-  {
-    name: "0x",
-    chainId: 5,
-    symbol: "ZRX",
-    decimals: 18,
-    address: "0xe4E81Fa6B16327D4B78CFEB83AAdE04bA7075165",
-    logoURI:
-      "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xE41d2489571d322189246DaFA5ebDe1F4699F498/logo.png",
-  },
-  {
-    name: "Basic Attention Token",
-    chainId: 5,
-    symbol: "BAT",
-    decimals: 18,
-    address: "0x70cBa46d2e933030E2f274AE58c951C800548AeF",
-    logoURI:
-      "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x0D8775F648430679A709E98d2b0Cb6250d2887EF/logo.png",
-  },
-  {
-    name: "Polymath Network",
-    chainId: 5,
-    symbol: "POLY",
-    decimals: 18,
-    address: "0x9e32c0EfF886B6Ccae99350Fd5e7002dCED55F15",
-    logoURI:
-      "https://assets.coingecko.com/coins/images/2784/thumb/inKkF01.png?1605007034",
-  },
+//from https://files.cow.fi/tokens/CowSwap.json
+const mainnetAndGnosisTokenList = [
   {
     symbol: "SPELL",
     name: "Spell Token",
@@ -175,6 +82,15 @@ export const cowTokenList = [
       "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x1494ca1f11d487c2bbe4543e90080aeba4ba3c2b/logo.png",
   },
   {
+    address: "0x152649ea73beab28c5b49b26eb48f7ead6d4c898",
+    symbol: "CAKE",
+    name: "PancakeSwap Token",
+    decimals: 18,
+    chainId: 1,
+    logoURI:
+      "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x152649ea73beab28c5b49b26eb48f7ead6d4c898/logo.png",
+  },
+  {
     symbol: "EDEN",
     name: "Eden",
     address: "0x1559fa1b8f28238fd5d76d9f434ad86fd20d1559",
@@ -209,6 +125,15 @@ export const cowTokenList = [
     chainId: 1,
     logoURI:
       "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x19062190b1925b5b6689d7073fdfc8c2976ef8cb/logo.png",
+  },
+  {
+    address: "0x1abaea1f7c830bd89acc67ec4af516284b1bc33c",
+    symbol: "EURC",
+    name: "Euro Coin",
+    decimals: 6,
+    chainId: 1,
+    logoURI:
+      "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x1abaea1f7c830bd89acc67ec4af516284b1bc33c/logo.png",
   },
   {
     address: "0x1bed97cbc3c24a4fb5c069c6e311a967386131f7",
@@ -254,6 +179,24 @@ export const cowTokenList = [
     chainId: 1,
     logoURI:
       "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599/logo.png",
+  },
+  {
+    address: "0x24ae2da0f361aa4be46b48eb19c91e02c5e4f27e",
+    symbol: "mevETH",
+    name: "Mev Liquid Staking Receipt",
+    decimals: 18,
+    chainId: 1,
+    logoURI:
+      "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x24ae2da0f361aa4be46b48eb19c91e02c5e4f27e/logo.png",
+  },
+  {
+    address: "0x27b5739e22ad9033bcbf192059122d163b60349d",
+    symbol: "st-yCRV",
+    name: "Staked Yearn CRV Vault",
+    decimals: 18,
+    chainId: 1,
+    logoURI:
+      "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x27b5739e22ad9033bcbf192059122d163b60349d/logo.png",
   },
   {
     address: "0x2a8e1e676ec238d8a992307b495b45b3feaa5e86",
@@ -535,6 +478,15 @@ export const cowTokenList = [
       "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x6dea81c8171d0ba574754ef6f8b412f2ed88c54d/logo.png",
   },
   {
+    address: "0x6e9455d109202b426169f0d8f01a3332dae160f3",
+    symbol: "lp-yCRVv2",
+    name: "LP Yearn CRV Vault v2",
+    decimals: 18,
+    chainId: 1,
+    logoURI:
+      "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x6e9455d109202b426169f0d8f01a3332dae160f3/logo.png",
+  },
+  {
     symbol: "MVI",
     name: "Metaverse Index",
     address: "0x72e364f2abdc788b7e918bc238b21f109cd634d7",
@@ -668,6 +620,15 @@ export const cowTokenList = [
     chainId: 1,
     logoURI:
       "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce/logo.png",
+  },
+  {
+    address: "0x96f6ef951840721adbf46ac996b59e0235cb985c",
+    symbol: "USDY",
+    name: "Ondo U.S. Dollar Yield",
+    decimals: 18,
+    chainId: 1,
+    logoURI:
+      "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x96f6ef951840721adbf46ac996b59e0235cb985c/logo.png",
   },
   {
     symbol: "STRONG",
@@ -814,6 +775,15 @@ export const cowTokenList = [
       "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0xc7283b66eb1eb5fb86327f08e1b5816b0720212b/logo.png",
   },
   {
+    address: "0xcd5fe23c85820f7b72d0926fc9b05b43e359b7ee",
+    symbol: "weETH",
+    name: "Wrapped eETH",
+    decimals: 18,
+    chainId: 1,
+    logoURI:
+      "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0xcd5fe23c85820f7b72d0926fc9b05b43e359b7ee/logo.png",
+  },
+  {
     symbol: "FOLD",
     name: "Manifold Finance",
     address: "0xd084944d3c05cd115c09d072b9f44ba3e0e45921",
@@ -904,6 +874,15 @@ export const cowTokenList = [
       "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0xe2ba8693ce7474900a045757fe0efca900f6530b/logo.png",
   },
   {
+    address: "0xe3668873d944e4a949da05fc8bde419eff543882",
+    symbol: "yPRISMA",
+    name: "Yearn PRISMA",
+    decimals: 18,
+    chainId: 1,
+    logoURI:
+      "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0xe3668873d944e4a949da05fc8bde419eff543882/logo.png",
+  },
+  {
     address: "0xe60779cc1b2c1d0580611c526a8df0e3f870ec48",
     symbol: "USH",
     name: "unshETHing_Token",
@@ -956,6 +935,15 @@ export const cowTokenList = [
     chainId: 1,
     logoURI:
       "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0xf951e335afb289353dc249e82926178eac7ded78/logo.png",
+  },
+  {
+    address: "0xfcc5c47be19d06bf83eb04298b026f81069ff65b",
+    symbol: "yCRV",
+    name: "Yearn CRV",
+    decimals: 18,
+    chainId: 1,
+    logoURI:
+      "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0xfcc5c47be19d06bf83eb04298b026f81069ff65b/logo.png",
   },
   {
     address: "0xfcf8eda095e37a41e002e266daad7efc1579bc0a",
@@ -1020,6 +1008,15 @@ export const cowTokenList = [
       "https://raw.githubusercontent.com/centfinance/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png",
   },
   {
+    address: "0x5cb9073902f2035222b9749f8fb0c9bfe5527108",
+    symbol: "GBPe",
+    name: "Monerium GBP emoney",
+    decimals: 18,
+    chainId: 100,
+    logoURI:
+      "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/100/0x5cb9073902f2035222b9749f8fb0c9bfe5527108/logo.png",
+  },
+  {
     address: "0x63e62989D9EB2d37dfDB1F93A22f063635b07d51",
     chainId: 100,
     name: "Minerva Wallet SuperToken",
@@ -1073,13 +1070,13 @@ export const cowTokenList = [
       "https://raw.githubusercontent.com/centfinance/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png",
   },
   {
-    address: "0x9C58BAcC331c9aa871AFD802DB6379a98e80CEdb",
+    address: "0x9c58bacc331c9aa871afd802db6379a98e80cedb",
     chainId: 100,
-    name: "Gnosis Token on Gnosis Chain",
+    name: "Gnosis",
     symbol: "GNO",
     decimals: 18,
     logoURI:
-      "https://assets.coingecko.com/coins/images/662/small/logo_square_simple_300px.png?1609402668",
+      "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/100/0x9c58bacc331c9aa871afd802db6379a98e80cedb/logo.png",
   },
   {
     address: "0xA4eF9Da5BA71Cc0D2e5E877a910A37eC43420445",
@@ -1171,3 +1168,36 @@ export const cowTokenList = [
       "https://raw.githubusercontent.com/centfinance/assets/master/blockchains/xdai/assets/0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d/logo.png",
   },
 ];
+
+// from https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/CowSwapSepolia.json
+const sepoliaTokenList = [
+  {
+    name: "Wrapped Ether",
+    chainId: 11155111,
+    symbol: "WETH",
+    decimals: 18,
+    address: "0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14",
+    logoURI:
+      "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2/logo.png",
+  },
+  {
+    name: "Uniswap",
+    chainId: 11155111,
+    symbol: "UNI",
+    decimals: 18,
+    address: "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
+    logoURI:
+      "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984/logo.png",
+  },
+  {
+    name: "USDC (test)",
+    chainId: 11155111,
+    symbol: "USDC",
+    decimals: 18,
+    address: "0xbe72E441BF55620febc26715db68d3494213D8Cb",
+    logoURI:
+      "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png",
+  },
+];
+
+export const cowTokenList = [...mainnetAndGnosisTokenList, ...sepoliaTokenList];
