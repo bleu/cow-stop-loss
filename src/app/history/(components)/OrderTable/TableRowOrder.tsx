@@ -30,7 +30,7 @@ export function TableRowOrder({
     <>
       <TableRow
        key={order?.id} 
-       className="border-transparent"
+       className="border-transparent hover:cursor-pointer hover:bg-brown12"
        onClick={
         () => router.push(`/history/order/${order?.hash}`)
         }
@@ -39,7 +39,10 @@ export function TableRowOrder({
         <TableCell>
           <span className="sr-only"></span>
         </TableCell>
-        <TableCell onClick={(e) => e.stopPropagation()}>
+        <TableCell 
+          onClick={(e) => e.stopPropagation()}
+          className="cursor-default"
+        >
           <Checkbox
             id="select-row"
             onChange={() => {
@@ -79,7 +82,10 @@ export function TableRowOrder({
           )}
         </TableCell>
         <TableCell>{capitalize(order?.status as string)}</TableCell>
-        <TableCell onClick={(e) => e.stopPropagation()}>
+        <TableCell 
+          onClick={(e) => e.stopPropagation()}
+          className="cursor-default"
+        >
           <CancelOrdersDialog
             tableRow
             ordersToCancel={[order.hash]}

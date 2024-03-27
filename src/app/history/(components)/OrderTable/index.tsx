@@ -49,42 +49,44 @@ export function OrderTable() {
           </div>
         </div>
       </div>
-      <Table className="bg-foreground border-0 text-black rounded-md">
-        <TableHeader className="bg-primary">
-          <TableCell className="rounded-tl-md">
-            <span className="sr-only"></span>
-          </TableCell>
-          <TableCell>
-            <span className="sr-only">Selected</span>
-          </TableCell>
-          <TableCell className="py-4">Tx Datetime</TableCell>
-          <TableCell>Sell Token</TableCell>
-          <TableCell>Buy Token</TableCell>
-          <TableCell>Status</TableCell>
-          <TableCell className="rounded-tr-md">
-            <span className="sr-only">Cancel</span>
-          </TableCell>
-        </TableHeader>
-        <TableBody>
-          {orders?.map((order) => (
-            <TableRowOrder
-              key={order.id}
-              order={order}
-              setOrdersToCancel={setOrdersToCancel}
-              ordersToCancel={ordersToCancel}
-            />
-          ))}
-          {orders?.length === 0 && (
-            <TableRow>
-              <TableCell colSpan={6}>
-                <h1 className="text-md text-slate12 m-2 text-center w-full">
-                  This address didn't made any Stop Loss order yet
-                </h1>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+      <div className="max-h-[520px] overflow-y-auto rounded-md">
+        <Table className="bg-foreground border-0 text-black rounded-md">
+          <TableHeader className="bg-primary">
+            <TableCell className="rounded-tl-md">
+              <span className="sr-only"></span>
+            </TableCell>
+            <TableCell>
+              <span className="sr-only">Selected</span>
+            </TableCell>
+            <TableCell className="py-4">Tx Datetime</TableCell>
+            <TableCell>Sell Token</TableCell>
+            <TableCell>Buy Token</TableCell>
+            <TableCell>Status</TableCell>
+            <TableCell className="rounded-tr-md">
+              <span className="sr-only">Cancel</span>
+            </TableCell>
+          </TableHeader>
+          <TableBody>
+            {orders?.map((order) => (
+              <TableRowOrder
+                key={order.id}
+                order={order}
+                setOrdersToCancel={setOrdersToCancel}
+                ordersToCancel={ordersToCancel}
+              />
+            ))}
+            {orders?.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={6}>
+                  <h1 className="text-md text-slate12 m-2 text-center w-full">
+                    This address didn't made any Stop Loss order yet
+                  </h1>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }
