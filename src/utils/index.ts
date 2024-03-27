@@ -260,6 +260,21 @@ export function formatDate(date: Date): string {
   });
 }
 
+
+export function formatDateTime(date: Date | string | number) {
+  return Intl.DateTimeFormat(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    timeZoneName: "short",
+  }).format(new Date(date));
+}
+
+
+
 export function formatDateToLocalDatetime(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
