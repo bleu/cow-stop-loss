@@ -1,11 +1,12 @@
 "use client"
 
-import { Separator } from "@bleu-fi/ui";
+import {  Separator } from "@bleu-fi/ui";
 
 import { Spinner } from "#/components/Spinner";
 import { useOrder } from "#/contexts/ordersContext";
 import { epochToDate, formatDateToLocalDatetime } from "#/utils";
 
+import { StatusBadge } from "../../(components)/StatusBadge";
 import { OrderInformation } from "./(components)/OrderInformation";
 
 export default function OrderPage({
@@ -24,14 +25,15 @@ export default function OrderPage({
   const stopLossOrder = orders.find((order) => order.hash === params.orderHash);
   const ordersRelated = orders.filter((order) => order.stopLossData?.appData === stopLossOrder?.stopLossData?.appData);
 
+
   return (
-    <div className="flex w-full justify-center h-[calc(100vh - 80px - 52px)]">
-      <div className="bg-blue3 my-10 text-white p-10 rounded">
+    <div className="flex size-full justify-center items-center">
+      <div className="bg-foreground my-10 text-black p-10 rounded relative">
         <OrderInformation label="Order Hash">{
           stopLossOrder?.hash
         }</OrderInformation>
         <OrderInformation label="Status">
-          {stopLossOrder?.status}
+          {StatusBadge(stopLossOrder?.status)}
         </OrderInformation> 
         <OrderInformation label="Submission Time">
           {formatDateToLocalDatetime(epochToDate(Number(stopLossOrder?.blockTimestamp)))}

@@ -7,9 +7,10 @@ import { TokenInfo } from "#/components/TokenInfo";
 import { StopLossOrderType } from "#/contexts/ordersContext";
 import { ChainId } from "#/lib/publicClients";
 import { IToken } from "#/lib/types";
-import { capitalize,formatDateToLocalDatetime } from "#/utils";
+import { formatDateToLocalDatetime } from "#/utils";
 
 import { CancelOrdersDialog } from "../CancelOrdersDialog";
+import { StatusBadge } from "../StatusBadge";
 
 
 interface ITableRowOrder {
@@ -81,7 +82,7 @@ export function TableRowOrder({
             "Error loading token"
           )}
         </TableCell>
-        <TableCell>{capitalize(order?.status as string)}</TableCell>
+        <TableCell>{StatusBadge(order?.status)}</TableCell>
         <TableCell 
           onClick={(e) => e.stopPropagation()}
           className="cursor-default"
