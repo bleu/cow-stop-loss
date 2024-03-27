@@ -65,7 +65,7 @@ export function TableRowOrder({ order }: { order: StopLossOrderType }) {
               className={cn(
                 "size-5",
                 disabled
-                  ? "text-foreground-primary/50"
+                  ? "text-primary-foreground/50"
                   : "text-destructive hover:destructive/80"
               )}
             />
