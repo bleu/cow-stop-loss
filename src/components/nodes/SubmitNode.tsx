@@ -45,9 +45,9 @@ export function SubmitNode() {
       .flat();
 
     sendTransactions(rawArgs)
-      .then(() => {
+      .then(({ safeTxHash }) => {
         setIsSubmitting(false);
-        push("/history");
+        push(`/txpending/${safeTxHash}`);
       })
       .catch(() => {
         setIsSubmitting(false);
