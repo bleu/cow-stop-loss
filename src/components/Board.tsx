@@ -221,6 +221,7 @@ export function Board({
       zoomOnPinch={false}
       zoomOnDoubleClick={false}
       zoomOnScroll={false}
+      nodesDraggable={false}
       proOptions={{ hideAttribution: true }}
       className="bg-background size-full"
     >
