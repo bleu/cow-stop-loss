@@ -76,7 +76,7 @@ export function SubmitNode() {
                   }
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-amber9 hover:text-amber11"
+                  className="text-accent hover:accent/70"
                 >
                   here
                 </a>

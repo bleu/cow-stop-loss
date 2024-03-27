@@ -67,7 +67,7 @@ export function Dialog({
           </div>
           <DialogClose asChild>
             <button
-              className="absolute right-[10px] top-[10px] inline-flex size-[30px] items-center justify-center text-sand12 hover:font-black focus:outline-none"
+              className="absolute right-[10px] top-[10px] inline-flex size-[30px] items-center justify-center text-foreground hover:font-black focus:outline-none"
               aria-label="Close"
             >
               <Cross2Icon />

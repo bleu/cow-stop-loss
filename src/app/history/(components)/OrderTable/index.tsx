@@ -56,7 +56,7 @@ export function OrderTable() {
           {orders?.length === 0 && (
             <TableRow>
               <TableCell colSpan={6}>
-                <h1 className="text-md text-slate12 m-2 text-center w-full">
+                <h1 className="text-md m-2 text-center w-full">
                   This address didn't made any Stop Loss order yet
                 </h1>
               </TableCell>

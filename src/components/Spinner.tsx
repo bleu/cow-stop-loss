@@ -7,13 +7,13 @@ enum SpinnerSize {
 }
 
 export enum SpinnerColor {
-  amber = "amber9",
-  blue = "blue9",
+  highlight = "highlight",
+  primary = "primary",
 }
 
 export function Spinner({
   size = "md",
-  color = "amber",
+  color = "highlight",
 }: {
   size?: keyof typeof SpinnerSize;
   color?: keyof typeof SpinnerColor;
@@ -28,16 +28,16 @@ export function Spinner({
     >
       <div
         className={cn(
-          "border-6 mx-2 animate-spin rounded-full border-2 border-solid border-l-slate10",
+          "border-6 mx-2 animate-spin rounded-full border-2 border-solid",
           {
             "h-4 w-4": SpinnerSizeNumber === SpinnerSize.sm,
             "h-12 w-12": SpinnerSizeNumber === SpinnerSize.md,
             "h-20 w-20": SpinnerSizeNumber === SpinnerSize.lg,
           },
           {
-            "border-amber10": SpinnerColorString === SpinnerColor.amber,
-            "border-blue10": SpinnerColorString === SpinnerColor.blue,
-          },
+            "border-highlight": SpinnerColorString === SpinnerColor.highlight,
+            "border-primary": SpinnerColorString === SpinnerColor.primary,
+          }
         )}
       />
     </div>

@@ -43,13 +43,9 @@ export function MintBalMenu({
                   <TableCell>
                     <div className="flex items-center gap-2">
                       Address: {truncateAddress(gauge)}
-                      <a
-                        target="_blank"
-                        href={contractExplorerUrl}
-                        className="text-slate12"
-                      >
+                      <a target="_blank" href={contractExplorerUrl}>
                         <ArrowTopRightIcon
-                          className="hover:text-amber9"
+                          className="hover:text-highlight"
                           width={10}
                           height={10}
                         />

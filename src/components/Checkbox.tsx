@@ -1,5 +1,4 @@
 import { Checkbox as CheckboxPrimitive } from "@bleu-fi/ui";
-import { slateDarkA } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import React from "react";
 
@@ -26,7 +25,7 @@ export function Checkbox({
     <div className="flex items-center justify-between">
       <div className="flex items-center">
         <CheckboxPrimitive
-          className="flex size-[15px] appearance-none items-center justify-center  bg-white shadow-[0_2px_10px] shadow-blackA7 outline-none hover:bg-slate12 focus:shadow-[0_0_0_2px_black]"
+          className="flex size-[15px] appearance-none items-center justify-center  bg-white shadow-[0_2px_10px] outline-none"
           checked={checked}
           onClick={() => onChange()}
           id={id}
@@ -39,10 +38,10 @@ export function Checkbox({
         <Tooltip content={tooltipText}>
           {tooltipLink ? (
             <a href={tooltipLink} target="_blank">
-              <InfoCircledIcon color={slateDarkA.slateA11} />
+              <InfoCircledIcon />
             </a>
           ) : (
-            <InfoCircledIcon color={slateDarkA.slateA11} />
+            <InfoCircledIcon />
           )}
         </Tooltip>
       )}
