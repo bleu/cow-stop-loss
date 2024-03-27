@@ -27,7 +27,7 @@ export function MintBalMenu({
         <span className="text-lg font-bold text-highlight mb-2">
           BAL Mint Hook
         </span>
-        <Table className="border border-foreground-primary rounded-md">
+        <Table className="border border-primary-foreground rounded-md">
           <TableHeader className="border-b">
             <TableCell>Gauges to mint</TableCell>
           </TableHeader>
