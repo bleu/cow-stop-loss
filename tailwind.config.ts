@@ -6,7 +6,10 @@ const defaultTheme = require("tailwindcss/defaultTheme");
 
 /** @type {import("tailwindcss").Config} */
 module.exports = {
-  content: ["./src/**/*.{js,ts,jsx,tsx}"],
+  content: [
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@bleu-fi/ui/dist/**/*",
+  ],
   theme: {
     container: {
       center: true,
@@ -25,7 +28,6 @@ module.exports = {
         ...brownDark,
         purple: "#B462FA",
         yellow: "hsla(44, 91%, 55%, 1);",
-
         success: "hsl(var(--success) / <alpha-value>)",
         info: "hsl(var(--info) / <alpha-value>)",
         warning: "hsl(var(--warning) / <alpha-value>)",
