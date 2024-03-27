@@ -28,7 +28,6 @@ import { IEdgeData, INodeData } from "#/lib/types";
 import { defaultEdgeProps } from "./edges";
 import { AddHookEdge } from "./edges/AddHookEdge";
 import { MintBalNode } from "./nodes/MintBalNode";
-import { MultiSendNode } from "./nodes/MultiSendNode";
 import { StopLossNode } from "./nodes/StopLossNode";
 import { SubmitNode } from "./nodes/SubmitNode";
 import { SwapNode } from "./nodes/SwapNode";
@@ -37,7 +36,6 @@ import { Spinner } from "./Spinner";
 const nodeTypes = {
   swap: SwapNode,
   stopLoss: StopLossNode,
-  hookMultiSend: MultiSendNode,
   hookMintBal: MintBalNode,
   submitNode: SubmitNode,
 };
@@ -108,7 +106,7 @@ export function Board({
     safe: { chainId, safeAddress },
   } = useSafeAppsSDK();
   const [edges, setEdges, onEdgesChange] = useEdgesState<IEdgeData>(initEdges);
-  const { fitView } = useReactFlow();
+  const { fitView, addNodes, addEdges } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState<INodeData>(
     getLayoutedNodes(initNodes)
   );
@@ -175,7 +173,7 @@ export function Board({
 
   function handleNodesChange(changes: NodeChange[]) {
     const nextChanges = changes.reduce((acc, change) => {
-      // prevent removing the swap and stop loss nodes
+      // prevent removing submit node
       if (change.type === "remove") {
         if (change.id !== "submit") {
           return [...acc, change];
@@ -184,13 +182,13 @@ export function Board({
       }
       return [...acc, change];
     }, [] as NodeChange[]);
-    fitView({ duration: 1000 });
     onNodesChange(nextChanges);
+    fitView({ nodes, duration: 1000 });
   }
 
   function handleEdgeChange(changes: EdgeChange[]) {
     const nextChanges = changes.reduce((acc, change) => {
-      // prevent removing the swap and stop loss nodes
+      // prevent removing edges
       if (change.type === "remove") {
         return acc;
       }
@@ -235,8 +233,9 @@ export function Board({
                 safeAddress as Address,
                 nodes
               ).then(({ orderEdges, orderNodes }) => {
+                addNodes(orderNodes);
+                addEdges(orderEdges);
                 setNodes(getLayoutedNodes([...nodes, ...orderNodes]));
-                setEdges([...edges, ...orderEdges]);
                 setIsAddingOrder(false);
               });
             }}
@@ -251,14 +250,6 @@ export function Board({
                 Add order
               </div>
             )}
-          </Button>
-          <Button
-            onClick={() => {
-              fitView({ duration: 1000 });
-            }}
-            className="bg-blue9 hover:bg-blue10 text-white rounded-md"
-          >
-            Fit view
           </Button>
         </div>
       </Panel>

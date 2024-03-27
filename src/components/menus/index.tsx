@@ -5,7 +5,6 @@ import { INodeData } from "#/lib/types";
 
 import { Spinner } from "../Spinner";
 import { MintBalMenu } from "./MintBalMenu";
-import { MultiSendMenu } from "./MultiSendMenu";
 import { StopLossConditionMenu } from "./StopLossConditionMenu";
 import { SwapMenu } from "./SwapMenu";
 
@@ -13,7 +12,6 @@ export default function Menu() {
   const nodeMenus = {
     stopLoss: StopLossConditionMenu,
     swap: SwapMenu,
-    hookMultiSend: MultiSendMenu,
     hookMintBal: MintBalMenu,
   };
 

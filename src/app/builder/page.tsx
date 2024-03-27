@@ -52,7 +52,7 @@ export default function Page() {
       <div className="container size-full py-6">
         <div className="flex h-full items-stretch gap-6">
           <div
-            className={`flex-col space-y-4 sm:flex md:order-2 transition-all duration-500 ${menuVisible ? "w-72 translate-x-0" : "w-0 translate-x-full"}`}
+            className={`flex-col space-y-4 sm:flex md:order-2 transition-all duration-500 w-72 translate-x-0`}
           >
             {menuVisible && <Menu />}
           </div>

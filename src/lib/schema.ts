@@ -99,11 +99,3 @@ export const generateSwapSchema = ({ chainId }: { chainId: ChainId }) =>
         }
       });
     });
-
-export const multiSendHookSchema = z.object({
-  type: z.literal("MULTI_SEND"),
-  safeAddress: basicAddressSchema,
-  token: basicTokenSchema,
-  amountPerReceiver: z.coerce.number().positive(),
-  receivers: basicAddressSchema.array().nonempty(),
-});

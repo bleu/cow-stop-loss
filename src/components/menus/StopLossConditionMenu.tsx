@@ -19,7 +19,6 @@ import { generateStopLossConditionSchema } from "#/lib/schema";
 import { IStopLossRecipeData, TIME_OPTIONS } from "#/lib/types";
 import { buildBlockExplorerAddressURL, formatNumber } from "#/utils";
 
-import Button from "../Button";
 import { BaseInput, Input } from "../Input";
 import { Select, SelectItem } from "../Select";
 import { Tooltip } from "../Tooltip";
@@ -58,18 +57,38 @@ export function StopLossConditionMenu({
     resolver: zodResolver(stopLossConditionSchema),
     defaultValues,
   });
+
   const { control } = form;
 
   const { setNodes, getNodes } = useReactFlow();
 
-  const [oraclePrice, setOraclesPrices] = useState<number>();
+  const [oraclePrice, setOraclePrices] = useState<number>();
 
-  const {
-    watch,
-    formState: { isSubmitting },
-  } = form;
+  const { watch, handleSubmit } = form;
 
   const formData = watch();
+
+  useEffect(() => {
+    const subscription = watch(() =>
+      handleSubmit((formData: FieldValues) => {
+        const newNodes = getNodes().map((node) => {
+          if (node.id === id) {
+            const error =
+              formData.strikePrice > (oraclePrice || 0)
+                ? "STRIKE_PRICE_ABOVE_ORACLE_PRICE"
+                : undefined;
+            return {
+              ...node,
+              data: { ...node.data, ...formData, error },
+            };
+          }
+          return node;
+        });
+        setNodes(newNodes);
+      })()
+    );
+    return () => subscription.unsubscribe();
+  }, [handleSubmit, watch, oraclePrice]);
 
   useEffect(() => {
     if (data.tokenSellOracle && data.tokenBuyOracle) {
@@ -86,7 +105,7 @@ export function StopLossConditionMenu({
           tokenSellOracle: data.tokenSellOracle,
         })
         .then((price) => {
-          setOraclesPrices(price);
+          setOraclePrices(price);
         });
     }
   }, [formData.tokenSellOracle, formData.tokenBuyOracle]);
@@ -95,22 +114,8 @@ export function StopLossConditionMenu({
     ? (formData.strikePrice / oraclePrice - 1) * 100
     : 0;
 
-  const onSubmit = (formData: FieldValues) => {
-    const newNodes = getNodes().map((node) => {
-      if (node.id === id) {
-        return {
-          ...node,
-          data: { ...node.data, ...formData, oracleError: false },
-          selected: false,
-        };
-      }
-      return node;
-    });
-    setNodes(newNodes);
-  };
-
   return (
-    <Form {...form} onSubmit={onSubmit}>
+    <Form {...form}>
       <div className="flex flex-col gap-3 m-2 w-full max-h-[39rem] overflow-y-scroll">
         <div>
           <span className="text-md font-bold mb-2">Stop Loss Condition</span>
@@ -185,13 +190,6 @@ export function StopLossConditionMenu({
             </AccordionItem>
           </Accordion>
         </div>
-        <Button
-          type="submit"
-          className="my-2 w-full"
-          disabled={percentageOverOraclePrice > 0 || isSubmitting}
-        >
-          {isSubmitting ? "Saving" : "Save"}
-        </Button>
       </div>
     </Form>
   );
