@@ -53,7 +53,7 @@ export function SubmitNode() {
         setIsSubmitting(false);
         toast({
           title: "Error creating transaction",
-          content: "Review your orders and try again.",
+          description: "Review your orders and try again.",
           variant: "destructive",
         });
       });

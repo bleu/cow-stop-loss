@@ -177,7 +177,7 @@ export function ChooseHookDialog({
         if (!mintData.gauges.length) {
           toast({
             title: "No gauges found",
-            content: "This Safe has no gauges to mint from",
+            description: "This Safe has no gauges to mint from",
             variant: "destructive",
           });
           throw new Error("No gauges found");
