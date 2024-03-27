@@ -8,9 +8,10 @@ interface ICheckbox {
   id: string;
   checked: boolean;
   onChange: () => void;
-  label: string;
+  label?: string;
   tooltipText?: string;
   tooltipLink?: string;
+  disabled?: boolean;
 }
 
 export function Checkbox({
@@ -20,6 +21,7 @@ export function Checkbox({
   label,
   tooltipLink,
   tooltipText,
+  disabled,
 }: ICheckbox) {
   return (
     <div className="flex items-center justify-between">
@@ -29,6 +31,7 @@ export function Checkbox({
           checked={checked}
           onClick={() => onChange()}
           id={id}
+          disabled={disabled}
         />
         <label htmlFor={id} className="pl-[15px] text-[15px] leading-8">
           {label}
