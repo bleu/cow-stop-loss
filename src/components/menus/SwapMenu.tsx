@@ -140,29 +140,31 @@ export function SwapMenu({
                 type="number"
                 step={1 / 10 ** amountDecimals}
               />
-              <div className="flex gap-x-1 text-xs">
-                <span>
+              {walletAmount != "0" && (
+                <div className="flex gap-x-1 text-xs">
                   <span>
-                    Wallet Balance:{" "}
-                    {formatNumber(
-                      walletAmount,
-                      4,
-                      "decimal",
-                      "standard",
-                      0.0001
-                    )}
+                    <span>
+                      Wallet Balance:{" "}
+                      {formatNumber(
+                        walletAmount,
+                        4,
+                        "decimal",
+                        "standard",
+                        0.0001
+                      )}
+                    </span>
                   </span>
-                </span>
-                <button
-                  type="button"
-                  className="text-accent outline-none hover:text-accent/70"
-                  onClick={() => {
-                    setValue("amount", convertAndRoundDown(walletAmount));
-                  }}
-                >
-                  Max
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    className="text-accent outline-none hover:text-accent/70"
+                    onClick={() => {
+                      setValue("amount", convertAndRoundDown(walletAmount));
+                    }}
+                  >
+                    Max
+                  </button>
+                </div>
+              )}
             </div>
             <TokenSelect
               selectedToken={data.tokenSell}
