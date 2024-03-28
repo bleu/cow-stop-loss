@@ -43,7 +43,7 @@ export function Dialog({
         />
         <DialogContent
           className={cn(
-            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-[6px] bg-darkBrown focus:outline-none bg-input text-background w-[90vw] max-w-[450px] p-[25px]"
+            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-[6px] focus:outline-none bg-input text-background w-[90vw] max-w-[450px] p-[25px]"
           )}
           onCloseAutoFocus={onClose}
         >

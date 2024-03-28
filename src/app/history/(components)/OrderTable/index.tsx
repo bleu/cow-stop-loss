@@ -29,7 +29,7 @@ export function OrderTable() {
     <div className="my-10 flex w-9/12 flex-col gap-y-5">
       <div className="flex items-center justify-between gap-x-8">
         <div className="flex justify-between w-full gap-1">
-          <h1 className="text-3xl text-slate12">My Stop Loss Orders</h1>
+          <h1 className="text-3xl text-foreground">My Stop Loss Orders</h1>
           <div className="flex items-center gap-x-2">
             <CancelOrdersDialog
               ordersToCancel={ordersToCancel}
@@ -78,7 +78,7 @@ export function OrderTable() {
             {orders?.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6}>
-                  <h1 className="text-md text-slate12 m-2 text-center w-full">
+                  <h1 className="text-md text-primary-foreground m-2 text-center w-full">
                     This address didn't made any Stop Loss order yet
                   </h1>
                 </TableCell>

@@ -23,7 +23,7 @@ export const BaseInput = React.forwardRef<
     {...props}
     ref={ref}
     className={cn(
-      "w-full selection:color-white border border-border box-border inline-flex h-[35px] appearance-none items-center justify-center bg-input px-[10px] text-[15px] leading-none text-background outline-none selection:bg-primary-content disabled:bg-brown9 ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 rounded-md",
+      "w-full selection:color-white border border-border box-border inline-flex h-[35px] appearance-none items-center justify-center bg-input px-[10px] text-[15px] leading-none text-background outline-none selection:bg-primary-content disabled:bg-background/50 ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50 rounded-md",
       props.className
     )}
   />

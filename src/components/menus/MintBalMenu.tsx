@@ -46,7 +46,7 @@ export function MintBalMenu({
                       <a
                         target="_blank"
                         href={contractExplorerUrl}
-                        className="text-slate12"
+                        className="text-foreground"
                       >
                         <ArrowTopRightIcon
                           className="hover:text-amber9"

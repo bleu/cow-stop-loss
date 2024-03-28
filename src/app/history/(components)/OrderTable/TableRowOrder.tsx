@@ -31,16 +31,16 @@ export function TableRowOrder({
     <>
       <TableRow
        key={order?.id} 
-       className="border-transparent hover:cursor-pointer hover:bg-brown12"
+       className="border-transparent hover:cursor-pointer hover:bg-foreground"
        onClick={
         () => router.push(`/history/order/${order?.hash}`)
         }
       >
-
         <TableCell>
           <span className="sr-only"></span>
         </TableCell>
         <TableCell 
+          // Stop onClick from table row, which is redirecting to order details page
           onClick={(e) => e.stopPropagation()}
           className="cursor-default"
         >
@@ -86,6 +86,7 @@ export function TableRowOrder({
           <StatusBadge status={order?.status}/>
         </TableCell>
         <TableCell 
+         // Stop onClick from table row, which is redirecting to order details page
           onClick={(e) => e.stopPropagation()}
           className="cursor-default"
         >

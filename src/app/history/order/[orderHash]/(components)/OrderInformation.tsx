@@ -10,7 +10,7 @@ const InfoTooltip = ({ text }: { text?: string }) => {
       <TooltipTrigger disabled>
         <QuestionMarkCircledIcon />
       </TooltipTrigger>
-      <TooltipContent className="max-w-56 text-center">
+      <TooltipContent className="max-w-56 text-center bg-warning text-background">
         {text}
       </TooltipContent>
     </Tooltip>

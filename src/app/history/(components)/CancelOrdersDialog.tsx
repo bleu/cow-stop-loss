@@ -29,11 +29,8 @@ export function CancelOrdersDialog({
   const { sendTransactions } = useRawTxData();
 
   async function cancelOrders(ordersHash: string[]) {
-    const ordersHashArray = Array.isArray(ordersHash)
-      ? ordersHash
-      : [ordersHash];
 
-    const cancelTransactionsData = ordersHashArray.map(
+    const cancelTransactionsData = ordersHash.map(
       (orderHash) =>
         ({
           type: TRANSACTION_TYPES.ORDER_CANCEL,
@@ -56,23 +53,23 @@ export function CancelOrdersDialog({
           <Button
             variant={tableRow ? "ghost" : "destructive"}
             disabled={disabled}
-            className={cn(tableRow && "hover:bg-transparent")}
+            className={cn(tableRow && "hover:bg-transparenti focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent")}
           >
             <span className="flex items-center gap-x-2">
               <TrashIcon
                 className={cn(
                   "size-5",
                   disabled && tableRow
-                    ? "text-slate10"
+                    ? "text-info"
                     : "text-destructive/70 hover:text-destructive",
-                  !tableRow && "text-white",
+                  !tableRow && "text-black",
                 )}
               />
               {!tableRow && "Cancel Orders"}
             </span>
           </Button>
       </DialogTrigger>
-      <DialogContent className="bg-blue3 border-0 text-white flex flex-col items-center">
+      <DialogContent className="bg-card border-0 text-background flex flex-col items-center">
         <h2 className="text-xl font-semibold">Are you sure?</h2>
         <span>
           You are about to cancel {ordersToCancel.length}{" "}
@@ -80,8 +77,8 @@ export function CancelOrdersDialog({
         </span>
         <div className="flex gap-x-2">
           <DialogClose asChild>
-            <Button variant="outline" className="text-black">
-              <span> No, keep orders</span>
+            <Button className="shadow-none">
+              <span>No, keep orders</span>
             </Button>
           </DialogClose>
 

@@ -219,7 +219,7 @@ function HookSelect({
       <Select.SelectTrigger className="h-[35px] inline-flex w-full items-center gap-[5px] bg-input border border-background">
         <Select.SelectValue placeholder="Choose one of the available hooks" />
       </Select.SelectTrigger>
-      <Select.SelectContent className="z-[10000] w-full overflow-hidden bg-input text-sand1">
+      <Select.SelectContent className="z-[10000] w-full overflow-hidden bg-input">
         <Select.SelectGroup>
           <Select.SelectLabel className="pl-4" />
           {HOOK_OPTIONS.map((option) => {
@@ -228,7 +228,7 @@ function HookSelect({
               <Select.SelectItem
                 key={option.value}
                 value={option.value}
-                className="relative flex select-none items-center bg-input leading-none text-sand1 data-[highlighted]:bg-gray-300 data-[highlighted]:font-semibold data-[disabled]:text-gray-400 data-[highlighted]:outline-none"
+                className="relative flex select-none items-center bg-input leading-none text-black data-[highlighted]:bg-gray-300 data-[highlighted]:font-semibold data-[disabled]:text-gray-400 data-[highlighted]:outline-none"
                 disabled={disabled}
               >
                 {option.label} {disabled && "(Coming soon)"}
