@@ -12,8 +12,8 @@ overrides:
 
 dependencies:
   '@bleu-fi/ui':
-    specifier: ^0.1.58
-    version: 0.1.58(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react-hook-form@7.50.1)(react-router-dom@6.22.3)(react@18.2.0)
+    specifier: ^0.1.59
+    version: 0.1.59(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react-hook-form@7.50.1)(react-router-dom@6.22.3)(react@18.2.0)
   '@cowprotocol/app-data':
     specifier: ^1.2.2
     version: 1.2.2(cross-fetch@4.0.0)(ethers@5.7.2)(ipfs-only-hash@4.0.0)(multiformats@9.9.0)
@@ -987,8 +987,8 @@ packages:
   /@bcoe/v8-coverage@0.2.3:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  /@bleu-fi/ui@0.1.58(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react-hook-form@7.50.1)(react-router-dom@6.22.3)(react@18.2.0):
-    resolution: {integrity: sha512-GvXGXxSV9hnPot6Qgkut5FEkHPCnQy4D8TAghdWPwCGBkJMSY5Svp8oWFei9D8d677PWyou9KH3zOnx7o6SPdg==, tarball: https://npm.pkg.github.com/download/@bleu-fi/ui/0.1.58/6e99660317f9d0350fa91d78cfc487733906c4f9}
+  /@bleu-fi/ui@0.1.59(@types/react-dom@18.2.19)(@types/react@18.2.55)(react-dom@18.2.0)(react-hook-form@7.50.1)(react-router-dom@6.22.3)(react@18.2.0):
+    resolution: {integrity: sha512-e9AcZF2Z1J1sNRPJ92zghFVOPCkfBUn+B5MMnHDQDASXPH3XGqt1+OMPVA/2pJ1Ev0NgdZy5bWCVCLe6hMUeig==, tarball: https://npm.pkg.github.com/download/@bleu-fi/ui/0.1.59/a959816b37f7a9f71c7b866e06a1a7e2c78e0369}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: '>=18'

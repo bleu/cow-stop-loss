@@ -1,9 +1,9 @@
+import { Spinner } from "@bleu-fi/ui";
 import { useNodes } from "reactflow";
 
 import { useRecipeData } from "#/hooks/useRecipeData";
 import { INodeData } from "#/lib/types";
 
-import { Spinner } from "../Spinner";
 import { MintBalMenu } from "./MintBalMenu";
 import { StopLossConditionMenu } from "./StopLossConditionMenu";
 import { SwapMenu } from "./SwapMenu";

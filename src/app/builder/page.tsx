@@ -1,5 +1,6 @@
 "use client";
 
+import { Spinner } from "@bleu-fi/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect, useState } from "react";
 import { Edge, Node } from "reactflow";
@@ -8,7 +9,6 @@ import { Address } from "viem";
 import { Board } from "#/components/Board";
 import Menu from "#/components/menus";
 import { defaultNodeProps } from "#/components/nodes";
-import { Spinner } from "#/components/Spinner";
 import { getOrderDefaultNodesAndEdges } from "#/lib/getOrderDefaultData";
 import { ChainId } from "#/lib/publicClients";
 import { IEdgeData, INodeData } from "#/lib/types";
