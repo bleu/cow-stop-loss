@@ -18,7 +18,7 @@ export default function Page({
   async function redirectToHistoryOnTxExecuted() {
     const tx = await sdk.txs.getBySafeTxHash(safeTxHash);
     if (tx.txStatus === TransactionStatus.SUCCESS) {
-      // Wait 1 second to wait subgraph to index the transaction
+      // Wait 1 second for the subgraph to index the transaction
       setTimeout(() => {
         router.push("/history");
       }, 1000);
