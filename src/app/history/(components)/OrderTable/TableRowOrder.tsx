@@ -82,7 +82,9 @@ export function TableRowOrder({
             "Error loading token"
           )}
         </TableCell>
-        <TableCell>{StatusBadge(order?.status)}</TableCell>
+        <TableCell>
+          <StatusBadge status={order?.status}/>
+        </TableCell>
         <TableCell 
           onClick={(e) => e.stopPropagation()}
           className="cursor-default"

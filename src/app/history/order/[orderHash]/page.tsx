@@ -66,7 +66,7 @@ export default function OrderPage({
             label="Status"
             tooltipText="The status can be Created, Posted, Fulfilled, Expired and Cancelled"
           >
-            {StatusBadge(stopLossOrder?.status)}
+             <StatusBadge status={stopLossOrder?.status}/>
           </OrderInformation>
           <OrderInformation
             label="Submission Time"
@@ -152,7 +152,7 @@ export default function OrderPage({
                       >
                         {order.hash}
                       </span>
-                      <span>{StatusBadge(stopLossOrder?.status)}</span>
+                      <StatusBadge status={stopLossOrder?.status}/>
                     </div>
                   ))}
                 </div>

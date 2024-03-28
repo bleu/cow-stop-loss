@@ -1,6 +1,6 @@
 import { Badge } from "@bleu-fi/ui";
 
-export function StatusBadge(status: string | undefined) {
+export function StatusBadge({status}: {status: string | undefined}) {
   switch (status) {
     case "created":
       return (
