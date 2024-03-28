@@ -6,6 +6,11 @@ import { formatNumber } from "#/utils";
 import { Tooltip } from "../Tooltip";
 import { BaseNode } from ".";
 
+const STOP_LOSS_ERROR_MESSSAGE = {
+  STRIKE_PRICE_ABOVE_ORACLE_PRICE: "Strike price is above the oracle price",
+  ORACLE_NOT_FOUND: "Oracle contract not found",
+};
+
 export function StopLossNode({
   selected,
   data,
@@ -22,7 +27,7 @@ export function StopLossNode({
           </span>
           {data.error && (
             <a href={"https://data.chain.link/feeds"} target="_blank">
-              <Tooltip content={data.error}>
+              <Tooltip content={STOP_LOSS_ERROR_MESSSAGE[data.error]}>
                 <ExclamationTriangleIcon className="size-3 text-destructive" />
               </Tooltip>
             </a>
