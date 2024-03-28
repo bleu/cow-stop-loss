@@ -44,16 +44,15 @@ export function CancelOrdersDialog({
         }) as OrderCancelArgs
     );
 
-    await sendTransactions(cancelTransactionsData)
-      .then(({ safeTxHash }) => {
-        push(`/txpending/${safeTxHash}`);
-      })
-      .catch(() => {
-        toast({
-          title: "Error building transaction",
-          variant: "destructive",
-        });
+    try {
+      const { safeTxHash } = await sendTransactions(cancelTransactionsData);
+      push(`/txpending/${safeTxHash}`);
+    } catch {
+      toast({
+        title: "Error building transaction",
+        variant: "destructive",
       });
+    }
   }
   return (
     <Dialog
