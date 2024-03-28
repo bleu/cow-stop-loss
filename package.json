@@ -22,7 +22,7 @@
     "test:watch": "pnpm exec jest --watchAll --verbose"
   },
   "dependencies": {
-    "@bleu-fi/ui": "^0.1.48",
+    "@bleu-fi/ui": "^0.1.58",
     "@cowprotocol/app-data": "^1.2.2",
     "@graphql-codegen/typescript": "^4.0.6",
     "@graphql-codegen/typescript-operations": "^4.2.0",
