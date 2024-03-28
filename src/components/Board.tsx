@@ -133,8 +133,12 @@ export function Board({
         const edgesWithOrderId = edges.filter((edge) =>
           nodesWithOrderId.some((node) => node.id === edge.source)
         );
-        setNodes(nodes.filter((node) => !nodesWithOrderId.includes(node)));
+        const newNodes = getLayoutedNodes(
+          nodes.filter((node) => !nodesWithOrderId.includes(node))
+        );
+        setNodes(newNodes);
         setEdges(edges.filter((edge) => !edgesWithOrderId.includes(edge)));
+        fitView({ nodes: newNodes, duration: 1000 });
         return;
       }
 
@@ -162,11 +166,11 @@ export function Board({
         }, edges)
       );
 
-      setNodes(
-        getLayoutedNodes(
-          nodes.filter((node) => !deleted.map((n) => n.id).includes(node.id))
-        )
+      const newNodes = getLayoutedNodes(
+        nodes.filter((node) => !deleted.map((n) => n.id).includes(node.id))
       );
+      setNodes(newNodes);
+      fitView({ nodes: newNodes, duration: 1000 });
     },
     [nodes, edges]
   );
