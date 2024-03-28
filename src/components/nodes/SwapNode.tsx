@@ -37,7 +37,7 @@ export function SwapNode({
           <span className="text-sm font-bold text-highlight">Swap</span>
           {sellTokenWalletAmount < sellAmount && (
             <a>
-              <Tooltip content="You don't have enough amount of the selling token. The order can still be posted but it just can be filled when you have the tokens.">
+              <Tooltip content="You don't have enough amount of the selling token. The order can still be posted but it will never be filled until you don't have enough tokens in your wallet.">
                 <ExclamationTriangleIcon className="size-3 text-warning text-bold" />
               </Tooltip>
             </a>

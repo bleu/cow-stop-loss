@@ -68,19 +68,18 @@ export function SubmitNode() {
       )
       .flat();
 
-    sendTransactions(rawArgs)
-      .then(({ safeTxHash }) => {
-        setIsSubmitting(false);
-        push(`/txpending/${safeTxHash}`);
-      })
-      .catch(() => {
-        setIsSubmitting(false);
-        toast({
-          title: "Error creating transaction",
-          description: "Review your orders and try again.",
-          variant: "destructive",
-        });
+    try {
+      const { safeTxHash } = await sendTransactions(rawArgs);
+      push(`/txpending/${safeTxHash}`);
+    } catch {
+      toast({
+        title: "Error creating transaction",
+        description: "Review your orders and try again.",
+        variant: "destructive",
       });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
