@@ -32,7 +32,7 @@ export function TableRowOrder({
     <>
       <TableRow
        key={order?.id} 
-       className="border-transparent hover:cursor-pointer hover:bg-foreground"
+       className="border-transparent hover:cursor-pointer hover:bg-background/10"
        onClick={
         () => router.push(`/history/order/${order?.hash}`)
         }

@@ -1,9 +1,8 @@
 import { Checkbox as CheckboxPrimitive } from "@bleu-fi/ui";
-import { slateDarkA } from "@radix-ui/colors";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
 import React from "react";
 
-import { Tooltip } from "./Tooltip";
+import { InfoTooltip } from "./Tooltip";
+
 
 interface ICheckbox {
   id: string;
@@ -36,17 +35,7 @@ export function Checkbox({
           </label>
         )}
       </div>
-      {tooltipText && (
-        <Tooltip content={tooltipText}>
-          {tooltipLink ? (
-            <a href={tooltipLink} target="_blank">
-              <InfoCircledIcon color={slateDarkA.slateA11} />
-            </a>
-          ) : (
-            <InfoCircledIcon color={slateDarkA.slateA11} />
-          )}
-        </Tooltip>
-      )}
+      <InfoTooltip text={tooltipText} link={tooltipLink}/>
     </div>
   );
 }

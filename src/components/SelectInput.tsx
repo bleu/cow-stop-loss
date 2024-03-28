@@ -1,8 +1,7 @@
 import { FormLabel, Select } from "@bleu-fi/ui";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
 import React from "react";
 
-import { Tooltip } from "./Tooltip";
+import { InfoTooltip } from "./Tooltip";
 
 const SelectInput = ({
   label,
@@ -23,11 +22,7 @@ const SelectInput = ({
     <label className="block text-sm text-background" htmlFor={name}>
       <div className="flex flex-row justify-between">
         <FormLabel className="mb-2 block text-sm">{label}</FormLabel>
-        {tooltipText && (
-          <Tooltip content={tooltipText}>
-            <InfoCircledIcon />
-          </Tooltip>
-        )}
+        <InfoTooltip text={tooltipText}/>
       </div>{" "}
       <Select.SelectRoot onValueChange={onValueChange} name={name}>
         <Select.SelectTrigger className="h-[35px] bg-input border-background" style={{borderWidth: 1}}>

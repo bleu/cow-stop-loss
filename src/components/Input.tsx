@@ -1,11 +1,11 @@
 "use client";
 
 import { cn,FormControl, FormLabel, FormMessage } from "@bleu-fi/ui";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
 import React, { HTMLProps } from "react";
 import { FieldError, RegisterOptions, useFormContext } from "react-hook-form";
 
-import { Tooltip } from "./Tooltip";
+import { InfoTooltip } from "./Tooltip";
+
 
 interface IInput extends Omit<HTMLProps<HTMLInputElement>, "name"> {
   name: string;
@@ -46,17 +46,7 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
       <div className="flex flex-col">
         <div className="flex flex-row justify-between">
           <FormLabel className="mb-2 block text-sm">{label}</FormLabel>
-          {tooltipText && (
-            <Tooltip content={tooltipText}>
-              {tooltipLink ? (
-                <a href={tooltipLink} target="_blank">
-                  <InfoCircledIcon />
-                </a>
-              ) : (
-                <InfoCircledIcon />
-              )}
-            </Tooltip>
-          )}
+          <InfoTooltip text={tooltipText} link={tooltipLink}/>
         </div>
         <FormControl>
           <BaseInput

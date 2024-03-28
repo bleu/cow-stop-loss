@@ -1,7 +1,5 @@
 import { Form, formatNumber,FormControl, FormMessage } from "@bleu-fi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { slateDarkA } from "@radix-ui/colors";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect, useState } from "react";
 import {
@@ -20,7 +18,7 @@ import { buildBlockExplorerAddressURL } from "#/utils";
 
 import { BaseInput, Input } from "../Input";
 import { SelectInput } from "../SelectInput";
-import { Tooltip } from "../Tooltip";
+import { InfoTooltip } from "../Tooltip";
 import {
   Accordion,
   AccordionContent,
@@ -234,9 +232,7 @@ export function StrikePriceInput({
             </span>
           )}
         </div>
-        <Tooltip content={STRIKE_PRICE_TOOLTIP_TEXT}>
-          <InfoCircledIcon color={slateDarkA.slateA11} />
-        </Tooltip>
+        <InfoTooltip text={STRIKE_PRICE_TOOLTIP_TEXT} />
       </div>
       <div className="flex flex-col gap-y-1">
         <FormControl>

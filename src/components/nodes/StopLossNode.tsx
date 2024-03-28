@@ -1,10 +1,8 @@
 import { formatNumber } from "@bleu-fi/ui";
-import { tomatoDark } from "@radix-ui/colors";
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
 import { IStopLossConditionData } from "#/lib/types";
 
-import { Tooltip } from "../Tooltip";
+import { InfoTooltip } from "../Tooltip";
 import { BaseNode } from ".";
 
 export function StopLossNode({
@@ -21,15 +19,9 @@ export function StopLossNode({
           <span className="text-sm font-bold text-highlight">
             Stop Loss Condition
           </span>
+          
           {data.error && (
-            <a href={"https://data.chain.link/feeds"} target="_blank">
-              <Tooltip content={data.error}>
-                <ExclamationTriangleIcon
-                  className="size-3"
-                  color={tomatoDark.tomato10}
-                />
-              </Tooltip>
-            </a>
+            <InfoTooltip text={data.error} link={"https://data.chain.link/feeds"} variant="error"/>
           )}
         </div>
         <span className="text-xs">
