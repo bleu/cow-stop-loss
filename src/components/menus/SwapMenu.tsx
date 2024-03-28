@@ -1,4 +1,4 @@
-import { Form } from "@bleu-fi/ui";
+import { convertStringToNumberAndRoundDown, Form, formatNumber } from "@bleu-fi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect } from "react";
@@ -11,7 +11,6 @@ import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
 import { ChainId } from "#/lib/publicClients";
 import { swapSchema } from "#/lib/schema";
 import { ISwapData, TIME_OPTIONS } from "#/lib/types";
-import { convertAndRoundDown, formatNumber } from "#/utils";
 
 import { Checkbox } from "../Checkbox";
 import { Input } from "../Input";
@@ -157,7 +156,7 @@ export function SwapMenu({
                     type="button"
                     className="text-accent outline-none hover:text-accent/70"
                     onClick={() => {
-                      setValue("amount", convertAndRoundDown(walletAmount));
+                      setValue("amount", convertStringToNumberAndRoundDown(walletAmount));
                     }}
                   >
                     Max

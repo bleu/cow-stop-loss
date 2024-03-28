@@ -1,6 +1,5 @@
-import { Form, FormControl, FormMessage } from "@bleu-fi/ui";
+import { Form, formatNumber,FormControl, FormMessage } from "@bleu-fi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect, useState } from "react";
 import {
@@ -15,11 +14,11 @@ import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
 import { ChainId } from "#/lib/publicClients";
 import { stopLossConditionSchema } from "#/lib/schema";
 import { IStopLossRecipeData, TIME_OPTIONS } from "#/lib/types";
-import { buildBlockExplorerAddressURL, formatNumber } from "#/utils";
+import { buildBlockExplorerAddressURL } from "#/utils";
 
 import { BaseInput, Input } from "../Input";
 import { SelectInputForm } from "../SelectInputForm";
-import { Tooltip } from "../Tooltip";
+import { InfoTooltip } from "../Tooltip";
 import {
   Accordion,
   AccordionContent,
@@ -230,9 +229,7 @@ export function StrikePriceInput({
             </span>
           )}
         </div>
-        <Tooltip content={STRIKE_PRICE_TOOLTIP_TEXT}>
-          <InfoCircledIcon />
-        </Tooltip>
+        <InfoTooltip text={STRIKE_PRICE_TOOLTIP_TEXT} />
       </div>
       <div className="flex flex-col gap-y-1">
         <FormControl>

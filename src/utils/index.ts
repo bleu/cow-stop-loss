@@ -1,10 +1,4 @@
-import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
 import { Address } from "viem";
-
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs));
-}
 
 export function truncateAddress(address?: string | null) {
   if (!address) return address;
@@ -13,36 +7,6 @@ export function truncateAddress(address?: string | null) {
   if (!match) return address;
 
   return `${match[1]}…${match[2]}`;
-}
-
-type Notation = "compact" | "engineering" | "scientific" | "standard";
-
-export const formatNumber = (
-  number: number | string | bigint,
-  decimals = 1,
-  style = "decimal",
-  notation: Notation = "compact",
-  lessThanThresholdToReplace = 0.001
-) => {
-  if (number === 0) return "0";
-  if (Math.abs(Number(number)) < lessThanThresholdToReplace) {
-    return `< ${lessThanThresholdToReplace.toLocaleString("en-US")}`;
-  }
-
-  return Number(number).toLocaleString("en-US", {
-    notation,
-    maximumFractionDigits: decimals,
-    style,
-  });
-};
-
-export function numberToPercent(value?: number) {
-  if (!value) return undefined;
-  return value * 100;
-}
-
-export function percentToNumber(value: number) {
-  return value / 100;
 }
 
 export enum Network {
@@ -238,50 +202,4 @@ export function unsafeNetworkIdFor(name: string) {
     (key) => networkIdEnumMap[key as keyof typeof networkIdEnumMap] === name
   );
 }
-
-export function capitalize(word: string) {
-  return word.charAt(0).toUpperCase() + word.slice(1);
-}
-
 export const addressRegex = /0x[a-fA-F0-9]{40}$/;
-
-/**
- * Formats a date in the "Month Day, Year" (American) format.
- *
- * @param {Date} date - The input date to be formatted.
- * @returns {string} A string representing the formatted date.
- */
-export function formatDate(date: Date): string {
-  return date.toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-}
-
-export function formatDateToLocalDatetime(date: Date): string {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  return `${year}-${month}-${day}T${hours}:${minutes}`;
-}
-
-export function convertAndRoundDown(value: string) {
-  const num = parseFloat(value);
-  const integerPartLength = Math.floor(num).toString().length;
-  const maxDecimalPlaces = Math.max(0, 15 - integerPartLength);
-  const scale = Math.pow(10, maxDecimalPlaces);
-  return Math.floor(num * scale) / scale;
-}
-
-/* eslint-disable @typescript-eslint/ban-types */
-export type GetDeepProp<T extends object, K extends string> = K extends keyof T
-  ? T[K]
-  : { [P in keyof T]: GetDeepProp<Extract<T[P], object>, K> }[keyof T];
-
-export type ArrElement<ArrType> = ArrType extends readonly (infer ElementType)[]
-  ? ElementType
-  : never;

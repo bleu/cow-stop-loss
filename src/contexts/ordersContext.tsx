@@ -1,6 +1,9 @@
+"use client";
+
+import { ArrElement, GetDeepProp } from "@bleu-fi/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import { useEffect, useState } from "react";
-import { Address, PublicClient } from "viem";
+import { createContext, PropsWithChildren, useContext, useEffect, useState} from "react";
+import { Address } from "viem";
 
 import { composableCowAbi } from "#/lib/abis/composableCow";
 import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
@@ -8,7 +11,8 @@ import { getCowOrders } from "#/lib/cowApi/fetchCowOrder";
 import { composableCowApi } from "#/lib/gql/client";
 import { UserStopLossOrdersQuery } from "#/lib/gql/composable-cow/__generated__/1";
 import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
-import { ArrElement, GetDeepProp } from "#/utils";
+
+
 
 type StopLossOrderTypeRaw = ArrElement<
   GetDeepProp<UserStopLossOrdersQuery, "items">
@@ -16,6 +20,9 @@ type StopLossOrderTypeRaw = ArrElement<
 
 export interface StopLossOrderType extends StopLossOrderTypeRaw {
   status?: string;
+  executedBuyAmount?: string;
+  executedSellAmount?: string;
+  executedSurplusFee?: string;
 }
 
 interface singleOrderReturn {
@@ -23,6 +30,8 @@ interface singleOrderReturn {
   result?: Address;
   status: "success" | "failure";
 }
+
+type singleOrder = Address| boolean | undefined
 
 export interface CowOrder {
   appData: string;
@@ -62,46 +71,54 @@ export interface CowOrder {
   validTo: number;
 }
 
-export function useUserOrders() {
-  const { safe } = useSafeAppsSDK();
-  const [loaded, setLoaded] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
-  const [error, setError] = useState(false);
-  const [orders, setOrders] = useState<StopLossOrderType[]>([]);
+type OrderContextType = {
+  orders: StopLossOrderType[];
+  loaded: boolean;
+  error: boolean;
+  reload: ({showSpinner}: {showSpinner: boolean}) => void;
+};
 
-  const reload = ({ showSpinner }: { showSpinner: boolean }) => {
-    setRetryCount(retryCount + 1);
-    setLoaded(!showSpinner);
-  };
+export const OrderContext = createContext({} as OrderContextType);
 
-  useEffect(() => {
-    async function loadOrders() {
-      try {
-        const [processedOrders] = await Promise.all([
-          getProcessedStopLossOrders({
-            chainId: safe.chainId as ChainId,
-            address: safe.safeAddress as Address,
-          }),
-        ]);
-        if (processedOrders !== undefined) {
-          setOrders([...processedOrders]);
-        } else {
-          setOrders([]);
-        }
-        setError(false);
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error(err);
-        setError(true);
+export function OrderProvider({ children }: PropsWithChildren) {
+const { safe } = useSafeAppsSDK();
+const [loaded, setLoaded] = useState(false);
+const [retryCount, setRetryCount] = useState(0);
+const [error, setError] = useState(false);
+const [orders, setOrders] = useState<StopLossOrderType[]>([]);
+
+const reload = ({ showSpinner }: { showSpinner: boolean }) => {
+  setRetryCount(retryCount + 1);
+  setLoaded(!showSpinner);
+};
+
+
+useEffect(() => {
+  async function loadOrders() {
+    try {
+      const [processedOrders] = await Promise.all([
+        getProcessedStopLossOrders({
+          chainId: safe.chainId as ChainId,
+          address: safe.safeAddress as Address,
+        }),
+      ]);
+      if (processedOrders !== undefined) {
+        setOrders([...processedOrders]);
+      } else {
+        setOrders([]);
       }
-      setLoaded(true);
+      setError(false);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      setError(true);
     }
+    setLoaded(true);
+  }
 
-    loadOrders();
-  }, [safe, retryCount]);
+  loadOrders();
+}, [safe, retryCount]);
 
-  return { orders, loaded, error, reload };
-}
 
 async function getProcessedStopLossOrders({
   chainId,
@@ -115,6 +132,7 @@ async function getProcessedStopLossOrders({
     user: `${address}-${chainId}`,
   });
   const cowOrders = await getCowOrders(address, chainId);
+
 
   if (!rawOrdersData?.orders?.items) {
     return [];
@@ -144,7 +162,7 @@ async function getProcessedStopLossOrders({
     const cowOrderMatch = cowOrders.find(
       (cowOrder) => cowOrder.appData === order.stopLossData?.appData
     );
-    let singleOrderResult;
+    let singleOrderResult:singleOrder = true;
 
     const orderIndex = ordersNeedingCheck.findIndex(
       (o) => o.hash === order.hash
@@ -157,9 +175,14 @@ async function getProcessedStopLossOrders({
       cowOrderMatch,
       singleOrder: singleOrderResult,
     });
+
+
+    
     return {
       ...order,
       status: status,
+      executedBuyAmount: cowOrderMatch?.executedBuyAmount,
+      executedSellAmount: cowOrderMatch?.executedSellAmount,
     };
   });
   return ordersWithStatus;
@@ -170,7 +193,7 @@ function getOrderStatus({
   singleOrder,
 }: {
   cowOrderMatch: CowOrder | undefined;
-  singleOrder: Address | undefined;
+  singleOrder: Address| boolean | undefined;
 }) {
   if (
     (cowOrderMatch && cowOrderMatch.status !== "fulfilled" && !singleOrder) ||
@@ -184,15 +207,21 @@ function getOrderStatus({
   }
 }
 
-export async function getSingleOrder(
-  orderHash: Address,
-  userAddress: Address,
-  publicClient: PublicClient
-) {
-  return publicClient.readContract({
-    address: COMPOSABLE_COW_ADDRESS,
-    abi: composableCowAbi,
-    functionName: "singleOrders",
-    args: [userAddress, orderHash],
-  });
+  return (
+    <OrderContext.Provider
+      value={{
+        orders,
+        loaded,
+        error,
+        reload,
+      }}
+    >
+      {children}
+    </OrderContext.Provider>
+  );
+}
+
+export function useOrder() {
+  const context = useContext(OrderContext);
+  return context;
 }

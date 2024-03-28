@@ -9,6 +9,7 @@ import React from "react";
 import { ReactFlowProvider } from "reactflow";
 
 import { NetworksContextProvider } from "#/contexts/networks";
+import { OrderProvider } from "#/contexts/ordersContext";
 
 import { Footer } from "./Footer";
 import { Header } from "./Header";
@@ -32,17 +33,19 @@ export function RootLayout({ children }: React.PropsWithChildren) {
     <SafeProvider loader={<SafeLoader />}>
       <NetworksContextProvider>
         <ReactFlowProvider>
-          <div className="flex flex-col h-screen">
-            <Header linkUrl={"/builder"} imageSrc={"/assets/stoploss.svg"}>
-              {path !== "/history" && <HistoryButton />}
-            </Header>
-            <div className="size-full bg-background">{children}</div>
-            <Footer
-              githubLink="https://github.com/bleu-fi/composable-cow-hub"
-              discordLink="https://discord.gg/cowprotocol"
-            />
-          </div>
-          <Toaster />
+          <OrderProvider>
+            <div className="flex flex-col h-screen">
+              <Header linkUrl={"/builder"} imageSrc={"/assets/stoploss.svg"}>
+                {path !== "/history" && <HistoryButton />}
+              </Header>
+              <div className="size-full bg-background">{children}</div>
+              <Footer
+                githubLink="https://github.com/bleu-fi/composable-cow-hub"
+                discordLink="https://discord.gg/cowprotocol"
+              />
+            </div>
+            <Toaster />
+          </OrderProvider>
         </ReactFlowProvider>
       </NetworksContextProvider>
     </SafeProvider>
@@ -51,7 +54,7 @@ export function RootLayout({ children }: React.PropsWithChildren) {
 
 function SafeLoader() {
   return (
-    <div className="bg-background flex size-full flex-col justify-center items-center px-12 py-16 md:py-20">
+    <div className="bg-background flex size-full flex-col justify-center items-center px-12 py-16 md:py-20 text-foreground">
       <div className="text-center text-3xl">This is a Safe (wallet) App</div>
       <p className="text-xl">
         To access please use this

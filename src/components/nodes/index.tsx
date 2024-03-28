@@ -1,6 +1,5 @@
+import { cn } from "@bleu-fi/ui";
 import React from "react";
-
-import { cn } from "#/utils";
 
 import { Handle } from "../Handle";
 

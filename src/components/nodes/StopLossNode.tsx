@@ -1,9 +1,8 @@
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { formatNumber } from "@bleu-fi/ui";
 
 import { IStopLossConditionData } from "#/lib/types";
-import { formatNumber } from "#/utils";
 
-import { Tooltip } from "../Tooltip";
+import { InfoTooltip } from "../Tooltip";
 import { BaseNode } from ".";
 
 const STOP_LOSS_ERROR_MESSSAGE = {
@@ -25,12 +24,9 @@ export function StopLossNode({
           <span className="text-sm font-bold text-highlight">
             Stop Loss Condition
           </span>
+          
           {data.error && (
-            <a href={"https://data.chain.link/feeds"} target="_blank">
-              <Tooltip content={STOP_LOSS_ERROR_MESSSAGE[data.error]}>
-                <ExclamationTriangleIcon className="size-3 text-destructive" />
-              </Tooltip>
-            </a>
+            <InfoTooltip text={STOP_LOSS_ERROR_MESSSAGE[data.error]} link={"https://data.chain.link/feeds"} variant="error"/>
           )}
         </div>
         <span className="text-xs">
