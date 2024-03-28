@@ -6,12 +6,12 @@ import { IHooks, INodeData, IStopLossRecipeData } from "#/lib/types";
 
 export function useRecipeData(): {
   ordersData?: IStopLossRecipeData[];
-  loaded: boolean;
+  loading: boolean;
   getOrderDataByOrderId: (orderId: number) => IStopLossRecipeData | undefined;
 } {
   const { safe } = useSafeAppsSDK();
   const [ordersData, setOrdersData] = useState<IStopLossRecipeData[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const [loading, setLoading] = useState(false);
   const nodes = useNodes<INodeData>();
 
   const getOrderDataByOrderId = (orderId: number) => {
@@ -26,6 +26,8 @@ export function useRecipeData(): {
           .map((node) => node.data?.orderId as number)
       )
     );
+
+    setLoading(true);
 
     setOrdersData(
       orderIds.map((orderId) => {
@@ -64,8 +66,8 @@ export function useRecipeData(): {
       })
     );
 
-    setLoaded(true);
+    setLoading(false);
   }, [safe, nodes]);
 
-  return { ordersData, loaded, getOrderDataByOrderId };
+  return { ordersData, loading, getOrderDataByOrderId };
 }

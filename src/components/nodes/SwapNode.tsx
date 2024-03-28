@@ -1,7 +1,7 @@
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { formatUnits } from "viem";
 
-import { useRecipeData } from "#/hooks/useRecipeData";
+import { useBuilder } from "#/contexts/builder";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { ISwapData } from "#/lib/types";
@@ -18,7 +18,7 @@ export function SwapNode({
   data: ISwapData;
 }) {
   const { fetchBalance } = useSafeBalances();
-  const { getOrderDataByOrderId } = useRecipeData();
+  const { getOrderDataByOrderId } = useBuilder();
   const recipeData = getOrderDataByOrderId(data.orderId);
   if (!recipeData) return null;
   const sellTokenWalletAmount = Number(

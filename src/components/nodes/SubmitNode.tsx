@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Address } from "viem";
 
+import { useBuilder } from "#/contexts/builder";
 import { FALLBACK_STATES, useFallbackState } from "#/hooks/useFallbackState";
 import { useRawTxData } from "#/hooks/useRawTxData";
-import { useRecipeData } from "#/hooks/useRecipeData";
 import { createRawTxArgs } from "#/lib/transactionFactory";
 import { IStopLossRecipeData } from "#/lib/types";
 
@@ -22,7 +22,7 @@ export function SubmitNode() {
   const { sendTransactions } = useRawTxData();
   const { toast } = useToast();
   const { fallbackState, domainSeparator } = useFallbackState();
-  const { ordersData } = useRecipeData();
+  const { ordersData } = useBuilder();
   const needFallbackSetting =
     fallbackState === FALLBACK_STATES.HAS_NOTHING ||
     fallbackState === FALLBACK_STATES.HAS_EXTENSIBLE_FALLBACK;
