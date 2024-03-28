@@ -11,6 +11,7 @@ interface ICheckbox {
   label?: string;
   tooltipText?: string;
   tooltipLink?: string;
+  disabled?: boolean;
 }
 
 export function Checkbox({
@@ -20,6 +21,7 @@ export function Checkbox({
   label,
   tooltipLink,
   tooltipText,
+  disabled,
 }: ICheckbox) {
   return (
     <div className="flex items-center justify-between">
@@ -27,6 +29,7 @@ export function Checkbox({
         <CheckboxPrimitive
           checked={checked}
           onClick={() => onChange()}
+          disabled={disabled}
           id={id}
           />
         {label && (

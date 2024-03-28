@@ -27,7 +27,7 @@ export function MintBalMenu({
         <span className="text-lg font-bold text-highlight mb-2">
           BAL Mint Hook
         </span>
-        <Table className="border border-foreground-primary rounded-md">
+        <Table className="border border-primary-foreground rounded-md">
           <TableHeader className="border-b">
             <TableCell>Gauges to mint</TableCell>
           </TableHeader>
@@ -43,13 +43,9 @@ export function MintBalMenu({
                   <TableCell>
                     <div className="flex items-center gap-2">
                       Address: {truncateAddress(gauge)}
-                      <a
-                        target="_blank"
-                        href={contractExplorerUrl}
-                        className="text-foreground"
-                      >
+                      <a target="_blank" href={contractExplorerUrl}>
                         <ArrowTopRightIcon
-                          className="hover:text-amber9"
+                          className="hover:text-highlight"
                           width={10}
                           height={10}
                         />

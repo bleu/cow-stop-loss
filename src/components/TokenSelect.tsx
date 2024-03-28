@@ -11,11 +11,9 @@ import {
 } from "@bleu-fi/ui";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import { TokenBalance, TokenType } from "@safe-global/safe-apps-sdk";
 import React, { useEffect, useState } from "react";
 import { Address } from "viem";
 
-import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { cowTokenList } from "#/lib/cowTokenList";
 import { ChainId } from "#/lib/publicClients";
 import { IToken } from "#/lib/types";
@@ -39,77 +37,33 @@ export function TokenSelect({
     safe: { chainId },
   } = useSafeAppsSDK();
   const [open, setOpen] = useState(false);
-  const [tokens, setTokens] = useState<TokenBalance[]>(
-    cowTokenList
-      .filter((token) => token.chainId === chainId)
-      .map((token) => {
-        return {
-          balance: "0",
-          fiatBalance: "0",
-          fiatConversion: "0",
-          tokenInfo: {
-            address: token.address,
-            decimals: token.decimals,
-            name: token.name,
-            symbol: token.symbol,
-            logoUri: token.logoURI,
-            type: TokenType.ERC20,
-          },
-        };
-      })
-  );
+  const tokens = cowTokenList.filter(
+    (token) => token.chainId === chainId
+  ) as IToken[];
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedValue, setSelectedValue] = useState<IToken | undefined>(
     undefined
   );
 
-  const { assets, loaded } = useSafeBalances();
   const { safe } = useSafeAppsSDK();
 
   useEffect(() => {
     if (selectedToken) {
       setSelectedValue(selectedToken);
     }
+  }, [selectedToken]);
 
-    if (loaded) {
-      const tokens = assets.map((asset) => {
-        return {
-          ...asset,
-        };
-      });
-
-      setTokens((prevTokens) => {
-        const combinedTokens = [...prevTokens, ...tokens].reduce<{
-          [key: string]: TokenBalance;
-        }>((acc, token) => {
-          const balanceBigInt = BigInt(token?.balance ?? 0);
-          const address = token?.tokenInfo?.address ?? "";
-
-          if (!acc[address] || balanceBigInt > BigInt(acc[address].balance)) {
-            acc[address] = token as TokenBalance;
-          }
-          return acc;
-        }, {});
-        return Object.values(combinedTokens);
-      });
-    }
-  }, [selectedToken, loaded, assets]);
-
-  function handleSelectToken(token: TokenBalance) {
-    const tokenForPriceChecker = {
-      address: token.tokenInfo.address as Address,
-      symbol: token.tokenInfo.symbol,
-      decimals: token.tokenInfo.decimals,
-    };
-    onSelectToken(tokenForPriceChecker);
-    setSelectedValue(tokenForPriceChecker);
+  function handleSelectToken(token: IToken) {
+    onSelectToken(token);
+    setSelectedValue(token);
     setOpen(false);
   }
 
-  function filterTokens(token: TokenBalance) {
+  function filterTokens(token: IToken) {
     if (!searchQuery) return true;
     const regex = new RegExp(searchQuery, "i");
-    return regex.test(token.tokenInfo.symbol);
+    return regex.test(token.symbol);
   }
 
   return (
@@ -121,7 +75,7 @@ export function TokenSelect({
             <Button
               variant="secondary"
               type="button"
-              className="px-2 justify-between border border-border bg-input hover:bg-input/20 hover:text-accent-foreground text-background"
+              className="px-2 justify-between border text-primary-foreground border-border bg-input hover:bg-input/20 hover:text-accent-foreground"
               disabled={disabled}
               onClick={() => setOpen(true)}
             >
@@ -159,14 +113,14 @@ export function TokenSelect({
             )}
             {tokens.filter(filterTokens).map((token) => (
               <CommandItem
-                key={token.tokenInfo.address}
+                key={token.address}
                 onSelect={() => handleSelectToken(token)}
               >
                 <TokenInfo
                   token={{
-                    address: token.tokenInfo.address as Address,
-                    symbol: token.tokenInfo.symbol,
-                    decimals: token.tokenInfo.decimals,
+                    address: token.address as Address,
+                    symbol: token.symbol,
+                    decimals: token.decimals,
                   }}
                   chainId={safe.chainId as ChainId}
                 />

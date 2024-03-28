@@ -52,12 +52,13 @@ export function TableRowOrder({
               const newOrdersToCancel = !rowIsSelected
                 ? [...ordersToCancel, order.hash]
                 : ordersToCancel.filter(
-                    (orderHash) => orderHash !== order.hash,
+                    (orderHash) => orderHash !== order.hash
                   );
               setOrdersToCancel(newOrdersToCancel);
             }}
             checked={rowIsSelected}
             aria-label="Select row"
+            disabled={order?.status != "created" && order?.status != "posted"}
           />
         </TableCell>
         <TableCell>
@@ -66,7 +67,7 @@ export function TableRowOrder({
         <TableCell>
           {order?.stopLossData?.tokenIn ? (
             <TokenInfo
-              token={order.stopLossData.tokenIn as IToken}
+              token={order?.stopLossData?.tokenIn as IToken}
               chainId={order?.chainId as ChainId}
             />
           ) : (
@@ -76,7 +77,7 @@ export function TableRowOrder({
         <TableCell>
           {order?.stopLossData?.tokenOut ? (
             <TokenInfo
-              token={order.stopLossData.tokenOut as IToken}
+              token={order?.stopLossData?.tokenOut as IToken}
               chainId={order?.chainId as ChainId}
             />
           ) : (

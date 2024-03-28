@@ -61,7 +61,7 @@ function SafeLoader() {
         <Link
           target="_blank"
           href="https://app.safe.global/share/safe-app?appUrl=https%3A%2F%2Fcow-tools-bleu-fi.vercel.app&chain=gor"
-          className="text-amber9"
+          className="text-highlight"
         >
           {" "}
           link{" "}

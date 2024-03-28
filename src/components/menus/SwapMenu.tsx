@@ -9,12 +9,12 @@ import { Address, formatUnits } from "viem";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
 import { ChainId } from "#/lib/publicClients";
-import { generateSwapSchema } from "#/lib/schema";
+import { swapSchema } from "#/lib/schema";
 import { ISwapData, TIME_OPTIONS } from "#/lib/types";
 
 import { Checkbox } from "../Checkbox";
 import { Input } from "../Input";
-import { SelectInput } from "../SelectInput";
+import { SelectInputForm } from "../SelectInputForm";
 import { TokenSelect } from "../TokenSelect";
 import {
   Accordion,
@@ -45,9 +45,8 @@ export function SwapMenu({
   const {
     safe: { chainId },
   } = useSafeAppsSDK();
-  const schema = generateSwapSchema({ chainId: chainId as ChainId });
-  const form = useForm<typeof schema._type>({
-    resolver: zodResolver(schema),
+  const form = useForm<typeof swapSchema._type>({
+    resolver: zodResolver(swapSchema),
     defaultValues,
   });
   const {
@@ -139,29 +138,31 @@ export function SwapMenu({
                 type="number"
                 step={1 / 10 ** amountDecimals}
               />
-              <div className="flex gap-x-1 text-xs">
-                <span>
+              {walletAmount != "0" && (
+                <div className="flex gap-x-1 text-xs">
                   <span>
-                    Wallet Balance:{" "}
-                    {formatNumber(
-                      walletAmount,
-                      4,
-                      "decimal",
-                      "standard",
-                      0.0001
-                    )}
+                    <span>
+                      Wallet Balance:{" "}
+                      {formatNumber(
+                        walletAmount,
+                        4,
+                        "decimal",
+                        "standard",
+                        0.0001
+                      )}
+                    </span>
                   </span>
-                </span>
-                <button
-                  type="button"
-                  className="text-accent outline-none hover:text-accent/70"
-                  onClick={() => {
-                    setValue("amount", convertStringToNumberAndRoundDown(walletAmount));
-                  }}
-                >
-                  Max
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    className="text-accent outline-none hover:text-accent/70"
+                    onClick={() => {
+                      setValue("amount", convertStringToNumberAndRoundDown(walletAmount));
+                    }}
+                  >
+                    Max
+                  </button>
+                </div>
+              )}
             </div>
             <TokenSelect
               selectedToken={data.tokenSell}
@@ -183,7 +184,7 @@ export function SwapMenu({
               <AccordionItem value="advancedOptions" key="advancedOption">
                 <AccordionTrigger>Advanced Options</AccordionTrigger>
                 <AccordionContent>
-                  <div className="flex flex-col gap-y-2 mx-2">
+                  <div className="flex flex-col gap-y-2">
                     <Input
                       name="allowedSlippage"
                       label={`Allowed Slippage (%)`}
@@ -212,7 +213,7 @@ export function SwapMenu({
                         setValue("isSellOrder", !formData.isSellOrder)
                       }
                     />
-                    <SelectInput
+                    <SelectInputForm
                       name="validityBucketTime"
                       label="Validity Bucket Time"
                       tooltipText={VALIDITY_BUCKET_TIME_TOOLTIP_TEXT}

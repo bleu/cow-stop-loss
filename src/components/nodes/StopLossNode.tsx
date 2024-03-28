@@ -5,6 +5,11 @@ import { IStopLossConditionData } from "#/lib/types";
 import { InfoTooltip } from "../Tooltip";
 import { BaseNode } from ".";
 
+const STOP_LOSS_ERROR_MESSSAGE = {
+  STRIKE_PRICE_ABOVE_ORACLE_PRICE: "Strike price is above the oracle price",
+  ORACLE_NOT_FOUND: "Oracle contract not found",
+};
+
 export function StopLossNode({
   selected,
   data,
@@ -21,7 +26,7 @@ export function StopLossNode({
           </span>
           
           {data.error && (
-            <InfoTooltip text={data.error} link={"https://data.chain.link/feeds"} variant="error"/>
+            <InfoTooltip text={STOP_LOSS_ERROR_MESSSAGE[data.error]} link={"https://data.chain.link/feeds"} variant="error"/>
           )}
         </div>
         <span className="text-xs">

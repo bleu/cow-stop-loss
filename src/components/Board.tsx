@@ -221,7 +221,9 @@ export function Board({
       zoomOnPinch={false}
       zoomOnDoubleClick={false}
       zoomOnScroll={false}
-      className="bg-background size-full shadow-md"
+      nodesDraggable={false}
+      proOptions={{ hideAttribution: true }}
+      className="bg-background size-full"
     >
       <Panel position="top-left">
         <div className="flex flex-row gap-4">

@@ -1,10 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
+
+import { useRecipeData } from "#/hooks/useRecipeData";
+import { IStopLossRecipeData } from "#/lib/types";
 
 interface IBuilderContext {
-  panelClickEvent: boolean;
-  emitPanelClickEvent: () => void;
+  ordersData?: IStopLossRecipeData[];
+  getOrderDataByOrderId: (orderId: number) => IStopLossRecipeData | undefined;
+  loading: boolean;
 }
 
 export const BuilderContext = React.createContext<IBuilderContext>(
@@ -16,19 +20,16 @@ export const BuilderContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [panelClickEvent, setPanelClickEvent] = useState<boolean>(false);
-
-  const emitPanelClickEvent = () => {
-    setPanelClickEvent(true);
-  };
-
-  const contextValue: IBuilderContext = {
-    panelClickEvent,
-    emitPanelClickEvent,
-  };
+  const { ordersData, getOrderDataByOrderId, loading } = useRecipeData();
 
   return (
-    <BuilderContext.Provider value={contextValue}>
+    <BuilderContext.Provider
+      value={{
+        ordersData,
+        getOrderDataByOrderId,
+        loading,
+      }}
+    >
       {children}
     </BuilderContext.Provider>
   );

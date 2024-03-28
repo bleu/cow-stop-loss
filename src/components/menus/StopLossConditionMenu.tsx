@@ -12,12 +12,12 @@ import { useReactFlow } from "reactflow";
 
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
 import { ChainId } from "#/lib/publicClients";
-import { generateStopLossConditionSchema } from "#/lib/schema";
+import { stopLossConditionSchema } from "#/lib/schema";
 import { IStopLossRecipeData, TIME_OPTIONS } from "#/lib/types";
 import { buildBlockExplorerAddressURL } from "#/utils";
 
 import { BaseInput, Input } from "../Input";
-import { SelectInput } from "../SelectInput";
+import { SelectInputForm } from "../SelectInputForm";
 import { InfoTooltip } from "../Tooltip";
 import {
   Accordion,
@@ -46,9 +46,6 @@ export function StopLossConditionMenu({
   const {
     safe: { chainId },
   } = useSafeAppsSDK();
-  const stopLossConditionSchema = generateStopLossConditionSchema({
-    chainId: chainId as ChainId,
-  });
   const form = useForm<typeof stopLossConditionSchema._type>({
     resolver: zodResolver(stopLossConditionSchema),
     defaultValues,
@@ -153,7 +150,7 @@ export function StopLossConditionMenu({
                     tooltipText={ORACLE_TOOLTIP_TEXT}
                   />
 
-                  <SelectInput
+                  <SelectInputForm
                     name="maxTimeSinceLastOracleUpdate"
                     onValueChange={(maxTimeSinceLastOracleUpdate) => {
                       setValue(

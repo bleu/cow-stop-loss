@@ -7,8 +7,10 @@ import {
   DialogClose,
   DialogContent,
   DialogTrigger,
+  toast,
 } from "@bleu-fi/ui";
 import { TrashIcon } from "@radix-ui/react-icons";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { useRawTxData } from "#/hooks/useRawTxData";
@@ -29,6 +31,7 @@ export function CancelOrdersDialog({
 }: ICancelOrdersDialog) {
   const [open, setOpen] = useState(false);
   const { sendTransactions } = useRawTxData();
+  const { push } = useRouter();
 
   async function cancelOrders(ordersHash: string[]) {
 
@@ -37,15 +40,23 @@ export function CancelOrdersDialog({
         ({
           type: TRANSACTION_TYPES.ORDER_CANCEL,
           hash: orderHash,
-        }) as OrderCancelArgs,
+        }) as OrderCancelArgs
     );
 
-    await sendTransactions(cancelTransactionsData);
+    try {
+      const { safeTxHash } = await sendTransactions(cancelTransactionsData);
+      push(`/txpending/${safeTxHash}`);
+    } catch {
+      toast({
+        title: "Error building transaction",
+        variant: "destructive",
+      });
+    }
   }
 
   return (
     <Dialog
-    defaultOpen={defaultOpen}
+      defaultOpen={defaultOpen}
       //  @ts-expect-error TS(2322) FIXME: Type '{ children: Element; className: string; }' i... Remove this comment to see the full error message
       className="max-w-none"
       open={open}

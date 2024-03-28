@@ -1,6 +1,6 @@
 import { useNodes } from "reactflow";
 
-import { useRecipeData } from "#/hooks/useRecipeData";
+import { useBuilder } from "#/contexts/builder";
 import { INodeData } from "#/lib/types";
 
 import { Spinner } from "../Spinner";
@@ -15,12 +15,9 @@ export default function Menu() {
     hookMintBal: MintBalMenu,
   };
 
-  const { getOrderDataByOrderId, loaded } = useRecipeData();
+  const { getOrderDataByOrderId } = useBuilder();
   const nodes = useNodes<INodeData>();
 
-  if (!loaded) {
-    return <Spinner />;
-  }
   const selected = nodes.find((node) => node.selected);
 
   if (
