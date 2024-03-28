@@ -2,7 +2,6 @@
 
 import {
   Button,
-  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -12,6 +11,7 @@ import {
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 
+import { Spinner } from "#/components/Spinner";
 import { useOrder } from "#/contexts/ordersContext";
 
 import { CancelOrdersDialog } from "../CancelOrdersDialog";

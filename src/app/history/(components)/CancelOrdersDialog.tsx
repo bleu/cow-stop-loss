@@ -55,7 +55,7 @@ export function CancelOrdersDialog({
           <Button
             variant={tableRow ? "ghost" : "destructive"}
             disabled={disabled}
-            className={cn(tableRow && "hover:bg-transparenti focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent")}
+            className={cn(tableRow && "hover:bg-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent")}
           >
             <span className="flex items-center gap-x-2">
               <TrashIcon

@@ -2,7 +2,7 @@
 
 import "reactflow/dist/base.css";
 
-import { Button, Spinner } from "@bleu-fi/ui";
+import { Button } from "@bleu-fi/ui";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React, { useCallback, useState } from "react";
@@ -31,6 +31,7 @@ import { MintBalNode } from "./nodes/MintBalNode";
 import { StopLossNode } from "./nodes/StopLossNode";
 import { SubmitNode } from "./nodes/SubmitNode";
 import { SwapNode } from "./nodes/SwapNode";
+import { Spinner } from "./Spinner";
 
 const nodeTypes = {
   swap: SwapNode,

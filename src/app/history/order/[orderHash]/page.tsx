@@ -1,7 +1,8 @@
 "use client";
 
-import { cn, epochToDate, formatDateTime, formatNumber, Separator, Spinner } from "@bleu-fi/ui";
+import { cn, epochToDate, formatDateTime, formatNumber, Separator } from "@bleu-fi/ui";
 
+import { Spinner } from "#/components/Spinner";
 import { useOrder } from "#/contexts/ordersContext";
 
 import { StatusBadge } from "../../(components)/StatusBadge";
