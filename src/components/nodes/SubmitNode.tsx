@@ -4,10 +4,13 @@ import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Address } from "viem";
+import { ZodError } from "zod";
 
+import { useBuilder } from "#/contexts/builder";
 import { FALLBACK_STATES, useFallbackState } from "#/hooks/useFallbackState";
 import { useRawTxData } from "#/hooks/useRawTxData";
-import { useRecipeData } from "#/hooks/useRecipeData";
+import { ChainId } from "#/lib/publicClients";
+import { generateStopLossRecipeSchema } from "#/lib/schema";
 import { createRawTxArgs } from "#/lib/transactionFactory";
 import { IStopLossRecipeData } from "#/lib/types";
 
@@ -16,22 +19,43 @@ import { Handle } from "../Handle";
 
 export function SubmitNode() {
   const {
-    safe: { safeAddress },
+    safe: { safeAddress, chainId },
   } = useSafeAppsSDK();
   const { push } = useRouter();
   const { sendTransactions } = useRawTxData();
   const { toast } = useToast();
   const { fallbackState, domainSeparator } = useFallbackState();
-  const { ordersData } = useRecipeData();
+  const { ordersData } = useBuilder();
   const needFallbackSetting =
     fallbackState === FALLBACK_STATES.HAS_NOTHING ||
     fallbackState === FALLBACK_STATES.HAS_EXTENSIBLE_FALLBACK;
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const stopLossRecipeSchema = generateStopLossRecipeSchema({
+    chainId: chainId as ChainId,
+  });
 
   const createOrder = async () => {
     if (!ordersData || !domainSeparator) {
       return;
     }
+
+    for (let i = 0; i < ordersData.length; i++) {
+      const stop = await stopLossRecipeSchema
+        .parseAsync(ordersData[i])
+        .then(() => false)
+        .catch((error: ZodError) => {
+          toast({
+            title: "Error validating parameters",
+            description: `${error.issues[0].message} error for order ${i + 1}`,
+            variant: "destructive",
+          });
+          return true;
+        });
+      if (stop) {
+        return;
+      }
+    }
+
     setIsSubmitting(true);
     const rawArgs = ordersData
       .map((order) =>
@@ -86,11 +110,7 @@ export function SubmitNode() {
           submitText="I am aware and want to continue"
           onSubmit={createOrder}
         >
-          <SubmitButton
-            ordersData={ordersData}
-            isSubmitting={isSubmitting}
-            onClick={createOrder}
-          />
+          <SubmitButton ordersData={ordersData} isSubmitting={isSubmitting} />
         </Dialog>
       ) : (
         <SubmitButton

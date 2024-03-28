@@ -9,7 +9,7 @@ import { Address, formatUnits } from "viem";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
 import { ChainId } from "#/lib/publicClients";
-import { generateSwapSchema } from "#/lib/schema";
+import { swapSchema } from "#/lib/schema";
 import { ISwapData, TIME_OPTIONS } from "#/lib/types";
 import { convertAndRoundDown, formatNumber } from "#/utils";
 
@@ -46,9 +46,8 @@ export function SwapMenu({
   const {
     safe: { chainId },
   } = useSafeAppsSDK();
-  const schema = generateSwapSchema({ chainId: chainId as ChainId });
-  const form = useForm<typeof schema._type>({
-    resolver: zodResolver(schema),
+  const form = useForm<typeof swapSchema._type>({
+    resolver: zodResolver(swapSchema),
     defaultValues,
   });
   const {
@@ -140,29 +139,31 @@ export function SwapMenu({
                 type="number"
                 step={1 / 10 ** amountDecimals}
               />
-              <div className="flex gap-x-1 text-xs">
-                <span>
+              {walletAmount != "0" && (
+                <div className="flex gap-x-1 text-xs">
                   <span>
-                    Wallet Balance:{" "}
-                    {formatNumber(
-                      walletAmount,
-                      4,
-                      "decimal",
-                      "standard",
-                      0.0001
-                    )}
+                    <span>
+                      Wallet Balance:{" "}
+                      {formatNumber(
+                        walletAmount,
+                        4,
+                        "decimal",
+                        "standard",
+                        0.0001
+                      )}
+                    </span>
                   </span>
-                </span>
-                <button
-                  type="button"
-                  className="text-accent outline-none hover:text-accent/70"
-                  onClick={() => {
-                    setValue("amount", convertAndRoundDown(walletAmount));
-                  }}
-                >
-                  Max
-                </button>
-              </div>
+                  <button
+                    type="button"
+                    className="text-accent outline-none hover:text-accent/70"
+                    onClick={() => {
+                      setValue("amount", convertAndRoundDown(walletAmount));
+                    }}
+                  >
+                    Max
+                  </button>
+                </div>
+              )}
             </div>
             <TokenSelect
               selectedToken={data.tokenSell}
