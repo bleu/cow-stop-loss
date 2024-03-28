@@ -1,50 +1,36 @@
-import * as TooltipPrimitive from "@radix-ui/react-tooltip";
-import { ReactNode } from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@bleu-fi/ui";
+import { ExclamationTriangleIcon, InfoCircledIcon, QuestionMarkCircledIcon } from "@radix-ui/react-icons";
 
-type TooltipProps = Omit<
-  TooltipPrimitive.TooltipProps & TooltipPrimitive.TooltipContentProps,
-  "content"
-> & {
-  content: ReactNode;
-  disableTooltip?: boolean;
-};
+export const InfoTooltip = ({ text, link, variant="default" }: { text?: string, link?:string, variant?: "default" | "question" | "error" }) => {
+  if (!text) return null;
 
-export function Tooltip({
-  children,
-  disableTooltip = false,
-  content,
-  open,
-  defaultOpen,
-  onOpenChange,
-  ...props
-}: TooltipProps) {
-  if (disableTooltip) return <>{children}</>;
+  function Icon () {
+    switch (variant) {
+      case "question":
+        return <QuestionMarkCircledIcon  />;
+      case "error":
+        return <ExclamationTriangleIcon />;
+      default:
+        return <InfoCircledIcon  />;
+    }
+  }
 
   return (
-    <TooltipPrimitive.Provider delayDuration={100}>
-      <TooltipPrimitive.Root
-        disableHoverableContent
-        open={open}
-        defaultOpen={defaultOpen}
-        onOpenChange={onOpenChange}
-      >
-        <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
-        <TooltipPrimitive.Portal>
-          <TooltipPrimitive.Content
-            className="z-50 overflow-hidden text-balance bg-background px-3 py-1.5 text-xs text-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2"
-            sideOffset={6}
-            avoidCollisions
-            {...props}
-          >
-            {content}
-            <TooltipPrimitive.Arrow
-              width={11}
-              height={5}
-              className="fill-background"
-            />
-          </TooltipPrimitive.Content>
-        </TooltipPrimitive.Portal>
-      </TooltipPrimitive.Root>
-    </TooltipPrimitive.Provider>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger disabled>
+          {link ? (
+              <a href={link} target="_blank">
+                <Icon  />
+              </a>
+            ) : (
+              <Icon  />
+            )}
+        </TooltipTrigger>
+        <TooltipContent className="max-w-56 text-center bg-warning text-background">
+          {text}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
-}
+};

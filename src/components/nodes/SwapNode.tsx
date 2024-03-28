@@ -1,13 +1,12 @@
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { formatNumber } from "@bleu-fi/ui";
 import { formatUnits } from "viem";
 
 import { useBuilder } from "#/contexts/builder";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { ISwapData } from "#/lib/types";
-import { formatNumber } from "#/utils";
 
-import { Tooltip } from "../Tooltip";
+import { InfoTooltip } from "../Tooltip";
 import { BaseNode } from ".";
 
 export function SwapNode({
@@ -36,11 +35,7 @@ export function SwapNode({
         <div className="flex flex-row gap-2 items-center">
           <span className="text-sm font-bold text-highlight">Swap</span>
           {sellTokenWalletAmount < sellAmount && (
-            <a>
-              <Tooltip content="You don't have enough amount of the selling token. The order can still be posted but it will never be filled until you don't have enough tokens in your wallet.">
-                <ExclamationTriangleIcon className="size-3 text-warning text-bold" />
-              </Tooltip>
-            </a>
+            <InfoTooltip variant="error" text="You don't have enough amount of the selling token. The order can still be posted but it will never be filled until you don't have enough tokens in your wallet." />
           )}
         </div>{" "}
         <div className="text-xs">

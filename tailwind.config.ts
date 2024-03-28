@@ -1,6 +1,5 @@
 /* eslint-env node */
 /* eslint-disable @typescript-eslint/no-var-requires */
-const { sandDark, brownDark } = require("@radix-ui/colors");
 
 const defaultTheme = require("tailwindcss/defaultTheme");
 
@@ -24,10 +23,6 @@ module.exports = {
     },
     extend: {
       colors: {
-        ...sandDark,
-        ...brownDark,
-        purple: "#B462FA",
-        yellow: "hsla(44, 91%, 55%, 1);",
         success: "hsl(var(--success) / <alpha-value>)",
         info: "hsl(var(--info) / <alpha-value>)",
         warning: "hsl(var(--warning) / <alpha-value>)",

@@ -12,13 +12,13 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 
 import { Spinner } from "#/components/Spinner";
-import { useUserOrders } from "#/hooks/useOrders";
+import { useOrder } from "#/contexts/ordersContext";
 
-import { CancelOrdersDialog } from "./CancelOrdersDialog";
+import { CancelOrdersDialog } from "../CancelOrdersDialog";
 import { TableRowOrder } from "./TableRowOrder";
 
 export function OrderTable() {
-  const { orders, loaded, reload } = useUserOrders();
+  const { orders, loaded, reload } = useOrder()
   const [ordersToCancel, setOrdersToCancel] = useState<string[]>([]);
 
   if (!loaded) {
@@ -49,23 +49,24 @@ export function OrderTable() {
           </div>
         </div>
       </div>
-      <div className="overflow-y-auto max-h-[550px] rounded-lg">
-        <Table className="bg-foreground text-primary-foreground rounded-lg">
-          <TableHeader>
-            <TableRow>
-              <TableCell>
-                <span className="sr-only"></span>
-              </TableCell>
-              <TableCell>
-                <span className="sr-only">Selected</span>
-              </TableCell>
-              <TableCell>Tx Datetime</TableCell>
-              <TableCell>Sell Token</TableCell>
-              <TableCell>Buy Token</TableCell>
-              <TableCell>Status</TableCell>
-            </TableRow>
+      <div className="max-h-[520px] overflow-y-auto rounded-md">
+        <Table className="bg-foreground border-0 text-black rounded-md">
+          <TableHeader className="bg-primary">
+            <TableCell className="rounded-tl-md">
+              <span className="sr-only"></span>
+            </TableCell>
+            <TableCell>
+              <span className="sr-only">Selected</span>
+            </TableCell>
+            <TableCell className="py-4">Tx Datetime</TableCell>
+            <TableCell>Sell Token</TableCell>
+            <TableCell>Buy Token</TableCell>
+            <TableCell>Status</TableCell>
+            <TableCell className="rounded-tr-md">
+              <span className="sr-only">Cancel</span>
+            </TableCell>
           </TableHeader>
-          <TableBody className="overflow-y-auto">
+          <TableBody>
             {orders?.map((order) => (
               <TableRowOrder
                 key={order.id}
