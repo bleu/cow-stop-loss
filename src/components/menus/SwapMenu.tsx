@@ -9,7 +9,7 @@ import { Address, formatUnits } from "viem";
 import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
 import { ChainId } from "#/lib/publicClients";
-import { generateSwapSchema } from "#/lib/schema";
+import { swapSchema } from "#/lib/schema";
 import { ISwapData, TIME_OPTIONS } from "#/lib/types";
 import { convertAndRoundDown, formatNumber } from "#/utils";
 
@@ -46,9 +46,8 @@ export function SwapMenu({
   const {
     safe: { chainId },
   } = useSafeAppsSDK();
-  const schema = generateSwapSchema({ chainId: chainId as ChainId });
-  const form = useForm<typeof schema._type>({
-    resolver: zodResolver(schema),
+  const form = useForm<typeof swapSchema._type>({
+    resolver: zodResolver(swapSchema),
     defaultValues,
   });
   const {

@@ -13,7 +13,7 @@ import { useReactFlow } from "reactflow";
 
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
 import { ChainId } from "#/lib/publicClients";
-import { generateStopLossConditionSchema } from "#/lib/schema";
+import { stopLossConditionSchema } from "#/lib/schema";
 import { IStopLossRecipeData, TIME_OPTIONS } from "#/lib/types";
 import { buildBlockExplorerAddressURL, formatNumber } from "#/utils";
 
@@ -47,9 +47,6 @@ export function StopLossConditionMenu({
   const {
     safe: { chainId },
   } = useSafeAppsSDK();
-  const stopLossConditionSchema = generateStopLossConditionSchema({
-    chainId: chainId as ChainId,
-  });
   const form = useForm<typeof stopLossConditionSchema._type>({
     resolver: zodResolver(stopLossConditionSchema),
     defaultValues,
