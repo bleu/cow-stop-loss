@@ -1,8 +1,7 @@
 "use client";
 
-import { FormControl, FormLabel, FormMessage } from "@bleu-fi/ui";
+import { cn,FormControl, FormLabel, FormMessage } from "@bleu-fi/ui";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
-import cn from "clsx";
 import React, { HTMLProps } from "react";
 import { FieldError, RegisterOptions, useFormContext } from "react-hook-form";
 

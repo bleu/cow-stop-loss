@@ -1,4 +1,4 @@
-import { Form, FormControl, FormMessage } from "@bleu-fi/ui";
+import { Form, formatNumber,FormControl, FormMessage } from "@bleu-fi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { slateDarkA } from "@radix-ui/colors";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
@@ -16,7 +16,7 @@ import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
 import { ChainId } from "#/lib/publicClients";
 import { generateStopLossConditionSchema } from "#/lib/schema";
 import { IStopLossRecipeData, TIME_OPTIONS } from "#/lib/types";
-import { buildBlockExplorerAddressURL, formatNumber } from "#/utils";
+import { buildBlockExplorerAddressURL } from "#/utils";
 
 import { BaseInput, Input } from "../Input";
 import { SelectInput } from "../SelectInput";

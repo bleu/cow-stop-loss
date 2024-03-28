@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrElement, GetDeepProp } from "@bleu-fi/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { createContext, PropsWithChildren, useContext, useEffect, useState} from "react";
 import { Address } from "viem";
@@ -10,7 +11,6 @@ import { getCowOrders } from "#/lib/cowApi/fetchCowOrder";
 import { composableCowApi } from "#/lib/gql/client";
 import { UserStopLossOrdersQuery } from "#/lib/gql/composable-cow/__generated__/1";
 import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
-import { ArrElement, GetDeepProp } from "#/utils";
 
 
 

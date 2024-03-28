@@ -2,6 +2,7 @@
 
 import {
   Button,
+  cn,
   Dialog as DialogPrimitive,
   DialogClose,
   DialogContent,
@@ -11,7 +12,6 @@ import {
   DialogTrigger,
 } from "@bleu-fi/ui";
 import { Cross2Icon } from "@radix-ui/react-icons";
-import cn from "clsx";
 import * as React from "react";
 
 export function Dialog({

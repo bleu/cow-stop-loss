@@ -1,4 +1,6 @@
-import { TableCell, TableRow } from "@bleu-fi/ui";
+"use client";
+
+import { epochToDate, formatDateTime,TableCell, TableRow } from "@bleu-fi/ui";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -7,7 +9,6 @@ import { TokenInfo } from "#/components/TokenInfo";
 import { StopLossOrderType } from "#/contexts/ordersContext";
 import { ChainId } from "#/lib/publicClients";
 import { IToken } from "#/lib/types";
-import { formatDateToLocalDatetime } from "#/utils";
 
 import { CancelOrdersDialog } from "../CancelOrdersDialog";
 import { StatusBadge } from "../StatusBadge";
@@ -60,7 +61,7 @@ export function TableRowOrder({
           />
         </TableCell>
         <TableCell>
-          {formatDateToLocalDatetime(new Date(order?.blockTimestamp * 1000))}
+          {formatDateTime(epochToDate(Number(order?.blockTimestamp)))}
         </TableCell>
         <TableCell>
           {order?.stopLossData?.tokenIn ? (

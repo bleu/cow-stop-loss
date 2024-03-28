@@ -1,8 +1,8 @@
+import { formatNumber } from "@bleu-fi/ui";
 import { tomatoDark } from "@radix-ui/colors";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 
 import { IStopLossConditionData } from "#/lib/types";
-import { formatNumber } from "#/utils";
 
 import { Tooltip } from "../Tooltip";
 import { BaseNode } from ".";

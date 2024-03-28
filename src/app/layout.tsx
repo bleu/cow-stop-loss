@@ -1,10 +1,10 @@
 import "./globals.css";
 
+import { cn } from "@bleu-fi/ui";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 
 import { RootLayout } from "#/components/RootLayout";
-import { cn } from "#/utils";
 
 export const metadata: Metadata = {
   title: "Create Next App",

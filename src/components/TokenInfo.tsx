@@ -1,6 +1,7 @@
+import { formatNumber } from "@bleu-fi/ui";
+
 import { ChainId } from "#/lib/publicClients";
 import { IToken } from "#/lib/types";
-import { formatNumber } from "#/utils";
 
 import { TokenLogo } from "./TokenLogo";
 

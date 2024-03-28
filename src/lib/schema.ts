@@ -4,7 +4,7 @@ import { TIME_OPTIONS } from "./types";
 import { ChainId, publicClientsFromIds } from "./publicClients";
 import { fetchCowQuote } from "./cowApi/fetchCowQuote";
 import { oracleMinimalAbi } from "./abis/oracleMinimalAbi";
-import { capitalize } from "#/utils";
+import { capitalize } from "@bleu-fi/ui";
 
 const basicAddressSchema = z
   .string()
