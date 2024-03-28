@@ -16,14 +16,13 @@ export default function Page({
   const router = useRouter();
 
   async function redirectToHistoryOnTxExecuted() {
-    sdk.txs.getBySafeTxHash(safeTxHash).then((tx) => {
-      if (tx.txStatus === TransactionStatus.SUCCESS) {
-        // Wait 1 second to wait subgraph to index the transaction
-        setTimeout(() => {
-          router.push("/history");
-        }, 1000);
-      }
-    });
+    const tx = await sdk.txs.getBySafeTxHash(safeTxHash);
+    if (tx.txStatus === TransactionStatus.SUCCESS) {
+      // Wait 1 second for the subgraph to index the transaction
+      setTimeout(() => {
+        router.push("/history");
+      }, 1000);
+    }
   }
 
   useEffect(() => {

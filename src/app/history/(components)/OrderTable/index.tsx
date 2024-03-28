@@ -78,7 +78,8 @@ export function OrderTable() {
               <TableRow>
                 <TableCell colSpan={6}>
                   <h1 className="text-md text-slate12 m-2 text-center w-full">
-                    This address didn't made any Stop Loss order yet
+                    This address doesn't have any Stop Loss orders associated to
+                    it yet
                   </h1>
                 </TableCell>
               </TableRow>
