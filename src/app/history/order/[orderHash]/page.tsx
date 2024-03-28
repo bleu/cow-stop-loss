@@ -129,10 +129,10 @@ export default function OrderPage({
               </OrderInformation>
             </>
           )}
-          <OrderInformation label="Oracle Token In">
+          <OrderInformation label="Oracle Token In" tooltipText="A chainlink-like oracle  that provides the current selling price of a token in a specified currency.">
             {stopLossOrder?.stopLossData?.sellTokenPriceOracle}
           </OrderInformation>
-          <OrderInformation label="Oracle Token In">
+          <OrderInformation label="Oracle Token In" tooltipText="A chainlink-like oracle that gives the current buying price of a token in the same currency.">
             {stopLossOrder?.stopLossData?.buyTokenPriceOracle}
           </OrderInformation>
         </div>
@@ -140,7 +140,7 @@ export default function OrderPage({
           <>
             <Separator className="my-3" />
             <div className="flex flex-col gap-y-1">
-              <OrderInformation label="Related Orders">
+              <OrderInformation label="Related Orders" tooltipText="The orders created based on your initial request">
                 <div className="flex flex-col">
                   {ordersRelated.map((order) => (
                     <div className="flex items-center gap-x-1">
