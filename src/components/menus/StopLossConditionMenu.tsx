@@ -92,7 +92,12 @@ export function StopLossConditionMenu({
 
   useEffect(() => {
     (async () => {
-      await loadChainlinkOracles();
+      setOraclePrices(
+        await oracleRouter.calculatePrice({
+          tokenBuyOracle: formData.tokenBuyOracle as Address,
+          tokenSellOracle: formData.tokenSellOracle as Address,
+        })
+      );
     })();
   }, []);
 
@@ -240,28 +245,28 @@ export function StrikePriceInput({
     <div className="flex flex-col">
       <div className="flex flex-row justify-between">
         <div className="flex flex-row gap-2 items-center text-sm">
-          <FormLabel className="mb-2 block text-sm">
+          <FormLabel className="mb-2 text-sm flex flex-row gap-1">
             {`Strike Price (${data.tokenSell?.symbol}/${data.tokenBuy?.symbol})`}
+            {Math.abs(percentageOverOraclePrice) > 0.01 && (
+              <span
+                className={
+                  percentageOverOraclePrice > 0
+                    ? "block text-destructive"
+                    : "block text-success"
+                }
+              >
+                (
+                {formatNumber(
+                  percentageOverOraclePrice,
+                  2,
+                  "decimal",
+                  "standard",
+                  0.01
+                )}{" "}
+                %)
+              </span>
+            )}
           </FormLabel>
-          {Math.abs(percentageOverOraclePrice) > 0.01 && (
-            <span
-              className={
-                percentageOverOraclePrice > 0
-                  ? "block text-destructive"
-                  : "block text-success"
-              }
-            >
-              (
-              {formatNumber(
-                percentageOverOraclePrice,
-                2,
-                "decimal",
-                "standard",
-                0.01
-              )}{" "}
-              %)
-            </span>
-          )}
         </div>
         <InfoTooltip text={STRIKE_PRICE_TOOLTIP_TEXT} />
       </div>
