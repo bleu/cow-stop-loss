@@ -4,9 +4,11 @@ import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React from "react";
 import {
   BaseEdge,
+  Edge,
   EdgeLabelRenderer,
   EdgeProps,
   getBezierPath,
+  getIncomers,
   Node,
   useReactFlow,
 } from "reactflow";
@@ -14,14 +16,13 @@ import { Address } from "viem";
 
 import { getDefaultMintBalData } from "#/lib/getOrderDefaultData";
 import { ChainId } from "#/lib/publicClients";
-import { IHooks, INodeData } from "#/lib/types";
+import { IEdgeData, IHooks, INodeData } from "#/lib/types";
 
 import { getLayoutedNodes } from "../Board";
 import { Dialog } from "../Dialog";
 import { defaultNodeProps } from "../nodes";
 import { defaultEdgeProps } from ".";
 
-export const MAX_NODES = 7;
 export const HOOK_OPTIONS = [
   {
     label: "Mint BAL from gauges",
@@ -70,7 +71,7 @@ export function AddHookEdge({
     targetPosition,
   });
 
-  const setNodesAndEdges = (newNode: Node<INodeData>) => {
+  const addNewNodeOnEdgePlace = (newNode: Node<INodeData>) => {
     const oldNodes = getNodes();
     const targetIndex = oldNodes.findIndex((n) => n.id === target);
     const newNodes = getLayoutedNodes([
@@ -78,23 +79,28 @@ export function AddHookEdge({
       newNode,
       ...oldNodes.slice(targetIndex),
     ]);
-    const edgesType = newNodes.length >= MAX_NODES ? "straight" : "addHook";
-    const newEdges = [
-      ...getEdges().filter((e) => e.id !== id),
-      {
-        id: `${source}-${newNode.id}`,
-        source,
-        target: newNode.id,
-        ...defaultEdgeProps,
-      },
-      {
-        id: `${newNode.id}-${target}`,
-        source: newNode.id,
-        target,
-        ...defaultEdgeProps,
-      },
-    ].map((e) => ({ ...e, type: edgesType }));
-    setNodes(newNodes);
+    const orderId = newNode.data?.orderId as number;
+    const newEdges = (
+      [
+        ...getEdges().filter((e) => e.id !== id),
+        {
+          id: `${source}-${newNode.id}`,
+          source,
+          target: newNode.id,
+          ...defaultEdgeProps,
+        },
+        {
+          id: `${newNode.id}-${target}`,
+          source: newNode.id,
+          target,
+          ...defaultEdgeProps,
+        },
+      ] as Edge<IEdgeData>[]
+    ).map((e) => {
+      if (e.data?.orderId !== orderId) return e;
+      return { ...e, type: "default" } as Edge<IEdgeData>;
+    });
+    setNodes(getLayoutedNodes(newNodes));
     setEdges(newEdges);
   };
 
@@ -110,9 +116,8 @@ export function AddHookEdge({
           }}
         >
           <ChooseHookDialog
-            setNodesAndEdges={setNodesAndEdges}
+            addNewNodeOnEdgePlace={addNewNodeOnEdgePlace}
             source={source}
-            target={target}
             safeAddress={safeAddress as Address}
           />
         </div>
@@ -122,46 +127,29 @@ export function AddHookEdge({
 }
 
 export function ChooseHookDialog({
-  setNodesAndEdges,
+  addNewNodeOnEdgePlace,
   source,
-  target,
   safeAddress,
 }: {
-  setNodesAndEdges: (node: Node<INodeData>) => void;
-  target: string;
+  addNewNodeOnEdgePlace: (node: Node<INodeData>) => void;
   source: string;
   safeAddress: Address;
 }) {
   const {
     safe: { chainId },
   } = useSafeAppsSDK();
-  const { getNodes, getNode } = useReactFlow();
+  const { getNodes, getNode, getEdges } = useReactFlow();
   const { toast } = useToast();
   const [hookSelected, setHookSelected] = React.useState<string>();
 
-  function getOrderId(
-    sourceNode: Node<INodeData>,
-    targetNode: Node<INodeData>
-  ): number {
-    if (targetNode.id === "submit") {
-      return sourceNode.data?.orderId as number;
-    }
-    return targetNode.data?.orderId as number;
-  }
-
   function addHookNode(type: string, data: Omit<IHooks, "orderId">) {
-    const targetNode = getNode(target) as Node<INodeData>;
     const sourceNode = getNode(source) as Node<INodeData>;
-    const orderId = getOrderId(sourceNode, targetNode);
-    const swapNode = getNode(`${orderId}-swap`) as Node<INodeData>;
-    const targetIndex = getNodes().findIndex((n) => n.id === target);
-    const swapNodeIndex = getNodes().findIndex((n) => n.id === "swap");
-    const isBeforeSwap = targetIndex <= swapNodeIndex;
-    const newNodeId = `${orderId}-hook-${Math.random().toString(36).substring(7)}`;
-    if (!targetNode || !swapNode.data || !("tokenSell" in swapNode.data))
-      return;
+    const incomers = getIncomers(sourceNode, getNodes(), getEdges());
+    const isBeforeSwap = incomers.length === 0;
+    const orderId = sourceNode.data?.orderId as number;
+    const newNodeId = `${orderId}-${isBeforeSwap ? "preHook" : "postHook"}-${Math.random().toString(36).substring(7)}`;
     const newNode = {
-      id: `${isBeforeSwap ? "preHook" : "postHook"}-${newNodeId}`,
+      id: newNodeId,
       type,
       data: {
         ...data,
@@ -169,7 +157,7 @@ export function ChooseHookDialog({
       },
       ...defaultNodeProps,
     };
-    setNodesAndEdges(newNode);
+    addNewNodeOnEdgePlace(newNode);
   }
   const addMintBalHook = () => {
     getDefaultMintBalData(chainId as ChainId, safeAddress as Address).then(
@@ -180,7 +168,6 @@ export function ChooseHookDialog({
             description: "This Safe has no gauges to mint from",
             variant: "destructive",
           });
-          throw new Error("No gauges found");
         }
         addHookNode("hookMintBal", mintData);
       }

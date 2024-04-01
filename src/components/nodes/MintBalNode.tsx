@@ -15,7 +15,7 @@ export function MintBalNode({
         <div className="ml-2">
           <div className="text-sm font-bold text-highlight">Mint BAL</div>
           <div className="text-xs">
-            {`Mint all BAL from ${data.gauges.length} gauges`}
+            {`Mint all BAL from ${data.gauges.length} gauge${data.gauges.length > 1 ? "s" : ""}`}
           </div>
         </div>
       </div>

@@ -44,7 +44,9 @@ const edgeTypes = {
   addHook: AddHookEdge,
 };
 
-export const getLayoutedNodes = (nodes: Node<INodeData>[]) => {
+export const getLayoutedNodes = (
+  nodes: Node<INodeData>[]
+): Node<INodeData>[] => {
   const gapBetweenNodes = {
     x: 500,
     y: 150,
@@ -65,15 +67,7 @@ export const getLayoutedNodes = (nodes: Node<INodeData>[]) => {
     )
   );
 
-  const layoutedNodes = [
-    {
-      ...submitNode,
-      position: {
-        x: ((uniqueOrdersIds.length - 1) * gapBetweenNodes.x) / 2,
-        y: maxOrderIdNodesLenght * gapBetweenNodes.y,
-      },
-    },
-  ] as Node<INodeData>[];
+  const layoutedNodes = [] as Node<INodeData>[];
 
   uniqueOrdersIds.forEach((orderId, colIndex) => {
     const nodesWithOrderId = nodes.filter(
@@ -92,7 +86,16 @@ export const getLayoutedNodes = (nodes: Node<INodeData>[]) => {
     );
   });
 
-  return layoutedNodes;
+  return [
+    ...layoutedNodes,
+    {
+      ...submitNode,
+      position: {
+        x: ((uniqueOrdersIds.length - 1) * gapBetweenNodes.x) / 2,
+        y: maxOrderIdNodesLenght * gapBetweenNodes.y,
+      },
+    },
+  ] as Node<INodeData>[];
 };
 
 export function Board({
@@ -144,13 +147,17 @@ export function Board({
 
       setEdges(
         deleted.reduce((acc, node) => {
+          const orderId = node.data?.orderId as number;
           const incomers = getIncomers(node, nodes, edges);
           const outgoers = getOutgoers(node, nodes, edges);
           const connectedEdges = getConnectedEdges([node], edges);
 
-          const remainingEdges = acc.filter(
-            (edge) => !connectedEdges.includes(edge)
-          );
+          const remainingEdges = acc
+            .filter((edge) => !connectedEdges.includes(edge))
+            .map((edge) => {
+              if (edge.data?.orderId !== orderId) return edge;
+              return { ...edge, type: "addHook" } as Edge<IEdgeData>;
+            });
 
           const createdEdges = incomers.flatMap(({ id: source }) =>
             outgoers.map(({ id: target }) => ({
@@ -158,6 +165,7 @@ export function Board({
               source,
               target,
               type: "addHook",
+              data: { orderId: node.data?.orderId as number },
               ...defaultEdgeProps,
             }))
           );

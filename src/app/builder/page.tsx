@@ -32,7 +32,7 @@ export default function Page() {
     getOrderDefaultNodesAndEdges(chainId as ChainId, safeAddress as Address, [
       submitNode,
     ]).then(({ orderEdges, orderNodes }) => {
-      setInitNodes([submitNode, ...orderNodes]);
+      setInitNodes([...orderNodes, submitNode]);
       setInitEdges(orderEdges);
     });
   }, [chainId, safeAddress]);
