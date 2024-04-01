@@ -59,7 +59,7 @@ export const getDefaultStopLossData = async ({
     strikePrice,
     tokenSellOracle: route.tokenSellOracle,
     tokenBuyOracle: route.tokenBuyOracle,
-    maxTimeSinceLastOracleUpdate: TIME_OPTIONS.YEAR,
+    maxTimeSinceLastOracleUpdate: TIME_OPTIONS.MINUTE_15,
   };
 };
 
@@ -73,8 +73,8 @@ export const getDefaultSwapData = (
   tokenBuy: cowTokenList.findLast(
     (token) => token.symbol === "USDC" && token.chainId === chainId
   ) as IToken,
-  amount: 0.1,
-  allowedSlippage: 1,
+  amount: 1,
+  allowedSlippage: 3,
   isSellOrder: true,
   validityBucketTime: TIME_OPTIONS.HOUR,
   isPartiallyFillable: false,
