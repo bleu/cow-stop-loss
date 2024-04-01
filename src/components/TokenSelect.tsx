@@ -1,8 +1,10 @@
 import {
   Button,
   Command,
+  CommandEmpty,
   CommandInput,
   CommandItem,
+  CommandList,
   FormLabel,
   FormMessage,
   Popover,
@@ -11,7 +13,7 @@ import {
 } from "@bleu-fi/ui";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Address } from "viem";
 
 import { cowTokenList } from "#/lib/cowTokenList";
@@ -37,33 +39,16 @@ export function TokenSelect({
     safe: { chainId },
   } = useSafeAppsSDK();
   const [open, setOpen] = useState(false);
+
   const tokens = cowTokenList.filter(
     (token) => token.chainId === chainId
   ) as IToken[];
 
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedValue, setSelectedValue] = useState<IToken | undefined>(
-    undefined
-  );
-
   const { safe } = useSafeAppsSDK();
-
-  useEffect(() => {
-    if (selectedToken) {
-      setSelectedValue(selectedToken);
-    }
-  }, [selectedToken]);
 
   function handleSelectToken(token: IToken) {
     onSelectToken(token);
-    setSelectedValue(token);
     setOpen(false);
-  }
-
-  function filterTokens(token: IToken) {
-    if (!searchQuery) return true;
-    const regex = new RegExp(searchQuery, "i");
-    return regex.test(token.symbol);
   }
 
   return (
@@ -81,9 +66,9 @@ export function TokenSelect({
             >
               {
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                selectedValue ? (
+                selectedToken ? (
                   <TokenInfo
-                    token={selectedValue}
+                    token={selectedToken}
                     chainId={safe.chainId as ChainId}
                   />
                 ) : (
@@ -100,32 +85,34 @@ export function TokenSelect({
           </div>
         </PopoverTrigger>
         <PopoverContent>
-          <Command>
-            <CommandInput
-              // TODO: COW-179
-              disabled
-              placeholder="Search token..."
-              className="h-9"
-              onValueChange={(search: string) => setSearchQuery(search)}
-            />
-            {tokens.filter(filterTokens).length === 0 && (
-              <CommandItem disabled>No tokens found on the Safe</CommandItem>
-            )}
-            {tokens.filter(filterTokens).map((token) => (
-              <CommandItem
-                key={token.address}
-                onSelect={() => handleSelectToken(token)}
-              >
-                <TokenInfo
-                  token={{
-                    address: token.address as Address,
-                    symbol: token.symbol,
-                    decimals: token.decimals,
-                  }}
-                  chainId={safe.chainId as ChainId}
-                />
-              </CommandItem>
-            ))}
+          <Command
+            filter={(value, search) => {
+              if (!search) return 1;
+              const regex = new RegExp(search, "i");
+              return Number(regex.test(value));
+            }}
+            value={selectedToken?.symbol}
+          >
+            <CommandInput placeholder="Search token..." className="h-9" />
+            <CommandList>
+              <CommandEmpty>No tokens found</CommandEmpty>
+              {tokens.map((token) => (
+                <CommandItem
+                  key={token.address}
+                  value={token.symbol + token.address}
+                  onSelect={() => handleSelectToken(token)}
+                >
+                  <TokenInfo
+                    token={{
+                      address: token.address as Address,
+                      symbol: token.symbol,
+                      decimals: token.decimals,
+                    }}
+                    chainId={safe.chainId as ChainId}
+                  />
+                </CommandItem>
+              ))}
+            </CommandList>
           </Command>
         </PopoverContent>
       </Popover>
