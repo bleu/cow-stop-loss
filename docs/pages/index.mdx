@@ -2,7 +2,9 @@
 
 ## Introduction 
 
-The stop loss is designed to sell a token if its price drops below a certain threshold. It uses the [Composable CoW framework](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/composable-cow) to post an order on the CoW Protocol. To check if the price of the token has dropped below the threshold, the stop loss uses the Chainlink price feed. In the UI, the oracles should be defined automatically to ensure secure price checking execution (WIP), unless the user defines an oracle manually or tokens that are not supported on our token list.
+The stop loss is designed to sell a token if its price drops below a certain threshold. It uses the [Composable CoW framework](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/composable-cow) to post an order on the CoW Protocol. To check if the price of the token has dropped below the threshold, the stop loss uses the Chainlink price feed. In the UI, the oracles have to be set by the user, there is a button to load available Chainlink oracles.
+
+The oracles and the strike price are among the token prices. This means that if you select two non-stable tokens and the buy token price increases, the stop loss can be triggered even if the buy token price didn't change.
 
 ## Requirements
 - Order must be created from a `Safe`.
@@ -32,12 +34,12 @@ Post Hooks are the blockchain actions that will be executed after the order is p
 
 ### Hooks Types
 
-- Multisend (WIP): Use this hook to send a token to multiple addresses. The hook will send the same amount of tokens to all the addresses.
+- BAL Mint: Use this hook to mint BAL from Balancer Gauges. To mint BAL you need to be a liquidity provider in a Balancer pool that has this incentive.
 
 ## FAQ
 
 :::details[Are all hooks executed in the same transaction?]
-Yes, all hooks are executed in the same transaction alongside the swap execution.
+Yes, all hooks are executed in the same settlement transaction alongside the swap execution.
 :::
 
 :::details[Are the hooks executed in the same order that I set them?]
@@ -45,17 +47,17 @@ Yes, the hooks are executed in the same order that you set them.
 :::
 
 :::details[What happens if a hook fails?]
-If a hook fails, it will be skipped. So the next hooks and the swap will still be executed.
+If a hook fails, it will be skipped. So, the next hooks and the swap can still be executed. To know more about the hooks execution, check the [CoW Hooks](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/hooks-trampoline) documentation.
 :::
 
-:::details[In partially filled orders, are the hooks executed for each part?]
-Pre hooks are executed in the first one, and the post hooks in all hooks.
+:::details[In partially filled orders, are the hooks executed on each order settlement?]
+Pre hooks are executed in the first one, and the post hooks in all settlements.
 :::
 
 :::details[Can I cancel an order?]
-Yes, if the order isn't posted yet. You can cancel it from the UI (WIP).
+Yes, if the order isn't posted yet. You can cancel it from the UI.
 :::
 
 :::details[Will my tokens be held by a third party?]
-No, your tokens remain in your wallet until the order execution.
+No, your tokens remain in your wallet until the swap execution.
 :::
