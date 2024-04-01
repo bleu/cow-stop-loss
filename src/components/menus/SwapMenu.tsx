@@ -1,14 +1,15 @@
-import { convertStringToNumberAndRoundDown, Form, formatNumber } from "@bleu-fi/ui";
+import {
+  convertStringToNumberAndRoundDown,
+  Form,
+  formatNumber,
+} from "@bleu-fi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect } from "react";
 import { FieldValues, useForm } from "react-hook-form";
 import { useReactFlow } from "reactflow";
 import { Address, formatUnits } from "viem";
 
 import { useSafeBalances } from "#/hooks/useSafeBalances";
-import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
-import { ChainId } from "#/lib/publicClients";
 import { swapSchema } from "#/lib/schema";
 import { ISwapData, TIME_OPTIONS } from "#/lib/types";
 
@@ -42,9 +43,6 @@ export function SwapMenu({
   defaultValues: FieldValues;
 }) {
   const { fetchBalance } = useSafeBalances();
-  const {
-    safe: { chainId },
-  } = useSafeAppsSDK();
   const form = useForm<typeof swapSchema._type>({
     resolver: zodResolver(swapSchema),
     defaultValues,
@@ -70,49 +68,14 @@ export function SwapMenu({
     amountDecimals
   );
 
-  const { setNodes, getNodes, getNode } = useReactFlow();
-
-  const oracleRouterFactory = CHAINS_ORACLE_ROUTER_FACTORY[chainId as ChainId];
+  const { setNodes, getNodes } = useReactFlow();
 
   const onSubmit = async (formData: FieldValues) => {
-    const oracleRouter = new oracleRouterFactory({
-      chainId: chainId as ChainId,
-      tokenSell: formData.tokenSell,
-      tokenBuy: formData.tokenBuy,
-    });
-
-    const oracles = await oracleRouter.findRoute().catch(() => {
-      return { tokenSellOracle: undefined, tokenBuyOracle: undefined };
-    });
-
-    const oracleNotFind = !oracles.tokenSellOracle || !oracles.tokenBuyOracle;
-
-    const oraclePrice = oracleNotFind
-      ? 0
-      : await oracleRouter.calculatePrice(oracles);
-
-    const orderId = getNode(id)?.data?.orderId;
-
     const newNodes = getNodes().map((node) => {
       if (node.id === id) {
         return {
           ...node,
           data: { ...node.data, ...formData },
-        };
-      } else if (node.id === `${orderId}-condition`) {
-        const error = oracleNotFind
-          ? "ORACLE_NOT_FOUND"
-          : oraclePrice < node.data.strikePrice
-            ? "STRIKE_PRICE_ABOVE_ORACLE_PRICE"
-            : undefined;
-        return {
-          ...node,
-          data: {
-            ...node.data,
-            tokenSellOracle: oracles.tokenSellOracle,
-            tokenBuyOracle: oracles.tokenBuyOracle,
-            error,
-          },
         };
       }
       return node;
@@ -156,7 +119,10 @@ export function SwapMenu({
                     type="button"
                     className="text-accent outline-none hover:text-accent/70"
                     onClick={() => {
-                      setValue("amount", convertStringToNumberAndRoundDown(walletAmount));
+                      setValue(
+                        "amount",
+                        convertStringToNumberAndRoundDown(walletAmount)
+                      );
                     }}
                   >
                     Max

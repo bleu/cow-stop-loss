@@ -1,4 +1,11 @@
-import { Form, formatNumber,FormControl, FormMessage } from "@bleu-fi/ui";
+import {
+  Form,
+  formatNumber,
+  FormControl,
+  FormLabel,
+  FormMessage,
+  useToast,
+} from "@bleu-fi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect, useState } from "react";
@@ -9,6 +16,7 @@ import {
   UseFormReturn,
 } from "react-hook-form";
 import { useReactFlow } from "reactflow";
+import { Address } from "viem";
 
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
 import { ChainId } from "#/lib/publicClients";
@@ -50,22 +58,61 @@ export function StopLossConditionMenu({
     resolver: zodResolver(stopLossConditionSchema),
     defaultValues,
   });
+  const { toast } = useToast();
 
   const { setNodes, getNodes } = useReactFlow();
 
-  const [oraclePrice, setOraclePrices] = useState<number>();
+  const oracleRouterFactory = CHAINS_ORACLE_ROUTER_FACTORY[chainId as ChainId];
+  const oracleRouter = new oracleRouterFactory({
+    chainId: chainId as ChainId,
+    tokenSell: data.tokenSell,
+    tokenBuy: data.tokenBuy,
+  });
 
+  const [oraclePrice, setOraclePrices] = useState<number>();
   const { watch, handleSubmit, setValue } = form;
 
   const formData = watch();
 
+  const loadChainlinkOracles = async () => {
+    try {
+      const oracles = await oracleRouter.findRoute();
+      const oraclePrice = await oracleRouter.calculatePrice(oracles);
+      setValue("tokenSellOracle", oracles.tokenSellOracle);
+      setValue("tokenBuyOracle", oracles.tokenBuyOracle);
+      setValue("strikePrice", oraclePrice);
+    } catch {
+      toast({
+        title: "Oracle not found",
+        description: "Could not find Chainlink oracles for this token pair",
+        variant: "destructive",
+      });
+    }
+  };
+
+  useEffect(() => {
+    (async () => {
+      setOraclePrices(
+        await oracleRouter.calculatePrice({
+          tokenBuyOracle: formData.tokenBuyOracle as Address,
+          tokenSellOracle: formData.tokenSellOracle as Address,
+        })
+      );
+    })();
+  }, []);
+
   useEffect(() => {
     const subscription = watch(() =>
-      handleSubmit((formData: FieldValues) => {
+      handleSubmit(async (formData: FieldValues) => {
+        const newPrice = await oracleRouter.calculatePrice({
+          tokenBuyOracle: formData.tokenBuyOracle as Address,
+          tokenSellOracle: formData.tokenSellOracle as Address,
+        });
+        setOraclePrices(newPrice);
         const newNodes = getNodes().map((node) => {
           if (node.id === id) {
             const error =
-              formData.strikePrice > (oraclePrice || 0)
+              formData.strikePrice > (newPrice || 0)
                 ? "STRIKE_PRICE_ABOVE_ORACLE_PRICE"
                 : undefined;
             return {
@@ -81,97 +128,89 @@ export function StopLossConditionMenu({
     return () => subscription.unsubscribe();
   }, [handleSubmit, watch, oraclePrice]);
 
-  useEffect(() => {
-    if (data.tokenSellOracle && data.tokenBuyOracle) {
-      const oracleRouter = new CHAINS_ORACLE_ROUTER_FACTORY[chainId as ChainId](
-        {
-          chainId: chainId as ChainId,
-          tokenBuy: data.tokenBuy,
-          tokenSell: data.tokenSell,
-        }
-      );
-      oracleRouter
-        .calculatePrice({
-          tokenBuyOracle: data.tokenBuyOracle,
-          tokenSellOracle: data.tokenSellOracle,
-        })
-        .then((price) => {
-          setOraclePrices(price);
-        });
-    }
-  }, [formData.tokenSellOracle, formData.tokenBuyOracle]);
-
   const percentageOverOraclePrice = oraclePrice
     ? (formData.strikePrice / oraclePrice - 1) * 100
     : 0;
 
   return (
     <Form {...form}>
-      <div className="flex flex-col gap-3 w-full max-h-[39rem] overflow-y-scroll">
+      <div className="w-full max-h-[39rem] overflow-y-scroll">
         <div>
           <span className="text-lg font-bold text-highlight mb-2">
             Stop Loss Condition
           </span>
-          <StrikePriceInput
-            form={form}
-            data={data}
-            percentageOverOraclePrice={percentageOverOraclePrice}
-            oraclePrice={oraclePrice}
-          />
-          <Accordion className="w-full" type="single" collapsible>
-            <AccordionItem value="advancedOptions" key="advancedOption">
-              <AccordionTrigger>Advanced Options</AccordionTrigger>
-              <AccordionContent>
-                <div className="flex flex-col gap-y-2">
-                  <Input
-                    name="tokenSellOracle"
-                    label={`${data.tokenSell?.symbol} Oracle`}
-                    tooltipLink={
-                      data.tokenSellOracle
-                        ? buildBlockExplorerAddressURL({
-                            chainId,
-                            address: data.tokenSellOracle,
-                          })?.url
-                        : undefined
-                    }
-                    tooltipText={ORACLE_TOOLTIP_TEXT}
-                  />
-                  <Input
-                    name="tokenBuyOracle"
-                    label={`${data.tokenBuy?.symbol} Oracle`}
-                    tooltipLink={
-                      data.tokenBuyOracle
-                        ? buildBlockExplorerAddressURL({
-                            chainId,
-                            address: data.tokenBuyOracle,
-                          })?.url
-                        : undefined
-                    }
-                    tooltipText={ORACLE_TOOLTIP_TEXT}
-                  />
-
-                  <SelectInputForm
-                    name="maxTimeSinceLastOracleUpdate"
-                    onValueChange={(maxTimeSinceLastOracleUpdate) => {
-                      setValue(
-                        "maxTimeSinceLastOracleUpdate",
-                        maxTimeSinceLastOracleUpdate as TIME_OPTIONS
-                      );
-                    }}
-                    options={Object.entries(TIME_OPTIONS).map(
-                      ([key, value]) => ({
-                        id: key,
-                        value: String(value),
-                      })
-                    )}
-                    placeholder={formData.maxTimeSinceLastOracleUpdate}
-                    tooltipText={MAX_TIME_SINCE_LAST_ORACLE_UPDATE_TOOLTIP_TEXT}
-                    label="Max time since last oracle update"
-                  />
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+          <div className="flex flex-col gap-y-2">
+            <StrikePriceInput
+              form={form}
+              data={data}
+              percentageOverOraclePrice={percentageOverOraclePrice}
+              oraclePrice={oraclePrice}
+            />
+            <Input
+              name="tokenSellOracle"
+              label={`${data.tokenSell?.symbol} Oracle`}
+              tooltipLink={
+                data.tokenSellOracle
+                  ? buildBlockExplorerAddressURL({
+                      chainId,
+                      address: data.tokenSellOracle,
+                    })?.url
+                  : undefined
+              }
+              tooltipText={ORACLE_TOOLTIP_TEXT}
+            />
+            <div className="w-full">
+              <Input
+                name="tokenBuyOracle"
+                label={`${data.tokenBuy?.symbol} Oracle`}
+                tooltipLink={
+                  data.tokenBuyOracle
+                    ? buildBlockExplorerAddressURL({
+                        chainId,
+                        address: data.tokenBuyOracle,
+                      })?.url
+                    : undefined
+                }
+                tooltipText={ORACLE_TOOLTIP_TEXT}
+              />
+              <button
+                type="button"
+                className="text-accent outline-none hover:text-accent/70 text-xs"
+                onClick={loadChainlinkOracles}
+              >
+                Load Chainlink oracles
+              </button>
+            </div>
+            <Accordion className="w-full" type="single" collapsible>
+              <AccordionItem value="advancedOptions" key="advancedOption">
+                <AccordionTrigger>Advanced Options</AccordionTrigger>
+                <AccordionContent>
+                  <div className="flex flex-col gap-y-2">
+                    <SelectInputForm
+                      name="maxTimeSinceLastOracleUpdate"
+                      onValueChange={(maxTimeSinceLastOracleUpdate) => {
+                        setValue(
+                          "maxTimeSinceLastOracleUpdate",
+                          maxTimeSinceLastOracleUpdate as TIME_OPTIONS
+                        );
+                      }}
+                      options={Object.entries(TIME_OPTIONS).map(
+                        ([key, value]) => ({
+                          id: key,
+                          value: String(value),
+                        })
+                      )}
+                      placeholder={formData.maxTimeSinceLastOracleUpdate}
+                      tooltipText={
+                        MAX_TIME_SINCE_LAST_ORACLE_UPDATE_TOOLTIP_TEXT
+                      }
+                      label="Max time since last oracle update"
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
         </div>
       </div>
     </Form>
@@ -203,31 +242,31 @@ export function StrikePriceInput({
   const error = errors.strikePrice as FieldError | undefined;
   const errorMessage = error?.message;
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col">
       <div className="flex flex-row justify-between">
         <div className="flex flex-row gap-2 items-center text-sm">
-          <span>
+          <FormLabel className="mb-2 text-sm flex flex-row gap-1">
             {`Strike Price (${data.tokenSell?.symbol}/${data.tokenBuy?.symbol})`}
-          </span>
-          {Math.abs(percentageOverOraclePrice) > 0.01 && (
-            <span
-              className={
-                percentageOverOraclePrice > 0
-                  ? "block text-destructive"
-                  : "block text-success"
-              }
-            >
-              (
-              {formatNumber(
-                percentageOverOraclePrice,
-                2,
-                "decimal",
-                "standard",
-                0.01
-              )}{" "}
-              %)
-            </span>
-          )}
+            {Math.abs(percentageOverOraclePrice) > 0.01 && (
+              <span
+                className={
+                  percentageOverOraclePrice > 0
+                    ? "block text-destructive"
+                    : "block text-success"
+                }
+              >
+                (
+                {formatNumber(
+                  percentageOverOraclePrice,
+                  2,
+                  "decimal",
+                  "standard",
+                  0.01
+                )}{" "}
+                %)
+              </span>
+            )}
+          </FormLabel>
         </div>
         <InfoTooltip text={STRIKE_PRICE_TOOLTIP_TEXT} />
       </div>
@@ -258,7 +297,7 @@ export function StrikePriceInput({
         )}
       </div>
       {errorMessage && (
-        <FormMessage className="mt-1 h-6 text-sm text-destructive">
+        <FormMessage className="my-1 h-6 text-sm text-destructive">
           <span>{errorMessage}</span>
         </FormMessage>
       )}
