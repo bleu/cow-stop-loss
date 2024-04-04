@@ -6,18 +6,27 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 import { Spinner } from "#/components/Spinner";
+import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
 
 export default function Page({
   params: { safeTxHash },
 }: {
   params: { safeTxHash: string };
 }) {
-  const { sdk } = useSafeAppsSDK();
+  const { sdk, safe } = useSafeAppsSDK();
+  const publicClient = publicClientsFromIds[safe.chainId as ChainId];
   const router = useRouter();
 
   async function redirectToHistoryOnTxExecuted() {
     const tx = await sdk.txs.getBySafeTxHash(safeTxHash);
-    if (tx.txStatus === TransactionStatus.SUCCESS) {
+    if (tx.txStatus === TransactionStatus.SUCCESS && tx.txHash) {
+      const confirmationBlocks = await publicClient.getTransactionConfirmations(
+        {
+          hash: tx.txHash as `0x${string}`,
+        }
+      );
+
+      if (confirmationBlocks < 3) return;
       // Wait 1 second for the subgraph to index the transaction
       setTimeout(() => {
         router.push("/history");

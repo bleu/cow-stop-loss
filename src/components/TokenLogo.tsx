@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useState } from "react";
 
+import { cowTokenList } from "#/lib/cowTokenList";
 import { ChainId } from "#/lib/publicClients";
 
 type ImageAttributes = React.DetailedHTMLProps<
@@ -14,15 +15,16 @@ type ImageFallbackProps = Omit<ImageAttributes, "src"> & {
   quality?: number;
 };
 
-const tokenUrlRoot =
-  "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images";
-
 export const cowprotocolTokenLogoUrl = (
   address?: string,
   chainId?: ChainId
 ) => {
   if (!address || !chainId) return;
-  return `${tokenUrlRoot}/${chainId}/${address.toLowerCase()}/logo.png`;
+  return cowTokenList.find(
+    (token) =>
+      token.chainId === chainId &&
+      token.address.toLowerCase() === address.toLowerCase()
+  )?.logoURI;
 };
 
 const FALLBACK_SRC = "/assets/generic-token-logo.png";
