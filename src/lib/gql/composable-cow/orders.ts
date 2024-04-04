@@ -9,6 +9,7 @@ gql(
         chainId
         decodedSuccess
         id
+        txHash
         hash
         staticInput
         stopLossData {
