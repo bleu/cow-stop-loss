@@ -1,4 +1,7 @@
 import { Address } from "viem";
+import { gnosis, goerli, mainnet, sepolia } from "viem/chains";
+
+import { ChainId } from "#/lib/publicClients";
 
 export function truncateAddress(address?: string | null) {
   if (!address) return address;
@@ -203,3 +206,22 @@ export function unsafeNetworkIdFor(name: string) {
   );
 }
 export const addressRegex = /0x[a-fA-F0-9]{40}$/;
+
+const cowExplorerBaseUrl = "https://explorer.cow.fi/";
+
+const cowExplorerUrl = {
+  [mainnet.id]: "",
+  [goerli.id]: "goerli",
+  [gnosis.id]: "gc",
+  [sepolia.id]: "sepolia",
+};
+
+export function buildOrderCowExplorerUrl({
+  chainId,
+  orderId,
+}: {
+  chainId: ChainId;
+  orderId: `0x${string}`;
+}) {
+  return `${cowExplorerBaseUrl}${cowExplorerUrl[chainId]}/orders/${orderId}`;
+}

@@ -1,9 +1,27 @@
 "use client";
 
-import { cn, epochToDate, formatDateTime, formatNumber, Separator } from "@bleu-fi/ui";
+import {
+  ClickToCopy,
+  cn,
+  epochToDate,
+  formatDateTime,
+  formatNumber,
+  Separator,
+} from "@bleu-fi/ui";
+import { ArrowLeftIcon, CopyIcon } from "@radix-ui/react-icons";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { formatUnits } from "viem";
 
 import { Spinner } from "#/components/Spinner";
-import { useOrder } from "#/contexts/ordersContext";
+import { TokenLogo } from "#/components/TokenLogo";
+import { CowOrder, useOrder } from "#/contexts/ordersContext";
+import { ChainId } from "#/lib/publicClients";
+import {
+  buildBlockExplorerTxUrl,
+  buildOrderCowExplorerUrl,
+  truncateAddress,
+} from "#/utils";
 
 import { StatusBadge } from "../../(components)/StatusBadge";
 import { OrderInformation } from "./(components)/OrderInformation";
@@ -15,25 +33,35 @@ export default function OrderPage({
     orderHash: string;
   };
 }) {
-  const { orders, loaded } = useOrder();
+  const { orders, loaded, getRelatedCowOrders } = useOrder();
+  const [cowOrdersRelated, setCowOrdersRelated] = useState<
+    CowOrder[] | undefined
+  >();
+  const stopLossOrder = orders.find((order) => order.hash === params.orderHash);
+
+  async function loadCow(appData: string) {
+    const cowOrderMatch = await getRelatedCowOrders({ appData });
+    setCowOrdersRelated(cowOrderMatch);
+  }
+
+  useEffect(() => {
+    if (stopLossOrder && loaded) {
+      loadCow(stopLossOrder?.stopLossData?.appData as string);
+    }
+  }, [stopLossOrder, loaded]);
 
   if (!loaded) {
     return <Spinner />;
   }
-  const stopLossOrder = orders.find((order) => order.hash === params.orderHash);
-  const ordersRelated = orders.filter(
-    (order) =>
-      order.stopLossData?.appData === stopLossOrder?.stopLossData?.appData,
-  );
 
   const orderDateTime = formatDateTime(
-    epochToDate(Number(stopLossOrder?.blockTimestamp)),
+    epochToDate(Number(stopLossOrder?.blockTimestamp))
   );
   const orderExpirationDateTime = formatDateTime(
     epochToDate(
       Number(stopLossOrder?.blockTimestamp) +
-        Number(stopLossOrder?.stopLossData?.validityBucketSeconds),
-    ),
+        Number(stopLossOrder?.stopLossData?.validityBucketSeconds)
+    )
   );
   const amountIn =
     Number(stopLossOrder?.stopLossData?.tokenAmountIn) /
@@ -47,14 +75,38 @@ export default function OrderPage({
   const executedAmountOut =
     Number(stopLossOrder?.executedBuyAmount) /
     10 ** Number(stopLossOrder?.stopLossData?.tokenOut.decimals);
-  const limitPrice = amountIn / amountOut;
-  const executionPrice = executedAmountIn / executedAmountOut;
-  const orderSurplus = ((limitPrice - executionPrice) / limitPrice) * 100;
+  const strikePrice = formatUnits(stopLossOrder?.stopLossData?.strike, 18);
+  const limitPrice = amountOut / amountIn;
+  const executionPrice = executedAmountOut / executedAmountIn;
+  const orderSurplus = ((executionPrice - limitPrice) / limitPrice) * 100;
+  const priceUnit = `${stopLossOrder?.stopLossData?.tokenOut.symbol} per ${stopLossOrder?.stopLossData?.tokenIn.symbol}`;
 
   return (
     <div className="flex size-full justify-center items-center">
       <div className="bg-foreground my-10 text-black p-10 rounded relative">
+        <div className="flex flex-row justify-between items-center mb-5">
+          <Link href="/history" className="hover:text-primary">
+            <ArrowLeftIcon className="size-4" />
+          </Link>
+          <h1 className="text-2xl font-bold">Order Details</h1>
+          <div />
+        </div>
         <div className="flex flex-col gap-y-1">
+          <OrderInformation
+            label="Order creation"
+            tooltipText="The transaction that created this stop loss order."
+          >
+            <a
+              target="_blank"
+              href={buildBlockExplorerTxUrl({
+                txHash: stopLossOrder?.txHash as string,
+                chainId: stopLossOrder?.chainId,
+              })}
+              className="hover:text-primary hover:underline"
+            >
+              {stopLossOrder?.txHash}
+            </a>
+          </OrderInformation>
           <OrderInformation
             label="Order Hash"
             tooltipText="The onchain settlement transaction for this order."
@@ -65,7 +117,7 @@ export default function OrderPage({
             label="Status"
             tooltipText="The status can be Created, Posted, Fulfilled, Expired and Cancelled"
           >
-             <StatusBadge status={stopLossOrder?.status}/>
+            <StatusBadge status={stopLossOrder?.status} />
           </OrderInformation>
           <OrderInformation
             label="Submission Time"
@@ -87,25 +139,55 @@ export default function OrderPage({
             tooltipText="The total sell and buy amount for this order. Sell amount includes the fee."
           >
             <div className="flex flex-col">
-              <div className="flex gap-x-2">
-                <span className="font-bold">From</span>
+              <div className="flex gap-x-2 items-center">
+                <span className="font-bold">
+                  {stopLossOrder?.stopLossData?.isSellOrder
+                    ? "From"
+                    : "From at most"}
+                </span>
                 {formatNumber(amountIn, 4)}{" "}
                 {stopLossOrder?.stopLossData?.tokenIn.symbol}
+                <TokenLogo
+                  tokenAddress={stopLossOrder?.stopLossData?.tokenIn.address.toLowerCase()}
+                  chainId={stopLossOrder?.chainId as ChainId}
+                  className="rounded-full"
+                  alt="Token Logo"
+                  height={22}
+                  width={22}
+                  quality={100}
+                />
               </div>
-              <div className="flex gap-x-2">
-                <span className="font-bold">To at least</span>
+              <div className="flex gap-x-2 items-center">
+                <span className="font-bold">
+                  {stopLossOrder?.stopLossData?.isSellOrder
+                    ? "To at least"
+                    : "To"}
+                </span>
                 {formatNumber(amountOut, 4)}{" "}
                 {stopLossOrder?.stopLossData?.tokenOut.symbol}
+                <TokenLogo
+                  tokenAddress={stopLossOrder?.stopLossData?.tokenOut.address}
+                  chainId={stopLossOrder?.chainId as ChainId}
+                  className="rounded-full"
+                  alt="Token Logo"
+                  height={22}
+                  width={22}
+                  quality={100}
+                />
               </div>
             </div>
+          </OrderInformation>
+          <OrderInformation
+            label="Strike Price"
+            tooltipText="If the oracle price drop bellow this threshold the order will be executed by the limit price."
+          >
+            {formatNumber(strikePrice, 4)} {priceUnit}
           </OrderInformation>
           <OrderInformation
             label="Limit Price"
             tooltipText="The limit price is the price at which this order shall be (partially) filled, in combination with the specified slippage. The fee is already deducted from the sell amount."
           >
-            {formatNumber(limitPrice, 4)}{" "}
-            {stopLossOrder?.stopLossData?.tokenIn.symbol} for{" "}
-            {stopLossOrder?.stopLossData?.tokenOut.symbol}
+            {formatNumber(limitPrice, 4)} {priceUnit}
           </OrderInformation>
           {stopLossOrder?.executedSellAmount && (
             <>
@@ -113,45 +195,63 @@ export default function OrderPage({
                 label="Execution Price"
                 tooltipText="The actual price at which this order has been matched and executed, after deducting fees from the amount sold."
               >
-                {formatNumber(executionPrice, 4)}{" "}
-                {stopLossOrder?.stopLossData?.tokenIn.symbol} for{" "}
-                {stopLossOrder?.stopLossData?.tokenOut.symbol}
+                {formatNumber(executionPrice, 4)} {priceUnit}
               </OrderInformation>
               <OrderInformation
                 label="Order"
                 tooltipText="The amount sold/bought. Also surplus for this order. This is the positive difference between the initial limit price and the actual (average) execution price."
               >
-                {formatNumber(executedAmountIn, 4)}{" "}
-                {stopLossOrder?.stopLossData?.tokenIn.symbol} for{" "}
-                {formatNumber(executedAmountOut, 4)}{" "}
-                {stopLossOrder?.stopLossData?.tokenOut.symbol} (
-                {formatNumber(orderSurplus, 4)}% Surplus)
+                <div className="flex gap-x-2">
+                  {formatNumber(executedAmountIn, 4)} {priceUnit}
+                  <span className="text-success text-bold">
+                    ({formatNumber(orderSurplus, 4)}% surplus)
+                  </span>
+                </div>
               </OrderInformation>
             </>
           )}
-          <OrderInformation label="Oracle Token In" tooltipText="A chainlink-like oracle  that provides the current selling price of a token in a specified currency.">
+          <OrderInformation
+            label="Oracle Token In"
+            tooltipText="A chainlink-like oracle  that provides the current selling price of a token in a specified currency."
+          >
             {stopLossOrder?.stopLossData?.sellTokenPriceOracle}
           </OrderInformation>
-          <OrderInformation label="Oracle Token In" tooltipText="A chainlink-like oracle that gives the current buying price of a token in the same currency.">
+          <OrderInformation
+            label="Oracle Token In"
+            tooltipText="A chainlink-like oracle that gives the current buying price of a token in the same currency."
+          >
             {stopLossOrder?.stopLossData?.buyTokenPriceOracle}
           </OrderInformation>
         </div>
-        {ordersRelated.length > 0 && (
+        {cowOrdersRelated && cowOrdersRelated.length > 0 && (
           <>
             <Separator className="my-3" />
             <div className="flex flex-col gap-y-1">
-              <OrderInformation label="Related Orders" tooltipText="The orders created based on your initial request">
+              <OrderInformation
+                label="Related Orders"
+                tooltipText="The orders created based on your initial request"
+              >
                 <div className="flex flex-col">
-                  {ordersRelated.map((order) => (
+                  {cowOrdersRelated.map((order) => (
                     <div className="flex items-center gap-x-1">
-                      <span
+                      <Link
                         className={cn(
-                          order.hash === stopLossOrder?.hash && "font-bold",
+                          "hover:text-primary hover:underline",
+                          order.status === "fulfilled" ? "font-bold" : ""
                         )}
+                        href={buildOrderCowExplorerUrl({
+                          chainId: stopLossOrder?.chainId as ChainId,
+                          orderId: order.uid as `0x${string}`,
+                        })}
+                        rel="noreferrer noopener"
+                        target="_blank"
                       >
-                        {order.hash}
-                      </span>
-                      <StatusBadge status={stopLossOrder?.status}/>
+                        {truncateAddress(order.uid)}
+                      </Link>
+                      <ClickToCopy text={order.uid}>
+                        <CopyIcon className="hover:text-primary" />
+                      </ClickToCopy>
+                      <StatusBadge status={stopLossOrder?.status} />
                     </div>
                   ))}
                 </div>
