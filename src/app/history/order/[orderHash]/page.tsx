@@ -57,12 +57,7 @@ export default function OrderPage({
   const orderDateTime = formatDateTime(
     epochToDate(Number(stopLossOrder?.blockTimestamp))
   );
-  const orderExpirationDateTime = formatDateTime(
-    epochToDate(
-      Number(stopLossOrder?.blockTimestamp) +
-        Number(stopLossOrder?.stopLossData?.validityBucketSeconds)
-    )
-  );
+
   const amountIn =
     Number(stopLossOrder?.stopLossData?.tokenAmountIn) /
     10 ** Number(stopLossOrder?.stopLossData?.tokenIn.decimals);
@@ -124,12 +119,6 @@ export default function OrderPage({
             tooltipText="The date and time at which the order was submitted."
           >
             {orderDateTime}
-          </OrderInformation>
-          <OrderInformation
-            label="Expiration Time"
-            tooltipText="The date and time at which an order will expire and effectively be cancelled."
-          >
-            {orderExpirationDateTime}
           </OrderInformation>
         </div>
         <Separator className="my-3" />
