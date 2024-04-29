@@ -10,13 +10,15 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  toast,
 } from "@bleu-fi/ui";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React, { useState } from "react";
-import { Address } from "viem";
+import { Address, isAddress } from "viem";
 
 import { cowTokenList } from "#/lib/cowTokenList";
+import { fetchTokenInfo } from "#/lib/fetchTokenInfo";
 import { ChainId } from "#/lib/publicClients";
 import { IToken } from "#/lib/types";
 
@@ -39,6 +41,7 @@ export function TokenSelect({
     safe: { chainId },
   } = useSafeAppsSDK();
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
 
   const tokens = cowTokenList.filter(
     (token) => token.chainId === chainId
@@ -49,6 +52,24 @@ export function TokenSelect({
   function handleSelectToken(token: IToken) {
     onSelectToken(token);
     setOpen(false);
+  }
+
+  async function handleImportToken() {
+    try {
+      const importedToken = await fetchTokenInfo(
+        search as Address,
+        chainId as ChainId
+      );
+      handleSelectToken(importedToken);
+      toast({
+        title: "Token imported",
+      });
+    } catch (e) {
+      toast({
+        title: "Error importing token",
+        variant: "destructive",
+      });
+    }
   }
 
   return (
@@ -87,6 +108,10 @@ export function TokenSelect({
         <PopoverContent>
           <Command
             filter={(value, search) => {
+              setSearch(search);
+              if (value === "import") {
+                return Number(isAddress(search));
+              }
               if (!search) return 1;
               const regex = new RegExp(search, "i");
               return Number(regex.test(value));
@@ -95,7 +120,7 @@ export function TokenSelect({
           >
             <CommandInput placeholder="Search token..." className="h-9" />
             <CommandList>
-              <CommandEmpty>No tokens found</CommandEmpty>
+              <CommandEmpty>No results found</CommandEmpty>
               {tokens.map((token) => (
                 <CommandItem
                   key={token.address}
@@ -112,6 +137,14 @@ export function TokenSelect({
                   />
                 </CommandItem>
               ))}
+              <CommandItem
+                key="import"
+                value="import"
+                onSelect={handleImportToken}
+                className="mx-1"
+              >
+                Import token
+              </CommandItem>
             </CommandList>
           </Command>
         </PopoverContent>
