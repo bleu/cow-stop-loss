@@ -17,6 +17,7 @@ import { Spinner } from "#/components/Spinner";
 import { TokenLogo } from "#/components/TokenLogo";
 import { CowOrder, useOrder } from "#/contexts/ordersContext";
 import { ChainId } from "#/lib/publicClients";
+import { formatTimeDelta } from "#/lib/timeDelta";
 import {
   buildBlockExplorerTxUrl,
   buildOrderCowExplorerUrl,
@@ -56,6 +57,9 @@ export default function OrderPage({
 
   const orderDateTime = formatDateTime(
     epochToDate(Number(stopLossOrder?.blockTimestamp))
+  );
+  const orderWaitTime = formatTimeDelta(
+    stopLossOrder?.stopLossData?.validityBucketSeconds as number
   );
 
   const amountIn =
@@ -119,6 +123,12 @@ export default function OrderPage({
             tooltipText="The date and time at which the order was submitted."
           >
             {orderDateTime}
+          </OrderInformation>
+          <OrderInformation
+            label="Validity Bucket Time"
+            tooltipText="After the oracle price achieves the defined strike price, how much time the order will wait to be filled on the orderbook."
+          >
+            {orderWaitTime}
           </OrderInformation>
         </div>
         <Separator className="my-3" />
