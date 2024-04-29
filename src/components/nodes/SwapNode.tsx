@@ -1,4 +1,5 @@
 import { formatNumber } from "@bleu-fi/ui";
+import { useEffect, useState } from "react";
 import { formatUnits } from "viem";
 
 import { useBuilder } from "#/contexts/builder";
@@ -17,16 +18,28 @@ export function SwapNode({
   data: ISwapData;
 }) {
   const { fetchBalance } = useSafeBalances();
+  const [sellTokenWalletAmount, setSellTokenWalletAmount] = useState<number>();
+  const [sellAmount, setSellAmount] = useState<number>();
+  const [buyAmount, setBuyAmount] = useState<number>();
   const { getOrderDataByOrderId } = useBuilder();
   const recipeData = getOrderDataByOrderId(data.orderId);
-  if (!recipeData) return null;
-  const sellTokenWalletAmount = Number(
-    formatUnits(
-      BigInt(fetchBalance(data.tokenSell.address)),
-      data.tokenSell.decimals
-    )
-  );
-  const [sellAmount, buyAmount] = calculateAmounts(recipeData);
+
+  useEffect(() => {
+    if (!recipeData) return;
+    const newSellTokenWalletAmount = Number(
+      formatUnits(
+        BigInt(fetchBalance(data.tokenSell.address)),
+        data.tokenSell.decimals
+      )
+    );
+    setSellTokenWalletAmount(newSellTokenWalletAmount);
+    const [newSellAmount, newBuyAmount] = calculateAmounts(recipeData);
+    setSellAmount(newSellAmount);
+    setBuyAmount(newBuyAmount);
+  }, [recipeData, data, fetchBalance]);
+
+  if (!sellAmount || !buyAmount) return null;
+
   const sellAmountWithSymbol = `${formatNumber(sellAmount, 2, "decimal", "compact", 0.01)} ${data.tokenSell.symbol}`;
   const buyAmountWithSymbol = `${formatNumber(buyAmount, 2, "decimal", "compact", 0.01)} ${data.tokenBuy.symbol}`;
   return (
@@ -34,10 +47,13 @@ export function SwapNode({
       <div className="flex flex-col">
         <div className="flex flex-row gap-2 items-center">
           <span className="text-sm font-bold text-highlight">Swap</span>
-          {sellTokenWalletAmount < sellAmount && (
-            <InfoTooltip variant="error" text="You don't have enough amount of the selling token. The order can still be posted but it will never be filled until you don't have enough tokens in your wallet." />
+          {(sellTokenWalletAmount || 0) < sellAmount && (
+            <InfoTooltip
+              variant="error"
+              text="You don't have enough amount of the selling token. The order can still be posted but it will never be filled until you don't have enough tokens in your wallet."
+            />
           )}
-        </div>{" "}
+        </div>
         <div className="text-xs">
           {data.isSellOrder
             ? `Sell ${sellAmountWithSymbol} for at least ${buyAmountWithSymbol}`
