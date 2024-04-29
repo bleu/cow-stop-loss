@@ -1,5 +1,7 @@
 import { Address, isAddress } from "viem";
 import { z } from "zod";
+import { normalize } from "viem/ens";
+
 import { IToken, TIME_OPTIONS } from "./types";
 import { ChainId, publicClientsFromIds } from "./publicClients";
 import { fetchCowQuote } from "./cowApi/fetchCowQuote";
@@ -19,6 +21,22 @@ const basicTokenSchema = z.object({
   decimals: z.number().positive(),
   symbol: z.string(),
 });
+
+const ensSchema = z
+  .string()
+  .min(1)
+  .refine((value) => value.includes(".eth"), {
+    message: "Provided address is invalid",
+  })
+  .transform(async (value) => {
+    const publicClient = publicClientsFromIds[1];
+    return (await publicClient.getEnsAddress({
+      name: normalize(value),
+    })) as Address;
+  })
+  .refine((value) => isAddress(value), {
+    message: "Provided address is invalid",
+  });
 
 const generateOracleSchema = ({ chainId }: { chainId: ChainId }) => {
   const publicClient = publicClientsFromIds[chainId];
@@ -57,7 +75,7 @@ export const swapSchema = z
     tokenBuy: basicTokenSchema,
     amount: z.coerce.number().positive(),
     allowedSlippage: z.coerce.number().positive(),
-    receiver: basicAddressSchema,
+    receiver: z.union([basicAddressSchema, ensSchema]),
     isPartiallyFillable: z.coerce.boolean(),
     validFrom: z.coerce.string(),
     isSellOrder: z.coerce.boolean(),
@@ -83,7 +101,7 @@ export const generateStopLossRecipeSchema = ({
       tokenSell: basicTokenSchema,
       tokenBuy: basicTokenSchema,
       amount: z.coerce.number().positive(),
-      allowedSlippage: z.coerce.number().positive(),
+      allowedSlippage: z.coerce.number().nonnegative().max(100),
       receiver: basicAddressSchema,
       isPartiallyFillable: z.coerce.boolean(),
       validFrom: z.coerce.string(),
