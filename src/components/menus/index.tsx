@@ -48,6 +48,8 @@ function DefaultMenu() {
     <div className="flex flex-col w-full">
       <span className="text-lg font-bold text-highlight">Nodes menu</span>
       <p>Select a node to see the menu and edit the parameters</p>
+      <br />
+      <p>If you want to delete one order node, select it and press delete</p>
     </div>
   );
 }
