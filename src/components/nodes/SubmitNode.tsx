@@ -1,5 +1,5 @@
 import { Button, useToast } from "@bleu-fi/ui";
-import { EnterIcon } from "@radix-ui/react-icons";
+import { PaperPlaneIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -146,7 +146,7 @@ export function SubmitButton({
       onClick={onClick}
     >
       <div className="flex flex-row justify-center text-center items-center gap-4">
-        <EnterIcon />
+        <PaperPlaneIcon />
         <p>{isSubmitting ? "Creating Tx..." : "Submit Orders"}</p>
       </div>
     </Button>
