@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Toaster } from "@bleu-fi/ui";
-import { ClockIcon, HomeIcon, PlusIcon } from "@radix-ui/react-icons";
+import { ClockIcon, PlusIcon } from "@radix-ui/react-icons";
 import SafeProvider from "@safe-global/safe-apps-react-sdk";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
