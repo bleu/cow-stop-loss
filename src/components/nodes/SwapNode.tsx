@@ -50,7 +50,7 @@ export function SwapNode({
           {(sellTokenWalletAmount || 0) < sellAmount && (
             <InfoTooltip
               variant="error"
-              text="You don't have enough amount of the selling token. The order can still be posted but it will never be filled until you don't have enough tokens in your wallet."
+              text="You don't have enough amount of the selling token. The order can still be posted but it can just be filled with the tokens that you have on your wallet."
             />
           )}
         </div>
