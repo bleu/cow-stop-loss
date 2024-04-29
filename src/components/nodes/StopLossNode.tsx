@@ -1,5 +1,6 @@
 import { formatNumber } from "@bleu-fi/ui";
 
+import { useBuilder } from "#/contexts/builder";
 import { IStopLossConditionData } from "#/lib/types";
 
 import { InfoTooltip } from "../Tooltip";
@@ -17,6 +18,9 @@ export function StopLossNode({
   selected: boolean;
   data: IStopLossConditionData;
 }) {
+  const { getOrderDataByOrderId } = useBuilder();
+  const recipeData = getOrderDataByOrderId(data.orderId);
+
   return (
     <BaseNode selected={selected} isStart>
       <div className="flex flex-col">
@@ -24,13 +28,18 @@ export function StopLossNode({
           <span className="text-sm font-bold text-highlight">
             Stop Loss Condition
           </span>
-          
+
           {data.error && (
-            <InfoTooltip text={STOP_LOSS_ERROR_MESSSAGE[data.error]} link={"https://data.chain.link/feeds"} variant="error"/>
+            <InfoTooltip
+              text={STOP_LOSS_ERROR_MESSSAGE[data.error]}
+              link={"https://data.chain.link/feeds"}
+              variant="error"
+            />
           )}
         </div>
         <span className="text-xs">
-          If the sell token price falls bellow{" "}
+          If the {recipeData?.tokenSell.symbol}/{recipeData?.tokenBuy.symbol}{" "}
+          falls bellow{" "}
           {formatNumber(data.strikePrice, 4, "decimal", "standard", 0.0001)}
         </span>
       </div>
