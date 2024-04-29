@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { cowTokenList } from "#/lib/cowTokenList";
 import { ChainId } from "#/lib/publicClients";
@@ -40,6 +40,10 @@ export const TokenLogo = ({
   const [imageSrc, setImageSrc] = useState<string>(
     cowprotocolTokenLogoUrl(tokenAddress, chainId) || FALLBACK_SRC
   );
+
+  useEffect(() => {
+    setImageSrc(cowprotocolTokenLogoUrl(tokenAddress, chainId) || FALLBACK_SRC);
+  }, [tokenAddress, chainId]);
 
   return (
     <Image
