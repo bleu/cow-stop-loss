@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Toaster } from "@bleu-fi/ui";
-import { ClockIcon } from "@radix-ui/react-icons";
+import { ClockIcon, PlusIcon } from "@radix-ui/react-icons";
 import SafeProvider from "@safe-global/safe-apps-react-sdk";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -26,6 +26,19 @@ function HistoryButton() {
   );
 }
 
+function BuilderButton() {
+  return (
+    <Link href="/history">
+      <Button className="h-full" variant="default">
+        <span className="flex items-center gap-x-2 ">
+          <PlusIcon />
+          New Order
+        </span>
+      </Button>
+    </Link>
+  );
+}
+
 export function RootLayout({ children }: React.PropsWithChildren) {
   const path = usePathname();
   return (
@@ -34,7 +47,7 @@ export function RootLayout({ children }: React.PropsWithChildren) {
         <ReactFlowProvider>
           <div className="flex flex-col h-screen">
             <Header linkUrl={"/builder"} imageSrc={"/assets/stoploss.svg"}>
-              {path !== "/history" && <HistoryButton />}
+              {path === "/history" ? <BuilderButton /> : <HistoryButton />}
             </Header>
             <div className="size-full bg-background">{children}</div>
             <Footer

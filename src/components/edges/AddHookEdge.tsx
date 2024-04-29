@@ -28,22 +28,22 @@ export const HOOK_OPTIONS = [
     label: "Mint BAL from gauges",
     value: "hookMintBal",
   },
-  {
-    label: "Multisend",
-    value: "hookMultiSend",
-  },
-  {
-    label: "Aave withdraw",
-    value: "hookAaveWithdraw",
-  },
-  {
-    label: "Claim vesting",
-    value: "hookClaimVesting",
-  },
-  {
-    label: "Exit pool",
-    value: "hookExitPool",
-  },
+  // {
+  //   label: "Multisend",
+  //   value: "hookMultiSend",
+  // },
+  // {
+  //   label: "Aave withdraw",
+  //   value: "hookAaveWithdraw",
+  // },
+  // {
+  //   label: "Claim vesting",
+  //   value: "hookClaimVesting",
+  // },
+  // {
+  //   label: "Exit pool",
+  //   value: "hookExitPool",
+  // },
 ];
 
 export function AddHookEdge({

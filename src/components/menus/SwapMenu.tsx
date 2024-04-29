@@ -101,34 +101,35 @@ export function SwapMenu({
                 type="number"
                 step={1 / 10 ** amountDecimals}
               />
-              {walletAmount != "0" && (
-                <div className="flex gap-x-1 text-xs">
+
+              <div className="flex gap-x-1 text-xs">
+                <span>
                   <span>
-                    <span>
-                      Wallet Balance:{" "}
-                      {formatNumber(
-                        walletAmount,
-                        4,
-                        "decimal",
-                        "standard",
-                        0.0001
-                      )}
-                    </span>
+                    Wallet Balance:{" "}
+                    {walletAmount == "0"
+                      ? walletAmount
+                      : formatNumber(
+                          walletAmount,
+                          4,
+                          "decimal",
+                          "standard",
+                          0.0001
+                        )}
                   </span>
-                  <button
-                    type="button"
-                    className="text-accent outline-none hover:text-accent/70"
-                    onClick={() => {
-                      setValue(
-                        "amount",
-                        convertStringToNumberAndRoundDown(walletAmount)
-                      );
-                    }}
-                  >
-                    Max
-                  </button>
-                </div>
-              )}
+                </span>
+                <button
+                  type="button"
+                  className="text-accent outline-none hover:text-accent/70"
+                  onClick={() => {
+                    setValue(
+                      "amount",
+                      convertStringToNumberAndRoundDown(walletAmount)
+                    );
+                  }}
+                >
+                  Max
+                </button>
+              </div>
             </div>
             <TokenSelect
               selectedToken={data.tokenSell}
