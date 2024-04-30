@@ -88,6 +88,7 @@ export function SwapMenu({
     return () => subscription.unsubscribe();
   }, [handleSubmit, watch]);
 
+  const maxButtonDisabled = walletAmount == "0";
   return (
     <Form {...form}>
       <span className="text-lg font-bold text-highlight mb-2">Swap</span>
@@ -104,7 +105,7 @@ export function SwapMenu({
             <span>
               <span>
                 Wallet Balance:{" "}
-                {walletAmount == "0"
+                {maxButtonDisabled
                   ? walletAmount
                   : formatNumber(
                       walletAmount,
@@ -115,18 +116,20 @@ export function SwapMenu({
                     )}
               </span>
             </span>
-            <button
-              type="button"
-              className="text-accent outline-none hover:text-accent/70"
-              onClick={() => {
-                setValue(
-                  "amount",
-                  convertStringToNumberAndRoundDown(walletAmount)
-                );
-              }}
-            >
-              Max
-            </button>
+            {!maxButtonDisabled && (
+              <button
+                type="button"
+                className="text-accent outline-none hover:text-accent/70"
+                onClick={() => {
+                  setValue(
+                    "amount",
+                    convertStringToNumberAndRoundDown(walletAmount)
+                  );
+                }}
+              >
+                Max
+              </button>
+            )}
           </div>
         </div>
         <TokenSelect
