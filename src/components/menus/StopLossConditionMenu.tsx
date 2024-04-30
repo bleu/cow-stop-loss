@@ -8,7 +8,7 @@ import {
 } from "@bleu-fi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   FieldError,
   FieldValues,
@@ -69,7 +69,6 @@ export function StopLossConditionMenu({
     tokenBuy: data.tokenBuy,
   });
 
-  const [oraclePrice, setOraclePrices] = useState<number>();
   const { watch, handleSubmit, setValue } = form;
 
   const formData = watch();
@@ -92,27 +91,21 @@ export function StopLossConditionMenu({
 
   useEffect(() => {
     (async () => {
-      setOraclePrices(
-        await oracleRouter.calculatePrice({
-          tokenBuyOracle: formData.tokenBuyOracle as Address,
-          tokenSellOracle: formData.tokenSellOracle as Address,
-        })
-      );
+      const currentOraclePrice = await oracleRouter.calculatePrice({
+        tokenBuyOracle: formData.tokenBuyOracle as Address,
+        tokenSellOracle: formData.tokenSellOracle as Address,
+      });
+      setValue("currentOraclePrice", currentOraclePrice);
     })();
-  }, []);
+  }, [formData.tokenBuyOracle, formData.tokenSellOracle]);
 
   useEffect(() => {
     const subscription = watch(() =>
-      handleSubmit(async (formData: FieldValues) => {
-        const newPrice = await oracleRouter.calculatePrice({
-          tokenBuyOracle: formData.tokenBuyOracle as Address,
-          tokenSellOracle: formData.tokenSellOracle as Address,
-        });
-        setOraclePrices(newPrice);
+      handleSubmit((formData: FieldValues) => {
         const newNodes = getNodes().map((node) => {
           if (node.id === id) {
             const error =
-              formData.strikePrice > (newPrice || 0)
+              formData.strikePrice > (formData.currentOraclePrice || 0)
                 ? "STRIKE_PRICE_ABOVE_ORACLE_PRICE"
                 : undefined;
             return {
@@ -126,10 +119,10 @@ export function StopLossConditionMenu({
       })()
     );
     return () => subscription.unsubscribe();
-  }, [handleSubmit, watch, oraclePrice]);
+  }, [handleSubmit, watch]);
 
-  const percentageOverOraclePrice = oraclePrice
-    ? (formData.strikePrice / oraclePrice - 1) * 100
+  const percentageOverOraclePrice = formData.currentOraclePrice
+    ? (formData.strikePrice / formData.currentOraclePrice - 1) * 100
     : 0;
 
   return (
@@ -144,7 +137,7 @@ export function StopLossConditionMenu({
               form={form}
               data={data}
               percentageOverOraclePrice={percentageOverOraclePrice}
-              oraclePrice={oraclePrice}
+              oraclePrice={formData.currentOraclePrice}
             />
             <Input
               name="tokenSellOracle"

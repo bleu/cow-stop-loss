@@ -40,6 +40,7 @@ export interface ISwapData extends BaseNode {
 
 export interface IStopLossConditionData extends BaseNode {
   strikePrice: number;
+  currentOraclePrice?: number;
   tokenSellOracle?: Address;
   tokenBuyOracle?: Address;
   maxTimeSinceLastOracleUpdate: TIME_OPTIONS;
