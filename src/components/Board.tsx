@@ -125,6 +125,12 @@ export function Board({
 
   const onNodesDelete = useCallback(
     (deleted: Node<INodeData>[]) => {
+      if (
+        orderIdsLenght == 1 &&
+        deleted.some((node) => node.type == "swap" || node.type == "stopLoss")
+      ) {
+        return;
+      }
       if (deleted.some((node) => node.id === "submit")) return;
       if (
         deleted.some((node) => node.type === "swap") ||
@@ -187,10 +193,15 @@ export function Board({
     const nextChanges = changes.reduce((acc, change) => {
       // prevent removing submit node
       if (change.type === "remove") {
-        if (change.id !== "submit") {
-          return [...acc, change];
+        if (change.id === "submit") {
+          return acc;
         }
-        return acc;
+        if (
+          orderIdsLenght == 1 &&
+          (change.id.includes("swap") || change.id.includes("condition"))
+        ) {
+          return acc;
+        }
       }
       return [...acc, change];
     }, [] as NodeChange[]);

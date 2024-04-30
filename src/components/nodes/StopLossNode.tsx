@@ -1,4 +1,6 @@
 import { formatNumber } from "@bleu-fi/ui";
+import { Cross1Icon } from "@radix-ui/react-icons";
+import { useReactFlow } from "reactflow";
 
 import { useBuilder } from "#/contexts/builder";
 import { IStopLossConditionData } from "#/lib/types";
@@ -12,22 +14,42 @@ const STOP_LOSS_ERROR_MESSSAGE = {
 };
 
 export function StopLossNode({
+  id,
   selected,
   data,
 }: {
+  id: string;
   selected: boolean;
   data: IStopLossConditionData;
 }) {
-  const { getOrderDataByOrderId } = useBuilder();
+  const { deleteElements } = useReactFlow();
+  const { getOrderDataByOrderId, ordersData } = useBuilder();
   const recipeData = getOrderDataByOrderId(data.orderId);
-
+  const deleteButtonDisabled = ordersData?.length === 1;
   return (
     <BaseNode selected={selected} isStart>
       <div className="flex flex-col">
         <div className="flex flex-row gap-2 items-center">
-          <span className="text-sm font-bold text-highlight">
-            Stop Loss Condition
-          </span>
+          <div className="w-full flex flex-row justify-between items-center">
+            <span className="text-sm font-bold text-highlight">
+              Stop Loss Condition
+            </span>
+            <button
+              className={
+                deleteButtonDisabled
+                  ? "text-background/60"
+                  : "text-background hover:text-destructive"
+              }
+              disabled={deleteButtonDisabled}
+              onClick={() => {
+                deleteElements({
+                  nodes: [{ id }],
+                });
+              }}
+            >
+              <Cross1Icon className="size-3" />
+            </button>
+          </div>
 
           {data.error && (
             <InfoTooltip
