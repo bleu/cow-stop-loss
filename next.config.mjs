@@ -19,8 +19,15 @@ const moduleExports = {
     domains: [
       "assets.coingecko.com",
       "raw.githubusercontent.com",
+      "app.stakewise.io",
     ],
     remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "app.stakewise.io",
+        port: "",
+        pathname: "/static/images/currencies/**"
+      },
       {
         protocol: "https",
         hostname: "assets.coingecko.com",

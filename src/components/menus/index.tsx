@@ -35,17 +35,21 @@ export default function Menu() {
   }
 
   return (
-    <MenuComponent
-      data={orderData}
-      id={selected.id}
-      defaultValues={selected.data}
-    />
+    <div className="w-full max-h-[39rem] overflow-y-scroll">
+      <div className="pr-3">
+        <MenuComponent
+          data={orderData}
+          id={selected.id}
+          defaultValues={selected.data}
+        />
+      </div>
+    </div>
   );
 }
 
 function DefaultMenu() {
   return (
-    <div className="flex flex-col w-full">
+    <div className="flex flex-col w-full pr-3">
       <span className="text-lg font-bold text-highlight">Nodes menu</span>
       <p>Select a node to see the menu and edit the parameters</p>
       <br />
