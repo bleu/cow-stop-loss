@@ -1,4 +1,4 @@
-import { Address, erc20Abi, isAddress } from "viem";
+import { Address, erc20Abi } from "viem";
 import { ChainId, publicClientsFromIds } from "./publicClients";
 import { IToken } from "./types";
 

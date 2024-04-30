@@ -8,7 +8,7 @@ import {
 } from "@bleu-fi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   FieldError,
   FieldValues,
@@ -69,7 +69,6 @@ export function StopLossConditionMenu({
     tokenBuy: data.tokenBuy,
   });
 
-  const [oraclePrice, setOraclePrices] = useState<number>();
   const { watch, handleSubmit, setValue } = form;
 
   const formData = watch();
@@ -92,27 +91,21 @@ export function StopLossConditionMenu({
 
   useEffect(() => {
     (async () => {
-      setOraclePrices(
-        await oracleRouter.calculatePrice({
-          tokenBuyOracle: formData.tokenBuyOracle as Address,
-          tokenSellOracle: formData.tokenSellOracle as Address,
-        })
-      );
+      const currentOraclePrice = await oracleRouter.calculatePrice({
+        tokenBuyOracle: formData.tokenBuyOracle as Address,
+        tokenSellOracle: formData.tokenSellOracle as Address,
+      });
+      setValue("currentOraclePrice", currentOraclePrice);
     })();
-  }, []);
+  }, [formData.tokenBuyOracle, formData.tokenSellOracle]);
 
   useEffect(() => {
     const subscription = watch(() =>
-      handleSubmit(async (formData: FieldValues) => {
-        const newPrice = await oracleRouter.calculatePrice({
-          tokenBuyOracle: formData.tokenBuyOracle as Address,
-          tokenSellOracle: formData.tokenSellOracle as Address,
-        });
-        setOraclePrices(newPrice);
+      handleSubmit((formData: FieldValues) => {
         const newNodes = getNodes().map((node) => {
           if (node.id === id) {
             const error =
-              formData.strikePrice > (newPrice || 0)
+              formData.strikePrice > (formData.currentOraclePrice || 0)
                 ? "STRIKE_PRICE_ABOVE_ORACLE_PRICE"
                 : undefined;
             return {
@@ -126,10 +119,10 @@ export function StopLossConditionMenu({
       })()
     );
     return () => subscription.unsubscribe();
-  }, [handleSubmit, watch, oraclePrice]);
+  }, [handleSubmit, watch]);
 
-  const percentageOverOraclePrice = oraclePrice
-    ? (formData.strikePrice / oraclePrice - 1) * 100
+  const percentageOverOraclePrice = formData.currentOraclePrice
+    ? (formData.strikePrice / formData.currentOraclePrice - 1) * 100
     : 0;
 
   return (
@@ -144,7 +137,7 @@ export function StopLossConditionMenu({
               form={form}
               data={data}
               percentageOverOraclePrice={percentageOverOraclePrice}
-              oraclePrice={oraclePrice}
+              oraclePrice={formData.currentOraclePrice}
             />
             <Input
               name="tokenSellOracle"
@@ -195,8 +188,8 @@ export function StopLossConditionMenu({
                         );
                       }}
                       options={Object.entries(TIME_OPTIONS).map(
-                        ([key, value]) => ({
-                          id: key,
+                        ([_key, value]) => ({
+                          id: value,
                           value: String(value),
                         })
                       )}
@@ -245,28 +238,9 @@ export function StrikePriceInput({
     <div className="flex flex-col">
       <div className="flex flew-row gap-2 justify-between">
         <FormLabel className="flex flex-row gap-1 items-center justify-between text-sm">
-          <span className="w-1/2">
+          <span className="w-full">
             {`Strike Price (${data.tokenSell?.symbol}/${data.tokenBuy?.symbol})`}
           </span>
-          {Math.abs(percentageOverOraclePrice) > 0.01 && (
-            <span
-              className={
-                percentageOverOraclePrice > 0
-                  ? "block text-destructive"
-                  : "block text-success"
-              }
-            >
-              (
-              {formatNumber(
-                percentageOverOraclePrice,
-                2,
-                "decimal",
-                "standard",
-                0.01
-              )}{" "}
-              %)
-            </span>
-          )}
         </FormLabel>
         <InfoTooltip text={STRIKE_PRICE_TOOLTIP_TEXT} />
       </div>
@@ -279,6 +253,28 @@ export function StrikePriceInput({
             className={errorMessage ? "border-destructive" : ""}
           />
         </FormControl>
+        {Math.abs(percentageOverOraclePrice) > 0.01 && (
+          <span className="text-xs">
+            Percentage over oracle price:{" "}
+            <span
+              className={
+                percentageOverOraclePrice > 0
+                  ? "text-destructive"
+                  : "text-success"
+              }
+            >
+              (
+              {formatNumber(
+                percentageOverOraclePrice,
+                2,
+                "decimal",
+                "standard",
+                0.01
+              )}{" "}
+              %)
+            </span>
+          </span>
+        )}
         {oraclePrice && (
           <div className="flex gap-x-1 text-xs">
             <span>

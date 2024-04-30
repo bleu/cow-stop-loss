@@ -60,6 +60,7 @@ const generateOracleSchema = ({ chainId }: { chainId: ChainId }) => {
 export const stopLossConditionSchema = z
   .object({
     strikePrice: z.coerce.number().positive(),
+    currentOraclePrice: z.coerce.number().positive().optional(),
     tokenSellOracle: basicAddressSchema,
     tokenBuyOracle: basicAddressSchema,
     maxTimeSinceLastOracleUpdate: z.nativeEnum(TIME_OPTIONS),
@@ -73,7 +74,7 @@ export const swapSchema = z.object({
   tokenSell: basicTokenSchema,
   tokenBuy: basicTokenSchema,
   amount: z.coerce.number().positive(),
-  allowedSlippage: z.coerce.number().positive(),
+  allowedSlippage: z.coerce.number().nonnegative().lt(100),
   receiver: z.union([basicAddressSchema, ensSchema]),
   isPartiallyFillable: z.coerce.boolean(),
   validFrom: z.coerce.string(),
@@ -91,15 +92,15 @@ export const generateStopLossRecipeSchema = ({
       tokenSell: basicTokenSchema,
       tokenBuy: basicTokenSchema,
       amount: z.coerce.number().positive(),
-      allowedSlippage: z.coerce.number().nonnegative().max(100),
+      allowedSlippage: z.coerce.number().nonnegative().lt(100),
       receiver: basicAddressSchema,
       isPartiallyFillable: z.coerce.boolean(),
       validFrom: z.coerce.string(),
       isSellOrder: z.coerce.boolean(),
       validityBucketTime: z.nativeEnum(TIME_OPTIONS),
       strikePrice: z.coerce.number().positive(),
-      tokenSellOracle: basicAddressSchema,
-      tokenBuyOracle: basicAddressSchema,
+      tokenSellOracle: generateOracleSchema({ chainId }),
+      tokenBuyOracle: generateOracleSchema({ chainId }),
       maxTimeSinceLastOracleUpdate: z.nativeEnum(TIME_OPTIONS),
     })
     .refine(

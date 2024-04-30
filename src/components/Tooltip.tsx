@@ -1,17 +1,36 @@
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@bleu-fi/ui";
-import { ExclamationTriangleIcon, InfoCircledIcon, QuestionMarkCircledIcon } from "@radix-ui/react-icons";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@bleu-fi/ui";
+import {
+  ExclamationTriangleIcon,
+  InfoCircledIcon,
+  QuestionMarkCircledIcon,
+} from "@radix-ui/react-icons";
 
-export const InfoTooltip = ({ text, link, variant="default" }: { text?: string, link?:string, variant?: "default" | "question" | "error" }) => {
+export const InfoTooltip = ({
+  text,
+  link,
+  variant = "default",
+  side = "top",
+}: {
+  text?: string;
+  link?: string;
+  variant?: "default" | "question" | "error";
+  side?: "top" | "right" | "bottom" | "left";
+}) => {
   if (!text) return null;
 
-  function Icon () {
+  function Icon() {
     switch (variant) {
       case "question":
-        return <QuestionMarkCircledIcon  />;
+        return <QuestionMarkCircledIcon />;
       case "error":
         return <ExclamationTriangleIcon />;
       default:
-        return <InfoCircledIcon  />;
+        return <InfoCircledIcon />;
     }
   }
 
@@ -20,14 +39,17 @@ export const InfoTooltip = ({ text, link, variant="default" }: { text?: string, 
       <Tooltip>
         <TooltipTrigger disabled>
           {link ? (
-              <a href={link} target="_blank">
-                <Icon  />
-              </a>
-            ) : (
-              <Icon  />
-            )}
+            <a href={link} target="_blank">
+              <Icon />
+            </a>
+          ) : (
+            <Icon />
+          )}
         </TooltipTrigger>
-        <TooltipContent className="max-w-56 text-center bg-warning text-background">
+        <TooltipContent
+          side={side}
+          className="max-w-72 text-center bg-warning text-background"
+        >
           {text}
         </TooltipContent>
       </Tooltip>
