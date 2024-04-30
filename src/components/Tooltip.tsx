@@ -22,6 +22,7 @@ export const InfoTooltip = ({
   side?: "top" | "right" | "bottom" | "left";
 }) => {
   if (!text) return null;
+  if (!text.endsWith(".")) text = text + ".";
 
   function Icon() {
     switch (variant) {
