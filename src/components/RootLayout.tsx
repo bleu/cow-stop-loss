@@ -28,7 +28,7 @@ function HistoryButton() {
 
 function BuilderButton() {
   return (
-    <Link href="/history">
+    <Link href="/builder">
       <Button className="h-full" variant="default">
         <span className="flex items-center gap-x-2 ">
           <PlusIcon />
