@@ -1,11 +1,11 @@
 import { Badge } from "@bleu-fi/ui";
 
-export function StatusBadge({status}: {status: string | undefined}) {
+export function StatusBadge({ status }: { status: string | undefined }) {
   switch (status) {
     case "created":
       return (
         <Badge className="text-black bg-highlight hover:bg-highlight/70">
-          Created
+          Waiting condition
         </Badge>
       );
     case "posted":
@@ -20,9 +20,7 @@ export function StatusBadge({status}: {status: string | undefined}) {
       return <Badge variant="destructive">Cancelled</Badge>;
     case "expired":
       return (
-        <Badge className="bg-info text-white hover:bg-info/70">
-          Expired
-        </Badge>
+        <Badge className="bg-info text-white hover:bg-info/70">Expired</Badge>
       );
     default:
       return <Badge>{status}</Badge>;
