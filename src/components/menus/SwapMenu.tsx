@@ -185,10 +185,12 @@ export function SwapMenu({
                   name="validityBucketTime"
                   label="Validity Bucket Time"
                   tooltipText={VALIDITY_BUCKET_TIME_TOOLTIP_TEXT}
-                  options={Object.entries(TIME_OPTIONS).map(([key, value]) => ({
-                    id: key,
-                    value: String(value),
-                  }))}
+                  options={Object.entries(TIME_OPTIONS).map(
+                    ([_key, value]) => ({
+                      id: value,
+                      value: String(value),
+                    })
+                  )}
                   placeholder={formData.validityBucketTime}
                   onValueChange={(validityBucketTime) => {
                     setValue(

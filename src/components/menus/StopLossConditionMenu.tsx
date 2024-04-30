@@ -195,8 +195,8 @@ export function StopLossConditionMenu({
                         );
                       }}
                       options={Object.entries(TIME_OPTIONS).map(
-                        ([key, value]) => ({
-                          id: key,
+                        ([_key, value]) => ({
+                          id: value,
                           value: String(value),
                         })
                       )}
