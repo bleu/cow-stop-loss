@@ -11,7 +11,7 @@ import {
 import { ArrowLeftIcon, CopyIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { formatUnits } from "viem";
+import { Address, formatUnits } from "viem";
 
 import { Spinner } from "#/components/Spinner";
 import { TokenLogo } from "#/components/TokenLogo";
@@ -19,6 +19,7 @@ import { CowOrder, useOrder } from "#/contexts/ordersContext";
 import { ChainId } from "#/lib/publicClients";
 import { formatTimeDelta } from "#/lib/timeDelta";
 import {
+  buildBlockExplorerTokenURL,
   buildBlockExplorerTxUrl,
   buildOrderCowExplorerUrl,
   truncateAddress,
@@ -95,22 +96,32 @@ export default function OrderPage({
             label="Order creation"
             tooltipText="The transaction that created this stop loss order."
           >
-            <a
-              target="_blank"
-              href={buildBlockExplorerTxUrl({
-                txHash: stopLossOrder?.txHash as string,
-                chainId: stopLossOrder?.chainId,
-              })}
-              className="hover:text-primary hover:underline"
-            >
-              {stopLossOrder?.txHash}
-            </a>
+            <div className="flex items-center gap-x-1">
+              <a
+                target="_blank"
+                href={buildBlockExplorerTxUrl({
+                  txHash: stopLossOrder?.txHash as string,
+                  chainId: stopLossOrder?.chainId,
+                })}
+                className="hover:text-primary hover:underline"
+              >
+                {stopLossOrder?.txHash}
+              </a>
+              <ClickToCopy text={stopLossOrder?.txHash as string}>
+                <CopyIcon className="hover:text-primary" />
+              </ClickToCopy>
+            </div>
           </OrderInformation>
           <OrderInformation
             label="Order Hash"
             tooltipText="The onchain settlement transaction for this order."
           >
-            {stopLossOrder?.hash}
+            <div className="flex items-center gap-x-1">
+              {stopLossOrder?.hash}
+              <ClickToCopy text={stopLossOrder?.hash as string}>
+                <CopyIcon className="hover:text-primary" />
+              </ClickToCopy>
+            </div>
           </OrderInformation>
           <OrderInformation
             label="Status"
@@ -145,7 +156,17 @@ export default function OrderPage({
                     : "From at most"}
                 </span>
                 {formatNumber(amountIn, 4)}{" "}
-                {stopLossOrder?.stopLossData?.tokenIn.symbol}
+                <a
+                  target="_blank"
+                  href={buildBlockExplorerTokenURL({
+                    tokenAddress: stopLossOrder?.stopLossData?.tokenIn
+                      .address as Address,
+                    chainId: stopLossOrder?.chainId,
+                  })}
+                  className="hover:text-primary hover:underline"
+                >
+                  {stopLossOrder?.stopLossData?.tokenIn.symbol}
+                </a>
                 <TokenLogo
                   tokenAddress={stopLossOrder?.stopLossData?.tokenIn.address.toLowerCase()}
                   chainId={stopLossOrder?.chainId as ChainId}
@@ -163,7 +184,17 @@ export default function OrderPage({
                     : "To"}
                 </span>
                 {formatNumber(amountOut, 4)}{" "}
-                {stopLossOrder?.stopLossData?.tokenOut.symbol}
+                <a
+                  target="_blank"
+                  href={buildBlockExplorerTokenURL({
+                    tokenAddress: stopLossOrder?.stopLossData?.tokenOut
+                      .address as Address,
+                    chainId: stopLossOrder?.chainId,
+                  })}
+                  className="hover:text-primary hover:underline"
+                >
+                  {stopLossOrder?.stopLossData?.tokenOut.symbol}
+                </a>
                 <TokenLogo
                   tokenAddress={stopLossOrder?.stopLossData?.tokenOut.address}
                   chainId={stopLossOrder?.chainId as ChainId}
@@ -213,13 +244,31 @@ export default function OrderPage({
             label="Oracle Token In"
             tooltipText="A chainlink-like oracle  that provides the current selling price of a token in a specified currency."
           >
-            {stopLossOrder?.stopLossData?.sellTokenPriceOracle}
+            <div className="flex items-center gap-x-1">
+              {stopLossOrder?.stopLossData?.sellTokenPriceOracle}
+              <ClickToCopy
+                text={
+                  stopLossOrder?.stopLossData?.sellTokenPriceOracle as string
+                }
+              >
+                <CopyIcon className="hover:text-primary" />
+              </ClickToCopy>
+            </div>
           </OrderInformation>
           <OrderInformation
             label="Oracle Token In"
             tooltipText="A chainlink-like oracle that gives the current buying price of a token in the same currency."
           >
-            {stopLossOrder?.stopLossData?.buyTokenPriceOracle}
+            <div className="flex items-center gap-x-1">
+              {stopLossOrder?.stopLossData?.buyTokenPriceOracle}
+              <ClickToCopy
+                text={
+                  stopLossOrder?.stopLossData?.buyTokenPriceOracle as string
+                }
+              >
+                <CopyIcon className="hover:text-primary" />
+              </ClickToCopy>
+            </div>
           </OrderInformation>
         </div>
         {cowOrdersRelated && cowOrdersRelated.length > 0 && (
