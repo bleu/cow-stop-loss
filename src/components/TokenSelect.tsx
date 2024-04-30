@@ -109,9 +109,6 @@ export function TokenSelect({
           <Command
             filter={(value, search) => {
               setSearch(search);
-              if (value === "import") {
-                return Number(isAddress(search));
-              }
               if (!search) return 1;
               const regex = new RegExp(search, "i");
               return Number(regex.test(value));
@@ -120,7 +117,9 @@ export function TokenSelect({
           >
             <CommandInput placeholder="Search token..." className="h-9" />
             <CommandList>
-              <CommandEmpty>No results found</CommandEmpty>
+              <CommandEmpty onSelect={handleImportToken}>
+                No results found
+              </CommandEmpty>
               {tokens.map((token) => (
                 <CommandItem
                   key={token.address}
@@ -137,14 +136,15 @@ export function TokenSelect({
                   />
                 </CommandItem>
               ))}
-              <CommandItem
-                key="import"
-                value="import"
-                onSelect={handleImportToken}
-                className="mx-1"
-              >
-                Import token
-              </CommandItem>
+              {isAddress(search) && (
+                <CommandItem
+                  key={search}
+                  value={search}
+                  onSelect={handleImportToken}
+                >
+                  Import token
+                </CommandItem>
+              )}
             </CommandList>
           </Command>
         </PopoverContent>
