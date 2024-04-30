@@ -245,28 +245,9 @@ export function StrikePriceInput({
     <div className="flex flex-col">
       <div className="flex flew-row gap-2 justify-between">
         <FormLabel className="flex flex-row gap-1 items-center justify-between text-sm">
-          <span className="w-1/2">
+          <span className="w-full">
             {`Strike Price (${data.tokenSell?.symbol}/${data.tokenBuy?.symbol})`}
           </span>
-          {Math.abs(percentageOverOraclePrice) > 0.01 && (
-            <span
-              className={
-                percentageOverOraclePrice > 0
-                  ? "block text-destructive"
-                  : "block text-success"
-              }
-            >
-              (
-              {formatNumber(
-                percentageOverOraclePrice,
-                2,
-                "decimal",
-                "standard",
-                0.01
-              )}{" "}
-              %)
-            </span>
-          )}
         </FormLabel>
         <InfoTooltip text={STRIKE_PRICE_TOOLTIP_TEXT} />
       </div>
@@ -279,6 +260,28 @@ export function StrikePriceInput({
             className={errorMessage ? "border-destructive" : ""}
           />
         </FormControl>
+        {Math.abs(percentageOverOraclePrice) > 0.01 && (
+          <span className="text-xs">
+            Percentage over oracle price:{" "}
+            <span
+              className={
+                percentageOverOraclePrice > 0
+                  ? "text-destructive"
+                  : "text-success"
+              }
+            >
+              (
+              {formatNumber(
+                percentageOverOraclePrice,
+                2,
+                "decimal",
+                "standard",
+                0.01
+              )}{" "}
+              %)
+            </span>
+          </span>
+        )}
         {oraclePrice && (
           <div className="flex gap-x-1 text-xs">
             <span>
