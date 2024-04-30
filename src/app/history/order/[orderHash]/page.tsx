@@ -141,6 +141,17 @@ export default function OrderPage({
           >
             {orderWaitTime}
           </OrderInformation>
+          <OrderInformation
+            label="Recipient"
+            tooltipText="Recipient of that will receive the buy tokens of the order."
+          >
+            <div className="flex items-center gap-x-1">
+              {stopLossOrder?.stopLossData?.to}
+              <ClickToCopy text={stopLossOrder?.stopLossData?.to as string}>
+                <CopyIcon className="hover:text-primary" />
+              </ClickToCopy>
+            </div>
+          </OrderInformation>
         </div>
         <Separator className="my-3" />
         <div className="flex flex-col gap-y-1">
