@@ -125,6 +125,12 @@ export function Board({
 
   const onNodesDelete = useCallback(
     (deleted: Node<INodeData>[]) => {
+      if (
+        orderIdsLenght == 1 &&
+        deleted.some((node) => node.type == "swap" || node.type == "stopLoss")
+      ) {
+        return;
+      }
       if (deleted.some((node) => node.id === "submit")) return;
       if (
         deleted.some((node) => node.type === "swap") ||
