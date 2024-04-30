@@ -17,7 +17,7 @@ import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React, { useState } from "react";
 import { Address, isAddress } from "viem";
 
-import { cowTokenList } from "#/lib/cowTokenList";
+import { useBuilder } from "#/contexts/builder";
 import { fetchTokenInfo } from "#/lib/fetchTokenInfo";
 import { ChainId } from "#/lib/publicClients";
 import { IToken } from "#/lib/types";
@@ -42,10 +42,7 @@ export function TokenSelect({
   } = useSafeAppsSDK();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-
-  const tokens = cowTokenList.filter(
-    (token) => token.chainId === chainId
-  ) as IToken[];
+  const { tokenList, addImportedToken } = useBuilder();
 
   const { safe } = useSafeAppsSDK();
 
@@ -61,6 +58,7 @@ export function TokenSelect({
         chainId as ChainId
       );
       handleSelectToken(importedToken);
+      addImportedToken(importedToken);
       toast({
         title: "Token imported",
       });
@@ -120,7 +118,7 @@ export function TokenSelect({
               <CommandEmpty onSelect={handleImportToken}>
                 No results found
               </CommandEmpty>
-              {tokens.map((token) => (
+              {tokenList.map((token) => (
                 <CommandItem
                   key={token.address}
                   value={token.symbol + token.address}
