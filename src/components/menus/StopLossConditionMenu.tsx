@@ -139,7 +139,7 @@ export function StopLossConditionMenu({
           <span className="text-lg font-bold text-highlight mb-2">
             Stop Loss Condition
           </span>
-          <div className="flex flex-col gap-y-2">
+          <div className="flex flex-col gap-y-3">
             <StrikePriceInput
               form={form}
               data={data}
@@ -159,20 +159,20 @@ export function StopLossConditionMenu({
               }
               tooltipText={ORACLE_TOOLTIP_TEXT}
             />
+            <Input
+              name="tokenBuyOracle"
+              label={`${data.tokenBuy?.symbol} Oracle`}
+              tooltipLink={
+                data.tokenBuyOracle
+                  ? buildBlockExplorerAddressURL({
+                      chainId,
+                      address: data.tokenBuyOracle,
+                    })?.url
+                  : undefined
+              }
+              tooltipText={ORACLE_TOOLTIP_TEXT}
+            />
             <div className="w-full">
-              <Input
-                name="tokenBuyOracle"
-                label={`${data.tokenBuy?.symbol} Oracle`}
-                tooltipLink={
-                  data.tokenBuyOracle
-                    ? buildBlockExplorerAddressURL({
-                        chainId,
-                        address: data.tokenBuyOracle,
-                      })?.url
-                    : undefined
-                }
-                tooltipText={ORACLE_TOOLTIP_TEXT}
-              />
               <button
                 type="button"
                 className="text-accent outline-none hover:text-accent/70 text-xs"
@@ -243,31 +243,31 @@ export function StrikePriceInput({
   const errorMessage = error?.message;
   return (
     <div className="flex flex-col">
-      <div className="flex flex-row justify-between">
-        <div className="flex flex-row gap-2 items-center text-sm">
-          <FormLabel className="mb-2 text-sm flex flex-row gap-1">
+      <div className="flex flew-row gap-2 justify-between">
+        <FormLabel className="flex flex-row gap-1 items-center justify-between text-sm">
+          <span className="w-1/2">
             {`Strike Price (${data.tokenSell?.symbol}/${data.tokenBuy?.symbol})`}
-            {Math.abs(percentageOverOraclePrice) > 0.01 && (
-              <span
-                className={
-                  percentageOverOraclePrice > 0
-                    ? "block text-destructive"
-                    : "block text-success"
-                }
-              >
-                (
-                {formatNumber(
-                  percentageOverOraclePrice,
-                  2,
-                  "decimal",
-                  "standard",
-                  0.01
-                )}{" "}
-                %)
-              </span>
-            )}
-          </FormLabel>
-        </div>
+          </span>
+          {Math.abs(percentageOverOraclePrice) > 0.01 && (
+            <span
+              className={
+                percentageOverOraclePrice > 0
+                  ? "block text-destructive"
+                  : "block text-success"
+              }
+            >
+              (
+              {formatNumber(
+                percentageOverOraclePrice,
+                2,
+                "decimal",
+                "standard",
+                0.01
+              )}{" "}
+              %)
+            </span>
+          )}
+        </FormLabel>
         <InfoTooltip text={STRIKE_PRICE_TOOLTIP_TEXT} />
       </div>
       <div className="flex flex-col gap-y-1">

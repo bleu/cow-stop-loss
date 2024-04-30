@@ -42,11 +42,11 @@ export default function Page() {
   }
 
   return (
-    <div className="hidden h-full flex-col md:flex text-background">
+    <div className="h-full flex text-background">
       <div className="size-full py-6 px-3">
         <div className="flex h-full gap-6">
           <div
-            className={`flex-col space-y-4 bg-foreground rounded-md text-primary-foreground md:order-2 w-72 p-3`}
+            className={`flex-col space-y-4 bg-foreground rounded-md text-primary-foreground order-2 w-72 py-3 pl-3`}
           >
             <Menu />
           </div>
