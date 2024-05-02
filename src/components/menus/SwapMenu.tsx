@@ -4,6 +4,7 @@ import {
   formatNumber,
 } from "@bleu-fi/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { UpdateIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect } from "react";
 import { FieldValues, useForm } from "react-hook-form";
@@ -14,7 +15,7 @@ import { useSafeBalances } from "#/hooks/useSafeBalances";
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
 import { ChainId } from "#/lib/publicClients";
 import { swapSchema } from "#/lib/schema";
-import { ISwapData, TIME_OPTIONS } from "#/lib/types";
+import { ISwapData, IToken, TIME_OPTIONS } from "#/lib/types";
 
 import { Checkbox } from "../Checkbox";
 import { Input } from "../Input";
@@ -91,11 +92,11 @@ export function SwapMenu({
     setNodes(newNodes);
   };
 
-  const updateOracles = async (formData: FieldValues) => {
+  const updateOracles = async (tokenSell: IToken, tokenBuy: IToken) => {
     const oracleRouter = new oracleRouterFactory({
       chainId: chainId as ChainId,
-      tokenSell: formData.tokenSell,
-      tokenBuy: formData.tokenBuy,
+      tokenSell,
+      tokenBuy,
     });
 
     const oracles = await oracleRouter.findRoute().catch(() => {
@@ -130,7 +131,7 @@ export function SwapMenu({
             tokenSellOracle: oracles.tokenSellOracle,
             tokenBuyOracle: oracles.tokenBuyOracle,
             currentOraclePrice,
-            strikePrice: oraclePrice,
+            strikePrice: oraclePrice * 0.9,
             error,
           },
         };
@@ -139,10 +140,6 @@ export function SwapMenu({
     });
     setNodes(newNodes);
   };
-
-  useEffect(() => {
-    updateOracles(formData);
-  }, [formData.tokenBuy, formData.tokenSell]);
 
   useEffect(() => {
     const subscription = watch(() => handleSubmit(onSubmit)());
@@ -193,22 +190,36 @@ export function SwapMenu({
             )}
           </div>
         </div>
-        <TokenSelect
-          selectedToken={data.tokenSell}
-          label="Token to sell"
-          onSelectToken={(newToken) => {
-            setValue("tokenSell", newToken);
-          }}
-          errorMessage={errors.tokenSell?.message}
-        />
-        <TokenSelect
-          selectedToken={data.tokenBuy}
-          label="Token to buy"
-          onSelectToken={(newToken) => {
-            setValue("tokenBuy", newToken);
-          }}
-          errorMessage={errors.tokenBuy?.message}
-        />
+        <div className="flex flex-col gap-y-1">
+          <TokenSelect
+            selectedToken={data.tokenSell}
+            label="Token to sell"
+            onSelectToken={(newToken) => {
+              setValue("tokenSell", newToken);
+              updateOracles(newToken, data.tokenBuy);
+            }}
+            errorMessage={errors.tokenSell?.message}
+          />
+          <button
+            type="button"
+            onClick={() => {
+              setValue("tokenSell", data.tokenBuy);
+              setValue("tokenBuy", data.tokenSell);
+            }}
+            className="flex flex-row w-full mt-2 justify-center text-xs hover:text-primary"
+          >
+            <UpdateIcon className="size-5" />
+          </button>
+          <TokenSelect
+            selectedToken={data.tokenBuy}
+            label="Token to buy"
+            onSelectToken={(newToken) => {
+              setValue("tokenBuy", newToken);
+              updateOracles(data.tokenSell, newToken);
+            }}
+            errorMessage={errors.tokenBuy?.message}
+          />
+        </div>
         <Accordion className="w-full" type="single" collapsible>
           <AccordionItem value="advancedOptions" key="advancedOption">
             <AccordionTrigger>Advanced Options</AccordionTrigger>
