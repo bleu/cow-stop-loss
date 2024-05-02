@@ -22,6 +22,7 @@ const STOP_LOSS_WARNING_MESSAGE = {
     "Oracle Price is more than 10% from market price for the selected tokens",
   MARKET_PRICE_NOT_FOUND:
     "Warning: Market price not found for the provided tokens",
+  ORACLE_NOT_FOUND: "Warning: Oracle price not found",
 } as const;
 
 export function StopLossNode({
@@ -50,6 +51,10 @@ export function StopLossNode({
         chainId: chainId as ChainId,
       })
         .then((price) => {
+          if (!data.currentOraclePrice) {
+            setWarning(STOP_LOSS_WARNING_MESSAGE.ORACLE_NOT_FOUND);
+            return;
+          }
           const percentageDiff =
             (price - (data.currentOraclePrice || 0)) / price;
 
