@@ -90,21 +90,23 @@ export function StopLossNode({
               <InfoTooltip text={warning} variant="error" side="bottom" />
             )}
           </div>
-          <button
-            className={
-              deleteButtonDisabled
-                ? "text-background/60"
-                : "text-background hover:text-destructive"
-            }
-            disabled={deleteButtonDisabled}
-            onClick={() => {
-              deleteElements({
-                nodes: [{ id }],
-              });
-            }}
-          >
-            <Cross1Icon className="size-3" />
-          </button>
+          {!deleteButtonDisabled && (
+            <button
+              className={
+                deleteButtonDisabled
+                  ? "text-background/60"
+                  : "text-background hover:text-destructive"
+              }
+              disabled={deleteButtonDisabled}
+              onClick={() => {
+                deleteElements({
+                  nodes: [{ id }],
+                });
+              }}
+            >
+              <Cross1Icon className="size-3" />
+            </button>
+          )}
         </div>
         <span className="text-xs">
           If the {recipeData?.tokenSell.symbol}/{recipeData?.tokenBuy.symbol}{" "}
