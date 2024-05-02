@@ -57,6 +57,7 @@ export const getDefaultStopLossData = async ({
 
   return {
     strikePrice,
+    currentOraclePrice: strikePrice,
     tokenSellOracle: route.tokenSellOracle,
     tokenBuyOracle: route.tokenBuyOracle,
     maxTimeSinceLastOracleUpdate: TIME_OPTIONS.MINUTE_15,
