@@ -42,22 +42,14 @@ export default function Page() {
   }
 
   return (
-    <div className="h-full flex text-background">
-      <div className="size-full py-6 px-3">
-        <div className="flex h-full gap-6">
-          <div
-            className={`flex-col space-y-4 bg-foreground rounded-md text-primary-foreground order-2 w-72 py-3 pl-3`}
-          >
-            <Menu />
-          </div>
-          <div className={`flex flex-col flex-1`}>
-            <div className="flex h-full flex-col space-y-4">
-              <div className="h-full">
-                <Board initNodes={initNodes} initEdges={initEdges} />
-              </div>
-            </div>
-          </div>
-        </div>
+    <div className="size-full pt-6 px-3 flex text-background gap-6">
+      <div
+        className={`flex-col space-y-4 bg-foreground rounded-md text-primary-foreground order-2 w-72 py-3 pl-3`}
+      >
+        <Menu />
+      </div>
+      <div className={`flex h-full flex-col flex-1 space-y-4`}>
+        <Board initNodes={initNodes} initEdges={initEdges} />
       </div>
     </div>
   );

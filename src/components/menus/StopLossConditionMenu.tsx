@@ -127,7 +127,7 @@ export function StopLossConditionMenu({
 
   return (
     <Form {...form}>
-      <div className="w-full max-h-[39rem] overflow-y-scroll">
+      <div className="w-full max-h-[39rem]">
         <div>
           <span className="text-lg font-bold text-highlight mb-2">
             Stop Loss Condition

@@ -22,7 +22,7 @@ export function MintBalMenu({
     safe: { chainId },
   } = useSafeAppsSDK();
   return (
-    <div className="w-full max-h-[39rem] overflow-y-scroll">
+    <div className="w-full max-h-[39rem]">
       <div className="flex flex-col w-full">
         <span className="text-lg font-bold text-highlight mb-2">
           BAL Mint Hook

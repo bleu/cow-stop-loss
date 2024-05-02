@@ -45,7 +45,7 @@ export function RootLayout({ children }: React.PropsWithChildren) {
     <SafeProvider loader={<SafeLoader />}>
       <NetworksContextProvider>
         <ReactFlowProvider>
-          <div className="flex flex-col h-screen">
+          <div className="flex flex-col h-svh justify-between">
             <Header linkUrl={"/builder"} imageSrc={"/assets/stoploss.svg"}>
               {path === "/history" ? <BuilderButton /> : <HistoryButton />}
             </Header>
