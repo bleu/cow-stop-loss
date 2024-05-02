@@ -15,6 +15,7 @@ import { Address, formatUnits } from "viem";
 
 import { Spinner } from "#/components/Spinner";
 import { TokenLogo } from "#/components/TokenLogo";
+import { InfoTooltip } from "#/components/Tooltip";
 import { CowOrder, useOrder } from "#/contexts/ordersContext";
 import { ChainId } from "#/lib/publicClients";
 import { formatTimeDelta } from "#/lib/timeDelta";
@@ -167,6 +168,7 @@ export default function OrderPage({
                     : "From at most"}
                 </span>
                 {formatNumber(amountIn, 4)}{" "}
+                <InfoTooltip text={amountIn.toString()} />
                 <a
                   target="_blank"
                   href={buildBlockExplorerTokenURL({
@@ -195,6 +197,7 @@ export default function OrderPage({
                     : "To"}
                 </span>
                 {formatNumber(amountOut, 4)}{" "}
+                <InfoTooltip text={amountOut.toString()} />
                 <a
                   target="_blank"
                   href={buildBlockExplorerTokenURL({
@@ -222,13 +225,15 @@ export default function OrderPage({
             label="Strike Price"
             tooltipText="If the oracle price drop bellow this threshold the order will be executed by the limit price."
           >
-            {formatNumber(strikePrice, 4)} {priceUnit}
+            {formatNumber(strikePrice, 4)}{" "}
+            <InfoTooltip text={strikePrice.toString()} /> {priceUnit}
           </OrderInformation>
           <OrderInformation
             label="Limit Price"
             tooltipText="The limit price is the price at which this order shall be (partially) filled, in combination with the specified slippage. The fee is already deducted from the sell amount."
           >
-            {formatNumber(limitPrice, 4)} {priceUnit}
+            {formatNumber(limitPrice, 4)}{" "}
+            <InfoTooltip text={limitPrice.toString()} /> {priceUnit}
           </OrderInformation>
           {stopLossOrder?.executedSellAmount && (
             <>
