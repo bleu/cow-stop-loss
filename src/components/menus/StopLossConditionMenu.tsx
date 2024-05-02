@@ -91,10 +91,12 @@ export function StopLossConditionMenu({
 
   useEffect(() => {
     (async () => {
-      const currentOraclePrice = await oracleRouter.calculatePrice({
-        tokenBuyOracle: formData.tokenBuyOracle as Address,
-        tokenSellOracle: formData.tokenSellOracle as Address,
-      });
+      const currentOraclePrice = await oracleRouter
+        .calculatePrice({
+          tokenBuyOracle: formData.tokenBuyOracle as Address,
+          tokenSellOracle: formData.tokenSellOracle as Address,
+        })
+        .catch(() => undefined);
       setValue("currentOraclePrice", currentOraclePrice);
     })();
   }, [formData.tokenBuyOracle, formData.tokenSellOracle]);
@@ -137,7 +139,7 @@ export function StopLossConditionMenu({
               form={form}
               data={data}
               percentageOverOraclePrice={percentageOverOraclePrice}
-              oraclePrice={formData.currentOraclePrice}
+              oraclePrice={formData.currentOraclePrice || 0}
             />
             <Input
               name="tokenSellOracle"
@@ -224,7 +226,7 @@ export function StrikePriceInput({
   }>;
   data: IStopLossRecipeData;
   percentageOverOraclePrice: number;
-  oraclePrice?: number;
+  oraclePrice: number;
 }) {
   const {
     register,
@@ -253,7 +255,7 @@ export function StrikePriceInput({
             className={errorMessage ? "border-destructive" : ""}
           />
         </FormControl>
-        {Math.abs(percentageOverOraclePrice) > 0.01 && (
+        {Math.abs(percentageOverOraclePrice) > 0.01 && oraclePrice && (
           <span className="text-xs">
             Percentage over oracle price:{" "}
             <span
@@ -275,7 +277,7 @@ export function StrikePriceInput({
             </span>
           </span>
         )}
-        {oraclePrice && (
+        {oraclePrice > 0 && (
           <div className="flex gap-x-1 text-xs">
             <span>
               <span>Set back to oracle price:</span>

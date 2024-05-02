@@ -38,7 +38,17 @@ export function SwapNode({
     setBuyAmount(newBuyAmount);
   }, [recipeData, data, fetchBalance]);
 
-  if (!sellAmount || !buyAmount) return null;
+  if (!sellAmount || !buyAmount)
+    return (
+      <BaseNode selected={selected}>
+        <div className="flex flex-col">
+          <div className="flex flex-row gap-2 items-center">
+            <span className="text-sm font-bold text-highlight">Swap</span>
+          </div>
+          <div className="text-xs">Define oracles to calculate the amounts</div>
+        </div>
+      </BaseNode>
+    );
 
   const sellAmountWithSymbol = `${formatNumber(sellAmount, 2, "decimal", "compact", 0.01)} ${data.tokenSell.symbol}`;
   const buyAmountWithSymbol = `${formatNumber(buyAmount, 2, "decimal", "compact", 0.01)} ${data.tokenBuy.symbol}`;
@@ -47,7 +57,7 @@ export function SwapNode({
       <div className="flex flex-col">
         <div className="flex flex-row gap-2 items-center">
           <span className="text-sm font-bold text-highlight">Swap</span>
-          {(sellTokenWalletAmount || 0) < sellAmount && (
+          {sellAmount && (sellTokenWalletAmount || 0) < sellAmount && (
             <InfoTooltip
               variant="error"
               text="You don't have enough amount of the selling token. The order can still be posted but it can just be filled with the tokens that you have on your wallet."
