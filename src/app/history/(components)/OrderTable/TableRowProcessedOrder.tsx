@@ -1,6 +1,6 @@
 "use client";
 
-import { epochToDate, formatDateTime,TableCell, TableRow } from "@bleu-fi/ui";
+import { epochToDate, formatDateTime, TableCell, TableRow } from "@bleu-fi/ui";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -13,34 +13,31 @@ import { IToken } from "#/lib/types";
 import { CancelOrdersDialog } from "../CancelOrdersDialog";
 import { StatusBadge } from "../StatusBadge";
 
-
 interface ITableRowOrder {
   order: StopLossOrderType;
   ordersToCancel: string[];
   setOrdersToCancel: (orders: string[]) => void;
 }
-  
-export function TableRowOrder({
+
+export function TableRowProcessedOrder({
   order,
   ordersToCancel,
   setOrdersToCancel,
 }: ITableRowOrder) {
-  const router = useRouter()
+  const router = useRouter();
   const [rowIsSelected, setRowIsSelected] = useState(false);
 
   return (
     <>
       <TableRow
-       key={order?.id} 
-       className="border-transparent hover:cursor-pointer hover:bg-background/10"
-       onClick={
-        () => router.push(`/history/order/${order?.hash}`)
-        }
+        key={order?.id}
+        className="border-transparent hover:cursor-pointer hover:bg-background/10"
+        onClick={() => router.push(`/history/order/${order?.hash}`)}
       >
         <TableCell>
           <span className="sr-only"></span>
         </TableCell>
-        <TableCell 
+        <TableCell
           // Stop onClick from table row, which is redirecting to order details page
           onClick={(e) => e.stopPropagation()}
           className="cursor-default"
@@ -58,7 +55,7 @@ export function TableRowOrder({
             }}
             checked={rowIsSelected}
             aria-label="Select row"
-            disabled={order?.status != "created" && order?.status != "posted"}
+            disabled={!order?.singleOrder}
           />
         </TableCell>
         <TableCell>
@@ -85,17 +82,17 @@ export function TableRowOrder({
           )}
         </TableCell>
         <TableCell>
-          <StatusBadge status={order?.status}/>
+          <StatusBadge status={order?.status} />
         </TableCell>
-        <TableCell 
-         // Stop onClick from table row, which is redirecting to order details page
+        <TableCell
+          // Stop onClick from table row, which is redirecting to order details page
           onClick={(e) => e.stopPropagation()}
           className="cursor-default"
         >
           <CancelOrdersDialog
             tableRow
             ordersToCancel={[order.hash]}
-            disabled={order?.status != "created" && order?.status != "posted"}
+            disabled={!order?.singleOrder}
           />
         </TableCell>
       </TableRow>

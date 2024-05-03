@@ -45,6 +45,9 @@ export default function Page({
         The transaction is being processed
       </div>
       <Spinner size="lg" />
+      <div className="text-center text-2xl text-foreground mt-4">
+        You can check the order status in the history page
+      </div>
     </div>
   );
 }

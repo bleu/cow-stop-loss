@@ -9,7 +9,7 @@ import { MetadataApi } from "@cowprotocol/app-data";
 import { uploadAppData } from "./cowApi/uploadAppData";
 import { ChainId } from "./publicClients";
 
-const stopLossDataStructure = [
+export const stopLossDataStructure = [
   {
     name: "sellToken",
     type: "address",

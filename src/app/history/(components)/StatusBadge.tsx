@@ -16,6 +16,12 @@ export function StatusBadge({ status }: { status: string | undefined }) {
           Fulfilled
         </Badge>
       );
+    case "partiallyFilled":
+      return (
+        <Badge variant="success" className="bg-success hover:bg-success/70">
+          Partially Filled
+        </Badge>
+      );
     case "cancelled":
       return <Badge variant="destructive">Cancelled</Badge>;
     case "expired":

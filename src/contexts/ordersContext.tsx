@@ -3,6 +3,12 @@
 import { ArrElement, GetDeepProp } from "@bleu-fi/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import {
+  getTransactionDetails,
+  getTransactionQueue,
+  Transaction,
+  TransactionDetails,
+} from "@safe-global/safe-gateway-typescript-sdk";
+import {
   createContext,
   PropsWithChildren,
   useContext,
@@ -14,9 +20,12 @@ import { Address } from "viem";
 import { composableCowAbi } from "#/lib/abis/composableCow";
 import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 import { getCowOrders } from "#/lib/cowApi/fetchCowOrder";
+import { fetchTokenInfo } from "#/lib/fetchTokenInfo";
 import { composableCowApi } from "#/lib/gql/client";
 import { UserStopLossOrdersQuery } from "#/lib/gql/composable-cow/__generated__/1";
 import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
+import { decodeComposableCowCreateTxData } from "#/lib/staticInputDecoder";
+import { IToken } from "#/lib/types";
 
 type StopLossOrderTypeRaw = ArrElement<
   GetDeepProp<UserStopLossOrdersQuery, "items">
@@ -27,9 +36,14 @@ export interface StopLossOrderType extends StopLossOrderTypeRaw {
   executedBuyAmount?: string;
   executedSellAmount?: string;
   executedSurplusFee?: string;
-  orderIds: string[];
+  singleOrder?: Address | boolean | undefined;
 }
 
+export interface StopLossPendingOrderType {
+  tokenIn: IToken;
+  tokenOut: IToken;
+  status: string;
+}
 interface singleOrderReturn {
   error?: Error;
   result?: Address;
@@ -86,43 +100,50 @@ type OrderContextType = {
   }: {
     appData: string;
   }) => Promise<CowOrder[] | undefined>;
+  pendingOrders: StopLossPendingOrderType[];
 };
 
 export const OrderContext = createContext({} as OrderContextType);
 
 export function OrderProvider({ children }: PropsWithChildren) {
   const { safe } = useSafeAppsSDK();
+  const {
+    safe: { chainId, safeAddress },
+  } = useSafeAppsSDK();
   const [loaded, setLoaded] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [error, setError] = useState(false);
   const [orders, setOrders] = useState<StopLossOrderType[]>([]);
+  const [pendingOrders, setPendingOrders] = useState<
+    StopLossPendingOrderType[]
+  >([]);
 
   const reload = ({ showSpinner }: { showSpinner: boolean }) => {
     setRetryCount(retryCount + 1);
     setLoaded(!showSpinner);
   };
 
-  useEffect(() => {
-    async function loadOrders() {
-      try {
-        const processedOrders = await getProcessedStopLossOrders({
+  async function loadOrders() {
+    try {
+      const [processedOrders, notProcessedOrders] = await Promise.all([
+        getProcessedStopLossOrders({
           chainId: safe.chainId as ChainId,
           address: safe.safeAddress as Address,
-        });
-        if (processedOrders !== undefined) {
-          setOrders(processedOrders);
-        } else {
-          setOrders([]);
-        }
-        setError(false);
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error(err);
-        setError(true);
-      }
-      setLoaded(true);
+        }),
+        getSigningStopLossOrders(),
+      ]);
+      setOrders(processedOrders);
+      setPendingOrders(notProcessedOrders);
+      setError(false);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
+      setError(true);
     }
+    setLoaded(true);
+  }
 
+  useEffect(() => {
     loadOrders();
   }, [safe, retryCount]);
 
@@ -166,7 +187,7 @@ export function OrderProvider({ children }: PropsWithChildren) {
     }
 
     const ordersWithStatus = rawOrdersData.orders.items.map((order) => {
-      const cowOrderMatch = cowOrders.find(
+      const cowOrdersMatch = cowOrders.filter(
         (cowOrder) => cowOrder.appData === order.stopLossData?.appData
       );
       let singleOrderResult: singleOrder = true;
@@ -178,19 +199,109 @@ export function OrderProvider({ children }: PropsWithChildren) {
         singleOrderResult = multicallResults[orderIndex]?.result;
       }
 
-      const status = getOrderStatus({
-        cowOrderMatch,
+      const orderWithoutStatus = {
+        ...order,
+        executedBuyAmount: String(
+          cowOrdersMatch?.reduce(
+            (acc, cowOrder) => acc + Number(cowOrder.executedBuyAmount),
+            0
+          )
+        ),
+        executedSellAmount: String(
+          cowOrdersMatch?.reduce(
+            (acc, cowOrder) => acc + Number(cowOrder.executedSellAmount),
+            0
+          )
+        ),
         singleOrder: singleOrderResult,
+      };
+
+      const status = getOrderStatus({
+        order: orderWithoutStatus,
+        cowOrdersMatch,
       });
 
       return {
-        ...order,
-        status: status,
-        executedBuyAmount: cowOrderMatch?.executedBuyAmount,
-        executedSellAmount: cowOrderMatch?.executedSellAmount,
+        ...orderWithoutStatus,
+        status,
       };
     });
-    return ordersWithStatus as StopLossOrderType[];
+    return ordersWithStatus;
+  }
+
+  function getComposableCowTransactionsFromTransactionsDetails(
+    transactionDetails: TransactionDetails
+  ) {
+    return (
+      transactionDetails.txData?.dataDecoded?.parameters?.[0].valueDecoded?.filter(
+        (value) =>
+          value.to?.toLowerCase() == COMPOSABLE_COW_ADDRESS.toLowerCase()
+      ) || []
+    );
+  }
+
+  async function getSigningStopLossOrders(): Promise<
+    StopLossPendingOrderType[]
+  > {
+    const chainIdString = String(chainId);
+    const queuedTransaction = (
+      await getTransactionQueue(chainIdString, safeAddress)
+    ).results.filter((result) => {
+      if (result.type != "TRANSACTION") return false;
+      if (!(`methodName` in result.transaction.txInfo)) return false;
+      return result.transaction.txInfo.methodName === "multiSend";
+    }) as Transaction[];
+
+    const queuedTransactionQueueDetails = await Promise.all(
+      queuedTransaction.map((transaction) =>
+        getTransactionDetails(chainIdString, transaction.transaction.id)
+      )
+    );
+
+    const queuedStopLossTransactionQueueDetails =
+      queuedTransactionQueueDetails.filter((transactionDetails) =>
+        transactionDetails.txData?.dataDecoded?.parameters?.[0].valueDecoded?.some(
+          (value) =>
+            value.to?.toLowerCase() == COMPOSABLE_COW_ADDRESS.toLowerCase()
+        )
+      );
+
+    const queuedStopLossTranasactionsDetails = await Promise.all(
+      queuedStopLossTransactionQueueDetails.map((transactionDetails) =>
+        Promise.all(
+          getComposableCowTransactionsFromTransactionsDetails(
+            transactionDetails
+          )
+        )
+      )
+    );
+
+    const queuedStaticInputs = queuedStopLossTranasactionsDetails
+      .flat()
+      .map(({ data }) =>
+        decodeComposableCowCreateTxData(data as `0x${string}`)
+      );
+
+    const [tokensIn, tokensOut] = await Promise.all(
+      [0, 1].map((index) =>
+        Promise.all(
+          queuedStaticInputs.map((staticInput) =>
+            fetchTokenInfo(
+              staticInput[index] as Address,
+              Number(chainId) as ChainId
+            )
+          )
+        )
+      )
+    );
+
+    return tokensIn.map((tokenIn, tokenInIndex) => {
+      return {
+        status: "Not executed",
+        tokenIn: tokenIn,
+        tokenOut: tokensOut[tokenInIndex],
+      };
+    });
   }
 
   async function getRelatedCowOrders({
@@ -206,22 +317,27 @@ export function OrderProvider({ children }: PropsWithChildren) {
   }
 
   function getOrderStatus({
-    cowOrderMatch,
-    singleOrder,
+    order,
+    cowOrdersMatch,
   }: {
-    cowOrderMatch: CowOrder | undefined;
-    singleOrder: Address | boolean | undefined;
+    order: Omit<StopLossOrderType, "status">;
+    cowOrdersMatch: CowOrder[] | undefined;
   }) {
     if (
-      (cowOrderMatch && cowOrderMatch.status !== "fulfilled" && !singleOrder) ||
-      (!cowOrderMatch && !singleOrder)
+      cowOrdersMatch &&
+      cowOrdersMatch.some(({ status }) => status === "fulfilled")
     ) {
-      return "cancelled";
-    } else if (cowOrderMatch) {
-      return cowOrderMatch.status === "open" ? "posted" : cowOrderMatch.status;
-    } else {
-      return "created";
+      if (order?.stopLossData?.isPartiallyFillable) {
+        if (order?.singleOrder) {
+          return "partiallyFilled";
+        }
+      }
+      return "fulfilled";
     }
+    if (!order?.singleOrder) {
+      return "cancelled";
+    }
+    return "created";
   }
 
   return (
@@ -232,6 +348,7 @@ export function OrderProvider({ children }: PropsWithChildren) {
         error,
         reload,
         getRelatedCowOrders,
+        pendingOrders,
       }}
     >
       {children}

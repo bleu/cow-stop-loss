@@ -15,10 +15,11 @@ import { Spinner } from "#/components/Spinner";
 import { useOrder } from "#/contexts/ordersContext";
 
 import { CancelOrdersDialog } from "../CancelOrdersDialog";
-import { TableRowOrder } from "./TableRowOrder";
+import { TableRowPendingOrder } from "./TableRowPendingOrder";
+import { TableRowProcessedOrder } from "./TableRowProcessedOrder";
 
 export function OrderTable() {
-  const { orders, loaded, reload } = useOrder()
+  const { orders, pendingOrders, loaded, reload } = useOrder();
   const [ordersToCancel, setOrdersToCancel] = useState<string[]>([]);
 
   if (!loaded) {
@@ -67,15 +68,22 @@ export function OrderTable() {
             </TableCell>
           </TableHeader>
           <TableBody>
+            {pendingOrders?.map((order, id) => (
+              <TableRowPendingOrder
+                key={`pending-order-${id}`}
+                id={`pending-order-${id}`}
+                order={order}
+              />
+            ))}
             {orders?.map((order) => (
-              <TableRowOrder
+              <TableRowProcessedOrder
                 key={order.id}
                 order={order}
                 setOrdersToCancel={setOrdersToCancel}
                 ordersToCancel={ordersToCancel}
               />
             ))}
-            {orders?.length === 0 && (
+            {orders?.length + pendingOrders?.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6}>
                   <h1 className="text-md text-slate12 m-2 text-center w-full">

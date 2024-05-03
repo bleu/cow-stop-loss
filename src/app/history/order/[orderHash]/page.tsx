@@ -235,7 +235,7 @@ export default function OrderPage({
             {formatNumber(limitPrice, 4)}{" "}
             <InfoTooltip text={limitPrice.toString()} /> {priceUnit}
           </OrderInformation>
-          {stopLossOrder?.executedSellAmount && (
+          {stopLossOrder?.executedSellAmount != "0" && (
             <>
               <OrderInformation
                 label="Execution Price"
@@ -248,10 +248,15 @@ export default function OrderPage({
                 tooltipText="The amount sold/bought. Also surplus for this order. This is the positive difference between the initial limit price and the actual (average) execution price."
               >
                 <div className="flex gap-x-2">
-                  {formatNumber(executedAmountIn, 4)} {priceUnit}
-                  <span className="text-success text-bold">
-                    ({formatNumber(orderSurplus, 4)}% surplus)
-                  </span>
+                  Swapped {formatNumber(executedAmountIn, 4)}{" "}
+                  {stopLossOrder?.stopLossData?.tokenIn.symbol} for{" "}
+                  {formatNumber(executedAmountOut, 4)}{" "}
+                  {stopLossOrder?.stopLossData?.tokenOut.symbol}
+                  {orderSurplus > 0 && (
+                    <span className="text-success text-bold">
+                      ({formatNumber(orderSurplus, 4)}% surplus)
+                    </span>
+                  )}
                 </div>
               </OrderInformation>
             </>
@@ -315,7 +320,7 @@ export default function OrderPage({
                       <ClickToCopy text={order.uid}>
                         <CopyIcon className="hover:text-primary" />
                       </ClickToCopy>
-                      <StatusBadge status={stopLossOrder?.status} />
+                      <StatusBadge status={order?.status} />
                     </div>
                   ))}
                 </div>
