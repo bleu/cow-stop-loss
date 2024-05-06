@@ -28,12 +28,26 @@ export const BuilderContextProvider = ({
   const {
     safe: { chainId },
   } = useSafeAppsSDK();
-  const [tokenList, setTokenList] = React.useState<IToken[]>(
-    cowTokenList.filter((token) => token.chainId === chainId) as IToken[]
+  const [importedTokenList, setImportedTokenList] = React.useState<IToken[]>(
+    (JSON.parse(
+      // @ts-ignore
+      localStorage.getItem("importedTokens-".concat(chainId.toString()))
+    ) as IToken[] | null) ?? []
   );
+  const [tokenList, setTokenList] = React.useState<IToken[]>([
+    ...(cowTokenList.filter((token) => token.chainId === chainId) as IToken[]),
+    ...importedTokenList,
+  ]);
 
   function addImportedToken(token: IToken) {
-    setTokenList([...tokenList, token]);
+    const newTokenList = [...tokenList, token];
+    const newImportedTokenList = [...importedTokenList, token];
+    setImportedTokenList(newImportedTokenList);
+    setTokenList(newTokenList);
+    localStorage.setItem(
+      "importedTokens-".concat(chainId.toString()),
+      JSON.stringify(newImportedTokenList)
+    );
   }
 
   return (
