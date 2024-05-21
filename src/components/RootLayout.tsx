@@ -70,7 +70,7 @@ function SafeLoader() {
         To access please use this
         <Link
           target="_blank"
-          href="https://app.safe.global/share/safe-app?appUrl=https%3A%2F%2Fcow-tools-bleu-fi.vercel.app&chain=gor"
+          href="https://app.safe.global/share/safe-app?appUrl=https%3A%2F%2Fcomposable-cow-hub.vercel.app&chain=gno"
           className="text-highlight"
         >
           {" "}
