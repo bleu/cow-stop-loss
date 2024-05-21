@@ -19,7 +19,7 @@ const STOP_LOSS_ERROR_MESSSAGE = {
 
 const STOP_LOSS_WARNING_MESSAGE = {
   DIFF_FROM_MARKET_PRICE:
-    "Oracle Price is more than 10% from market price for the selected tokens",
+    "Warning: Oracle Price is more than 10% different from market price",
   MARKET_PRICE_NOT_FOUND:
     "Warning: Market price not found for the provided tokens",
   ORACLE_NOT_FOUND: "Warning: Oracle price not found",
