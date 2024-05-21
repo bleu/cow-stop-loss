@@ -119,11 +119,7 @@ export function SwapMenu({
 
     const newNodes = getNodes().map((node) => {
       if (node.id === `${data.orderId}-condition`) {
-        const error = oracleNotFind
-          ? "ORACLE_NOT_FOUND"
-          : oraclePrice < node.data.strikePrice
-            ? "STRIKE_PRICE_ABOVE_ORACLE_PRICE"
-            : undefined;
+        const error = oracleNotFind ? "ORACLE_NOT_FOUND" : undefined;
         return {
           ...node,
           data: {
@@ -192,30 +188,33 @@ export function SwapMenu({
         </div>
         <div className="flex flex-col gap-y-1">
           <TokenSelect
-            selectedToken={data.tokenSell}
+            selectedToken={formData.tokenSell as IToken}
             label="Token to sell"
             onSelectToken={(newToken) => {
               setValue("tokenSell", newToken);
-              updateOracles(newToken, data.tokenBuy);
+              updateOracles(newToken, formData.tokenBuy as IToken);
             }}
             errorMessage={errors.tokenSell?.message}
           />
           <button
             type="button"
             onClick={() => {
-              setValue("tokenSell", data.tokenBuy);
-              setValue("tokenBuy", data.tokenSell);
+              const newTokenSell = formData.tokenBuy;
+              const newTokenBuy = formData.tokenSell;
+              updateOracles(newTokenSell as IToken, newTokenBuy as IToken);
+              setValue("tokenSell", newTokenSell);
+              setValue("tokenBuy", newTokenBuy);
             }}
             className="flex flex-row w-full mt-2 justify-center text-xs hover:text-primary"
           >
             <UpdateIcon className="size-5" />
           </button>
           <TokenSelect
-            selectedToken={data.tokenBuy}
+            selectedToken={formData.tokenBuy as IToken}
             label="Token to buy"
             onSelectToken={(newToken) => {
               setValue("tokenBuy", newToken);
-              updateOracles(data.tokenSell, newToken);
+              updateOracles(formData.tokenBuy as IToken, newToken);
             }}
             errorMessage={errors.tokenBuy?.message}
           />
