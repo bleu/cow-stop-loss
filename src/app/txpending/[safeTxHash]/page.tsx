@@ -2,6 +2,7 @@
 
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { TransactionStatus } from "@safe-global/safe-apps-sdk";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
@@ -46,7 +47,10 @@ export default function Page({
       </div>
       <Spinner size="lg" />
       <div className="text-center text-2xl text-foreground mt-4">
-        You can check the order status in the history page
+        You can check the order status in the{" "}
+        <Link href="/history" className="text-primary hover:text-primary/80">
+          history page
+        </Link>
       </div>
     </div>
   );
