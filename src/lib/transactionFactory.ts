@@ -22,6 +22,7 @@ import {
 import { FALLBACK_STATES } from "#/hooks/useFallbackState";
 import { calculateSellAmount } from "./calculateAmounts";
 import { balancerMinterAbi } from "./abis/balancerMinter";
+import { ChainId } from "./publicClients";
 
 export enum TRANSACTION_TYPES {
   ERC20_APPROVE = "ERC20_APPROVE",
@@ -99,7 +100,7 @@ class StopLossOrderTx implements ITransaction<StopLossOrderArgs> {
         functionName: "create",
         args: [
           {
-            handler: STOP_LOSS_ADDRESS,
+            handler: STOP_LOSS_ADDRESS[data.safeInfo.chainId as ChainId],
             salt: salt,
             staticInput: await stopLossArgsEncoder(data, salt),
           },
