@@ -8,6 +8,12 @@ export interface IToken {
   address: Address;
 }
 
+export interface ITokenWithValue extends IToken {
+  balance: string;
+  usdPrice: number;
+  usdValue: number;
+}
+
 export type nodeNames = "swap" | "stopLoss" | "hookMultiSend";
 
 export enum TIME_OPTIONS {
