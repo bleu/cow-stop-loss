@@ -6,7 +6,7 @@ import { IToken, TIME_OPTIONS } from "./types";
 import { ChainId, publicClientsFromIds } from "./publicClients";
 import { fetchCowQuote } from "./cowApi/fetchCowQuote";
 import { oracleMinimalAbi } from "./abis/oracleMinimalAbi";
-import { capitalize } from "@bleu-fi/ui";
+import { capitalize } from "@bleu/ui";
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "./oracleRouter";
 
 const basicAddressSchema = z

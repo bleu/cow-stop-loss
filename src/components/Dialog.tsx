@@ -8,7 +8,7 @@ import {
   DialogPortal,
   DialogTitle,
   DialogTrigger,
-} from "@bleu-fi/ui";
+} from "@bleu/ui";
 import cn from "clsx";
 import * as React from "react";
 

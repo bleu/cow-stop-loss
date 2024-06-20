@@ -1,4 +1,4 @@
-import { formatNumber } from "@bleu-fi/ui";
+import { formatNumber } from "@bleu/ui";
 
 import { ChainId } from "#/lib/publicClients";
 import { IToken } from "#/lib/types";

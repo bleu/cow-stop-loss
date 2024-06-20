@@ -1,6 +1,6 @@
 "use client";
 
-import { epochToDate, formatDateTime, TableCell, TableRow } from "@bleu-fi/ui";
+import { epochToDate, formatDateTime, TableCell, TableRow } from "@bleu/ui";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 

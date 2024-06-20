@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrElement, GetDeepProp } from "@bleu-fi/ui";
+import { ArrElement, GetDeepProp } from "@bleu/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import {
   getTransactionDetails,

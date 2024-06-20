@@ -1,4 +1,4 @@
-import { Badge } from "@bleu-fi/ui";
+import { Badge } from "@bleu/ui";
 
 export function StatusBadge({ status }: { status: string | undefined }) {
   switch (status) {

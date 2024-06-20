@@ -1,10 +1,4 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHeader,
-  TableRow,
-} from "@bleu-fi/ui";
+import { Table, TableBody, TableCell, TableHeader, TableRow } from "@bleu/ui";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { FieldValues } from "react-hook-form";

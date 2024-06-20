@@ -1,11 +1,10 @@
 "use client";
 
-import { cn,FormControl, FormLabel, FormMessage } from "@bleu-fi/ui";
+import { cn, FormControl, FormLabel, FormMessage } from "@bleu/ui";
 import React, { HTMLProps } from "react";
 import { FieldError, RegisterOptions, useFormContext } from "react-hook-form";
 
 import { InfoTooltip } from "./Tooltip";
-
 
 interface IInput extends Omit<HTMLProps<HTMLInputElement>, "name"> {
   name: string;
@@ -46,7 +45,7 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
       <div className="flex flex-col">
         <div className="flex flex-row justify-between">
           <FormLabel className="mb-2 block text-sm">{label}</FormLabel>
-          <InfoTooltip text={tooltipText} link={tooltipLink}/>
+          <InfoTooltip text={tooltipText} link={tooltipLink} />
         </div>
         <FormControl>
           <BaseInput

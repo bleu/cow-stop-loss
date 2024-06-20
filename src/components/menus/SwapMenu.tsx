@@ -2,7 +2,7 @@ import {
   convertStringToNumberAndRoundDown,
   Form,
   formatNumber,
-} from "@bleu-fi/ui";
+} from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { UpdateIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";

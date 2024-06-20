@@ -11,7 +11,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   toast,
-} from "@bleu-fi/ui";
+} from "@bleu/ui";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React, { useState } from "react";

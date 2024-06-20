@@ -1,4 +1,4 @@
-import { formatNumber } from "@bleu-fi/ui";
+import { formatNumber } from "@bleu/ui";
 import { useEffect, useState } from "react";
 import { formatUnits } from "viem";
 

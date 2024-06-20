@@ -1,4 +1,4 @@
-import { formatNumber } from "@bleu-fi/ui";
+import { formatNumber } from "@bleu/ui";
 import { Cross1Icon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect, useState } from "react";

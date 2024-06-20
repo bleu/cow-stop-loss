@@ -5,7 +5,7 @@ import {
   FormLabel,
   FormMessage,
   useToast,
-} from "@bleu-fi/ui";
+} from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect } from "react";
