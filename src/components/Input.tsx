@@ -1,16 +1,16 @@
-import { cn, Input as InputPrimitive, InputProps } from "@bleu/ui";
+import { cn, Input as InputPrimitive } from "@bleu/ui";
+import React, { HTMLProps } from "react";
 
-export function Input({
-  className,
-  ...props
-}: InputProps & React.RefAttributes<HTMLInputElement>) {
-  return (
-    <InputPrimitive
-      {...props}
-      className={cn(
-        "w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:text-foreground/70 px-0",
-        className
-      )}
-    />
-  );
-}
+export const Input = React.forwardRef<
+  HTMLInputElement,
+  HTMLProps<HTMLInputElement>
+>((props, ref) => (
+  <InputPrimitive
+    {...props}
+    ref={ref}
+    className={cn(
+      "w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:text-foreground/70 px-0",
+      props.className
+    )}
+  />
+));

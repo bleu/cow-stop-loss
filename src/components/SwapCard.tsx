@@ -1,47 +1,57 @@
 "use client";
 
-import { Button, Card, CardContent, CardTitle, Form, Switch } from "@bleu/ui";
+import { Button, Card, CardContent, CardTitle, Form } from "@bleu/ui";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { GearIcon } from "@radix-ui/react-icons";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
+
+import { ChainId } from "#/lib/publicClients";
+import { generateSwapSchema } from "#/lib/schema";
 
 import { InvertTokensSeparator } from "./InvertTokensSeparator";
+import { OrderTypeSwitch } from "./OrderTypeSwitch";
 import { PriceInputCard } from "./PriceInputCard";
 import { TokenInputCard } from "./TokenInputCard";
 
 export function SwapCard() {
-  const form = useForm();
+  const {
+    safe: { chainId },
+  } = useSafeAppsSDK();
+  const formSchema = generateSwapSchema(chainId as ChainId);
+  const form = useForm<z.input<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      isSellOrder: true,
+    },
+  });
 
   return (
-    <Form {...form} className="w-full">
+    <Form
+      {...form}
+      onSubmit={(data) => {
+        // eslint-disable-next-line no-console
+        console.log(data);
+      }}
+      className="w-full"
+    >
       <Card className="bg-foreground text-background w-full p-5 rounded-none">
         <CardTitle className="w-full flex justify-between">
-          <div className="flex gap-2 items-center">
-            <span className="text-base font-bold">Create a new sell order</span>
-            <Switch
-              className="shadow-none data-[state=unchecked]:bg-primary"
-              defaultChecked={true}
-            />
-          </div>
+          <OrderTypeSwitch />
           <GearIcon className="size-6" />
         </CardTitle>
         <CardContent className="flex flex-col gap-4 py-5 px-0">
-          <TokenInputCard form={form} side="Sell" />
+          <TokenInputCard side="Sell" />
           <div className="flex gap-2 justify-between">
-            <PriceInputCard
-              title="Strike Price"
-              fieldName="price"
-              form={form}
-              showMarketPrice
-            />
-            <PriceInputCard
-              title="Limit Price"
-              fieldName="amount"
-              form={form}
-            />
+            <PriceInputCard fieldName="strikePrice" showMarketPrice />
+            <PriceInputCard fieldName="limitPrice" />
           </div>
           <InvertTokensSeparator />
-          <TokenInputCard form={form} side="Buy" />
-          <Button className="rounded-none">Review stop-loss order</Button>
+          <TokenInputCard side="Buy" />
+          <Button className="rounded-none" type="submit">
+            Review stop-loss order
+          </Button>
         </CardContent>
       </Card>
     </Form>

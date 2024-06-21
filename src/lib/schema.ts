@@ -8,6 +8,7 @@ import { fetchCowQuote } from "./cowApi/fetchCowQuote";
 import { oracleMinimalAbi } from "./abis/oracleMinimalAbi";
 import { capitalize } from "@bleu/ui";
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "./oracleRouter";
+import { calculateAmounts } from "./calculateAmounts";
 
 const basicAddressSchema = z
   .string()
@@ -70,17 +71,48 @@ export const stopLossConditionSchema = z
     message: "Tokens sell and buy must be different",
   });
 
-export const swapSchema = z.object({
-  tokenSell: basicTokenSchema,
-  tokenBuy: basicTokenSchema,
-  amount: z.coerce.number().positive(),
-  allowedSlippage: z.coerce.number().nonnegative().lt(100),
-  receiver: z.union([basicAddressSchema, ensSchema]),
-  isPartiallyFillable: z.coerce.boolean(),
-  validFrom: z.coerce.string(),
-  isSellOrder: z.coerce.boolean(),
-  validityBucketTime: z.nativeEnum(TIME_OPTIONS),
-});
+export const generateSwapSchema = (chainId: ChainId) =>
+  z
+    .object({
+      tokenSell: basicTokenSchema,
+      tokenBuy: basicTokenSchema,
+      amountSell: z.coerce.number().positive(),
+      amountBuy: z.coerce.number().positive(),
+      strikePrice: z.coerce.number().positive(),
+      limitPrice: z.coerce.number().positive(),
+      receiver: z.union([basicAddressSchema, ensSchema]),
+      isSellOrder: z.coerce.boolean(),
+    })
+    .refine(
+      (data) => {
+        return data.tokenSell.address != data.tokenBuy.address;
+      },
+      {
+        path: ["tokenBuy"],
+        message: "Tokens sell and buy must be different",
+      }
+    )
+    .superRefine((data, ctx) => {
+      const amountDecimals = data.isSellOrder
+        ? data.tokenSell.decimals
+        : data.tokenBuy.decimals;
+      const amount = data.isSellOrder ? data.amountSell : data.amountBuy;
+      return fetchCowQuote({
+        tokenIn: data.tokenSell,
+        tokenOut: data.tokenBuy,
+        amount: amount * 10 ** amountDecimals,
+        chainId,
+        priceQuality: "fast",
+        isSell: data.isSellOrder,
+      }).then((res) => {
+        if (res.errorType) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `${res.errorType}: ${capitalize(res.description)}`,
+          });
+        }
+      });
+    });
 
 export const generateStopLossRecipeSchema = ({
   chainId,

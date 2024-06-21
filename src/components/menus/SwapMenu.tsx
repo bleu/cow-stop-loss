@@ -26,7 +26,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "../ui/accordion";
+} from "../ui/ui/accordion";
 
 const ALLOWED_SLIPPAGE_TOOLTIP_TEXT =
   "Used, in addition to the strike price, to determine the limit price of the order. The order will not be executed if the price of the token is outside of the limit price.";
