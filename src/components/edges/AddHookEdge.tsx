@@ -1,4 +1,4 @@
-import { Select, useToast } from "@bleu-fi/ui";
+import { Select, useToast } from "@bleu/ui";
 import { PlusCircledIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React from "react";

@@ -1,8 +1,7 @@
-import { Checkbox as CheckboxPrimitive } from "@bleu-fi/ui";
+import { Checkbox as CheckboxPrimitive } from "@bleu/ui";
 import React from "react";
 
 import { InfoTooltip } from "./Tooltip";
-
 
 interface ICheckbox {
   id: string;
@@ -31,14 +30,14 @@ export function Checkbox({
           onClick={() => onChange()}
           disabled={disabled}
           id={id}
-          />
+        />
         {label && (
           <label htmlFor={id} className="pl-[15px] text-[15px] leading-8">
             {label}
           </label>
         )}
       </div>
-      <InfoTooltip text={tooltipText} link={tooltipLink}/>
+      <InfoTooltip text={tooltipText} link={tooltipLink} />
     </div>
   );
 }

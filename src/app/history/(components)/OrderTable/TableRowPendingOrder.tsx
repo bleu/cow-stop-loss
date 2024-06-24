@@ -1,6 +1,6 @@
 "use client";
 
-import { TableCell, TableRow } from "@bleu-fi/ui";
+import { TableCell, TableRow } from "@bleu/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 
 import { TokenInfo } from "#/components/TokenInfo";

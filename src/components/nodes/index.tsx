@@ -1,4 +1,4 @@
-import { cn } from "@bleu-fi/ui";
+import { cn } from "@bleu/ui";
 import React from "react";
 
 import { Handle } from "../Handle";

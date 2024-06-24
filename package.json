@@ -22,7 +22,7 @@
     "test:watch": "pnpm exec jest --watchAll --verbose"
   },
   "dependencies": {
-    "@bleu-fi/ui": "^0.1.59",
+    "@bleu/ui": "^0.1.118",
     "@cowprotocol/app-data": "^1.2.2",
     "@graphql-codegen/typescript": "^4.0.6",
     "@graphql-codegen/typescript-operations": "^4.2.0",
@@ -77,7 +77,7 @@
     "react": "^18.2.0",
     "react-day-picker": "^8.10.0",
     "react-dom": "^18.2.0",
-    "react-hook-form": "^7.50.1",
+    "react-hook-form": "^7.52.0",
     "react-resizable-panels": "^2.0.9",
     "reactflow": "^11.10.4",
     "sonner": "^1.4.0",

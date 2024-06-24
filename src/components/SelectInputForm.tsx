@@ -1,4 +1,4 @@
-import { FormLabel, Select } from "@bleu-fi/ui";
+import { FormLabel, Select } from "@bleu/ui";
 import React from "react";
 
 import { InfoTooltip } from "./Tooltip";
@@ -22,7 +22,7 @@ const SelectInputForm = ({
     <label className="block text-sm text-primary-foreground" htmlFor={name}>
       <div className="flex flex-row justify-between">
         <FormLabel className="mb-2 block text-sm">{label}</FormLabel>
-        <InfoTooltip text={tooltipText}/>
+        <InfoTooltip text={tooltipText} />
       </div>{" "}
       <Select.SelectRoot onValueChange={onValueChange} name={name}>
         <Select.SelectTrigger className="h-[35px] inline-flex w-full items-center gap-[5px] bg-input border border-background">

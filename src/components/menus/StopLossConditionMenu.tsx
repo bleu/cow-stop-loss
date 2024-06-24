@@ -5,7 +5,7 @@ import {
   FormLabel,
   FormMessage,
   useToast,
-} from "@bleu-fi/ui";
+} from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect } from "react";
@@ -32,7 +32,7 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "../ui/accordion";
+} from "../ui/ui/accordion";
 
 const ORACLE_TOOLTIP_TEXT =
   "Please take care when manually editing the address of the oracle contract, as it will determine if the order is ready to be posted and its price.";

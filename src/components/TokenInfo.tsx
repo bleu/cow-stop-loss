@@ -1,26 +1,33 @@
-import { formatNumber } from "@bleu-fi/ui";
+"use client";
+import { formatNumber } from "@bleu/ui";
+import { ArrowTopRightIcon } from "@radix-ui/react-icons";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 
+import { TokenLogo } from "#/components/TokenLogo";
 import { ChainId } from "#/lib/publicClients";
-import { IToken } from "#/lib/types";
+import { IToken, ITokenWithValue } from "#/lib/types";
 
-import { TokenLogo } from "./TokenLogo";
+import { BlockExplorerLink } from "./ExplorerLink";
 
 export function TokenInfo({
-  chainId,
-  amount,
   token,
+  showBalance = false,
+  showExplorerLink = true,
 }: {
-  token: IToken;
-  chainId?: ChainId;
-  amount?: number | string;
+  token: IToken | ITokenWithValue;
+  showBalance?: boolean;
+  showExplorerLink?: boolean;
 }) {
+  const {
+    safe: { chainId },
+  } = useSafeAppsSDK();
   return (
     <div className="flex items-center gap-x-1">
       <div className="flex items-center justify-center">
-        <div className="rounded-full bg-white p-1">
+        <div className="rounded-full bg-white">
           <TokenLogo
             tokenAddress={token.address}
-            chainId={chainId}
+            chainId={chainId as ChainId}
             className="rounded-full"
             alt="Token Logo"
             height={22}
@@ -29,8 +36,22 @@ export function TokenInfo({
           />
         </div>
       </div>
-      {token.symbol}
-      {amount && `(${formatNumber(amount, 4, "decimal", "compact", 0.001)})`}
+      <div className="flex items-center space-x-1">
+        <span>{token.symbol}</span>
+        {showExplorerLink && (
+          <BlockExplorerLink
+            type="token"
+            label={<ArrowTopRightIcon />}
+            identifier={token.address}
+            networkId={chainId as ChainId}
+          />
+        )}
+      </div>
+      <div>
+        {"balance" in token &&
+          showBalance &&
+          `(${formatNumber(token.balance, 4, "decimal", "compact", 0.001)})`}
+      </div>
     </div>
   );
 }

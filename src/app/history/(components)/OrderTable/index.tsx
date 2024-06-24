@@ -7,7 +7,7 @@ import {
   TableCell,
   TableHeader,
   TableRow,
-} from "@bleu-fi/ui";
+} from "@bleu/ui";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useState } from "react";
 

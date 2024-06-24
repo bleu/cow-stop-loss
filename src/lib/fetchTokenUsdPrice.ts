@@ -5,54 +5,6 @@ import { gnosis, mainnet, sepolia } from "viem/chains";
 import { getNativePrice } from "./cowApi/fetchNativePrice";
 import { getCoingeckoUsdPrice } from "./coingeckoApi";
 
-export async function fetchPairUsdPrice({
-  baseToken,
-  quoteToken,
-  chainId,
-}: {
-  baseToken: IToken;
-  quoteToken: IToken;
-  chainId: ChainId;
-}): Promise<number> {
-  const [baseTokenUsdPrice, quoteTokenUsdPrice] = await Promise.all([
-    fetchTokenUsdPrice({
-      tokenAddress: baseToken.address,
-      tokenDecimals: baseToken.decimals,
-      chainId: chainId,
-    }),
-    fetchTokenUsdPrice({
-      tokenAddress: quoteToken.address,
-      tokenDecimals: quoteToken.decimals,
-      chainId: chainId,
-    }),
-  ]);
-  return baseTokenUsdPrice / quoteTokenUsdPrice;
-}
-
-/**
- * Fetches USD price for a given currency from coingecko or CowProtocol
- * CoW Protocol Orderbook API is used as a fallback
- * When Coingecko rate limit is hit, CowProtocol will be used for 1 minute
- */
-export async function fetchTokenUsdPrice({
-  tokenAddress,
-  tokenDecimals,
-  chainId,
-}: {
-  tokenAddress: Address;
-  tokenDecimals: number;
-  chainId: ChainId;
-}): Promise<number> {
-  try {
-    return await getCoingeckoUsdPrice({
-      chainId,
-      address: tokenAddress,
-    });
-  } catch (error) {
-    return getCowProtocolUsdPrice({ chainId, tokenAddress, tokenDecimals });
-  }
-}
-
 export const USDC: Record<ChainId, IToken> = {
   [mainnet.id]: {
     address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",

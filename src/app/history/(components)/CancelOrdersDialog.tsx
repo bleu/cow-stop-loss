@@ -8,7 +8,7 @@ import {
   DialogContent,
   DialogTrigger,
   toast,
-} from "@bleu-fi/ui";
+} from "@bleu/ui";
 import { TrashIcon } from "@radix-ui/react-icons";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -34,7 +34,6 @@ export function CancelOrdersDialog({
   const { push } = useRouter();
 
   async function cancelOrders(ordersHash: string[]) {
-
     const cancelTransactionsData = ordersHash.map(
       (orderHash) =>
         ({
@@ -63,24 +62,27 @@ export function CancelOrdersDialog({
       onOpenChange={setOpen}
     >
       <DialogTrigger asChild>
-          <Button
-            variant={tableRow ? "ghost" : "destructive"}
-            disabled={disabled}
-            className={cn(tableRow && "hover:bg-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent")}
-          >
-            <span className="flex items-center gap-x-2">
-              <TrashIcon
-                className={cn(
-                  "size-5",
-                  disabled && tableRow
-                    ? "text-info"
-                    : "text-destructive/70 hover:text-destructive",
-                  !tableRow && "text-black",
-                )}
-              />
-              {!tableRow && "Cancel Orders"}
-            </span>
-          </Button>
+        <Button
+          variant={tableRow ? "ghost" : "destructive"}
+          disabled={disabled}
+          className={cn(
+            tableRow &&
+              "hover:bg-transparent focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-transparent"
+          )}
+        >
+          <span className="flex items-center gap-x-2">
+            <TrashIcon
+              className={cn(
+                "size-5",
+                disabled && tableRow
+                  ? "text-info"
+                  : "text-destructive/70 hover:text-destructive",
+                !tableRow && "text-black"
+              )}
+            />
+            {!tableRow && "Cancel Orders"}
+          </span>
+        </Button>
       </DialogTrigger>
       <DialogContent className="bg-card border-0 text-background flex flex-col items-center">
         <h2 className="text-xl font-semibold">Are you sure?</h2>

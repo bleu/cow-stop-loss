@@ -1,4 +1,4 @@
-import { Button, useToast } from "@bleu-fi/ui";
+import { Button, useToast } from "@bleu/ui";
 import { PaperPlaneIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useRouter } from "next/navigation";

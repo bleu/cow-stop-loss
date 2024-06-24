@@ -1,54 +1,21 @@
-"use client";
-
-import { Button, Toaster } from "@bleu-fi/ui";
-import { ClockIcon, PlusIcon } from "@radix-ui/react-icons";
+import { Toaster } from "@bleu/ui";
 import SafeProvider from "@safe-global/safe-apps-react-sdk";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import React from "react";
-import { ReactFlowProvider } from "reactflow";
 
 import { NetworksContextProvider } from "#/contexts/networks";
+import { TokenSelectContextProvider } from "#/contexts/tokenSelectContext";
 
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 
-function HistoryButton() {
-  return (
-    <Link href="/history">
-      <Button className="h-full" variant="default">
-        <span className="flex items-center gap-x-2 ">
-          <ClockIcon />
-          History
-        </span>
-      </Button>
-    </Link>
-  );
-}
-
-function BuilderButton() {
-  return (
-    <Link href="/builder">
-      <Button className="h-full" variant="default">
-        <span className="flex items-center gap-x-2 ">
-          <PlusIcon />
-          New Order
-        </span>
-      </Button>
-    </Link>
-  );
-}
-
 export function RootLayout({ children }: React.PropsWithChildren) {
-  const path = usePathname();
   return (
     <SafeProvider loader={<SafeLoader />}>
       <NetworksContextProvider>
-        <ReactFlowProvider>
+        <TokenSelectContextProvider>
           <div className="flex flex-col h-svh justify-between">
-            <Header linkUrl={"/builder"} imageSrc={"/assets/stoploss.svg"}>
-              {path === "/history" ? <BuilderButton /> : <HistoryButton />}
-            </Header>
+            <Header linkUrl={"/builder"} imageSrc={"/assets/stoploss.svg"} />
             <div className="size-full bg-background">{children}</div>
             <Footer
               githubLink="https://github.com/bleu-fi/composable-cow-hub"
@@ -56,7 +23,7 @@ export function RootLayout({ children }: React.PropsWithChildren) {
             />
           </div>
           <Toaster />
-        </ReactFlowProvider>
+        </TokenSelectContextProvider>
       </NetworksContextProvider>
     </SafeProvider>
   );

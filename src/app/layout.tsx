@@ -1,11 +1,10 @@
-"use client"
+"use client";
 import "./globals.css";
 
-import { cn } from "@bleu-fi/ui";
+import { cn } from "@bleu/ui";
 import localFont from "next/font/local";
 
 import { RootLayout } from "#/components/RootLayout";
-
 
 const flechaS = localFont({
   src: [

@@ -7,7 +7,7 @@ import {
   formatDateTime,
   formatNumber,
   Separator,
-} from "@bleu-fi/ui";
+} from "@bleu/ui";
 import { ArrowLeftIcon, CopyIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { useEffect, useState } from "react";

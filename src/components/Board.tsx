@@ -2,7 +2,7 @@
 
 import "reactflow/dist/base.css";
 
-import { Button } from "@bleu-fi/ui";
+import { Button } from "@bleu/ui";
 import { PlusIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React, { useCallback, useState } from "react";
