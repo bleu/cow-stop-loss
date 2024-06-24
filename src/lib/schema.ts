@@ -193,3 +193,10 @@ export const generateStopLossRecipeSchema = ({
         }
       });
     });
+
+export const advancedSettingsSchema = z.object({
+  maxHoursSinceOracleUpdates: z.coerce.number().positive().optional(),
+  tokenSellOracle: basicAddressSchema.optional(),
+  tokenBuyOracle: basicAddressSchema.optional(),
+  receiver: z.union([basicAddressSchema, ensSchema]).optional(),
+});

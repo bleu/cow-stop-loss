@@ -1,6 +1,6 @@
-import { Card, CardContent, CardTitle, formatNumber } from "@bleu/ui";
+import { Card, CardContent, CardTitle, formatNumber, Input } from "@bleu/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { z } from "zod";
 
@@ -10,9 +10,9 @@ import { generateSwapSchema } from "#/lib/schema";
 import { fetchPairUsdPrice } from "#/lib/tokenUtils";
 import { IToken } from "#/lib/types";
 
-import { Input } from "./Input";
+export const PriceInputCard = memo(PriceInputCardComponent);
 
-export function PriceInputCard({
+function PriceInputCardComponent({
   fieldName,
   showMarketPrice = false,
 }: {
@@ -24,7 +24,7 @@ export function PriceInputCard({
   } = useSafeAppsSDK();
   const { register, control, getValues, setValue } =
     useFormContext<z.input<ReturnType<typeof generateSwapSchema>>>();
-  const title = fieldName === "limitPrice" ? "Limit Price" : "Strike Price";
+  const title = fieldName === "limitPrice" ? "Limit price" : "Strike price";
   const [marketPrice, setMarketPrice] = useState<number>();
 
   const [tokenBuy, tokenSell, price] = useWatch({
@@ -75,7 +75,7 @@ export function PriceInputCard({
   return (
     <Card className="bg-background text-foreground w-full p-2 rounded-none">
       <CardTitle>
-        <div className="flex justify-between text-base">
+        <div className="flex justify-between font-normal text-sm">
           <span>{title}</span>
           {marketPrice && (
             <button
@@ -91,13 +91,13 @@ export function PriceInputCard({
         </div>
       </CardTitle>
       <CardContent className="flex flex-col gap-2 px-0 py-2 items-start">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center gap-5">
           <Input
             {...register(fieldName)}
             type="number"
             step={1 / 10 ** 18}
             placeholder="0.0"
-            className="text-2xl"
+            className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:text-foreground/70 px-0 text-2xl"
             min={0}
           />
           {tokenBuy && tokenBuy && <span>{tokenBuy.symbol}</span>}

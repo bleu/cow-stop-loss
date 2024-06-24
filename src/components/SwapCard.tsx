@@ -2,7 +2,6 @@
 
 import { Button, Card, CardContent, CardTitle, Form } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { GearIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -10,6 +9,7 @@ import { z } from "zod";
 import { ChainId } from "#/lib/publicClients";
 import { generateSwapSchema } from "#/lib/schema";
 
+import { AdvancedSettingsDialog } from "./AdvancedSettingsDialog";
 import { InvertTokensSeparator } from "./InvertTokensSeparator";
 import { OrderTypeSwitch } from "./OrderTypeSwitch";
 import { PriceInputCard } from "./PriceInputCard";
@@ -39,7 +39,7 @@ export function SwapCard() {
       <Card className="bg-foreground text-background w-full p-5 rounded-none">
         <CardTitle className="w-full flex justify-between">
           <OrderTypeSwitch />
-          <GearIcon className="size-6" />
+          <AdvancedSettingsDialog />
         </CardTitle>
         <CardContent className="flex flex-col gap-4 py-5 px-0">
           <TokenInputCard side="Sell" />

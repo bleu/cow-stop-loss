@@ -4,9 +4,10 @@ import {
   CardTitle,
   convertStringToNumberAndRoundDown,
   formatNumber,
+  Input,
 } from "@bleu/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { Address } from "viem";
 import { z } from "zod";
@@ -17,10 +18,11 @@ import { generateSwapSchema } from "#/lib/schema";
 import { fetchFormattedBalancerOf, fetchTokenUsdPrice } from "#/lib/tokenUtils";
 import { IToken } from "#/lib/types";
 
-import { Input } from "./Input";
 import { TokenSelect } from "./TokenSelect";
 
-export function TokenInputCard({ side }: { side: "Sell" | "Buy" }) {
+export const TokenInputCard = memo(TokenInputCardComponent);
+
+function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   const {
     safe: { safeAddress, chainId },
   } = useSafeAppsSDK();
@@ -101,10 +103,10 @@ export function TokenInputCard({ side }: { side: "Sell" | "Buy" }) {
 
   return (
     <Card className="bg-background text-foreground w-full p-2 rounded-none">
-      <CardTitle className="w-full flex justify-between">
-        <span className="text-base">{side} amount</span>
+      <CardTitle className="w-full flex justify-between font-normal text-sm">
+        {getCardTitle(isAmountDisabled, side)}
       </CardTitle>
-      <CardContent className="flex justify-between gap-2 px-0 py-2 items-start">
+      <CardContent className="flex justify-between gap-5 px-0 py-2 items-start">
         <div className="flex flex-col gap-y-1 w-full">
           <TokenSelect
             selectedToken={token as IToken}
@@ -115,7 +117,7 @@ export function TokenInputCard({ side }: { side: "Sell" | "Buy" }) {
             errorMessage={errors[tokenFieldName]?.message}
           />
           {token && (
-            <span className="text-sm text-foreground/70">
+            <span className="text-xs text-foreground/70">
               <span>
                 Balance:{" "}
                 {formatNumber(
@@ -149,15 +151,26 @@ export function TokenInputCard({ side }: { side: "Sell" | "Buy" }) {
             type="number"
             step={1 / 10 ** (token ? token.decimals : 18)}
             placeholder="0.0"
-            className="text-2xl text-right"
+            className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:text-foreground/70 px-0 text-2xl text-right"
             disabled={isAmountDisabled}
             min={0}
           />
-          <i className="text-sm text-foreground/70">
+          <i className="text-xs text-foreground/70">
             ${formatNumber(amount * (usdPrice || 0), 2)}
           </i>
         </div>
       </CardContent>
     </Card>
   );
+}
+
+function getCardTitle(isAmountDisabled: boolean, side: "Sell" | "Buy") {
+  if (!isAmountDisabled) {
+    return `${side} amount`;
+  }
+  if (side === "Buy") {
+    return "Receive at lest";
+  } else {
+    return "Sell at most";
+  }
 }
