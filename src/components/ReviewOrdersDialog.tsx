@@ -22,31 +22,28 @@ import { Address } from "viem";
 import { useSwapContext } from "#/contexts/swapContext";
 import { ChainId } from "#/lib/publicClients";
 import { fetchTokenUsdPrice } from "#/lib/tokenUtils";
-import { IToken } from "#/lib/types";
+import { DraftOrder, IToken } from "#/lib/types";
 
 import { AddressWithLink } from "./AddressWithLink";
 import { TokenAmount } from "./TokenAmount";
 import { TokenInfo } from "./TokenInfo";
 
-export function ReviewOrdersDialog() {
-  const {
-    draftOrders,
-    setReviewOrdersDialogOpen,
-    reviewOrdersDialogOpen,
-    removeDraftOrder,
-  } = useSwapContext();
+export function ReviewOrdersDialog({
+  draftOrders,
+  open,
+  setOpen,
+  showAddOrders = false,
+}: {
+  draftOrders: DraftOrder[];
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  showAddOrders?: boolean;
+}) {
+  const { addDraftOrders } = useSwapContext();
   const multipleOrders = draftOrders.length > 1;
 
   return (
-    <Dialog
-      open={reviewOrdersDialogOpen}
-      onOpenChange={(open) => {
-        if (!open && !multipleOrders) {
-          removeDraftOrder(0);
-        }
-        setReviewOrdersDialogOpen(open);
-      }}
-    >
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogPortal>
         <DialogOverlay
           id="dialog-overlay"
@@ -69,7 +66,7 @@ export function ReviewOrdersDialog() {
                   return (
                     <TabsTrigger
                       value={String(index)}
-                    >{`Order #${index + 1}`}</TabsTrigger>
+                    >{`#${index + 1}`}</TabsTrigger>
                   );
                 })}
               </TabsList>
@@ -95,7 +92,7 @@ export function ReviewOrdersDialog() {
                         balance={order.amountBuy}
                       />
                       <div className="w-full flex flex-col gap-1 mt-2">
-                        <OrderInformation title="Strike price">
+                        <OrderInformation title="Trigger price">
                           {order.tokenSell.symbol} price bellow{" "}
                           {formatNumber(order.strikePrice, 2)}{" "}
                           {order.tokenBuy.symbol}
@@ -135,15 +132,20 @@ export function ReviewOrdersDialog() {
                 );
               })}
             </TabsRoot>
+
             <Button className="w-full mt-3">
               {multipleOrders
-                ? "Place all stop-loss orders"
+                ? `Place all ${draftOrders.length} stop-loss orders`
                 : "Place stop-loss order"}
             </Button>
-            {!multipleOrders && (
+            {showAddOrders && (
               <Button
                 variant="link"
                 className="text-background text-wrap text-xs"
+                onClick={() => {
+                  addDraftOrders(draftOrders);
+                  setOpen(false);
+                }}
               >
                 Want to place another orders to save fees? Click here to save
                 this one into drafts and create another one.

@@ -9,13 +9,11 @@ import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { memo, useEffect, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { Address } from "viem";
-import { z } from "zod";
 
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { ChainId } from "#/lib/publicClients";
-import { generateSwapSchema } from "#/lib/schema";
 import { fetchFormattedBalancerOf, fetchTokenUsdPrice } from "#/lib/tokenUtils";
-import { IToken } from "#/lib/types";
+import { IToken, SwapData } from "#/lib/types";
 
 import { Input } from "./Input";
 import { TokenSelect } from "./TokenSelect";
@@ -31,7 +29,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     control,
     getValues,
     formState: { errors },
-  } = useFormContext<z.input<ReturnType<typeof generateSwapSchema>>>();
+  } = useFormContext<SwapData>();
   const tokenFieldName = `token${side}` as const;
   const amountFieldName = `amount${side}` as const;
 

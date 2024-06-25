@@ -103,4 +103,7 @@ export type AdvancedSwapSettings = z.input<
 >;
 export type SwapData = z.input<ReturnType<typeof generateSwapSchema>>;
 
-export type DraftOrder = SwapData & AdvancedSwapSettings;
+export type DraftOrder = SwapData &
+  AdvancedSwapSettings & {
+    id: string;
+  };

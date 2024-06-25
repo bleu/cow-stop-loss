@@ -15,11 +15,10 @@ import {
 interface ISwapContext {
   advancedSettings?: AdvancedSwapSettings;
   draftOrders: DraftOrder[];
-  addDraftOrder: (data: SwapData) => Promise<void>;
-  removeDraftOrder: (index: number) => void;
+  createDraftOrder: (data: SwapData) => Promise<DraftOrder>;
+  addDraftOrders: (data: DraftOrder[]) => void;
+  removeDraftOrders: (id: string[]) => void;
   setAdvancedSettings: (data: AdvancedSwapSettings) => void;
-  reviewOrdersDialogOpen: boolean;
-  setReviewOrdersDialogOpen: (open: boolean) => void;
 }
 
 export const SwapContext = React.createContext<ISwapContext>(
@@ -35,9 +34,6 @@ export const SwapContextProvider = ({
     safe: { safeAddress, chainId },
   } = useSafeAppsSDK();
 
-  const [reviewOrdersDialogOpen, setReviewOrdersDialogOpen] =
-    React.useState(false);
-
   const [draftOrders, setDraftOrders] = React.useState<DraftOrder[]>([]);
 
   const [advancedSettings, setAdvancedSettings] =
@@ -51,10 +47,11 @@ export const SwapContextProvider = ({
 
   const oracleRouterClass = CHAINS_ORACLE_ROUTER_FACTORY[chainId as ChainId];
 
-  async function addDraftOrder(data: SwapData) {
+  async function createDraftOrder(data: SwapData) {
     const draftOrder: DraftOrder = {
       ...data,
       ...advancedSettings,
+      id: `draft-${draftOrders.length}-${Date.now()}`,
     };
     if (!advancedSettings.tokenBuyOracle || !advancedSettings.tokenSellOracle) {
       const oracleRouter = new oracleRouterClass({
@@ -67,25 +64,26 @@ export const SwapContextProvider = ({
       draftOrder.tokenBuyOracle = tokenBuyOracle;
       draftOrder.tokenSellOracle = tokenSellOracle;
     }
-    setDraftOrders([...draftOrders, draftOrder]);
+    return draftOrder;
   }
 
-  function removeDraftOrder(index: number) {
-    const newDraftOrders = [...draftOrders];
-    newDraftOrders.splice(index, 1);
-    setDraftOrders(newDraftOrders);
+  function removeDraftOrders(ids: string[]) {
+    setDraftOrders(draftOrders.filter((order) => !ids.includes(order.id)));
+  }
+
+  function addDraftOrders(orders: DraftOrder[]): void {
+    setDraftOrders([...draftOrders, ...orders]);
   }
 
   return (
     <SwapContext.Provider
       value={{
         draftOrders,
-        addDraftOrder,
-        removeDraftOrder,
+        addDraftOrders,
+        removeDraftOrders,
+        createDraftOrder,
         advancedSettings,
         setAdvancedSettings,
-        reviewOrdersDialogOpen,
-        setReviewOrdersDialogOpen,
       }}
     >
       {children}

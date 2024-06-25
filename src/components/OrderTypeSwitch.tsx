@@ -1,12 +1,10 @@
 import { Switch } from "@bleu/ui";
 import { useFormContext, useWatch } from "react-hook-form";
-import { z } from "zod";
 
-import { generateSwapSchema } from "#/lib/schema";
+import { SwapData } from "#/lib/types";
 
 export function OrderTypeSwitch() {
-  const { control, setValue } =
-    useFormContext<z.input<ReturnType<typeof generateSwapSchema>>>();
+  const { control, setValue } = useFormContext<SwapData>();
   const isSellOrder = useWatch({
     control,
     name: "isSellOrder",

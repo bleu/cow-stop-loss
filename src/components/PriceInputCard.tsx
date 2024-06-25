@@ -2,13 +2,11 @@ import { Card, CardContent, CardTitle, formatNumber, Input } from "@bleu/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { memo, useEffect, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
-import { z } from "zod";
 
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { ChainId } from "#/lib/publicClients";
-import { generateSwapSchema } from "#/lib/schema";
 import { fetchPairUsdPrice } from "#/lib/tokenUtils";
-import { IToken } from "#/lib/types";
+import { IToken, SwapData } from "#/lib/types";
 
 export const PriceInputCard = memo(PriceInputCardComponent);
 
@@ -22,9 +20,8 @@ function PriceInputCardComponent({
   const {
     safe: { chainId },
   } = useSafeAppsSDK();
-  const { register, control, getValues, setValue } =
-    useFormContext<z.input<ReturnType<typeof generateSwapSchema>>>();
-  const title = fieldName === "limitPrice" ? "Limit price" : "Strike price";
+  const { register, control, getValues, setValue } = useFormContext<SwapData>();
+  const title = fieldName === "limitPrice" ? "Limit price" : "Trigger price";
   const [marketPrice, setMarketPrice] = useState<number>();
 
   const [tokenBuy, tokenSell, price] = useWatch({

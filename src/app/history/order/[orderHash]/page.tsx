@@ -222,7 +222,7 @@ export default function OrderPage({
             </div>
           </OrderInformation>
           <OrderInformation
-            label="Strike Price"
+            label="Trigger Price"
             tooltipText="If the oracle price drop bellow this threshold the order will be executed by the limit price."
           >
             {formatNumber(strikePrice, 4)}{" "}
