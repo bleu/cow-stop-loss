@@ -1,10 +1,4 @@
-import {
-  cn,
-  FormMessage,
-  Input as InputPrimitive,
-  Label,
-  Tooltip,
-} from "@bleu/ui";
+import { cn, Input as InputPrimitive, Label, Tooltip } from "@bleu/ui";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import React, { HTMLProps } from "react";
 import { FieldError, RegisterOptions, useFormContext } from "react-hook-form";
@@ -64,15 +58,13 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
           {...props}
           {...register(name, validation)}
           className={cn(
-            "w-full shadow-none rounded-none focus-visible:ring-transparent focus-visible:ring-offset-0 placeholder:text-foreground/70 bg-foreground border border-background",
+            "w-full shadow-none rounded-md focus-visible:ring-transparent focus-visible:ring-offset-0 placeholder:text-background/70 bg-foreground border border-background",
             className
           )}
         />
 
         {errorMessage && (
-          <FormMessage className="mt-1 text-sm text-destructive">
-            <span>{errorMessage}</span>
-          </FormMessage>
+          <div className="mt-1 text-sm text-destructive">{errorMessage}</div>
         )}
       </div>
     );

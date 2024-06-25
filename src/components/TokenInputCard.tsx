@@ -4,7 +4,6 @@ import {
   CardTitle,
   convertStringToNumberAndRoundDown,
   formatNumber,
-  Input,
 } from "@bleu/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { memo, useEffect, useState } from "react";
@@ -18,9 +17,8 @@ import { generateSwapSchema } from "#/lib/schema";
 import { fetchFormattedBalancerOf, fetchTokenUsdPrice } from "#/lib/tokenUtils";
 import { IToken } from "#/lib/types";
 
+import { Input } from "./Input";
 import { TokenSelect } from "./TokenSelect";
-
-export const TokenInputCard = memo(TokenInputCardComponent);
 
 function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   const {
@@ -102,8 +100,8 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   }, [amount]);
 
   return (
-    <Card className="bg-background text-foreground w-full p-2 rounded-none">
-      <CardTitle className="w-full flex justify-between font-normal text-sm">
+    <Card className="bg-background text-foreground w-full p-2 rounded-md">
+      <CardTitle className="w-full flex justify-between font-normal text-xs">
         {getCardTitle(isAmountDisabled, side)}
       </CardTitle>
       <CardContent className="flex justify-between gap-5 px-0 py-2 items-start">
@@ -151,7 +149,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
             type="number"
             step={1 / 10 ** (token ? token.decimals : 18)}
             placeholder="0.0"
-            className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:text-foreground/70 px-0 text-2xl text-right"
+            className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:text-foreground/70 px-0 text-2xl text-right bg-background"
             disabled={isAmountDisabled}
             min={0}
           />
@@ -164,12 +162,14 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   );
 }
 
-function getCardTitle(isAmountDisabled: boolean, side: "Sell" | "Buy") {
+export const TokenInputCard = memo(TokenInputCardComponent);
+
+export function getCardTitle(isAmountDisabled: boolean, side: "Sell" | "Buy") {
   if (!isAmountDisabled) {
     return `${side} amount`;
   }
   if (side === "Buy") {
-    return "Receive at lest";
+    return "Receive at least";
   } else {
     return "Sell at most";
   }

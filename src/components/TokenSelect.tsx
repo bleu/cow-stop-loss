@@ -5,7 +5,6 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  FormMessage,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -73,7 +72,7 @@ export function TokenSelect({
             <Button
               variant="ghost"
               type="button"
-              className="px-2 justify-between bg-foreground text-background rounded-none"
+              className="px-2 justify-between bg-foreground text-background rounded-md"
               disabled={disabled}
               onClick={() => setOpen(true)}
             >
@@ -88,9 +87,9 @@ export function TokenSelect({
               {!disabled && <ChevronDownIcon />}
             </Button>
             {errorMessage && (
-              <FormMessage className="mt-1 h-6 text-sm text-destructive">
+              <div className="mt-1 text-sm text-destructive">
                 <span>{errorMessage}</span>
-              </FormMessage>
+              </div>
             )}
           </div>
         </PopoverTrigger>

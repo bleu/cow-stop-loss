@@ -73,13 +73,13 @@ function PriceInputCardComponent({
   }, [price]);
 
   return (
-    <Card className="bg-background text-foreground w-full p-2 rounded-none">
+    <Card className="bg-background text-foreground w-full p-2 rounded-md">
       <CardTitle>
-        <div className="flex justify-between font-normal text-sm">
+        <div className="flex justify-between font-normal text-xs">
           <span>{title}</span>
           {marketPrice && (
             <button
-              className="text-accent text-sm hover:text-accent/80"
+              className="text-accent hover:text-accent/80"
               type="button"
               onClick={() => {
                 setValue(fieldName, marketPrice);
@@ -103,9 +103,9 @@ function PriceInputCardComponent({
           {tokenBuy && tokenBuy && <span>{tokenBuy.symbol}</span>}
         </div>
         {showMarketPrice && marketPrice && (
-          <div className="flex flex-col items-start justify-between text-xs text-foreground/70">
-            <span>
-              Current: {tokenSell.symbol} = {formatNumber(marketPrice, 4)}{" "}
+          <div className="flex flex-col items-start justify-between font-normal text-foreground/70">
+            <span className="text-xs">
+              Current: {tokenSell.symbol} = {formatNumber(marketPrice, 2)}{" "}
               {tokenBuy.symbol}
             </span>
           </div>

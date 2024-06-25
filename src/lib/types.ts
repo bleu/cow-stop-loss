@@ -1,6 +1,8 @@
 import { Address } from "viem";
 import { ChainId } from "./publicClients";
 import { SafeInfo } from "@safe-global/safe-apps-sdk";
+import { generateAdvancedSettingsSchema, generateSwapSchema } from "./schema";
+import { z } from "zod";
 
 export interface IToken {
   symbol: string;
@@ -95,3 +97,10 @@ export type INodeData =
 export interface IEdgeData {
   orderId: number;
 }
+
+export type AdvancedSwapSettings = z.input<
+  ReturnType<typeof generateAdvancedSettingsSchema>
+>;
+export type SwapData = z.input<ReturnType<typeof generateSwapSchema>>;
+
+export type DraftOrder = SwapData & AdvancedSwapSettings;

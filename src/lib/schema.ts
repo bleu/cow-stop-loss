@@ -80,7 +80,6 @@ export const generateSwapSchema = (chainId: ChainId) =>
       amountBuy: z.coerce.number().positive(),
       strikePrice: z.coerce.number().positive(),
       limitPrice: z.coerce.number().positive(),
-      receiver: z.union([basicAddressSchema, ensSchema]),
       isSellOrder: z.coerce.boolean(),
     })
     .refine(
@@ -194,9 +193,42 @@ export const generateStopLossRecipeSchema = ({
       });
     });
 
-export const advancedSettingsSchema = z.object({
-  maxHoursSinceOracleUpdates: z.coerce.number().positive().optional(),
-  tokenSellOracle: basicAddressSchema.optional(),
-  tokenBuyOracle: basicAddressSchema.optional(),
-  receiver: z.union([basicAddressSchema, ensSchema]).optional(),
-});
+export const generateAdvancedSettingsSchema = (chainId: ChainId) =>
+  z
+    .object({
+      maxHoursSinceOracleUpdates: z.coerce.number().positive(),
+      tokenSellOracle: z.union([
+        generateOracleSchema({ chainId }),
+        z.literal(""),
+      ]),
+      tokenBuyOracle: z.union([
+        generateOracleSchema({ chainId }),
+        z.literal(""),
+      ]),
+      receiver: z.union([basicAddressSchema, ensSchema]),
+      partiallyFillable: z.coerce.boolean(),
+    })
+    .refine(
+      (data) => {
+        if (!data.tokenSellOracle && data.tokenBuyOracle) {
+          return false;
+        }
+        return true;
+      },
+      {
+        message: "If one oracle is set, both must be set",
+        path: ["tokenSellOracle"],
+      }
+    )
+    .refine(
+      (data) => {
+        if (!data.tokenBuyOracle && data.tokenSellOracle) {
+          return false;
+        }
+        return true;
+      },
+      {
+        message: "If one oracle is set, both must be set",
+        path: ["tokenBuyOracle"],
+      }
+    );
