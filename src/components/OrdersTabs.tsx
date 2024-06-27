@@ -2,12 +2,15 @@
 
 import { TabsContent, TabsList, TabsRoot, TabsTrigger } from "@bleu/ui";
 
+import { useOrder } from "#/contexts/ordersContext";
 import { useSwapContext } from "#/contexts/swapContext";
 
 import { DraftOrdersTab } from "./DraftOrdersTab";
+import { HistoryOrdersTab } from "./HistoryOrdersTab";
 
 export function OrderTabs() {
   const { draftOrders } = useSwapContext();
+  const { openOrders, historyOrders } = useOrder();
 
   return (
     <TabsRoot className="w-full flex flex-col gap-2" defaultValue="draft">
@@ -15,8 +18,10 @@ export function OrderTabs() {
         <span className="text-2xl font-semibold">Your orders</span>
         <TabsList>
           <TabsTrigger value="draft">Draft ({draftOrders.length})</TabsTrigger>
-          <TabsTrigger value="open">Open</TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
+          <TabsTrigger value="open">Open ({openOrders.length})</TabsTrigger>
+          <TabsTrigger value="history">
+            History ({historyOrders.length})
+          </TabsTrigger>
         </TabsList>
       </div>
       <div className="flex rounded-md text-background bg-foreground p-2">
@@ -24,10 +29,10 @@ export function OrderTabs() {
           <DraftOrdersTab />
         </TabsContent>
         <TabsContent className="w-full" value="open">
-          Open
+          Open orders
         </TabsContent>
         <TabsContent className="w-full" value="history">
-          History
+          <HistoryOrdersTab />
         </TabsContent>
       </div>
     </TabsRoot>

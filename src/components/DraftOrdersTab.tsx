@@ -14,6 +14,7 @@ import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect, useState } from "react";
 
 import { useSwapContext } from "#/contexts/swapContext";
+import { getOrderDescription } from "#/lib/orderDescription";
 import { ChainId } from "#/lib/publicClients";
 import { fetchPairUsdPrice } from "#/lib/tokenUtils";
 import { DraftOrder, IToken } from "#/lib/types";
@@ -105,7 +106,13 @@ export function DraftOrderRow({
   } = useSafeAppsSDK();
   const [marketPrice, setMarketPrice] = useState<number>();
 
-  const orderDescription = `Swap ${formatNumber(order.amountSell, 2)} ${order.tokenSell.symbol} ${order.isSellOrder ? `` : `at most`} for ${order.isSellOrder ? `at least` : ``} ${formatNumber(order.amountBuy, 2)} ${order.tokenBuy.symbol}`;
+  const orderDescription = getOrderDescription({
+    tokenBuy: order.tokenBuy as IToken,
+    tokenSell: order.tokenSell as IToken,
+    amountSell: order.amountSell,
+    isSellOrder: order.isSellOrder,
+    amountBuy: order.amountBuy,
+  });
 
   const priceUnity = `${order.tokenBuy.symbol}/${order.tokenSell.symbol}`;
 

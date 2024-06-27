@@ -140,6 +140,7 @@ export function AdvancedSettingsDialog() {
               className="w-full mt-4"
               type="submit"
               loading={isSubmitting}
+              loadingText="Saving..."
             >
               Save Settings
             </Button>

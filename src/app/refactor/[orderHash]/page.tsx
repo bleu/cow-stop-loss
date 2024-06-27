@@ -7,14 +7,16 @@ import {
   formatDateTime,
   formatNumber,
   Separator,
+  Spinner,
 } from "@bleu/ui";
 import { ArrowLeftIcon, CopyIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Address, formatUnits } from "viem";
 
+import { LinkComponent } from "#/components/Link";
 import { OrderInformation } from "#/components/OrderInformation";
-import { Spinner } from "#/components/Spinner";
+import { StatusBadge } from "#/components/StatusBadge";
 import { TokenLogo } from "#/components/TokenLogo";
 import { InfoTooltip } from "#/components/Tooltip";
 import { CowOrder, useOrder } from "#/contexts/ordersContext";
@@ -27,8 +29,6 @@ import {
   truncateAddress,
 } from "#/utils";
 
-import { StatusBadge } from "../../(components)/StatusBadge";
-
 export default function OrderPage({
   params,
 }: {
@@ -36,7 +36,7 @@ export default function OrderPage({
     orderHash: string;
   };
 }) {
-  const { orders, loaded, getRelatedCowOrders } = useOrder();
+  const { orders, getRelatedCowOrders, isLoading } = useOrder();
   const [cowOrdersRelated, setCowOrdersRelated] = useState<
     CowOrder[] | undefined
   >();
@@ -48,12 +48,12 @@ export default function OrderPage({
   }
 
   useEffect(() => {
-    if (stopLossOrder && loaded) {
+    if (stopLossOrder && !isLoading) {
       loadCow(stopLossOrder?.stopLossData?.appData as string);
     }
-  }, [stopLossOrder, loaded]);
+  }, [stopLossOrder, isLoading]);
 
-  if (!loaded) {
+  if (isLoading) {
     return <Spinner />;
   }
 
@@ -86,9 +86,9 @@ export default function OrderPage({
     <div className="flex size-full justify-center items-center">
       <div className="bg-foreground my-10 text-black p-10 rounded relative">
         <div className="flex flex-row justify-between items-center mb-5">
-          <Link href="/history" className="hover:text-primary">
+          <LinkComponent href="/refactor" className="hover:text-primary">
             <ArrowLeftIcon className="size-4" />
-          </Link>
+          </LinkComponent>
           <h1 className="text-2xl font-bold">Order Details</h1>
           <div />
         </div>
