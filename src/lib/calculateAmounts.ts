@@ -15,7 +15,7 @@ export function calculateSellAmount({
   amount: number;
   limitPrice: number;
 }): number {
-  return isSellOrder ? amount : amount / limitPrice;
+  return isSellOrder ? amount : amount * limitPrice;
 }
 
 export function calculateBuyAmount({
@@ -27,5 +27,5 @@ export function calculateBuyAmount({
   amount: number;
   limitPrice: number;
 }): number {
-  return isSellOrder ? amount / limitPrice : amount;
+  return isSellOrder ? amount * limitPrice : amount;
 }

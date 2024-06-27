@@ -35,6 +35,7 @@ export const InfoTooltip = ({
     }
   }
 
+  return <></>;
   return (
     <TooltipProvider>
       <Tooltip>

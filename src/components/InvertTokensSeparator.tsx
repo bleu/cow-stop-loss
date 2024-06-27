@@ -1,13 +1,14 @@
 import { Separator } from "@bleu/ui";
 import { UpdateIcon } from "@radix-ui/react-icons";
+import { memo } from "react";
 import { useFormContext } from "react-hook-form";
-import { z } from "zod";
 
-import { generateSwapSchema } from "#/lib/schema";
+import { SwapData } from "#/lib/types";
 
-export function InvertTokensSeparator() {
-  const { getValues, setValue } =
-    useFormContext<z.input<ReturnType<typeof generateSwapSchema>>>();
+export const InvertTokensSeparator = memo(InvertTokensSeparatorComponent);
+
+function InvertTokensSeparatorComponent() {
+  const { getValues, setValue } = useFormContext<SwapData>();
 
   function invertTokens() {
     const [

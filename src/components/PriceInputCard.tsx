@@ -1,18 +1,16 @@
-import { Card, CardContent, CardTitle, formatNumber } from "@bleu/ui";
+import { Card, CardContent, CardTitle, formatNumber, Input } from "@bleu/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
-import { z } from "zod";
 
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { ChainId } from "#/lib/publicClients";
-import { generateSwapSchema } from "#/lib/schema";
 import { fetchPairUsdPrice } from "#/lib/tokenUtils";
-import { IToken } from "#/lib/types";
+import { IToken, SwapData } from "#/lib/types";
 
-import { Input } from "./Input";
+export const PriceInputCard = memo(PriceInputCardComponent);
 
-export function PriceInputCard({
+function PriceInputCardComponent({
   fieldName,
   showMarketPrice = false,
 }: {
@@ -22,9 +20,8 @@ export function PriceInputCard({
   const {
     safe: { chainId },
   } = useSafeAppsSDK();
-  const { register, control, getValues, setValue } =
-    useFormContext<z.input<ReturnType<typeof generateSwapSchema>>>();
-  const title = fieldName === "limitPrice" ? "Limit Price" : "Strike Price";
+  const { register, control, getValues, setValue } = useFormContext<SwapData>();
+  const title = fieldName === "limitPrice" ? "Limit price" : "Trigger price";
   const [marketPrice, setMarketPrice] = useState<number>();
 
   const [tokenBuy, tokenSell, price] = useWatch({
@@ -73,13 +70,13 @@ export function PriceInputCard({
   }, [price]);
 
   return (
-    <Card className="bg-background text-foreground w-full p-2 rounded-none">
+    <Card className="bg-background text-foreground w-full p-2 rounded-md">
       <CardTitle>
-        <div className="flex justify-between text-base">
+        <div className="flex justify-between font-normal text-xs">
           <span>{title}</span>
           {marketPrice && (
             <button
-              className="text-accent text-sm hover:text-accent/80"
+              className="text-accent hover:text-accent/80"
               type="button"
               onClick={() => {
                 setValue(fieldName, marketPrice);
@@ -91,21 +88,21 @@ export function PriceInputCard({
         </div>
       </CardTitle>
       <CardContent className="flex flex-col gap-2 px-0 py-2 items-start">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center gap-5">
           <Input
             {...register(fieldName)}
             type="number"
             step={1 / 10 ** 18}
             placeholder="0.0"
-            className="text-2xl"
+            className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:text-foreground/70 px-0 text-2xl"
             min={0}
           />
           {tokenBuy && tokenBuy && <span>{tokenBuy.symbol}</span>}
         </div>
         {showMarketPrice && marketPrice && (
-          <div className="flex flex-col items-start justify-between text-xs text-foreground/70">
-            <span>
-              Current: {tokenSell.symbol} = {formatNumber(marketPrice, 4)}{" "}
+          <div className="flex flex-col items-start justify-between font-normal text-foreground/70">
+            <span className="text-xs">
+              Current: {tokenSell.symbol} = {formatNumber(marketPrice, 2)}{" "}
               {tokenBuy.symbol}
             </span>
           </div>
