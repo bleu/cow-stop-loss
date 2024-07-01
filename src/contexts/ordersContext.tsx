@@ -2,10 +2,17 @@
 
 import { ArrElement, GetDeepProp } from "@bleu/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import { createContext, PropsWithChildren, useContext, useState } from "react";
+import {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import useSWR from "swr";
 import { Address } from "viem";
 
+import { useTxManager } from "#/hooks/useTxManager";
 import { composableCowAbi } from "#/lib/abis/composableCow";
 import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 import { getCowOrders } from "#/lib/cowApi/fetchCowOrder";
@@ -93,6 +100,7 @@ type OrderContextType = {
   }: {
     appData: string;
   }) => Promise<CowOrder[] | undefined>;
+  txManager: ReturnType<typeof useTxManager>;
 };
 
 export const OrderContext = createContext({} as OrderContextType);
@@ -103,6 +111,7 @@ export function OrderProvider({ children }: PropsWithChildren) {
     data: orders,
     mutate,
     isLoading,
+    isValidating,
     error,
   } = useSWR(
     {
@@ -124,6 +133,8 @@ export function OrderProvider({ children }: PropsWithChildren) {
   function removeDraftOrders(ids: string[]): void {
     setDraftOrders(draftOrders.filter((order) => !ids.includes(order.id)));
   }
+
+  const txManager = useTxManager();
 
   async function getProcessedStopLossOrders({
     chainId,
@@ -243,6 +254,12 @@ export function OrderProvider({ children }: PropsWithChildren) {
     return "created";
   }
 
+  useEffect(() => {
+    if (!txManager.isPonderUpdating) {
+      mutate();
+    }
+  }, [txManager.isPonderUpdating]);
+
   const historyOrders = orders.filter((order) => !order.singleOrder);
   const openOrders = orders.filter((order) => order.singleOrder);
 
@@ -255,11 +272,12 @@ export function OrderProvider({ children }: PropsWithChildren) {
         setDraftOrders,
         addDraftOrders,
         removeDraftOrders,
-        isLoading,
+        isLoading: isLoading || isValidating,
         error,
         mutate,
         getRelatedCowOrders,
         orders,
+        txManager,
       }}
     >
       {children}
