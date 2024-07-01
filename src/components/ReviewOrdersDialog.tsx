@@ -40,10 +40,11 @@ export function ReviewOrdersDialog({
   setOpen: (open: boolean) => void;
   showAddOrders?: boolean;
 }) {
-  const { addDraftOrders, removeDraftOrders } = useOrder();
-
   const {
+    addDraftOrders,
+    removeDraftOrders,
     txManager: { writeContract },
+    setTxPendingDialog,
   } = useOrder();
   const multipleOrders = draftOrders.length > 1;
   const {
@@ -65,6 +66,7 @@ export function ReviewOrdersDialog({
       onSuccess: () => {
         removeDraftOrders(draftOrders.map((order) => order.id));
         setOpen(false);
+        setTxPendingDialog(true);
       },
     });
   };

@@ -93,6 +93,6 @@ export function useTxManager() {
     writeContract,
     txHash,
     isWriting,
-    isPonderUpdating: !isTxProcessed && txHash,
+    isPonderUpdating: !isTxProcessed && !!txHash,
   };
 }

@@ -23,7 +23,8 @@ import { IToken } from "#/lib/types";
 export function OpenOrdersTab() {
   const {
     openOrders,
-    txManager: { writeContract },
+    txManager: { writeContract, isWriting },
+    setTxPendingDialog,
   } = useOrder();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
@@ -36,6 +37,7 @@ export function OpenOrdersTab() {
     writeContract(deleteTxArgs, {
       onSuccess: () => {
         setSelectedIds([]);
+        setTxPendingDialog(true);
       },
     });
   };
@@ -83,8 +85,10 @@ export function OpenOrdersTab() {
           variant="destructive"
           disabled={!selectedIds.length}
           onClick={onCancelOrders}
+          loading={isWriting}
+          loadingText={"Cancelling..."}
         >
-          Delete
+          Cancel
         </Button>
       </div>
     </div>

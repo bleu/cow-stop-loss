@@ -101,6 +101,8 @@ type OrderContextType = {
     appData: string;
   }) => Promise<CowOrder[] | undefined>;
   txManager: ReturnType<typeof useTxManager>;
+  txPendingDialog: boolean;
+  setTxPendingDialog: (open: boolean) => void;
 };
 
 export const OrderContext = createContext({} as OrderContextType);
@@ -123,6 +125,8 @@ export function OrderProvider({ children }: PropsWithChildren) {
       fallbackData: [],
     }
   );
+
+  const [txPendingDialog, setTxPendingDialog] = useState(false);
 
   const [draftOrders, setDraftOrders] = useState<DraftOrder[]>([]);
 
@@ -278,6 +282,8 @@ export function OrderProvider({ children }: PropsWithChildren) {
         getRelatedCowOrders,
         orders,
         txManager,
+        txPendingDialog,
+        setTxPendingDialog,
       }}
     >
       {children}
