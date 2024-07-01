@@ -17,11 +17,28 @@ import { formatUnits } from "viem";
 import { StopLossOrderType, useOrder } from "#/contexts/ordersContext";
 import { useTokens } from "#/contexts/tokensContext";
 import { getOrderDescription } from "#/lib/orderDescription";
+import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { IToken } from "#/lib/types";
 
 export function OpenOrdersTab() {
-  const { openOrders } = useOrder();
+  const {
+    openOrders,
+    txManager: { writeContract },
+  } = useOrder();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  const onCancelOrders = () => {
+    const orders = openOrders.filter((order) => selectedIds.includes(order.id));
+    const deleteTxArgs = orders.map((order) => ({
+      type: TRANSACTION_TYPES.ORDER_CANCEL,
+      hash: order.hash,
+    })) as OrderCancelArgs[];
+    writeContract(deleteTxArgs, {
+      onSuccess: () => {
+        setSelectedIds([]);
+      },
+    });
+  };
 
   return (
     <div className="flex flex-col gap-2">
@@ -62,7 +79,11 @@ export function OpenOrdersTab() {
         </TableBody>
       </Table>
       <div className="flex justify-end gap-2">
-        <Button variant="destructive" disabled={!selectedIds.length}>
+        <Button
+          variant="destructive"
+          disabled={!selectedIds.length}
+          onClick={onCancelOrders}
+        >
           Delete
         </Button>
       </div>
