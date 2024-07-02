@@ -9,19 +9,18 @@ import {
   Separator,
 } from "@bleu/ui";
 import { ArrowLeftIcon, CopyIcon } from "@radix-ui/react-icons";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { Address, formatUnits } from "viem";
 
 import { LinkComponent } from "#/components/Link";
 import { OrderInformation } from "#/components/OrderInformation";
-import { Spinner } from "#/components/Spinner";
 import { StatusBadge } from "#/components/StatusBadge";
 import { TokenLogo } from "#/components/TokenLogo";
 import { InfoTooltip } from "#/components/Tooltip";
-import { CowOrder, useOrder } from "#/contexts/ordersContext";
 import { ChainId } from "#/lib/publicClients";
 import { formatTimeDelta } from "#/lib/timeDelta";
+import { StopLossOrderTypeWithCowOrders } from "#/lib/types";
 import {
   buildBlockExplorerTokenURL,
   buildBlockExplorerTxUrl,
@@ -29,64 +28,45 @@ import {
   truncateAddress,
 } from "#/utils";
 
-export default function OrderPage({
-  params,
+export function OrderDetails({
+  order,
 }: {
-  params: {
-    orderHash: string;
-  };
+  order: StopLossOrderTypeWithCowOrders;
 }) {
-  const { orders, getRelatedCowOrders, isLoading } = useOrder();
-  const [cowOrdersRelated, setCowOrdersRelated] = useState<
-    CowOrder[] | undefined
-  >();
-  const stopLossOrder = orders.find((order) => order.hash === params.orderHash);
-
-  async function loadCow(appData: string) {
-    const cowOrderMatch = await getRelatedCowOrders({ appData });
-    setCowOrdersRelated(cowOrderMatch);
-  }
-
-  useEffect(() => {
-    if (stopLossOrder && !isLoading) {
-      loadCow(stopLossOrder?.stopLossData?.appData as string);
-    }
-  }, [stopLossOrder, isLoading]);
-
-  if (isLoading) {
-    return <Spinner />;
-  }
-
+  const { safe } = useSafeAppsSDK();
   const orderDateTime = formatDateTime(
-    epochToDate(Number(stopLossOrder?.blockTimestamp))
+    epochToDate(Number(order?.blockTimestamp))
   );
   const orderWaitTime = formatTimeDelta(
-    stopLossOrder?.stopLossData?.validityBucketSeconds as number
+    order?.stopLossData?.validityBucketSeconds as number
   );
 
   const amountIn =
-    Number(stopLossOrder?.stopLossData?.tokenAmountIn) /
-    10 ** Number(stopLossOrder?.stopLossData?.tokenIn.decimals);
+    Number(order?.stopLossData?.tokenAmountIn) /
+    10 ** Number(order?.stopLossData?.tokenIn.decimals);
   const amountOut =
-    Number(stopLossOrder?.stopLossData?.tokenAmountOut) /
-    10 ** Number(stopLossOrder?.stopLossData?.tokenOut.decimals);
+    Number(order?.stopLossData?.tokenAmountOut) /
+    10 ** Number(order?.stopLossData?.tokenOut.decimals);
   const executedAmountIn =
-    Number(stopLossOrder?.executedSellAmount) /
-    10 ** Number(stopLossOrder?.stopLossData?.tokenIn.decimals);
+    Number(order?.executedSellAmount) /
+    10 ** Number(order?.stopLossData?.tokenIn.decimals);
   const executedAmountOut =
-    Number(stopLossOrder?.executedBuyAmount) /
-    10 ** Number(stopLossOrder?.stopLossData?.tokenOut.decimals);
-  const strikePrice = formatUnits(stopLossOrder?.stopLossData?.strike, 18);
+    Number(order?.executedBuyAmount) /
+    10 ** Number(order?.stopLossData?.tokenOut.decimals);
+  const strikePrice = formatUnits(order?.stopLossData?.strike, 18);
   const limitPrice = amountOut / amountIn;
   const executionPrice = executedAmountOut / executedAmountIn;
   const orderSurplus = ((executionPrice - limitPrice) / limitPrice) * 100;
-  const priceUnit = `${stopLossOrder?.stopLossData?.tokenOut.symbol} per ${stopLossOrder?.stopLossData?.tokenIn.symbol}`;
+  const priceUnit = `${order?.stopLossData?.tokenOut.symbol} per ${order?.stopLossData?.tokenIn.symbol}`;
 
   return (
     <div className="flex size-full justify-center items-center">
       <div className="bg-foreground my-10 text-black p-10 rounded relative">
         <div className="flex flex-row justify-between items-center mb-5">
-          <LinkComponent href="/refactor" className="hover:text-primary">
+          <LinkComponent
+            href={`/${safe.chainId}/${safe.safeAddress}`}
+            className="hover:text-primary"
+          >
             <ArrowLeftIcon className="size-4" />
           </LinkComponent>
           <h1 className="text-2xl font-bold">Order Details</h1>
@@ -101,14 +81,14 @@ export default function OrderPage({
               <a
                 target="_blank"
                 href={buildBlockExplorerTxUrl({
-                  txHash: stopLossOrder?.txHash as string,
-                  chainId: stopLossOrder?.chainId,
+                  txHash: order?.txHash as string,
+                  chainId: order?.chainId,
                 })}
                 className="hover:text-primary hover:underline"
               >
-                {stopLossOrder?.txHash}
+                {order?.txHash}
               </a>
-              <ClickToCopy text={stopLossOrder?.txHash as string}>
+              <ClickToCopy text={order?.txHash as string}>
                 <CopyIcon className="hover:text-primary" />
               </ClickToCopy>
             </div>
@@ -118,8 +98,8 @@ export default function OrderPage({
             tooltipText="The onchain settlement transaction for this order."
           >
             <div className="flex items-center gap-x-1">
-              {stopLossOrder?.hash}
-              <ClickToCopy text={stopLossOrder?.hash as string}>
+              {order?.hash}
+              <ClickToCopy text={order?.hash as string}>
                 <CopyIcon className="hover:text-primary" />
               </ClickToCopy>
             </div>
@@ -128,7 +108,7 @@ export default function OrderPage({
             label="Status"
             tooltipText="The status can be Created, Posted, Fulfilled, Expired and Cancelled"
           >
-            <StatusBadge status={stopLossOrder?.status} />
+            <StatusBadge status={order?.status} />
           </OrderInformation>
           <OrderInformation
             label="Submission Time"
@@ -147,8 +127,8 @@ export default function OrderPage({
             tooltipText="Recipient of that will receive the buy tokens of the order."
           >
             <div className="flex items-center gap-x-1">
-              {stopLossOrder?.stopLossData?.to}
-              <ClickToCopy text={stopLossOrder?.stopLossData?.to as string}>
+              {order?.stopLossData?.to}
+              <ClickToCopy text={order?.stopLossData?.to as string}>
                 <CopyIcon className="hover:text-primary" />
               </ClickToCopy>
             </div>
@@ -163,26 +143,24 @@ export default function OrderPage({
             <div className="flex flex-col">
               <div className="flex gap-x-2 items-center">
                 <span className="font-bold">
-                  {stopLossOrder?.stopLossData?.isSellOrder
-                    ? "From"
-                    : "From at most"}
+                  {order?.stopLossData?.isSellOrder ? "From" : "From at most"}
                 </span>
                 {formatNumber(amountIn, 4)}{" "}
                 <InfoTooltip text={amountIn.toString()} />
                 <a
                   target="_blank"
                   href={buildBlockExplorerTokenURL({
-                    tokenAddress: stopLossOrder?.stopLossData?.tokenIn
+                    tokenAddress: order?.stopLossData?.tokenIn
                       .address as Address,
-                    chainId: stopLossOrder?.chainId,
+                    chainId: order?.chainId,
                   })}
                   className="hover:text-primary hover:underline"
                 >
-                  {stopLossOrder?.stopLossData?.tokenIn.symbol}
+                  {order?.stopLossData?.tokenIn.symbol}
                 </a>
                 <TokenLogo
-                  tokenAddress={stopLossOrder?.stopLossData?.tokenIn.address.toLowerCase()}
-                  chainId={stopLossOrder?.chainId as ChainId}
+                  tokenAddress={order?.stopLossData?.tokenIn.address.toLowerCase()}
+                  chainId={order?.chainId as ChainId}
                   className="rounded-full"
                   alt="Token Logo"
                   height={22}
@@ -192,26 +170,24 @@ export default function OrderPage({
               </div>
               <div className="flex gap-x-2 items-center">
                 <span className="font-bold">
-                  {stopLossOrder?.stopLossData?.isSellOrder
-                    ? "To at least"
-                    : "To"}
+                  {order?.stopLossData?.isSellOrder ? "To at least" : "To"}
                 </span>
                 {formatNumber(amountOut, 4)}{" "}
                 <InfoTooltip text={amountOut.toString()} />
                 <a
                   target="_blank"
                   href={buildBlockExplorerTokenURL({
-                    tokenAddress: stopLossOrder?.stopLossData?.tokenOut
+                    tokenAddress: order?.stopLossData?.tokenOut
                       .address as Address,
-                    chainId: stopLossOrder?.chainId,
+                    chainId: order?.chainId,
                   })}
                   className="hover:text-primary hover:underline"
                 >
-                  {stopLossOrder?.stopLossData?.tokenOut.symbol}
+                  {order?.stopLossData?.tokenOut.symbol}
                 </a>
                 <TokenLogo
-                  tokenAddress={stopLossOrder?.stopLossData?.tokenOut.address}
-                  chainId={stopLossOrder?.chainId as ChainId}
+                  tokenAddress={order?.stopLossData?.tokenOut.address}
+                  chainId={order?.chainId as ChainId}
                   className="rounded-full"
                   alt="Token Logo"
                   height={22}
@@ -235,7 +211,7 @@ export default function OrderPage({
             {formatNumber(limitPrice, 4)}{" "}
             <InfoTooltip text={limitPrice.toString()} /> {priceUnit}
           </OrderInformation>
-          {stopLossOrder?.executedSellAmount != "0" && (
+          {order?.executedSellAmount != "0" && (
             <>
               <OrderInformation
                 label="Execution Price"
@@ -249,9 +225,9 @@ export default function OrderPage({
               >
                 <div className="flex gap-x-2">
                   Swapped {formatNumber(executedAmountIn, 4)}{" "}
-                  {stopLossOrder?.stopLossData?.tokenIn.symbol} for{" "}
+                  {order?.stopLossData?.tokenIn.symbol} for{" "}
                   {formatNumber(executedAmountOut, 4)}{" "}
-                  {stopLossOrder?.stopLossData?.tokenOut.symbol}
+                  {order?.stopLossData?.tokenOut.symbol}
                   {orderSurplus > 0 && (
                     <span className="text-success text-bold">
                       ({formatNumber(orderSurplus, 4)}% surplus)
@@ -266,11 +242,9 @@ export default function OrderPage({
             tooltipText="A chainlink-like oracle  that provides the current selling price of a token in a specified currency."
           >
             <div className="flex items-center gap-x-1">
-              {stopLossOrder?.stopLossData?.sellTokenPriceOracle}
+              {order?.stopLossData?.sellTokenPriceOracle}
               <ClickToCopy
-                text={
-                  stopLossOrder?.stopLossData?.sellTokenPriceOracle as string
-                }
+                text={order?.stopLossData?.sellTokenPriceOracle as string}
               >
                 <CopyIcon className="hover:text-primary" />
               </ClickToCopy>
@@ -281,18 +255,16 @@ export default function OrderPage({
             tooltipText="A chainlink-like oracle that gives the current buying price of a token in the same currency."
           >
             <div className="flex items-center gap-x-1">
-              {stopLossOrder?.stopLossData?.buyTokenPriceOracle}
+              {order?.stopLossData?.buyTokenPriceOracle}
               <ClickToCopy
-                text={
-                  stopLossOrder?.stopLossData?.buyTokenPriceOracle as string
-                }
+                text={order?.stopLossData?.buyTokenPriceOracle as string}
               >
                 <CopyIcon className="hover:text-primary" />
               </ClickToCopy>
             </div>
           </OrderInformation>
         </div>
-        {cowOrdersRelated && cowOrdersRelated.length > 0 && (
+        {order?.cowOrders && order.cowOrders.length > 0 && (
           <>
             <Separator className="my-3" />
             <div className="flex flex-col gap-y-1">
@@ -301,7 +273,7 @@ export default function OrderPage({
                 tooltipText="The orders created based on your initial request"
               >
                 <div className="flex flex-col">
-                  {cowOrdersRelated.map((order) => (
+                  {order.cowOrders.map((cowOrder) => (
                     <div className="flex items-center gap-x-1">
                       <Link
                         className={cn(
@@ -309,18 +281,18 @@ export default function OrderPage({
                           order.status === "fulfilled" ? "font-bold" : ""
                         )}
                         href={buildOrderCowExplorerUrl({
-                          chainId: stopLossOrder?.chainId as ChainId,
-                          orderId: order.uid as `0x${string}`,
+                          chainId: order?.chainId as ChainId,
+                          orderId: cowOrder.uid as `0x${string}`,
                         })}
                         rel="noreferrer noopener"
                         target="_blank"
                       >
-                        {truncateAddress(order.uid)}
+                        {truncateAddress(cowOrder.uid)}
                       </Link>
-                      <ClickToCopy text={order.uid}>
+                      <ClickToCopy text={cowOrder.uid}>
                         <CopyIcon className="hover:text-primary" />
                       </ClickToCopy>
-                      <StatusBadge status={order?.status} />
+                      <StatusBadge status={cowOrder?.status} />
                     </div>
                   ))}
                 </div>

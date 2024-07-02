@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Tooltip,
   TooltipContent,
@@ -35,6 +37,7 @@ export const InfoTooltip = ({
     }
   }
 
+  // TODO: FIX ON COW-299
   return <></>;
   return (
     <TooltipProvider>
