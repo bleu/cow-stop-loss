@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  epochToDate,
+  formatDateTime,
   formatNumber,
   Table,
   TableBody,
@@ -8,26 +10,22 @@ import {
   TableHeader,
   TableRow,
 } from "@bleu/ui";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useRouter } from "next/navigation";
 import { formatUnits } from "viem";
 
-import { StopLossOrderType, useOrder } from "#/contexts/ordersContext";
-import { getOrderDescription } from "#/lib/orderDescription";
-import { IToken } from "#/lib/types";
+import { useOrder } from "#/contexts/ordersContext";
+import { StopLossOrderType } from "#/lib/types";
 
-import { Spinner } from "./Spinner";
 import { StatusBadge } from "./StatusBadge";
 
 export function HistoryOrdersTab() {
-  const { historyOrders, isLoading } = useOrder();
-
-  if (isLoading) {
-    return <Spinner />;
-  }
+  const { historyOrders } = useOrder();
 
   return (
     <Table className="w-full rounded-md border-separate border">
       <TableHeader className="bg-background/70 text-foreground border-b overflow-scroll">
+        <TableCell>Created</TableCell>
         <TableCell>Order</TableCell>
         <TableCell>Trigger price</TableCell>
         <TableCell>Filled</TableCell>
@@ -51,6 +49,8 @@ export function HistoryOrdersTab() {
 }
 
 export function HistoryOrderRow({ order }: { order: StopLossOrderType }) {
+  const { safe } = useSafeAppsSDK();
+
   const router = useRouter();
   if (!order.stopLossData) {
     return null;
@@ -76,24 +76,31 @@ export function HistoryOrderRow({ order }: { order: StopLossOrderType }) {
     )
   );
 
-  const orderDescription = getOrderDescription({
-    tokenSell: order.stopLossData.tokenIn as IToken,
-    tokenBuy: order.stopLossData.tokenOut as IToken,
-    amountSell,
-    amountBuy,
-    isSellOrder: order.stopLossData.isSellOrder,
-  });
+  const orderDateTime = formatDateTime(
+    epochToDate(Number(order.blockTimestamp))
+  );
 
   return (
     <TableRow
-      onClick={() => router.push(`/refactor/${order?.hash}`)}
-      className="cursor-pointer hover:bg-background/10"
+      onClick={() =>
+        router.push(`/${safe.chainId}/${safe.safeAddress}/${order?.id}`)
+      }
+      className="cursor-pointer hover:bg-background/10 text-xs"
     >
-      <TableCell>{orderDescription}</TableCell>
+      <TableCell>{orderDateTime}</TableCell>
+      <TableCell>
+        <div className="flex flex-col">
+          <span>{order.stopLossData.isSellOrder ? "Sell" : "Buy"} Order</span>
+          <span>
+            {formatNumber(amountSell, 4)} {order.stopLossData.tokenIn.symbol} to{" "}
+            {formatNumber(amountBuy, 4)} {order.stopLossData.tokenOut.symbol}
+          </span>
+        </div>
+      </TableCell>
       <TableCell>
         {formatNumber(triggerPrice, 4)} {priceUnity}
       </TableCell>
-      <TableCell className="flex items-center gap-2">0%</TableCell>
+      <TableCell>{((order.filledPct || 0) * 100).toFixed()}%</TableCell>
       <TableCell>
         <StatusBadge status={order.status} />
       </TableCell>

@@ -3,6 +3,8 @@
 import {
   Button,
   Checkbox,
+  epochToDate,
+  formatDateTime,
   formatNumber,
   Table,
   TableBody,
@@ -10,15 +12,15 @@ import {
   TableHeader,
   TableRow,
 } from "@bleu/ui";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { formatUnits } from "viem";
 
-import { StopLossOrderType, useOrder } from "#/contexts/ordersContext";
+import { useOrder } from "#/contexts/ordersContext";
 import { useTokens } from "#/contexts/tokensContext";
-import { getOrderDescription } from "#/lib/orderDescription";
 import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
-import { IToken } from "#/lib/types";
+import { IToken, StopLossOrderType } from "#/lib/types";
 
 export function OpenOrdersTab() {
   const {
@@ -49,6 +51,7 @@ export function OpenOrdersTab() {
           <TableCell className="rounded-tl-md">
             <span className="sr-only">Select</span>
           </TableCell>
+          <TableCell>Created</TableCell>
           <TableCell>Order</TableCell>
           <TableCell>Trigger price</TableCell>
           <TableCell>Current price</TableCell>
@@ -73,7 +76,7 @@ export function OpenOrdersTab() {
             })
           ) : (
             <TableRow>
-              <TableCell colSpan={5} className="text-center">
+              <TableCell colSpan={6} className="text-center">
                 No open orders. Create a new one to get started.
               </TableCell>
             </TableRow>
@@ -103,6 +106,8 @@ export function OpenOrderRow({
   onSelect: (selected: boolean) => void;
 }) {
   const router = useRouter();
+  const { safe } = useSafeAppsSDK();
+
   const [marketPrice, setMarketPrice] = useState<number>();
   const { getTokenPairPrice } = useTokens();
 
@@ -145,18 +150,16 @@ export function OpenOrderRow({
     )
   );
 
-  const orderDescription = getOrderDescription({
-    tokenSell: order.stopLossData.tokenIn as IToken,
-    tokenBuy: order.stopLossData.tokenOut as IToken,
-    amountSell,
-    amountBuy,
-    isSellOrder: order.stopLossData.isSellOrder,
-  });
+  const orderDateTime = formatDateTime(
+    epochToDate(Number(order.blockTimestamp))
+  );
 
   return (
     <TableRow
-      onClick={() => router.push(`/refactor/${order?.hash}`)}
-      className="cursor-pointer hover:bg-background/10"
+      onClick={() =>
+        router.push(`/${safe.chainId}/${safe.safeAddress}/${order?.id}`)
+      }
+      className="cursor-pointer hover:bg-background/10 text-xs"
     >
       <TableCell
         onClick={(e) => {
@@ -170,7 +173,16 @@ export function OpenOrderRow({
           }}
         />
       </TableCell>
-      <TableCell>{orderDescription}</TableCell>
+      <TableCell>{orderDateTime}</TableCell>
+      <TableCell>
+        <div className="flex flex-col">
+          <span>{order.stopLossData.isSellOrder ? "Sell" : "Buy"} Order</span>
+          <span>
+            {formatNumber(amountSell, 4)} {order.stopLossData.tokenIn.symbol} to{" "}
+            {formatNumber(amountBuy, 4)} {order.stopLossData.tokenOut.symbol}
+          </span>
+        </div>
+      </TableCell>
       <TableCell>
         {formatNumber(triggerPrice, 4)} {priceUnity}
       </TableCell>
@@ -179,7 +191,7 @@ export function OpenOrderRow({
           ? ` ${formatNumber(marketPrice, 4)} ${priceUnity}`
           : `Loading...`}
       </TableCell>
-      <TableCell>0%</TableCell>
+      <TableCell>{((order.filledPct || 0) * 100).toFixed()}%</TableCell>
     </TableRow>
   );
 }
