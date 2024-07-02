@@ -2,17 +2,24 @@
 
 import { ArrElement, GetDeepProp } from "@bleu/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import { createContext, PropsWithChildren, useContext } from "react";
+import {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import useSWR from "swr";
 import { Address } from "viem";
 
+import { useTxManager } from "#/hooks/useTxManager";
 import { composableCowAbi } from "#/lib/abis/composableCow";
 import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 import { getCowOrders } from "#/lib/cowApi/fetchCowOrder";
 import { composableCowApi } from "#/lib/gql/client";
 import { UserStopLossOrdersQuery } from "#/lib/gql/composable-cow/__generated__/1";
 import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
-import { IToken } from "#/lib/types";
+import { DraftOrder, IToken } from "#/lib/types";
 
 type StopLossOrderTypeRaw = ArrElement<
   GetDeepProp<UserStopLossOrdersQuery, "items">
@@ -78,6 +85,10 @@ export interface CowOrder {
 }
 
 type OrderContextType = {
+  draftOrders: DraftOrder[];
+  setDraftOrders: (orders: DraftOrder[]) => void;
+  addDraftOrders: (orders: DraftOrder[]) => void;
+  removeDraftOrders: (id: string[]) => void;
   orders: StopLossOrderType[];
   openOrders: StopLossOrderType[];
   historyOrders: StopLossOrderType[];
@@ -89,6 +100,9 @@ type OrderContextType = {
   }: {
     appData: string;
   }) => Promise<CowOrder[] | undefined>;
+  txManager: ReturnType<typeof useTxManager>;
+  txPendingDialog: boolean;
+  setTxPendingDialog: (open: boolean) => void;
 };
 
 export const OrderContext = createContext({} as OrderContextType);
@@ -99,6 +113,7 @@ export function OrderProvider({ children }: PropsWithChildren) {
     data: orders,
     mutate,
     isLoading,
+    isValidating,
     error,
   } = useSWR(
     {
@@ -110,6 +125,20 @@ export function OrderProvider({ children }: PropsWithChildren) {
       fallbackData: [],
     }
   );
+
+  const [txPendingDialog, setTxPendingDialog] = useState(false);
+
+  const [draftOrders, setDraftOrders] = useState<DraftOrder[]>([]);
+
+  function addDraftOrders(orders: DraftOrder[]): void {
+    setDraftOrders([...draftOrders, ...orders]);
+  }
+
+  function removeDraftOrders(ids: string[]): void {
+    setDraftOrders(draftOrders.filter((order) => !ids.includes(order.id)));
+  }
+
+  const txManager = useTxManager();
 
   async function getProcessedStopLossOrders({
     chainId,
@@ -229,6 +258,12 @@ export function OrderProvider({ children }: PropsWithChildren) {
     return "created";
   }
 
+  useEffect(() => {
+    if (!txManager.isPonderUpdating) {
+      mutate();
+    }
+  }, [txManager.isPonderUpdating]);
+
   const historyOrders = orders.filter((order) => !order.singleOrder);
   const openOrders = orders.filter((order) => order.singleOrder);
 
@@ -237,11 +272,18 @@ export function OrderProvider({ children }: PropsWithChildren) {
       value={{
         historyOrders,
         openOrders,
-        isLoading,
+        draftOrders,
+        setDraftOrders,
+        addDraftOrders,
+        removeDraftOrders,
+        isLoading: isLoading || isValidating,
         error,
         mutate,
         getRelatedCowOrders,
         orders,
+        txManager,
+        txPendingDialog,
+        setTxPendingDialog,
       }}
     >
       {children}

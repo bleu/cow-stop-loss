@@ -1,22 +1,24 @@
 import { Toaster } from "@bleu/ui";
 import SafeProvider from "@safe-global/safe-apps-react-sdk";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 
-import { NetworksContextProvider } from "#/contexts/networks";
 import { OrderProvider } from "#/contexts/ordersContext";
-import { TokenSelectContextProvider } from "#/contexts/tokenSelectContext";
+import { TokensContextProvider } from "#/contexts/tokensContext";
 
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 
 export function RootLayout({ children }: React.PropsWithChildren) {
+  const [queryClient] = useState(() => new QueryClient());
+
   return (
     <SafeProvider loader={<SafeLoader />}>
-      <NetworksContextProvider>
-        <TokenSelectContextProvider>
+      <QueryClientProvider client={queryClient}>
+        <TokensContextProvider>
           <OrderProvider>
-            <div className="flex flex-col h-svh justify-between">
+            <div className="flex flex-col size-full min-h-screen justify-between">
               <Header linkUrl={"/builder"} imageSrc={"/assets/stoploss.svg"} />
               <div className="size-full bg-background">{children}</div>
               <Footer
@@ -26,8 +28,8 @@ export function RootLayout({ children }: React.PropsWithChildren) {
             </div>
             <Toaster />
           </OrderProvider>
-        </TokenSelectContextProvider>
-      </NetworksContextProvider>
+        </TokensContextProvider>
+      </QueryClientProvider>
     </SafeProvider>
   );
 }
