@@ -25,20 +25,18 @@ export function Checkbox({
   const value = useWatch({ control, name });
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center">
-        <CheckboxPrimitive
-          checked={value}
-          onClick={() => setValue(name, !value)}
-          disabled={disabled}
-          id={id}
-        />
-        {label && (
-          <label htmlFor={id} className="pl-[15px] text-[15px] leading-8">
-            {label}
-          </label>
-        )}
-      </div>
+    <div className="flex items-center gap-1">
+      <CheckboxPrimitive
+        checked={value}
+        onClick={() => setValue(name, !value)}
+        disabled={disabled}
+        id={id}
+      />
+      {label && (
+        <label htmlFor={id} className="font-semibold text-sm">
+          {label}
+        </label>
+      )}
       <InfoTooltip text={tooltipText} link={tooltipLink} />
     </div>
   );
