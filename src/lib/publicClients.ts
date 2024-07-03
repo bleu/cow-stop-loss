@@ -1,24 +1,35 @@
 import { createPublicClient, http } from "viem";
 import { gnosis, mainnet, sepolia } from "viem/chains";
 
-export type ChainType = typeof mainnet | typeof gnosis | typeof sepolia;
+export type ChainType = (typeof supportedChains)[number];
 
-export type ChainName = "mainnet" | "gnosis" | "sepolia";
+export type ChainName = "gnosis" | "mainnet" | "sepolia";
 
-export type ChainId = typeof mainnet.id | typeof gnosis.id | typeof sepolia.id;
+export type ChainId = (typeof supportedChainIds)[number];
+
+export const supportedChains = [gnosis, mainnet, sepolia] as const;
+
+export const supportedChainIds = [mainnet.id, gnosis.id, sepolia.id] as const;
+
+export const RPC_PROVIDERS = {
+  [mainnet.id]: process.env.RPC_URL_MAINNET,
+  [gnosis.id]: process.env.RPC_URL_GNOSIS,
+  [sepolia.id]: process.env.RPC_URL_SEPOLIA,
+} as const;
 
 export function createClientForChain(chain: ChainType) {
   return createPublicClient({
     chain,
-    transport: http(),
+    transport: http(RPC_PROVIDERS[chain.id]),
+    cacheTime: 0,
   });
-};
+}
 
 export const publicClientsFromNames = {
+  gnosis: createClientForChain(gnosis),
   mainnet: createClientForChain(mainnet),
   sepolia: createClientForChain(sepolia),
-  gnosis: createClientForChain(gnosis),
-} as const;
+};
 
 export const publicClientsFromIds = {
   [gnosis.id]: createClientForChain(gnosis),
