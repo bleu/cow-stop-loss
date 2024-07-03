@@ -1,7 +1,7 @@
 "use client";
 
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import React from "react";
+import React, { useEffect } from "react";
 import { Address } from "viem";
 
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
@@ -30,6 +30,8 @@ interface ISwapContext {
   tokenSellOracle?: Address;
   tokenBuyOracle?: Address;
   isLoading: boolean;
+  firstAccess: boolean;
+  setFirstAccess: (data: boolean) => void;
 }
 
 export const SwapCardContext = React.createContext<ISwapContext>(
@@ -47,6 +49,9 @@ export const SwapCardContextProvider = ({
   const { draftOrders } = useOrder();
 
   const [reviewDialogOpen, setReviewDialogOpen] = React.useState(false);
+  const [firstAccess, setFirstAccess] = React.useState(
+    localStorage.getItem("firstAccess") === null
+  );
 
   const [tokenSellOracle, setTokenSellOracle] = React.useState<Address>();
   const [tokenBuyOracle, setTokenBuyOracle] = React.useState<Address>();
@@ -108,6 +113,12 @@ export const SwapCardContextProvider = ({
     return draftOrder;
   }
 
+  useEffect(() => {
+    if (!firstAccess) {
+      localStorage.setItem("firstAccess", "false");
+    }
+  }, [firstAccess]);
+
   return (
     <SwapCardContext.Provider
       value={{
@@ -122,6 +133,8 @@ export const SwapCardContextProvider = ({
         updateOracle,
         tokenSellOracle,
         tokenBuyOracle,
+        firstAccess,
+        setFirstAccess,
       }}
     >
       {children}
