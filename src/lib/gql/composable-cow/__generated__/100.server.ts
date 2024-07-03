@@ -33,6 +33,8 @@ export type ConstantProductData = {
 };
 
 export type ConstantProductDataFilter = {
+  AND?: InputMaybe<Array<InputMaybe<ConstantProductDataFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<ConstantProductDataFilter>>>;
   appData?: InputMaybe<Scalars['String']['input']>;
   appData_gt?: InputMaybe<Scalars['String']['input']>;
   appData_gte?: InputMaybe<Scalars['String']['input']>;
@@ -109,8 +111,8 @@ export type ConstantProductDataFilter = {
 
 export type ConstantProductDataPage = {
   __typename?: 'ConstantProductDataPage';
-  items?: Maybe<Array<ConstantProductData>>;
-  pageInfo?: Maybe<PageInfo>;
+  items: Array<ConstantProductData>;
+  pageInfo: PageInfo;
 };
 
 export type Order = {
@@ -121,7 +123,7 @@ export type Order = {
   constantProductData?: Maybe<ConstantProductData>;
   constantProductDataId?: Maybe<Scalars['String']['output']>;
   decodedSuccess: Scalars['Boolean']['output'];
-  hash: Scalars['String']['output'];
+  hash?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   orderHandler?: Maybe<OrderHandler>;
   orderHandlerId?: Maybe<Scalars['String']['output']>;
@@ -135,6 +137,8 @@ export type Order = {
 };
 
 export type OrderFilter = {
+  AND?: InputMaybe<Array<InputMaybe<OrderFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<OrderFilter>>>;
   blockNumber?: InputMaybe<Scalars['BigInt']['input']>;
   blockNumber_gt?: InputMaybe<Scalars['BigInt']['input']>;
   blockNumber_gte?: InputMaybe<Scalars['BigInt']['input']>;
@@ -256,6 +260,8 @@ export type OrderHandler = {
 };
 
 export type OrderHandlerFilter = {
+  AND?: InputMaybe<Array<InputMaybe<OrderHandlerFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<OrderHandlerFilter>>>;
   address?: InputMaybe<Scalars['String']['input']>;
   address_gt?: InputMaybe<Scalars['String']['input']>;
   address_gte?: InputMaybe<Scalars['String']['input']>;
@@ -296,14 +302,14 @@ export type OrderHandlerFilter = {
 
 export type OrderHandlerPage = {
   __typename?: 'OrderHandlerPage';
-  items?: Maybe<Array<OrderHandler>>;
-  pageInfo?: Maybe<PageInfo>;
+  items: Array<OrderHandler>;
+  pageInfo: PageInfo;
 };
 
 export type OrderPage = {
   __typename?: 'OrderPage';
-  items?: Maybe<Array<Order>>;
-  pageInfo?: Maybe<PageInfo>;
+  items: Array<Order>;
+  pageInfo: PageInfo;
 };
 
 export type PageInfo = {
@@ -317,17 +323,17 @@ export type PageInfo = {
 export type Query = {
   __typename?: 'Query';
   constantProductData?: Maybe<ConstantProductData>;
-  constantProductDatas?: Maybe<ConstantProductDataPage>;
+  constantProductDatas: ConstantProductDataPage;
   order?: Maybe<Order>;
   orderHandler?: Maybe<OrderHandler>;
-  orderHandlers?: Maybe<OrderHandlerPage>;
-  orders?: Maybe<OrderPage>;
+  orderHandlers: OrderHandlerPage;
+  orders: OrderPage;
   stopLossOrder?: Maybe<StopLossOrder>;
-  stopLossOrders?: Maybe<StopLossOrderPage>;
+  stopLossOrders: StopLossOrderPage;
   token?: Maybe<Token>;
-  tokens?: Maybe<TokenPage>;
+  tokens: TokenPage;
   user?: Maybe<User>;
-  users?: Maybe<UserPage>;
+  users: UserPage;
 };
 
 
@@ -443,7 +449,6 @@ export type StopLossOrder = {
   orderId: Scalars['String']['output'];
   sellTokenPriceOracle: Scalars['String']['output'];
   strike: Scalars['BigInt']['output'];
-  strikeFloat: Scalars['Float']['output'];
   to: Scalars['String']['output'];
   tokenAmountIn: Scalars['BigInt']['output'];
   tokenAmountOut: Scalars['BigInt']['output'];
@@ -455,6 +460,8 @@ export type StopLossOrder = {
 };
 
 export type StopLossOrderFilter = {
+  AND?: InputMaybe<Array<InputMaybe<StopLossOrderFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<StopLossOrderFilter>>>;
   appData?: InputMaybe<Scalars['String']['input']>;
   appData_gt?: InputMaybe<Scalars['String']['input']>;
   appData_gte?: InputMaybe<Scalars['String']['input']>;
@@ -464,15 +471,13 @@ export type StopLossOrderFilter = {
   appData_not?: InputMaybe<Scalars['String']['input']>;
   appData_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   buyTokenPriceOracle?: InputMaybe<Scalars['String']['input']>;
-  buyTokenPriceOracle_contains?: InputMaybe<Scalars['String']['input']>;
-  buyTokenPriceOracle_ends_with?: InputMaybe<Scalars['String']['input']>;
+  buyTokenPriceOracle_gt?: InputMaybe<Scalars['String']['input']>;
+  buyTokenPriceOracle_gte?: InputMaybe<Scalars['String']['input']>;
   buyTokenPriceOracle_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  buyTokenPriceOracle_lt?: InputMaybe<Scalars['String']['input']>;
+  buyTokenPriceOracle_lte?: InputMaybe<Scalars['String']['input']>;
   buyTokenPriceOracle_not?: InputMaybe<Scalars['String']['input']>;
-  buyTokenPriceOracle_not_contains?: InputMaybe<Scalars['String']['input']>;
-  buyTokenPriceOracle_not_ends_with?: InputMaybe<Scalars['String']['input']>;
   buyTokenPriceOracle_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  buyTokenPriceOracle_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  buyTokenPriceOracle_starts_with?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   id_contains?: InputMaybe<Scalars['String']['input']>;
   id_ends_with?: InputMaybe<Scalars['String']['input']>;
@@ -510,24 +515,14 @@ export type StopLossOrderFilter = {
   orderId_not_starts_with?: InputMaybe<Scalars['String']['input']>;
   orderId_starts_with?: InputMaybe<Scalars['String']['input']>;
   sellTokenPriceOracle?: InputMaybe<Scalars['String']['input']>;
-  sellTokenPriceOracle_contains?: InputMaybe<Scalars['String']['input']>;
-  sellTokenPriceOracle_ends_with?: InputMaybe<Scalars['String']['input']>;
+  sellTokenPriceOracle_gt?: InputMaybe<Scalars['String']['input']>;
+  sellTokenPriceOracle_gte?: InputMaybe<Scalars['String']['input']>;
   sellTokenPriceOracle_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  sellTokenPriceOracle_lt?: InputMaybe<Scalars['String']['input']>;
+  sellTokenPriceOracle_lte?: InputMaybe<Scalars['String']['input']>;
   sellTokenPriceOracle_not?: InputMaybe<Scalars['String']['input']>;
-  sellTokenPriceOracle_not_contains?: InputMaybe<Scalars['String']['input']>;
-  sellTokenPriceOracle_not_ends_with?: InputMaybe<Scalars['String']['input']>;
   sellTokenPriceOracle_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  sellTokenPriceOracle_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  sellTokenPriceOracle_starts_with?: InputMaybe<Scalars['String']['input']>;
   strike?: InputMaybe<Scalars['BigInt']['input']>;
-  strikeFloat?: InputMaybe<Scalars['Float']['input']>;
-  strikeFloat_gt?: InputMaybe<Scalars['Float']['input']>;
-  strikeFloat_gte?: InputMaybe<Scalars['Float']['input']>;
-  strikeFloat_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
-  strikeFloat_lt?: InputMaybe<Scalars['Float']['input']>;
-  strikeFloat_lte?: InputMaybe<Scalars['Float']['input']>;
-  strikeFloat_not?: InputMaybe<Scalars['Float']['input']>;
-  strikeFloat_not_in?: InputMaybe<Array<InputMaybe<Scalars['Float']['input']>>>;
   strike_gt?: InputMaybe<Scalars['BigInt']['input']>;
   strike_gte?: InputMaybe<Scalars['BigInt']['input']>;
   strike_in?: InputMaybe<Array<InputMaybe<Scalars['BigInt']['input']>>>;
@@ -591,8 +586,8 @@ export type StopLossOrderFilter = {
 
 export type StopLossOrderPage = {
   __typename?: 'StopLossOrderPage';
-  items?: Maybe<Array<StopLossOrder>>;
-  pageInfo?: Maybe<PageInfo>;
+  items: Array<StopLossOrder>;
+  pageInfo: PageInfo;
 };
 
 export type Token = {
@@ -606,16 +601,16 @@ export type Token = {
 };
 
 export type TokenFilter = {
+  AND?: InputMaybe<Array<InputMaybe<TokenFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<TokenFilter>>>;
   address?: InputMaybe<Scalars['String']['input']>;
-  address_contains?: InputMaybe<Scalars['String']['input']>;
-  address_ends_with?: InputMaybe<Scalars['String']['input']>;
+  address_gt?: InputMaybe<Scalars['String']['input']>;
+  address_gte?: InputMaybe<Scalars['String']['input']>;
   address_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  address_lt?: InputMaybe<Scalars['String']['input']>;
+  address_lte?: InputMaybe<Scalars['String']['input']>;
   address_not?: InputMaybe<Scalars['String']['input']>;
-  address_not_contains?: InputMaybe<Scalars['String']['input']>;
-  address_not_ends_with?: InputMaybe<Scalars['String']['input']>;
   address_not_in?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
-  address_not_starts_with?: InputMaybe<Scalars['String']['input']>;
-  address_starts_with?: InputMaybe<Scalars['String']['input']>;
   chainId?: InputMaybe<Scalars['Int']['input']>;
   chainId_gt?: InputMaybe<Scalars['Int']['input']>;
   chainId_gte?: InputMaybe<Scalars['Int']['input']>;
@@ -666,8 +661,8 @@ export type TokenFilter = {
 
 export type TokenPage = {
   __typename?: 'TokenPage';
-  items?: Maybe<Array<Token>>;
-  pageInfo?: Maybe<PageInfo>;
+  items: Array<Token>;
+  pageInfo: PageInfo;
 };
 
 export type User = {
@@ -685,10 +680,12 @@ export type UserOrdersArgs = {
   limit?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<Scalars['String']['input']>;
   orderDirection?: InputMaybe<Scalars['String']['input']>;
-  timestamp?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<UserFilter>;
 };
 
 export type UserFilter = {
+  AND?: InputMaybe<Array<InputMaybe<UserFilter>>>;
+  OR?: InputMaybe<Array<InputMaybe<UserFilter>>>;
   address?: InputMaybe<Scalars['String']['input']>;
   address_contains?: InputMaybe<Scalars['String']['input']>;
   address_ends_with?: InputMaybe<Scalars['String']['input']>;
@@ -721,8 +718,8 @@ export type UserFilter = {
 
 export type UserPage = {
   __typename?: 'UserPage';
-  items?: Maybe<Array<User>>;
-  pageInfo?: Maybe<PageInfo>;
+  items: Array<User>;
+  pageInfo: PageInfo;
 };
 
 export type UserStopLossOrdersQueryVariables = Exact<{
@@ -730,7 +727,14 @@ export type UserStopLossOrdersQueryVariables = Exact<{
 }>;
 
 
-export type UserStopLossOrdersQuery = { __typename?: 'Query', orders?: { __typename?: 'OrderPage', items?: Array<{ __typename?: 'Order', blockNumber: any, blockTimestamp: any, chainId: number, decodedSuccess: boolean, id: string, txHash: string, hash: string, staticInput: string, stopLossData?: { __typename?: 'StopLossOrder', appData: string, buyTokenPriceOracle: string, id: string, isPartiallyFillable: boolean, isSellOrder: boolean, maxTimeSinceLastOracleUpdate: any, orderId: string, sellTokenPriceOracle: string, strike: any, to: string, tokenAmountIn: any, tokenAmountOut: any, validityBucketSeconds: any, tokenIn: { __typename?: 'Token', address: string, decimals: number, name: string, symbol: string }, tokenOut: { __typename?: 'Token', address: string, decimals: number, name: string, symbol: string } } | null }> | null } | null };
+export type UserStopLossOrdersQuery = { __typename?: 'Query', orders: { __typename?: 'OrderPage', items: Array<{ __typename?: 'Order', blockNumber: any, blockTimestamp: any, chainId: number, decodedSuccess: boolean, id: string, txHash: string, hash?: string | null, staticInput: string, stopLossData?: { __typename?: 'StopLossOrder', appData: string, buyTokenPriceOracle: string, id: string, isPartiallyFillable: boolean, isSellOrder: boolean, maxTimeSinceLastOracleUpdate: any, orderId: string, sellTokenPriceOracle: string, strike: any, to: string, tokenAmountIn: any, tokenAmountOut: any, validityBucketSeconds: any, tokenIn: { __typename?: 'Token', address: string, decimals: number, name: string, symbol: string }, tokenOut: { __typename?: 'Token', address: string, decimals: number, name: string, symbol: string } } | null }> } };
+
+export type OrderByIdQueryVariables = Exact<{
+  orderId: Scalars['String']['input'];
+}>;
+
+
+export type OrderByIdQuery = { __typename?: 'Query', order?: { __typename?: 'Order', blockNumber: any, blockTimestamp: any, chainId: number, decodedSuccess: boolean, id: string, txHash: string, hash?: string | null, staticInput: string, stopLossData?: { __typename?: 'StopLossOrder', appData: string, buyTokenPriceOracle: string, id: string, isPartiallyFillable: boolean, isSellOrder: boolean, maxTimeSinceLastOracleUpdate: any, orderId: string, sellTokenPriceOracle: string, strike: any, to: string, tokenAmountIn: any, tokenAmountOut: any, validityBucketSeconds: any, tokenIn: { __typename?: 'Token', address: string, decimals: number, name: string, symbol: string }, tokenOut: { __typename?: 'Token', address: string, decimals: number, name: string, symbol: string } } | null } | null };
 
 
 export const UserStopLossOrdersDocument = gql`
@@ -780,6 +784,47 @@ export const UserStopLossOrdersDocument = gql`
   }
 }
     `;
+export const OrderByIdDocument = gql`
+    query OrderById($orderId: String!) {
+  order(id: $orderId) {
+    blockNumber
+    blockTimestamp
+    chainId
+    decodedSuccess
+    id
+    txHash
+    hash
+    staticInput
+    stopLossData {
+      appData
+      buyTokenPriceOracle
+      id
+      isPartiallyFillable
+      isSellOrder
+      maxTimeSinceLastOracleUpdate
+      orderId
+      sellTokenPriceOracle
+      strike
+      to
+      tokenAmountIn
+      tokenAmountOut
+      tokenIn {
+        address
+        decimals
+        name
+        symbol
+      }
+      tokenOut {
+        address
+        decimals
+        name
+        symbol
+      }
+      validityBucketSeconds
+    }
+  }
+}
+    `;
 
 export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
@@ -790,6 +835,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
   return {
     UserStopLossOrders(variables: UserStopLossOrdersQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UserStopLossOrdersQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<UserStopLossOrdersQuery>(UserStopLossOrdersDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'UserStopLossOrders', 'query', variables);
+    },
+    OrderById(variables: OrderByIdQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<OrderByIdQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<OrderByIdQuery>(OrderByIdDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'OrderById', 'query', variables);
     }
   };
 }

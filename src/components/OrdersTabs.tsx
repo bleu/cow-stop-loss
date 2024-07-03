@@ -47,7 +47,7 @@ export function OrderTabs() {
           </TabsTrigger>
         </TabsList>
       </div>
-      <div className="flex rounded-md text-background bg-foreground p-2">
+      <div className="flex rounded-md text-background bg-foreground p-2 max-h-[70vh] overflow-auto">
         <TabsContent className="w-full" value="draft">
           <DraftOrdersTab />
         </TabsContent>

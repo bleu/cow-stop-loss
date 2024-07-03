@@ -1,3 +1,5 @@
+"use client";
+
 import { Badge } from "@bleu/ui";
 
 export function StatusBadge({ status }: { status: string | undefined }) {

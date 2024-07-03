@@ -116,7 +116,7 @@ export function DraftOrderRow({
   const priceUnity = `${order.tokenBuy.symbol}/${order.tokenSell.symbol}`;
 
   return (
-    <TableRow className="h-7">
+    <TableRow className="text-xs">
       <TableCell>
         <Checkbox
           onCheckedChange={(checked) => {
