@@ -82,7 +82,12 @@ export function AdvancedSettingsDialog() {
               setOpen(false);
             }}
           >
-            <Input name="receiver" label="Receiver" placeholder="0xabc...123" />
+            <Input
+              name="receiver"
+              label="Receiver"
+              placeholder="0xabc...123"
+              tooltipText="Address that will receive the tokens on stop-loss order."
+            />
             <Separator className="mt-2" />
             <div className="flex flex-col gap-1">
               <Label className="block text-sm text-background font-semibold">
@@ -110,11 +115,13 @@ export function AdvancedSettingsDialog() {
                         name="tokenSellOracle"
                         label="Token sell oracle"
                         placeholder="0xabc...123"
+                        tooltipText="The oracle that will provide the price of the token being sold. Both oracles must have the same quote currency."
                       />
                       <Input
                         name="tokenBuyOracle"
                         label="Token buy oracle"
                         placeholder="0xabc...123"
+                        tooltipText="he oracle that will provide the price of the token being sold. Both oracles must have the same quote currency."
                       />
                     </div>
                   </AccordionContent>
@@ -122,6 +129,8 @@ export function AdvancedSettingsDialog() {
                 <Input
                   name="maxHoursSinceOracleUpdates"
                   label="Maximum hours since last oracle update"
+                  type="number"
+                  tooltipText="The maximum number of hours since the last oracle update. If the oracle has not been updated in this time, the order will not be posted."
                 />
               </Accordion>
             </div>
@@ -133,6 +142,7 @@ export function AdvancedSettingsDialog() {
               <Checkbox
                 name="partiallyFillable"
                 label="Enable partially fillable orders"
+                tooltipText="If enabled, the order accepts sell part of the tokens. Limit price is still consider."
               />
             </div>
             <Separator className="my-2" />

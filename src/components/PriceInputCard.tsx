@@ -5,6 +5,8 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { SwapData } from "#/lib/types";
 
+import { InfoTooltip } from "./Tooltip";
+
 export const PriceInputCard = memo(PriceInputCardComponent);
 
 function PriceInputCardComponent({
@@ -43,11 +45,19 @@ function PriceInputCardComponent({
     }
   }, [price]);
 
+  const tooltipText =
+    fieldName === "limitPrice"
+      ? "The maximum price you are willing to pay."
+      : "The price at which the order will be posted.";
+
   return (
     <Card className="bg-background text-foreground w-full p-2 rounded-md">
       <CardTitle>
         <div className="flex justify-between font-normal text-xs">
-          <span>{title}</span>
+          <div className="flex gap-1">
+            <span>{title}</span>
+            <InfoTooltip text={tooltipText} />
+          </div>
           {marketPrice && (
             <button
               className="text-accent hover:text-accent/80"
