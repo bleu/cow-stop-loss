@@ -12,9 +12,6 @@ import { Spinner } from "./Spinner";
 
 export function OrderTabs() {
   const {
-    openOrders,
-    historyOrders,
-    draftOrders,
     isLoading,
     mutate,
     txManager: { isPonderUpdating },
@@ -40,11 +37,9 @@ export function OrderTabs() {
           )}
         </div>
         <TabsList>
-          <TabsTrigger value="draft">Draft ({draftOrders.length})</TabsTrigger>
-          <TabsTrigger value="open">Open ({openOrders.length})</TabsTrigger>
-          <TabsTrigger value="history">
-            History ({historyOrders.length})
-          </TabsTrigger>
+          <TabsTrigger value="draft">Draft</TabsTrigger>
+          <TabsTrigger value="open">Open</TabsTrigger>
+          <TabsTrigger value="history">History</TabsTrigger>
         </TabsList>
       </div>
       <div className="flex rounded-md text-background bg-foreground p-2 max-h-[70vh] overflow-auto">
