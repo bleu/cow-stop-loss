@@ -14,7 +14,8 @@ export const supportedChainIds = [mainnet.id, gnosis.id, sepolia.id] as const;
 export const RPC_PROVIDERS = {
   [mainnet.id]: process.env.RPC_URL_MAINNET,
   [gnosis.id]: process.env.RPC_URL_GNOSIS,
-  [sepolia.id]: process.env.RPC_URL_SEPOLIA,
+  // TODO: Infura API of sepolia for testing
+  [sepolia.id]: "https://sepolia.infura.io/v3/dfe880d50c7344c8ab4dbb1e5b74a51d",
 } as const;
 
 export function createClientForChain(chain: ChainType) {
