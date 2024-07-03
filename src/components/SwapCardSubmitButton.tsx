@@ -106,7 +106,7 @@ function getButtonState({
   if (!tokenBuy || !tokenSell) {
     return {
       disabled: true,
-      text: "Please select tokens",
+      text: "Select tokens",
     };
   }
   if (tokenBuy.address.toLowerCase() === tokenSell.address.toLowerCase()) {
@@ -118,19 +118,19 @@ function getButtonState({
   if (!buyAmount && !sellAmount) {
     return {
       disabled: true,
-      text: "Please enter amounts",
+      text: "Enter amounts",
     };
   }
   if (!limitPrice) {
     return {
       disabled: true,
-      text: "Please enter the limit price",
+      text: "Set the limit price",
     };
   }
   if (!strikePrice) {
     return {
       disabled: true,
-      text: "Please enter the trigger price",
+      text: "Set the trigger price",
     };
   }
   if (marketPrice && strikePrice > marketPrice) {

@@ -170,7 +170,7 @@ export function AdvancedSettingsDialog() {
                 setAdvancedSettings(defaultSettings);
               }}
             >
-              <ResetIcon className="size-3" /> Back to default settings
+              <ResetIcon className="size-3" /> Reset to default settings
             </Button>
           </Form>
         </DialogContent>
