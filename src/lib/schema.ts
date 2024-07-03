@@ -47,7 +47,7 @@ const generateOracleSchema = ({ chainId }: { chainId: ChainId }) => {
         .catch(() => false);
     },
     {
-      message: "Oracle contract not found",
+      message: "Address does not conform to Oracle interface",
     }
   );
 };
