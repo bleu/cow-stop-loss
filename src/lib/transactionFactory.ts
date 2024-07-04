@@ -8,6 +8,7 @@ import { DraftOrder, IToken } from "./types";
 import {
   COMPOSABLE_COW_ADDRESS,
   EXTENSIBLE_FALLBACK_ADDRESS,
+  GPV2_VAULT_RELAYER_ADDRESS,
   STOP_LOSS_ADDRESS,
 } from "./contracts";
 import { FALLBACK_STATES } from "#/hooks/useFallbackState";
@@ -230,7 +231,7 @@ export async function createRawTxArgs({
     return {
       type: TRANSACTION_TYPES.ERC20_APPROVE,
       token,
-      spender: COMPOSABLE_COW_ADDRESS,
+      spender: GPV2_VAULT_RELAYER_ADDRESS,
       amount: totalAmount,
     } as ERC20ApproveArgs;
   });

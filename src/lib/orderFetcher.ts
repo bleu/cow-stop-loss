@@ -6,6 +6,7 @@ import { COMPOSABLE_COW_ADDRESS } from "./contracts";
 import { composableCowAbi } from "./abis/composableCow";
 import {
   CowOrder,
+  OrderStatus,
   StopLossOrderType,
   StopLossOrderTypeWithCowOrders,
 } from "./types";
@@ -24,7 +25,12 @@ export async function getProcessedStopLossOrder({
     orderId: orderId,
   });
   if (!rawOrderData?.order?.stopLossData || !rawOrderData?.order?.hash) return;
-  const cowOrders = await getCowOrders(address, chainId);
+  const cowOrders =
+    (await getRelatedCowOrders({
+      address,
+      chainId,
+      appData: rawOrderData.order.stopLossData.appData,
+    })) || [];
   const singleOrderResult = await publicClient.readContract({
     address: COMPOSABLE_COW_ADDRESS,
     abi: composableCowAbi,
@@ -56,9 +62,7 @@ export async function getProcessedStopLossOrder({
       singleOrder: singleOrderResult,
       filledPct,
     },
-    cowOrdersMatch: cowOrders,
   });
-
   return {
     ...rawOrderData.order,
     status,
@@ -122,7 +126,6 @@ export async function getProcessedStopLossOrders({
 
     const status = getOrderStatus({
       order: orderWithoutStatus,
-      cowOrdersMatch,
     });
 
     return {
@@ -148,24 +151,14 @@ export async function getRelatedCowOrders({
 
 export function getOrderStatus({
   order,
-  cowOrdersMatch,
 }: {
   order: Omit<StopLossOrderType, "status">;
-  cowOrdersMatch: CowOrder[] | undefined;
-}) {
-  if (
-    cowOrdersMatch &&
-    cowOrdersMatch.some(({ status }) => status === "fulfilled")
-  ) {
-    if (order?.stopLossData?.isPartiallyFillable) {
-      if (order?.singleOrder) {
-        return "partiallyFilled";
-      }
-    }
-    return "fulfilled";
-  }
-  if (!order?.singleOrder) {
-    return "cancelled";
-  }
-  return "created";
+}): OrderStatus {
+  if (!order.filledPct && !order.singleOrder) return "canceled";
+
+  if (!order.filledPct) return "open";
+
+  if (order.filledPct >= 1) return "fulfilled";
+
+  return "partiallyFilled";
 }

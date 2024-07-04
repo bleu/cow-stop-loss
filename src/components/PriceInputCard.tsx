@@ -1,4 +1,4 @@
-import { Card, CardContent, CardTitle, formatNumber, Input } from "@bleu/ui";
+import { Card, CardContent, CardTitle, Input } from "@bleu/ui";
 import { memo, useEffect } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
@@ -11,7 +11,6 @@ export const PriceInputCard = memo(PriceInputCardComponent);
 
 function PriceInputCardComponent({
   fieldName,
-  showMarketPrice = false,
 }: {
   fieldName: "limitPrice" | "strikePrice";
   showMarketPrice?: boolean;
@@ -19,9 +18,9 @@ function PriceInputCardComponent({
   const { register, control, getValues, setValue } = useFormContext<SwapData>();
   const title = fieldName === "limitPrice" ? "Limit price" : "Trigger price";
 
-  const [tokenBuy, tokenSell, price, marketPrice] = useWatch({
+  const [tokenBuy, price, marketPrice] = useWatch({
     control,
-    name: ["tokenBuy", "tokenSell", fieldName, "marketPrice"],
+    name: ["tokenBuy", fieldName, "marketPrice"],
   });
 
   async function updateDisabledAmount() {
@@ -63,10 +62,10 @@ function PriceInputCardComponent({
               className="text-accent hover:text-accent/80"
               type="button"
               onClick={() => {
-                setValue(fieldName, marketPrice);
+                setValue(fieldName, Number(marketPrice.toFixed(4)));
               }}
             >
-              Set to market
+              Market
             </button>
           )}
         </div>
@@ -83,14 +82,6 @@ function PriceInputCardComponent({
           />
           {tokenBuy && tokenBuy && <span>{tokenBuy.symbol}</span>}
         </div>
-        {showMarketPrice && marketPrice && (
-          <div className="flex flex-col items-start justify-between font-normal text-foreground/70">
-            <span className="text-xs">
-              Current: {tokenSell.symbol} = {formatNumber(marketPrice, 2)}{" "}
-              {tokenBuy.symbol}
-            </span>
-          </div>
-        )}
       </CardContent>
     </Card>
   );

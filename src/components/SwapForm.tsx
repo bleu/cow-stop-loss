@@ -12,6 +12,7 @@ import { SwapData } from "#/lib/types";
 
 import { AdvancedSettingsAlert } from "./AdvancedSettingsAlert";
 import { AdvancedSettingsDialog } from "./AdvancedSettingsDialog";
+import { CurrentMarketPrice } from "./CurrentMarketPrice";
 import { InvertTokensSeparator } from "./InvertTokensSeparator";
 import { OrderTypeSwitch } from "./OrderTypeSwitch";
 import { PriceInputCard } from "./PriceInputCard";
@@ -42,8 +43,8 @@ export function SwapForm() {
   return (
     <Form
       {...form}
-      onSubmit={(data) => {
-        const newOrder = createDraftOrder(data);
+      onSubmit={async (data) => {
+        const newOrder = await createDraftOrder(data);
         setCurrentDraftOrder(newOrder);
         setReviewDialogOpen(true);
       }}
@@ -61,12 +62,13 @@ export function SwapForm() {
           <OrderTypeSwitch />
           <AdvancedSettingsDialog />
         </CardTitle>
-        <CardContent className="flex flex-col gap-4 py-5 px-0">
+        <CardContent className="flex flex-col gap-2 py-5 px-0">
           <TokenInputCard side="Sell" />
           <div className="flex gap-2 justify-between">
-            <PriceInputCard fieldName="strikePrice" showMarketPrice />
+            <PriceInputCard fieldName="strikePrice" />
             <PriceInputCard fieldName="limitPrice" />
           </div>
+          <CurrentMarketPrice />
           <InvertTokensSeparator />
           <TokenInputCard side="Buy" />
           <AdvancedSettingsAlert />

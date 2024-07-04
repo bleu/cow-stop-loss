@@ -14,6 +14,9 @@ export function OrderTabs() {
   const {
     isLoading,
     mutate,
+    openOrders,
+    historyOrders,
+    draftOrders,
     txManager: { isPonderUpdating },
   } = useOrder();
 
@@ -37,9 +40,15 @@ export function OrderTabs() {
           )}
         </div>
         <TabsList>
-          <TabsTrigger value="draft">Draft</TabsTrigger>
-          <TabsTrigger value="open">Open</TabsTrigger>
-          <TabsTrigger value="history">History</TabsTrigger>
+          <TabsTrigger value="draft">
+            Draft{draftOrders.length > 0 && ` (${draftOrders.length})`}
+          </TabsTrigger>
+          <TabsTrigger value="open">
+            Open{openOrders.length > 0 && ` (${openOrders.length})`}
+          </TabsTrigger>
+          <TabsTrigger value="history">
+            History{historyOrders.length > 0 && ` (${historyOrders.length})`}
+          </TabsTrigger>
         </TabsList>
       </div>
       <div className="flex rounded-md text-background bg-foreground p-2 max-h-[70vh] overflow-auto">

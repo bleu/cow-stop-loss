@@ -73,8 +73,12 @@ export function OrderProvider({ children }: PropsWithChildren) {
     }
   }, [txManager.isPonderUpdating]);
 
-  const historyOrders = orders.filter((order) => !order.singleOrder);
-  const openOrders = orders.filter((order) => order.singleOrder);
+  const historyOrders = orders.filter(
+    (order) => !order.singleOrder || order.status === "fulfilled"
+  );
+  const openOrders = orders.filter(
+    (order) => order.singleOrder && order.status !== "fulfilled"
+  );
 
   return (
     <OrderContext.Provider

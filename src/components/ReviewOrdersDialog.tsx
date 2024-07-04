@@ -26,6 +26,7 @@ import { createRawTxArgs } from "#/lib/transactionFactory";
 import { DraftOrder, IToken } from "#/lib/types";
 
 import { AddressWithLink } from "./AddressWithLink";
+import { OraclePriceWarning } from "./OraclePriceAlert";
 import { TokenAmount } from "./TokenAmount";
 import { TokenInfo } from "./TokenInfo";
 
@@ -145,6 +146,7 @@ function OrderTab({ order }: { order: DraftOrder }) {
           balance={order.amountBuy}
         />
         <div className="w-full flex flex-col gap-1 mt-2">
+          <OraclePriceWarning draftOrder={order} />
           <OrderInformation title="Trigger price">
             {order.tokenSell.symbol} price bellow{" "}
             {formatNumber(order.strikePrice, 2)} {order.tokenBuy.symbol}
@@ -164,6 +166,9 @@ function OrderTab({ order }: { order: DraftOrder }) {
           </OrderInformation>
           <OrderInformation title={`${order.tokenBuy.symbol} oracle`}>
             <AddressWithLink address={order.tokenBuyOracle} />
+          </OrderInformation>
+          <OrderInformation title="Current oracle price">
+            {formatNumber(order.oraclePrice, 2)}
           </OrderInformation>
           <OrderInformation title="Oracles condition">
             Last update on the last{" "}
