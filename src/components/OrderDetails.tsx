@@ -239,7 +239,7 @@ export function OrderDetails({
           )}
           <OrderInformation
             label="Oracle Token In"
-            tooltipText="A chainlink-like oracle  that provides the current selling price of a token in a specified currency."
+            tooltipText="A oracle that provides the current selling price of a token in a specified currency."
           >
             <div className="flex items-center gap-x-1">
               {order?.stopLossData?.sellTokenPriceOracle}
@@ -251,8 +251,8 @@ export function OrderDetails({
             </div>
           </OrderInformation>
           <OrderInformation
-            label="Oracle Token In"
-            tooltipText="A chainlink-like oracle that gives the current buying price of a token in the same currency."
+            label="Oracle Token Out"
+            tooltipText="A oracle that gives the current buying price of a token in the same currency."
           >
             <div className="flex items-center gap-x-1">
               {order?.stopLossData?.buyTokenPriceOracle}
