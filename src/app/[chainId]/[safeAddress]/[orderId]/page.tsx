@@ -1,3 +1,4 @@
+import { notFound } from "next/navigation";
 import { Address } from "viem";
 
 import { OrderDetails } from "#/components/OrderDetails";
@@ -23,5 +24,5 @@ export default async function OrderPage({
     return <OrderDetails order={order} />;
   }
 
-  return <div>Order not found</div>;
+  notFound();
 }
