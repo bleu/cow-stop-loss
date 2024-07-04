@@ -19,11 +19,11 @@ export function OraclePriceWarning({ draftOrder }: { draftOrder: DraftOrder }) {
   const oracleAndMarketPriceDiffAboveThreshold =
     Math.abs(draftOrder.oraclePrice - draftOrder.marketPrice) /
       draftOrder.marketPrice >
-    0.1;
+    0.02;
   if (oracleAndMarketPriceDiffAboveThreshold) {
     return (
       <AlertCard style="warning" title="Oracle price differs from market price">
-        The oracle price differs from the market price by more than 10%. Please
+        The oracle price differs from the market price by more than 2%. Please
         proceed with caution.
       </AlertCard>
     );
