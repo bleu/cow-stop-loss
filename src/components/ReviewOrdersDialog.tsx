@@ -148,13 +148,23 @@ function OrderTab({ order }: { order: DraftOrder }) {
         <div className="w-full flex flex-col gap-1 mt-2">
           <OraclePriceWarning draftOrder={order} />
           <OrderInformation title="Trigger price">
-            {order.tokenSell.symbol} price bellow{" "}
-            {formatNumber(order.strikePrice, 2)} {order.tokenBuy.symbol}
+            {order.tokenSell.symbol} = {formatNumber(order.strikePrice, 4)}{" "}
+            {order.tokenBuy.symbol}
           </OrderInformation>
           <OrderInformation title="Limit price">
-            {order.tokenSell.symbol} price bellow{" "}
-            {formatNumber(order.limitPrice, 2)} {order.tokenBuy.symbol}
+            {order.tokenSell.symbol} = {formatNumber(order.limitPrice, 4)}{" "}
+            {order.tokenBuy.symbol}
           </OrderInformation>
+          <OrderInformation title="Current oracle price">
+            {order.tokenSell.symbol} = {formatNumber(order.oraclePrice, 4)}{" "}
+            {order.tokenBuy.symbol}
+          </OrderInformation>
+          {order.marketPrice && (
+            <OrderInformation title="Current market price">
+              {order.tokenSell.symbol} = {formatNumber(order.marketPrice, 4)}{" "}
+              {order.tokenBuy.symbol}
+            </OrderInformation>
+          )}
           <OrderInformation title="Type">
             {order.partiallyFillable ? "Partial fillable" : "Fill or Kill"}
           </OrderInformation>
@@ -166,9 +176,6 @@ function OrderTab({ order }: { order: DraftOrder }) {
           </OrderInformation>
           <OrderInformation title={`${order.tokenBuy.symbol} oracle`}>
             <AddressWithLink address={order.tokenBuyOracle} />
-          </OrderInformation>
-          <OrderInformation title="Current oracle price">
-            {formatNumber(order.oraclePrice, 2)}
           </OrderInformation>
           <OrderInformation title="Oracles condition">
             Last update on the last{" "}
