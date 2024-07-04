@@ -18,7 +18,7 @@ export function AddressWithLink({ address }: { address: string }) {
       <BlockExplorerLink
         type="address"
         label={<ArrowTopRightIcon />}
-        identifier="0x1234...5678"
+        identifier={address}
         networkId={chainId as ChainId}
       />
     </div>
