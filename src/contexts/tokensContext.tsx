@@ -1,7 +1,7 @@
 "use client";
 
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import React from "react";
+import React, { useEffect } from "react";
 
 import { cowTokenList } from "#/lib/cowTokenList";
 import { ChainId } from "#/lib/publicClients";
@@ -44,7 +44,7 @@ export const TokensContextProvider = ({
 
   const [importedTokenList, setImportedTokenList] = React.useState<
     ITokenWithChainId[]
-  >(fetchFromLocalStorage("importedTokens") || []);
+  >([]);
   const [tokenPricesMapping, setTokenPricesMapping] =
     React.useState<Record<string, number>>();
 
@@ -95,6 +95,14 @@ export const TokensContextProvider = ({
       JSON.stringify(newImportedTokenList)
     );
   }
+
+  useEffect(() => {
+    const importedTokens =
+      fetchFromLocalStorage<ITokenWithChainId[]>("importedTokens");
+    setImportedTokenList(
+      importedTokens?.filter((token) => token.chainId === chainId) || []
+    );
+  }, [chainId]);
 
   return (
     <TokensContext.Provider
