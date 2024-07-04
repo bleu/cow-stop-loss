@@ -6,6 +6,6 @@ import { CowOrder } from "../types";
 
 export async function getCowOrders(userAddress: Address, chainId: ChainId) {
   const baseUrl = COW_API_URL_BY_CHAIN_ID[chainId];
-  const url = `${baseUrl}/api/v1/account/${userAddress}/orders`;
+  const url = `${baseUrl}/api/v1/account/${userAddress}/orders?limit=1000`;
   return await fetcher<CowOrder[]>(url);
 }
