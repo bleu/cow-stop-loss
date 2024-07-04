@@ -32,7 +32,7 @@ export interface IGnosisPriceFeedItem {
   pair: [string, string];
 }
 
-abstract class OracleRouter {
+export abstract class OracleRouter {
   publicClient: PublicClient;
   chainId: ChainId;
   tokenSell: IToken;

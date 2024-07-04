@@ -4,7 +4,7 @@ import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React, { useEffect } from "react";
 import { Address } from "viem";
 
-import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
+import { CHAINS_ORACLE_ROUTER_FACTORY, IRoute } from "#/lib/oracleRouter";
 import { ChainId } from "#/lib/publicClients";
 import {
   AdvancedSwapSettings,
@@ -18,7 +18,7 @@ import { useOrder } from "./ordersContext";
 interface ISwapContext {
   currentDraftOrder?: DraftOrder;
   advancedSettings: AdvancedSwapSettings;
-  createDraftOrder: (data: SwapData) => DraftOrder;
+  createDraftOrder: (data: SwapData) => Promise<DraftOrder>;
   reviewDialogOpen: boolean;
   setReviewDialogOpen: (open: boolean) => void;
   setAdvancedSettings: (data: AdvancedSwapSettings) => void;
@@ -47,14 +47,12 @@ export const SwapCardContextProvider = ({
     safe: { safeAddress, chainId },
   } = useSafeAppsSDK();
   const { draftOrders } = useOrder();
-
   const [reviewDialogOpen, setReviewDialogOpen] = React.useState(false);
   const [firstAccess, setFirstAccess] = React.useState(
     localStorage.getItem("firstAccess") === null
   );
 
-  const [tokenSellOracle, setTokenSellOracle] = React.useState<Address>();
-  const [tokenBuyOracle, setTokenBuyOracle] = React.useState<Address>();
+  const [oracleRoute, setOracleRoute] = React.useState<IRoute>();
   const [currentDraftOrder, setCurrentDraftOrder] =
     React.useState<DraftOrder>();
 
@@ -86,30 +84,46 @@ export const SwapCardContextProvider = ({
       tokenSell: tokenSell,
     });
     try {
-      const { tokenBuyOracle, tokenSellOracle } =
-        await oracleRouter.findRoute();
-      setTokenBuyOracle(tokenBuyOracle);
-      setTokenSellOracle(tokenSellOracle);
+      const route = await oracleRouter.findRoute();
+      setOracleRoute(route);
     } catch {
-      setTokenBuyOracle(undefined);
-      setTokenSellOracle(undefined);
+      setOracleRoute(undefined);
     }
     setIsLoading(false);
   }
 
-  function createDraftOrder(data: SwapData) {
+  async function createDraftOrder(data: SwapData) {
+    let tokenBuyOracle = advancedSettings.tokenBuyOracle;
+    let tokenSellOracle = advancedSettings.tokenSellOracle;
+    if (!advancedSettings.tokenBuyOracle || !advancedSettings.tokenSellOracle) {
+      if (!oracleRoute) {
+        throw new Error("No route found");
+      }
+      tokenBuyOracle = oracleRoute.tokenBuyOracle;
+      tokenSellOracle = oracleRoute.tokenSellOracle;
+    }
+    if (!tokenBuyOracle || !tokenSellOracle) {
+      throw new Error("Oracle not found");
+    }
+    const oracleRouter = new oracleRouterClass({
+      chainId: chainId as ChainId,
+      tokenBuy: data.tokenBuy,
+      tokenSell: data.tokenSell,
+    });
+
+    const oraclePrice = await oracleRouter.calculatePrice({
+      tokenBuyOracle,
+      tokenSellOracle,
+    });
+
     const draftOrder: DraftOrder = {
       ...data,
       ...advancedSettings,
+      tokenBuyOracle,
+      tokenSellOracle,
       id: `draft-${draftOrders.length}-${Date.now()}`,
+      oraclePrice,
     };
-    if (!advancedSettings.tokenBuyOracle || !advancedSettings.tokenSellOracle) {
-      if (!tokenBuyOracle || !tokenSellOracle) {
-        throw new Error("Chainlink oracle not found");
-      }
-      draftOrder.tokenBuyOracle = tokenBuyOracle;
-      draftOrder.tokenSellOracle = tokenSellOracle;
-    }
     return draftOrder;
   }
 
@@ -131,8 +145,8 @@ export const SwapCardContextProvider = ({
         advancedSettings,
         setAdvancedSettings,
         updateOracle,
-        tokenSellOracle,
-        tokenBuyOracle,
+        tokenSellOracle: oracleRoute?.tokenSellOracle,
+        tokenBuyOracle: oracleRoute?.tokenBuyOracle,
         firstAccess,
         setFirstAccess,
       }}

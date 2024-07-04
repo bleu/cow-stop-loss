@@ -24,6 +24,7 @@ export type SwapData = z.input<ReturnType<typeof generateSwapSchema>>;
 export type DraftOrder = SwapData &
   AdvancedSwapSettings & {
     id: string;
+    oraclePrice: number;
   };
 
 type StopLossOrderTypeRaw = ArrElement<
