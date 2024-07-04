@@ -2,16 +2,16 @@
 
 import { Badge } from "@bleu/ui";
 
-export function StatusBadge({ status }: { status: string | undefined }) {
+import { OrderStatus } from "#/lib/types";
+
+export function StatusBadge({ status }: { status: OrderStatus | string }) {
   switch (status) {
-    case "created":
+    case "open":
       return (
         <Badge className="text-black bg-highlight hover:bg-highlight/70">
-          Waiting condition
+          Open
         </Badge>
       );
-    case "posted":
-      return <Badge color="successOutline">Posted</Badge>;
     case "fulfilled":
       return (
         <Badge
@@ -30,7 +30,7 @@ export function StatusBadge({ status }: { status: string | undefined }) {
           Partially Filled
         </Badge>
       );
-    case "cancelled":
+    case "canceled":
       return (
         <Badge color="destructive" className="text-foreground">
           Cancelled

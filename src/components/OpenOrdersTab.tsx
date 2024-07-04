@@ -22,6 +22,8 @@ import { useTokens } from "#/contexts/tokensContext";
 import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { IToken, StopLossOrderType } from "#/lib/types";
 
+import { StatusBadge } from "./StatusBadge";
+
 export function OpenOrdersTab() {
   const {
     openOrders,
@@ -55,7 +57,8 @@ export function OpenOrdersTab() {
           <TableCell>Order</TableCell>
           <TableCell>Trigger price</TableCell>
           <TableCell>Current price</TableCell>
-          <TableCell className="rounded-tr-md">Filled</TableCell>
+          <TableCell>Filled</TableCell>
+          <TableCell className="rounded-tr-md">Status</TableCell>
         </TableHeader>
         <TableBody>
           {openOrders.length ? (
@@ -76,7 +79,7 @@ export function OpenOrdersTab() {
             })
           ) : (
             <TableRow>
-              <TableCell colSpan={6} className="text-center">
+              <TableCell colSpan={7} className="text-center">
                 No open orders. Create a new one to get started.
               </TableCell>
             </TableRow>
@@ -192,6 +195,9 @@ export function OpenOrderRow({
           : `Loading...`}
       </TableCell>
       <TableCell>{((order.filledPct || 0) * 100).toFixed()}%</TableCell>
+      <TableCell>
+        <StatusBadge status={order.status} />
+      </TableCell>
     </TableRow>
   );
 }

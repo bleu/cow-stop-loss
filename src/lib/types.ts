@@ -10,6 +10,8 @@ export interface IToken {
   address: Address;
 }
 
+export type OrderStatus = "open" | "canceled" | "fulfilled" | "partiallyFilled";
+
 export interface ITokenWithValue extends IToken {
   balance: string;
   usdPrice: number;
@@ -32,7 +34,7 @@ type StopLossOrderTypeRaw = ArrElement<
 >;
 
 export interface StopLossOrderType extends StopLossOrderTypeRaw {
-  status?: string;
+  status: OrderStatus;
   executedBuyAmount?: string;
   executedSellAmount?: string;
   executedSurplusFee?: string;
