@@ -91,7 +91,7 @@ export async function stopLossArgsEncoder(
     data.tokenBuy.decimals
   );
 
-  const validityBucketSeconds = 24 * 60 * 60;
+  const validityBucketSeconds = 24 * 3600;
 
   return encodeAbiParameters(stopLossDataStructure, [
     data.tokenSell.address,
@@ -106,6 +106,6 @@ export async function stopLossArgsEncoder(
     data.tokenSellOracle,
     data.tokenBuyOracle,
     strikePriceWithDecimals,
-    (data.maxHoursSinceOracleUpdates * 60).toFixed(),
+    (data.maxHoursSinceOracleUpdates * 3600).toFixed(),
   ]);
 }
