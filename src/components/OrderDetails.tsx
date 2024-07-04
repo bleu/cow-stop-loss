@@ -11,6 +11,7 @@ import {
 import { ArrowLeftIcon, CopyIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import Link from "next/link";
+import useSWR from "swr";
 import { Address, formatUnits } from "viem";
 
 import { LinkComponent } from "#/components/Link";
@@ -18,6 +19,7 @@ import { OrderInformation } from "#/components/OrderInformation";
 import { StatusBadge } from "#/components/StatusBadge";
 import { TokenLogo } from "#/components/TokenLogo";
 import { InfoTooltip } from "#/components/Tooltip";
+import { getProcessedStopLossOrder } from "#/lib/orderFetcher";
 import { ChainId } from "#/lib/publicClients";
 import { formatTimeDelta } from "#/lib/timeDelta";
 import { StopLossOrderTypeWithCowOrders } from "#/lib/types";
@@ -29,10 +31,27 @@ import {
 } from "#/utils";
 
 export function OrderDetails({
-  order,
+  defaultOrder,
+  orderId,
+  chainId,
+  address,
 }: {
-  order: StopLossOrderTypeWithCowOrders;
+  defaultOrder: StopLossOrderTypeWithCowOrders;
+  orderId: string;
+  address: Address;
+  chainId: ChainId;
 }) {
+  const orderFetcher = async () => {
+    return await getProcessedStopLossOrder({
+      chainId,
+      orderId,
+      address,
+    });
+  };
+  const { data: order } = useSWR(["orderDetails"], orderFetcher, {
+    fallbackData: defaultOrder,
+  });
+
   const { safe } = useSafeAppsSDK();
   const orderDateTime = formatDateTime(
     epochToDate(Number(order?.blockTimestamp))
@@ -108,7 +127,7 @@ export function OrderDetails({
             label="Status"
             tooltipText="The status can be Created, Posted, Fulfilled, Expired and Cancelled"
           >
-            <StatusBadge status={order?.status} />
+            <StatusBadge status={order?.status || ""} />
           </OrderInformation>
           <OrderInformation
             label="Submission Time"

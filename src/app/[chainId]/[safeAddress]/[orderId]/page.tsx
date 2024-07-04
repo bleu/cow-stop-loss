@@ -14,14 +14,21 @@ export default async function OrderPage({
     orderId: string;
   };
 }) {
-  const order = await getProcessedStopLossOrder({
+  const defaultOrder = await getProcessedStopLossOrder({
     chainId: params.chainId,
     orderId: params.orderId,
     address: params.safeAddress,
   });
 
-  if (order) {
-    return <OrderDetails order={order} />;
+  if (defaultOrder) {
+    return (
+      <OrderDetails
+        defaultOrder={defaultOrder}
+        orderId={params.orderId}
+        chainId={params.chainId}
+        address={params.safeAddress}
+      />
+    );
   }
 
   notFound();
