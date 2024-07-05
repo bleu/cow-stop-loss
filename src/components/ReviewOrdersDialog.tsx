@@ -4,9 +4,6 @@ import {
   Button,
   Dialog,
   DialogContent,
-  DialogOverlay,
-  DialogPortal,
-  DialogTitle,
   formatNumber,
   TabsContent,
   TabsList,
@@ -77,59 +74,51 @@ export function ReviewOrdersDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogPortal>
-        <DialogOverlay
-          id="dialog-overlay"
-          className={cn(
-            "bg-black/20 data-[state=open]:animate-overlayShow fixed inset-0 rounded-lg",
-          )}
-        />
-        <DialogContent
-          className={cn(
-            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-lg focus:outline-none bg-foreground  w-[90vw] max-w-[450px] p-[25px] overflow-y-scroll",
-          )}
-        >
-          <div className="flex flex-col gap-2 w-full">
-            <DialogTitle className="text-2xl font-medium ">
-              Review stop-loss order{multipleOrders ? "s" : ""}
-            </DialogTitle>
-            <TabsRoot>
-              <TabsList defaultValue={String(0)} className="flex justify-start">
-                {draftOrders.map((order, index) => {
-                  return (
-                    <TabsTrigger
-                      value={order.id}
-                      className="data-[state=active]:text-white"
-                    >{`#${index + 1}`}</TabsTrigger>
-                  );
-                })}
-              </TabsList>
-              {draftOrders.map((order) => {
-                return <OrderTab order={order} />;
-              })}
-            </TabsRoot>
-
-            <Button className="w-full mt-3" onClick={onSubmit}>
-              {multipleOrders
-                ? `Place all ${draftOrders.length} stop-loss orders`
-                : "Place stop-loss order"}
-            </Button>
-            {showAddOrders && (
-              <Button
-                variant="link"
-                className=" text-wrap text-xs text-white"
-                onClick={() => {
-                  addDraftOrders(draftOrders);
-                  setOpen(false);
-                }}
-              >
-                Want to place another orders to save fees? Click here to save
-                this one into drafts and create another one.
-              </Button>
-            )}
+      <DialogContent
+        className={cn(
+          "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-foreground w-[90vw] max-w-[450px]"
+        )}
+      >
+        <div className="flex flex-col gap-2 w-full overflow-y-scroll max-h-[85vh]">
+          <div className="text-2xl font-medium ">
+            Review Stop Loss order{multipleOrders ? "s" : ""}
           </div>
-        </DialogContent>
-      </DialogPortal>
+          <TabsRoot>
+            <TabsList defaultValue={String(0)} className="flex justify-start">
+              {draftOrders.map((order, index) => {
+                return (
+                  <TabsTrigger
+                    value={order.id}
+                    className="data-[state=active]:text-white"
+                  >{`#${index + 1}`}</TabsTrigger>
+                );
+              })}
+            </TabsList>
+            {draftOrders.map((order) => {
+              return <OrderTab order={order} />;
+            })}
+          </TabsRoot>
+
+          <Button className="w-full mt-3" onClick={onSubmit}>
+            {multipleOrders
+              ? `Place all ${draftOrders.length} Stop Loss orders`
+              : "Place Stop Loss order"}
+          </Button>
+          {showAddOrders && (
+            <Button
+              variant="link"
+              className=" text-wrap text-xs text-white"
+              onClick={() => {
+                addDraftOrders(draftOrders);
+                setOpen(false);
+              }}
+            >
+              Want to place another orders to save fees? Click here to save this
+              one into drafts and create another one.
+            </Button>
+          )}
+        </div>
+      </DialogContent>
     </Dialog>
   );
 }
