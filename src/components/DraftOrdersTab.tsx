@@ -24,7 +24,7 @@ export function DraftOrdersTab() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const selectedOrders = draftOrders.filter((order) =>
-    selectedIds.includes(order.id)
+    selectedIds.includes(order.id),
   );
 
   return (
@@ -35,8 +35,8 @@ export function DraftOrdersTab() {
         draftOrders={selectedOrders}
       />
       <div className="flex flex-col gap-2">
-        <Table className="w-full rounded-md border-separate border">
-          <TableHeader className="bg-background/70 text-foreground border-b">
+        <Table className="w-full rounded-lg">
+          <TableHeader className="bg-background">
             <TableCell className="rounded-tl-md">
               <span className="sr-only">Select</span>
             </TableCell>
@@ -58,7 +58,7 @@ export function DraftOrdersTab() {
                         return;
                       }
                       setSelectedIds(
-                        selectedIds.filter((id) => id !== order.id)
+                        selectedIds.filter((id) => id !== order.id),
                       );
                     }}
                   />

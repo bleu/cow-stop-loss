@@ -1,4 +1,4 @@
-import { Card, CardContent, CardTitle, Input } from "@bleu/ui";
+import { Button, Card, CardContent, CardTitle, Input } from "@bleu/ui";
 import { memo, useEffect } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
@@ -35,7 +35,7 @@ function PriceInputCardComponent({
     });
     setValue(
       isSellOrder ? "amountBuy" : "amountSell",
-      isSellOrder ? buyAmount : sellAmount
+      isSellOrder ? buyAmount : sellAmount,
     );
   }
 
@@ -51,7 +51,7 @@ function PriceInputCardComponent({
       : TOOLTIP_DESCRIPTIONS.TRIGGER_PRICE;
 
   return (
-    <Card className="bg-background text-foreground w-full p-2 rounded-md">
+    <Card className="bg-background  w-full p-2 rounded-lg">
       <CardTitle>
         <div className="flex justify-between font-normal text-xs">
           <div className="flex gap-1">
@@ -59,15 +59,16 @@ function PriceInputCardComponent({
             <InfoTooltip text={tooltipText} />
           </div>
           {marketPrice && (
-            <button
-              className="text-accent hover:text-accent/80"
+            <Button
               type="button"
+              variant="ghost"
+              className="py-0 px-1 h-fit text-accent"
               onClick={() => {
                 setValue(fieldName, Number(marketPrice.toFixed(4)));
               }}
             >
               Market
-            </button>
+            </Button>
           )}
         </div>
       </CardTitle>
@@ -78,7 +79,7 @@ function PriceInputCardComponent({
             type="number"
             step={1 / 10 ** 18}
             placeholder="0.0"
-            className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:text-foreground/70 px-0 text-2xl"
+            className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:/70 px-0 text-2xl"
             min={0}
           />
           {tokenBuy && tokenBuy && <span>{tokenBuy.symbol}</span>}

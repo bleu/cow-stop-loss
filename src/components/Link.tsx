@@ -2,19 +2,23 @@
 
 import { Url } from "next/dist/shared/lib/router/router";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 import { Spinner } from "./Spinner";
 
 export function LinkComponent({
   href,
+  backToLastPage = false,
   children,
   className,
 }: {
-  href: Url;
+  href?: Url;
+  backToLastPage?: boolean;
   children: React.ReactElement;
   className?: string;
 }) {
+  const router = useRouter();
   const [isLoading, setIsLoading] = React.useState(false);
 
   const ClonedElement = React.cloneElement(children, {
@@ -25,9 +29,22 @@ export function LinkComponent({
     return <div className={className}>{ClonedElement}</div>;
   }
 
+  if (backToLastPage) {
+    return (
+      <button
+        onClick={() => {
+          setIsLoading(true);
+          router.back();
+        }}
+        className={className}
+      >
+        {ClonedElement}
+      </button>
+    );
+  }
   return (
     <Link
-      href={href.toString()}
+      href={href?.toString() || "/"}
       prefetch={false}
       className={className}
       onClick={() => {

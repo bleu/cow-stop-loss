@@ -8,10 +8,10 @@ import { useSwapCardContext } from "#/contexts/swapCardContext";
 export function SwapCardIntroduction() {
   const { setFirstAccess } = useSwapCardContext();
   return (
-    <Card className="bg-foreground text-background w-full p-5 rounded-md overflow-auto">
+    <Card className="bg-foreground  w-full p-5 rounded-lg overflow-auto">
       <CardTitle className="w-full flex flex-col items-center">
-        <span className="text-xl">Start creating</span>
-        <span className="text-2xl">stop-loss orders</span>
+        <span className="text-lg">Start creating</span>
+        <span className="text-4xl text-primary">stop-loss orders</span>
       </CardTitle>
       <CardContent className="flex flex-col gap-4 py-5 px-0">
         <span className="text-sm">
@@ -19,19 +19,19 @@ export function SwapCardIntroduction() {
         </span>
         <div className="grid grid-cols-2 gap-4">
           <StepBulletPoint
-            icon={<span className="text-lg text-accent font-semibold">1.</span>}
+            icon={<span className="text-lg text-success font-bold">1.</span>}
             description="Choose the tokens you want to swap"
           />
           <StepBulletPoint
-            icon={<span className="text-lg text-accent font-semibold">2.</span>}
+            icon={<span className="text-lg text-success font-bold">2.</span>}
             description="Define the token amount to sell or buy"
           />
           <StepBulletPoint
-            icon={<span className="text-lg text-accent font-semibold">3.</span>}
+            icon={<span className="text-lg text-success font-bold">3.</span>}
             description="Set up a trigger and limit price to condition your order"
           />
           <StepBulletPoint
-            icon={<span className="text-lg text-accent font-semibold">4.</span>}
+            icon={<span className="text-lg text-success font-bold">4.</span>}
             description="Review the order and you are ready to go or..."
           />
         </div>

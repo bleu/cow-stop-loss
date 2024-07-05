@@ -175,7 +175,7 @@ const TRANSACTION_CREATORS: {
 export class TransactionFactory {
   static async createRawTx<T extends TRANSACTION_TYPES>(
     type: T,
-    args: TransactionBindings[T]
+    args: TransactionBindings[T],
   ): Promise<BaseTransaction> {
     const TransactionCreator = TRANSACTION_CREATORS[type];
     const txCreator = new TransactionCreator();
@@ -221,12 +221,12 @@ export async function createRawTxArgs({
 
   const approveTxs = Array.from(uniqueTokenSell).map((tokenAddress) => {
     const ordersWithSameTokenSell = data.filter(
-      (order) => order.tokenSell.address === tokenAddress
+      (order) => order.tokenSell.address === tokenAddress,
     );
     const token = ordersWithSameTokenSell[0].tokenSell;
     const totalAmount = ordersWithSameTokenSell.reduce(
       (acc, order) => acc + order.amountSell,
-      0
+      0,
     );
     return {
       type: TRANSACTION_TYPES.ERC20_APPROVE,
@@ -242,7 +242,7 @@ export async function createRawTxArgs({
       ...order,
       chainId,
       safeAddress,
-    }))
+    })),
   );
 
   return [...setupTxs, ...approveTxs, ...ordersTxs];

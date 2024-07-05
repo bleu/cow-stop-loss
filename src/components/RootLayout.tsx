@@ -18,8 +18,8 @@ export function RootLayout({ children }: React.PropsWithChildren) {
       <QueryClientProvider client={queryClient}>
         <TokensContextProvider>
           <OrderProvider>
-            <div className="flex flex-col size-full min-h-screen justify-between">
-              <Header linkUrl={"/builder"} imageSrc={"/assets/stoploss.svg"} />
+            <div className="flex flex-col min-h-screen size-screen justify-between">
+              <Header linkUrl={"/"} imageSrc={"/assets/stoploss.svg"} />
               <div className="size-full bg-background">{children}</div>
               <Footer
                 githubLink="https://github.com/bleu-fi/composable-cow-hub"
@@ -36,7 +36,7 @@ export function RootLayout({ children }: React.PropsWithChildren) {
 
 function SafeLoader() {
   return (
-    <div className="bg-background flex size-full flex-col justify-center items-center px-12 py-16 md:py-20 text-foreground">
+    <div className="bg-background flex size-full flex-col justify-center items-center px-12 py-16 md:py-20 ">
       <div className="text-center text-3xl">This is a Safe (wallet) App</div>
       <p className="text-xl">
         To access please use this

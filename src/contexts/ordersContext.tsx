@@ -50,7 +50,7 @@ export function OrderProvider({ children }: PropsWithChildren) {
     getProcessedStopLossOrders,
     {
       fallbackData: [],
-    }
+    },
   );
 
   const [txPendingDialog, setTxPendingDialog] = useState(false);
@@ -74,10 +74,10 @@ export function OrderProvider({ children }: PropsWithChildren) {
   }, [txManager.isPonderUpdating]);
 
   const historyOrders = orders.filter(
-    (order) => !order.singleOrder || order.status === "fulfilled"
+    (order) => !order.singleOrder || order.status === "fulfilled",
   );
   const openOrders = orders.filter(
-    (order) => order.singleOrder && order.status !== "fulfilled"
+    (order) => order.singleOrder && order.status !== "fulfilled",
   );
 
   return (

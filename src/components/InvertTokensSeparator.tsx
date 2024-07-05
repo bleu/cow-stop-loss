@@ -1,4 +1,4 @@
-import { Separator } from "@bleu/ui";
+import { Button, Separator } from "@bleu/ui";
 import { UpdateIcon } from "@radix-ui/react-icons";
 import { memo } from "react";
 import { useFormContext } from "react-hook-form";
@@ -45,13 +45,14 @@ function InvertTokensSeparatorComponent() {
       <div className="w-2/5">
         <Separator />
       </div>
-      <button
-        className="flex justify-center w-1/5"
+      <Button
+        className="flex justify-center w-1/5 hover:text-primary/70"
         type="button"
+        variant="link"
         onClick={invertTokens}
       >
-        <UpdateIcon className="size-6 text-accent hover:text-accent/70" />
-      </button>
+        <UpdateIcon className="size-6" />
+      </Button>
       <div className="w-2/5">
         <Separator />
       </div>

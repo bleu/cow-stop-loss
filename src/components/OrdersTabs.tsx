@@ -22,7 +22,10 @@ export function OrderTabs() {
 
   const isUpdating = isLoading || isPonderUpdating;
   return (
-    <TabsRoot className="w-full flex flex-col gap-2" defaultValue="draft">
+    <TabsRoot
+      className="w-full h-[70vh] flex flex-col gap-2"
+      defaultValue="draft"
+    >
       <div className="flex flex-row justify-between items-center">
         <div className="flex gap-2 items-center">
           <span className="text-2xl font-semibold">Your orders</span>
@@ -40,18 +43,21 @@ export function OrderTabs() {
           )}
         </div>
         <TabsList>
-          <TabsTrigger value="draft">
+          <TabsTrigger className="data-[state=active]:text-white" value="draft">
             Draft{draftOrders.length > 0 && ` (${draftOrders.length})`}
           </TabsTrigger>
-          <TabsTrigger value="open">
+          <TabsTrigger className="data-[state=active]:text-white" value="open">
             Open{openOrders.length > 0 && ` (${openOrders.length})`}
           </TabsTrigger>
-          <TabsTrigger value="history">
+          <TabsTrigger
+            className="data-[state=active]:text-white"
+            value="history"
+          >
             History{historyOrders.length > 0 && ` (${historyOrders.length})`}
           </TabsTrigger>
         </TabsList>
       </div>
-      <div className="flex rounded-md text-background bg-foreground p-2 max-h-[70vh] overflow-auto">
+      <div className="flex rounded-lg bg-foreground p-2 max-h-[70vh] overflow-auto">
         <TabsContent className="w-full" value="draft">
           <DraftOrdersTab />
         </TabsContent>

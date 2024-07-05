@@ -58,9 +58,9 @@ const generates = Object.assign(
             },
           ],
         ])
-        .flat(1)
-    )
-  )
+        .flat(1),
+    ),
+  ),
 );
 
 const config: CodegenConfig = {

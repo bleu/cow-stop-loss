@@ -57,7 +57,7 @@ export function SwapForm() {
         showAddOrders
       />
 
-      <Card className="bg-foreground text-background w-full p-5 rounded-md overflow-auto">
+      <Card className="bg-foreground w-full p-5 rounded-lg overflow-auto">
         <CardTitle className="w-full flex justify-between">
           <OrderTypeSwitch />
           <AdvancedSettingsDialog />

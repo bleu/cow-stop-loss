@@ -81,16 +81,16 @@ export function ReviewOrdersDialog({
         <DialogOverlay
           id="dialog-overlay"
           className={cn(
-            "bg-black/20 data-[state=open]:animate-overlayShow fixed inset-0 rounded-md"
+            "bg-black/20 data-[state=open]:animate-overlayShow fixed inset-0 rounded-lg",
           )}
         />
         <DialogContent
           className={cn(
-            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-md focus:outline-none bg-foreground text-background w-[90vw] max-w-[450px] p-[25px] overflow-auto"
+            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-lg focus:outline-none bg-foreground  w-[90vw] max-w-[450px] p-[25px] overflow-y-scroll",
           )}
         >
           <div className="flex flex-col gap-2 w-full">
-            <DialogTitle className="text-2xl font-medium text-background">
+            <DialogTitle className="text-2xl font-medium ">
               Review stop-loss order{multipleOrders ? "s" : ""}
             </DialogTitle>
             <TabsRoot>
@@ -99,6 +99,7 @@ export function ReviewOrdersDialog({
                   return (
                     <TabsTrigger
                       value={order.id}
+                      className="data-[state=active]:text-white"
                     >{`#${index + 1}`}</TabsTrigger>
                   );
                 })}
@@ -116,7 +117,7 @@ export function ReviewOrdersDialog({
             {showAddOrders && (
               <Button
                 variant="link"
-                className="text-background text-wrap text-xs"
+                className=" text-wrap text-xs text-white"
                 onClick={() => {
                   addDraftOrders(draftOrders);
                   setOpen(false);
@@ -148,8 +149,8 @@ function OrderTab({ order }: { order: DraftOrder }) {
           token={order.tokenBuy}
           balance={order.amountBuy}
         />
+        <OraclePriceWarning draftOrder={order} />
         <div className="w-full flex flex-col gap-1 mt-2">
-          <OraclePriceWarning draftOrder={order} />
           <OrderInformation
             title="Trigger price"
             tooltipText={TOOLTIP_DESCRIPTIONS.TRIGGER_PRICE}
@@ -226,7 +227,7 @@ function OrderInformation({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex justify-between text-sm border-b border-background">
+    <div className="flex justify-between text-sm pb-1 border-b border-background">
       <div className="flex gap-1">
         <span>{title}</span>
         <InfoTooltip text={tooltipText} />
@@ -253,7 +254,7 @@ function TokenInformation({
   }, [token]);
 
   return (
-    <div className="flex flex-col gap-2 bg-background/80 text-foreground rounded-md p-2 w-full">
+    <div className="flex flex-col gap-2 bg-background/80 rounded-lg p-2 w-full">
       <span className="text-xs">{title}</span>
       <div className="flex items-center justify-between">
         <TokenInfo token={token} />

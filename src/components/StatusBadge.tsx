@@ -8,7 +8,7 @@ export function StatusBadge({ status }: { status: OrderStatus | string }) {
   switch (status) {
     case "open":
       return (
-        <Badge className="text-black bg-highlight hover:bg-highlight/70">
+        <Badge className="text-black h-fit py-1 bg-highlight hover:bg-highlight/70">
           Open
         </Badge>
       );
@@ -16,7 +16,7 @@ export function StatusBadge({ status }: { status: OrderStatus | string }) {
       return (
         <Badge
           color="success"
-          className="bg-success hover:bg-success/70 text-foreground"
+          className="bg-success h-fit py-1 hover:bg-success/70 "
         >
           Fulfilled
         </Badge>
@@ -25,18 +25,18 @@ export function StatusBadge({ status }: { status: OrderStatus | string }) {
       return (
         <Badge
           color="success"
-          className="bg-success hover:bg-success/70 text-foreground"
+          className="bg-success h-fit py-1 hover:bg-success/70 "
         >
           Partially Filled
         </Badge>
       );
     case "canceled":
       return (
-        <Badge color="destructive" className="text-foreground">
+        <Badge color="destructive" className="h-fit py-1">
           Cancelled
         </Badge>
       );
     default:
-      return <Badge>{status}</Badge>;
+      return <Badge className="h-fit py-1">{status}</Badge>;
   }
 }

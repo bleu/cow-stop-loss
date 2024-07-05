@@ -7,15 +7,13 @@ export default function Page() {
   return (
     <>
       <TxPendingDialog />
-      <div className="size-full py-5 px-8 flex gap-6">
-        <div className="flex w-[600px]">
+      <div className="flex size-full mb-2 mt-16 px-8 flex gap-6">
+        <div className="w-[600px]">
           <SwapCardContextProvider>
             <SwapCard />
           </SwapCardContextProvider>
         </div>
-        <div className="size-full">
-          <OrderTabs />
-        </div>
+        <OrderTabs />
       </div>
     </>
   );

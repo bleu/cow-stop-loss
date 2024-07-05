@@ -1,3 +1,4 @@
+import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import cn from "clsx";
 
 export function AlertCard({
@@ -10,18 +11,20 @@ export function AlertCard({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="w-full justify-center" role="alert">
-      <div
-        className={cn(
-          "font-bold text-sand12 px-4 py-2 border-t border-x border-border",
-          style === "error" ? "bg-destructive" : "bg-accent"
-        )}
-      >
-        {title}
+    <div
+      className="w-full justify-center rounded-lg bg-background/70  px-4 py-2"
+      role="alert"
+    >
+      <div className="w-full flex gap-1 items-center">
+        <ExclamationTriangleIcon
+          className={cn(
+            "w-6 h-6",
+            style === "error" ? "text-destructive" : "text-highlight",
+          )}
+        />
+        <div className="font-bold text-sand12 px-4 py-2 text-base">{title}</div>
       </div>
-      <div className={cn("px-4 py-3 text-base w-full border border-border")}>
-        {children}
-      </div>
+      <div className="w-full text-xs">{children}</div>
     </div>
   );
 }
