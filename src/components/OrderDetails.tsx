@@ -9,6 +9,7 @@ import {
   Separator,
 } from "@bleu/ui";
 import { ArrowLeftIcon, CopyIcon } from "@radix-ui/react-icons";
+import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import Link from "next/link";
 import useSWR from "swr";
 import { Address, formatUnits } from "viem";
@@ -41,6 +42,7 @@ export function OrderDetails({
   address: Address;
   chainId: ChainId;
 }) {
+  const { safe } = useSafeAppsSDK();
   const orderFetcher = async () => {
     return await getProcessedStopLossOrder({
       chainId,
@@ -53,13 +55,13 @@ export function OrderDetails({
   });
 
   const orderDateTime = formatDateTime(
-    epochToDate(Number(order?.blockTimestamp)),
+    epochToDate(Number(order?.blockTimestamp))
   );
   const orderWaitTime = formatTimeDelta(
-    order?.stopLossData?.validityBucketSeconds as number,
+    order?.stopLossData?.validityBucketSeconds as number
   );
   const maxOracleUpdateTime = formatTimeDelta(
-    order?.stopLossData?.maxTimeSinceLastOracleUpdate as number,
+    order?.stopLossData?.maxTimeSinceLastOracleUpdate as number
   );
 
   const amountIn =
@@ -84,7 +86,10 @@ export function OrderDetails({
     <div className="flex size-full justify-center items-center">
       <div className="bg-foreground my-10 text-white p-10 rounded relative">
         <div className="flex flex-row justify-between items-center mb-5">
-          <LinkComponent backToLastPage={true} className="hover:text-primary">
+          <LinkComponent
+            href={`/${safe.chainId}/${safe.safeAddress}`}
+            className="hover:text-primary"
+          >
             <ArrowLeftIcon className="size-4" />
           </LinkComponent>
           <h1 className="text-2xl font-bold">Order Details</h1>
@@ -311,7 +316,7 @@ export function OrderDetails({
                       <Link
                         className={cn(
                           "hover:text-primary hover:underline",
-                          order.status === "fulfilled" ? "font-bold" : "",
+                          order.status === "fulfilled" ? "font-bold" : ""
                         )}
                         href={buildOrderCowExplorerUrl({
                           chainId: order?.chainId as ChainId,
