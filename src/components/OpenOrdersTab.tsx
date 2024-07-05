@@ -4,7 +4,6 @@ import {
   Button,
   Checkbox,
   epochToDate,
-  formatDateTime,
   formatNumber,
   Table,
   TableBody,
@@ -12,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@bleu/ui";
-import { DotsVerticalIcon } from "@radix-ui/react-icons";
+import { OpenInNewWindowIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useEffect, useState } from "react";
 import { formatUnits } from "viem";
@@ -59,7 +58,10 @@ export function OpenOrdersTab() {
           <TableCell>Trigger price</TableCell>
           <TableCell>Current price</TableCell>
           <TableCell>Filled</TableCell>
-          <TableCell className="rounded-tr-md">Status</TableCell>
+          <TableCell>Status</TableCell>
+          <TableCell className="rounded-tr-md">
+            <span className="sr-only">Details</span>
+          </TableCell>{" "}
         </TableHeader>
         <TableBody>
           {openOrders.length ? (
@@ -120,7 +122,7 @@ export function OpenOrderRow({
     }
     const price = await getTokenPairPrice(
       order.stopLossData.tokenIn as IToken,
-      order.stopLossData.tokenOut as IToken,
+      order.stopLossData.tokenOut as IToken
     );
     setMarketPrice(price);
   }
@@ -143,19 +145,19 @@ export function OpenOrderRow({
   const amountSell = Number(
     formatUnits(
       order.stopLossData?.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals,
-    ),
+      order.stopLossData.tokenIn.decimals
+    )
   );
   const amountBuy = Number(
     formatUnits(
       order.stopLossData?.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals,
-    ),
+      order.stopLossData.tokenOut.decimals
+    )
   );
 
-  const orderDateTime = formatDateTime(
-    epochToDate(Number(order.blockTimestamp)),
-  );
+  const orderDateTime = epochToDate(
+    Number(order.blockTimestamp)
+  ).toLocaleString();
 
   return (
     <TableRow className="hover:bg-background text-xs">
@@ -185,13 +187,15 @@ export function OpenOrderRow({
           : `Loading...`}
       </TableCell>
       <TableCell>{((order.filledPct || 0) * 100).toFixed()}%</TableCell>
-      <TableCell className="flex gap-1 items-center">
+      <TableCell>
         <StatusBadge status={order.status} />
+      </TableCell>
+      <TableCell>
         <LinkComponent
           href={`/${safe.chainId}/${safe.safeAddress}/${order?.id}`}
         >
-          <Button variant="ghost" className="p-0">
-            <DotsVerticalIcon className="size-5" />
+          <Button variant="link" className="hover:text-primary/70 p-0">
+            <OpenInNewWindowIcon className="size-5" />
           </Button>
         </LinkComponent>
       </TableCell>
