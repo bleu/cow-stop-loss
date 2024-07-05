@@ -1,7 +1,8 @@
-import { cn, Input as InputPrimitive, Label, Tooltip } from "@bleu/ui";
-import { InfoCircledIcon } from "@radix-ui/react-icons";
+import { cn, Input as InputPrimitive, Label } from "@bleu/ui";
 import React, { HTMLProps } from "react";
 import { FieldError, RegisterOptions, useFormContext } from "react-hook-form";
+
+import { InfoTooltip } from "./Tooltip";
 
 interface IInput extends Omit<HTMLProps<HTMLInputElement>, "name"> {
   name: string;
@@ -36,21 +37,9 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
       <div className="flex flex-col">
         {label && (
           <div className="flex flex-row gap-x-2 items-center mb-2">
-            <Label className="block text-sm text-background">{label}</Label>
+            <Label className="block text-sm ">{label}</Label>
             {tooltipText && (
-              <Tooltip content={tooltipText}>
-                {tooltipLink ? (
-                  <a
-                    href={tooltipLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <InfoCircledIcon className="text-background" />
-                  </a>
-                ) : (
-                  <InfoCircledIcon className="text-background" />
-                )}
-              </Tooltip>
+              <InfoTooltip text={tooltipText} link={tooltipLink} />
             )}
           </div>
         )}
@@ -58,8 +47,8 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
           {...props}
           {...register(name, validation)}
           className={cn(
-            "w-full shadow-none rounded-md focus-visible:ring-transparent focus-visible:ring-offset-0 placeholder:text-background/70 bg-foreground border border-background",
-            className
+            "w-full shadow-none rounded-md placeholder:opacity-50 border border-border",
+            className,
           )}
         />
 
@@ -68,5 +57,5 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
         )}
       </div>
     );
-  }
+  },
 );

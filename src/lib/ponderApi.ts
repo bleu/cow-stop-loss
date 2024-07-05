@@ -15,7 +15,7 @@ export async function getBlockNumberFromPrometheusMetrics(chainId: number) {
     .find(({ name }) => name === "ponder_realtime_latest_block_number")
     ?.["metrics"]?.find(
       // @ts-ignore
-      ({ labels }) => labels.network === networkFor(chainId)
+      ({ labels }) => labels.network === networkFor(chainId),
     )?.value;
 
   if (!latestBlockNumber) return undefined;

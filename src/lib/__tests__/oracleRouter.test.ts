@@ -54,10 +54,10 @@ describe("OracleRouter", () => {
       const oracles = await mainnetRouter.findRoute();
 
       expect(oracles.tokenSellOracle.toLowerCase()).toEqual(
-        "0x2f2c0C1727Ce8C429A237DDFBBb87357893fBD5D".toLowerCase()
+        "0x2f2c0C1727Ce8C429A237DDFBBb87357893fBD5D".toLowerCase(),
       );
       expect(oracles.tokenBuyOracle.toLowerCase()).toEqual(
-        "0xbba12740DE905707251525477bAD74985DeC46D2".toLowerCase()
+        "0xbba12740DE905707251525477bAD74985DeC46D2".toLowerCase(),
       );
     }, 15000);
     it("should raise error for gnosis tokens", async () => {
@@ -68,7 +68,7 @@ describe("OracleRouter", () => {
       });
 
       await expect(mainnetRouter.findRoute()).rejects.toThrow(
-        "No matching oracles found"
+        "No matching oracles found",
       );
     }, 15000);
     it("should find WETH USD oracle", async () => {
@@ -110,10 +110,10 @@ describe("OracleRouter", () => {
       const oracles = await gnosisRouter.findRoute();
 
       expect(oracles.tokenSellOracle.toLowerCase()).toEqual(
-        "0x1b723c855f7d2c2785f99486973271355e782d77".toLowerCase()
+        "0x1b723c855f7d2c2785f99486973271355e782d77".toLowerCase(),
       );
       expect(oracles.tokenBuyOracle.toLowerCase()).toEqual(
-        "0xed322a5ac55bae091190dff9066760b86751947b".toLowerCase()
+        "0xed322a5ac55bae091190dff9066760b86751947b".toLowerCase(),
       );
     });
     it("should find WETH USD oracle", async () => {
@@ -140,10 +140,10 @@ describe("OracleRouter", () => {
       const oracles = await sepoliaRouter.findRoute();
 
       expect(oracles.tokenBuyOracle.toLowerCase()).toEqual(
-        "0xEd2D417d759b1E77fe6A8920C79AE4CE6D6930F7".toLowerCase()
+        "0xEd2D417d759b1E77fe6A8920C79AE4CE6D6930F7".toLowerCase(),
       );
       expect(oracles.tokenSellOracle.toLowerCase()).toEqual(
-        "0x57Cb700070Cb1b0475E2D668FA8E89cF0Dda9509".toLowerCase()
+        "0x57Cb700070Cb1b0475E2D668FA8E89cF0Dda9509".toLowerCase(),
       );
     });
   });

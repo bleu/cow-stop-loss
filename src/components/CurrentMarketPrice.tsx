@@ -16,7 +16,10 @@ export function CurrentMarketPrice() {
   if (!tokenSell || !tokenBuy || !marketPrice || marketPrice <= 0) return null;
   return (
     <span className="text-xs">
-      Current market price: {tokenSell.symbol} = {formatNumber(marketPrice, 4)}{" "}
+      Current market price:{" "}
+      <b>
+        {tokenSell.symbol} = {formatNumber(marketPrice, 4)}{" "}
+      </b>
       {tokenBuy.symbol}
     </span>
   );

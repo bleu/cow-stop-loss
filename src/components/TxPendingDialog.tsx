@@ -25,16 +25,16 @@ export function TxPendingDialog() {
         <DialogOverlay
           id="dialog-overlay"
           className={cn(
-            "bg-black/20 data-[state=open]:animate-overlayShow fixed inset-0 rounded-md"
+            "bg-black/20 data-[state=open]:animate-overlayShow fixed inset-0 rounded-lg",
           )}
         />
         <DialogContent
           className={cn(
-            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-md focus:outline-none bg-foreground text-background w-[90vw] max-w-[450px] p-[25px] overflow-auto"
+            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-lg focus:outline-none bg-foreground  w-[90vw] max-w-[450px] p-[25px] overflow-auto",
           )}
         >
           <div className="flex flex-col gap-2 w-full">
-            <DialogTitle className="text-2xl font-medium text-background">
+            <DialogTitle className="text-2xl font-medium ">
               Transaction pending
             </DialogTitle>
             <span className="text-wrap">

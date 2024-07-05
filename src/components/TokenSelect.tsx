@@ -1,5 +1,6 @@
 import {
   Button,
+  cn,
   Command,
   CommandEmpty,
   CommandInput,
@@ -49,7 +50,7 @@ export function TokenSelect({
     try {
       const importedToken = await fetchTokenInfo(
         search as Address,
-        chainId as ChainId
+        chainId as ChainId,
       );
       handleSelectToken(importedToken);
       addImportedToken(importedToken);
@@ -70,9 +71,13 @@ export function TokenSelect({
         <PopoverTrigger asChild>
           <div className="flex flex-col">
             <Button
-              variant="ghost"
               type="button"
-              className="px-2 justify-between bg-foreground text-background rounded-md"
+              className={cn(
+                "px-2 pl-3 justify-between rounded-full",
+                selectedToken
+                  ? "bg-foreground text-white hover:text-primary-foreground"
+                  : "",
+              )}
               disabled={disabled}
               onClick={() => setOpen(true)}
             >
@@ -81,10 +86,10 @@ export function TokenSelect({
                 selectedToken ? (
                   <TokenInfo token={selectedToken} showExplorerLink={false} />
                 ) : (
-                  "Select Token"
+                  "Select a token"
                 )
               }
-              {!disabled && <ChevronDownIcon />}
+              {!disabled && <ChevronDownIcon className="size-6" />}
             </Button>
             {errorMessage && (
               <div className="mt-1 text-sm text-destructive">
@@ -117,6 +122,7 @@ export function TokenSelect({
                   key={token.address}
                   value={token.symbol + token.address}
                   onSelect={() => handleSelectToken(token)}
+                  className="hover:bg-primary hover:text-primary-foreground"
                 >
                   <TokenInfo
                     token={{

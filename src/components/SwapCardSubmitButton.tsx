@@ -58,7 +58,7 @@ export function SwapCardSubmitButton() {
 
   return (
     <Button
-      className="rounded-md text-wrap py-2 mt-2 h-auto"
+      className="rounded-lg text-wrap py-2 mt-2 h-auto"
       type="submit"
       loading={isSubmitting || isLoading}
       loadingText={isSubmitting ? "Validating..." : "Loading..."}
@@ -157,6 +157,6 @@ function getButtonState({
   }
   return {
     disabled: false,
-    text: "Review stop-loss order",
+    text: "Review Stop Loss order",
   };
 }

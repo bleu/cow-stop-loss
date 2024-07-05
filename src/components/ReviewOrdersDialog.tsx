@@ -4,9 +4,6 @@ import {
   Button,
   Dialog,
   DialogContent,
-  DialogOverlay,
-  DialogPortal,
-  DialogTitle,
   formatNumber,
   TabsContent,
   TabsList,
@@ -22,6 +19,8 @@ import { useOrder } from "#/contexts/ordersContext";
 import { useTokens } from "#/contexts/tokensContext";
 import { useFallbackState } from "#/hooks/useFallbackState";
 import { ChainId } from "#/lib/publicClients";
+import { formatTimeDelta } from "#/lib/timeDelta";
+import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { createRawTxArgs } from "#/lib/transactionFactory";
 import { DraftOrder, IToken } from "#/lib/types";
 
@@ -29,6 +28,7 @@ import { AddressWithLink } from "./AddressWithLink";
 import { OraclePriceWarning } from "./OraclePriceAlert";
 import { TokenAmount } from "./TokenAmount";
 import { TokenInfo } from "./TokenInfo";
+import { InfoTooltip } from "./Tooltip";
 
 export function ReviewOrdersDialog({
   draftOrders,
@@ -74,58 +74,51 @@ export function ReviewOrdersDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogPortal>
-        <DialogOverlay
-          id="dialog-overlay"
-          className={cn(
-            "bg-black/20 data-[state=open]:animate-overlayShow fixed inset-0 rounded-md"
-          )}
-        />
-        <DialogContent
-          className={cn(
-            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-md focus:outline-none bg-foreground text-background w-[90vw] max-w-[450px] p-[25px] overflow-auto"
-          )}
-        >
-          <div className="flex flex-col gap-2 w-full">
-            <DialogTitle className="text-2xl font-medium text-background">
-              Review stop-loss order{multipleOrders ? "s" : ""}
-            </DialogTitle>
-            <TabsRoot>
-              <TabsList defaultValue={String(0)} className="flex justify-start">
-                {draftOrders.map((order, index) => {
-                  return (
-                    <TabsTrigger
-                      value={order.id}
-                    >{`#${index + 1}`}</TabsTrigger>
-                  );
-                })}
-              </TabsList>
-              {draftOrders.map((order) => {
-                return <OrderTab order={order} />;
-              })}
-            </TabsRoot>
-
-            <Button className="w-full mt-3" onClick={onSubmit}>
-              {multipleOrders
-                ? `Place all ${draftOrders.length} stop-loss orders`
-                : "Place stop-loss order"}
-            </Button>
-            {showAddOrders && (
-              <Button
-                variant="link"
-                className="text-background text-wrap text-xs"
-                onClick={() => {
-                  addDraftOrders(draftOrders);
-                  setOpen(false);
-                }}
-              >
-                Want to place another orders to save fees? Click here to save
-                this one into drafts and create another one.
-              </Button>
-            )}
+      <DialogContent
+        className={cn(
+          "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-foreground w-[90vw] max-w-[450px]",
+        )}
+      >
+        <div className="flex flex-col gap-2 w-full overflow-y-scroll max-h-[85vh]">
+          <div className="text-2xl font-medium ">
+            Review Stop Loss order{multipleOrders ? "s" : ""}
           </div>
-        </DialogContent>
-      </DialogPortal>
+          <TabsRoot>
+            <TabsList defaultValue={String(0)} className="flex justify-start">
+              {draftOrders.map((order, index) => {
+                return (
+                  <TabsTrigger
+                    value={order.id}
+                    className="data-[state=active]:text-white"
+                  >{`#${index + 1}`}</TabsTrigger>
+                );
+              })}
+            </TabsList>
+            {draftOrders.map((order) => {
+              return <OrderTab order={order} />;
+            })}
+          </TabsRoot>
+
+          <Button className="w-full mt-3" onClick={onSubmit}>
+            {multipleOrders
+              ? `Place all ${draftOrders.length} Stop Loss orders`
+              : "Place Stop Loss order"}
+          </Button>
+          {showAddOrders && (
+            <Button
+              variant="link"
+              className=" text-wrap text-xs text-white"
+              onClick={() => {
+                addDraftOrders(draftOrders);
+                setOpen(false);
+              }}
+            >
+              Want to place another orders to save fees? Click here to save this
+              one into drafts and create another one.
+            </Button>
+          )}
+        </div>
+      </DialogContent>
     </Dialog>
   );
 }
@@ -145,42 +138,67 @@ function OrderTab({ order }: { order: DraftOrder }) {
           token={order.tokenBuy}
           balance={order.amountBuy}
         />
+        <OraclePriceWarning draftOrder={order} />
         <div className="w-full flex flex-col gap-1 mt-2">
-          <OraclePriceWarning draftOrder={order} />
-          <OrderInformation title="Trigger price">
+          <OrderInformation
+            title="Trigger price"
+            tooltipText={TOOLTIP_DESCRIPTIONS.TRIGGER_PRICE}
+          >
             {order.tokenSell.symbol} = {formatNumber(order.strikePrice, 4)}{" "}
             {order.tokenBuy.symbol}
           </OrderInformation>
-          <OrderInformation title="Limit price">
+          <OrderInformation
+            title="Limit price"
+            tooltipText={TOOLTIP_DESCRIPTIONS.LIMIT_PRICE}
+          >
             {order.tokenSell.symbol} = {formatNumber(order.limitPrice, 4)}{" "}
             {order.tokenBuy.symbol}
           </OrderInformation>
-          <OrderInformation title="Current oracle price">
+          <OrderInformation
+            title="Current oracle price"
+            tooltipText={TOOLTIP_DESCRIPTIONS.CURRENT_ORACLE_PRICE}
+          >
             {order.tokenSell.symbol} = {formatNumber(order.oraclePrice, 4)}{" "}
             {order.tokenBuy.symbol}
           </OrderInformation>
           {order.marketPrice && (
-            <OrderInformation title="Current market price">
+            <OrderInformation
+              title="Current market price"
+              tooltipText={TOOLTIP_DESCRIPTIONS.CURRENT_MARKET_PRICE}
+            >
               {order.tokenSell.symbol} = {formatNumber(order.marketPrice, 4)}{" "}
               {order.tokenBuy.symbol}
             </OrderInformation>
           )}
-          <OrderInformation title="Type">
+          <OrderInformation
+            title="Type"
+            tooltipText={TOOLTIP_DESCRIPTIONS.TYPE}
+          >
             {order.partiallyFillable ? "Partial fillable" : "Fill or Kill"}
           </OrderInformation>
-          <OrderInformation title="Receiver">
+          <OrderInformation
+            title="Receiver"
+            tooltipText={TOOLTIP_DESCRIPTIONS.RECIPIENT}
+          >
             <AddressWithLink address={order.receiver} />
           </OrderInformation>
-          <OrderInformation title={`${order.tokenSell.symbol} oracle`}>
+          <OrderInformation
+            title={`${order.tokenSell.symbol} oracle`}
+            tooltipText={TOOLTIP_DESCRIPTIONS.ORACLE_TOKEN_SELL}
+          >
             <AddressWithLink address={order.tokenSellOracle} />
           </OrderInformation>
-          <OrderInformation title={`${order.tokenBuy.symbol} oracle`}>
+          <OrderInformation
+            title={`${order.tokenBuy.symbol} oracle`}
+            tooltipText={TOOLTIP_DESCRIPTIONS.ORACLE_TOKEN_BUY}
+          >
             <AddressWithLink address={order.tokenBuyOracle} />
           </OrderInformation>
-          <OrderInformation title="Oracles condition">
-            Last update on the last{" "}
-            {formatNumber(order.maxHoursSinceOracleUpdates, 2)} hour
-            {order.maxHoursSinceOracleUpdates > 1 && "s"}
+          <OrderInformation
+            title="Oracles validity time"
+            tooltipText={TOOLTIP_DESCRIPTIONS.MAX_TIME_SINCE_LAST_ORACLE_UPDATE}
+          >
+            {formatTimeDelta(order.maxHoursSinceOracleUpdates * 3600)}
           </OrderInformation>
         </div>
       </div>
@@ -190,14 +208,19 @@ function OrderTab({ order }: { order: DraftOrder }) {
 
 function OrderInformation({
   title,
+  tooltipText,
   children,
 }: {
   title: string;
+  tooltipText?: string;
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex justify-between text-sm border-b border-background">
-      <span>{title}</span>
+    <div className="flex justify-between text-sm pb-1 border-b border-background">
+      <div className="flex gap-1">
+        <span>{title}</span>
+        <InfoTooltip text={tooltipText} />
+      </div>
       <span>{children}</span>
     </div>
   );
@@ -220,7 +243,7 @@ function TokenInformation({
   }, [token]);
 
   return (
-    <div className="flex flex-col gap-2 bg-background/80 text-foreground rounded-md p-2 w-full">
+    <div className="flex flex-col gap-2 bg-background/80 rounded-lg p-2 w-full">
       <span className="text-xs">{title}</span>
       <div className="flex items-center justify-between">
         <TokenInfo token={token} />

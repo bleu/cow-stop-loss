@@ -20,7 +20,7 @@ export type argType =
   | bigint[];
 
 export function decodeComposableCowCreateTxData(
-  data: `0x${string}`
+  data: `0x${string}`,
 ): argType[] {
   const { functionName, args } = decodeFunctionData({
     abi: composableCowAbi,
@@ -33,6 +33,6 @@ export function decodeComposableCowCreateTxData(
 
   return decodeAbiParameters(
     stopLossDataStructure,
-    args[0].staticInput
+    args[0].staticInput,
   ) as argType[];
 }

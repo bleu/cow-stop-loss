@@ -49,7 +49,7 @@ export default function Layout({
         className={cn(
           flechaS.variable,
           circularStd.variable,
-          "bg-background flex h-full flex-col font-sans font-normal text-foreground border-foreground"
+          "bg-background flex h-full flex-col font-sans font-normal text-white bg-background border-border",
         )}
       >
         <RootLayout>{children}</RootLayout>

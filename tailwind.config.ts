@@ -60,6 +60,9 @@ module.exports = {
           foreground: "hsl(var(--card-foreground) / <alpha-value>)",
         },
       },
+      zIndex: {
+        "100": "100",
+      },
       keyframes: {
         "accordion-down": {
           from: { height: 0 },

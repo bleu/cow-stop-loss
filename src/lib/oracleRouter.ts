@@ -170,10 +170,10 @@ export class GnosisRouter extends OracleRouter {
         : token.symbol;
     const feeds = await this.fetchPriceFeeds();
     const ETH_ORACLE = feeds.find(
-      (feed) => feed.pair[0] === symbolToFind && feed.pair[1] === "ETH"
+      (feed) => feed.pair[0] === symbolToFind && feed.pair[1] === "ETH",
     );
     const USD_ORACLE = feeds.find(
-      (feed) => feed.pair[0] === symbolToFind && feed.pair[1] === "USD"
+      (feed) => feed.pair[0] === symbolToFind && feed.pair[1] === "USD",
     );
 
     return {

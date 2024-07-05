@@ -21,7 +21,7 @@ export function useTxManager() {
     const txs = await Promise.all(
       argsArray.map((arg) => {
         return TransactionFactory.createRawTx(arg.type, arg);
-      })
+      }),
     );
     const { safeTxHash } = await sdk.txs.send({ txs });
     return safeTxHash as `0x${string}`;
@@ -51,7 +51,7 @@ export function useTxManager() {
         if (!safeTx) return true;
         if (
           [TransactionStatus.CANCELLED, TransactionStatus.FAILED].includes(
-            safeTx?.txStatus
+            safeTx?.txStatus,
           )
         )
           return true;
@@ -71,7 +71,7 @@ export function useTxManager() {
         return txBlockNumber < ponderBlockNumber;
       },
       mutationKey: ["getSafeTx"],
-    }
+    },
   );
 
   useEffect(() => {

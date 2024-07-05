@@ -1,8 +1,8 @@
 "use client";
 
 import {
+  Button,
   epochToDate,
-  formatDateTime,
   formatNumber,
   Table,
   TableBody,
@@ -10,26 +10,30 @@ import {
   TableHeader,
   TableRow,
 } from "@bleu/ui";
+import { OpenInNewWindowIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import { useRouter } from "next/navigation";
 import { formatUnits } from "viem";
 
 import { useOrder } from "#/contexts/ordersContext";
 import { StopLossOrderType } from "#/lib/types";
 
+import { LinkComponent } from "./Link";
 import { StatusBadge } from "./StatusBadge";
 
 export function HistoryOrdersTab() {
   const { historyOrders } = useOrder();
 
   return (
-    <Table className="w-full rounded-md border-separate border">
-      <TableHeader className="bg-background/70 text-foreground border-b overflow-scroll">
-        <TableCell>Created</TableCell>
+    <Table className="w-full rounded-lg">
+      <TableHeader className="bg-background overflow-scroll">
+        <TableCell className="rounded-tl-md">Created</TableCell>
         <TableCell>Order</TableCell>
         <TableCell>Trigger price</TableCell>
         <TableCell>Filled</TableCell>
-        <TableCell className="rounded-tr-md">Status</TableCell>
+        <TableCell>Status</TableCell>
+        <TableCell className="rounded-tr-md">
+          <span className="sr-only">Details</span>
+        </TableCell>
       </TableHeader>
       <TableBody>
         {historyOrders.length ? (
@@ -51,7 +55,6 @@ export function HistoryOrdersTab() {
 export function HistoryOrderRow({ order }: { order: StopLossOrderType }) {
   const { safe } = useSafeAppsSDK();
 
-  const router = useRouter();
   if (!order.stopLossData) {
     return null;
   }
@@ -66,27 +69,22 @@ export function HistoryOrderRow({ order }: { order: StopLossOrderType }) {
   const amountSell = Number(
     formatUnits(
       order.stopLossData?.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals
-    )
+      order.stopLossData.tokenIn.decimals,
+    ),
   );
   const amountBuy = Number(
     formatUnits(
       order.stopLossData?.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals
-    )
+      order.stopLossData.tokenOut.decimals,
+    ),
   );
 
-  const orderDateTime = formatDateTime(
-    epochToDate(Number(order.blockTimestamp))
-  );
+  const orderDateTime = epochToDate(
+    Number(order.blockTimestamp),
+  ).toLocaleString();
 
   return (
-    <TableRow
-      onClick={() =>
-        router.push(`/${safe.chainId}/${safe.safeAddress}/${order?.id}`)
-      }
-      className="cursor-pointer hover:bg-background/10 text-xs"
-    >
+    <TableRow className="hover:bg-background text-xs">
       <TableCell>{orderDateTime}</TableCell>
       <TableCell>
         <div className="flex flex-col">
@@ -103,6 +101,15 @@ export function HistoryOrderRow({ order }: { order: StopLossOrderType }) {
       <TableCell>{((order.filledPct || 0) * 100).toFixed()}%</TableCell>
       <TableCell>
         <StatusBadge status={order.status} />
+      </TableCell>
+      <TableCell>
+        <LinkComponent
+          href={`/${safe.chainId}/${safe.safeAddress}/${order?.id}`}
+        >
+          <Button variant="link" className="hover:text-primary/70 p-0">
+            <OpenInNewWindowIcon className="size-5" />
+          </Button>
+        </LinkComponent>
       </TableCell>
     </TableRow>
   );

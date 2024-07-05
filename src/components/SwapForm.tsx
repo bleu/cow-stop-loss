@@ -1,8 +1,9 @@
 "use client";
 
-import { Card, CardContent, CardTitle } from "@bleu/ui";
+import { Card, CardContent } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
+import React from "react";
 import { useForm } from "react-hook-form";
 
 import { useSwapCardContext } from "#/contexts/swapCardContext";
@@ -25,7 +26,12 @@ export function SwapForm() {
   const {
     safe: { chainId },
   } = useSafeAppsSDK();
-  const formSchema = generateSwapSchema(chainId as ChainId);
+
+  const formSchema = React.useMemo(
+    () => generateSwapSchema(chainId as ChainId),
+    [chainId],
+  );
+
   const {
     createDraftOrder,
     currentDraftOrder,
@@ -57,12 +63,12 @@ export function SwapForm() {
         showAddOrders
       />
 
-      <Card className="bg-foreground text-background w-full p-5 rounded-md overflow-auto">
-        <CardTitle className="w-full flex justify-between">
-          <OrderTypeSwitch />
-          <AdvancedSettingsDialog />
-        </CardTitle>
-        <CardContent className="flex flex-col gap-2 py-5 px-0">
+      <Card className="bg-foreground w-full p-5 rounded-lg overflow-auto">
+        <CardContent className="flex flex-col gap-2 p-0">
+          <div className="w-full flex justify-between pb-4">
+            <OrderTypeSwitch />
+            <AdvancedSettingsDialog />
+          </div>
           <TokenInputCard side="Sell" />
           <div className="flex gap-2 justify-between">
             <PriceInputCard fieldName="strikePrice" />

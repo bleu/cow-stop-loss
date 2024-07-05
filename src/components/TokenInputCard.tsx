@@ -1,9 +1,11 @@
 import {
+  Button,
   Card,
   CardContent,
   CardTitle,
   convertStringToNumberAndRoundDown,
   formatNumber,
+  Input,
 } from "@bleu/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { memo, useEffect, useState } from "react";
@@ -17,7 +19,6 @@ import { ChainId } from "#/lib/publicClients";
 import { fetchFormattedBalancerOf } from "#/lib/tokenUtils";
 import { SwapData } from "#/lib/types";
 
-import { Input } from "./Input";
 import { TokenSelect } from "./TokenSelect";
 
 function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
@@ -60,7 +61,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     const anotherSideAmount = side === "Buy" ? sellAmount : buyAmount;
     setValue(
       `amount${side === "Buy" ? "Sell" : "Buy"}` as const,
-      anotherSideAmount
+      anotherSideAmount,
     );
   }
 
@@ -81,7 +82,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   useEffect(() => {
     // Control if the amount field should be disabled
     setIsAmountDisabled(
-      (isSellOrder && side === "Buy") || (!isSellOrder && side === "Sell")
+      (isSellOrder && side === "Buy") || (!isSellOrder && side === "Sell"),
     );
   }, [isSellOrder, side]);
 
@@ -101,7 +102,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   }, [amount]);
 
   return (
-    <Card className="bg-background text-foreground w-full p-2 rounded-md">
+    <Card className="bg-background w-full p-2 rounded-lg">
       <CardTitle className="w-full flex justify-between font-normal text-xs">
         {getCardTitle(isAmountDisabled, side)}
       </CardTitle>
@@ -128,7 +129,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
             errorMessage={errors[tokenFieldName]?.message}
           />
           {token && (
-            <span className="text-xs text-foreground/70">
+            <span className="text-xs /70">
               <span>
                 Balance:{" "}
                 {formatNumber(
@@ -136,22 +137,23 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                   4,
                   "decimal",
                   "standard",
-                  0.0001
+                  0.0001,
                 )}{" "}
               </span>
               {!isAmountDisabled && tokenBalance && (
-                <button
+                <Button
                   type="button"
-                  className="text-accent outline-none hover:text-accent/70"
+                  variant="ghost"
+                  className="py-0 px-1 h-fit text-accent"
                   onClick={() => {
                     setValue(
                       amountFieldName,
-                      convertStringToNumberAndRoundDown(tokenBalance)
+                      convertStringToNumberAndRoundDown(tokenBalance),
                     );
                   }}
                 >
                   Max
-                </button>
+                </Button>
               )}
             </span>
           )}
@@ -162,11 +164,11 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
             type="number"
             step={1 / 10 ** (token ? token.decimals : 18)}
             placeholder="0.0"
-            className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:text-foreground/70 px-0 text-2xl text-right bg-background"
+            className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:/70 px-0 text-2xl text-right bg-background"
             disabled={isAmountDisabled}
             min={0}
           />
-          <i className="text-xs text-foreground/70">
+          <i className="text-xs /70">
             ${formatNumber(amount * (usdPrice || 0), 2)}
           </i>
         </div>

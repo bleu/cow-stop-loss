@@ -35,7 +35,7 @@ interface ISwapContext {
 }
 
 export const SwapCardContext = React.createContext<ISwapContext>(
-  {} as ISwapContext
+  {} as ISwapContext,
 );
 
 export const SwapCardContextProvider = ({
@@ -49,7 +49,7 @@ export const SwapCardContextProvider = ({
   const { draftOrders } = useOrder();
   const [reviewDialogOpen, setReviewDialogOpen] = React.useState(false);
   const [firstAccess, setFirstAccess] = React.useState(
-    localStorage.getItem("firstAccess") === null
+    localStorage.getItem("firstAccess") === null,
   );
 
   const [oracleRoute, setOracleRoute] = React.useState<IRoute>();

@@ -12,6 +12,7 @@ export function LinkComponent({
   className,
 }: {
   href: Url;
+  backToLastPage?: boolean;
   children: React.ReactElement;
   className?: string;
 }) {
@@ -27,7 +28,7 @@ export function LinkComponent({
 
   return (
     <Link
-      href={href.toString()}
+      href={href?.toString()}
       prefetch={false}
       className={className}
       onClick={() => {

@@ -4,7 +4,6 @@ import {
   Button,
   Checkbox,
   epochToDate,
-  formatDateTime,
   formatNumber,
   Table,
   TableBody,
@@ -12,8 +11,8 @@ import {
   TableHeader,
   TableRow,
 } from "@bleu/ui";
+import { OpenInNewWindowIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { formatUnits } from "viem";
 
@@ -22,6 +21,7 @@ import { useTokens } from "#/contexts/tokensContext";
 import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { IToken, StopLossOrderType } from "#/lib/types";
 
+import { LinkComponent } from "./Link";
 import { StatusBadge } from "./StatusBadge";
 
 export function OpenOrdersTab() {
@@ -48,8 +48,8 @@ export function OpenOrdersTab() {
 
   return (
     <div className="flex flex-col gap-2">
-      <Table className="w-full rounded-md border-separate border">
-        <TableHeader className="bg-background/70 text-foreground border-b">
+      <Table className="w-full rounded-lg">
+        <TableHeader className="bg-background">
           <TableCell className="rounded-tl-md">
             <span className="sr-only">Select</span>
           </TableCell>
@@ -58,7 +58,10 @@ export function OpenOrdersTab() {
           <TableCell>Trigger price</TableCell>
           <TableCell>Current price</TableCell>
           <TableCell>Filled</TableCell>
-          <TableCell className="rounded-tr-md">Status</TableCell>
+          <TableCell>Status</TableCell>
+          <TableCell className="rounded-tr-md">
+            <span className="sr-only">Details</span>
+          </TableCell>{" "}
         </TableHeader>
         <TableBody>
           {openOrders.length ? (
@@ -108,7 +111,6 @@ export function OpenOrderRow({
   order: StopLossOrderType;
   onSelect: (selected: boolean) => void;
 }) {
-  const router = useRouter();
   const { safe } = useSafeAppsSDK();
 
   const [marketPrice, setMarketPrice] = useState<number>();
@@ -120,7 +122,7 @@ export function OpenOrderRow({
     }
     const price = await getTokenPairPrice(
       order.stopLossData.tokenIn as IToken,
-      order.stopLossData.tokenOut as IToken
+      order.stopLossData.tokenOut as IToken,
     );
     setMarketPrice(price);
   }
@@ -143,33 +145,23 @@ export function OpenOrderRow({
   const amountSell = Number(
     formatUnits(
       order.stopLossData?.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals
-    )
+      order.stopLossData.tokenIn.decimals,
+    ),
   );
   const amountBuy = Number(
     formatUnits(
       order.stopLossData?.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals
-    )
+      order.stopLossData.tokenOut.decimals,
+    ),
   );
 
-  const orderDateTime = formatDateTime(
-    epochToDate(Number(order.blockTimestamp))
-  );
+  const orderDateTime = epochToDate(
+    Number(order.blockTimestamp),
+  ).toLocaleString();
 
   return (
-    <TableRow
-      onClick={() =>
-        router.push(`/${safe.chainId}/${safe.safeAddress}/${order?.id}`)
-      }
-      className="cursor-pointer hover:bg-background/10 text-xs"
-    >
-      <TableCell
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
-        className="cursor-default"
-      >
+    <TableRow className="hover:bg-background text-xs">
+      <TableCell>
         <Checkbox
           onCheckedChange={(checked) => {
             onSelect(checked as boolean);
@@ -197,6 +189,15 @@ export function OpenOrderRow({
       <TableCell>{((order.filledPct || 0) * 100).toFixed()}%</TableCell>
       <TableCell>
         <StatusBadge status={order.status} />
+      </TableCell>
+      <TableCell>
+        <LinkComponent
+          href={`/${safe.chainId}/${safe.safeAddress}/${order?.id}`}
+        >
+          <Button variant="link" className="hover:text-primary/70 p-0">
+            <OpenInNewWindowIcon className="size-5" />
+          </Button>
+        </LinkComponent>
       </TableCell>
     </TableRow>
   );

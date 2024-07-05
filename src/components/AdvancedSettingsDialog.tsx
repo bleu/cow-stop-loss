@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form";
 import { useSwapCardContext } from "#/contexts/swapCardContext";
 import { ChainId } from "#/lib/publicClients";
 import { generateAdvancedSettingsSchema } from "#/lib/schema";
+import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { AdvancedSwapSettings } from "#/lib/types";
 
 import { Checkbox } from "./Checkbox";
@@ -61,16 +62,16 @@ export function AdvancedSettingsDialog() {
         <DialogOverlay
           id="dialog-overlay"
           className={cn(
-            "bg-black/20 data-[state=open]:animate-overlayShow fixed inset-0 rounded-md"
+            "bg-black/20 data-[state=open]:animate-overlayShow fixed inset-0 rounded-lg",
           )}
         />
         <DialogContent
           className={cn(
-            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-md focus:outline-none bg-foreground text-background w-[90vw] max-w-[450px] p-[25px]"
+            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-lg focus:outline-none bg-foreground  w-[90vw] max-w-[450px] p-[25px]",
           )}
         >
           <div className="flex flex-col justify-between w-full">
-            <DialogTitle className="text-2xl font-medium text-background">
+            <DialogTitle className="text-2xl font-medium ">
               Advanced Settings
             </DialogTitle>
           </div>
@@ -86,13 +87,11 @@ export function AdvancedSettingsDialog() {
               name="receiver"
               label="Receiver"
               placeholder="0xabc...123"
-              tooltipText="Address that will receive the tokens on stop-loss order."
+              tooltipText={TOOLTIP_DESCRIPTIONS.RECIPIENT}
             />
-            <Separator className="mt-2" />
-            <div className="flex flex-col gap-1">
-              <Label className="block text-sm text-background font-semibold">
-                Oracle
-              </Label>
+            <Separator className="bg-white mt-2" />
+            <div className="flex flex-col gap-2">
+              <Label className="block text-sm font-semibold">Oracle</Label>
               <Accordion
                 className="flex flex-col gap-2 text-sm w-full"
                 type="single"
@@ -110,18 +109,18 @@ export function AdvancedSettingsDialog() {
                     </AccordionTrigger>
                   </div>
                   <AccordionContent className="p-0">
-                    <div className="flex flex-col gap-2">
+                    <div className="flex flex-col gap-2 mt-1">
                       <Input
                         name="tokenSellOracle"
                         label="Token sell oracle"
                         placeholder="0xabc...123"
-                        tooltipText="The oracle that will provide the price of the token being sold. Both oracles must have the same quote currency."
+                        tooltipText={TOOLTIP_DESCRIPTIONS.ORACLE_TOKEN_SELL}
                       />
                       <Input
                         name="tokenBuyOracle"
                         label="Token buy oracle"
                         placeholder="0xabc...123"
-                        tooltipText="he oracle that will provide the price of the token being sold. Both oracles must have the same quote currency."
+                        tooltipText={TOOLTIP_DESCRIPTIONS.ORACLE_TOKEN_BUY}
                       />
                     </div>
                   </AccordionContent>
@@ -130,22 +129,23 @@ export function AdvancedSettingsDialog() {
                   name="maxHoursSinceOracleUpdates"
                   label="Maximum hours since last oracle update"
                   type="number"
-                  tooltipText="The maximum number of hours since the last oracle update. If the oracle has not been updated in this time, the order will not be posted."
+                  tooltipText={
+                    TOOLTIP_DESCRIPTIONS.MAX_TIME_SINCE_LAST_ORACLE_UPDATE
+                  }
                 />
               </Accordion>
             </div>
-            <Separator className="my-2" />
-            <div className="flex flex-col gap-1">
-              <Label className="block text-sm text-background font-semibold">
+            <Separator className="bg-white my-2" />
+            <div className="flex flex-col gap-2">
+              <Label className="block text-sm font-semibold">
                 Partial executions
               </Label>
               <Checkbox
                 name="partiallyFillable"
                 label="Enable partially fillable orders"
-                tooltipText="If enabled, the order accepts sell part of the tokens. Limit price is still consider."
+                tooltipText={TOOLTIP_DESCRIPTIONS.TYPE}
               />
             </div>
-            <Separator className="my-2" />
             <Button
               className="w-full mt-4"
               type="submit"
@@ -157,7 +157,7 @@ export function AdvancedSettingsDialog() {
             <Button
               variant="link"
               type="button"
-              className="text-xs flex gap-1 items-center text-background"
+              className="text-xs flex gap-1 text-white items-center "
               onClick={() => {
                 const defaultSettings = {
                   receiver: safeAddress,

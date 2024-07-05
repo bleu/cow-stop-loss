@@ -1,14 +1,14 @@
-name: 'Setup JS Dependencies'
-description: 'Install JS dependencies using PNPM'
+name: "Setup JS Dependencies"
+description: "Install JS dependencies using PNPM"
 inputs:
   npm_token:
-    description: 'NPM token for authentication'
+    description: "NPM token for authentication"
     required: true
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - uses: actions/checkout@v2
-      
+
     - name: Setup PNPM
       uses: pnpm/action-setup@v2
       with:
