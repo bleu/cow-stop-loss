@@ -22,6 +22,8 @@ import { useOrder } from "#/contexts/ordersContext";
 import { useTokens } from "#/contexts/tokensContext";
 import { useFallbackState } from "#/hooks/useFallbackState";
 import { ChainId } from "#/lib/publicClients";
+import { formatTimeDelta } from "#/lib/timeDelta";
+import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { createRawTxArgs } from "#/lib/transactionFactory";
 import { DraftOrder, IToken } from "#/lib/types";
 
@@ -29,6 +31,7 @@ import { AddressWithLink } from "./AddressWithLink";
 import { OraclePriceWarning } from "./OraclePriceAlert";
 import { TokenAmount } from "./TokenAmount";
 import { TokenInfo } from "./TokenInfo";
+import { InfoTooltip } from "./Tooltip";
 
 export function ReviewOrdersDialog({
   draftOrders,
@@ -147,40 +150,65 @@ function OrderTab({ order }: { order: DraftOrder }) {
         />
         <div className="w-full flex flex-col gap-1 mt-2">
           <OraclePriceWarning draftOrder={order} />
-          <OrderInformation title="Trigger price">
+          <OrderInformation
+            title="Trigger price"
+            tooltipText={TOOLTIP_DESCRIPTIONS.TRIGGER_PRICE}
+          >
             {order.tokenSell.symbol} = {formatNumber(order.strikePrice, 4)}{" "}
             {order.tokenBuy.symbol}
           </OrderInformation>
-          <OrderInformation title="Limit price">
+          <OrderInformation
+            title="Limit price"
+            tooltipText={TOOLTIP_DESCRIPTIONS.LIMIT_PRICE}
+          >
             {order.tokenSell.symbol} = {formatNumber(order.limitPrice, 4)}{" "}
             {order.tokenBuy.symbol}
           </OrderInformation>
-          <OrderInformation title="Current oracle price">
+          <OrderInformation
+            title="Current oracle price"
+            tooltipText={TOOLTIP_DESCRIPTIONS.CURRENT_ORACLE_PRICE}
+          >
             {order.tokenSell.symbol} = {formatNumber(order.oraclePrice, 4)}{" "}
             {order.tokenBuy.symbol}
           </OrderInformation>
           {order.marketPrice && (
-            <OrderInformation title="Current market price">
+            <OrderInformation
+              title="Current market price"
+              tooltipText={TOOLTIP_DESCRIPTIONS.CURRENT_MARKET_PRICE}
+            >
               {order.tokenSell.symbol} = {formatNumber(order.marketPrice, 4)}{" "}
               {order.tokenBuy.symbol}
             </OrderInformation>
           )}
-          <OrderInformation title="Type">
+          <OrderInformation
+            title="Type"
+            tooltipText={TOOLTIP_DESCRIPTIONS.TYPE}
+          >
             {order.partiallyFillable ? "Partial fillable" : "Fill or Kill"}
           </OrderInformation>
-          <OrderInformation title="Receiver">
+          <OrderInformation
+            title="Receiver"
+            tooltipText={TOOLTIP_DESCRIPTIONS.RECIPIENT}
+          >
             <AddressWithLink address={order.receiver} />
           </OrderInformation>
-          <OrderInformation title={`${order.tokenSell.symbol} oracle`}>
+          <OrderInformation
+            title={`${order.tokenSell.symbol} oracle`}
+            tooltipText={TOOLTIP_DESCRIPTIONS.ORACLE_TOKEN_SELL}
+          >
             <AddressWithLink address={order.tokenSellOracle} />
           </OrderInformation>
-          <OrderInformation title={`${order.tokenBuy.symbol} oracle`}>
+          <OrderInformation
+            title={`${order.tokenBuy.symbol} oracle`}
+            tooltipText={TOOLTIP_DESCRIPTIONS.ORACLE_TOKEN_BUY}
+          >
             <AddressWithLink address={order.tokenBuyOracle} />
           </OrderInformation>
-          <OrderInformation title="Oracles condition">
-            Last update on the last{" "}
-            {formatNumber(order.maxHoursSinceOracleUpdates, 2)} hour
-            {order.maxHoursSinceOracleUpdates > 1 && "s"}
+          <OrderInformation
+            title="Oracles validity time"
+            tooltipText={TOOLTIP_DESCRIPTIONS.MAX_TIME_SINCE_LAST_ORACLE_UPDATE}
+          >
+            {formatTimeDelta(order.maxHoursSinceOracleUpdates * 3600)}
           </OrderInformation>
         </div>
       </div>
@@ -190,14 +218,19 @@ function OrderTab({ order }: { order: DraftOrder }) {
 
 function OrderInformation({
   title,
+  tooltipText,
   children,
 }: {
   title: string;
+  tooltipText?: string;
   children: React.ReactNode;
 }) {
   return (
     <div className="flex justify-between text-sm border-b border-background">
-      <span>{title}</span>
+      <div className="flex gap-1">
+        <span>{title}</span>
+        <InfoTooltip text={tooltipText} />
+      </div>
       <span>{children}</span>
     </div>
   );

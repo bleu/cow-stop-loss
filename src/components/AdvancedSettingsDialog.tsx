@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form";
 import { useSwapCardContext } from "#/contexts/swapCardContext";
 import { ChainId } from "#/lib/publicClients";
 import { generateAdvancedSettingsSchema } from "#/lib/schema";
+import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { AdvancedSwapSettings } from "#/lib/types";
 
 import { Checkbox } from "./Checkbox";
@@ -86,7 +87,7 @@ export function AdvancedSettingsDialog() {
               name="receiver"
               label="Receiver"
               placeholder="0xabc...123"
-              tooltipText="Address that will receive the tokens on stop-loss order."
+              tooltipText={TOOLTIP_DESCRIPTIONS.RECIPIENT}
             />
             <Separator className="mt-2" />
             <div className="flex flex-col gap-1">
@@ -115,13 +116,13 @@ export function AdvancedSettingsDialog() {
                         name="tokenSellOracle"
                         label="Token sell oracle"
                         placeholder="0xabc...123"
-                        tooltipText="The oracle that will provide the price of the token being sold. Both oracles must have the same quote currency."
+                        tooltipText={TOOLTIP_DESCRIPTIONS.ORACLE_TOKEN_SELL}
                       />
                       <Input
                         name="tokenBuyOracle"
                         label="Token buy oracle"
                         placeholder="0xabc...123"
-                        tooltipText="he oracle that will provide the price of the token being sold. Both oracles must have the same quote currency."
+                        tooltipText={TOOLTIP_DESCRIPTIONS.ORACLE_TOKEN_BUY}
                       />
                     </div>
                   </AccordionContent>
@@ -130,7 +131,9 @@ export function AdvancedSettingsDialog() {
                   name="maxHoursSinceOracleUpdates"
                   label="Maximum hours since last oracle update"
                   type="number"
-                  tooltipText="The maximum number of hours since the last oracle update. If the oracle has not been updated in this time, the order will not be posted."
+                  tooltipText={
+                    TOOLTIP_DESCRIPTIONS.MAX_TIME_SINCE_LAST_ORACLE_UPDATE
+                  }
                 />
               </Accordion>
             </div>
@@ -142,7 +145,7 @@ export function AdvancedSettingsDialog() {
               <Checkbox
                 name="partiallyFillable"
                 label="Enable partially fillable orders"
-                tooltipText="If enabled, the order accepts sell part of the tokens. Limit price is still consider."
+                tooltipText={TOOLTIP_DESCRIPTIONS.TYPE}
               />
             </div>
             <Separator className="my-2" />

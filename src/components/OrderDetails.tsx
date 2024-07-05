@@ -15,13 +15,14 @@ import useSWR from "swr";
 import { Address, formatUnits } from "viem";
 
 import { LinkComponent } from "#/components/Link";
-import { OrderInformation } from "#/components/OrderInformation";
+import { OrderDetailsInformation } from "#/components/OrderDetailsInformation";
 import { StatusBadge } from "#/components/StatusBadge";
 import { TokenLogo } from "#/components/TokenLogo";
 import { InfoTooltip } from "#/components/Tooltip";
 import { getProcessedStopLossOrder } from "#/lib/orderFetcher";
 import { ChainId } from "#/lib/publicClients";
 import { formatTimeDelta } from "#/lib/timeDelta";
+import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { StopLossOrderTypeWithCowOrders } from "#/lib/types";
 import {
   buildBlockExplorerTokenURL,
@@ -59,6 +60,9 @@ export function OrderDetails({
   const orderWaitTime = formatTimeDelta(
     order?.stopLossData?.validityBucketSeconds as number
   );
+  const maxOracleUpdateTime = formatTimeDelta(
+    order?.stopLossData?.maxTimeSinceLastOracleUpdate as number
+  );
 
   const amountIn =
     Number(order?.stopLossData?.tokenAmountIn) /
@@ -92,9 +96,9 @@ export function OrderDetails({
           <div />
         </div>
         <div className="flex flex-col gap-y-1">
-          <OrderInformation
+          <OrderDetailsInformation
             label="Order creation"
-            tooltipText="The transaction that created this stop loss order."
+            tooltipText={TOOLTIP_DESCRIPTIONS.ORDER_CREATION}
           >
             <div className="flex items-center gap-x-1">
               <a
@@ -111,10 +115,10 @@ export function OrderDetails({
                 <CopyIcon className="hover:text-primary" />
               </ClickToCopy>
             </div>
-          </OrderInformation>
-          <OrderInformation
+          </OrderDetailsInformation>
+          <OrderDetailsInformation
             label="Order Hash"
-            tooltipText="The onchain settlement transaction for this order."
+            tooltipText={TOOLTIP_DESCRIPTIONS.ORDER_HASH}
           >
             <div className="flex items-center gap-x-1">
               {order?.hash}
@@ -122,28 +126,43 @@ export function OrderDetails({
                 <CopyIcon className="hover:text-primary" />
               </ClickToCopy>
             </div>
-          </OrderInformation>
-          <OrderInformation
+          </OrderDetailsInformation>
+          <OrderDetailsInformation
             label="Status"
-            tooltipText="The status can be Created, Posted, Fulfilled, Expired and Cancelled"
+            tooltipText={TOOLTIP_DESCRIPTIONS.STATUS}
           >
+            <OrderDetailsInformation
+              label="Type"
+              tooltipText={TOOLTIP_DESCRIPTIONS.TYPE}
+            >
+              {order?.stopLossData?.isPartiallyFillable
+                ? "Partially fillable"
+                : "Fill or kill"}{" "}
+              Order
+            </OrderDetailsInformation>
             <StatusBadge status={order?.status || ""} />
-          </OrderInformation>
-          <OrderInformation
+          </OrderDetailsInformation>
+          <OrderDetailsInformation
             label="Submission Time"
-            tooltipText="The date and time at which the order was submitted."
+            tooltipText={TOOLTIP_DESCRIPTIONS.SUBMISSION_TIME}
           >
             {orderDateTime}
-          </OrderInformation>
-          <OrderInformation
+          </OrderDetailsInformation>
+          <OrderDetailsInformation
             label="Validity Bucket Time"
-            tooltipText="After the oracle price achieves the defined strike price, how much time the order will wait to be filled on the orderbook."
+            tooltipText={TOOLTIP_DESCRIPTIONS.VALIDITY_BUCKET_TIME}
           >
             {orderWaitTime}
-          </OrderInformation>
-          <OrderInformation
+          </OrderDetailsInformation>
+          <OrderDetailsInformation
+            label="Oracle Validity Time"
+            tooltipText={TOOLTIP_DESCRIPTIONS.MAX_TIME_SINCE_LAST_ORACLE_UPDATE}
+          >
+            {maxOracleUpdateTime}
+          </OrderDetailsInformation>
+          <OrderDetailsInformation
             label="Recipient"
-            tooltipText="Recipient of that will receive the buy tokens of the order."
+            tooltipText={TOOLTIP_DESCRIPTIONS.RECIPIENT}
           >
             <div className="flex items-center gap-x-1">
               {order?.stopLossData?.to}
@@ -151,13 +170,13 @@ export function OrderDetails({
                 <CopyIcon className="hover:text-primary" />
               </ClickToCopy>
             </div>
-          </OrderInformation>
+          </OrderDetailsInformation>
         </div>
         <Separator className="my-3" />
         <div className="flex flex-col gap-y-1">
-          <OrderInformation
+          <OrderDetailsInformation
             label="Amount"
-            tooltipText="The total sell and buy amount for this order. Sell amount includes the fee."
+            tooltipText={TOOLTIP_DESCRIPTIONS.AMOUNT}
           >
             <div className="flex flex-col">
               <div className="flex gap-x-2 items-center">
@@ -215,32 +234,32 @@ export function OrderDetails({
                 />
               </div>
             </div>
-          </OrderInformation>
-          <OrderInformation
+          </OrderDetailsInformation>
+          <OrderDetailsInformation
             label="Trigger Price"
-            tooltipText="If the oracle price drop bellow this threshold the order will be executed by the limit price."
+            tooltipText={TOOLTIP_DESCRIPTIONS.TRIGGER_PRICE}
           >
             {formatNumber(strikePrice, 4)}{" "}
             <InfoTooltip text={strikePrice.toString()} /> {priceUnit}
-          </OrderInformation>
-          <OrderInformation
+          </OrderDetailsInformation>
+          <OrderDetailsInformation
             label="Limit Price"
-            tooltipText="The limit price is the price at which this order shall be (partially) filled, in combination with the specified slippage. The fee is already deducted from the sell amount."
+            tooltipText={TOOLTIP_DESCRIPTIONS.LIMIT_PRICE}
           >
             {formatNumber(limitPrice, 4)}{" "}
             <InfoTooltip text={limitPrice.toString()} /> {priceUnit}
-          </OrderInformation>
-          {order?.executedSellAmount != "0" && (
+          </OrderDetailsInformation>
+          {(order?.filledPct || 0) > 0 && (
             <>
-              <OrderInformation
+              <OrderDetailsInformation
                 label="Execution Price"
-                tooltipText="The actual price at which this order has been matched and executed, after deducting fees from the amount sold."
+                tooltipText={TOOLTIP_DESCRIPTIONS.LIMIT_PRICE}
               >
                 {formatNumber(executionPrice, 4)} {priceUnit}
-              </OrderInformation>
-              <OrderInformation
+              </OrderDetailsInformation>
+              <OrderDetailsInformation
                 label="Order"
-                tooltipText="The amount sold/bought. Also surplus for this order. This is the positive difference between the initial limit price and the actual (average) execution price."
+                tooltipText={TOOLTIP_DESCRIPTIONS.ORDER}
               >
                 <div className="flex gap-x-2">
                   Swapped {formatNumber(executedAmountIn, 4)}{" "}
@@ -253,12 +272,12 @@ export function OrderDetails({
                     </span>
                   )}
                 </div>
-              </OrderInformation>
+              </OrderDetailsInformation>
             </>
           )}
-          <OrderInformation
-            label="Oracle Token In"
-            tooltipText="A oracle that provides the current selling price of a token in a specified currency."
+          <OrderDetailsInformation
+            label="Token Sell Oracle"
+            tooltipText={TOOLTIP_DESCRIPTIONS.ORACLE_TOKEN_SELL}
           >
             <div className="flex items-center gap-x-1">
               {order?.stopLossData?.sellTokenPriceOracle}
@@ -268,10 +287,10 @@ export function OrderDetails({
                 <CopyIcon className="hover:text-primary" />
               </ClickToCopy>
             </div>
-          </OrderInformation>
-          <OrderInformation
-            label="Oracle Token Out"
-            tooltipText="A oracle that gives the current buying price of a token in the same currency."
+          </OrderDetailsInformation>
+          <OrderDetailsInformation
+            label="Token Buy Oracle"
+            tooltipText={TOOLTIP_DESCRIPTIONS.ORACLE_TOKEN_BUY}
           >
             <div className="flex items-center gap-x-1">
               {order?.stopLossData?.buyTokenPriceOracle}
@@ -281,15 +300,15 @@ export function OrderDetails({
                 <CopyIcon className="hover:text-primary" />
               </ClickToCopy>
             </div>
-          </OrderInformation>
+          </OrderDetailsInformation>
         </div>
         {order?.cowOrders && order.cowOrders.length > 0 && (
           <>
             <Separator className="my-3" />
             <div className="flex flex-col gap-y-1">
-              <OrderInformation
+              <OrderDetailsInformation
                 label="Related Orders"
-                tooltipText="The orders created based on your initial request"
+                tooltipText={TOOLTIP_DESCRIPTIONS.RELATED_ORDERS}
               >
                 <div className="flex flex-col">
                   {order.cowOrders.map((cowOrder) => (
@@ -315,7 +334,7 @@ export function OrderDetails({
                     </div>
                   ))}
                 </div>
-              </OrderInformation>
+              </OrderDetailsInformation>
             </div>
           </>
         )}

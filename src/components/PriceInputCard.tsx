@@ -3,6 +3,7 @@ import { memo, useEffect } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
 import { calculateAmounts } from "#/lib/calculateAmounts";
+import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { SwapData } from "#/lib/types";
 
 import { InfoTooltip } from "./Tooltip";
@@ -46,8 +47,8 @@ function PriceInputCardComponent({
 
   const tooltipText =
     fieldName === "limitPrice"
-      ? "The maximum price you are willing to pay."
-      : "The price at which the order will be posted.";
+      ? TOOLTIP_DESCRIPTIONS.LIMIT_PRICE
+      : TOOLTIP_DESCRIPTIONS.TRIGGER_PRICE;
 
   return (
     <Card className="bg-background text-foreground w-full p-2 rounded-md">
