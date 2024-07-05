@@ -1,9 +1,6 @@
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@bleu-fi/ui";
+"use client";
+
+import { Tooltip, TooltipTrigger } from "@bleu/ui";
 import {
   ExclamationTriangleIcon,
   InfoCircledIcon,
@@ -22,7 +19,7 @@ export const InfoTooltip = ({
   side?: "top" | "right" | "bottom" | "left";
 }) => {
   if (!text) return null;
-  if (text.endsWith(".")) text = text.slice(0, -1);
+  if (!text.endsWith(".")) text += ".";
 
   function Icon() {
     switch (variant) {
@@ -36,24 +33,16 @@ export const InfoTooltip = ({
   }
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger disabled>
-          {link ? (
-            <a href={link} target="_blank">
-              <Icon />
-            </a>
-          ) : (
+    <Tooltip side={side} content={text}>
+      <TooltipTrigger>
+        {link ? (
+          <a href={link} target="_blank">
             <Icon />
-          )}
-        </TooltipTrigger>
-        <TooltipContent
-          side={side}
-          className="max-w-72 text-center bg-warning text-background"
-        >
-          {text}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+          </a>
+        ) : (
+          <Icon />
+        )}
+      </TooltipTrigger>
+    </Tooltip>
   );
 };

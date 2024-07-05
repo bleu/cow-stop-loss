@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { Address, getAddress } from "viem";
 import { gnosis, mainnet, sepolia } from "viem/chains";
 
 import { cowTokenList } from "#/lib/cowTokenList";
@@ -20,13 +23,13 @@ const tokenUrlRoot =
   "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images";
 
 export const cowprotocolTokenLogoUrl = (address?: string, chainId?: ChainId) =>
-  `${tokenUrlRoot}/${chainId}/${address?.toLowerCase()}/logo.png`;
+  `${tokenUrlRoot}/${chainId}/${address}/logo.png`;
 
 export const cowTokenListLogoUrl = (address?: string, chainId?: ChainId) => {
   return cowTokenList.find(
     (token) =>
       token.chainId === chainId &&
-      token.address.toLowerCase() === address?.toLowerCase()
+      token.address.toLowerCase() === address?.toLowerCase(),
   )?.logoURI;
 };
 
@@ -50,27 +53,21 @@ export const TokenLogo = ({
   className,
   quality,
 }: ImageFallbackProps) => {
-  const [imagesSrc, setImagesSrc] = useState<string[]>([
-    cowprotocolTokenLogoUrl(tokenAddress, chainId),
-    cowprotocolTokenLogoUrl(tokenAddress, 1),
+  const imagesSrc = [
+    cowprotocolTokenLogoUrl(tokenAddress?.toLowerCase(), chainId),
+    cowprotocolTokenLogoUrl(getAddress(tokenAddress as Address), chainId),
+    cowprotocolTokenLogoUrl(tokenAddress?.toLowerCase(), 1),
+    cowprotocolTokenLogoUrl(getAddress(tokenAddress as Address), 1),
     cowTokenListLogoUrl(tokenAddress, chainId),
     cowTokenListLogoUrl(tokenAddress, 1),
     trustTokenLogoUrl(tokenAddress, chainId),
-    trustTokenLogoUrl(tokenAddress, 1),
+    trustTokenLogoUrl(tokenAddress?.toLowerCase(), chainId),
+    trustTokenLogoUrl(getAddress(tokenAddress as Address), chainId),
+    trustTokenLogoUrl(tokenAddress?.toLowerCase(), 1),
+    trustTokenLogoUrl(getAddress(tokenAddress as Address), 1),
     FALLBACK_SRC,
-  ] as string[]);
+  ];
   const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    setImagesSrc([
-      cowprotocolTokenLogoUrl(tokenAddress, chainId),
-      cowprotocolTokenLogoUrl(tokenAddress, 1),
-      trustTokenLogoUrl(tokenAddress, chainId),
-      trustTokenLogoUrl(tokenAddress, 1),
-      FALLBACK_SRC,
-    ] as string[]);
-    setIndex(0);
-  }, [tokenAddress, chainId]);
 
   return (
     <Image
@@ -79,10 +76,13 @@ export const TokenLogo = ({
       height={Number(height)}
       quality={quality}
       alt={alt || ""}
-      src={imagesSrc[index]}
+      src={imagesSrc[index] || FALLBACK_SRC}
       onError={() => {
-        setIndex(index + 1);
+        if (index < imagesSrc.length - 1) {
+          setIndex(index + 1);
+        }
       }}
+      unoptimized // Disabling to avoid 404 error log on the console
     />
   );
 };

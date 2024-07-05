@@ -42,5 +42,48 @@ gql(
       }
     }
   } 
-  `
+  `,
+);
+
+gql(
+  `query OrderById($orderId: String!) {
+    order(id: $orderId) {
+      blockNumber
+      blockTimestamp
+      chainId
+      decodedSuccess
+      id
+      txHash
+      hash
+      staticInput
+      stopLossData {
+        appData
+        buyTokenPriceOracle
+        id
+        isPartiallyFillable
+        isSellOrder
+        maxTimeSinceLastOracleUpdate
+        orderId
+        sellTokenPriceOracle
+        strike
+        to
+        tokenAmountIn
+        tokenAmountOut
+        tokenIn {
+          address
+          decimals
+          name
+          symbol
+        }
+        tokenOut {
+          address
+          decimals
+          name
+          symbol
+        }
+        validityBucketSeconds
+      }
+    }
+  } 
+  `,
 );

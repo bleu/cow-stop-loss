@@ -1,24 +1,36 @@
 import { createPublicClient, http } from "viem";
 import { gnosis, mainnet, sepolia } from "viem/chains";
 
-export type ChainType = typeof mainnet | typeof gnosis | typeof sepolia;
+export type ChainType = (typeof supportedChains)[number];
 
-export type ChainName = "mainnet" | "gnosis" | "sepolia";
+export type ChainName = "gnosis" | "mainnet" | "sepolia";
 
-export type ChainId = typeof mainnet.id | typeof gnosis.id | typeof sepolia.id;
+export type ChainId = (typeof supportedChainIds)[number];
+
+export const supportedChains = [gnosis, mainnet, sepolia] as const;
+
+export const supportedChainIds = [mainnet.id, gnosis.id, sepolia.id] as const;
+
+export const RPC_PROVIDERS = {
+  [mainnet.id]: process.env.RPC_URL_MAINNET,
+  [gnosis.id]: process.env.RPC_URL_GNOSIS,
+  // TODO: Infura API of sepolia for testing
+  [sepolia.id]: "https://sepolia.infura.io/v3/dfe880d50c7344c8ab4dbb1e5b74a51d",
+} as const;
 
 export function createClientForChain(chain: ChainType) {
   return createPublicClient({
     chain,
-    transport: http(),
+    transport: http(RPC_PROVIDERS[chain.id]),
+    cacheTime: 0,
   });
-};
+}
 
 export const publicClientsFromNames = {
+  gnosis: createClientForChain(gnosis),
   mainnet: createClientForChain(mainnet),
   sepolia: createClientForChain(sepolia),
-  gnosis: createClientForChain(gnosis),
-} as const;
+};
 
 export const publicClientsFromIds = {
   [gnosis.id]: createClientForChain(gnosis),

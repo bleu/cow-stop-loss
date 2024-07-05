@@ -3,18 +3,16 @@
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import Image from "next/image";
 import Link from "next/link";
-import { ReactNode } from "react";
 
 import { NetworkChainId, truncateAddress } from "#/utils";
 
 interface IHeader {
   linkUrl: string;
   imageSrc?: string;
-  children?: ReactNode;
   onLinkClick?: () => void;
 }
 
-export function Header({ linkUrl, imageSrc, children, onLinkClick }: IHeader) {
+export function Header({ linkUrl, imageSrc, onLinkClick }: IHeader) {
   const {
     safe: { safeAddress, chainId },
   } = useSafeAppsSDK();
@@ -28,7 +26,7 @@ export function Header({ linkUrl, imageSrc, children, onLinkClick }: IHeader) {
   };
 
   return (
-    <div className="flex h-20 w-full items-center bg-background p-4 text-foreground">
+    <div className="flex h-20 w-full items-center bg-background p-4">
       <div className="mr-auto flex justify-start">
         <Link
           href={linkUrl}
@@ -37,15 +35,14 @@ export function Header({ linkUrl, imageSrc, children, onLinkClick }: IHeader) {
         >
           <>
             {imageSrc && (
-              <Image src={imageSrc} height={50} width={200} alt="" />
+              <Image src={imageSrc} height={100} width={300} alt="" />
             )}
           </>
         </Link>
       </div>
       <div className="flex gap-x-4">
-        {children && <div className="flex justify-center">{children}</div>}
         <div className="ml-auto flex justify-end">
-          <div className="border-foreground text-center text-sm rounded-md font-semibold border py-3 px-5">
+          <div className="bg-foreground text-center text-sm rounded-lg font-semibold py-3 px-5">
             {`${networkAcronym[chainId]}:${truncateAddress(safeAddress)}`}
           </div>
         </div>

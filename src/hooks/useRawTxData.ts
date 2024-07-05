@@ -13,7 +13,7 @@ export function useRawTxData() {
     const txs = await Promise.all(
       argsArray.map((arg) => {
         return TransactionFactory.createRawTx(arg.type, arg);
-      })
+      }),
     );
     const txsToSend = txs.filter((tx) => tx !== null) as BaseTransaction[];
     return await sdk.txs.send({ txs: txsToSend });

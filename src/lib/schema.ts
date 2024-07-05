@@ -2,19 +2,14 @@ import { Address, isAddress } from "viem";
 import { z } from "zod";
 import { normalize } from "viem/ens";
 
-import { IToken, TIME_OPTIONS } from "./types";
 import { ChainId, publicClientsFromIds } from "./publicClients";
 import { fetchCowQuote } from "./cowApi/fetchCowQuote";
 import { oracleMinimalAbi } from "./abis/oracleMinimalAbi";
-import { capitalize } from "@bleu-fi/ui";
-import { CHAINS_ORACLE_ROUTER_FACTORY } from "./oracleRouter";
+import { capitalize } from "@bleu/ui";
 
-const basicAddressSchema = z
-  .string()
-  .min(1)
-  .refine((value) => isAddress(value), {
-    message: "Provided address is invalid",
-  });
+const basicAddressSchema = z.custom<Address>((val) => {
+  return typeof val === "string" ? isAddress(val) : false;
+});
 
 const basicTokenSchema = z.object({
   address: basicAddressSchema,
@@ -52,56 +47,22 @@ const generateOracleSchema = ({ chainId }: { chainId: ChainId }) => {
         .catch(() => false);
     },
     {
-      message: "Oracle contract not found",
-    }
+      message: "Address does not conform to Oracle interface",
+    },
   );
 };
 
-export const stopLossConditionSchema = z
-  .object({
-    strikePrice: z.coerce.number().positive(),
-    currentOraclePrice: z.coerce.number().positive().optional(),
-    tokenSellOracle: basicAddressSchema,
-    tokenBuyOracle: basicAddressSchema,
-    maxTimeSinceLastOracleUpdate: z.nativeEnum(TIME_OPTIONS),
-  })
-  .refine((data) => data.tokenSellOracle != data.tokenBuyOracle, {
-    path: ["tokenBuyOracle"],
-    message: "Tokens sell and buy must be different",
-  });
-
-export const swapSchema = z.object({
-  tokenSell: basicTokenSchema,
-  tokenBuy: basicTokenSchema,
-  amount: z.coerce.number().positive(),
-  allowedSlippage: z.coerce.number().nonnegative().lt(100),
-  receiver: z.union([basicAddressSchema, ensSchema]),
-  isPartiallyFillable: z.coerce.boolean(),
-  validFrom: z.coerce.string(),
-  isSellOrder: z.coerce.boolean(),
-  validityBucketTime: z.nativeEnum(TIME_OPTIONS),
-});
-
-export const generateStopLossRecipeSchema = ({
-  chainId,
-}: {
-  chainId: ChainId;
-}) =>
+export const generateSwapSchema = (chainId: ChainId) =>
   z
     .object({
       tokenSell: basicTokenSchema,
       tokenBuy: basicTokenSchema,
-      amount: z.coerce.number().positive(),
-      allowedSlippage: z.coerce.number().nonnegative().lt(100),
-      receiver: basicAddressSchema,
-      isPartiallyFillable: z.coerce.boolean(),
-      validFrom: z.coerce.string(),
-      isSellOrder: z.coerce.boolean(),
-      validityBucketTime: z.nativeEnum(TIME_OPTIONS),
+      amountSell: z.coerce.number().positive(),
+      amountBuy: z.coerce.number().positive(),
       strikePrice: z.coerce.number().positive(),
-      tokenSellOracle: generateOracleSchema({ chainId }),
-      tokenBuyOracle: generateOracleSchema({ chainId }),
-      maxTimeSinceLastOracleUpdate: z.nativeEnum(TIME_OPTIONS),
+      limitPrice: z.coerce.number().positive(),
+      marketPrice: z.optional(z.number().positive()),
+      isSellOrder: z.coerce.boolean(),
     })
     .refine(
       (data) => {
@@ -110,45 +71,26 @@ export const generateStopLossRecipeSchema = ({
       {
         path: ["tokenBuy"],
         message: "Tokens sell and buy must be different",
-      }
+      },
     )
-    .superRefine((data, ctx) => {
-      const oracleRouter = new CHAINS_ORACLE_ROUTER_FACTORY[chainId as ChainId](
-        {
-          chainId: chainId as ChainId,
-          tokenBuy: data.tokenBuy as IToken,
-          tokenSell: data.tokenSell as IToken,
-        }
-      );
-
-      return oracleRouter
-        .calculatePrice({
-          tokenBuyOracle: data.tokenBuyOracle as Address,
-          tokenSellOracle: data.tokenSellOracle as Address,
-        })
-        .then((oraclePrice) => {
-          if (data.strikePrice > oraclePrice) {
-            ctx.addIssue({
-              code: z.ZodIssueCode.custom,
-              message: "Strike price must be below the oracle price",
-            });
-          }
-        })
-        .catch(() => {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Oracle contract not found",
-          });
-        });
-    })
+    .refine(
+      (data) => {
+        return !data.marketPrice || data.marketPrice > data.strikePrice;
+      },
+      {
+        path: ["strikePrice"],
+        message: "Strike price must be less than current market price",
+      },
+    )
     .superRefine((data, ctx) => {
       const amountDecimals = data.isSellOrder
         ? data.tokenSell.decimals
         : data.tokenBuy.decimals;
+      const amount = data.isSellOrder ? data.amountSell : data.amountBuy;
       return fetchCowQuote({
         tokenIn: data.tokenSell,
         tokenOut: data.tokenBuy,
-        amount: data.amount * 10 ** amountDecimals,
+        amount: amount * 10 ** amountDecimals,
         chainId,
         priceQuality: "fast",
         isSell: data.isSellOrder,
@@ -161,3 +103,43 @@ export const generateStopLossRecipeSchema = ({
         }
       });
     });
+
+export const generateAdvancedSettingsSchema = (chainId: ChainId) =>
+  z
+    .object({
+      maxHoursSinceOracleUpdates: z.coerce.number().positive(),
+      tokenSellOracle: z.union([
+        generateOracleSchema({ chainId }),
+        z.literal(""),
+      ]),
+      tokenBuyOracle: z.union([
+        generateOracleSchema({ chainId }),
+        z.literal(""),
+      ]),
+      receiver: z.union([basicAddressSchema, ensSchema]),
+      partiallyFillable: z.coerce.boolean(),
+    })
+    .refine(
+      (data) => {
+        if (!data.tokenSellOracle && data.tokenBuyOracle) {
+          return false;
+        }
+        return true;
+      },
+      {
+        message: "If one oracle is set, both must be set",
+        path: ["tokenSellOracle"],
+      },
+    )
+    .refine(
+      (data) => {
+        if (!data.tokenBuyOracle && data.tokenSellOracle) {
+          return false;
+        }
+        return true;
+      },
+      {
+        message: "If one oracle is set, both must be set",
+        path: ["tokenBuyOracle"],
+      },
+    );
