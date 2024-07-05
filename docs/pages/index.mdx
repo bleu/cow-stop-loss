@@ -1,12 +1,13 @@
 # Stop Loss Documentation
 
-## Introduction 
+## Introduction
 
 The stop loss is designed to sell a token if its price drops below a certain threshold. It uses the [Composable CoW framework](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/composable-cow) to post an order on the CoW Protocol. To check if the price of the token has dropped below the threshold, the stop loss uses the Chainlink price feed. In the UI, the oracles have to be set by the user, there is a button to load available Chainlink oracles.
 
 The oracles and the strike price are among the token prices. This means that if you select two non-stable tokens and the buy token price increases, the stop loss can be triggered even if the buy token price didn't change.
 
 ## Requirements
+
 - Order must be created from a `Safe`.
 - The `Safe Multisig` must have the token to be sold at the order creation time.
 - The `Safe` has its fallback handler set to `ExtensibleFallbackHandler`.
@@ -20,7 +21,7 @@ The oracles and the strike price are among the token prices. This means that if 
 
 ## Hooks
 
-In addition to the stop-loss order, the user can add additional hooks to be executed before and after the order execution. Hooks execution isn't guaranteed; this means that if the hook fails, the order can still be executed. The hooks are executed in the order they are added. For more information about the hooks, check the [CoW Hooks](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/hooks-trampoline) documentation.
+In addition to the Stop Loss order, the user can add additional hooks to be executed before and after the order execution. Hooks execution isn't guaranteed; this means that if the hook fails, the order can still be executed. The hooks are executed in the order they are added. For more information about the hooks, check the [CoW Hooks](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/hooks-trampoline) documentation.
 
 These actions are static, meaning that all hook parameters must be defined at the time of the order creation.
 

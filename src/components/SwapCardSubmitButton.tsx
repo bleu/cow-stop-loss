@@ -157,6 +157,6 @@ function getButtonState({
   }
   return {
     disabled: false,
-    text: "Review stop-loss order",
+    text: "Review Stop Loss order",
   };
 }

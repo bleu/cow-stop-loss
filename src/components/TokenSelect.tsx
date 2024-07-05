@@ -73,7 +73,7 @@ export function TokenSelect({
             <Button
               type="button"
               className={cn(
-                "px-2 justify-between rounded-full",
+                "px-2 pl-3 justify-between rounded-full",
                 selectedToken
                   ? "bg-foreground text-white hover:text-primary-foreground"
                   : "",

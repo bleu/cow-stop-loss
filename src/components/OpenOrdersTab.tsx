@@ -122,7 +122,7 @@ export function OpenOrderRow({
     }
     const price = await getTokenPairPrice(
       order.stopLossData.tokenIn as IToken,
-      order.stopLossData.tokenOut as IToken
+      order.stopLossData.tokenOut as IToken,
     );
     setMarketPrice(price);
   }
@@ -145,18 +145,18 @@ export function OpenOrderRow({
   const amountSell = Number(
     formatUnits(
       order.stopLossData?.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals
-    )
+      order.stopLossData.tokenIn.decimals,
+    ),
   );
   const amountBuy = Number(
     formatUnits(
       order.stopLossData?.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals
-    )
+      order.stopLossData.tokenOut.decimals,
+    ),
   );
 
   const orderDateTime = epochToDate(
-    Number(order.blockTimestamp)
+    Number(order.blockTimestamp),
   ).toLocaleString();
 
   return (
