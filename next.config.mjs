@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const moduleExports = {
+  experimental: {
+    reactCompiler: true,
+  },
   async headers() {
     return [
       {
