@@ -76,7 +76,7 @@ export function ReviewOrdersDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         className={cn(
-          "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-foreground w-[90vw] max-w-[450px]",
+          "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-foreground w-[90vw] max-w-[450px]"
         )}
       >
         <div className="flex flex-col gap-2 w-full overflow-y-scroll max-h-[85vh]">
@@ -124,6 +124,11 @@ export function ReviewOrdersDialog({
 }
 
 function OrderTab({ order }: { order: DraftOrder }) {
+  const { useTokenPairPrice } = useTokens();
+  const { data: marketPrice } = useTokenPairPrice(
+    order.tokenSell,
+    order.tokenBuy
+  );
   return (
     <TabsContent value={order.id}>
       <div className="flex flex-col items-center gap-2 w-full">
@@ -161,12 +166,12 @@ function OrderTab({ order }: { order: DraftOrder }) {
             {order.tokenSell.symbol} = {formatNumber(order.oraclePrice, 4)}{" "}
             {order.tokenBuy.symbol}
           </OrderInformation>
-          {order.marketPrice && (
+          {marketPrice && (
             <OrderInformation
               title="Current market price"
               tooltipText={TOOLTIP_DESCRIPTIONS.CURRENT_MARKET_PRICE}
             >
-              {order.tokenSell.symbol} = {formatNumber(order.marketPrice, 4)}{" "}
+              {order.tokenSell.symbol} = {formatNumber(marketPrice, 4)}{" "}
               {order.tokenBuy.symbol}
             </OrderInformation>
           )}
@@ -235,12 +240,8 @@ function TokenInformation({
   token: IToken;
   balance: number;
 }) {
-  const [tokenPrice, setTokenPrice] = React.useState<number>();
-  const { getOrFetchTokenPrice } = useTokens();
-
-  React.useEffect(() => {
-    getOrFetchTokenPrice(token).then(setTokenPrice);
-  }, [token]);
+  const { useTokenPrice } = useTokens();
+  const { data: tokenPrice } = useTokenPrice(token);
 
   return (
     <div className="flex flex-col gap-2 bg-background/80 rounded-lg p-2 w-full">

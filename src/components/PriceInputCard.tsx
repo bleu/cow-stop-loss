@@ -58,21 +58,9 @@ function PriceInputCardComponent({
             <span>{title}</span>
             <InfoTooltip text={tooltipText} />
           </div>
-          {marketPrice && (
-            <Button
-              type="button"
-              variant="ghost"
-              className="py-0 px-1 h-fit text-accent"
-              onClick={() => {
-                setValue(fieldName, Number(marketPrice.toFixed(4)));
-              }}
-            >
-              Market
-            </Button>
-          )}
         </div>
       </CardTitle>
-      <CardContent className="flex flex-col gap-2 px-0 py-2 items-start">
+      <CardContent className="flex flex-col gap-1 px-0 py-2 items-start">
         <div className="flex justify-between items-center gap-5">
           <Input
             {...register(fieldName)}
@@ -84,6 +72,18 @@ function PriceInputCardComponent({
           />
           {tokenBuy && tokenBuy && <span>{tokenBuy.symbol}</span>}
         </div>
+        {marketPrice && (
+          <Button
+            type="button"
+            variant="ghost"
+            className="py-0 px-1 h-fit text-accent text-xs"
+            onClick={() => {
+              setValue(fieldName, Number(marketPrice.toFixed(4)));
+            }}
+          >
+            Market
+          </Button>
+        )}
       </CardContent>
     </Card>
   );

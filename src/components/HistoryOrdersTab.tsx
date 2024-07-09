@@ -4,6 +4,7 @@ import {
   Button,
   epochToDate,
   formatNumber,
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -21,7 +22,7 @@ import { LinkComponent } from "./Link";
 import { StatusBadge } from "./StatusBadge";
 
 export function HistoryOrdersTab() {
-  const { historyOrders } = useOrder();
+  const { historyOrders, isLoading } = useOrder();
 
   return (
     <Table className="w-full rounded-lg">
@@ -42,8 +43,12 @@ export function HistoryOrdersTab() {
           })
         ) : (
           <TableRow>
-            <TableCell colSpan={5} className="text-center">
-              No history orders. Create a new one to get started.
+            <TableCell colSpan={6} className="text-center">
+              {isLoading ? (
+                <Spinner />
+              ) : (
+                "No open orders. Create a new one to get started."
+              )}
             </TableCell>
           </TableRow>
         )}
@@ -69,18 +74,18 @@ export function HistoryOrderRow({ order }: { order: StopLossOrderType }) {
   const amountSell = Number(
     formatUnits(
       order.stopLossData?.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals,
-    ),
+      order.stopLossData.tokenIn.decimals
+    )
   );
   const amountBuy = Number(
     formatUnits(
       order.stopLossData?.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals,
-    ),
+      order.stopLossData.tokenOut.decimals
+    )
   );
 
   const orderDateTime = epochToDate(
-    Number(order.blockTimestamp),
+    Number(order.blockTimestamp)
   ).toLocaleString();
 
   return (

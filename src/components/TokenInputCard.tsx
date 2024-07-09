@@ -40,16 +40,16 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
 
   const [isAmountDisabled, setIsAmountDisabled] = useState(false);
   const [tokenBalance, setTokenBalance] = useState<string>();
-  const [usdPrice, setUsdPrice] = useState<number>();
+  const { useTokenPrice } = useTokens();
 
   const [token, isSellOrder, amount] = useWatch({
     control,
     name: [tokenFieldName, "isSellOrder", amountFieldName],
   });
 
-  const { updateOracle } = useSwapCardContext();
-  const { getOrFetchTokenPrice, getTokenPairPrice } = useTokens();
+  const { data: usdPrice } = useTokenPrice(token);
 
+  const { updateOracle } = useSwapCardContext();
   async function updateOtherSideAmount() {
     const limitPrice = getValues("limitPrice");
     if (!limitPrice) return;
@@ -61,13 +61,8 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     const anotherSideAmount = side === "Buy" ? sellAmount : buyAmount;
     setValue(
       `amount${side === "Buy" ? "Sell" : "Buy"}` as const,
-      anotherSideAmount,
+      anotherSideAmount
     );
-  }
-
-  async function updateUsdPrice() {
-    const usdPrice = await getOrFetchTokenPrice(token);
-    setUsdPrice(usdPrice);
   }
 
   async function updateTokenBalance() {
@@ -82,7 +77,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   useEffect(() => {
     // Control if the amount field should be disabled
     setIsAmountDisabled(
-      (isSellOrder && side === "Buy") || (!isSellOrder && side === "Sell"),
+      (isSellOrder && side === "Buy") || (!isSellOrder && side === "Sell")
     );
   }, [isSellOrder, side]);
 
@@ -90,7 +85,6 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     // Update token balance on token change
     if (token) {
       updateTokenBalance();
-      updateUsdPrice();
     }
   }, [token, safeAddress]);
 
@@ -115,13 +109,6 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
               const tokenSell = side == "Sell" ? newToken : otherToken;
               const tokenBuy = side == "Sell" ? otherToken : newToken;
               if (otherToken) {
-                getTokenPairPrice(tokenSell, tokenBuy)
-                  .then((mkPrice) => {
-                    setValue("marketPrice", mkPrice);
-                  })
-                  .catch(() => {
-                    setValue("marketPrice", undefined);
-                  });
                 updateOracle({ tokenSell, tokenBuy });
               }
               setValue(tokenFieldName, newToken);
@@ -137,18 +124,18 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                   4,
                   "decimal",
                   "standard",
-                  0.0001,
+                  0.0001
                 )}{" "}
               </span>
               {!isAmountDisabled && tokenBalance && (
                 <Button
                   type="button"
                   variant="ghost"
-                  className="py-0 px-1 h-fit text-accent"
+                  className="py-0 px-1 h-fit text-accent text-xs"
                   onClick={() => {
                     setValue(
                       amountFieldName,
-                      convertStringToNumberAndRoundDown(tokenBalance),
+                      convertStringToNumberAndRoundDown(tokenBalance)
                     );
                   }}
                 >
