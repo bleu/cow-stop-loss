@@ -76,7 +76,7 @@ export function ReviewOrdersDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         className={cn(
-          "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-foreground w-[90vw] max-w-[450px]"
+          "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-foreground w-[90vw] max-w-[450px]",
         )}
       >
         <div className="flex flex-col gap-2 w-full overflow-y-scroll max-h-[85vh]">
@@ -127,7 +127,7 @@ function OrderTab({ order }: { order: DraftOrder }) {
   const { useTokenPairPrice } = useTokens();
   const { data: marketPrice } = useTokenPairPrice(
     order.tokenSell,
-    order.tokenBuy
+    order.tokenBuy,
   );
   return (
     <TabsContent value={order.id}>
