@@ -12,10 +12,9 @@ export const supportedChains = [gnosis, mainnet, sepolia] as const;
 export const supportedChainIds = [mainnet.id, gnosis.id, sepolia.id] as const;
 
 export const RPC_PROVIDERS = {
-  [mainnet.id]: process.env.RPC_URL_MAINNET,
-  [gnosis.id]: process.env.RPC_URL_GNOSIS,
-  // TODO: Infura API of sepolia for testing
-  [sepolia.id]: "https://sepolia.infura.io/v3/dfe880d50c7344c8ab4dbb1e5b74a51d",
+  [mainnet.id]: process.env.NEXT_PUBLIC_RPC_URL_MAINNET,
+  [gnosis.id]: process.env.NEXT_PUBLIC_RPC_URL_GNOSIS,
+  [sepolia.id]: process.env.NEXT_PUBLIC_RPC_URL_SEPOLIA,
 } as const;
 
 export function createClientForChain(chain: ChainType) {
