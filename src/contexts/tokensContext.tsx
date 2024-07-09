@@ -52,7 +52,7 @@ function fetchFromLocalStorage<T>(key: string): T | null {
   return JSON.parse(item);
 }
 
-export const TOKEN_PRICE_CACHE_DURATION = 15_000; // 10 seconds
+export const TOKEN_PRICE_CACHE_DURATION = 10_000; // 10 seconds
 
 export const TokensContextProvider = ({
   children,
