@@ -155,7 +155,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
             disabled={isAmountDisabled}
             min={0}
           />
-          <i className="text-xs /70">
+          <i className="text-xs">
             ${formatNumber(amount * (usdPrice || 0), 2)}
           </i>
         </div>
