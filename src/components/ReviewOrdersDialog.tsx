@@ -83,26 +83,34 @@ export function ReviewOrdersDialog({
           <div className="text-2xl font-medium ">
             Review Stop Loss order{multipleOrders ? "s" : ""}
           </div>
-          <TabsRoot>
-            <TabsList defaultValue={String(0)} className="flex justify-start">
-              {draftOrders.map((order, index) => {
+          {multipleOrders ? (
+            <TabsRoot>
+              <TabsList defaultValue={String(0)} className="flex justify-start">
+                {draftOrders.map((order, index) => {
+                  return (
+                    <TabsTrigger
+                      value={order.id}
+                      className="data-[state=active]:text-white"
+                    >{`#${index + 1}`}</TabsTrigger>
+                  );
+                })}
+              </TabsList>
+
+              {draftOrders.map((order) => {
                 return (
-                  <TabsTrigger
-                    value={order.id}
-                    className="data-[state=active]:text-white"
-                  >{`#${index + 1}`}</TabsTrigger>
+                  <TabsContent value={order.id}>
+                    <OrderContent order={order} />
+                  </TabsContent>
                 );
               })}
-            </TabsList>
-            {draftOrders.map((order) => {
-              return <OrderTab order={order} />;
-            })}
-          </TabsRoot>
-
+            </TabsRoot>
+          ) : (
+            <OrderContent order={draftOrders[0]} />
+          )}
           <Button className="w-full mt-3" onClick={onSubmit}>
             {multipleOrders
               ? `Place all ${draftOrders.length} Stop Loss orders`
-              : "Place Stop Loss order"}
+              : `Place Stop Loss order${multipleOrders ? "s" : ""}`}
           </Button>
           {showAddOrders && (
             <Button
@@ -123,7 +131,7 @@ export function ReviewOrdersDialog({
   );
 }
 
-function OrderTab({ order }: { order: DraftOrder }) {
+function OrderContent({ order }: { order: DraftOrder }) {
   const { useTokenPairPrice } = useTokens();
   const { data: currentMarketPrice } = useTokenPairPrice(
     order.tokenSell,
@@ -131,84 +139,79 @@ function OrderTab({ order }: { order: DraftOrder }) {
   );
   const marketPrice = currentMarketPrice || order.fallbackMarketPrice;
   return (
-    <TabsContent value={order.id}>
-      <div className="flex flex-col items-center gap-2 w-full">
-        <TokenInformation
-          title={order.isSellOrder ? "Sell exactly" : "Sell at most"}
-          token={order.tokenSell}
-          balance={order.amountSell}
-        />
-        <ArrowDownIcon className="size-8" />
-        <TokenInformation
-          title={order.isSellOrder ? "Receive at least" : "Receive exactly"}
-          token={order.tokenBuy}
-          balance={order.amountBuy}
-        />
-        <OraclePriceWarning draftOrder={order} />
-        <div className="w-full flex flex-col gap-1 mt-2">
+    <div className="flex flex-col items-center gap-2 w-full">
+      <TokenInformation
+        title={order.isSellOrder ? "Sell exactly" : "Sell at most"}
+        token={order.tokenSell}
+        balance={order.amountSell}
+      />
+      <ArrowDownIcon className="size-8" />
+      <TokenInformation
+        title={order.isSellOrder ? "Receive at least" : "Receive exactly"}
+        token={order.tokenBuy}
+        balance={order.amountBuy}
+      />
+      <OraclePriceWarning draftOrder={order} />
+      <div className="w-full flex flex-col gap-1 mt-2">
+        <OrderInformation
+          title="Trigger price"
+          tooltipText={TOOLTIP_DESCRIPTIONS.TRIGGER_PRICE}
+        >
+          {order.tokenSell.symbol} = {formatNumber(order.strikePrice, 4)}{" "}
+          {order.tokenBuy.symbol}
+        </OrderInformation>
+        <OrderInformation
+          title="Limit price"
+          tooltipText={TOOLTIP_DESCRIPTIONS.LIMIT_PRICE}
+        >
+          {order.tokenSell.symbol} = {formatNumber(order.limitPrice, 4)}{" "}
+          {order.tokenBuy.symbol}
+        </OrderInformation>
+        <OrderInformation
+          title="Current oracle price"
+          tooltipText={TOOLTIP_DESCRIPTIONS.CURRENT_ORACLE_PRICE}
+        >
+          {order.tokenSell.symbol} = {formatNumber(order.oraclePrice, 4)}{" "}
+          {order.tokenBuy.symbol}
+        </OrderInformation>
+        {marketPrice && (
           <OrderInformation
-            title="Trigger price"
-            tooltipText={TOOLTIP_DESCRIPTIONS.TRIGGER_PRICE}
+            title="Current market price"
+            tooltipText={TOOLTIP_DESCRIPTIONS.CURRENT_MARKET_PRICE}
           >
-            {order.tokenSell.symbol} = {formatNumber(order.strikePrice, 4)}{" "}
+            {order.tokenSell.symbol} = {formatNumber(marketPrice, 4)}{" "}
             {order.tokenBuy.symbol}
           </OrderInformation>
-          <OrderInformation
-            title="Limit price"
-            tooltipText={TOOLTIP_DESCRIPTIONS.LIMIT_PRICE}
-          >
-            {order.tokenSell.symbol} = {formatNumber(order.limitPrice, 4)}{" "}
-            {order.tokenBuy.symbol}
-          </OrderInformation>
-          <OrderInformation
-            title="Current oracle price"
-            tooltipText={TOOLTIP_DESCRIPTIONS.CURRENT_ORACLE_PRICE}
-          >
-            {order.tokenSell.symbol} = {formatNumber(order.oraclePrice, 4)}{" "}
-            {order.tokenBuy.symbol}
-          </OrderInformation>
-          {marketPrice && (
-            <OrderInformation
-              title="Current market price"
-              tooltipText={TOOLTIP_DESCRIPTIONS.CURRENT_MARKET_PRICE}
-            >
-              {order.tokenSell.symbol} = {formatNumber(marketPrice, 4)}{" "}
-              {order.tokenBuy.symbol}
-            </OrderInformation>
-          )}
-          <OrderInformation
-            title="Type"
-            tooltipText={TOOLTIP_DESCRIPTIONS.TYPE}
-          >
-            {order.partiallyFillable ? "Partial fillable" : "Fill or Kill"}
-          </OrderInformation>
-          <OrderInformation
-            title="Receiver"
-            tooltipText={TOOLTIP_DESCRIPTIONS.RECIPIENT}
-          >
-            <AddressWithLink address={order.receiver} />
-          </OrderInformation>
-          <OrderInformation
-            title={`${order.tokenSell.symbol} oracle`}
-            tooltipText={TOOLTIP_DESCRIPTIONS.ORACLE_TOKEN_SELL}
-          >
-            <AddressWithLink address={order.tokenSellOracle} />
-          </OrderInformation>
-          <OrderInformation
-            title={`${order.tokenBuy.symbol} oracle`}
-            tooltipText={TOOLTIP_DESCRIPTIONS.ORACLE_TOKEN_BUY}
-          >
-            <AddressWithLink address={order.tokenBuyOracle} />
-          </OrderInformation>
-          <OrderInformation
-            title="Oracles validity time"
-            tooltipText={TOOLTIP_DESCRIPTIONS.MAX_TIME_SINCE_LAST_ORACLE_UPDATE}
-          >
-            {formatTimeDelta(order.maxHoursSinceOracleUpdates * 3600)}
-          </OrderInformation>
-        </div>
+        )}
+        <OrderInformation title="Type" tooltipText={TOOLTIP_DESCRIPTIONS.TYPE}>
+          {order.partiallyFillable ? "Partial fillable" : "Fill or Kill"}
+        </OrderInformation>
+        <OrderInformation
+          title="Receiver"
+          tooltipText={TOOLTIP_DESCRIPTIONS.RECIPIENT}
+        >
+          <AddressWithLink address={order.receiver} />
+        </OrderInformation>
+        <OrderInformation
+          title={`${order.tokenSell.symbol} oracle`}
+          tooltipText={TOOLTIP_DESCRIPTIONS.ORACLE_TOKEN_SELL}
+        >
+          <AddressWithLink address={order.tokenSellOracle} />
+        </OrderInformation>
+        <OrderInformation
+          title={`${order.tokenBuy.symbol} oracle`}
+          tooltipText={TOOLTIP_DESCRIPTIONS.ORACLE_TOKEN_BUY}
+        >
+          <AddressWithLink address={order.tokenBuyOracle} />
+        </OrderInformation>
+        <OrderInformation
+          title="Oracles validity time"
+          tooltipText={TOOLTIP_DESCRIPTIONS.MAX_TIME_SINCE_LAST_ORACLE_UPDATE}
+        >
+          {formatTimeDelta(order.maxHoursSinceOracleUpdates * 3600)}
+        </OrderInformation>
       </div>
-    </TabsContent>
+    </div>
   );
 }
 
