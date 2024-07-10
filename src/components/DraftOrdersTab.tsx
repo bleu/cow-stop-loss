@@ -36,6 +36,26 @@ export function DraftOrdersTab() {
         draftOrders={selectedOrders}
       />
       <div className="flex flex-col gap-2">
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="destructive"
+            disabled={!selectedIds.length}
+            onClick={() => {
+              removeDraftOrders(selectedIds);
+              setSelectedIds([]);
+            }}
+          >
+            Delete
+          </Button>
+          <Button
+            disabled={!selectedIds.length}
+            onClick={() => {
+              setReviewDialogOpen(true);
+            }}
+          >
+            Review orders
+          </Button>
+        </div>
         <Table className="w-full rounded-lg">
           <TableHeader className="bg-background">
             <TableCell className="rounded-tl-md">
@@ -74,26 +94,6 @@ export function DraftOrdersTab() {
             )}
           </TableBody>
         </Table>
-        <div className="flex justify-end gap-2">
-          <Button
-            variant="destructive"
-            disabled={!selectedIds.length}
-            onClick={() => {
-              removeDraftOrders(selectedIds);
-              setSelectedIds([]);
-            }}
-          >
-            Delete
-          </Button>
-          <Button
-            disabled={!selectedIds.length}
-            onClick={() => {
-              setReviewDialogOpen(true);
-            }}
-          >
-            Review orders
-          </Button>
-        </div>
       </div>
     </>
   );

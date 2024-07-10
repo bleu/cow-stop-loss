@@ -79,7 +79,7 @@ export function ReviewOrdersDialog({
           "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-foreground w-[90vw] max-w-[450px]",
         )}
       >
-        <div className="flex flex-col gap-2 w-full overflow-y-scroll max-h-[85vh]">
+        <div className="flex flex-col gap-2 w-full overflow-y-scroll scrollbar scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-primary scrollbar-track-background scrollbar-w-4 max-h-[85vh]">
           <div className="text-2xl font-medium ">
             Review Stop Loss order{multipleOrders ? "s" : ""}
           </div>
@@ -125,10 +125,11 @@ export function ReviewOrdersDialog({
 
 function OrderTab({ order }: { order: DraftOrder }) {
   const { useTokenPairPrice } = useTokens();
-  const { data: marketPrice } = useTokenPairPrice(
+  const { data: currentMarketPrice } = useTokenPairPrice(
     order.tokenSell,
     order.tokenBuy,
   );
+  const marketPrice = currentMarketPrice || order.fallbackMarketPrice;
   return (
     <TabsContent value={order.id}>
       <div className="flex flex-col items-center gap-2 w-full">

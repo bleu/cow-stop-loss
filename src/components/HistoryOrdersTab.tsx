@@ -26,7 +26,7 @@ export function HistoryOrdersTab() {
 
   return (
     <Table className="w-full rounded-lg">
-      <TableHeader className="bg-background overflow-scroll">
+      <TableHeader className="bg-background">
         <TableCell className="rounded-tl-md">Created</TableCell>
         <TableCell>Order</TableCell>
         <TableCell>Trigger price</TableCell>
