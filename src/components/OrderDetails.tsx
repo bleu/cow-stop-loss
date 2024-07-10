@@ -305,37 +305,35 @@ export function OrderDetails({
         {order?.cowOrders && order.cowOrders.length > 0 && (
           <>
             <Separator className="my-3" />
-            <div className="flex flex-col gap-y-1">
-              <OrderDetailsInformation
-                label="Related Orders"
-                tooltipText={TOOLTIP_DESCRIPTIONS.RELATED_ORDERS}
-              >
-                <div className="flex flex-col">
-                  {order.cowOrders.map((cowOrder) => (
-                    <div className="flex items-center gap-x-1">
-                      <Link
-                        className={cn(
-                          "hover:text-primary hover:underline",
-                          order.status === "fulfilled" ? "font-bold" : "",
-                        )}
-                        href={buildOrderCowExplorerUrl({
-                          chainId: order?.chainId as ChainId,
-                          orderId: cowOrder.uid as `0x${string}`,
-                        })}
-                        rel="noreferrer noopener"
-                        target="_blank"
-                      >
-                        {truncateAddress(cowOrder.uid)}
-                      </Link>
-                      <ClickToCopy text={cowOrder.uid}>
-                        <CopyIcon className="hover:text-primary" />
-                      </ClickToCopy>
-                      <StatusBadge status={cowOrder?.status} />
-                    </div>
-                  ))}
-                </div>
-              </OrderDetailsInformation>
-            </div>
+            <OrderDetailsInformation
+              label="Related Orders"
+              tooltipText={TOOLTIP_DESCRIPTIONS.RELATED_ORDERS}
+            >
+              <div className="flex flex-col gap-1">
+                {order.cowOrders.map((cowOrder) => (
+                  <div className="flex items-center gap-x-1">
+                    <Link
+                      className={cn(
+                        "hover:text-primary hover:underline",
+                        order.status === "fulfilled" ? "font-bold" : "",
+                      )}
+                      href={buildOrderCowExplorerUrl({
+                        chainId: order?.chainId as ChainId,
+                        orderId: cowOrder.uid as `0x${string}`,
+                      })}
+                      rel="noreferrer noopener"
+                      target="_blank"
+                    >
+                      {truncateAddress(cowOrder.uid)}
+                    </Link>
+                    <ClickToCopy text={cowOrder.uid}>
+                      <CopyIcon className="hover:text-primary" />
+                    </ClickToCopy>
+                    <StatusBadge status={cowOrder?.status} />
+                  </div>
+                ))}
+              </div>
+            </OrderDetailsInformation>
           </>
         )}
       </div>
