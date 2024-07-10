@@ -143,6 +143,8 @@ export function AdvancedSettingsDialog() {
                   tooltipText={
                     TOOLTIP_DESCRIPTIONS.MAX_TIME_SINCE_LAST_ORACLE_UPDATE
                   }
+                  min={0}
+                  max={24 * 365}
                 />
               </Accordion>
             </div>
