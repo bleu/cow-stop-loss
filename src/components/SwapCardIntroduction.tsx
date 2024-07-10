@@ -24,7 +24,7 @@ const StepBulletPoint = ({
   icon: React.ReactNode;
   description: string;
 }) => (
-  <div className="flex items-center gap-2">
+  <div className="flex items-start gap-2">
     <div className="w-[20px]">{icon}</div>
     <span className="text-wrap text-xs w-full">{description}</span>
   </div>
@@ -64,7 +64,9 @@ export function SwapCardIntroduction() {
         <BulletPointList
           items={INTRODUCTION_STEPS}
           iconGenerator={(index: number) => (
-            <span className="text-lg text-success font-bold">{index + 1}.</span>
+            <span className="text-lg text-success font-bold inline-block align-top">
+              {index + 1}.
+            </span>
           )}
         />
         <span className="text-sm mt-2">If you feel confident:</span>
