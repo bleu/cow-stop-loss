@@ -12,11 +12,11 @@ import {
 } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import { GearIcon, ResetIcon } from "@radix-ui/react-icons";
+import { ArrowTopRightIcon, GearIcon, ResetIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import cn from "clsx";
 import * as React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 
 import { useSwapCardContext } from "#/contexts/swapCardContext";
 import { ChainId } from "#/lib/publicClients";
@@ -25,6 +25,7 @@ import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { AdvancedSwapSettings } from "#/lib/types";
 
 import { Checkbox } from "./Checkbox";
+import { BlockExplorerLink } from "./ExplorerLink";
 import { Input } from "./Input";
 import {
   Accordion,
@@ -48,9 +49,11 @@ export function AdvancedSettingsDialog() {
 
   const {
     reset,
+    control,
     formState: { isSubmitting },
   } = form;
 
+  const receiver = useWatch({ control, name: "receiver" });
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -88,6 +91,14 @@ export function AdvancedSettingsDialog() {
               label="Receiver"
               placeholder="0xabc...123"
               tooltipText={TOOLTIP_DESCRIPTIONS.RECIPIENT}
+              extraLabelElement={
+                <BlockExplorerLink
+                  type="address"
+                  label={<ArrowTopRightIcon />}
+                  identifier={receiver}
+                  networkId={chainId as ChainId}
+                />
+              }
             />
             <Separator className="bg-white mt-2" />
             <div className="flex flex-col gap-2">

@@ -9,6 +9,7 @@ interface IInput extends Omit<HTMLProps<HTMLInputElement>, "name"> {
   validation?: RegisterOptions;
   tooltipText?: string;
   tooltipLink?: string;
+  extraLabelElement?: React.ReactNode;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, IInput>(
@@ -18,6 +19,7 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
     validation,
     tooltipText,
     tooltipLink,
+    extraLabelElement,
     className,
     ...props
   }: IInput) => {
@@ -41,6 +43,7 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
             {tooltipText && (
               <InfoTooltip text={tooltipText} link={tooltipLink} />
             )}
+            {extraLabelElement}
           </div>
         )}
         <InputPrimitive
