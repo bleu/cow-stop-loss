@@ -40,10 +40,10 @@ div[data-rk] {
     --card-foreground: 0 0% 100%;
     --radius: 20px;
 
-    --highlight: 39 100% 50%;
+    --highlight: 42 100% 71%;
     --info: 203 13% 88%;
     --success: 162 99% 40%;
-    --warning: 39 100% 50%;
+    --warning: 42 100% 71%;
   }
 
   * {
