@@ -14,6 +14,7 @@ import {
 } from "#/lib/types";
 
 import { useOrder } from "./ordersContext";
+import { useTokens } from "./tokensContext";
 
 interface ISwapContext {
   currentDraftOrder?: DraftOrder;
@@ -51,6 +52,7 @@ export const SwapCardContextProvider = ({
   const [firstAccess, setFirstAccess] = React.useState(
     localStorage.getItem("firstAccess") === null,
   );
+  const { getTokenPairPrice } = useTokens();
 
   const [oracleRoute, setOracleRoute] = React.useState<IRoute>();
   const [currentDraftOrder, setCurrentDraftOrder] =
@@ -116,6 +118,11 @@ export const SwapCardContextProvider = ({
       tokenSellOracle,
     });
 
+    const fallbackMarketPrice = await getTokenPairPrice(
+      data.tokenSell,
+      data.tokenBuy,
+    );
+
     const draftOrder: DraftOrder = {
       ...data,
       ...advancedSettings,
@@ -123,6 +130,7 @@ export const SwapCardContextProvider = ({
       tokenSellOracle,
       id: `draft-${draftOrders.length}-${Date.now()}`,
       oraclePrice,
+      fallbackMarketPrice,
     };
     return draftOrder;
   }

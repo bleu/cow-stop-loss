@@ -125,7 +125,7 @@ export const TokensContextProvider = ({
   const useTokenPairPrice = (tokenSell?: IToken, tokenBuy?: IToken) => {
     return useSWR(
       [tokenSell, tokenBuy],
-      ([tokenSell, tokenBuy]) => getTokenPairPrice(tokenSell, tokenBuy),
+      () => getTokenPairPrice(tokenSell, tokenBuy),
       {
         refreshInterval: TOKEN_PRICE_CACHE_DURATION,
       },

@@ -6,6 +6,7 @@ import { Address } from "viem";
 
 import { useOrder } from "#/contexts/ordersContext";
 import { useSwapCardContext } from "#/contexts/swapCardContext";
+import { useTokens } from "#/contexts/tokensContext";
 import {
   AdvancedSwapSettings,
   DraftOrder,
@@ -21,26 +22,21 @@ export function SwapCardSubmitButton() {
   } = useFormContext<SwapData>();
   const { tokenBuyOracle, tokenSellOracle, advancedSettings, isLoading } =
     useSwapCardContext();
-  const [
-    tokenBuy,
-    tokenSell,
-    buyAmount,
-    sellAmount,
-    strikePrice,
-    limitPrice,
-    marketPrice,
-  ] = useWatch({
-    control,
-    name: [
-      "tokenBuy",
-      "tokenSell",
-      "amountBuy",
-      "amountSell",
-      "strikePrice",
-      "limitPrice",
-      "marketPrice",
-    ],
-  });
+  const [tokenBuy, tokenSell, buyAmount, sellAmount, strikePrice, limitPrice] =
+    useWatch({
+      control,
+      name: [
+        "tokenBuy",
+        "tokenSell",
+        "amountBuy",
+        "amountSell",
+        "strikePrice",
+        "limitPrice",
+      ],
+    });
+
+  const { useTokenPairPrice } = useTokens();
+  const { data: marketPrice } = useTokenPairPrice(tokenSell, tokenBuy);
 
   const { disabled, text } = getButtonState({
     draftOrders,
@@ -136,7 +132,7 @@ function getButtonState({
   if (marketPrice && strikePrice > marketPrice) {
     return {
       disabled: true,
-      text: "Strike price must be lower than market price",
+      text: "Trigger price must be lower than market price",
     };
   }
   if (

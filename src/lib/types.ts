@@ -27,6 +27,7 @@ export type DraftOrder = SwapData &
   AdvancedSwapSettings & {
     id: string;
     oraclePrice: number;
+    fallbackMarketPrice?: number;
   };
 
 type StopLossOrderTypeRaw = ArrElement<

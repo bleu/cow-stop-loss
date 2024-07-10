@@ -97,7 +97,10 @@ export const generateSwapSchema = (chainId: ChainId) =>
 export const generateAdvancedSettingsSchema = (chainId: ChainId) =>
   z
     .object({
-      maxHoursSinceOracleUpdates: z.coerce.number().positive(),
+      maxHoursSinceOracleUpdates: z.coerce
+        .number()
+        .positive()
+        .max(365 * 24),
       tokenSellOracle: z.union([
         generateOracleSchema({ chainId }),
         z.literal(""),
