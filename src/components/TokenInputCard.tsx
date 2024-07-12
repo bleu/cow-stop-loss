@@ -7,13 +7,13 @@ import {
   formatNumber,
   Input,
 } from "@bleu/ui";
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { memo, useEffect, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { Address } from "viem";
 
 import { useSwapCardContext } from "#/contexts/swapCardContext";
-import { useTokens } from "#/contexts/tokensContext";
+import { useSafeApp } from "#/hooks/useSafeApp";
+import { useTokenPrice } from "#/hooks/useTokenPrice";
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { ChainId } from "#/lib/publicClients";
 import { fetchFormattedBalanceOf } from "#/lib/tokenUtils";
@@ -23,9 +23,7 @@ import { pasteAbsoluteValue, preventNegativeKeyDown } from "#/utils/inputs";
 import { TokenSelect } from "./TokenSelect";
 
 function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
-  const {
-    safe: { safeAddress, chainId },
-  } = useSafeAppsSDK();
+  const { safeAddress, chainId } = useSafeApp();
 
   const {
     setValue,
@@ -41,7 +39,6 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
 
   const [isAmountDisabled, setIsAmountDisabled] = useState(false);
   const [tokenBalance, setTokenBalance] = useState<string>();
-  const { useTokenPrice } = useTokens();
 
   const [token, isSellOrder, amount] = useWatch({
     control,
@@ -62,7 +59,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     const anotherSideAmount = side === "Buy" ? sellAmount : buyAmount;
     setValue(
       `amount${side === "Buy" ? "Sell" : "Buy"}` as const,
-      anotherSideAmount,
+      anotherSideAmount
     );
   }
 
@@ -78,7 +75,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   useEffect(() => {
     // Control if the amount field should be disabled
     setIsAmountDisabled(
-      (isSellOrder && side === "Buy") || (!isSellOrder && side === "Sell"),
+      (isSellOrder && side === "Buy") || (!isSellOrder && side === "Sell")
     );
   }, [isSellOrder, side]);
 
@@ -102,7 +99,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
         {getCardTitle(isAmountDisabled, side)}
       </CardTitle>
       <CardContent className="flex justify-between gap-2 px-0 py-2 items-start">
-        <div className="flex flex-col gap-y-1 min-w-28">
+        <div className="flex flex-col gap-y-1 min-w-28 w-32">
           <TokenSelect
             selectedToken={token}
             onSelectToken={(newToken) => {
@@ -125,7 +122,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                   4,
                   "decimal",
                   "standard",
-                  0.0001,
+                  0.0001
                 )}{" "}
               </span>
               {!isAmountDisabled &&
@@ -139,7 +136,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                     onClick={() => {
                       setValue(
                         amountFieldName,
-                        Number(convertStringToNumberAndRoundDown(tokenBalance)),
+                        Number(convertStringToNumberAndRoundDown(tokenBalance))
                       );
                     }}
                   >
@@ -167,7 +164,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
               amount && usdPrice ? amount * (usdPrice || 0) : 0,
               2,
               "currency",
-              "standard",
+              "standard"
             )}`}
           </i>
         </div>

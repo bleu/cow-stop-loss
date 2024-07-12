@@ -8,23 +8,21 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
   TableHeader,
   TableRow,
 } from "@bleu/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { formatUnits } from "viem";
 
 import { useOrder } from "#/contexts/ordersContext";
-import { useTokens } from "#/contexts/tokensContext";
+import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { IToken, StopLossOrderType } from "#/lib/types";
 
-import { LinkComponent } from "./Link";
-import { Spinner } from "./Spinner";
 import { StatusBadge } from "./StatusBadge";
-import { useRouter } from "next/navigation";
+import { Spinner } from "./ui/spinner";
 
 export function OpenOrdersTab() {
   const {
@@ -120,16 +118,14 @@ export function OpenOrderRow({
   const { safe } = useSafeAppsSDK();
   const router = useRouter();
 
-  const { useTokenPairPrice } = useTokens();
+  const { data: marketPrice } = useTokenPairPrice(
+    order.stopLossData?.tokenIn as IToken,
+    order.stopLossData?.tokenOut as IToken,
+  );
 
   if (!order.stopLossData) {
     return null;
   }
-
-  const { data: marketPrice } = useTokenPairPrice(
-    order.stopLossData?.tokenIn as IToken,
-    order.stopLossData?.tokenOut as IToken
-  );
 
   const priceUnity =
     order.stopLossData.tokenOut.symbol +
@@ -141,18 +137,18 @@ export function OpenOrderRow({
   const amountSell = Number(
     formatUnits(
       order.stopLossData?.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals
-    )
+      order.stopLossData.tokenIn.decimals,
+    ),
   );
   const amountBuy = Number(
     formatUnits(
       order.stopLossData?.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals
-    )
+      order.stopLossData.tokenOut.decimals,
+    ),
   );
 
   const orderDateTime = epochToDate(
-    Number(order.blockTimestamp)
+    Number(order.blockTimestamp),
   ).toLocaleString();
 
   return (

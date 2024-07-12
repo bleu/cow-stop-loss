@@ -1,5 +1,5 @@
 import { OrderTabs } from "#/components/OrdersTabs";
-import { SwapCard } from "#/components/SwapCard";
+import { SwapCard } from "#/components/swap-card/SwapCard";
 import { TxPendingDialog } from "#/components/TxPendingDialog";
 import { SwapCardContextProvider } from "#/contexts/swapCardContext";
 

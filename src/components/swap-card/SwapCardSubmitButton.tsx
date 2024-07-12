@@ -6,7 +6,7 @@ import { Address } from "viem";
 
 import { useOrder } from "#/contexts/ordersContext";
 import { useSwapCardContext } from "#/contexts/swapCardContext";
-import { useTokens } from "#/contexts/tokensContext";
+import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import {
   AdvancedSwapSettings,
   DraftOrder,
@@ -35,7 +35,6 @@ export function SwapCardSubmitButton() {
       ],
     });
 
-  const { useTokenPairPrice } = useTokens();
   const { data: marketPrice } = useTokenPairPrice(tokenSell, tokenBuy);
 
   const { disabled, text } = getButtonState({

@@ -16,8 +16,9 @@ import * as React from "react";
 import { Address } from "viem";
 
 import { useOrder } from "#/contexts/ordersContext";
-import { useTokens } from "#/contexts/tokensContext";
 import { useFallbackState } from "#/hooks/useFallbackState";
+import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
+import { useTokenPrice } from "#/hooks/useTokenPrice";
 import { ChainId } from "#/lib/publicClients";
 import { formatTimeDelta } from "#/lib/timeDelta";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
@@ -28,7 +29,7 @@ import { AddressWithLink } from "./AddressWithLink";
 import { OraclePriceWarning } from "./OraclePriceAlert";
 import { TokenAmount } from "./TokenAmount";
 import { TokenInfo } from "./TokenInfo";
-import { InfoTooltip } from "./Tooltip";
+import { InfoTooltip } from "./ui/tooltip";
 
 export function ReviewOrdersDialog({
   draftOrders,
@@ -132,7 +133,6 @@ export function ReviewOrdersDialog({
 }
 
 function OrderContent({ order }: { order: DraftOrder }) {
-  const { useTokenPairPrice } = useTokens();
   const { data: currentMarketPrice } = useTokenPairPrice(
     order.tokenSell,
     order.tokenBuy,
@@ -244,7 +244,6 @@ function TokenInformation({
   token: IToken;
   balance: number;
 }) {
-  const { useTokenPrice } = useTokens();
   const { data: tokenPrice } = useTokenPrice(token);
 
   return (

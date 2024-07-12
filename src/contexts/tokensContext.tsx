@@ -1,9 +1,9 @@
 "use client";
 
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React, { useEffect } from "react";
 import useSWR from "swr";
 
+import { useSafeApp } from "#/hooks/useSafeApp";
 import { cowTokenList } from "#/lib/cowTokenList";
 import { ChainId } from "#/lib/publicClients";
 import { fetchTokenUsdPrice } from "#/lib/tokenUtils";
@@ -61,9 +61,7 @@ export const TokensContextProvider = ({
 }) => {
   if (typeof window === "undefined" || !window.localStorage) return;
 
-  const {
-    safe: { chainId },
-  } = useSafeAppsSDK();
+  const { chainId } = useSafeApp();
 
   const [importedTokenList, setImportedTokenList] = React.useState<
     ITokenWithChainId[]

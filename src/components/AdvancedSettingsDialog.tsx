@@ -13,44 +13,42 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-dropdown-menu";
 import { ArrowTopRightIcon, GearIcon, ResetIcon } from "@radix-ui/react-icons";
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import cn from "clsx";
 import * as React from "react";
 import { useForm, useWatch } from "react-hook-form";
 
 import { useSwapCardContext } from "#/contexts/swapCardContext";
+import { useSafeApp } from "#/hooks/useSafeApp";
 import { ChainId } from "#/lib/publicClients";
 import { generateAdvancedSettingsSchema } from "#/lib/schema";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { AdvancedSwapSettings } from "#/lib/types";
 
-import { Checkbox } from "./Checkbox";
 import { BlockExplorerLink } from "./ExplorerLink";
-import { Input } from "./Input";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "./ui/accordion";
+import { Checkbox } from "./ui/checkbox";
 import { Form } from "./ui/form";
+import { Input } from "./ui/input";
 
 function haveSettingsChanged(
   current: Partial<AdvancedSwapSettings>,
-  defaults: AdvancedSwapSettings
+  defaults: AdvancedSwapSettings,
 ): boolean {
   return Object.keys(current).some(
     (key) =>
       current[key as keyof AdvancedSwapSettings] !==
-      defaults[key as keyof AdvancedSwapSettings]
+      defaults[key as keyof AdvancedSwapSettings],
   );
 }
 
 export function AdvancedSettingsDialog() {
   const [open, setOpen] = React.useState(false);
-  const {
-    safe: { safeAddress, chainId },
-  } = useSafeAppsSDK();
+  const { safeAddress, chainId } = useSafeApp();
   const { setAdvancedSettings, advancedSettings } = useSwapCardContext();
 
   const defaultSettings = {
@@ -75,7 +73,7 @@ export function AdvancedSettingsDialog() {
   const currentValues = useWatch({ control });
   const areSettingsDifferentFromDefault = haveSettingsChanged(
     currentValues,
-    defaultSettings
+    defaultSettings,
   );
 
   const receiver = useWatch({ control, name: "receiver" });
@@ -93,12 +91,12 @@ export function AdvancedSettingsDialog() {
         <DialogOverlay
           id="dialog-overlay"
           className={cn(
-            "bg-black/20 data-[state=open]:animate-overlayShow fixed inset-0 rounded-lg"
+            "bg-black/20 data-[state=open]:animate-overlayShow fixed inset-0 rounded-lg",
           )}
         />
         <DialogContent
           className={cn(
-            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-lg focus:outline-none bg-foreground  w-[90vw] max-w-[450px] p-[25px]"
+            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-lg focus:outline-none bg-foreground  w-[90vw] max-w-[450px] p-[25px]",
           )}
         >
           <div className="flex flex-col justify-between w-full">

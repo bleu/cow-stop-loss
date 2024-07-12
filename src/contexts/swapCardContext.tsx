@@ -1,9 +1,9 @@
 "use client";
 
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React, { useEffect } from "react";
 import { Address } from "viem";
 
+import { useSafeApp } from "#/hooks/useSafeApp";
 import { CHAINS_ORACLE_ROUTER_FACTORY, IRoute } from "#/lib/oracleRouter";
 import { ChainId } from "#/lib/publicClients";
 import {
@@ -37,7 +37,7 @@ interface ISwapContext {
 }
 
 export const SwapCardContext = React.createContext<ISwapContext>(
-  {} as ISwapContext,
+  {} as ISwapContext
 );
 
 const loadAdvancedSettings = (safeAddress: string): AdvancedSwapSettings => {
@@ -59,13 +59,11 @@ export const SwapCardContextProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const {
-    safe: { safeAddress, chainId },
-  } = useSafeAppsSDK();
+  const { safeAddress, chainId } = useSafeApp();
   const { draftOrders } = useOrder();
   const [reviewDialogOpen, setReviewDialogOpen] = React.useState(false);
   const [firstAccess, setFirstAccess] = React.useState(
-    localStorage.getItem("firstAccess") === null,
+    localStorage.getItem("firstAccess") === null
   );
   const { getTokenPairPrice } = useTokens();
 
@@ -129,7 +127,7 @@ export const SwapCardContextProvider = ({
 
     const fallbackMarketPrice = await getTokenPairPrice(
       data.tokenSell,
-      data.tokenBuy,
+      data.tokenBuy
     );
 
     const timestamp = Date.now().toString(16);

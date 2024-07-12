@@ -1,9 +1,9 @@
 "use client";
 import { formatNumber } from "@bleu/ui";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 
 import { TokenLogo } from "#/components/TokenLogo";
+import { useSafeApp } from "#/hooks/useSafeApp";
 import { ChainId } from "#/lib/publicClients";
 import { IToken, ITokenWithValue } from "#/lib/types";
 
@@ -18,9 +18,7 @@ export function TokenInfo({
   showBalance?: boolean;
   showExplorerLink?: boolean;
 }) {
-  const {
-    safe: { chainId },
-  } = useSafeAppsSDK();
+  const { chainId } = useSafeApp();
   return (
     <div className="flex items-center gap-x-1">
       <div className="flex shrink-0 items-center justify-center">

@@ -1,4 +1,4 @@
-import { InfoTooltip } from "#/components/Tooltip";
+import { InfoTooltip } from "#/components/tooltip";
 
 export function OrderDetailsInformation({
   label,

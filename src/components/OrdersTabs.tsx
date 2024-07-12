@@ -9,7 +9,7 @@ import { useSwapCardContext } from "#/contexts/swapCardContext";
 import { DraftOrdersTab } from "./DraftOrdersTab";
 import { HistoryOrdersTab } from "./HistoryOrdersTab";
 import { OpenOrdersTab } from "./OpenOrdersTab";
-import { Spinner } from "./Spinner";
+import { Spinner } from "./ui/spinner";
 
 export function OrderTabs() {
   const {

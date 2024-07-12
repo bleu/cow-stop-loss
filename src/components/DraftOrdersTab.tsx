@@ -14,7 +14,7 @@ import {
 import { useState } from "react";
 
 import { useOrder } from "#/contexts/ordersContext";
-import { useTokens } from "#/contexts/tokensContext";
+import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { getOrderDescription } from "#/lib/orderDescription";
 import { DraftOrder } from "#/lib/types";
 
@@ -26,7 +26,7 @@ export function DraftOrdersTab() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const selectedOrders = draftOrders.filter((order) =>
-    selectedIds.includes(order.id)
+    selectedIds.includes(order.id),
   );
 
   return (
@@ -62,7 +62,7 @@ export function DraftOrdersTab() {
                         return;
                       }
                       setSelectedIds(
-                        selectedIds.filter((id) => id !== order.id)
+                        selectedIds.filter((id) => id !== order.id),
                       );
                     }}
                   />
@@ -120,10 +120,10 @@ export function DraftOrderRow({
   });
 
   const priceUnity = `${order.tokenBuy.symbol}/${order.tokenSell.symbol}`;
-  const { useTokenPairPrice } = useTokens();
+
   const { data: marketPrice } = useTokenPairPrice(
     order.tokenSell,
-    order.tokenBuy
+    order.tokenBuy,
   );
 
   return (

@@ -1,6 +1,6 @@
 import { DraftOrder } from "#/lib/types";
 
-import { AlertCard } from "./AlertCard";
+import { AlertCard } from "./ui/alert-card";
 
 const ORACLE_PRICE_DIFF_THRESHOLD = 0.02;
 

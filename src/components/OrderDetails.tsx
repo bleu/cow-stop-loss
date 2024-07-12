@@ -15,11 +15,11 @@ import Link from "next/link";
 import useSWR from "swr";
 import { Address, formatUnits } from "viem";
 
-import { LinkComponent } from "#/components/Link";
+import { LinkComponent } from "#/components/link";
 import { OrderDetailsInformation } from "#/components/OrderDetailsInformation";
 import { StatusBadge } from "#/components/StatusBadge";
 import { TokenLogo } from "#/components/TokenLogo";
-import { InfoTooltip } from "#/components/Tooltip";
+import { InfoTooltip } from "#/components/tooltip";
 import { getProcessedStopLossOrder } from "#/lib/orderFetcher";
 import { ChainId } from "#/lib/publicClients";
 import { formatTimeDelta } from "#/lib/timeDelta";

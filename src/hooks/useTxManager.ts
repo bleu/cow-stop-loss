@@ -1,4 +1,3 @@
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { TransactionStatus } from "@safe-global/safe-apps-sdk";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
@@ -10,11 +9,10 @@ import {
   TransactionFactory,
 } from "#/lib/transactionFactory";
 
+import { useSafeApp } from "./useSafeApp";
+
 export function useTxManager() {
-  const {
-    sdk,
-    safe: { chainId },
-  } = useSafeAppsSDK();
+  const { sdk, chainId } = useSafeApp();
 
   const publicClient = publicClientsFromIds[chainId as ChainId];
   const sendTransactions = async (argsArray: AllTransactionArgs[]) => {

@@ -3,13 +3,13 @@ import { ArrowLeftRight } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
-import { useTokens } from "#/contexts/tokensContext";
+import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { SwapData } from "#/lib/types";
 import { pasteAbsoluteValue, preventNegativeKeyDown } from "#/utils/inputs";
 
-import { InfoTooltip } from "./Tooltip";
+import { InfoTooltip } from "./ui/tooltip";
 
 export const PriceInputCard = memo(PriceInputCardComponent);
 
@@ -28,7 +28,7 @@ function PriceInputCardComponent({
     control,
     name: ["tokenBuy", "tokenSell", fieldName],
   });
-  const { useTokenPairPrice } = useTokens();
+
   const { data: marketPrice } = useTokenPairPrice(tokenSell, tokenBuy);
 
   const [isInverted, setIsInverted] = useState(false);

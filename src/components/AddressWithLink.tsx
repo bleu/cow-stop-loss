@@ -1,17 +1,15 @@
 "use client";
 
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 
+import { useSafeApp } from "#/hooks/useSafeApp";
 import { ChainId } from "#/lib/publicClients";
 import { truncateAddress } from "#/utils";
 
 import { BlockExplorerLink } from "./ExplorerLink";
 
 export function AddressWithLink({ address }: { address: string }) {
-  const {
-    safe: { chainId },
-  } = useSafeAppsSDK();
+  const { chainId } = useSafeApp();
   return (
     <div className="flex gap-1 items-center">
       <span>{truncateAddress(address)}</span>
