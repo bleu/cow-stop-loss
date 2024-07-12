@@ -23,21 +23,19 @@ import { getProcessedStopLossOrder } from "#/lib/orderFetcher";
 import { ChainId } from "#/lib/publicClients";
 import { formatTimeDelta } from "#/lib/timeDelta";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
-import { StopLossOrderTypeWithCowOrders } from "#/lib/types";
 import {
   buildBlockExplorerTokenURL,
   buildBlockExplorerTxUrl,
   buildOrderCowExplorerUrl,
   truncateAddress,
 } from "#/utils";
+import { Spinner } from "./Spinner";
 
 export function OrderDetails({
-  defaultOrder,
   orderId,
   chainId,
   address,
 }: {
-  defaultOrder: StopLossOrderTypeWithCowOrders;
   orderId: string;
   address: Address;
   chainId: ChainId;
@@ -50,9 +48,11 @@ export function OrderDetails({
       address,
     });
   };
-  const { data: order } = useSWR(["orderDetails"], orderFetcher, {
-    fallbackData: defaultOrder,
-  });
+  const { data: order, isLoading } = useSWR(["orderDetails"], orderFetcher);
+
+  if (isLoading) {
+    return <Spinner />;
+  }
 
   const orderDateTime = formatDateTime(
     epochToDate(Number(order?.blockTimestamp))

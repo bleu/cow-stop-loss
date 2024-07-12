@@ -11,7 +11,6 @@ import {
   TableHeader,
   TableRow,
 } from "@bleu/ui";
-import { OpenInNewWindowIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useState } from "react";
 import { formatUnits } from "viem";
@@ -24,6 +23,7 @@ import { IToken, StopLossOrderType } from "#/lib/types";
 import { LinkComponent } from "./Link";
 import { Spinner } from "./Spinner";
 import { StatusBadge } from "./StatusBadge";
+import { useRouter } from "next/navigation";
 
 export function OpenOrdersTab() {
   const {
@@ -60,10 +60,7 @@ export function OpenOrdersTab() {
           <TableCell>Trigger price</TableCell>
           <TableCell>Current market price</TableCell>
           <TableCell>Filled</TableCell>
-          <TableCell>Status</TableCell>
-          <TableCell className="rounded-tr-md">
-            <span className="sr-only">Details</span>
-          </TableCell>{" "}
+          <TableCell className="rounded-tr-md">Status</TableCell>
         </TableHeader>
         <TableBody>
           {openOrders.length ? (
@@ -120,6 +117,7 @@ export function OpenOrderRow({
   onSelect: (selected: boolean) => void;
 }) {
   const { safe } = useSafeAppsSDK();
+  const router = useRouter();
 
   const { useTokenPairPrice } = useTokens();
 
@@ -129,7 +127,7 @@ export function OpenOrderRow({
 
   const { data: marketPrice } = useTokenPairPrice(
     order.stopLossData?.tokenIn as IToken,
-    order.stopLossData?.tokenOut as IToken,
+    order.stopLossData?.tokenOut as IToken
   );
 
   const priceUnity =
@@ -142,23 +140,33 @@ export function OpenOrderRow({
   const amountSell = Number(
     formatUnits(
       order.stopLossData?.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals,
-    ),
+      order.stopLossData.tokenIn.decimals
+    )
   );
   const amountBuy = Number(
     formatUnits(
       order.stopLossData?.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals,
-    ),
+      order.stopLossData.tokenOut.decimals
+    )
   );
 
   const orderDateTime = epochToDate(
-    Number(order.blockTimestamp),
+    Number(order.blockTimestamp)
   ).toLocaleString();
 
   return (
-    <TableRow className="hover:bg-background text-xs">
-      <TableCell>
+    <TableRow
+      className="hover:bg-background text-xs cursor-pointer"
+      onClick={() =>
+        router.push(`/${safe.chainId}/${safe.safeAddress}/${order?.id}`)
+      }
+    >
+      <TableCell
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+        className="cursor-normal"
+      >
         <Checkbox
           onCheckedChange={(checked) => {
             onSelect(checked as boolean);
@@ -186,15 +194,6 @@ export function OpenOrderRow({
       <TableCell>{((order.filledPct || 0) * 100).toFixed()}%</TableCell>
       <TableCell>
         <StatusBadge status={order.status} />
-      </TableCell>
-      <TableCell>
-        <LinkComponent
-          href={`/${safe.chainId}/${safe.safeAddress}/${order?.id}`}
-        >
-          <Button variant="link" className="hover:text-primary/70 p-0">
-            <OpenInNewWindowIcon className="size-5" />
-          </Button>
-        </LinkComponent>
       </TableCell>
     </TableRow>
   );

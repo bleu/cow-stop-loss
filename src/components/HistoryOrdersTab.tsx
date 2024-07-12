@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Button,
   epochToDate,
   formatNumber,
   Spinner,
@@ -11,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "@bleu/ui";
-import { OpenInNewWindowIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { formatUnits } from "viem";
 
@@ -20,6 +18,7 @@ import { StopLossOrderType } from "#/lib/types";
 
 import { LinkComponent } from "./Link";
 import { StatusBadge } from "./StatusBadge";
+import { useRouter } from "next/navigation";
 
 export function HistoryOrdersTab() {
   const { historyOrders, isLoading } = useOrder();
@@ -31,10 +30,7 @@ export function HistoryOrdersTab() {
         <TableCell>Order</TableCell>
         <TableCell>Trigger price</TableCell>
         <TableCell>Filled</TableCell>
-        <TableCell>Status</TableCell>
-        <TableCell className="rounded-tr-md">
-          <span className="sr-only">Details</span>
-        </TableCell>
+        <TableCell className="rounded-tr-md">Status</TableCell>
       </TableHeader>
       <TableBody>
         {historyOrders.length ? (
@@ -43,7 +39,7 @@ export function HistoryOrdersTab() {
           })
         ) : (
           <TableRow>
-            <TableCell colSpan={6} className="text-center">
+            <TableCell colSpan={5} className="text-center">
               {isLoading ? (
                 <Spinner />
               ) : (
@@ -61,6 +57,7 @@ export function HistoryOrdersTab() {
 
 export function HistoryOrderRow({ order }: { order: StopLossOrderType }) {
   const { safe } = useSafeAppsSDK();
+  const router = useRouter();
 
   if (!order.stopLossData) {
     return null;
@@ -76,22 +73,27 @@ export function HistoryOrderRow({ order }: { order: StopLossOrderType }) {
   const amountSell = Number(
     formatUnits(
       order.stopLossData?.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals,
-    ),
+      order.stopLossData.tokenIn.decimals
+    )
   );
   const amountBuy = Number(
     formatUnits(
       order.stopLossData?.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals,
-    ),
+      order.stopLossData.tokenOut.decimals
+    )
   );
 
   const orderDateTime = epochToDate(
-    Number(order.blockTimestamp),
+    Number(order.blockTimestamp)
   ).toLocaleString();
 
   return (
-    <TableRow className="hover:bg-background text-xs">
+    <TableRow
+      className="hover:bg-background text-xs cursor-pointer"
+      onClick={() =>
+        router.push(`/${safe.chainId}/${safe.safeAddress}/${order?.id}`)
+      }
+    >
       <TableCell>{orderDateTime}</TableCell>
       <TableCell>
         <div className="flex flex-col">
@@ -108,15 +110,6 @@ export function HistoryOrderRow({ order }: { order: StopLossOrderType }) {
       <TableCell>{((order.filledPct || 0) * 100).toFixed()}%</TableCell>
       <TableCell>
         <StatusBadge status={order.status} />
-      </TableCell>
-      <TableCell>
-        <LinkComponent
-          href={`/${safe.chainId}/${safe.safeAddress}/${order?.id}`}
-        >
-          <Button variant="link" className="hover:text-primary/70 p-0">
-            <OpenInNewWindowIcon className="size-5" />
-          </Button>
-        </LinkComponent>
       </TableCell>
     </TableRow>
   );
