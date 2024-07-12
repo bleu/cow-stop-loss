@@ -23,7 +23,7 @@ export function TokenInfo({
   } = useSafeAppsSDK();
   return (
     <div className="flex items-center gap-x-1">
-      <div className="flex items-center justify-center">
+      <div className="flex shrink-0 items-center justify-center">
         <div className="rounded-full bg-white">
           <TokenLogo
             tokenAddress={token.address}
@@ -36,7 +36,7 @@ export function TokenInfo({
           />
         </div>
       </div>
-      <div className="flex items-center space-x-1">
+      <div className="flex items-center space-x-1 overflow-x-auto">
         <span>{token.symbol}</span>
         {showExplorerLink && (
           <BlockExplorerLink

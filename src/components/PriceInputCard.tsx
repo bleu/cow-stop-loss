@@ -1,7 +1,9 @@
-import { Button, Card, CardContent, CardTitle, Input } from "@bleu/ui";
+import { Button, Card, CardContent, CardTitle, cn, Input } from "@bleu/ui";
+import { ArrowLeftRight } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
+import { useTokens } from "#/contexts/tokensContext";
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { SwapData } from "#/lib/types";
@@ -22,13 +24,17 @@ function PriceInputCardComponent({
   const { register, control, getValues, setValue } = useFormContext<SwapData>();
   const title = fieldName === "limitPrice" ? "Limit price" : "Trigger price";
 
-  const [tokenBuy, tokenSell, formPrice, marketPrice] = useWatch({
+  const [tokenBuy, tokenSell, formPrice] = useWatch({
     control,
-    name: ["tokenBuy", "tokenSell", fieldName, "marketPrice"],
+    name: ["tokenBuy", "tokenSell", fieldName],
   });
+  const { useTokenPairPrice } = useTokens();
+  const { data: marketPrice } = useTokenPairPrice(tokenSell, tokenBuy);
 
   const [isInverted, setIsInverted] = useState(false);
-  const [displayPrice, setDisplayPrice] = useState(formPrice);
+  const [displayPrice, setDisplayPrice] = useState<number | undefined>(
+    formPrice
+  );
 
   useEffect(() => {
     updateDisplayPrice(formPrice);
@@ -82,6 +88,12 @@ function PriceInputCardComponent({
     }
   };
 
+  const isMarketPriceDifferentFromInput = !marketPrice
+    ? false
+    : isInverted
+      ? 1 / formPrice - marketPrice > 0.000001
+      : marketPrice !== formPrice;
+
   return (
     <Card className="bg-background w-full p-2 rounded-lg">
       <CardTitle>
@@ -92,8 +104,8 @@ function PriceInputCardComponent({
           </div>
         </div>
       </CardTitle>
-      <CardContent className="flex flex-col gap-1 px-0 py-2 items-start">
-        <div className="flex justify-between items-center gap-5 w-full">
+      <CardContent className="flex flex-col gap-1 px-0 pt-2 pb-0 items-start">
+        <div className="flex justify-between items-center gap-2 w-full">
           <Input
             type="number"
             disabled={disabled}
@@ -114,8 +126,8 @@ function PriceInputCardComponent({
               className="py-0 px-1 h-fit text-accent text-xs text-end"
               onClick={handleInvert}
             >
-              {isInverted ? tokenSell.symbol : tokenBuy.symbol}/<br />
-              {isInverted ? tokenBuy.symbol : tokenSell.symbol}
+              {isInverted ? tokenSell.symbol : tokenBuy.symbol}
+              <ArrowLeftRight className="size-3" />
             </Button>
           )}
         </div>
@@ -123,14 +135,17 @@ function PriceInputCardComponent({
           <Button
             type="button"
             variant="ghost"
-            className="py-0 px-1 h-fit text-accent text-xs"
+            className={cn(
+              "py-0 -ml-1 px-1 h-fit text-accent text-xs",
+              !isMarketPriceDifferentFromInput && "opacity-80"
+            )}
             onClick={() => {
               const newPrice = isInverted ? 1 / marketPrice : marketPrice;
               setValue(fieldName, marketPrice);
               setDisplayPrice(newPrice);
             }}
           >
-            Market
+            Set to market
           </Button>
         )}
       </CardContent>

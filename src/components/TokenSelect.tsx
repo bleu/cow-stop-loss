@@ -50,7 +50,7 @@ export function TokenSelect({
     try {
       const importedToken = await fetchTokenInfo(
         search as Address,
-        chainId as ChainId,
+        chainId as ChainId
       );
       handleSelectToken(importedToken);
       addImportedToken(importedToken);
@@ -66,88 +66,86 @@ export function TokenSelect({
   }
 
   return (
-    <div className="w-full">
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <div className="flex flex-col">
-            <Button
-              type="button"
-              className={cn(
-                "px-2 pl-3 justify-between rounded-full",
-                selectedToken
-                  ? "bg-foreground text-white hover:text-primary-foreground"
-                  : "",
-              )}
-              disabled={disabled}
-              onClick={() => setOpen(true)}
-            >
-              {
-                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                selectedToken ? (
-                  <TokenInfo token={selectedToken} showExplorerLink={false} />
-                ) : (
-                  "Select a token"
-                )
-              }
-              {!disabled && <ChevronDownIcon className="size-6" />}
-            </Button>
-            {errorMessage && (
-              <div className="mt-1 text-sm text-destructive">
-                <span>{errorMessage}</span>
-              </div>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <div className="flex flex-col">
+          <Button
+            type="button"
+            className={cn(
+              "px-2 justify-between rounded-full",
+              selectedToken
+                ? "bg-foreground text-white hover:text-primary-foreground"
+                : ""
             )}
-          </div>
-        </PopoverTrigger>
-        <PopoverContent>
-          {/* @ts-ignore */}
-          <Command
-            filter={(value: string, search: string) => {
-              setSearch(search);
-              if (!search) return 1;
-              const regex = new RegExp(search, "i");
-              return Number(regex.test(value));
-            }}
-            value={selectedToken?.symbol}
+            disabled={disabled}
+            onClick={() => setOpen(true)}
           >
-            <CommandInput />
+            {
+              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+              selectedToken ? (
+                <TokenInfo token={selectedToken} showExplorerLink={false} />
+              ) : (
+                "Select a token"
+              )
+            }
+            {!disabled && <ChevronDownIcon className="size-4" />}
+          </Button>
+          {errorMessage && (
+            <div className="mt-1 text-sm text-destructive">
+              <span>{errorMessage}</span>
+            </div>
+          )}
+        </div>
+      </PopoverTrigger>
+      <PopoverContent>
+        {/* @ts-ignore */}
+        <Command
+          filter={(value: string, search: string) => {
+            setSearch(search);
+            if (!search) return 1;
+            const regex = new RegExp(search, "i");
+            return Number(regex.test(value));
+          }}
+          value={selectedToken?.symbol}
+        >
+          <CommandInput />
+          {/* @ts-ignore */}
+          <CommandList>
             {/* @ts-ignore */}
-            <CommandList>
-              {/* @ts-ignore */}
-              <CommandEmpty onSelect={handleImportToken}>
-                No results found
-              </CommandEmpty>
-              {getTokenList().map((token) => (
-                // @ts-ignore
-                <CommandItem
-                  key={token.address}
-                  value={token.symbol + token.address}
-                  onSelect={() => handleSelectToken(token)}
-                  className="hover:bg-primary hover:text-primary-foreground"
-                >
-                  <TokenInfo
-                    token={{
-                      address: token.address as Address,
-                      symbol: token.symbol,
-                      decimals: token.decimals,
-                    }}
-                    showExplorerLink={false}
-                  />
-                </CommandItem>
-              ))}
-              {isAddress(search) && (
-                // @ts-ignore
-                <CommandItem
-                  key={search}
-                  value={search}
-                  onSelect={handleImportToken}
-                >
-                  Import token
-                </CommandItem>
-              )}
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
-    </div>
+            <CommandEmpty onSelect={handleImportToken}>
+              No results found
+            </CommandEmpty>
+            {getTokenList().map((token) => (
+              // @ts-ignore
+              <CommandItem
+                key={token.address}
+                value={token.symbol + token.address}
+                onSelect={() => handleSelectToken(token)}
+                className="hover:bg-primary hover:text-primary-foreground"
+              >
+                <TokenInfo
+                  token={{
+                    address: token.address as Address,
+                    symbol: token.symbol,
+                    decimals: token.decimals,
+                  }}
+                  showExplorerLink={false}
+                />
+              </CommandItem>
+            ))}
+            {isAddress(search) && (
+              // @ts-ignore
+              <CommandItem
+                key={search}
+                value={search}
+                onSelect={handleImportToken}
+              >
+                Import token
+              </CommandItem>
+            )}
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }
