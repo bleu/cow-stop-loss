@@ -54,17 +54,18 @@ export async function getProcessedStopLossOrder({
     : executedBuyAmount /
       Number(rawOrderData?.order?.stopLossData?.tokenAmountOut);
 
+  const orderWithoutStatus = {
+    ...rawOrderData.order,
+    executedBuyAmount: String(executedBuyAmount),
+    executedSellAmount: String(executedSellAmount),
+    singleOrder: singleOrderResult,
+    filledPct,
+  };
   const status = getOrderStatus({
-    order: {
-      ...rawOrderData.order,
-      executedBuyAmount: String(executedBuyAmount),
-      executedSellAmount: String(executedSellAmount),
-      singleOrder: singleOrderResult,
-      filledPct,
-    },
+    order: orderWithoutStatus,
   });
   return {
-    ...rawOrderData.order,
+    ...orderWithoutStatus,
     status,
     cowOrders: cowOrders,
   };

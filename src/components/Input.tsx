@@ -9,6 +9,7 @@ interface IInput extends Omit<HTMLProps<HTMLInputElement>, "name"> {
   validation?: RegisterOptions;
   tooltipText?: string;
   tooltipLink?: string;
+  extraLabelElement?: React.ReactNode;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, IInput>(
@@ -18,6 +19,7 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
     validation,
     tooltipText,
     tooltipLink,
+    extraLabelElement,
     className,
     ...props
   }: IInput) => {
@@ -37,10 +39,11 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
       <div className="flex flex-col">
         {label && (
           <div className="flex flex-row gap-x-2 items-center mb-2">
-            <Label className="block text-sm ">{label}</Label>
+            <Label className="block text-sm">{label}</Label>
             {tooltipText && (
               <InfoTooltip text={tooltipText} link={tooltipLink} />
             )}
+            {extraLabelElement}
           </div>
         )}
         <InputPrimitive
@@ -48,7 +51,7 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
           {...register(name, validation)}
           className={cn(
             "w-full shadow-none rounded-md placeholder:opacity-50 border border-border",
-            className,
+            className
           )}
         />
 
@@ -57,5 +60,5 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
         )}
       </div>
     );
-  },
+  }
 );

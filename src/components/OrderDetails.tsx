@@ -138,9 +138,8 @@ export function OrderDetails({
             tooltipText={TOOLTIP_DESCRIPTIONS.TYPE}
           >
             {order?.stopLossData?.isPartiallyFillable
-              ? "Partially fillable"
-              : "Fill or kill"}{" "}
-            Order
+              ? "Partially fillable order"
+              : "Fill or kill order"}
           </OrderDetailsInformation>
           <OrderDetailsInformation
             label="Submission Time"
@@ -239,15 +238,19 @@ export function OrderDetails({
             label="Trigger Price"
             tooltipText={TOOLTIP_DESCRIPTIONS.TRIGGER_PRICE}
           >
-            {formatNumber(strikePrice, 4)}{" "}
-            <InfoTooltip text={strikePrice.toString()} /> {priceUnit}
+            <div className="flex gap-1">
+              {formatNumber(strikePrice, 4)}{" "}
+              <InfoTooltip text={strikePrice.toString()} /> {priceUnit}
+            </div>
           </OrderDetailsInformation>
           <OrderDetailsInformation
             label="Limit Price"
             tooltipText={TOOLTIP_DESCRIPTIONS.LIMIT_PRICE}
           >
-            {formatNumber(limitPrice, 4)}{" "}
-            <InfoTooltip text={limitPrice.toString()} /> {priceUnit}
+            <div className="flex gap-1">
+              {formatNumber(limitPrice, 4)}{" "}
+              <InfoTooltip text={limitPrice.toString()} /> {priceUnit}
+            </div>
           </OrderDetailsInformation>
           {(order?.filledPct || 0) > 0 && (
             <>
@@ -305,37 +308,35 @@ export function OrderDetails({
         {order?.cowOrders && order.cowOrders.length > 0 && (
           <>
             <Separator className="my-3" />
-            <div className="flex flex-col gap-y-1">
-              <OrderDetailsInformation
-                label="Related Orders"
-                tooltipText={TOOLTIP_DESCRIPTIONS.RELATED_ORDERS}
-              >
-                <div className="flex flex-col">
-                  {order.cowOrders.map((cowOrder) => (
-                    <div className="flex items-center gap-x-1">
-                      <Link
-                        className={cn(
-                          "hover:text-primary hover:underline",
-                          order.status === "fulfilled" ? "font-bold" : "",
-                        )}
-                        href={buildOrderCowExplorerUrl({
-                          chainId: order?.chainId as ChainId,
-                          orderId: cowOrder.uid as `0x${string}`,
-                        })}
-                        rel="noreferrer noopener"
-                        target="_blank"
-                      >
-                        {truncateAddress(cowOrder.uid)}
-                      </Link>
-                      <ClickToCopy text={cowOrder.uid}>
-                        <CopyIcon className="hover:text-primary" />
-                      </ClickToCopy>
-                      <StatusBadge status={cowOrder?.status} />
-                    </div>
-                  ))}
-                </div>
-              </OrderDetailsInformation>
-            </div>
+            <OrderDetailsInformation
+              label="Related Orders"
+              tooltipText={TOOLTIP_DESCRIPTIONS.RELATED_ORDERS}
+            >
+              <div className="flex flex-col gap-1">
+                {order.cowOrders.map((cowOrder) => (
+                  <div className="flex items-center gap-x-1">
+                    <Link
+                      className={cn(
+                        "hover:text-primary hover:underline",
+                        order.status === "fulfilled" ? "font-bold" : "",
+                      )}
+                      href={buildOrderCowExplorerUrl({
+                        chainId: order?.chainId as ChainId,
+                        orderId: cowOrder.uid as `0x${string}`,
+                      })}
+                      rel="noreferrer noopener"
+                      target="_blank"
+                    >
+                      {truncateAddress(cowOrder.uid)}
+                    </Link>
+                    <ClickToCopy text={cowOrder.uid}>
+                      <CopyIcon className="hover:text-primary" />
+                    </ClickToCopy>
+                    <StatusBadge status={cowOrder?.status} />
+                  </div>
+                ))}
+              </div>
+            </OrderDetailsInformation>
           </>
         )}
       </div>

@@ -2,6 +2,7 @@
 
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React, { useEffect } from "react";
+import useSWR from "swr";
 
 import { cowTokenList } from "#/lib/cowTokenList";
 import { ChainId } from "#/lib/publicClients";
@@ -12,11 +13,31 @@ interface ITokenWithChainId extends IToken {
   chainId: ChainId;
 }
 
+interface ITokenPriceMapping {
+  [tokenAddress: string]: {
+    price: number;
+    validUntil: number;
+  };
+}
+
 interface ITokensContext {
   getTokenList: () => IToken[];
   addImportedToken: (token: IToken) => void;
-  getTokenPairPrice: (tokenSell: IToken, tokenBuy: IToken) => Promise<number>;
-  getOrFetchTokenPrice: (token: IToken) => Promise<number>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  useTokenPrice: (token: IToken) => { data?: number; error: any };
+  useTokenPairPrice: (
+    tokenSell: IToken,
+    tokenBuy: IToken,
+  ) => {
+    data?: number;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    error: any;
+  };
+  getOrFetchTokenPrice: (token?: IToken) => Promise<number | undefined>;
+  getTokenPairPrice: (
+    tokenSell?: IToken,
+    tokenBuy?: IToken,
+  ) => Promise<number | undefined>;
 }
 
 export const TokensContext = React.createContext<ITokensContext>(
@@ -30,6 +51,8 @@ function fetchFromLocalStorage<T>(key: string): T | null {
 
   return JSON.parse(item);
 }
+
+export const TOKEN_PRICE_CACHE_DURATION = 10_000; // 10 seconds
 
 export const TokensContextProvider = ({
   children,
@@ -46,7 +69,7 @@ export const TokensContextProvider = ({
     ITokenWithChainId[]
   >([]);
   const [tokenPricesMapping, setTokenPricesMapping] =
-    React.useState<Record<string, number>>();
+    React.useState<ITokenPriceMapping>();
 
   function getTokenList() {
     return [
@@ -57,10 +80,14 @@ export const TokensContextProvider = ({
     ];
   }
 
-  async function getOrFetchTokenPrice(token: IToken) {
-    if (tokenPricesMapping?.[token.address]) {
-      return tokenPricesMapping[token.address];
+  async function getOrFetchTokenPrice(token?: IToken) {
+    if (!token) return undefined;
+    const currentTimestamp = Date.now();
+    const savedPriceInfo = tokenPricesMapping?.[token.address.toLowerCase()];
+    if (savedPriceInfo && savedPriceInfo.validUntil > currentTimestamp) {
+      return tokenPricesMapping[token.address].price;
     }
+
     const tokenPrice = await fetchTokenUsdPrice({
       tokenAddress: token.address,
       tokenDecimals: token.decimals,
@@ -69,20 +96,41 @@ export const TokensContextProvider = ({
 
     setTokenPricesMapping({
       ...tokenPricesMapping,
-      [token.address]: tokenPrice,
+      [token.address.toLowerCase()]: {
+        price: tokenPrice,
+        validUntil: currentTimestamp + TOKEN_PRICE_CACHE_DURATION, // 10 seconds of cache
+      },
     });
 
     return tokenPrice;
   }
 
-  async function getTokenPairPrice(tokenSell: IToken, tokenBuy: IToken) {
+  async function getTokenPairPrice(tokenSell?: IToken, tokenBuy?: IToken) {
+    if (!tokenSell || !tokenBuy) return undefined;
     return Promise.all([
       getOrFetchTokenPrice(tokenSell),
       getOrFetchTokenPrice(tokenBuy),
     ]).then(([sellPrice, buyPrice]) => {
+      if (!sellPrice || !buyPrice) return undefined;
       return sellPrice / buyPrice;
     });
   }
+
+  const useTokenPrice = (token: IToken) => {
+    return useSWR(token, getOrFetchTokenPrice, {
+      refreshInterval: TOKEN_PRICE_CACHE_DURATION,
+    });
+  };
+
+  const useTokenPairPrice = (tokenSell?: IToken, tokenBuy?: IToken) => {
+    return useSWR(
+      [tokenSell, tokenBuy],
+      () => getTokenPairPrice(tokenSell, tokenBuy),
+      {
+        refreshInterval: TOKEN_PRICE_CACHE_DURATION,
+      },
+    );
+  };
 
   function addImportedToken(token: IToken) {
     const newImportedTokenList = [
@@ -109,8 +157,10 @@ export const TokensContextProvider = ({
       value={{
         getTokenList,
         addImportedToken,
-        getTokenPairPrice,
+        useTokenPrice,
+        useTokenPairPrice,
         getOrFetchTokenPrice,
+        getTokenPairPrice,
       }}
     >
       {children}

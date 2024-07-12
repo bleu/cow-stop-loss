@@ -1,5 +1,5 @@
 export enum TOOLTIP_DESCRIPTIONS {
-  TRIGGER_PRICE = "If the oracle price drop bellow this threshold the order will be executed by the limit price.",
+  TRIGGER_PRICE = "If the oracle price drop below this threshold the order will be executed by the limit price.",
   LIMIT_PRICE = "The limit price is the price at which this order shall be (partially) filled.",
   CURRENT_ORACLE_PRICE = "The price that will be monitored to trigger the order posting.",
   CURRENT_MARKET_PRICE = "The current price of the token pair in the market.",

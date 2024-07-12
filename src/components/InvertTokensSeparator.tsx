@@ -20,7 +20,6 @@ function InvertTokensSeparatorComponent() {
       amountSell,
       limitPrice,
       strikePrice,
-      marketPrice,
     ] = getValues([
       "tokenBuy",
       "tokenSell",
@@ -28,7 +27,6 @@ function InvertTokensSeparatorComponent() {
       "amountSell",
       "limitPrice",
       "strikePrice",
-      "marketPrice",
     ]);
     setValue("tokenBuy", tokenSell);
     setValue("tokenSell", tokenBuy);
@@ -36,7 +34,6 @@ function InvertTokensSeparatorComponent() {
     setValue("amountSell", amountBuy);
     if (limitPrice) setValue("limitPrice", 1 / limitPrice);
     if (strikePrice) setValue("strikePrice", 1 / strikePrice);
-    if (marketPrice) setValue("marketPrice", 1 / marketPrice);
     updateOracle({ tokenSell: tokenBuy, tokenBuy: tokenSell });
   }
 

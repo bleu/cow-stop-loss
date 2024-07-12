@@ -78,12 +78,6 @@ class ERC20ApproveRawTx implements ITransaction<ERC20ApproveArgs> {
 
 class StopLossOrderTx implements ITransaction<StopLossOrderArgs> {
   async createRawTx(data: StopLossOrderArgs): Promise<BaseTransaction> {
-    const saltPadEnd = [...Array(4)]
-      .map(() => Math.floor(Math.random() * 16).toString(16))
-      .join("");
-
-    const salt =
-      `0x${Date.now().toString(16).padEnd(64, saltPadEnd)}` as Address;
     return {
       to: COMPOSABLE_COW_ADDRESS,
       value: "0",
@@ -93,8 +87,8 @@ class StopLossOrderTx implements ITransaction<StopLossOrderArgs> {
         args: [
           {
             handler: STOP_LOSS_ADDRESS[data.chainId],
-            salt: salt,
-            staticInput: await stopLossArgsEncoder(data, salt),
+            salt: data.salt,
+            staticInput: await stopLossArgsEncoder(data),
           },
           true,
         ],

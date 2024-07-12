@@ -56,7 +56,7 @@ gql(
       txHash
       hash
       staticInput
-      stopLossData {
+      stopLossData {li
         appData
         buyTokenPriceOracle
         id

@@ -61,7 +61,6 @@ export const generateSwapSchema = (chainId: ChainId) =>
       amountBuy: z.coerce.number().positive(),
       strikePrice: z.coerce.number().positive(),
       limitPrice: z.coerce.number().positive(),
-      marketPrice: z.optional(z.number().positive()),
       isSellOrder: z.coerce.boolean(),
     })
     .refine(
@@ -71,15 +70,6 @@ export const generateSwapSchema = (chainId: ChainId) =>
       {
         path: ["tokenBuy"],
         message: "Tokens sell and buy must be different",
-      },
-    )
-    .refine(
-      (data) => {
-        return !data.marketPrice || data.marketPrice > data.strikePrice;
-      },
-      {
-        path: ["strikePrice"],
-        message: "Strike price must be less than current market price",
       },
     )
     .superRefine((data, ctx) => {
@@ -107,7 +97,10 @@ export const generateSwapSchema = (chainId: ChainId) =>
 export const generateAdvancedSettingsSchema = (chainId: ChainId) =>
   z
     .object({
-      maxHoursSinceOracleUpdates: z.coerce.number().positive(),
+      maxHoursSinceOracleUpdates: z.coerce
+        .number()
+        .positive()
+        .max(365 * 24),
       tokenSellOracle: z.union([
         generateOracleSchema({ chainId }),
         z.literal(""),

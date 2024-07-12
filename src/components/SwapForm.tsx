@@ -62,8 +62,7 @@ export function SwapForm() {
         draftOrders={currentDraftOrder ? [currentDraftOrder] : []}
         showAddOrders
       />
-
-      <Card className="bg-foreground w-full p-5 rounded-lg overflow-auto">
+      <Card className="bg-foreground w-full p-5 rounded-lg overflow-y-scroll scrollbar scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-primary scrollbar-track-background scrollbar-w-4">
         <CardContent className="flex flex-col gap-2 p-0">
           <div className="w-full flex justify-between pb-4">
             <OrderTypeSwitch />

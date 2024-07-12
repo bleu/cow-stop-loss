@@ -23,8 +23,8 @@ export function TokenInfo({
   } = useSafeAppsSDK();
   return (
     <div className="flex items-center gap-x-1">
-      <div className="flex items-center justify-center">
-        <div className="rounded-full bg-white">
+      <div className="flex shrink-0 items-center justify-center">
+        <div className="rounded-full">
           <TokenLogo
             tokenAddress={token.address}
             chainId={chainId as ChainId}

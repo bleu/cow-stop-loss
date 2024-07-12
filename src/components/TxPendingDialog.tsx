@@ -30,7 +30,7 @@ export function TxPendingDialog() {
         />
         <DialogContent
           className={cn(
-            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-lg focus:outline-none bg-foreground  w-[90vw] max-w-[450px] p-[25px] overflow-auto",
+            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-lg focus:outline-none bg-foreground  w-[90vw] max-w-[450px] p-[25px]",
           )}
         >
           <div className="flex flex-col gap-2 w-full">
@@ -38,8 +38,7 @@ export function TxPendingDialog() {
               Transaction pending
             </DialogTitle>
             <span className="text-wrap">
-              Almost done! Your transaction is being processed. Click on the
-              button bellow to go back to the dashboard.
+              {isPonderUpdating ? "Almost done" : "Done"}!
             </span>
             <Button
               className="w-full mt-3"
@@ -50,7 +49,7 @@ export function TxPendingDialog() {
             >
               {isPonderUpdating
                 ? "Processing transaction..."
-                : "Back to dashboard"}
+                : "Back to the dashboard"}
             </Button>
           </div>
         </DialogContent>

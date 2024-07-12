@@ -4,6 +4,7 @@ import {
   Button,
   epochToDate,
   formatNumber,
+  Spinner,
   Table,
   TableBody,
   TableCell,
@@ -21,11 +22,11 @@ import { LinkComponent } from "./Link";
 import { StatusBadge } from "./StatusBadge";
 
 export function HistoryOrdersTab() {
-  const { historyOrders } = useOrder();
+  const { historyOrders, isLoading } = useOrder();
 
   return (
     <Table className="w-full rounded-lg">
-      <TableHeader className="bg-background overflow-scroll">
+      <TableHeader className="bg-background">
         <TableCell className="rounded-tl-md">Created</TableCell>
         <TableCell>Order</TableCell>
         <TableCell>Trigger price</TableCell>
@@ -42,8 +43,14 @@ export function HistoryOrdersTab() {
           })
         ) : (
           <TableRow>
-            <TableCell colSpan={5} className="text-center">
-              No history orders. Create a new one to get started.
+            <TableCell colSpan={6} className="text-center">
+              {isLoading ? (
+                <Spinner />
+              ) : (
+                <div className="py-4">
+                  No open orders. Create a new one to get started.
+                </div>
+              )}
             </TableCell>
           </TableRow>
         )}

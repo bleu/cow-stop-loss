@@ -61,7 +61,6 @@ export const stopLossDataStructure = [
 
 export async function stopLossArgsEncoder(
   data: StopLossOrderArgs,
-  salt: `0x${string}`,
 ): Promise<`0x${string}`> {
   const metadataApi = new MetadataApi();
 
@@ -69,7 +68,8 @@ export async function stopLossArgsEncoder(
     metadata: {
       widget: {
         appCode: "Stop Loss",
-        ponderId: `${salt}-${data.safeAddress}-${data.chainId}`,
+        // @ts-expect-error
+        ponderId: `${data.salt}-${data.safeAddress}-${data.chainId}`,
       },
     },
   });

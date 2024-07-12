@@ -13,13 +13,13 @@ export const InfoTooltip = ({
   variant = "default",
   side = "top",
 }: {
-  text?: string;
+  // get type from the InfoTooltip component
+  text?: Parameters<typeof Tooltip>[0]["content"];
   link?: string;
   variant?: "default" | "question" | "error";
   side?: "top" | "right" | "bottom" | "left";
 }) => {
   if (!text) return null;
-  if (!text.endsWith(".")) text += ".";
 
   function Icon() {
     switch (variant) {
@@ -34,7 +34,11 @@ export const InfoTooltip = ({
 
   return (
     <Tooltip side={side} content={text}>
-      <TooltipTrigger>
+      <TooltipTrigger
+        onFocusCapture={(e) => {
+          e.stopPropagation();
+        }}
+      >
         {link ? (
           <a href={link} target="_blank">
             <Icon />

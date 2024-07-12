@@ -16,8 +16,9 @@ import { useSwapCardContext } from "#/contexts/swapCardContext";
 import { useTokens } from "#/contexts/tokensContext";
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { ChainId } from "#/lib/publicClients";
-import { fetchFormattedBalancerOf } from "#/lib/tokenUtils";
+import { fetchFormattedBalanceOf } from "#/lib/tokenUtils";
 import { SwapData } from "#/lib/types";
+import { pasteAbsoluteValue, preventNegativeKeyDown } from "#/utils/inputs";
 
 import { TokenSelect } from "./TokenSelect";
 
@@ -40,16 +41,16 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
 
   const [isAmountDisabled, setIsAmountDisabled] = useState(false);
   const [tokenBalance, setTokenBalance] = useState<string>();
-  const [usdPrice, setUsdPrice] = useState<number>();
+  const { useTokenPrice } = useTokens();
 
   const [token, isSellOrder, amount] = useWatch({
     control,
     name: [tokenFieldName, "isSellOrder", amountFieldName],
   });
 
-  const { updateOracle } = useSwapCardContext();
-  const { getOrFetchTokenPrice, getTokenPairPrice } = useTokens();
+  const { data: usdPrice } = useTokenPrice(token);
 
+  const { updateOracle } = useSwapCardContext();
   async function updateOtherSideAmount() {
     const limitPrice = getValues("limitPrice");
     if (!limitPrice) return;
@@ -65,13 +66,8 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     );
   }
 
-  async function updateUsdPrice() {
-    const usdPrice = await getOrFetchTokenPrice(token);
-    setUsdPrice(usdPrice);
-  }
-
   async function updateTokenBalance() {
-    const balance = await fetchFormattedBalancerOf({
+    const balance = await fetchFormattedBalanceOf({
       token: token,
       address: safeAddress as Address,
       chainId: chainId as ChainId,
@@ -90,7 +86,6 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     // Update token balance on token change
     if (token) {
       updateTokenBalance();
-      updateUsdPrice();
     }
   }, [token, safeAddress]);
 
@@ -106,8 +101,8 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
       <CardTitle className="w-full flex justify-between font-normal text-xs">
         {getCardTitle(isAmountDisabled, side)}
       </CardTitle>
-      <CardContent className="flex justify-between gap-5 px-0 py-2 items-start">
-        <div className="flex flex-col gap-y-1 w-full">
+      <CardContent className="flex justify-between gap-2 px-0 py-2 items-start">
+        <div className="flex flex-col gap-y-1 min-w-28">
           <TokenSelect
             selectedToken={token}
             onSelectToken={(newToken) => {
@@ -115,13 +110,6 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
               const tokenSell = side == "Sell" ? newToken : otherToken;
               const tokenBuy = side == "Sell" ? otherToken : newToken;
               if (otherToken) {
-                getTokenPairPrice(tokenSell, tokenBuy)
-                  .then((mkPrice) => {
-                    setValue("marketPrice", mkPrice);
-                  })
-                  .catch(() => {
-                    setValue("marketPrice", undefined);
-                  });
                 updateOracle({ tokenSell, tokenBuy });
               }
               setValue(tokenFieldName, newToken);
@@ -129,7 +117,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
             errorMessage={errors[tokenFieldName]?.message}
           />
           {token && (
-            <span className="text-xs /70">
+            <span className="text-xs">
               <span>
                 Balance:{" "}
                 {formatNumber(
@@ -140,25 +128,28 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                   0.0001,
                 )}{" "}
               </span>
-              {!isAmountDisabled && tokenBalance && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="py-0 px-1 h-fit text-accent"
-                  onClick={() => {
-                    setValue(
-                      amountFieldName,
-                      convertStringToNumberAndRoundDown(tokenBalance),
-                    );
-                  }}
-                >
-                  Max
-                </Button>
-              )}
+              {!isAmountDisabled &&
+                tokenBalance &&
+                tokenBalance !== "0" &&
+                amount.toString().includes(formatNumber(tokenBalance)) && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="py-0 px-1 h-fit text-accent text-xs"
+                    onClick={() => {
+                      setValue(
+                        amountFieldName,
+                        Number(convertStringToNumberAndRoundDown(tokenBalance)),
+                      );
+                    }}
+                  >
+                    Max
+                  </Button>
+                )}
             </span>
           )}
         </div>
-        <div className="flex flex-col gap-y-1 w-full items-end">
+        <div className="flex flex-col gap-y-1 w-full items-end overflow-x-auto">
           <Input
             {...register(amountFieldName)}
             type="number"
@@ -167,9 +158,17 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
             className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:/70 px-0 text-2xl text-right bg-background"
             disabled={isAmountDisabled}
             min={0}
+            max={10 ** 18}
+            onKeyDown={preventNegativeKeyDown}
+            onPaste={pasteAbsoluteValue}
           />
-          <i className="text-xs /70">
-            ${formatNumber(amount * (usdPrice || 0), 2)}
+          <i className="text-xs pr-1">
+            {`≈ ${formatNumber(
+              amount && usdPrice ? amount * (usdPrice || 0) : 0,
+              2,
+              "currency",
+              "standard",
+            )}`}
           </i>
         </div>
       </CardContent>

@@ -12,11 +12,11 @@ import {
 } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import { GearIcon, ResetIcon } from "@radix-ui/react-icons";
+import { ArrowTopRightIcon, GearIcon, ResetIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import cn from "clsx";
 import * as React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 
 import { useSwapCardContext } from "#/contexts/swapCardContext";
 import { ChainId } from "#/lib/publicClients";
@@ -25,6 +25,7 @@ import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { AdvancedSwapSettings } from "#/lib/types";
 
 import { Checkbox } from "./Checkbox";
+import { BlockExplorerLink } from "./ExplorerLink";
 import { Input } from "./Input";
 import {
   Accordion,
@@ -34,12 +35,31 @@ import {
 } from "./ui/accordion";
 import { Form } from "./ui/form";
 
+function haveSettingsChanged(
+  current: Partial<AdvancedSwapSettings>,
+  defaults: AdvancedSwapSettings
+): boolean {
+  return Object.keys(current).some(
+    (key) =>
+      current[key as keyof AdvancedSwapSettings] !==
+      defaults[key as keyof AdvancedSwapSettings]
+  );
+}
+
 export function AdvancedSettingsDialog() {
   const [open, setOpen] = React.useState(false);
   const {
     safe: { safeAddress, chainId },
   } = useSafeAppsSDK();
   const { setAdvancedSettings, advancedSettings } = useSwapCardContext();
+
+  const defaultSettings = {
+    receiver: safeAddress,
+    maxHoursSinceOracleUpdates: 1,
+    tokenBuyOracle: "" as const,
+    tokenSellOracle: "" as const,
+    partiallyFillable: false,
+  } as const;
 
   const form = useForm<AdvancedSwapSettings>({
     resolver: zodResolver(generateAdvancedSettingsSchema(chainId as ChainId)),
@@ -48,13 +68,24 @@ export function AdvancedSettingsDialog() {
 
   const {
     reset,
+    control,
     formState: { isSubmitting },
   } = form;
+
+  const currentValues = useWatch({ control });
+  const areSettingsDifferentFromDefault = haveSettingsChanged(
+    currentValues,
+    defaultSettings
+  );
+
+  const receiver = useWatch({ control, name: "receiver" });
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button>
+        <button
+          className={cn(areSettingsDifferentFromDefault && "text-primary")}
+        >
           <GearIcon className="size-6" />
         </button>
       </DialogTrigger>
@@ -62,12 +93,12 @@ export function AdvancedSettingsDialog() {
         <DialogOverlay
           id="dialog-overlay"
           className={cn(
-            "bg-black/20 data-[state=open]:animate-overlayShow fixed inset-0 rounded-lg",
+            "bg-black/20 data-[state=open]:animate-overlayShow fixed inset-0 rounded-lg"
           )}
         />
         <DialogContent
           className={cn(
-            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-lg focus:outline-none bg-foreground  w-[90vw] max-w-[450px] p-[25px]",
+            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-lg focus:outline-none bg-foreground  w-[90vw] max-w-[450px] p-[25px]"
           )}
         >
           <div className="flex flex-col justify-between w-full">
@@ -88,6 +119,14 @@ export function AdvancedSettingsDialog() {
               label="Receiver"
               placeholder="0xabc...123"
               tooltipText={TOOLTIP_DESCRIPTIONS.RECIPIENT}
+              extraLabelElement={
+                <BlockExplorerLink
+                  type="address"
+                  label={<ArrowTopRightIcon />}
+                  identifier={receiver}
+                  networkId={chainId as ChainId}
+                />
+              }
             />
             <Separator className="bg-white mt-2" />
             <div className="flex flex-col gap-2">
@@ -132,6 +171,8 @@ export function AdvancedSettingsDialog() {
                   tooltipText={
                     TOOLTIP_DESCRIPTIONS.MAX_TIME_SINCE_LAST_ORACLE_UPDATE
                   }
+                  min={0}
+                  max={24 * 365}
                 />
               </Accordion>
             </div>
@@ -154,24 +195,19 @@ export function AdvancedSettingsDialog() {
             >
               Save Settings
             </Button>
-            <Button
-              variant="link"
-              type="button"
-              className="text-xs flex gap-1 text-white items-center "
-              onClick={() => {
-                const defaultSettings = {
-                  receiver: safeAddress,
-                  maxHoursSinceOracleUpdates: 1,
-                  tokenBuyOracle: "" as const,
-                  tokenSellOracle: "" as const,
-                  partiallyFillable: false,
-                };
-                reset(defaultSettings);
-                setAdvancedSettings(defaultSettings);
-              }}
-            >
-              <ResetIcon className="size-3" /> Reset to default settings
-            </Button>
+            {areSettingsDifferentFromDefault && (
+              <Button
+                variant="link"
+                type="button"
+                className="text-xs flex gap-1 text-white items-center pb-0 h-min"
+                onClick={() => {
+                  reset(defaultSettings);
+                  setAdvancedSettings(defaultSettings);
+                }}
+              >
+                <ResetIcon className="size-3" /> Reset to default settings
+              </Button>
+            )}
           </Form>
         </DialogContent>
       </DialogPortal>

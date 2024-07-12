@@ -59,7 +59,7 @@ export async function fetchTokenUsdPrice({
   }
 }
 
-export async function fetchFormattedBalancerOf({
+export async function fetchFormattedBalanceOf({
   token,
   address,
   chainId,

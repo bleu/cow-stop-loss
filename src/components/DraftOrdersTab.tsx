@@ -13,6 +13,7 @@ import {
 import { useState } from "react";
 
 import { useOrder } from "#/contexts/ordersContext";
+import { useTokens } from "#/contexts/tokensContext";
 import { getOrderDescription } from "#/lib/orderDescription";
 import { DraftOrder } from "#/lib/types";
 
@@ -67,7 +68,9 @@ export function DraftOrdersTab() {
             ) : (
               <TableRow>
                 <TableCell colSpan={5} className="text-center">
-                  No draft orders. Create a new one to get started.
+                  <div className="py-4">
+                    No draft orders. Create a new one to get started.
+                  </div>
                 </TableCell>
               </TableRow>
             )}
@@ -90,7 +93,7 @@ export function DraftOrdersTab() {
               setReviewDialogOpen(true);
             }}
           >
-            Review orders
+            Review {selectedIds.length > 1 ? "orders" : "order"}
           </Button>
         </div>
       </div>
@@ -114,6 +117,11 @@ export function DraftOrderRow({
   });
 
   const priceUnity = `${order.tokenBuy.symbol}/${order.tokenSell.symbol}`;
+  const { useTokenPairPrice } = useTokens();
+  const { data: marketPrice } = useTokenPairPrice(
+    order.tokenSell,
+    order.tokenBuy,
+  );
 
   return (
     <TableRow className="text-xs">
@@ -132,8 +140,8 @@ export function DraftOrderRow({
         {formatNumber(order.limitPrice, 4)} {priceUnity}
       </TableCell>
       <TableCell>
-        {order.marketPrice
-          ? ` ${formatNumber(order.marketPrice, 4)} ${priceUnity}`
+        {marketPrice
+          ? ` ${formatNumber(marketPrice, 4)} ${priceUnity}`
           : `Market price not found`}
       </TableCell>
     </TableRow>

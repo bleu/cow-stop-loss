@@ -13,7 +13,7 @@ import {
 } from "@bleu/ui";
 import { OpenInNewWindowIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { formatUnits } from "viem";
 
 import { useOrder } from "#/contexts/ordersContext";
@@ -22,6 +22,7 @@ import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { IToken, StopLossOrderType } from "#/lib/types";
 
 import { LinkComponent } from "./Link";
+import { Spinner } from "./Spinner";
 import { StatusBadge } from "./StatusBadge";
 
 export function OpenOrdersTab() {
@@ -29,6 +30,7 @@ export function OpenOrdersTab() {
     openOrders,
     txManager: { writeContract, isWriting },
     setTxPendingDialog,
+    isLoading,
   } = useOrder();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
@@ -56,7 +58,7 @@ export function OpenOrdersTab() {
           <TableCell>Created</TableCell>
           <TableCell>Order</TableCell>
           <TableCell>Trigger price</TableCell>
-          <TableCell>Current price</TableCell>
+          <TableCell>Current market price</TableCell>
           <TableCell>Filled</TableCell>
           <TableCell>Status</TableCell>
           <TableCell className="rounded-tr-md">
@@ -83,7 +85,13 @@ export function OpenOrdersTab() {
           ) : (
             <TableRow>
               <TableCell colSpan={7} className="text-center">
-                No open orders. Create a new one to get started.
+                {isLoading ? (
+                  <Spinner />
+                ) : (
+                  <div className="py-4">
+                    No open orders. Create a new one to get started.
+                  </div>
+                )}
               </TableCell>
             </TableRow>
           )}
@@ -113,27 +121,16 @@ export function OpenOrderRow({
 }) {
   const { safe } = useSafeAppsSDK();
 
-  const [marketPrice, setMarketPrice] = useState<number>();
-  const { getTokenPairPrice } = useTokens();
-
-  async function fetchMarketPrice() {
-    if (!order.stopLossData) {
-      return;
-    }
-    const price = await getTokenPairPrice(
-      order.stopLossData.tokenIn as IToken,
-      order.stopLossData.tokenOut as IToken,
-    );
-    setMarketPrice(price);
-  }
-
-  useEffect(() => {
-    fetchMarketPrice();
-  }, [order]);
+  const { useTokenPairPrice } = useTokens();
 
   if (!order.stopLossData) {
     return null;
   }
+
+  const { data: marketPrice } = useTokenPairPrice(
+    order.stopLossData?.tokenIn as IToken,
+    order.stopLossData?.tokenOut as IToken,
+  );
 
   const priceUnity =
     order.stopLossData.tokenOut.symbol +

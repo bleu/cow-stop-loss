@@ -12,8 +12,10 @@ import {
   IToken,
   SwapData,
 } from "#/lib/types";
+import { generateRandomHex } from "#/utils";
 
 import { useOrder } from "./ordersContext";
+import { useTokens } from "./tokensContext";
 
 interface ISwapContext {
   currentDraftOrder?: DraftOrder;
@@ -38,6 +40,20 @@ export const SwapCardContext = React.createContext<ISwapContext>(
   {} as ISwapContext,
 );
 
+const loadAdvancedSettings = (safeAddress: string): AdvancedSwapSettings => {
+  const savedSettings = localStorage.getItem("advancedSettings");
+  if (savedSettings) {
+    return JSON.parse(savedSettings);
+  }
+  return {
+    receiver: safeAddress,
+    maxHoursSinceOracleUpdates: 1,
+    tokenBuyOracle: "",
+    tokenSellOracle: "",
+    partiallyFillable: false,
+  };
+};
+
 export const SwapCardContextProvider = ({
   children,
 }: {
@@ -51,19 +67,14 @@ export const SwapCardContextProvider = ({
   const [firstAccess, setFirstAccess] = React.useState(
     localStorage.getItem("firstAccess") === null,
   );
+  const { getTokenPairPrice } = useTokens();
 
   const [oracleRoute, setOracleRoute] = React.useState<IRoute>();
   const [currentDraftOrder, setCurrentDraftOrder] =
     React.useState<DraftOrder>();
 
   const [advancedSettings, setAdvancedSettings] =
-    React.useState<AdvancedSwapSettings>({
-      receiver: safeAddress,
-      maxHoursSinceOracleUpdates: 1,
-      tokenBuyOracle: "",
-      tokenSellOracle: "",
-      partiallyFillable: false,
-    });
+    React.useState<AdvancedSwapSettings>(loadAdvancedSettings(safeAddress));
 
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -116,6 +127,15 @@ export const SwapCardContextProvider = ({
       tokenSellOracle,
     });
 
+    const fallbackMarketPrice = await getTokenPairPrice(
+      data.tokenSell,
+      data.tokenBuy,
+    );
+
+    const timestamp = Date.now().toString(16);
+    const randomPart = generateRandomHex(64 - timestamp.length);
+    const salt = `0x${timestamp}${randomPart}` as `0x${string}`;
+
     const draftOrder: DraftOrder = {
       ...data,
       ...advancedSettings,
@@ -123,9 +143,22 @@ export const SwapCardContextProvider = ({
       tokenSellOracle,
       id: `draft-${draftOrders.length}-${Date.now()}`,
       oraclePrice,
+      fallbackMarketPrice,
+      salt,
     };
     return draftOrder;
   }
+
+  useEffect(() => {
+    if (!firstAccess) {
+      localStorage.setItem("firstAccess", "false");
+    }
+  }, [firstAccess]);
+
+  const saveAdvancedSettings = (settings: AdvancedSwapSettings) => {
+    setAdvancedSettings(settings);
+    localStorage.setItem("advancedSettings", JSON.stringify(settings));
+  };
 
   useEffect(() => {
     if (!firstAccess) {
@@ -143,7 +176,7 @@ export const SwapCardContextProvider = ({
         setCurrentDraftOrder,
         createDraftOrder,
         advancedSettings,
-        setAdvancedSettings,
+        setAdvancedSettings: saveAdvancedSettings,
         updateOracle,
         tokenSellOracle: oracleRoute?.tokenSellOracle,
         tokenBuyOracle: oracleRoute?.tokenBuyOracle,

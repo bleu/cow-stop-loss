@@ -24,7 +24,7 @@ const StepBulletPoint = ({
   icon: React.ReactNode;
   description: string;
 }) => (
-  <div className="flex items-center gap-2">
+  <div className="flex items-start gap-2">
     <div className="w-[20px]">{icon}</div>
     <span className="text-wrap text-xs w-full">{description}</span>
   </div>
@@ -52,19 +52,21 @@ export function SwapCardIntroduction() {
   const { setFirstAccess } = useSwapCardContext();
 
   return (
-    <Card className="bg-foreground w-full p-5 rounded-lg overflow-auto">
+    <Card className="bg-foreground w-full p-6 rounded-lg">
       <CardTitle className="w-full flex flex-col items-center">
         <span className="text-lg">Start creating</span>
         <span className="text-4xl text-primary">Stop Loss orders</span>
       </CardTitle>
-      <CardContent className="flex flex-col gap-4 py-5 px-0">
+      <CardContent className="flex flex-col gap-4 pt-5 pb-0 px-0">
         <span className="text-sm">
           Execute effective investment strategies in a few steps:
         </span>
         <BulletPointList
           items={INTRODUCTION_STEPS}
           iconGenerator={(index: number) => (
-            <span className="text-lg text-success font-bold">{index + 1}.</span>
+            <span className="text-lg text-success font-bold inline-block align-top">
+              {index + 1}.
+            </span>
           )}
         />
         <span className="text-sm mt-2">If you feel confident:</span>

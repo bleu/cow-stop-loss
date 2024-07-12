@@ -7,14 +7,14 @@ export default function Page() {
   return (
     <>
       <TxPendingDialog />
-      <div className="flex size-full mb-2 mt-16 px-8 flex gap-6">
-        <div className="w-[600px]">
-          <SwapCardContextProvider>
+      <SwapCardContextProvider>
+        <div className="flex size-full mb-2 mt-16 px-8 gap-6">
+          <div className="mx-auto w-1/3">
             <SwapCard />
-          </SwapCardContextProvider>
+          </div>
+          <OrderTabs />
         </div>
-        <OrderTabs />
-      </div>
+      </SwapCardContextProvider>
     </>
   );
 }

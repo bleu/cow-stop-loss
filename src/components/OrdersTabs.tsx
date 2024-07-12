@@ -4,6 +4,7 @@ import { TabsContent, TabsList, TabsRoot, TabsTrigger } from "@bleu/ui";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
 import { useOrder } from "#/contexts/ordersContext";
+import { useSwapCardContext } from "#/contexts/swapCardContext";
 
 import { DraftOrdersTab } from "./DraftOrdersTab";
 import { HistoryOrdersTab } from "./HistoryOrdersTab";
@@ -19,11 +20,16 @@ export function OrderTabs() {
     draftOrders,
     txManager: { isPonderUpdating },
   } = useOrder();
+  const { firstAccess } = useSwapCardContext();
+
+  if (firstAccess) {
+    return null;
+  }
 
   const isUpdating = isLoading || isPonderUpdating;
   return (
     <TabsRoot
-      className="w-full h-[70vh] flex flex-col gap-2"
+      className="w-3/4 h-[70vh] flex flex-col gap-2"
       defaultValue="draft"
     >
       <div className="flex flex-row justify-between items-center">
@@ -57,7 +63,7 @@ export function OrderTabs() {
           </TabsTrigger>
         </TabsList>
       </div>
-      <div className="flex rounded-lg bg-foreground p-2 max-h-[70vh] overflow-auto">
+      <div className="flex rounded-lg bg-foreground p-2 max-h-[70vh] overflow-y-scroll scrollbar scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-primary scrollbar-track-background scrollbar-w-4">
         <TabsContent className="w-full" value="draft">
           <DraftOrdersTab />
         </TabsContent>
