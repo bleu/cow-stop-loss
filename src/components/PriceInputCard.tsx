@@ -33,7 +33,7 @@ function PriceInputCardComponent({
 
   const [isInverted, setIsInverted] = useState(false);
   const [displayPrice, setDisplayPrice] = useState<number | undefined>(
-    formPrice
+    formPrice,
   );
 
   useEffect(() => {
@@ -51,7 +51,7 @@ function PriceInputCardComponent({
     });
     setValue(
       isSellOrder ? "amountBuy" : "amountSell",
-      isSellOrder ? buyAmount : sellAmount
+      isSellOrder ? buyAmount : sellAmount,
     );
   }
 
@@ -137,7 +137,7 @@ function PriceInputCardComponent({
             variant="ghost"
             className={cn(
               "py-0 -ml-1 px-1 h-fit text-accent text-xs",
-              !isMarketPriceDifferentFromInput && "opacity-80"
+              !isMarketPriceDifferentFromInput && "opacity-80",
             )}
             onClick={() => {
               const newPrice = isInverted ? 1 / marketPrice : marketPrice;

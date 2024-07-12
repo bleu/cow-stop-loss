@@ -1,5 +1,5 @@
 export function preventNegativeKeyDown(
-  e: React.KeyboardEvent<HTMLInputElement>
+  e: React.KeyboardEvent<HTMLInputElement>,
 ) {
   if (e.key === "-") {
     e.preventDefault();

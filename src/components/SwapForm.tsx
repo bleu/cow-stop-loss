@@ -29,7 +29,7 @@ export function SwapForm() {
 
   const formSchema = React.useMemo(
     () => generateSwapSchema(chainId as ChainId),
-    [chainId]
+    [chainId],
   );
 
   const {

@@ -25,7 +25,7 @@ export function DraftOrdersTab() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const selectedOrders = draftOrders.filter((order) =>
-    selectedIds.includes(order.id)
+    selectedIds.includes(order.id),
   );
 
   return (
@@ -59,7 +59,7 @@ export function DraftOrdersTab() {
                         return;
                       }
                       setSelectedIds(
-                        selectedIds.filter((id) => id !== order.id)
+                        selectedIds.filter((id) => id !== order.id),
                       );
                     }}
                   />
@@ -120,7 +120,7 @@ export function DraftOrderRow({
   const { useTokenPairPrice } = useTokens();
   const { data: marketPrice } = useTokenPairPrice(
     order.tokenSell,
-    order.tokenBuy
+    order.tokenBuy,
   );
 
   return (

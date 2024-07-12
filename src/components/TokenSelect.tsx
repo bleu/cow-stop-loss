@@ -50,7 +50,7 @@ export function TokenSelect({
     try {
       const importedToken = await fetchTokenInfo(
         search as Address,
-        chainId as ChainId
+        chainId as ChainId,
       );
       handleSelectToken(importedToken);
       addImportedToken(importedToken);
@@ -75,7 +75,7 @@ export function TokenSelect({
               "px-2 justify-between rounded-full",
               selectedToken
                 ? "bg-foreground text-white hover:text-primary-foreground"
-                : ""
+                : "",
             )}
             disabled={disabled}
             onClick={() => setOpen(true)}
