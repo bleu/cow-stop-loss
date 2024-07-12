@@ -16,7 +16,6 @@ import { formatUnits } from "viem";
 import { useOrder } from "#/contexts/ordersContext";
 import { StopLossOrderType } from "#/lib/types";
 
-import { LinkComponent } from "./Link";
 import { StatusBadge } from "./StatusBadge";
 import { useRouter } from "next/navigation";
 

@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Button,
   ClickToCopy,
   cn,
   epochToDate,
@@ -8,7 +9,7 @@ import {
   formatNumber,
   Separator,
 } from "@bleu/ui";
-import { ArrowLeftIcon, CopyIcon } from "@radix-ui/react-icons";
+import { ArrowLeftIcon, CopyIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import Link from "next/link";
 import useSWR from "swr";
@@ -30,6 +31,8 @@ import {
   truncateAddress,
 } from "#/utils";
 import { Spinner } from "./Spinner";
+import { useOrder } from "#/contexts/ordersContext";
+import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 
 export function OrderDetails({
   orderId,
@@ -48,10 +51,25 @@ export function OrderDetails({
       address,
     });
   };
-  const { data: order, isLoading } = useSWR(["orderDetails"], orderFetcher);
+  const {
+    data: order,
+    isValidating,
+    isLoading,
+    mutate,
+  } = useSWR(["orderDetails"], orderFetcher);
 
-  if (isLoading) {
+  const {
+    txManager: { writeContract, isPonderUpdating },
+  } = useOrder();
+
+  const isUpdating = isLoading || isPonderUpdating || isValidating;
+
+  if (isUpdating && !order) {
     return <Spinner />;
+  }
+
+  if (!order) {
+    return null;
   }
 
   const orderDateTime = formatDateTime(
@@ -82,6 +100,15 @@ export function OrderDetails({
   const orderSurplus = ((executionPrice - limitPrice) / limitPrice) * 100;
   const priceUnit = `${order?.stopLossData?.tokenOut.symbol} per ${order?.stopLossData?.tokenIn.symbol}`;
 
+  const onCancelOrder = () => {
+    if (!order) return;
+    const deleteTxArgs = {
+      type: TRANSACTION_TYPES.ORDER_CANCEL,
+      hash: order.hash,
+    } as OrderCancelArgs;
+    writeContract([deleteTxArgs]);
+  };
+
   return (
     <div className="flex size-full justify-center items-center">
       <div className="bg-foreground my-10 text-white p-10 rounded relative">
@@ -92,8 +119,26 @@ export function OrderDetails({
           >
             <ArrowLeftIcon className="size-4" />
           </LinkComponent>
-          <h1 className="text-2xl font-bold">Order Details</h1>
-          <div />
+          <div className="flex gap-2 items-center justify-start">
+            <h1 className="text-2xl font-bold">Order Details</h1>
+            {isUpdating ? (
+              <Spinner size="sm" />
+            ) : (
+              <button
+                onClick={() => mutate()}
+                className="hover:text-primary px-1"
+              >
+                <ReloadIcon className="size-4" />
+              </button>
+            )}
+          </div>
+          <Button
+            onClick={onCancelOrder}
+            variant="destructive"
+            disabled={order.status !== "open"}
+          >
+            Cancel
+          </Button>
         </div>
         <div className="flex flex-col gap-y-1">
           <OrderDetailsInformation
