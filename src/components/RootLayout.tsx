@@ -1,3 +1,4 @@
+"use client";
 import { Toaster } from "@bleu/ui";
 import SafeProvider from "@safe-global/safe-apps-react-sdk";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

@@ -27,7 +27,7 @@ interface ITokensContext {
   useTokenPrice: (token: IToken) => { data?: number; error: any };
   useTokenPairPrice: (
     tokenSell: IToken,
-    tokenBuy: IToken,
+    tokenBuy: IToken
   ) => {
     data?: number;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -36,12 +36,12 @@ interface ITokensContext {
   getOrFetchTokenPrice: (token?: IToken) => Promise<number | undefined>;
   getTokenPairPrice: (
     tokenSell?: IToken,
-    tokenBuy?: IToken,
+    tokenBuy?: IToken
   ) => Promise<number | undefined>;
 }
 
 export const TokensContext = React.createContext<ITokensContext>(
-  {} as ITokensContext,
+  {} as ITokensContext
 );
 
 function fetchFromLocalStorage<T>(key: string): T | null {
@@ -74,7 +74,7 @@ export const TokensContextProvider = ({
   function getTokenList() {
     return [
       ...(cowTokenList.filter(
-        (token) => token.chainId === chainId,
+        (token) => token.chainId === chainId
       ) as IToken[]),
       ...importedTokenList,
     ];
@@ -128,7 +128,7 @@ export const TokensContextProvider = ({
       () => getTokenPairPrice(tokenSell, tokenBuy),
       {
         refreshInterval: TOKEN_PRICE_CACHE_DURATION,
-      },
+      }
     );
   };
 
@@ -140,7 +140,7 @@ export const TokensContextProvider = ({
     setImportedTokenList(newImportedTokenList);
     localStorage.setItem(
       "importedTokens",
-      JSON.stringify(newImportedTokenList),
+      JSON.stringify(newImportedTokenList)
     );
   }
 
@@ -148,7 +148,7 @@ export const TokensContextProvider = ({
     const importedTokens =
       fetchFromLocalStorage<ITokenWithChainId[]>("importedTokens");
     setImportedTokenList(
-      importedTokens?.filter((token) => token.chainId === chainId) || [],
+      importedTokens?.filter((token) => token.chainId === chainId) || []
     );
   }, [chainId]);
 

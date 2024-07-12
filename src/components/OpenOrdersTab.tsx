@@ -8,6 +8,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableHead,
   TableHeader,
   TableRow,
 } from "@bleu/ui";
@@ -52,18 +53,20 @@ export function OpenOrdersTab() {
     <div className="flex flex-col gap-2">
       <Table className="w-full rounded-lg">
         <TableHeader className="bg-background">
-          <TableCell className="rounded-tl-md">
-            <span className="sr-only">Select</span>
-          </TableCell>
-          <TableCell>Created</TableCell>
-          <TableCell>Order</TableCell>
-          <TableCell>Trigger price</TableCell>
-          <TableCell>Current market price</TableCell>
-          <TableCell>Filled</TableCell>
-          <TableCell>Status</TableCell>
-          <TableCell className="rounded-tr-md">
-            <span className="sr-only">Details</span>
-          </TableCell>{" "}
+          <TableRow>
+            <TableHead className="rounded-tl-md">
+              <span className="sr-only">Select</span>
+            </TableHead>
+            <TableHead>Created</TableHead>
+            <TableHead>Order</TableHead>
+            <TableHead>Trigger price</TableHead>
+            <TableHead>Current market price</TableHead>
+            <TableHead>Filled</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="rounded-tr-md">
+              <span className="sr-only">Details</span>
+            </TableHead>{" "}
+          </TableRow>
         </TableHeader>
         <TableBody>
           {openOrders.length ? (
@@ -129,7 +132,7 @@ export function OpenOrderRow({
 
   const { data: marketPrice } = useTokenPairPrice(
     order.stopLossData?.tokenIn as IToken,
-    order.stopLossData?.tokenOut as IToken,
+    order.stopLossData?.tokenOut as IToken
   );
 
   const priceUnity =
@@ -142,18 +145,18 @@ export function OpenOrderRow({
   const amountSell = Number(
     formatUnits(
       order.stopLossData?.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals,
-    ),
+      order.stopLossData.tokenIn.decimals
+    )
   );
   const amountBuy = Number(
     formatUnits(
       order.stopLossData?.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals,
-    ),
+      order.stopLossData.tokenOut.decimals
+    )
   );
 
   const orderDateTime = epochToDate(
-    Number(order.blockTimestamp),
+    Number(order.blockTimestamp)
   ).toLocaleString();
 
   return (

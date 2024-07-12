@@ -8,6 +8,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableHead,
   TableHeader,
   TableRow,
 } from "@bleu/ui";
@@ -27,14 +28,16 @@ export function HistoryOrdersTab() {
   return (
     <Table className="w-full rounded-lg">
       <TableHeader className="bg-background">
-        <TableCell className="rounded-tl-md">Created</TableCell>
-        <TableCell>Order</TableCell>
-        <TableCell>Trigger price</TableCell>
-        <TableCell>Filled</TableCell>
-        <TableCell>Status</TableCell>
-        <TableCell className="rounded-tr-md">
-          <span className="sr-only">Details</span>
-        </TableCell>
+        <TableRow>
+          <TableHead className="rounded-tl-md">Created</TableHead>
+          <TableHead>Order</TableHead>
+          <TableHead>Trigger price</TableHead>
+          <TableHead>Filled</TableHead>
+          <TableHead>Status</TableHead>
+          <TableHead className="rounded-tr-md">
+            <span className="sr-only">Details</span>
+          </TableHead>
+        </TableRow>
       </TableHeader>
       <TableBody>
         {historyOrders.length ? (
@@ -76,18 +79,18 @@ export function HistoryOrderRow({ order }: { order: StopLossOrderType }) {
   const amountSell = Number(
     formatUnits(
       order.stopLossData?.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals,
-    ),
+      order.stopLossData.tokenIn.decimals
+    )
   );
   const amountBuy = Number(
     formatUnits(
       order.stopLossData?.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals,
-    ),
+      order.stopLossData.tokenOut.decimals
+    )
   );
 
   const orderDateTime = epochToDate(
-    Number(order.blockTimestamp),
+    Number(order.blockTimestamp)
   ).toLocaleString();
 
   return (
