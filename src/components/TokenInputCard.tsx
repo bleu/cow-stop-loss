@@ -159,7 +159,10 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
             onPaste={pasteAbsoluteValue}
           />
           <i className="text-xs">
-            ${formatNumber(amount * (usdPrice || 0), 2)}
+            {`$${formatNumber(
+              amount && usdPrice ? amount * (usdPrice || 0) : 0,
+              2
+            )}`}
           </i>
         </div>
       </CardContent>
