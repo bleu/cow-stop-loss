@@ -33,22 +33,20 @@ export const InfoTooltip = ({
   }
 
   return (
-    <div
-      onFocusCapture={(e) => {
-        e.stopPropagation();
-      }}
-    >
-      <Tooltip side={side} content={text}>
-        <TooltipTrigger>
-          {link ? (
-            <a href={link} target="_blank">
-              <Icon />
-            </a>
-          ) : (
+    <Tooltip side={side} content={text}>
+      <TooltipTrigger
+        onFocusCapture={(e) => {
+          e.stopPropagation();
+        }}
+      >
+        {link ? (
+          <a href={link} target="_blank">
             <Icon />
-          )}
-        </TooltipTrigger>
-      </Tooltip>
-    </div>
+          </a>
+        ) : (
+          <Icon />
+        )}
+      </TooltipTrigger>
+    </Tooltip>
   );
 };

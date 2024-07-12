@@ -102,7 +102,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
         {getCardTitle(isAmountDisabled, side)}
       </CardTitle>
       <CardContent className="flex justify-between gap-2 px-0 py-2 items-start">
-        <div className="flex flex-col gap-y-1 w-1/2">
+        <div className="flex flex-col gap-y-1 min-w-28">
           <TokenSelect
             selectedToken={token}
             onSelectToken={(newToken) => {

@@ -2,6 +2,8 @@ import { DraftOrder } from "#/lib/types";
 
 import { AlertCard } from "./AlertCard";
 
+const ORACLE_PRICE_DIFF_THRESHOLD = 0.02;
+
 export function OraclePriceWarning({
   draftOrder,
   marketPrice,
@@ -23,7 +25,8 @@ export function OraclePriceWarning({
     );
 
   const oracleAndMarketPriceDiffAboveThreshold =
-    Math.abs(draftOrder.oraclePrice - marketPrice) / marketPrice > 0.02;
+    Math.abs(draftOrder.oraclePrice - marketPrice) / marketPrice >
+    ORACLE_PRICE_DIFF_THRESHOLD;
   if (oracleAndMarketPriceDiffAboveThreshold) {
     return (
       <AlertCard style="warning" title="Oracle price differs from market price">

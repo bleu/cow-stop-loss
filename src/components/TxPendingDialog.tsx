@@ -38,8 +38,7 @@ export function TxPendingDialog() {
               Transaction pending
             </DialogTitle>
             <span className="text-wrap">
-              {isPonderUpdating ? "Almost done" : "Done"}! Click on the button
-              below to go back to the dashboard.
+              {isPonderUpdating ? "Almost done" : "Done"}!
             </span>
             <Button
               className="w-full mt-3"
