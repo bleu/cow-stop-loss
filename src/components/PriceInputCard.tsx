@@ -5,6 +5,7 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { SwapData } from "#/lib/types";
+import { pasteAbsoluteValue, preventNegativeKeyDown } from "#/utils/inputs";
 
 import { InfoTooltip } from "./Tooltip";
 
@@ -35,7 +36,7 @@ function PriceInputCardComponent({
     });
     setValue(
       isSellOrder ? "amountBuy" : "amountSell",
-      isSellOrder ? buyAmount : sellAmount,
+      isSellOrder ? buyAmount : sellAmount
     );
   }
 
@@ -69,6 +70,8 @@ function PriceInputCardComponent({
             placeholder="0.0"
             className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:/70 px-0 text-2xl"
             min={0}
+            onKeyDown={preventNegativeKeyDown}
+            onPaste={pasteAbsoluteValue}
           />
           {tokenBuy && tokenBuy && <span>{tokenBuy.symbol}</span>}
         </div>

@@ -69,7 +69,7 @@ export function OpenOrdersTab() {
           <TableCell>Created</TableCell>
           <TableCell>Order</TableCell>
           <TableCell>Trigger price</TableCell>
-          <TableCell>Current price</TableCell>
+          <TableCell>Current market price</TableCell>
           <TableCell>Filled</TableCell>
           <TableCell>Status</TableCell>
           <TableCell className="rounded-tr-md">
@@ -127,7 +127,7 @@ export function OpenOrderRow({
 
   const { data: marketPrice } = useTokenPairPrice(
     order.stopLossData?.tokenIn as IToken,
-    order.stopLossData?.tokenOut as IToken,
+    order.stopLossData?.tokenOut as IToken
   );
 
   const priceUnity =
@@ -140,18 +140,18 @@ export function OpenOrderRow({
   const amountSell = Number(
     formatUnits(
       order.stopLossData?.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals,
-    ),
+      order.stopLossData.tokenIn.decimals
+    )
   );
   const amountBuy = Number(
     formatUnits(
       order.stopLossData?.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals,
-    ),
+      order.stopLossData.tokenOut.decimals
+    )
   );
 
   const orderDateTime = epochToDate(
-    Number(order.blockTimestamp),
+    Number(order.blockTimestamp)
   ).toLocaleString();
 
   return (

@@ -18,6 +18,7 @@ import { calculateAmounts } from "#/lib/calculateAmounts";
 import { ChainId } from "#/lib/publicClients";
 import { fetchFormattedBalancerOf } from "#/lib/tokenUtils";
 import { SwapData } from "#/lib/types";
+import { pasteAbsoluteValue, preventNegativeKeyDown } from "#/utils/inputs";
 
 import { TokenSelect } from "./TokenSelect";
 
@@ -61,7 +62,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     const anotherSideAmount = side === "Buy" ? sellAmount : buyAmount;
     setValue(
       `amount${side === "Buy" ? "Sell" : "Buy"}` as const,
-      anotherSideAmount,
+      anotherSideAmount
     );
   }
 
@@ -77,7 +78,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   useEffect(() => {
     // Control if the amount field should be disabled
     setIsAmountDisabled(
-      (isSellOrder && side === "Buy") || (!isSellOrder && side === "Sell"),
+      (isSellOrder && side === "Buy") || (!isSellOrder && side === "Sell")
     );
   }, [isSellOrder, side]);
 
@@ -124,7 +125,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                   4,
                   "decimal",
                   "standard",
-                  0.0001,
+                  0.0001
                 )}{" "}
               </span>
               {!isAmountDisabled && tokenBalance && (
@@ -135,7 +136,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                   onClick={() => {
                     setValue(
                       amountFieldName,
-                      convertStringToNumberAndRoundDown(tokenBalance),
+                      convertStringToNumberAndRoundDown(tokenBalance)
                     );
                   }}
                 >
@@ -154,6 +155,8 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
             className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:/70 px-0 text-2xl text-right bg-background"
             disabled={isAmountDisabled}
             min={0}
+            onKeyDown={preventNegativeKeyDown}
+            onPaste={pasteAbsoluteValue}
           />
           <i className="text-xs">
             ${formatNumber(amount * (usdPrice || 0), 2)}
