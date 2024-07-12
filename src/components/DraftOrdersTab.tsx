@@ -7,6 +7,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableHead,
   TableHeader,
   TableRow,
 } from "@bleu/ui";
@@ -25,7 +26,7 @@ export function DraftOrdersTab() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const selectedOrders = draftOrders.filter((order) =>
-    selectedIds.includes(order.id),
+    selectedIds.includes(order.id)
   );
 
   return (
@@ -38,13 +39,15 @@ export function DraftOrdersTab() {
       <div className="flex flex-col gap-2">
         <Table className="w-full rounded-lg">
           <TableHeader className="bg-background">
-            <TableCell className="rounded-tl-md">
-              <span className="sr-only">Select</span>
-            </TableCell>
-            <TableCell>Order</TableCell>
-            <TableCell>Trigger price</TableCell>
-            <TableCell>Limit price</TableCell>
-            <TableCell className="rounded-tr-md">Current price</TableCell>
+            <TableRow>
+              <TableHead className="rounded-tl-md">
+                <span className="sr-only">Select</span>
+              </TableHead>
+              <TableHead>Order</TableHead>
+              <TableHead>Trigger price</TableHead>
+              <TableHead>Limit price</TableHead>
+              <TableHead className="rounded-tr-md">Current price</TableHead>
+            </TableRow>
           </TableHeader>
           <TableBody>
             {draftOrders.length ? (
@@ -59,7 +62,7 @@ export function DraftOrdersTab() {
                         return;
                       }
                       setSelectedIds(
-                        selectedIds.filter((id) => id !== order.id),
+                        selectedIds.filter((id) => id !== order.id)
                       );
                     }}
                   />
@@ -120,7 +123,7 @@ export function DraftOrderRow({
   const { useTokenPairPrice } = useTokens();
   const { data: marketPrice } = useTokenPairPrice(
     order.tokenSell,
-    order.tokenBuy,
+    order.tokenBuy
   );
 
   return (
