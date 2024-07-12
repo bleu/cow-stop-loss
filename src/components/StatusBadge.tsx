@@ -1,6 +1,6 @@
 "use client";
 
-import { Badge } from "@bleu/ui";
+import { Badge, capitalize } from "@bleu/ui";
 
 import { OrderStatus } from "#/lib/types";
 
@@ -38,8 +38,8 @@ export function StatusBadge({ status }: { status: OrderStatus | string }) {
       );
     default:
       return (
-        <Badge className="h-fit py-1 hover:bg-primary bg-primary">
-          {status}
+        <Badge className="h-fit py-1 hover:bg-primary bg-primary ">
+          {capitalize(status)}
         </Badge>
       );
   }
