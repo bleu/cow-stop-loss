@@ -238,15 +238,19 @@ export function OrderDetails({
             label="Trigger Price"
             tooltipText={TOOLTIP_DESCRIPTIONS.TRIGGER_PRICE}
           >
-            {formatNumber(strikePrice, 4)}{" "}
-            <InfoTooltip text={strikePrice.toString()} /> {priceUnit}
+            <div className="flex gap-1">
+              {formatNumber(strikePrice, 4)}{" "}
+              <InfoTooltip text={strikePrice.toString()} /> {priceUnit}
+            </div>
           </OrderDetailsInformation>
           <OrderDetailsInformation
             label="Limit Price"
             tooltipText={TOOLTIP_DESCRIPTIONS.LIMIT_PRICE}
           >
-            {formatNumber(limitPrice, 4)}{" "}
-            <InfoTooltip text={limitPrice.toString()} /> {priceUnit}
+            <div className="flex gap-1">
+              {formatNumber(limitPrice, 4)}{" "}
+              <InfoTooltip text={limitPrice.toString()} /> {priceUnit}
+            </div>
           </OrderDetailsInformation>
           {(order?.filledPct || 0) > 0 && (
             <>
