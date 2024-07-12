@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@bleu/ui";
-import { useFormContext, useWatch } from "react-hook-form";
+import { FieldErrors, useFormContext, useWatch } from "react-hook-form";
 import { Address } from "viem";
 
 import { useOrder } from "#/contexts/ordersContext";
@@ -17,7 +17,7 @@ import {
 export function SwapCardSubmitButton() {
   const { draftOrders } = useOrder();
   const {
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
     control,
   } = useFormContext<SwapData>();
   const { tokenBuyOracle, tokenSellOracle, advancedSettings, isLoading } =
@@ -50,6 +50,7 @@ export function SwapCardSubmitButton() {
     tokenSellOracle,
     tokenBuyOracle,
     advancedSettings,
+    errors,
   });
 
   return (
@@ -77,6 +78,7 @@ function getButtonState({
   tokenSellOracle,
   tokenBuyOracle,
   advancedSettings,
+  errors,
 }: {
   draftOrders: DraftOrder[];
   tokenBuy?: IToken;
@@ -89,6 +91,7 @@ function getButtonState({
   tokenSellOracle?: Address;
   tokenBuyOracle?: Address;
   advancedSettings: AdvancedSwapSettings;
+  errors: FieldErrors<SwapData>;
 }): {
   disabled: boolean;
   text: string;
@@ -149,6 +152,18 @@ function getButtonState({
     return {
       disabled: true,
       text: "Error quoting tokens, make sure that CoW supports them.",
+    };
+  }
+  if (Object.values(errors).length) {
+    const errorList = Object.values(errors);
+    const firstErrorMessage = errorList[0];
+    const firstErrorKey = Object.keys(errors).find(
+      // @ts-ignore
+      (key) => errors[key] === firstErrorMessage
+    );
+    return {
+      disabled: false,
+      text: `Error on ${firstErrorKey}: ${firstErrorMessage}. Click to try again`,
     };
   }
   return {
