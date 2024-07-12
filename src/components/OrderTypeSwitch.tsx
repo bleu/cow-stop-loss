@@ -9,7 +9,7 @@ export function OrderTypeToggleGroup({
 }: {
   onChange: (value: string) => void;
 }) {
-  const [value, setValue] = useState("buy");
+  const [value, setValue] = useState("sell");
 
   useEffect(() => {
     onChange(value);
