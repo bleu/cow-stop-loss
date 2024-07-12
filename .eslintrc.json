@@ -11,7 +11,8 @@
     "simple-import-sort",
     "import",
     "tailwindcss",
-    "@typescript-eslint"
+    "@typescript-eslint",
+    "eslint-plugin-react-compiler"
   ],
   "extends": [
     "eslint:recommended",
@@ -47,7 +48,8 @@
     "tailwindcss/migration-from-tailwind-2": "warn",
     "tailwindcss/no-arbitrary-value": "off",
     "tailwindcss/no-custom-classname": "off",
-    "tailwindcss/no-contradicting-classname": "error"
+    "tailwindcss/no-contradicting-classname": "error",
+    "react-compiler/react-compiler": "error"
   },
   "ignorePatterns": [
     "**/generated.ts",
