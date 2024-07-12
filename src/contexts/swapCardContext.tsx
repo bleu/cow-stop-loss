@@ -12,6 +12,7 @@ import {
   IToken,
   SwapData,
 } from "#/lib/types";
+import { generateRandomHex } from "#/utils";
 
 import { useOrder } from "./ordersContext";
 import { useTokens } from "./tokensContext";
@@ -36,7 +37,7 @@ interface ISwapContext {
 }
 
 export const SwapCardContext = React.createContext<ISwapContext>(
-  {} as ISwapContext
+  {} as ISwapContext,
 );
 
 const loadAdvancedSettings = (safeAddress: string): AdvancedSwapSettings => {
@@ -64,7 +65,7 @@ export const SwapCardContextProvider = ({
   const { draftOrders } = useOrder();
   const [reviewDialogOpen, setReviewDialogOpen] = React.useState(false);
   const [firstAccess, setFirstAccess] = React.useState(
-    localStorage.getItem("firstAccess") === null
+    localStorage.getItem("firstAccess") === null,
   );
   const { getTokenPairPrice } = useTokens();
 
@@ -128,8 +129,12 @@ export const SwapCardContextProvider = ({
 
     const fallbackMarketPrice = await getTokenPairPrice(
       data.tokenSell,
-      data.tokenBuy
+      data.tokenBuy,
     );
+
+    const timestamp = Date.now().toString(16);
+    const randomPart = generateRandomHex(64 - timestamp.length);
+    const salt = `0x${timestamp}${randomPart}` as `0x${string}`;
 
     const draftOrder: DraftOrder = {
       ...data,
@@ -139,6 +144,7 @@ export const SwapCardContextProvider = ({
       id: `draft-${draftOrders.length}-${Date.now()}`,
       oraclePrice,
       fallbackMarketPrice,
+      salt,
     };
     return draftOrder;
   }
