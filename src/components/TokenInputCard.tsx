@@ -16,7 +16,7 @@ import { useSwapCardContext } from "#/contexts/swapCardContext";
 import { useTokens } from "#/contexts/tokensContext";
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { ChainId } from "#/lib/publicClients";
-import { fetchFormattedBalancerOf } from "#/lib/tokenUtils";
+import { fetchFormattedBalanceOf } from "#/lib/tokenUtils";
 import { SwapData } from "#/lib/types";
 import { pasteAbsoluteValue, preventNegativeKeyDown } from "#/utils/inputs";
 
@@ -67,7 +67,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   }
 
   async function updateTokenBalance() {
-    const balance = await fetchFormattedBalancerOf({
+    const balance = await fetchFormattedBalanceOf({
       token: token,
       address: safeAddress as Address,
       chainId: chainId as ChainId,
