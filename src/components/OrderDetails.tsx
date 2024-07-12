@@ -55,13 +55,13 @@ export function OrderDetails({
   });
 
   const orderDateTime = formatDateTime(
-    epochToDate(Number(order?.blockTimestamp)),
+    epochToDate(Number(order?.blockTimestamp))
   );
   const orderWaitTime = formatTimeDelta(
-    order?.stopLossData?.validityBucketSeconds as number,
+    order?.stopLossData?.validityBucketSeconds as number
   );
   const maxOracleUpdateTime = formatTimeDelta(
-    order?.stopLossData?.maxTimeSinceLastOracleUpdate as number,
+    order?.stopLossData?.maxTimeSinceLastOracleUpdate as number
   );
 
   const amountIn =
@@ -183,7 +183,9 @@ export function OrderDetails({
                   {order?.stopLossData?.isSellOrder ? "From" : "From at most"}
                 </span>
                 {formatNumber(amountIn, 4)}{" "}
-                <InfoTooltip text={amountIn.toString()} />
+                <InfoTooltip
+                  text={amountIn.toFixed(order?.stopLossData?.tokenIn.decimals)}
+                />
                 <a
                   target="_blank"
                   href={buildBlockExplorerTokenURL({
@@ -210,7 +212,11 @@ export function OrderDetails({
                   {order?.stopLossData?.isSellOrder ? "To at least" : "To"}
                 </span>
                 {formatNumber(amountOut, 4)}{" "}
-                <InfoTooltip text={amountOut.toString()} />
+                <InfoTooltip
+                  text={amountOut.toFixed(
+                    order?.stopLossData?.tokenOut.decimals
+                  )}
+                />
                 <a
                   target="_blank"
                   href={buildBlockExplorerTokenURL({
@@ -240,7 +246,7 @@ export function OrderDetails({
           >
             <div className="flex gap-1">
               {formatNumber(strikePrice, 4)}{" "}
-              <InfoTooltip text={strikePrice.toString()} /> {priceUnit}
+              <InfoTooltip text={Number(strikePrice).toFixed(18)} /> {priceUnit}
             </div>
           </OrderDetailsInformation>
           <OrderDetailsInformation
@@ -249,7 +255,7 @@ export function OrderDetails({
           >
             <div className="flex gap-1">
               {formatNumber(limitPrice, 4)}{" "}
-              <InfoTooltip text={limitPrice.toString()} /> {priceUnit}
+              <InfoTooltip text={Number(limitPrice).toFixed(18)} /> {priceUnit}
             </div>
           </OrderDetailsInformation>
           {(order?.filledPct || 0) > 0 && (
@@ -318,7 +324,7 @@ export function OrderDetails({
                     <Link
                       className={cn(
                         "hover:text-primary hover:underline",
-                        order.status === "fulfilled" ? "font-bold" : "",
+                        order.status === "fulfilled" ? "font-bold" : ""
                       )}
                       href={buildOrderCowExplorerUrl({
                         chainId: order?.chainId as ChainId,
