@@ -47,7 +47,9 @@ export function HistoryOrdersTab() {
               {isLoading ? (
                 <Spinner />
               ) : (
-                "No open orders. Create a new one to get started."
+                <div className="py-4">
+                  No open orders. Create a new one to get started.
+                </div>
               )}
             </TableCell>
           </TableRow>
@@ -74,18 +76,18 @@ export function HistoryOrderRow({ order }: { order: StopLossOrderType }) {
   const amountSell = Number(
     formatUnits(
       order.stopLossData?.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals,
-    ),
+      order.stopLossData.tokenIn.decimals
+    )
   );
   const amountBuy = Number(
     formatUnits(
       order.stopLossData?.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals,
-    ),
+      order.stopLossData.tokenOut.decimals
+    )
   );
 
   const orderDateTime = epochToDate(
-    Number(order.blockTimestamp),
+    Number(order.blockTimestamp)
   ).toLocaleString();
 
   return (

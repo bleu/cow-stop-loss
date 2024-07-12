@@ -25,7 +25,7 @@ export function DraftOrdersTab() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const selectedOrders = draftOrders.filter((order) =>
-    selectedIds.includes(order.id),
+    selectedIds.includes(order.id)
   );
 
   return (
@@ -36,26 +36,6 @@ export function DraftOrdersTab() {
         draftOrders={selectedOrders}
       />
       <div className="flex flex-col gap-2">
-        <div className="flex justify-end gap-2">
-          <Button
-            variant="destructive"
-            disabled={!selectedIds.length}
-            onClick={() => {
-              removeDraftOrders(selectedIds);
-              setSelectedIds([]);
-            }}
-          >
-            Delete
-          </Button>
-          <Button
-            disabled={!selectedIds.length}
-            onClick={() => {
-              setReviewDialogOpen(true);
-            }}
-          >
-            Review orders
-          </Button>
-        </div>
         <Table className="w-full rounded-lg">
           <TableHeader className="bg-background">
             <TableCell className="rounded-tl-md">
@@ -79,7 +59,7 @@ export function DraftOrdersTab() {
                         return;
                       }
                       setSelectedIds(
-                        selectedIds.filter((id) => id !== order.id),
+                        selectedIds.filter((id) => id !== order.id)
                       );
                     }}
                   />
@@ -88,12 +68,34 @@ export function DraftOrdersTab() {
             ) : (
               <TableRow>
                 <TableCell colSpan={5} className="text-center">
-                  No draft orders. Create a new one to get started.
+                  <div className="py-4">
+                    No draft orders. Create a new one to get started.
+                  </div>
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="destructive"
+            disabled={!selectedIds.length}
+            onClick={() => {
+              removeDraftOrders(selectedIds);
+              setSelectedIds([]);
+            }}
+          >
+            Delete
+          </Button>
+          <Button
+            disabled={!selectedIds.length}
+            onClick={() => {
+              setReviewDialogOpen(true);
+            }}
+          >
+            Review {selectedIds.length > 1 ? "orders" : "order"}
+          </Button>
+        </div>
       </div>
     </>
   );
@@ -118,7 +120,7 @@ export function DraftOrderRow({
   const { useTokenPairPrice } = useTokens();
   const { data: marketPrice } = useTokenPairPrice(
     order.tokenSell,
-    order.tokenBuy,
+    order.tokenBuy
   );
 
   return (

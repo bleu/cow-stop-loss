@@ -13,13 +13,13 @@ export const InfoTooltip = ({
   variant = "default",
   side = "top",
 }: {
-  text?: string;
+  // get type from the InfoTooltip component
+  text?: Parameters<typeof Tooltip>[0]["content"];
   link?: string;
   variant?: "default" | "question" | "error";
   side?: "top" | "right" | "bottom" | "left";
 }) => {
   if (!text) return null;
-  if (!text.endsWith(".")) text += ".";
 
   function Icon() {
     switch (variant) {

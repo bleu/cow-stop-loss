@@ -55,13 +55,13 @@ export function OrderDetails({
   });
 
   const orderDateTime = formatDateTime(
-    epochToDate(Number(order?.blockTimestamp)),
+    epochToDate(Number(order?.blockTimestamp))
   );
   const orderWaitTime = formatTimeDelta(
-    order?.stopLossData?.validityBucketSeconds as number,
+    order?.stopLossData?.validityBucketSeconds as number
   );
   const maxOracleUpdateTime = formatTimeDelta(
-    order?.stopLossData?.maxTimeSinceLastOracleUpdate as number,
+    order?.stopLossData?.maxTimeSinceLastOracleUpdate as number
   );
 
   const amountIn =
@@ -138,9 +138,8 @@ export function OrderDetails({
             tooltipText={TOOLTIP_DESCRIPTIONS.TYPE}
           >
             {order?.stopLossData?.isPartiallyFillable
-              ? "Partially fillable"
-              : "Fill or kill"}{" "}
-            Order
+              ? "Partially fillable order"
+              : "Fill or kill order"}
           </OrderDetailsInformation>
           <OrderDetailsInformation
             label="Submission Time"
@@ -315,7 +314,7 @@ export function OrderDetails({
                     <Link
                       className={cn(
                         "hover:text-primary hover:underline",
-                        order.status === "fulfilled" ? "font-bold" : "",
+                        order.status === "fulfilled" ? "font-bold" : ""
                       )}
                       href={buildOrderCowExplorerUrl({
                         chainId: order?.chainId as ChainId,

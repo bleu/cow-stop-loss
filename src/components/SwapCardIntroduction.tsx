@@ -52,12 +52,12 @@ export function SwapCardIntroduction() {
   const { setFirstAccess } = useSwapCardContext();
 
   return (
-    <Card className="bg-foreground w-full p-5 rounded-lg">
+    <Card className="bg-foreground w-full p-6 rounded-lg">
       <CardTitle className="w-full flex flex-col items-center">
         <span className="text-lg">Start creating</span>
         <span className="text-4xl text-primary">Stop Loss orders</span>
       </CardTitle>
-      <CardContent className="flex flex-col gap-4 py-5 px-0">
+      <CardContent className="flex flex-col gap-4 pt-5 pb-0 px-0">
         <span className="text-sm">
           Execute effective investment strategies in a few steps:
         </span>

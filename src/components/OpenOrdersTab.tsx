@@ -50,17 +50,6 @@ export function OpenOrdersTab() {
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex justify-end gap-2">
-        <Button
-          variant="destructive"
-          disabled={!selectedIds.length}
-          onClick={onCancelOrders}
-          loading={isWriting}
-          loadingText={"Cancelling..."}
-        >
-          Cancel
-        </Button>
-      </div>
       <Table className="w-full rounded-lg">
         <TableHeader className="bg-background">
           <TableCell className="rounded-tl-md">
@@ -99,13 +88,26 @@ export function OpenOrdersTab() {
                 {isLoading ? (
                   <Spinner />
                 ) : (
-                  "No open orders. Create a new one to get started."
+                  <div className="py-4">
+                    No open orders. Create a new one to get started.
+                  </div>
                 )}
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
+      <div className="flex justify-end gap-2">
+        <Button
+          variant="destructive"
+          disabled={!selectedIds.length}
+          onClick={onCancelOrders}
+          loading={isWriting}
+          loadingText={"Cancelling..."}
+        >
+          Cancel
+        </Button>
+      </div>
     </div>
   );
 }

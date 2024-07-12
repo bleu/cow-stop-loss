@@ -13,9 +13,11 @@ export const PriceInputCard = memo(PriceInputCardComponent);
 
 function PriceInputCardComponent({
   fieldName,
+  disabled,
 }: {
   fieldName: "limitPrice" | "strikePrice";
   showMarketPrice?: boolean;
+  disabled?: boolean;
 }) {
   const { register, control, getValues, setValue } = useFormContext<SwapData>();
   const title = fieldName === "limitPrice" ? "Limit price" : "Trigger price";
@@ -66,6 +68,7 @@ function PriceInputCardComponent({
           <Input
             {...register(fieldName)}
             type="number"
+            disabled={disabled}
             step={1 / 10 ** 18}
             placeholder="0.0"
             className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:/70 px-0 text-2xl"
