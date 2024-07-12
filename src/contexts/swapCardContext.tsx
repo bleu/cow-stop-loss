@@ -36,8 +36,22 @@ interface ISwapContext {
 }
 
 export const SwapCardContext = React.createContext<ISwapContext>(
-  {} as ISwapContext,
+  {} as ISwapContext
 );
+
+const loadAdvancedSettings = (safeAddress: string): AdvancedSwapSettings => {
+  const savedSettings = localStorage.getItem("advancedSettings");
+  if (savedSettings) {
+    return JSON.parse(savedSettings);
+  }
+  return {
+    receiver: safeAddress,
+    maxHoursSinceOracleUpdates: 1,
+    tokenBuyOracle: "",
+    tokenSellOracle: "",
+    partiallyFillable: false,
+  };
+};
 
 export const SwapCardContextProvider = ({
   children,
@@ -50,7 +64,7 @@ export const SwapCardContextProvider = ({
   const { draftOrders } = useOrder();
   const [reviewDialogOpen, setReviewDialogOpen] = React.useState(false);
   const [firstAccess, setFirstAccess] = React.useState(
-    localStorage.getItem("firstAccess") === null,
+    localStorage.getItem("firstAccess") === null
   );
   const { getTokenPairPrice } = useTokens();
 
@@ -59,13 +73,7 @@ export const SwapCardContextProvider = ({
     React.useState<DraftOrder>();
 
   const [advancedSettings, setAdvancedSettings] =
-    React.useState<AdvancedSwapSettings>({
-      receiver: safeAddress,
-      maxHoursSinceOracleUpdates: 1,
-      tokenBuyOracle: "",
-      tokenSellOracle: "",
-      partiallyFillable: false,
-    });
+    React.useState<AdvancedSwapSettings>(loadAdvancedSettings(safeAddress));
 
   const [isLoading, setIsLoading] = React.useState(false);
 
@@ -120,7 +128,7 @@ export const SwapCardContextProvider = ({
 
     const fallbackMarketPrice = await getTokenPairPrice(
       data.tokenSell,
-      data.tokenBuy,
+      data.tokenBuy
     );
 
     const draftOrder: DraftOrder = {
@@ -141,6 +149,17 @@ export const SwapCardContextProvider = ({
     }
   }, [firstAccess]);
 
+  const saveAdvancedSettings = (settings: AdvancedSwapSettings) => {
+    setAdvancedSettings(settings);
+    localStorage.setItem("advancedSettings", JSON.stringify(settings));
+  };
+
+  useEffect(() => {
+    if (!firstAccess) {
+      localStorage.setItem("firstAccess", "false");
+    }
+  }, [firstAccess]);
+
   return (
     <SwapCardContext.Provider
       value={{
@@ -151,7 +170,7 @@ export const SwapCardContextProvider = ({
         setCurrentDraftOrder,
         createDraftOrder,
         advancedSettings,
-        setAdvancedSettings,
+        setAdvancedSettings: saveAdvancedSettings,
         updateOracle,
         tokenSellOracle: oracleRoute?.tokenSellOracle,
         tokenBuyOracle: oracleRoute?.tokenBuyOracle,
