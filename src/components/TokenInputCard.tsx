@@ -128,21 +128,24 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                   0.0001
                 )}{" "}
               </span>
-              {!isAmountDisabled && tokenBalance && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="py-0 px-1 h-fit text-accent text-xs"
-                  onClick={() => {
-                    setValue(
-                      amountFieldName,
-                      convertStringToNumberAndRoundDown(tokenBalance)
-                    );
-                  }}
-                >
-                  Max
-                </Button>
-              )}
+              {!isAmountDisabled &&
+                tokenBalance &&
+                tokenBalance !== "0" &&
+                amount.toString().includes(formatNumber(tokenBalance)) && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="py-0 px-1 h-fit text-accent text-xs"
+                    onClick={() => {
+                      setValue(
+                        amountFieldName,
+                        convertStringToNumberAndRoundDown(tokenBalance)
+                      );
+                    }}
+                  >
+                    Max
+                  </Button>
+                )}
             </span>
           )}
         </div>
