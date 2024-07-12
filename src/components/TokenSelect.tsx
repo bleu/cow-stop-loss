@@ -72,7 +72,7 @@ export function TokenSelect({
           <Button
             type="button"
             className={cn(
-              "px-2 justify-between rounded-full",
+              "flex px-2 justify-between rounded-full gap-2",
               selectedToken
                 ? "bg-foreground text-white hover:text-primary-foreground"
                 : "",

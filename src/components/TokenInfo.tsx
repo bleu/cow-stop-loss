@@ -36,7 +36,7 @@ export function TokenInfo({
           />
         </div>
       </div>
-      <div className="flex items-center space-x-1 overflow-x-auto">
+      <div className="flex items-center space-x-1">
         <span>{token.symbol}</span>
         {showExplorerLink && (
           <BlockExplorerLink

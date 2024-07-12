@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, CardTitle, cn, Input } from "@bleu/ui";
+import { Button, Card, CardContent, CardTitle, Input } from "@bleu/ui";
 import { ArrowLeftRight } from "lucide-react";
 import { memo, useEffect, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
@@ -88,12 +88,6 @@ function PriceInputCardComponent({
     }
   };
 
-  const isMarketPriceDifferentFromInput = !marketPrice
-    ? false
-    : isInverted
-      ? 1 / formPrice - marketPrice > 0.000001
-      : marketPrice !== formPrice;
-
   return (
     <Card className="bg-background w-full p-2 rounded-lg">
       <CardTitle>
@@ -111,7 +105,7 @@ function PriceInputCardComponent({
             disabled={disabled}
             step={1 / 10 ** 18}
             placeholder="0.0"
-            className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:/70 px-0 text-2xl"
+            className="w-full border-none shadow-none h-9 focus-visible:ring-transparent px-0 text-lg"
             min={0}
             onKeyDown={preventNegativeKeyDown}
             onPaste={pasteAbsoluteValue}
@@ -135,13 +129,10 @@ function PriceInputCardComponent({
           <Button
             type="button"
             variant="ghost"
-            className={cn(
-              "py-0 -ml-1 px-1 h-fit text-accent text-xs",
-              !isMarketPriceDifferentFromInput && "opacity-80",
-            )}
+            className="py-0 -ml-1 px-1 h-fit text-accent text-xs"
             onClick={() => {
               const newPrice = isInverted ? 1 / marketPrice : marketPrice;
-              setValue(fieldName, marketPrice);
+              setValue(fieldName, Number(marketPrice.toFixed(4)));
               setDisplayPrice(newPrice);
             }}
           >

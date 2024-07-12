@@ -117,7 +117,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
             errorMessage={errors[tokenFieldName]?.message}
           />
           {token && (
-            <span className="text-xs /70">
+            <span className="text-xs">
               <span>
                 Balance:{" "}
                 {formatNumber(
@@ -162,7 +162,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
             onKeyDown={preventNegativeKeyDown}
             onPaste={pasteAbsoluteValue}
           />
-          <i className="text-xs">
+          <i className="text-xs pr-1">
             {`≈ ${formatNumber(
               amount && usdPrice ? amount * (usdPrice || 0) : 0,
               2,
