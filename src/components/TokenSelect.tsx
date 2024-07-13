@@ -15,7 +15,7 @@ import { ChevronDownIcon } from "@radix-ui/react-icons";
 import React, { useState } from "react";
 import { Address, isAddress } from "viem";
 
-import { useTokens } from "#/contexts/tokensContext";
+import { useApp } from "#/contexts/appContext";
 import { useSafeApp } from "#/hooks/useSafeApp";
 import { fetchTokenInfo } from "#/lib/fetchTokenInfo";
 import { ChainId } from "#/lib/publicClients";
@@ -37,7 +37,8 @@ export function TokenSelect({
   const { chainId } = useSafeApp();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const { getTokenList, addImportedToken } = useTokens();
+  // const { getTokenList, addImportedToken } = useTokens();
+  const { tokenList } = useApp();
 
   function handleSelectToken(token: IToken) {
     onSelectToken(token);
@@ -51,7 +52,7 @@ export function TokenSelect({
         chainId as ChainId
       );
       handleSelectToken(importedToken);
-      addImportedToken(importedToken);
+      tokenList.addImportedToken(importedToken);
       toast({
         title: "Token imported",
       });
@@ -110,7 +111,7 @@ export function TokenSelect({
             <CommandEmpty onSelect={handleImportToken}>
               No results found
             </CommandEmpty>
-            {getTokenList().map((token) => (
+            {tokenList.tokenList.map((token) => (
               // @ts-ignore
               <CommandItem
                 key={token.address}

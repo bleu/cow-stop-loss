@@ -6,6 +6,7 @@ import { Address } from "viem";
 import { useSafeApp } from "#/hooks/useSafeApp";
 import { CHAINS_ORACLE_ROUTER_FACTORY, IRoute } from "#/lib/oracleRouter";
 import { ChainId } from "#/lib/publicClients";
+import { fetchPairUsdPrice } from "#/lib/tokenUtils";
 import {
   AdvancedSwapSettings,
   DraftOrder,
@@ -15,7 +16,6 @@ import {
 import { generateRandomHex } from "#/utils";
 
 import { useOrder } from "./ordersContext";
-import { useTokens } from "./tokensContext";
 
 interface ISwapContext {
   currentDraftOrder?: DraftOrder;
@@ -65,7 +65,6 @@ export const SwapCardContextProvider = ({
   const [firstAccess, setFirstAccess] = React.useState(
     localStorage.getItem("firstAccess") === null
   );
-  const { getTokenPairPrice } = useTokens();
 
   const [oracleRoute, setOracleRoute] = React.useState<IRoute>();
   const [currentDraftOrder, setCurrentDraftOrder] =
@@ -125,10 +124,11 @@ export const SwapCardContextProvider = ({
       tokenSellOracle,
     });
 
-    const fallbackMarketPrice = await getTokenPairPrice(
-      data.tokenSell,
-      data.tokenBuy
-    );
+    const fallbackMarketPrice = await fetchPairUsdPrice({
+      sellToken: data.tokenSell,
+      buyToken: data.tokenBuy,
+      chainId: chainId as ChainId,
+    });
 
     const timestamp = Date.now().toString(16);
     const randomPart = generateRandomHex(64 - timestamp.length);

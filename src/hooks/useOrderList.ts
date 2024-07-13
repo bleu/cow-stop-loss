@@ -20,17 +20,17 @@ export const useOrderList = () => {
         chainId: cid as ChainId,
         address: address as `0x${string}`,
       }),
-    { refreshInterval: 60000 }, // Refresh every minute
+    { refreshInterval: 60_000 }
   );
 
   const openOrders =
     orders?.filter(
-      (order) => order.singleOrder && order.status !== "fulfilled",
+      (order) => order.singleOrder && order.status !== "fulfilled"
     ) || [];
 
   const historyOrders =
     orders?.filter(
-      (order) => !order.singleOrder || order.status === "fulfilled",
+      (order) => !order.singleOrder || order.status === "fulfilled"
     ) || [];
 
   return {

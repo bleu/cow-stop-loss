@@ -1,40 +1,18 @@
-import useSWR from "swr";
+// hooks/useDraftOrders.ts
+import { useCallback, useState } from "react";
 
-const DRAFT_ORDERS_KEY = "draftOrders";
+import { DraftOrder } from "#/lib/types";
 
-const getDraftOrders = () => {
-  const stored = localStorage.getItem(DRAFT_ORDERS_KEY);
-  return stored ? JSON.parse(stored) : [];
-};
+export function useDraftOrders() {
+  const [draftOrders, setDraftOrders] = useState<DraftOrder[]>([]);
 
-const setDraftOrders = (orders) => {
-  localStorage.setItem(DRAFT_ORDERS_KEY, JSON.stringify(orders));
-};
+  const addDraftOrder = useCallback((order: DraftOrder) => {
+    setDraftOrders((prev) => [...prev, order]);
+  }, []);
 
-export const useDraftOrders = () => {
-  const { data: draftOrders, mutate } = useSWR(
-    DRAFT_ORDERS_KEY,
-    getDraftOrders,
-  );
+  const removeDraftOrder = useCallback((id: string) => {
+    setDraftOrders((prev) => prev.filter((order) => order.id !== id));
+  }, []);
 
-  const addDraftOrder = async (order) => {
-    const updatedOrders = [...(draftOrders || []), order];
-    await mutate(updatedOrders, false);
-    setDraftOrders(updatedOrders);
-  };
-
-  const removeDraftOrder = async (id) => {
-    const updatedOrders = (draftOrders || []).filter(
-      (order) => order.id !== id,
-    );
-    await mutate(updatedOrders, false);
-    setDraftOrders(updatedOrders);
-  };
-
-  return {
-    draftOrders: draftOrders || [],
-    addDraftOrder,
-    removeDraftOrder,
-    isLoading: !draftOrders,
-  };
-};
+  return { draftOrders, addDraftOrder, removeDraftOrder };
+}
