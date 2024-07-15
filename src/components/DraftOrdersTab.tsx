@@ -19,6 +19,7 @@ import { getOrderDescription } from "#/lib/orderDescription";
 import { DraftOrder } from "#/lib/types";
 
 import { ReviewOrdersDialog } from "./ReviewOrdersDialog";
+import { RemoveDraftOrdersDialog } from "./RemoveDraftOrdersDialog";
 
 export function DraftOrdersTab() {
   const { draftOrders, removeDraftOrders } = useOrder();
@@ -94,16 +95,10 @@ export function DraftOrdersTab() {
           </TableBody>
         </Table>
         <div className="flex justify-end gap-2">
-          <Button
-            variant="destructive"
-            disabled={!selectedIds.length}
-            onClick={() => {
-              removeDraftOrders(selectedIds);
-              setSelectedIds([]);
-            }}
-          >
-            Delete
-          </Button>
+          <RemoveDraftOrdersDialog
+            selectedIds={selectedIds}
+            setSelectedIds={setSelectedIds}
+          />
           <Button
             disabled={!selectedIds.length}
             onClick={() => {
