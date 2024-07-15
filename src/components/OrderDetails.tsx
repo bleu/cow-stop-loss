@@ -20,7 +20,6 @@ import Link from "next/link";
 import useSWR from "swr";
 import { Address, formatUnits } from "viem";
 
-import { LinkComponent } from "#/components/Link";
 import { OrderDetailsInformation } from "#/components/OrderDetailsInformation";
 import { StatusBadge } from "#/components/StatusBadge";
 import { TokenLogo } from "#/components/TokenLogo";
@@ -35,6 +34,7 @@ import { useOrder } from "#/contexts/ordersContext";
 import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { BlockExplorerLink } from "./ExplorerLink";
 import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
+import { useRouter } from "next/navigation";
 
 export function OrderDetails({
   orderId,
@@ -45,9 +45,8 @@ export function OrderDetails({
   address: Address;
   chainId: ChainId;
 }) {
-  const { safe } = useSafeAppsSDK();
   const orderFetcher = async () => {
-    return await getProcessedStopLossOrder({
+    return getProcessedStopLossOrder({
       chainId,
       orderId,
       address,
@@ -58,7 +57,9 @@ export function OrderDetails({
     isValidating,
     isLoading,
     mutate,
-  } = useSWR(["orderDetails"], orderFetcher);
+  } = useSWR([orderId], orderFetcher);
+
+  const router = useRouter();
 
   const {
     txManager: { writeContract, isPonderUpdating },
@@ -115,12 +116,9 @@ export function OrderDetails({
     <div className="flex size-full justify-center items-center">
       <div className="bg-foreground my-10 text-white p-10 rounded relative">
         <div className="flex flex-row justify-between items-center mb-5">
-          <LinkComponent
-            href={`/${safe.chainId}/${safe.safeAddress}`}
-            className="hover:text-primary"
-          >
+          <button onClick={router.back}>
             <ArrowLeftIcon className="size-4" />
-          </LinkComponent>
+          </button>
           <div className="flex gap-2 items-center justify-start">
             <h1 className="text-2xl font-bold">Order Details</h1>
             {isUpdating ? (
