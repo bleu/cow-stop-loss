@@ -85,7 +85,7 @@ export const TokensContextProvider = ({
     const currentTimestamp = Date.now();
     const savedPriceInfo = tokenPricesMapping?.[token.address.toLowerCase()];
     if (savedPriceInfo && savedPriceInfo.validUntil > currentTimestamp) {
-      return tokenPricesMapping[token.address].price;
+      return savedPriceInfo.price;
     }
 
     const tokenPrice = await fetchTokenUsdPrice({
