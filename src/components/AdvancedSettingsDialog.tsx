@@ -80,8 +80,15 @@ export function AdvancedSettingsDialog() {
 
   const receiver = useWatch({ control, name: "receiver" });
 
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!isOpen) {
+      reset(advancedSettings);
+    }
+    setOpen(isOpen);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <button
           className={cn(areSettingsDifferentFromDefault && "text-primary")}
