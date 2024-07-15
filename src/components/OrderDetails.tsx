@@ -9,7 +9,12 @@ import {
   formatNumber,
   Separator,
 } from "@bleu/ui";
-import { ArrowLeftIcon, CopyIcon, ReloadIcon } from "@radix-ui/react-icons";
+import {
+  ArrowLeftIcon,
+  ArrowTopRightIcon,
+  CopyIcon,
+  ReloadIcon,
+} from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import Link from "next/link";
 import useSWR from "swr";
@@ -24,15 +29,12 @@ import { getProcessedStopLossOrder } from "#/lib/orderFetcher";
 import { ChainId } from "#/lib/publicClients";
 import { formatTimeDelta } from "#/lib/timeDelta";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
-import {
-  buildBlockExplorerTokenURL,
-  buildBlockExplorerTxUrl,
-  buildOrderCowExplorerUrl,
-  truncateAddress,
-} from "#/utils";
+import { buildOrderCowExplorerUrl, truncateAddress } from "#/utils";
 import { Spinner } from "./Spinner";
 import { useOrder } from "#/contexts/ordersContext";
 import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
+import { BlockExplorerLink } from "./ExplorerLink";
+import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 
 export function OrderDetails({
   orderId,
@@ -142,20 +144,17 @@ export function OrderDetails({
         </div>
         <div className="flex flex-col gap-y-1">
           <OrderDetailsInformation
-            label="Order creation"
+            label="Order Creation"
             tooltipText={TOOLTIP_DESCRIPTIONS.ORDER_CREATION}
           >
             <div className="flex items-center gap-x-1">
-              <a
-                target="_blank"
-                href={buildBlockExplorerTxUrl({
-                  txHash: order?.txHash as string,
-                  chainId: order?.chainId,
-                })}
-                className="hover:text-primary hover:underline"
-              >
-                {order?.txHash}
-              </a>
+              {order?.txHash}
+              <BlockExplorerLink
+                type="transaction"
+                label={<ArrowTopRightIcon />}
+                identifier={order?.txHash}
+                networkId={chainId as ChainId}
+              />
               <ClickToCopy text={order?.txHash as string}>
                 <CopyIcon className="hover:text-primary" />
               </ClickToCopy>
@@ -167,6 +166,12 @@ export function OrderDetails({
           >
             <div className="flex items-center gap-x-1">
               {order?.hash}
+              <BlockExplorerLink
+                type="address"
+                label={<ArrowTopRightIcon />}
+                identifier={COMPOSABLE_COW_ADDRESS}
+                networkId={chainId as ChainId}
+              />
               <ClickToCopy text={order?.hash as string}>
                 <CopyIcon className="hover:text-primary" />
               </ClickToCopy>
@@ -210,6 +215,12 @@ export function OrderDetails({
           >
             <div className="flex items-center gap-x-1">
               {order?.stopLossData?.to}
+              <BlockExplorerLink
+                type="address"
+                label={<ArrowTopRightIcon />}
+                identifier={order?.stopLossData?.to}
+                networkId={chainId as ChainId}
+              />
               <ClickToCopy text={order?.stopLossData?.to as string}>
                 <CopyIcon className="hover:text-primary" />
               </ClickToCopy>
@@ -231,17 +242,13 @@ export function OrderDetails({
                 <InfoTooltip
                   text={amountIn.toFixed(order?.stopLossData?.tokenIn.decimals)}
                 />
-                <a
-                  target="_blank"
-                  href={buildBlockExplorerTokenURL({
-                    tokenAddress: order?.stopLossData?.tokenIn
-                      .address as Address,
-                    chainId: order?.chainId,
-                  })}
-                  className="hover:text-primary hover:underline"
-                >
-                  {order?.stopLossData?.tokenIn.symbol}
-                </a>
+                {order?.stopLossData?.tokenIn.symbol}
+                <BlockExplorerLink
+                  type="address"
+                  label={<ArrowTopRightIcon />}
+                  identifier={order?.stopLossData?.tokenIn.address}
+                  networkId={chainId as ChainId}
+                />
                 <TokenLogo
                   tokenAddress={order?.stopLossData?.tokenIn.address.toLowerCase()}
                   chainId={order?.chainId as ChainId}
@@ -262,17 +269,13 @@ export function OrderDetails({
                     order?.stopLossData?.tokenOut.decimals
                   )}
                 />
-                <a
-                  target="_blank"
-                  href={buildBlockExplorerTokenURL({
-                    tokenAddress: order?.stopLossData?.tokenOut
-                      .address as Address,
-                    chainId: order?.chainId,
-                  })}
-                  className="hover:text-primary hover:underline"
-                >
-                  {order?.stopLossData?.tokenOut.symbol}
-                </a>
+                {order?.stopLossData?.tokenOut.symbol}
+                <BlockExplorerLink
+                  type="address"
+                  label={<ArrowTopRightIcon />}
+                  identifier={order?.stopLossData?.tokenOut.address}
+                  networkId={chainId as ChainId}
+                />
                 <TokenLogo
                   tokenAddress={order?.stopLossData?.tokenOut.address}
                   chainId={order?.chainId as ChainId}
@@ -335,6 +338,12 @@ export function OrderDetails({
           >
             <div className="flex items-center gap-x-1">
               {order?.stopLossData?.sellTokenPriceOracle}
+              <BlockExplorerLink
+                type="address"
+                label={<ArrowTopRightIcon />}
+                identifier={order?.stopLossData?.sellTokenPriceOracle}
+                networkId={chainId as ChainId}
+              />
               <ClickToCopy
                 text={order?.stopLossData?.sellTokenPriceOracle as string}
               >
@@ -348,6 +357,12 @@ export function OrderDetails({
           >
             <div className="flex items-center gap-x-1">
               {order?.stopLossData?.buyTokenPriceOracle}
+              <BlockExplorerLink
+                type="address"
+                label={<ArrowTopRightIcon />}
+                identifier={order?.stopLossData?.buyTokenPriceOracle}
+                networkId={chainId as ChainId}
+              />
               <ClickToCopy
                 text={order?.stopLossData?.buyTokenPriceOracle as string}
               >
@@ -366,6 +381,7 @@ export function OrderDetails({
               <div className="flex flex-col gap-1">
                 {order.cowOrders.map((cowOrder) => (
                   <div className="flex items-center gap-x-1">
+                    {truncateAddress(cowOrder.uid)}
                     <Link
                       className={cn(
                         "hover:text-primary hover:underline",
@@ -378,7 +394,7 @@ export function OrderDetails({
                       rel="noreferrer noopener"
                       target="_blank"
                     >
-                      {truncateAddress(cowOrder.uid)}
+                      <ArrowTopRightIcon />
                     </Link>
                     <ClickToCopy text={cowOrder.uid}>
                       <CopyIcon className="hover:text-primary" />
