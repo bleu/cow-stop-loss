@@ -24,6 +24,7 @@ import { IToken, StopLossOrderType } from "#/lib/types";
 
 import { StatusBadge } from "./StatusBadge";
 import { Spinner } from "./ui/spinner";
+import { OrderDropdownMenuCell } from "./OrderDropdownMenuCell";
 
 export function OpenOrdersTab() {
   const {
@@ -67,9 +68,12 @@ export function OpenOrdersTab() {
           <TableCell>Created</TableCell>
           <TableCell>Order</TableCell>
           <TableCell>Trigger price</TableCell>
-          <TableCell>Current market price</TableCell>
+          <TableCell>Current price</TableCell>
           <TableCell>Filled</TableCell>
-          <TableCell className="rounded-tr-md">Status</TableCell>
+          <TableCell>Status</TableCell>
+          <TableCell className="rounded-tr-md">
+            <span className="sr-only">Actions</span>
+          </TableCell>
         </TableHeader>
         <TableBody>
           {openOrders.length ? (
@@ -91,7 +95,7 @@ export function OpenOrdersTab() {
             })
           ) : (
             <TableRow>
-              <TableCell colSpan={7} className="text-center">
+              <TableCell colSpan={100} className="text-center">
                 {isLoading ? (
                   <Spinner />
                 ) : (
@@ -136,16 +140,19 @@ export function OpenOrderRow({
     order.stopLossData?.tokenOut as IToken
   );
 
+  const [invertedPrice, setInvertedPrice] = useState(false);
+
   if (!order.stopLossData) {
     return null;
   }
 
-  const priceUnity =
-    order.stopLossData.tokenOut.symbol +
-    "/" +
-    order.stopLossData.tokenIn.symbol;
+  const priceUnity = invertedPrice
+    ? `${order.stopLossData.tokenIn.symbol}/${order.stopLossData.tokenOut.symbol}`
+    : order.stopLossData.tokenOut.symbol +
+      "/" +
+      order.stopLossData.tokenIn.symbol;
 
-  const triggerPrice = formatUnits(order.stopLossData?.strike, 18);
+  const triggerPrice = Number(formatUnits(order.stopLossData?.strike, 18));
 
   const amountSell = Number(
     formatUnits(
@@ -175,7 +182,7 @@ export function OpenOrderRow({
         onClick={(e) => {
           e.stopPropagation();
         }}
-        className="cursor-normal"
+        className="cursor-default"
       >
         <Checkbox
           checked={checked}
@@ -195,17 +202,23 @@ export function OpenOrderRow({
         </div>
       </TableCell>
       <TableCell>
-        {formatNumber(triggerPrice, 4)} {priceUnity}
+        {formatNumber(invertedPrice ? 1 / triggerPrice : triggerPrice, 4)}{" "}
+        {priceUnity}
       </TableCell>
       <TableCell>
         {marketPrice
-          ? ` ${formatNumber(marketPrice, 4)} ${priceUnity}`
+          ? ` ${formatNumber(invertedPrice ? 1 / marketPrice : triggerPrice, 4)} ${priceUnity}`
           : `Loading...`}
       </TableCell>
       <TableCell>{((order.filledPct || 0) * 100).toFixed()}%</TableCell>
       <TableCell>
         <StatusBadge status={order.status} />
       </TableCell>
+      <OrderDropdownMenuCell
+        orderId={order.id}
+        invertedPrice={invertedPrice}
+        setInvertedPrice={setInvertedPrice}
+      />
     </TableRow>
   );
 }
