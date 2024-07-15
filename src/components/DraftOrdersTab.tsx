@@ -41,7 +41,20 @@ export function DraftOrdersTab() {
           <TableHeader className="bg-background">
             <TableRow>
               <TableHead className="rounded-tl-md">
-                <span className="sr-only">Select</span>
+                <Checkbox
+                  checked={
+                    selectedIds.length === draftOrders.length &&
+                    !!draftOrders.length
+                  }
+                  disabled={!draftOrders.length}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      setSelectedIds(draftOrders.map((order) => order.id));
+                      return;
+                    }
+                    setSelectedIds([]);
+                  }}
+                />
               </TableHead>
               <TableHead>Order</TableHead>
               <TableHead>Trigger price</TableHead>
@@ -56,6 +69,7 @@ export function DraftOrdersTab() {
                   <DraftOrderRow
                     order={order}
                     key={order.id}
+                    checked={selectedIds.includes(order.id)}
                     onSelect={(selected) => {
                       if (selected) {
                         setSelectedIds([...selectedIds, order.id]);
@@ -107,8 +121,10 @@ export function DraftOrdersTab() {
 export function DraftOrderRow({
   order,
   onSelect,
+  checked,
 }: {
   order: DraftOrder;
+  checked: boolean;
   onSelect: (selected: boolean) => void;
 }) {
   const orderDescription = getOrderDescription({
@@ -130,6 +146,7 @@ export function DraftOrderRow({
     <TableRow className="text-xs">
       <TableCell>
         <Checkbox
+          checked={checked}
           onCheckedChange={(checked) => {
             onSelect(checked as boolean);
           }}

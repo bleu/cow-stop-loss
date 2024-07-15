@@ -54,7 +54,16 @@ export function OpenOrdersTab() {
       <Table className="w-full rounded-lg">
         <TableHeader className="bg-background">
           <TableCell className="rounded-tl-md">
-            <span className="sr-only">Select</span>
+            <Checkbox
+              checked={selectedIds.length === openOrders.length}
+              onCheckedChange={(checked) => {
+                if (checked) {
+                  setSelectedIds(openOrders.map((order) => order.id));
+                  return;
+                }
+                setSelectedIds([]);
+              }}
+            />
           </TableCell>
           <TableCell>Created</TableCell>
           <TableCell>Order</TableCell>
@@ -68,6 +77,7 @@ export function OpenOrdersTab() {
             openOrders.map((order) => {
               return (
                 <OpenOrderRow
+                  checked={selectedIds.includes(order.id)}
                   order={order}
                   key={order.id}
                   onSelect={(selected) => {
@@ -113,7 +123,9 @@ export function OpenOrdersTab() {
 export function OpenOrderRow({
   order,
   onSelect,
+  checked,
 }: {
+  checked: boolean;
   order: StopLossOrderType;
   onSelect: (selected: boolean) => void;
 }) {
@@ -169,6 +181,7 @@ export function OpenOrderRow({
         className="cursor-normal"
       >
         <Checkbox
+          checked={checked}
           onCheckedChange={(checked) => {
             onSelect(checked as boolean);
           }}
