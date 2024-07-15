@@ -34,10 +34,14 @@ interface ISwapContext {
   isLoading: boolean;
   firstAccess: boolean;
   setFirstAccess: (data: boolean) => void;
+  tokenSellBalance?: string;
+  tokenBuyBalance?: string;
+  setTokenSellBalance: (data: string) => void;
+  setTokenBuyBalance: (data: string) => void;
 }
 
 export const SwapCardContext = React.createContext<ISwapContext>(
-  {} as ISwapContext,
+  {} as ISwapContext
 );
 
 const loadAdvancedSettings = (safeAddress: string): AdvancedSwapSettings => {
@@ -64,8 +68,10 @@ export const SwapCardContextProvider = ({
   } = useSafeAppsSDK();
   const { draftOrders } = useOrder();
   const [reviewDialogOpen, setReviewDialogOpen] = React.useState(false);
+  const [tokenSellBalance, setTokenSellBalance] = React.useState<string>();
+  const [tokenBuyBalance, setTokenBuyBalance] = React.useState<string>();
   const [firstAccess, setFirstAccess] = React.useState(
-    localStorage.getItem("firstAccess") === null,
+    localStorage.getItem("firstAccess") === null
   );
   const { getTokenPairPrice } = useTokens();
 
@@ -129,7 +135,7 @@ export const SwapCardContextProvider = ({
 
     const fallbackMarketPrice = await getTokenPairPrice(
       data.tokenSell,
-      data.tokenBuy,
+      data.tokenBuy
     );
 
     const timestamp = Date.now().toString(16);
@@ -169,6 +175,10 @@ export const SwapCardContextProvider = ({
   return (
     <SwapCardContext.Provider
       value={{
+        tokenSellBalance,
+        tokenBuyBalance,
+        setTokenSellBalance,
+        setTokenBuyBalance,
         isLoading,
         reviewDialogOpen,
         setReviewDialogOpen,

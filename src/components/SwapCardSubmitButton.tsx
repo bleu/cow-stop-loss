@@ -20,8 +20,14 @@ export function SwapCardSubmitButton() {
     formState: { isSubmitting, errors },
     control,
   } = useFormContext<SwapData>();
-  const { tokenBuyOracle, tokenSellOracle, advancedSettings, isLoading } =
-    useSwapCardContext();
+  const {
+    tokenBuyOracle,
+    tokenSellOracle,
+    advancedSettings,
+    isLoading,
+    tokenBuyBalance,
+    tokenSellBalance,
+  } = useSwapCardContext();
   const [tokenBuy, tokenSell, buyAmount, sellAmount, strikePrice, limitPrice] =
     useWatch({
       control,
@@ -38,20 +44,93 @@ export function SwapCardSubmitButton() {
   const { useTokenPairPrice } = useTokens();
   const { data: marketPrice } = useTokenPairPrice(tokenSell, tokenBuy);
 
-  const { disabled, text } = getButtonState({
-    draftOrders,
-    tokenBuy,
-    tokenSell,
-    buyAmount,
-    sellAmount,
-    strikePrice,
-    marketPrice,
-    limitPrice,
-    tokenSellOracle,
-    tokenBuyOracle,
-    advancedSettings,
-    errors,
-  });
+  function getButtonState(): {
+    disabled: boolean;
+    text: string;
+  } {
+    if (draftOrders.length > 4) {
+      return {
+        disabled: true,
+        text: "You can only have 5 draft orders at a time",
+      };
+    }
+    if (!tokenBuy || !tokenSell) {
+      return {
+        disabled: true,
+        text: "Select tokens",
+      };
+    }
+    if (tokenBuy.address.toLowerCase() === tokenSell.address.toLowerCase()) {
+      return {
+        disabled: true,
+        text: "Tokens must be different",
+      };
+    }
+    if (!buyAmount && !sellAmount) {
+      return {
+        disabled: true,
+        text: "Enter amounts",
+      };
+    }
+    if (sellAmount > Number(tokenSellBalance)) {
+      return {
+        disabled: true,
+        text: "Insufficient balance",
+      };
+    }
+    if (!limitPrice) {
+      return {
+        disabled: true,
+        text: "Set the limit price",
+      };
+    }
+    if (!strikePrice) {
+      return {
+        disabled: true,
+        text: "Set the trigger price",
+      };
+    }
+    if (marketPrice && strikePrice > marketPrice) {
+      return {
+        disabled: true,
+        text: "Trigger price must be lower than market price",
+      };
+    }
+    if (
+      (!tokenBuyOracle && !advancedSettings.tokenBuyOracle) ||
+      (!tokenSellOracle && !advancedSettings.tokenSellOracle)
+    ) {
+      return {
+        disabled: true,
+        text: "Error finding token oracles, set it manually in advanced settings",
+      };
+    }
+
+    if (!marketPrice) {
+      return {
+        disabled: true,
+        text: "Error quoting tokens, make sure that CoW supports them.",
+      };
+    }
+    if (Object.values(errors).length) {
+      const errorList = Object.values(errors);
+      const firstErrorMessage = errorList[0];
+      const firstErrorKey = Object.keys(errors).find(
+        // @ts-ignore
+        (key) => errors[key] === firstErrorMessage
+      );
+      return {
+        disabled: false,
+        text: `Error on ${firstErrorKey}: ${firstErrorMessage}. Click to try again`,
+      };
+    }
+    return {
+      disabled: false,
+      text: "Review Stop Loss order",
+    };
+  }
+
+  const { disabled, text } = getButtonState();
 
   return (
     <Button
