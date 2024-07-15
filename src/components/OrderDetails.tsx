@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  Button,
   ClickToCopy,
   cn,
   epochToDate,
@@ -8,7 +9,7 @@ import {
   formatNumber,
   Separator,
 } from "@bleu/ui";
-import { ArrowLeftIcon, CopyIcon } from "@radix-ui/react-icons";
+import { ArrowLeftIcon, CopyIcon, ReloadIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import Link from "next/link";
 import useSWR from "swr";
@@ -23,21 +24,21 @@ import { getProcessedStopLossOrder } from "#/lib/orderFetcher";
 import { ChainId } from "#/lib/publicClients";
 import { formatTimeDelta } from "#/lib/timeDelta";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
-import { StopLossOrderTypeWithCowOrders } from "#/lib/types";
 import {
   buildBlockExplorerTokenURL,
   buildBlockExplorerTxUrl,
   buildOrderCowExplorerUrl,
   truncateAddress,
 } from "#/utils";
+import { Spinner } from "./Spinner";
+import { useOrder } from "#/contexts/ordersContext";
+import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 
 export function OrderDetails({
-  defaultOrder,
   orderId,
   chainId,
   address,
 }: {
-  defaultOrder: StopLossOrderTypeWithCowOrders;
   orderId: string;
   address: Address;
   chainId: ChainId;
@@ -50,18 +51,35 @@ export function OrderDetails({
       address,
     });
   };
-  const { data: order } = useSWR(["orderDetails"], orderFetcher, {
-    fallbackData: defaultOrder,
-  });
+  const {
+    data: order,
+    isValidating,
+    isLoading,
+    mutate,
+  } = useSWR(["orderDetails"], orderFetcher);
+
+  const {
+    txManager: { writeContract, isPonderUpdating },
+  } = useOrder();
+
+  const isUpdating = isLoading || isPonderUpdating || isValidating;
+
+  if (isUpdating && !order) {
+    return <Spinner />;
+  }
+
+  if (!order) {
+    return null;
+  }
 
   const orderDateTime = formatDateTime(
-    epochToDate(Number(order?.blockTimestamp)),
+    epochToDate(Number(order?.blockTimestamp))
   );
   const orderWaitTime = formatTimeDelta(
-    order?.stopLossData?.validityBucketSeconds as number,
+    order?.stopLossData?.validityBucketSeconds as number
   );
   const maxOracleUpdateTime = formatTimeDelta(
-    order?.stopLossData?.maxTimeSinceLastOracleUpdate as number,
+    order?.stopLossData?.maxTimeSinceLastOracleUpdate as number
   );
 
   const amountIn =
@@ -82,6 +100,15 @@ export function OrderDetails({
   const orderSurplus = ((executionPrice - limitPrice) / limitPrice) * 100;
   const priceUnit = `${order?.stopLossData?.tokenOut.symbol} per ${order?.stopLossData?.tokenIn.symbol}`;
 
+  const onCancelOrder = () => {
+    if (!order) return;
+    const deleteTxArgs = {
+      type: TRANSACTION_TYPES.ORDER_CANCEL,
+      hash: order.hash,
+    } as OrderCancelArgs;
+    writeContract([deleteTxArgs]);
+  };
+
   return (
     <div className="flex size-full justify-center items-center">
       <div className="bg-foreground my-10 text-white p-10 rounded relative">
@@ -92,8 +119,26 @@ export function OrderDetails({
           >
             <ArrowLeftIcon className="size-4" />
           </LinkComponent>
-          <h1 className="text-2xl font-bold">Order Details</h1>
-          <div />
+          <div className="flex gap-2 items-center justify-start">
+            <h1 className="text-2xl font-bold">Order Details</h1>
+            {isUpdating ? (
+              <Spinner size="sm" />
+            ) : (
+              <button
+                onClick={() => mutate()}
+                className="hover:text-primary px-1"
+              >
+                <ReloadIcon className="size-4" />
+              </button>
+            )}
+          </div>
+          <Button
+            onClick={onCancelOrder}
+            variant="destructive"
+            disabled={order.status !== "open"}
+          >
+            Cancel
+          </Button>
         </div>
         <div className="flex flex-col gap-y-1">
           <OrderDetailsInformation
@@ -183,7 +228,9 @@ export function OrderDetails({
                   {order?.stopLossData?.isSellOrder ? "From" : "From at most"}
                 </span>
                 {formatNumber(amountIn, 4)}{" "}
-                <InfoTooltip text={amountIn.toString()} />
+                <InfoTooltip
+                  text={amountIn.toFixed(order?.stopLossData?.tokenIn.decimals)}
+                />
                 <a
                   target="_blank"
                   href={buildBlockExplorerTokenURL({
@@ -210,7 +257,11 @@ export function OrderDetails({
                   {order?.stopLossData?.isSellOrder ? "To at least" : "To"}
                 </span>
                 {formatNumber(amountOut, 4)}{" "}
-                <InfoTooltip text={amountOut.toString()} />
+                <InfoTooltip
+                  text={amountOut.toFixed(
+                    order?.stopLossData?.tokenOut.decimals
+                  )}
+                />
                 <a
                   target="_blank"
                   href={buildBlockExplorerTokenURL({
@@ -240,7 +291,7 @@ export function OrderDetails({
           >
             <div className="flex gap-1">
               {formatNumber(strikePrice, 4)}{" "}
-              <InfoTooltip text={strikePrice.toString()} /> {priceUnit}
+              <InfoTooltip text={Number(strikePrice).toFixed(18)} /> {priceUnit}
             </div>
           </OrderDetailsInformation>
           <OrderDetailsInformation
@@ -249,7 +300,7 @@ export function OrderDetails({
           >
             <div className="flex gap-1">
               {formatNumber(limitPrice, 4)}{" "}
-              <InfoTooltip text={limitPrice.toString()} /> {priceUnit}
+              <InfoTooltip text={Number(limitPrice).toFixed(18)} /> {priceUnit}
             </div>
           </OrderDetailsInformation>
           {(order?.filledPct || 0) > 0 && (
@@ -318,7 +369,7 @@ export function OrderDetails({
                     <Link
                       className={cn(
                         "hover:text-primary hover:underline",
-                        order.status === "fulfilled" ? "font-bold" : "",
+                        order.status === "fulfilled" ? "font-bold" : ""
                       )}
                       href={buildOrderCowExplorerUrl({
                         chainId: order?.chainId as ChainId,

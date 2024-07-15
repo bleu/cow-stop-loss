@@ -12,7 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "@bleu/ui";
-import { OpenInNewWindowIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useState } from "react";
 import { formatUnits } from "viem";
@@ -25,6 +24,7 @@ import { IToken, StopLossOrderType } from "#/lib/types";
 import { LinkComponent } from "./Link";
 import { Spinner } from "./Spinner";
 import { StatusBadge } from "./StatusBadge";
+import { useRouter } from "next/navigation";
 
 export function OpenOrdersTab() {
   const {
@@ -53,20 +53,15 @@ export function OpenOrdersTab() {
     <div className="flex flex-col gap-2">
       <Table className="w-full rounded-lg">
         <TableHeader className="bg-background">
-          <TableRow>
-            <TableHead className="rounded-tl-md">
-              <span className="sr-only">Select</span>
-            </TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead>Order</TableHead>
-            <TableHead>Trigger price</TableHead>
-            <TableHead>Current market price</TableHead>
-            <TableHead>Filled</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="rounded-tr-md">
-              <span className="sr-only">Details</span>
-            </TableHead>{" "}
-          </TableRow>
+          <TableCell className="rounded-tl-md">
+            <span className="sr-only">Select</span>
+          </TableCell>
+          <TableCell>Created</TableCell>
+          <TableCell>Order</TableCell>
+          <TableCell>Trigger price</TableCell>
+          <TableCell>Current market price</TableCell>
+          <TableCell>Filled</TableCell>
+          <TableCell className="rounded-tr-md">Status</TableCell>
         </TableHeader>
         <TableBody>
           {openOrders.length ? (
@@ -123,6 +118,7 @@ export function OpenOrderRow({
   onSelect: (selected: boolean) => void;
 }) {
   const { safe } = useSafeAppsSDK();
+  const router = useRouter();
 
   const { useTokenPairPrice } = useTokens();
 
@@ -160,8 +156,18 @@ export function OpenOrderRow({
   ).toLocaleString();
 
   return (
-    <TableRow className="hover:bg-background text-xs">
-      <TableCell>
+    <TableRow
+      className="hover:bg-background text-xs cursor-pointer"
+      onClick={() =>
+        router.push(`/${safe.chainId}/${safe.safeAddress}/${order?.id}`)
+      }
+    >
+      <TableCell
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+        className="cursor-normal"
+      >
         <Checkbox
           onCheckedChange={(checked) => {
             onSelect(checked as boolean);
@@ -189,15 +195,6 @@ export function OpenOrderRow({
       <TableCell>{((order.filledPct || 0) * 100).toFixed()}%</TableCell>
       <TableCell>
         <StatusBadge status={order.status} />
-      </TableCell>
-      <TableCell>
-        <LinkComponent
-          href={`/${safe.chainId}/${safe.safeAddress}/${order?.id}`}
-        >
-          <Button variant="link" className="hover:text-primary/70 p-0">
-            <OpenInNewWindowIcon className="size-5" />
-          </Button>
-        </LinkComponent>
       </TableCell>
     </TableRow>
   );

@@ -17,21 +17,26 @@ const basicTokenSchema = z.object({
   symbol: z.string(),
 });
 
-const ensSchema = z
-  .string()
-  .min(1)
-  .refine((value) => value.includes(".eth"), {
-    message: "Provided address is invalid",
-  })
-  .transform(async (value) => {
-    const publicClient = publicClientsFromIds[1];
-    return (await publicClient.getEnsAddress({
-      name: normalize(value),
-    })) as Address;
-  })
-  .refine((value) => isAddress(value), {
-    message: "Provided address is invalid",
-  });
+const generateEnsSchema = (chainId: number) => {
+  if (chainId === 1) {
+    return z
+      .string()
+      .min(1)
+      .refine((value) => value.includes(".eth"), {
+        message: "Provided address is invalid",
+      })
+      .transform(async (value) => {
+        const publicClient = publicClientsFromIds[1];
+        return (await publicClient.getEnsAddress({
+          name: normalize(value),
+        })) as Address;
+      })
+      .refine((value) => isAddress(value), {
+        message: "Provided address is invalid",
+      });
+  }
+  return basicAddressSchema;
+};
 
 const generateOracleSchema = ({ chainId }: { chainId: ChainId }) => {
   const publicClient = publicClientsFromIds[chainId];
@@ -48,7 +53,7 @@ const generateOracleSchema = ({ chainId }: { chainId: ChainId }) => {
     },
     {
       message: "Address does not conform to Oracle interface",
-    },
+    }
   );
 };
 
@@ -70,7 +75,7 @@ export const generateSwapSchema = (chainId: ChainId) =>
       {
         path: ["tokenBuy"],
         message: "Tokens sell and buy must be different",
-      },
+      }
     )
     .superRefine((data, ctx) => {
       const amountDecimals = data.isSellOrder
@@ -109,7 +114,7 @@ export const generateAdvancedSettingsSchema = (chainId: ChainId) =>
         generateOracleSchema({ chainId }),
         z.literal(""),
       ]),
-      receiver: z.union([basicAddressSchema, ensSchema]),
+      receiver: z.union([basicAddressSchema, generateEnsSchema(chainId)]),
       partiallyFillable: z.coerce.boolean(),
     })
     .refine(
@@ -122,7 +127,7 @@ export const generateAdvancedSettingsSchema = (chainId: ChainId) =>
       {
         message: "If one oracle is set, both must be set",
         path: ["tokenSellOracle"],
-      },
+      }
     )
     .refine(
       (data) => {
@@ -134,5 +139,5 @@ export const generateAdvancedSettingsSchema = (chainId: ChainId) =>
       {
         message: "If one oracle is set, both must be set",
         path: ["tokenBuyOracle"],
-      },
+      }
     );
