@@ -22,8 +22,6 @@ type OrderContextType = {
   addDraftOrders: (orders: DraftOrder[]) => void;
   removeDraftOrders: (id: string[]) => void;
   orders: StopLossOrderType[];
-  openOrders: StopLossOrderType[];
-  historyOrders: StopLossOrderType[];
   isLoading: boolean;
   error: boolean;
   mutate: () => void;
@@ -50,7 +48,7 @@ export function OrderProvider({ children }: PropsWithChildren) {
     getProcessedStopLossOrders,
     {
       fallbackData: [],
-    },
+    }
   );
 
   const [txPendingDialog, setTxPendingDialog] = useState(false);
@@ -73,18 +71,9 @@ export function OrderProvider({ children }: PropsWithChildren) {
     }
   }, [txManager.isPonderUpdating]);
 
-  const historyOrders = orders.filter(
-    (order) => !order.singleOrder || order.status === "fulfilled",
-  );
-  const openOrders = orders.filter(
-    (order) => order.singleOrder && order.status !== "fulfilled",
-  );
-
   return (
     <OrderContext.Provider
       value={{
-        historyOrders,
-        openOrders,
         draftOrders,
         setDraftOrders,
         addDraftOrders,

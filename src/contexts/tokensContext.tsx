@@ -1,9 +1,8 @@
 "use client";
 
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React, { useEffect } from "react";
-import useSWR from "swr";
 
+import { useSafeApp } from "#/hooks/useSafeApp";
 import { cowTokenList } from "#/lib/cowTokenList";
 import { ChainId } from "#/lib/publicClients";
 import { fetchTokenUsdPrice } from "#/lib/tokenUtils";
@@ -24,20 +23,7 @@ interface ITokensContext {
   getTokenList: () => IToken[];
   addImportedToken: (token: IToken) => void;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  useTokenPrice: (token: IToken) => { data?: number; error: any };
-  useTokenPairPrice: (
-    tokenSell: IToken,
-    tokenBuy: IToken
-  ) => {
-    data?: number;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    error: any;
-  };
   getOrFetchTokenPrice: (token?: IToken) => Promise<number | undefined>;
-  getTokenPairPrice: (
-    tokenSell?: IToken,
-    tokenBuy?: IToken
-  ) => Promise<number | undefined>;
 }
 
 export const TokensContext = React.createContext<ITokensContext>(
@@ -61,9 +47,7 @@ export const TokensContextProvider = ({
 }) => {
   if (typeof window === "undefined" || !window.localStorage) return;
 
-  const {
-    safe: { chainId },
-  } = useSafeAppsSDK();
+  const { chainId } = useSafeApp();
 
   const [importedTokenList, setImportedTokenList] = React.useState<
     ITokenWithChainId[]
@@ -105,33 +89,6 @@ export const TokensContextProvider = ({
     return tokenPrice;
   }
 
-  async function getTokenPairPrice(tokenSell?: IToken, tokenBuy?: IToken) {
-    if (!tokenSell || !tokenBuy) return undefined;
-    return Promise.all([
-      getOrFetchTokenPrice(tokenSell),
-      getOrFetchTokenPrice(tokenBuy),
-    ]).then(([sellPrice, buyPrice]) => {
-      if (!sellPrice || !buyPrice) return undefined;
-      return sellPrice / buyPrice;
-    });
-  }
-
-  const useTokenPrice = (token: IToken) => {
-    return useSWR(token, getOrFetchTokenPrice, {
-      refreshInterval: TOKEN_PRICE_CACHE_DURATION,
-    });
-  };
-
-  const useTokenPairPrice = (tokenSell?: IToken, tokenBuy?: IToken) => {
-    return useSWR(
-      [tokenSell, tokenBuy],
-      () => getTokenPairPrice(tokenSell, tokenBuy),
-      {
-        refreshInterval: TOKEN_PRICE_CACHE_DURATION,
-      }
-    );
-  };
-
   function addImportedToken(token: IToken) {
     const newImportedTokenList = [
       ...importedTokenList,
@@ -157,10 +114,7 @@ export const TokensContextProvider = ({
       value={{
         getTokenList,
         addImportedToken,
-        useTokenPrice,
-        useTokenPairPrice,
         getOrFetchTokenPrice,
-        getTokenPairPrice,
       }}
     >
       {children}

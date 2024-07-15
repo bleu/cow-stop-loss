@@ -10,10 +10,12 @@ export async function fetchPairUsdPrice({
   buyToken,
   chainId,
 }: {
-  sellToken: IToken;
-  buyToken: IToken;
+  sellToken?: IToken;
+  buyToken?: IToken;
   chainId: ChainId;
-}): Promise<number> {
+}): Promise<number | undefined> {
+  if (!sellToken || !buyToken) return undefined;
+
   const [sellTokenUsdPrice, buyTokenUsdPrice] = await Promise.all([
     fetchTokenUsdPrice({
       tokenAddress: sellToken.address,
@@ -26,6 +28,9 @@ export async function fetchPairUsdPrice({
       chainId: chainId,
     }),
   ]);
+
+  if (!sellTokenUsdPrice || !buyTokenUsdPrice) return undefined;
+
   return sellTokenUsdPrice / buyTokenUsdPrice;
 }
 

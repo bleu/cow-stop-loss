@@ -4,7 +4,7 @@ import { Url } from "next/dist/shared/lib/router/router";
 import Link from "next/link";
 import React from "react";
 
-import { Spinner } from "./Spinner";
+import { Spinner } from "./spinner";
 
 export function LinkComponent({
   href,

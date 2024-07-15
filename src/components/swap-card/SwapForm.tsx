@@ -2,34 +2,32 @@
 
 import { Card, CardContent } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod";
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React from "react";
 import { useForm } from "react-hook-form";
 
 import { useSwapCardContext } from "#/contexts/swapCardContext";
+import { useSafeApp } from "#/hooks/useSafeApp";
 import { ChainId } from "#/lib/publicClients";
 import { generateSwapSchema } from "#/lib/schema";
 import { SwapData } from "#/lib/types";
 
-import { AdvancedSettingsAlert } from "./AdvancedSettingsAlert";
-import { AdvancedSettingsDialog } from "./AdvancedSettingsDialog";
-import { CurrentMarketPrice } from "./CurrentMarketPrice";
-import { InvertTokensSeparator } from "./InvertTokensSeparator";
-import { OrderTypeSwitch } from "./OrderTypeSwitch";
-import { PriceInputCard } from "./PriceInputCard";
-import { ReviewOrdersDialog } from "./ReviewOrdersDialog";
+import { AdvancedSettingsAlert } from "../AdvancedSettingsAlert";
+import { AdvancedSettingsDialog } from "../AdvancedSettingsDialog";
+import { CurrentMarketPrice } from "../CurrentMarketPrice";
+import { InvertTokensSeparator } from "../InvertTokensSeparator";
+import { OrderTypeSwitch } from "../OrderTypeSwitch";
+import { PriceInputCard } from "../PriceInputCard";
+import { ReviewOrdersDialog } from "../ReviewOrdersDialog";
+import { TokenInputCard } from "../TokenInputCard";
+import { Form } from "../ui/form";
 import { SwapCardSubmitButton } from "./SwapCardSubmitButton";
-import { TokenInputCard } from "./TokenInputCard";
-import { Form } from "./ui/form";
 
 export function SwapForm() {
-  const {
-    safe: { chainId },
-  } = useSafeAppsSDK();
+  const { chainId } = useSafeApp();
 
   const formSchema = React.useMemo(
     () => generateSwapSchema(chainId as ChainId),
-    [chainId],
+    [chainId]
   );
 
   const {

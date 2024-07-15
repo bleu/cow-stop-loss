@@ -5,7 +5,7 @@ import { useFormContext, useWatch } from "react-hook-form";
 
 import { useOrder } from "#/contexts/ordersContext";
 import { useSwapCardContext } from "#/contexts/swapCardContext";
-import { useTokens } from "#/contexts/tokensContext";
+import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { SwapData } from "#/lib/types";
 
 export function SwapCardSubmitButton() {
@@ -34,7 +34,6 @@ export function SwapCardSubmitButton() {
       ],
     });
 
-  const { useTokenPairPrice } = useTokens();
   const { data: marketPrice } = useTokenPairPrice(tokenSell, tokenBuy);
 
   function getButtonState(): {

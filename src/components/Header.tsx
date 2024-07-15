@@ -1,9 +1,9 @@
 "use client";
 
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import Image from "next/image";
 import Link from "next/link";
 
+import { useSafeApp } from "#/hooks/useSafeApp";
 import { NetworkChainId, truncateAddress } from "#/utils";
 
 interface IHeader {
@@ -13,9 +13,7 @@ interface IHeader {
 }
 
 export function Header({ linkUrl, imageSrc, onLinkClick }: IHeader) {
-  const {
-    safe: { safeAddress, chainId },
-  } = useSafeAppsSDK();
+  const { safeAddress, chainId } = useSafeApp();
 
   const networkAcronym: {
     [key: string]: string;

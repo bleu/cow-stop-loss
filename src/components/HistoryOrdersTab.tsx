@@ -7,21 +7,20 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
   TableHeader,
   TableRow,
 } from "@bleu/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
+import { useRouter } from "next/navigation";
 import { formatUnits } from "viem";
 
-import { useOrder } from "#/contexts/ordersContext";
+import { useOrderList } from "#/hooks/useOrderList";
 import { StopLossOrderType } from "#/lib/types";
 
 import { StatusBadge } from "./StatusBadge";
-import { useRouter } from "next/navigation";
 
 export function HistoryOrdersTab() {
-  const { historyOrders, isLoading } = useOrder();
+  const { historyOrders, isLoading } = useOrderList();
 
   return (
     <Table className="w-full rounded-lg">

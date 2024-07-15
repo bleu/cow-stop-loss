@@ -1,16 +1,13 @@
 "use client";
 
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-
 import { useSwapCardContext } from "#/contexts/swapCardContext";
+import { useSafeApp } from "#/hooks/useSafeApp";
 
-import { AlertCard } from "./AlertCard";
+import { AlertCard } from "./ui/alert-card";
 
 export function AdvancedSettingsAlert() {
   const { advancedSettings } = useSwapCardContext();
-  const {
-    safe: { safeAddress },
-  } = useSafeAppsSDK();
+  const { safeAddress } = useSafeApp();
 
   const isAdvancedSettingsChanged =
     advancedSettings?.receiver.toLowerCase() !== safeAddress.toLowerCase() ||

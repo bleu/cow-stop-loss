@@ -8,31 +8,30 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableHead,
   TableHeader,
   TableRow,
 } from "@bleu/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { formatUnits } from "viem";
 
 import { useOrder } from "#/contexts/ordersContext";
-import { useTokens } from "#/contexts/tokensContext";
+import { useOrderList } from "#/hooks/useOrderList";
+import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { IToken, StopLossOrderType } from "#/lib/types";
 
-import { LinkComponent } from "./Link";
-import { Spinner } from "./Spinner";
 import { StatusBadge } from "./StatusBadge";
-import { useRouter } from "next/navigation";
+import { Spinner } from "./ui/spinner";
 
 export function OpenOrdersTab() {
   const {
-    openOrders,
     txManager: { writeContract, isWriting },
     setTxPendingDialog,
     isLoading,
   } = useOrder();
+  const { openOrders } = useOrderList();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const onCancelOrders = () => {
@@ -132,16 +131,14 @@ export function OpenOrderRow({
   const { safe } = useSafeAppsSDK();
   const router = useRouter();
 
-  const { useTokenPairPrice } = useTokens();
-
-  if (!order.stopLossData) {
-    return null;
-  }
-
   const { data: marketPrice } = useTokenPairPrice(
     order.stopLossData?.tokenIn as IToken,
     order.stopLossData?.tokenOut as IToken
   );
+
+  if (!order.stopLossData) {
+    return null;
+  }
 
   const priceUnity =
     order.stopLossData.tokenOut.symbol +

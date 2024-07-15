@@ -7,13 +7,13 @@ import {
   formatNumber,
   Input,
 } from "@bleu/ui";
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { memo, useEffect, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { Address } from "viem";
 
 import { useSwapCardContext } from "#/contexts/swapCardContext";
-import { useTokens } from "#/contexts/tokensContext";
+import { useSafeApp } from "#/hooks/useSafeApp";
+import { useTokenPrice } from "#/hooks/useTokenPrice";
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { ChainId } from "#/lib/publicClients";
 import { fetchFormattedBalanceOf } from "#/lib/tokenUtils";
@@ -23,9 +23,7 @@ import { pasteAbsoluteValue, preventNegativeKeyDown } from "#/utils/inputs";
 import { TokenSelect } from "./TokenSelect";
 
 function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
-  const {
-    safe: { safeAddress, chainId },
-  } = useSafeAppsSDK();
+  const { safeAddress, chainId } = useSafeApp();
 
   const {
     setValue,
@@ -40,7 +38,6 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   const amountFieldName = `amount${side}` as const;
 
   const [isAmountDisabled, setIsAmountDisabled] = useState(false);
-  const { useTokenPrice } = useTokens();
 
   const [token, isSellOrder, amount] = useWatch({
     control,
@@ -111,7 +108,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
         {getCardTitle(isAmountDisabled, side)}
       </CardTitle>
       <CardContent className="flex justify-between gap-2 px-0 py-2 items-start">
-        <div className="flex flex-col gap-y-1 min-w-28">
+        <div className="flex flex-col gap-y-1 min-w-28 w-32">
           <TokenSelect
             selectedToken={token}
             onSelectToken={(newToken) => {

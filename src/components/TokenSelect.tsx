@@ -12,11 +12,11 @@ import {
   toast,
 } from "@bleu/ui";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React, { useState } from "react";
 import { Address, isAddress } from "viem";
 
-import { useTokens } from "#/contexts/tokensContext";
+import { useApp } from "#/contexts/appContext";
+import { useSafeApp } from "#/hooks/useSafeApp";
 import { fetchTokenInfo } from "#/lib/fetchTokenInfo";
 import { ChainId } from "#/lib/publicClients";
 import { IToken } from "#/lib/types";
@@ -34,12 +34,11 @@ export function TokenSelect({
   disabled?: boolean;
   errorMessage?: string;
 }) {
-  const {
-    safe: { chainId },
-  } = useSafeAppsSDK();
+  const { chainId } = useSafeApp();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const { getTokenList, addImportedToken } = useTokens();
+  // const { getTokenList, addImportedToken } = useTokens();
+  const { tokenList } = useApp();
 
   function handleSelectToken(token: IToken) {
     onSelectToken(token);
@@ -50,10 +49,10 @@ export function TokenSelect({
     try {
       const importedToken = await fetchTokenInfo(
         search as Address,
-        chainId as ChainId,
+        chainId as ChainId
       );
       handleSelectToken(importedToken);
-      addImportedToken(importedToken);
+      tokenList.addImportedToken(importedToken);
       toast({
         title: "Token imported",
       });
@@ -72,23 +71,20 @@ export function TokenSelect({
           <Button
             type="button"
             className={cn(
-              "flex px-2 justify-between rounded-full gap-2",
+              "flex px-2 justify-between rounded-full space-x-1",
               selectedToken
                 ? "bg-foreground text-white hover:text-primary-foreground"
-                : "",
+                : ""
             )}
             disabled={disabled}
             onClick={() => setOpen(true)}
           >
-            {
-              // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-              selectedToken ? (
-                <TokenInfo token={selectedToken} showExplorerLink={false} />
-              ) : (
-                "Select a token"
-              )
-            }
-            {!disabled && <ChevronDownIcon className="size-4" />}
+            {selectedToken ? (
+              <TokenInfo token={selectedToken} showExplorerLink={false} />
+            ) : (
+              "Select token"
+            )}
+            {!disabled && <ChevronDownIcon className="size-4 shrink-0" />}
           </Button>
           {errorMessage && (
             <div className="mt-1 text-sm text-destructive">
@@ -115,7 +111,7 @@ export function TokenSelect({
             <CommandEmpty onSelect={handleImportToken}>
               No results found
             </CommandEmpty>
-            {getTokenList().map((token) => (
+            {tokenList.tokenList.map((token) => (
               // @ts-ignore
               <CommandItem
                 key={token.address}

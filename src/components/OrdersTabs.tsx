@@ -5,21 +5,22 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 
 import { useOrder } from "#/contexts/ordersContext";
 import { useSwapCardContext } from "#/contexts/swapCardContext";
+import { useOrderList } from "#/hooks/useOrderList";
 
 import { DraftOrdersTab } from "./DraftOrdersTab";
 import { HistoryOrdersTab } from "./HistoryOrdersTab";
 import { OpenOrdersTab } from "./OpenOrdersTab";
-import { Spinner } from "./Spinner";
+import { Spinner } from "./ui/spinner";
 
 export function OrderTabs() {
   const {
     isLoading,
     mutate,
-    openOrders,
-    historyOrders,
     draftOrders,
     txManager: { isPonderUpdating },
   } = useOrder();
+  const { historyOrders, openOrders } = useOrderList();
+
   const { firstAccess } = useSwapCardContext();
 
   if (firstAccess) {

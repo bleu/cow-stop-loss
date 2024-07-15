@@ -2,7 +2,7 @@ import { cn, Input as InputPrimitive, Label } from "@bleu/ui";
 import React, { HTMLProps } from "react";
 import { FieldError, RegisterOptions, useFormContext } from "react-hook-form";
 
-import { InfoTooltip } from "./Tooltip";
+import { InfoTooltip } from "./tooltip";
 
 interface IInput extends Omit<HTMLProps<HTMLInputElement>, "name"> {
   name: string;
@@ -51,7 +51,7 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
           {...register(name, validation)}
           className={cn(
             "w-full shadow-none rounded-md placeholder:opacity-50 border border-border",
-            className
+            className,
           )}
         />
 
@@ -60,5 +60,5 @@ export const Input = React.forwardRef<HTMLInputElement, IInput>(
         )}
       </div>
     );
-  }
+  },
 );

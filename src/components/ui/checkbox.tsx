@@ -2,7 +2,7 @@ import { Checkbox as CheckboxPrimitive } from "@bleu/ui";
 import React from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
-import { InfoTooltip } from "./Tooltip";
+import { InfoTooltip } from "./tooltip";
 
 interface ICheckbox {
   name: string;
