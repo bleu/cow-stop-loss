@@ -10,7 +10,14 @@ export interface IToken {
   address: Address;
 }
 
-export type OrderStatus = "open" | "canceled" | "fulfilled" | "partiallyFilled";
+export type OrderStatus =
+  | "open"
+  | "canceled"
+  | "fulfilled"
+  | "partiallyFilled"
+  | "draft"
+  | "creating"
+  | "cancelling";
 
 export interface ITokenWithValue extends IToken {
   balance: string;
@@ -29,6 +36,7 @@ export type DraftOrder = SwapData &
     oraclePrice: number;
     fallbackMarketPrice?: number;
     salt: `0x${string}`;
+    status: OrderStatus;
   };
 
 type StopLossOrderTypeRaw = ArrElement<
