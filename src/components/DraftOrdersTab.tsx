@@ -41,6 +41,20 @@ export function DraftOrdersTab() {
     <>
       <ReviewOrdersDialog draftOrders={selectedOrders} />
       <div className="flex flex-col gap-2">
+        <div className="flex justify-end gap-2">
+          <RemoveDraftOrdersDialog
+            selectedIds={selectedIds}
+            setSelectedIds={setSelectedIds}
+          />
+          <Button
+            disabled={!selectedIds.length}
+            onClick={() => {
+              setReviewDialogOpen(true);
+            }}
+          >
+            Review {selectedIds.length > 1 ? "orders" : "order"}
+          </Button>
+        </div>
         <Table className="w-full rounded-lg">
           <TableHeader className="bg-background">
             <TableRow>
@@ -101,20 +115,6 @@ export function DraftOrdersTab() {
             )}
           </TableBody>
         </Table>
-        <div className="flex justify-end gap-2">
-          <RemoveDraftOrdersDialog
-            selectedIds={selectedIds}
-            setSelectedIds={setSelectedIds}
-          />
-          <Button
-            disabled={!selectedIds.length}
-            onClick={() => {
-              setReviewDialogOpen(true);
-            }}
-          >
-            Review {selectedIds.length > 1 ? "orders" : "order"}
-          </Button>
-        </div>
       </div>
     </>
   );
