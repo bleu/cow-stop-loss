@@ -68,7 +68,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     const anotherSideAmount = side === "Buy" ? sellAmount : buyAmount;
     setValue(
       `amount${side === "Buy" ? "Sell" : "Buy"}` as const,
-      anotherSideAmount
+      anotherSideAmount,
     );
   }
 
@@ -84,7 +84,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   useEffect(() => {
     // Control if the amount field should be disabled
     setIsAmountDisabled(
-      (isSellOrder && side === "Buy") || (!isSellOrder && side === "Sell")
+      (isSellOrder && side === "Buy") || (!isSellOrder && side === "Sell"),
     );
   }, [isSellOrder, side]);
 
@@ -131,7 +131,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                   4,
                   "decimal",
                   "standard",
-                  0.0001
+                  0.0001,
                 )}{" "}
               </span>
               {!isAmountDisabled &&
@@ -145,7 +145,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                     onClick={() => {
                       setValue(
                         amountFieldName,
-                        Number(convertStringToNumberAndRoundDown(tokenBalance))
+                        Number(convertStringToNumberAndRoundDown(tokenBalance)),
                       );
                     }}
                   >
@@ -173,7 +173,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
               amount && usdPrice ? amount * (usdPrice || 0) : 0,
               2,
               "currency",
-              "standard"
+              "standard",
             )}`}
           </i>
         </div>

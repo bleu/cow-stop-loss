@@ -22,9 +22,9 @@ import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { IToken, StopLossOrderType } from "#/lib/types";
 
+import { OrderDropdownMenuCell } from "./OrderDropdownMenuCell";
 import { StatusBadge } from "./StatusBadge";
 import { Spinner } from "./ui/spinner";
-import { OrderDropdownMenuCell } from "./OrderDropdownMenuCell";
 
 export function OpenOrdersTab() {
   const {
@@ -137,7 +137,7 @@ export function OpenOrderRow({
 
   const { data: marketPrice } = useTokenPairPrice(
     order.stopLossData?.tokenIn as IToken,
-    order.stopLossData?.tokenOut as IToken
+    order.stopLossData?.tokenOut as IToken,
   );
 
   const [invertedPrice, setInvertedPrice] = useState(false);
@@ -157,18 +157,18 @@ export function OpenOrderRow({
   const amountSell = Number(
     formatUnits(
       order.stopLossData?.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals
-    )
+      order.stopLossData.tokenIn.decimals,
+    ),
   );
   const amountBuy = Number(
     formatUnits(
       order.stopLossData?.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals
-    )
+      order.stopLossData.tokenOut.decimals,
+    ),
   );
 
   const orderDateTime = epochToDate(
-    Number(order.blockTimestamp)
+    Number(order.blockTimestamp),
   ).toLocaleString();
 
   return (

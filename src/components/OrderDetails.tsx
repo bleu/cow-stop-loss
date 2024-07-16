@@ -15,26 +15,26 @@ import {
   CopyIcon,
   ReloadIcon,
 } from "@radix-ui/react-icons";
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import { Address, formatUnits } from "viem";
 
 import { OrderDetailsInformation } from "#/components/OrderDetailsInformation";
 import { StatusBadge } from "#/components/StatusBadge";
 import { TokenLogo } from "#/components/TokenLogo";
+import { Spinner } from "#/components/ui/spinner";
 import { InfoTooltip } from "#/components/ui/tooltip";
+import { useOrder } from "#/contexts/ordersContext";
+import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 import { getProcessedStopLossOrder } from "#/lib/orderFetcher";
 import { ChainId } from "#/lib/publicClients";
 import { formatTimeDelta } from "#/lib/timeDelta";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
-import { buildOrderCowExplorerUrl, truncateAddress } from "#/utils";
-import { Spinner } from "#/components/ui/spinner";
-import { useOrder } from "#/contexts/ordersContext";
 import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
+import { buildOrderCowExplorerUrl, truncateAddress } from "#/utils";
+
 import { BlockExplorerLink } from "./ExplorerLink";
-import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
-import { useRouter } from "next/navigation";
 
 export function OrderDetails({
   orderId,
@@ -76,13 +76,13 @@ export function OrderDetails({
   }
 
   const orderDateTime = formatDateTime(
-    epochToDate(Number(order?.blockTimestamp))
+    epochToDate(Number(order?.blockTimestamp)),
   );
   const orderWaitTime = formatTimeDelta(
-    order?.stopLossData?.validityBucketSeconds as number
+    order?.stopLossData?.validityBucketSeconds as number,
   );
   const maxOracleUpdateTime = formatTimeDelta(
-    order?.stopLossData?.maxTimeSinceLastOracleUpdate as number
+    order?.stopLossData?.maxTimeSinceLastOracleUpdate as number,
   );
 
   const amountIn =
@@ -264,7 +264,7 @@ export function OrderDetails({
                 {formatNumber(amountOut, 4)}{" "}
                 <InfoTooltip
                   text={amountOut.toFixed(
-                    order?.stopLossData?.tokenOut.decimals
+                    order?.stopLossData?.tokenOut.decimals,
                   )}
                 />
                 {order?.stopLossData?.tokenOut.symbol}
@@ -383,7 +383,7 @@ export function OrderDetails({
                     <Link
                       className={cn(
                         "hover:text-primary hover:underline",
-                        order.status === "fulfilled" ? "font-bold" : ""
+                        order.status === "fulfilled" ? "font-bold" : "",
                       )}
                       href={buildOrderCowExplorerUrl({
                         chainId: order?.chainId as ChainId,

@@ -41,7 +41,7 @@ interface ISwapContext {
 }
 
 export const SwapCardContext = React.createContext<ISwapContext>(
-  {} as ISwapContext
+  {} as ISwapContext,
 );
 
 const loadAdvancedSettings = (safeAddress: string): AdvancedSwapSettings => {
@@ -69,7 +69,7 @@ export const SwapCardContextProvider = ({
   const [tokenSellBalance, setTokenSellBalance] = React.useState<string>();
   const [tokenBuyBalance, setTokenBuyBalance] = React.useState<string>();
   const [firstAccess, setFirstAccess] = React.useState(
-    localStorage.getItem("firstAccess") === null
+    localStorage.getItem("firstAccess") === null,
   );
 
   const [oracleRoute, setOracleRoute] = React.useState<IRoute>();

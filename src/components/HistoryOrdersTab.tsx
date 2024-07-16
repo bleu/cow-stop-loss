@@ -12,14 +12,14 @@ import {
 } from "@bleu/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { formatUnits } from "viem";
 
 import { useOrderList } from "#/hooks/useOrderList";
 import { StopLossOrderType } from "#/lib/types";
 
-import { StatusBadge } from "./StatusBadge";
-import { useState } from "react";
 import { OrderDropdownMenuCell } from "./OrderDropdownMenuCell";
+import { StatusBadge } from "./StatusBadge";
 
 export function HistoryOrdersTab() {
   const { historyOrders, isLoading } = useOrderList();
@@ -43,7 +43,7 @@ export function HistoryOrdersTab() {
           })
         ) : (
           <TableRow>
-            <TableCell colSpan={5} className="text-center">
+            <TableCell colSpan={100} className="text-center">
               {isLoading ? (
                 <Spinner />
               ) : (
@@ -79,18 +79,18 @@ export function HistoryOrderRow({ order }: { order: StopLossOrderType }) {
   const amountSell = Number(
     formatUnits(
       order.stopLossData?.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals
-    )
+      order.stopLossData.tokenIn.decimals,
+    ),
   );
   const amountBuy = Number(
     formatUnits(
       order.stopLossData?.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals
-    )
+      order.stopLossData.tokenOut.decimals,
+    ),
   );
 
   const orderDateTime = epochToDate(
-    Number(order.blockTimestamp)
+    Number(order.blockTimestamp),
   ).toLocaleString();
 
   return (

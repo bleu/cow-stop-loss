@@ -18,17 +18,17 @@ import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { getOrderDescription } from "#/lib/orderDescription";
 import { DraftOrder } from "#/lib/types";
 
-import { ReviewOrdersDialog } from "./ReviewOrdersDialog";
-import { RemoveDraftOrdersDialog } from "./RemoveDraftOrdersDialog";
 import { OrderDropdownMenuCell } from "./OrderDropdownMenuCell";
+import { RemoveDraftOrdersDialog } from "./RemoveDraftOrdersDialog";
+import { ReviewOrdersDialog } from "./ReviewOrdersDialog";
 
 export function DraftOrdersTab() {
-  const { draftOrders, removeDraftOrders } = useOrder();
+  const { draftOrders } = useOrder();
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const selectedOrders = draftOrders.filter((order) =>
-    selectedIds.includes(order.id)
+    selectedIds.includes(order.id),
   );
 
   return (
@@ -81,7 +81,7 @@ export function DraftOrdersTab() {
                         return;
                       }
                       setSelectedIds(
-                        selectedIds.filter((id) => id !== order.id)
+                        selectedIds.filter((id) => id !== order.id),
                       );
                     }}
                   />
@@ -142,7 +142,7 @@ export function DraftOrderRow({
 
   const { data: marketPrice } = useTokenPairPrice(
     order.tokenSell,
-    order.tokenBuy
+    order.tokenBuy,
   );
 
   return (
@@ -159,14 +159,14 @@ export function DraftOrderRow({
       <TableCell>
         {formatNumber(
           invertedPrice ? 1 / order.strikePrice : order.strikePrice,
-          4
+          4,
         )}{" "}
         {priceUnity}
       </TableCell>
       <TableCell>
         {formatNumber(
           invertedPrice ? 1 / order.limitPrice : order.limitPrice,
-          4
+          4,
         )}{" "}
         {priceUnity}
       </TableCell>

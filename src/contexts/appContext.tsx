@@ -8,7 +8,7 @@ import { useTransaction } from "../hooks/useTransaction";
 import { useUIState } from "../hooks/useUIState";
 
 const AppContext = createContext<ReturnType<typeof useAppState> | undefined>(
-  undefined
+  undefined,
 );
 
 function useAppState() {
