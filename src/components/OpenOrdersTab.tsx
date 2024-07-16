@@ -37,7 +37,7 @@ export function OpenOrdersTab() {
 
   const onCancelOrders = () => {
     const ordersToCancel = openOrders.filter((order) =>
-      selectedIds.includes(order.id),
+      selectedIds.includes(order.id)
     );
     const deleteTxArgs = ordersToCancel.map((order) => ({
       type: TRANSACTION_TYPES.ORDER_CANCEL,
@@ -62,16 +62,22 @@ export function OpenOrdersTab() {
     });
   };
 
+  const selectableOrders = openOrders.filter((order) => order.status == "open");
+
   return (
     <div className="flex flex-col gap-2">
       <Table className="w-full rounded-lg">
         <TableHeader className="bg-background">
           <TableCell className="rounded-tl-md">
             <Checkbox
-              checked={selectedIds.length === openOrders.length}
+              checked={
+                selectedIds.length === selectableOrders.length &&
+                !!selectableOrders.length
+              }
+              disabled={!selectableOrders.length}
               onCheckedChange={(checked) => {
                 if (checked) {
-                  setSelectedIds(openOrders.map((order) => order.id));
+                  setSelectedIds(selectableOrders.map((order) => order.id));
                   return;
                 }
                 setSelectedIds([]);
@@ -150,7 +156,7 @@ export function OpenOrderRow({
 
   const { data: marketPrice } = useTokenPairPrice(
     order.stopLossData?.tokenIn as IToken,
-    order.stopLossData?.tokenOut as IToken,
+    order.stopLossData?.tokenOut as IToken
   );
 
   const [invertedPrice, setInvertedPrice] = useState(false);
@@ -170,18 +176,18 @@ export function OpenOrderRow({
   const amountSell = Number(
     formatUnits(
       order.stopLossData?.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals,
-    ),
+      order.stopLossData.tokenIn.decimals
+    )
   );
   const amountBuy = Number(
     formatUnits(
       order.stopLossData?.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals,
-    ),
+      order.stopLossData.tokenOut.decimals
+    )
   );
 
   const orderDateTime = epochToDate(
-    Number(order.blockTimestamp),
+    Number(order.blockTimestamp)
   ).toLocaleString();
 
   return (
@@ -198,6 +204,7 @@ export function OpenOrderRow({
         className="cursor-default"
       >
         <Checkbox
+          disabled={order.status == "cancelling"}
           checked={checked}
           onCheckedChange={(checked) => {
             onSelect(checked as boolean);

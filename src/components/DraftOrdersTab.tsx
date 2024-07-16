@@ -28,8 +28,12 @@ export function DraftOrdersTab() {
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
+  const selectableOrders = draftOrders.filter(
+    (order) => order.status == "draft"
+  );
+
   const selectedOrders = draftOrders.filter((order) =>
-    selectedIds.includes(order.id),
+    selectedIds.includes(order.id)
   );
 
   return (
@@ -46,13 +50,13 @@ export function DraftOrdersTab() {
               <TableHead className="rounded-tl-md">
                 <Checkbox
                   checked={
-                    selectedIds.length === draftOrders.length &&
-                    !!draftOrders.length
+                    selectedIds.length === selectableOrders.length &&
+                    !!selectableOrders.length
                   }
-                  disabled={!draftOrders.length}
+                  disabled={!selectableOrders.length}
                   onCheckedChange={(checked) => {
                     if (checked) {
-                      setSelectedIds(draftOrders.map((order) => order.id));
+                      setSelectedIds(selectableOrders.map((order) => order.id));
                       return;
                     }
                     setSelectedIds([]);
@@ -83,7 +87,7 @@ export function DraftOrdersTab() {
                         return;
                       }
                       setSelectedIds(
-                        selectedIds.filter((id) => id !== order.id),
+                        selectedIds.filter((id) => id !== order.id)
                       );
                     }}
                   />
@@ -144,7 +148,7 @@ export function DraftOrderRow({
 
   const { data: marketPrice } = useTokenPairPrice(
     order.tokenSell,
-    order.tokenBuy,
+    order.tokenBuy
   );
 
   return (
@@ -162,14 +166,14 @@ export function DraftOrderRow({
       <TableCell>
         {formatNumber(
           invertedPrice ? 1 / order.strikePrice : order.strikePrice,
-          4,
+          4
         )}{" "}
         {priceUnity}
       </TableCell>
       <TableCell>
         {formatNumber(
           invertedPrice ? 1 / order.limitPrice : order.limitPrice,
-          4,
+          4
         )}{" "}
         {priceUnity}
       </TableCell>
