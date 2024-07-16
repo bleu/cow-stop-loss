@@ -45,7 +45,7 @@ export function TxPendingDialog() {
             <Button
               className="w-full mt-3"
               onClick={() => {
-                setTxPendingDialog(false);
+                setTxPendingDialogOpen(false);
               }}
               disabled={isPonderUpdating}
             >

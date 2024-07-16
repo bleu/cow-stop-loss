@@ -20,10 +20,10 @@ export function SwapCardSubmitButton() {
   const isLoading = useOracleStore((state) => state.isLoading);
 
   const tokenSellBalance = useSwapTokenBalances(
-    (state) => state.tokenSellBalance
+    (state) => state.tokenSellBalance,
   );
   const advancedSettings = useAdvancedSettingsStore(
-    (state) => state.advancedSettings
+    (state) => state.advancedSettings,
   );
   const [tokenBuyOracle, tokenSellOracle] = useOracleStore((state) => [
     state.oracleRoute?.tokenBuyOracle,
@@ -117,7 +117,7 @@ export function SwapCardSubmitButton() {
       const firstErrorMessage = errorList[0];
       const firstErrorKey = Object.keys(errors).find(
         // @ts-ignore
-        (key) => errors[key] === firstErrorMessage
+        (key) => errors[key] === firstErrorMessage,
       );
       return {
         disabled: false,
