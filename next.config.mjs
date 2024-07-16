@@ -3,6 +3,10 @@ const moduleExports = {
   experimental: {
     reactCompiler: true,
   },
+  webpack: (config) => {
+    config.externals.push('pino-pretty');
+    return config;
+  },
   async headers() {
     return [
       {
