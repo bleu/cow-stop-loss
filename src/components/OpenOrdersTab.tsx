@@ -16,9 +16,10 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { formatUnits } from "viem";
 
-import { useOrder } from "#/contexts/ordersContext";
 import { useOrderList } from "#/hooks/useOrderList";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
+import { useTxManager } from "#/hooks/useTxManager";
+import { useUIStore } from "#/hooks/useUIState";
 import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { IToken, StopLossOrderType } from "#/lib/types";
 
@@ -27,12 +28,11 @@ import { StatusBadge } from "./StatusBadge";
 import { Spinner } from "./ui/spinner";
 
 export function OpenOrdersTab() {
-  const {
-    txManager: { writeContract, isWriting },
-    setTxPendingDialog,
-    isLoading,
-  } = useOrder();
-  const { openOrders } = useOrderList();
+  const { writeContract, isWriting } = useTxManager();
+  const setTxPendingDialogOpen = useUIStore(
+    (state) => state.setTxPendingDialogOpen,
+  );
+  const { openOrders, isLoading } = useOrderList();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const onCancelOrders = () => {
@@ -44,7 +44,7 @@ export function OpenOrdersTab() {
     writeContract(deleteTxArgs, {
       onSuccess: () => {
         setSelectedIds([]);
-        setTxPendingDialog(true);
+        setTxPendingDialogOpen(true);
       },
     });
   };
@@ -100,7 +100,7 @@ export function OpenOrdersTab() {
                   <Spinner />
                 ) : (
                   <div className="py-4">
-                    No open orders. Create a new one to get started.
+                    No open orders. Create one to get started.
                   </div>
                 )}
               </TableCell>

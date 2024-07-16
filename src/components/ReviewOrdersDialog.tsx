@@ -15,10 +15,12 @@ import cn from "clsx";
 import * as React from "react";
 import { Address } from "viem";
 
-import { useOrder } from "#/contexts/ordersContext";
+import { useDraftOrders } from "#/hooks/useDraftOrders";
 import { useFallbackState } from "#/hooks/useFallbackState";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { useTokenPrice } from "#/hooks/useTokenPrice";
+import { useTxManager } from "#/hooks/useTxManager";
+import { useUIStore } from "#/hooks/useUIState";
 import { ChainId } from "#/lib/publicClients";
 import { formatTimeDelta } from "#/lib/timeDelta";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
@@ -32,22 +34,26 @@ import { TokenInfo } from "./TokenInfo";
 import { InfoTooltip } from "./ui/tooltip";
 
 export function ReviewOrdersDialog({
-  draftOrders,
-  open,
-  setOpen,
   showAddOrders = false,
 }: {
   draftOrders: DraftOrder[];
-  open: boolean;
-  setOpen: (open: boolean) => void;
   showAddOrders?: boolean;
 }) {
-  const {
-    addDraftOrders,
-    removeDraftOrders,
-    txManager: { writeContract },
-    setTxPendingDialog,
-  } = useOrder();
+  const { writeContract } = useTxManager();
+
+  const [draftOrders, addDraftOrders, removeDraftOrders] = useDraftOrders(
+    (state) => [
+      state.draftOrders,
+      state.addDraftOrders,
+      state.removeDraftOrders,
+    ],
+  );
+
+  const [setTxPendingDialogOpen, open, setOpen] = useUIStore((state) => [
+    state.setTxPendingDialogOpen,
+    state.reviewDialogOpen,
+    state.setReviewDialogOpen,
+  ]);
   const multipleOrders = draftOrders.length > 1;
   const {
     safe: { safeAddress, chainId },
@@ -68,7 +74,7 @@ export function ReviewOrdersDialog({
       onSuccess: () => {
         removeDraftOrders(draftOrders.map((order) => order.id));
         setOpen(false);
-        setTxPendingDialog(true);
+        setTxPendingDialogOpen(true);
       },
     });
   };

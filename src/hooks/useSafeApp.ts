@@ -5,6 +5,7 @@ import { ChainId } from "#/lib/publicClients";
 
 export function useSafeApp() {
   const { safe, sdk } = useSafeAppsSDK();
+
   return {
     safeAddress: safe.safeAddress as Address,
     chainId: safe.chainId as ChainId,

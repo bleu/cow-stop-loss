@@ -48,7 +48,7 @@ export function OrderTypeSwitch() {
   return (
     <div className="flex gap-2 items-center">
       <span className="text-base font-bold inline-flex items-center space-x-1">
-        <span>Create a new</span>
+        <span>Create</span>
         <OrderTypeToggleGroup
           onChange={(value) => {
             setValue("isSellOrder", value === "sell");

@@ -25,7 +25,7 @@ import { StatusBadge } from "#/components/StatusBadge";
 import { TokenLogo } from "#/components/TokenLogo";
 import { Spinner } from "#/components/ui/spinner";
 import { InfoTooltip } from "#/components/ui/tooltip";
-import { useOrder } from "#/contexts/ordersContext";
+import { useTxManager } from "#/hooks/useTxManager";
 import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 import { getProcessedStopLossOrder } from "#/lib/orderFetcher";
 import { ChainId } from "#/lib/publicClients";
@@ -61,9 +61,7 @@ export function OrderDetails({
 
   const router = useRouter();
 
-  const {
-    txManager: { writeContract, isPonderUpdating },
-  } = useOrder();
+  const { writeContract, isPonderUpdating } = useTxManager();
 
   const isUpdating = isLoading || isPonderUpdating || isValidating;
 

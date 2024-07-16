@@ -5,11 +5,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Link from "next/link";
 import React, { useState } from "react";
 import { SWRConfig, SWRConfiguration } from "swr";
+import { WagmiProvider } from "wagmi";
 
-import { AppProvider } from "#/contexts/appContext";
-import { OrderProvider } from "#/contexts/ordersContext";
-import { TokensContextProvider } from "#/contexts/tokensContext";
 import { localStorageProvider } from "#/lib/localStorageProvider";
+import { wagmiConfig } from "#/utils/wagmi";
 
 import { Footer } from "./Footer";
 import { Header } from "./Header";
@@ -27,25 +26,21 @@ export function RootLayout({ children }: React.PropsWithChildren) {
 
   return (
     <SafeProvider loader={<SafeLoader />}>
-      <QueryClientProvider client={queryClient}>
-        <SWRConfig value={swrConfig}>
-          <AppProvider>
-            <TokensContextProvider>
-              <OrderProvider>
-                <div className="flex flex-col min-h-screen size-screen justify-between">
-                  <Header linkUrl={"/"} imageSrc={"/assets/stoploss.svg"} />
-                  <div className="size-full bg-background">{children}</div>
-                  <Footer
-                    githubLink="https://github.com/bleu/cow-stop-loss"
-                    discordLink="https://discord.gg/cowprotocol"
-                  />
-                </div>
-                <Toaster />
-              </OrderProvider>
-            </TokensContextProvider>
-          </AppProvider>
-        </SWRConfig>
-      </QueryClientProvider>
+      <WagmiProvider config={wagmiConfig}>
+        <QueryClientProvider client={queryClient}>
+          <SWRConfig value={swrConfig}>
+            <div className="flex flex-col min-h-screen size-screen justify-between">
+              <Header linkUrl={"/"} imageSrc={"/assets/stoploss.svg"} />
+              <div className="size-full bg-background">{children}</div>
+              <Footer
+                githubLink="https://github.com/bleu/cow-stop-loss"
+                discordLink="https://discord.gg/cowprotocol"
+              />
+            </div>
+            <Toaster />
+          </SWRConfig>
+        </QueryClientProvider>
+      </WagmiProvider>
     </SafeProvider>
   );
 }

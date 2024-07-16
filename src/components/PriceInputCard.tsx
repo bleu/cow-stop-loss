@@ -79,6 +79,7 @@ function PriceInputCardComponent({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = parseFloat(e.target.value);
+
     if (!isNaN(inputValue) && inputValue !== 0) {
       const newFormPrice = isInverted ? 1 / inputValue : inputValue;
       setValue(fieldName, newFormPrice);

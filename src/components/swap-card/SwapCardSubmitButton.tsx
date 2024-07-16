@@ -1,45 +1,59 @@
 "use client";
 
 import { Button } from "@bleu/ui";
+import { useCallback } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
-import { useOrder } from "#/contexts/ordersContext";
-import { useSwapCardContext } from "#/contexts/swapCardContext";
+import { useAdvancedSettingsStore } from "#/hooks/useAdvancedSettings";
+import { useDraftOrders } from "#/hooks/useDraftOrders";
+import { useOracleStore } from "#/hooks/useOracle";
+import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { SwapData } from "#/lib/types";
 
 export function SwapCardSubmitButton() {
-  const { draftOrders } = useOrder();
+  const { draftOrders } = useDraftOrders();
   const {
     formState: { isSubmitting, errors },
     control,
   } = useFormContext<SwapData>();
-  const {
-    tokenBuyOracle,
-    tokenSellOracle,
-    advancedSettings,
-    isLoading,
-    tokenSellBalance,
-  } = useSwapCardContext();
-  const [tokenBuy, tokenSell, buyAmount, sellAmount, strikePrice, limitPrice] =
-    useWatch({
-      control,
-      name: [
-        "tokenBuy",
-        "tokenSell",
-        "amountBuy",
-        "amountSell",
-        "strikePrice",
-        "limitPrice",
-      ],
-    });
+  const isLoading = useOracleStore((state) => state.isLoading);
+
+  const tokenSellBalance = useSwapTokenBalances(
+    (state) => state.tokenSellBalance,
+  );
+  const advancedSettings = useAdvancedSettingsStore(
+    (state) => state.advancedSettings,
+  );
+  const [tokenBuyOracle, tokenSellOracle] = useOracleStore((state) => [
+    state.oracleRoute?.tokenBuyOracle,
+    state.oracleRoute?.tokenSellOracle,
+  ]);
+
+  const [
+    tokenBuy,
+    tokenSell,
+    buyAmount,
+    sellAmount,
+    strikePrice,
+    limitPrice,
+    isSellOrder,
+  ] = useWatch({
+    control,
+    name: [
+      "tokenBuy",
+      "tokenSell",
+      "amountBuy",
+      "amountSell",
+      "strikePrice",
+      "limitPrice",
+      "isSellOrder",
+    ],
+  });
 
   const { data: marketPrice } = useTokenPairPrice(tokenSell, tokenBuy);
 
-  function getButtonState(): {
-    disabled: boolean;
-    text: string;
-  } {
+  const getButtonState = useCallback(() => {
     if (draftOrders.length > 4) {
       return {
         disabled: true,
@@ -82,11 +96,20 @@ export function SwapCardSubmitButton() {
         text: "Set the trigger price",
       };
     }
-    if (marketPrice && strikePrice > marketPrice) {
-      return {
-        disabled: true,
-        text: "Trigger price must be lower than market price",
-      };
+
+    if (marketPrice) {
+      if (isSellOrder && strikePrice > marketPrice) {
+        return {
+          disabled: true,
+          text: "For sell orders, trigger price must be lower than market price",
+        };
+      }
+      if (!isSellOrder && strikePrice < marketPrice) {
+        return {
+          disabled: true,
+          text: "For buy orders, trigger price must be higher than market price",
+        };
+      }
     }
     if (
       (!tokenBuyOracle && !advancedSettings.tokenBuyOracle) ||
@@ -120,7 +143,20 @@ export function SwapCardSubmitButton() {
       disabled: false,
       text: "Review Stop Loss order",
     };
-  }
+  }, [
+    advancedSettings.tokenBuyOracle,
+    advancedSettings.tokenSellOracle,
+    buyAmount,
+    draftOrders.length,
+    errors,
+    limitPrice,
+    marketPrice,
+    sellAmount,
+    strikePrice,
+    tokenBuy,
+    tokenSell,
+    tokenSellBalance,
+  ]);
 
   const { disabled, text } = getButtonState();
 

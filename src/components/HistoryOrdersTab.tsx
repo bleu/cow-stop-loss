@@ -48,7 +48,7 @@ export function HistoryOrdersTab() {
                 <Spinner />
               ) : (
                 <div className="py-4">
-                  No open orders. Create a new one to get started.
+                  No open orders. Create one to get started.
                 </div>
               )}
             </TableCell>

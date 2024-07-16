@@ -17,7 +17,7 @@ export function TokenAmount({
         {formatNumber(balance, 4)} {token.symbol}
       </span>
       <i className="text-xs h-5">
-        {usdPrice > 0 && `$${formatNumber(balance * usdPrice, 2)}`}
+        ≈ {usdPrice > 0 && `$${formatNumber(balance * usdPrice, 2)}`}
       </i>
     </div>
   );

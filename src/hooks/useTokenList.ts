@@ -1,43 +1,46 @@
-import { useEffect, useState } from "react";
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 import { cowTokenList } from "#/lib/cowTokenList";
 import { ChainId } from "#/lib/publicClients";
 import { IToken } from "#/lib/types";
 
-import { useSafeApp } from "./useSafeApp";
+interface TokenListState {
+  importedTokens: (IToken & { chainId: ChainId })[];
+  addImportedToken: (token: IToken, chainId: ChainId) => void;
+  getTokenList: (chainId: ChainId) => IToken[];
+}
 
-export function useTokenList() {
-  const { chainId } = useSafeApp();
-  const [importedTokenList, setImportedTokenList] = useState<IToken[]>([]);
+export const useTokenListStore = create<TokenListState>()(
+  persist(
+    (set, get) => ({
+      importedTokens: [],
+      addImportedToken: (token: IToken, chainId: ChainId) =>
+        set((state) => ({
+          importedTokens: [...state.importedTokens, { ...token, chainId }],
+        })),
+      getTokenList: (chainId: ChainId) => {
+        const { importedTokens } = get();
+        return [
+          ...(cowTokenList.filter(
+            (token) => token.chainId === chainId,
+          ) as IToken[]),
+          ...importedTokens.filter((token) => token.chainId === chainId),
+        ];
+      },
+    }),
+    {
+      name: "token-list-storage",
+      partialize: (state) => ({ importedTokens: state.importedTokens }),
+    },
+  ),
+);
+export function useTokenList(chainId: ChainId) {
+  const addImportedToken = useTokenListStore((state) => state.addImportedToken);
+  const tokenList = useTokenListStore((state) => state.getTokenList(chainId));
 
-  useEffect(() => {
-    const storedTokens = localStorage.getItem("importedTokens");
-    if (storedTokens) {
-      const parsedTokens = JSON.parse(storedTokens) as (IToken & {
-        chainId: ChainId;
-      })[];
-      setImportedTokenList(
-        parsedTokens.filter((token) => token.chainId === chainId),
-      );
-    }
-  }, [chainId]);
-
-  const tokenList = [
-    ...(cowTokenList.filter((token) => token.chainId === chainId) as IToken[]),
-    ...importedTokenList,
-  ];
-
-  function addImportedToken(token: IToken) {
-    const newImportedTokenList = [
-      ...importedTokenList,
-      { ...token, chainId: chainId as ChainId },
-    ];
-    setImportedTokenList(newImportedTokenList);
-    localStorage.setItem(
-      "importedTokens",
-      JSON.stringify(newImportedTokenList),
-    );
-  }
-
-  return { tokenList, addImportedToken };
+  return {
+    tokenList,
+    addImportedToken: (token: IToken) => addImportedToken(token, chainId),
+  };
 }
