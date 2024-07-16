@@ -1,5 +1,5 @@
+import { cn } from "@bleu/ui";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
-import cn from "clsx";
 
 export function AlertCard({
   title,
@@ -12,19 +12,21 @@ export function AlertCard({
 }) {
   return (
     <div
-      className="w-full justify-center rounded-lg bg-background/70  px-4 py-2"
+      className="flex w-full justify-center rounded-lg bg-background/70 px-4 py-2 space-x-4"
       role="alert"
     >
-      <div className="w-full flex gap-1 items-center">
+      <div className="my-auto">
         <ExclamationTriangleIcon
           className={cn(
             "w-6 h-6",
-            style === "error" ? "text-destructive" : "text-highlight",
+            style === "error" ? "text-destructive" : "text-highlight"
           )}
         />
-        <div className="font-bold text-sand12 px-4 py-2 text-base">{title}</div>
       </div>
-      <div className="w-full text-xs">{children}</div>
+      <div>
+        <div className="font-bold text-sand12 text-base">{title}</div>
+        <div className="w-full text-xs">{children}</div>
+      </div>
     </div>
   );
 }
