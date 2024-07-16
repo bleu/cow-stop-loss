@@ -115,7 +115,7 @@ export function OpenOrdersTab() {
           ) : (
             <TableRow>
               <TableCell colSpan={100} className="text-center">
-                {isLoading ? (
+                {isLoading && !orders ? (
                   <Spinner />
                 ) : (
                   <div className="py-4">

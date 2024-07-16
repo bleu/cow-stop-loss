@@ -22,7 +22,7 @@ import { OrderDropdownMenuCell } from "./OrderDropdownMenuCell";
 import { StatusBadge } from "./StatusBadge";
 
 export function HistoryOrdersTab() {
-  const { historyOrders, isLoading } = useOrderList();
+  const { historyOrders, orders, isLoading } = useOrderList();
 
   return (
     <Table className="w-full rounded-lg">
@@ -44,7 +44,7 @@ export function HistoryOrdersTab() {
         ) : (
           <TableRow>
             <TableCell colSpan={100} className="text-center">
-              {isLoading ? (
+              {isLoading && !orders ? (
                 <Spinner />
               ) : (
                 <div className="py-4">
