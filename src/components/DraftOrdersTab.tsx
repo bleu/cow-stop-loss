@@ -18,11 +18,12 @@ import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { getOrderDescription } from "#/lib/orderDescription";
 import { DraftOrder } from "#/lib/types";
 
-import { ReviewOrdersDialog } from "./ReviewOrdersDialog";
+import { OrderDropdownMenuCell } from "./OrderDropdownMenuCell";
 import { RemoveDraftOrdersDialog } from "./RemoveDraftOrdersDialog";
+import { ReviewOrdersDialog } from "./ReviewOrdersDialog";
 
 export function DraftOrdersTab() {
-  const { draftOrders, removeDraftOrders } = useOrder();
+  const { draftOrders } = useOrder();
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
@@ -60,7 +61,10 @@ export function DraftOrdersTab() {
               <TableHead>Order</TableHead>
               <TableHead>Trigger price</TableHead>
               <TableHead>Limit price</TableHead>
-              <TableHead className="rounded-tr-md">Current price</TableHead>
+              <TableHead>Current price</TableHead>
+              <TableCell className="rounded-tr-md">
+                <span className="sr-only">Actions</span>
+              </TableCell>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -85,7 +89,7 @@ export function DraftOrdersTab() {
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={5} className="text-center">
+                <TableCell colSpan={100} className="text-center">
                   <div className="py-4">
                     No draft orders. Create a new one to get started.
                   </div>
@@ -122,6 +126,8 @@ export function DraftOrderRow({
   checked: boolean;
   onSelect: (selected: boolean) => void;
 }) {
+  const [invertedPrice, setInvertedPrice] = useState(false);
+
   const orderDescription = getOrderDescription({
     tokenBuy: order.tokenBuy,
     tokenSell: order.tokenSell,
@@ -130,7 +136,9 @@ export function DraftOrderRow({
     amountBuy: order.amountBuy,
   });
 
-  const priceUnity = `${order.tokenBuy.symbol}/${order.tokenSell.symbol}`;
+  const priceUnity = invertedPrice
+    ? `${order.tokenSell.symbol}/${order.tokenBuy.symbol}`
+    : order.tokenBuy.symbol + "/" + order.tokenSell.symbol;
 
   const { data: marketPrice } = useTokenPairPrice(
     order.tokenSell,
@@ -149,16 +157,30 @@ export function DraftOrderRow({
       </TableCell>
       <TableCell>{orderDescription}</TableCell>
       <TableCell>
-        {formatNumber(order.strikePrice, 4)} {priceUnity}
+        {formatNumber(
+          invertedPrice ? 1 / order.strikePrice : order.strikePrice,
+          4,
+        )}{" "}
+        {priceUnity}
       </TableCell>
       <TableCell>
-        {formatNumber(order.limitPrice, 4)} {priceUnity}
+        {formatNumber(
+          invertedPrice ? 1 / order.limitPrice : order.limitPrice,
+          4,
+        )}{" "}
+        {priceUnity}
       </TableCell>
       <TableCell>
         {marketPrice
-          ? ` ${formatNumber(marketPrice, 4)} ${priceUnity}`
+          ? ` ${formatNumber(invertedPrice ? 1 / marketPrice : marketPrice, 4)} ${priceUnity}`
           : `Market price not found`}
       </TableCell>
+      <OrderDropdownMenuCell
+        orderId={order.id}
+        invertedPrice={invertedPrice}
+        setInvertedPrice={setInvertedPrice}
+        showDetails={false}
+      />
     </TableRow>
   );
 }

@@ -39,13 +39,13 @@ export function useSwap() {
       }
       setIsLoading(false);
     },
-    [chainId]
+    [chainId],
   );
 
   const createDraftOrder = useCallback(
     async (
       data: SwapData,
-      advancedSettings: AdvancedSwapSettings
+      advancedSettings: AdvancedSwapSettings,
     ): Promise<DraftOrder> => {
       let tokenBuyOracle = advancedSettings.tokenBuyOracle;
       let tokenSellOracle = advancedSettings.tokenSellOracle;
@@ -97,7 +97,7 @@ export function useSwap() {
 
       return draftOrder;
     },
-    [chainId, oracleRoute]
+    [chainId, oracleRoute],
   );
 
   return {

@@ -17,7 +17,7 @@ export function useTokenList() {
         chainId: ChainId;
       })[];
       setImportedTokenList(
-        parsedTokens.filter((token) => token.chainId === chainId)
+        parsedTokens.filter((token) => token.chainId === chainId),
       );
     }
   }, [chainId]);
@@ -35,7 +35,7 @@ export function useTokenList() {
     setImportedTokenList(newImportedTokenList);
     localStorage.setItem(
       "importedTokens",
-      JSON.stringify(newImportedTokenList)
+      JSON.stringify(newImportedTokenList),
     );
   }
 

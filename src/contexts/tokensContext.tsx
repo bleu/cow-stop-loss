@@ -27,7 +27,7 @@ interface ITokensContext {
 }
 
 export const TokensContext = React.createContext<ITokensContext>(
-  {} as ITokensContext
+  {} as ITokensContext,
 );
 
 function fetchFromLocalStorage<T>(key: string): T | null {
@@ -58,7 +58,7 @@ export const TokensContextProvider = ({
   function getTokenList() {
     return [
       ...(cowTokenList.filter(
-        (token) => token.chainId === chainId
+        (token) => token.chainId === chainId,
       ) as IToken[]),
       ...importedTokenList,
     ];
@@ -97,7 +97,7 @@ export const TokensContextProvider = ({
     setImportedTokenList(newImportedTokenList);
     localStorage.setItem(
       "importedTokens",
-      JSON.stringify(newImportedTokenList)
+      JSON.stringify(newImportedTokenList),
     );
   }
 
@@ -105,7 +105,7 @@ export const TokensContextProvider = ({
     const importedTokens =
       fetchFromLocalStorage<ITokenWithChainId[]>("importedTokens");
     setImportedTokenList(
-      importedTokens?.filter((token) => token.chainId === chainId) || []
+      importedTokens?.filter((token) => token.chainId === chainId) || [],
     );
   }, [chainId]);
 

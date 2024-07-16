@@ -109,7 +109,7 @@ export function SwapCardSubmitButton() {
       const firstErrorMessage = errorList[0];
       const firstErrorKey = Object.keys(errors).find(
         // @ts-ignore
-        (key) => errors[key] === firstErrorMessage
+        (key) => errors[key] === firstErrorMessage,
       );
       return {
         disabled: false,

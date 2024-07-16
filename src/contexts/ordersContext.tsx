@@ -48,7 +48,7 @@ export function OrderProvider({ children }: PropsWithChildren) {
     getProcessedStopLossOrders,
     {
       fallbackData: [],
-    }
+    },
   );
 
   const [txPendingDialog, setTxPendingDialog] = useState(false);

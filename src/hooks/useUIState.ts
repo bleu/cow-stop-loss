@@ -5,7 +5,7 @@ export function useUIState() {
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
   const [txPendingDialogOpen, setTxPendingDialogOpen] = useState(false);
   const [firstAccess, setFirstAccess] = useState(
-    localStorage.getItem("firstAccess") === null
+    localStorage.getItem("firstAccess") === null,
   );
 
   const setFirstAccessCallback = useCallback((value: boolean) => {
