@@ -38,7 +38,10 @@ export function TxPendingDialog() {
               Transaction pending
             </DialogTitle>
             <span className="text-wrap">
-              {isPonderUpdating ? "Almost done" : "Done"}!
+              {isPonderUpdating
+                ? "Almost done! Your transaction is being processed"
+                : "Done! Your transaction was processed!"}
+              !
             </span>
             <Button
               className="w-full mt-3"
@@ -47,9 +50,7 @@ export function TxPendingDialog() {
               }}
               disabled={isPonderUpdating}
             >
-              {isPonderUpdating
-                ? "Processing transaction..."
-                : "Back to the dashboard"}
+              Back to the dashboard
             </Button>
           </div>
         </DialogContent>
