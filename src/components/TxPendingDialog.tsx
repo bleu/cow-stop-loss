@@ -10,17 +10,19 @@ import {
 } from "@bleu/ui";
 import cn from "clsx";
 
-import { useOrder } from "#/contexts/ordersContext";
+import { useTxManager } from "#/hooks/useTxManager";
+import { useUIStore } from "#/hooks/useUIState";
 
 export function TxPendingDialog() {
-  const {
-    txManager: { isPonderUpdating },
-    txPendingDialog,
-    setTxPendingDialog,
-  } = useOrder();
+  const { isPonderUpdating } = useTxManager();
+
+  const [txPendingDialogOpen, setTxPendingDialogOpen] = useUIStore((state) => [
+    state.txPendingDialogOpen,
+    state.setTxPendingDialogOpen,
+  ]);
 
   return (
-    <Dialog open={txPendingDialog} onOpenChange={setTxPendingDialog}>
+    <Dialog open={txPendingDialogOpen} onOpenChange={setTxPendingDialogOpen}>
       <DialogPortal>
         <DialogOverlay
           id="dialog-overlay"

@@ -11,8 +11,9 @@ import { memo, useEffect, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { Address } from "viem";
 
-import { useSwapCardContext } from "#/contexts/swapCardContext";
+import { useOracleStore } from "#/hooks/useOracle";
 import { useSafeApp } from "#/hooks/useSafeApp";
+import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { useTokenPrice } from "#/hooks/useTokenPrice";
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { ChainId } from "#/lib/publicClients";
@@ -46,13 +47,27 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
 
   const { data: usdPrice } = useTokenPrice(token);
 
-  const {
-    updateOracle,
+  const [
     tokenSellBalance,
     tokenBuyBalance,
     setTokenBuyBalance,
     setTokenSellBalance,
-  } = useSwapCardContext();
+  ] = useSwapTokenBalances((state) => [
+    state.tokenSellBalance,
+    state.tokenBuyBalance,
+    state.setTokenBuyBalance,
+    state.setTokenSellBalance,
+  ]);
+  const updateOracle = useOracleStore((state) => state.updateOracle);
+  // const { data: tokenSellBalance } = useBalance({
+  //   address: safeAddress,
+  //   token: currentDraftOrder?.tokenSell.address,
+  // });
+  // const { data: tokenBuyBalance } = useBalance({
+  //   address: safeAddress,
+  //   token: currentDraftOrder?.tokenBuy.address,
+  // });
+
   const tokenBalance = side === "Buy" ? tokenBuyBalance : tokenSellBalance;
   const setTokenBalance =
     side === "Buy" ? setTokenBuyBalance : setTokenSellBalance;
@@ -68,7 +83,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     const anotherSideAmount = side === "Buy" ? sellAmount : buyAmount;
     setValue(
       `amount${side === "Buy" ? "Sell" : "Buy"}` as const,
-      anotherSideAmount
+      anotherSideAmount,
     );
   }
 
@@ -84,7 +99,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   useEffect(() => {
     // Control if the amount field should be disabled
     setIsAmountDisabled(
-      (isSellOrder && side === "Buy") || (!isSellOrder && side === "Sell")
+      (isSellOrder && side === "Buy") || (!isSellOrder && side === "Sell"),
     );
   }, [isSellOrder, side]);
 
@@ -116,7 +131,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
               const tokenSell = side == "Sell" ? newToken : otherToken;
               const tokenBuy = side == "Sell" ? otherToken : newToken;
               if (otherToken) {
-                updateOracle({ tokenSell, tokenBuy });
+                updateOracle({ tokenSell, tokenBuy, chainId });
               }
               setValue(tokenFieldName, newToken);
             }}
@@ -131,7 +146,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                   4,
                   "decimal",
                   "standard",
-                  0.0001
+                  0.0001,
                 )}{" "}
               </span>
               {!isAmountDisabled &&
@@ -145,7 +160,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                     onClick={() => {
                       setValue(
                         amountFieldName,
-                        Number(convertStringToNumberAndRoundDown(tokenBalance))
+                        Number(convertStringToNumberAndRoundDown(tokenBalance)),
                       );
                     }}
                   >
@@ -173,7 +188,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
               amount && usdPrice ? amount * (usdPrice || 0) : 0,
               2,
               "currency",
-              "standard"
+              "standard",
             )}`}
           </i>
         </div>

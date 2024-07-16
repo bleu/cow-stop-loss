@@ -33,7 +33,7 @@ function PriceInputCardComponent({
 
   const [isInverted, setIsInverted] = useState(false);
   const [displayPrice, setDisplayPrice] = useState<number | undefined>(
-    formPrice
+    formPrice,
   );
 
   useEffect(() => {
@@ -51,7 +51,7 @@ function PriceInputCardComponent({
     });
     setValue(
       isSellOrder ? "amountBuy" : "amountSell",
-      isSellOrder ? buyAmount : sellAmount
+      isSellOrder ? buyAmount : sellAmount,
     );
   }
 
@@ -79,7 +79,7 @@ function PriceInputCardComponent({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputValue = parseFloat(e.target.value);
-    console.log(inputValue);
+
     if (!isNaN(inputValue) && inputValue !== 0) {
       const newFormPrice = isInverted ? 1 / inputValue : inputValue;
       setValue(fieldName, newFormPrice);

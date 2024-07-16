@@ -1,12 +1,14 @@
 "use client";
 
-import { useSwapCardContext } from "#/contexts/swapCardContext";
+import { useAdvancedSettingsStore } from "#/hooks/useAdvancedSettings";
 import { useSafeApp } from "#/hooks/useSafeApp";
 
 import { AlertCard } from "./ui/alert-card";
 
 export function AdvancedSettingsAlert() {
-  const { advancedSettings } = useSwapCardContext();
+  const advancedSettings = useAdvancedSettingsStore(
+    (state) => state.advancedSettings,
+  );
   const { safeAddress } = useSafeApp();
 
   const isAdvancedSettingsChanged =

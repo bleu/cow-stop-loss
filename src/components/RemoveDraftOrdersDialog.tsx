@@ -9,9 +9,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@bleu/ui";
-
-import { useOrder } from "#/contexts/ordersContext";
 import { useState } from "react";
+
+import { useDraftOrders } from "#/hooks/useDraftOrders";
 
 export function RemoveDraftOrdersDialog({
   selectedIds,
@@ -20,7 +20,7 @@ export function RemoveDraftOrdersDialog({
   selectedIds: string[];
   setSelectedIds: (ids: string[]) => void;
 }) {
-  const { removeDraftOrders } = useOrder();
+  const { removeDraftOrders } = useDraftOrders();
   const [open, setOpen] = useState(false);
 
   return (

@@ -13,17 +13,18 @@ import {
 } from "@bleu/ui";
 import { useState } from "react";
 
-import { useOrder } from "#/contexts/ordersContext";
+import { useDraftOrders } from "#/hooks/useDraftOrders";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
+import { useUIStore } from "#/hooks/useUIState";
 import { getOrderDescription } from "#/lib/orderDescription";
 import { DraftOrder } from "#/lib/types";
 
-import { ReviewOrdersDialog } from "./ReviewOrdersDialog";
 import { RemoveDraftOrdersDialog } from "./RemoveDraftOrdersDialog";
+import { ReviewOrdersDialog } from "./ReviewOrdersDialog";
 
 export function DraftOrdersTab() {
-  const { draftOrders, removeDraftOrders } = useOrder();
-  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const draftOrders = useDraftOrders((state) => state.draftOrders);
+  const setReviewDialogOpen = useUIStore((state) => state.setReviewDialogOpen);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const selectedOrders = draftOrders.filter((order) =>
@@ -32,11 +33,7 @@ export function DraftOrdersTab() {
 
   return (
     <>
-      <ReviewOrdersDialog
-        open={reviewDialogOpen}
-        setOpen={setReviewDialogOpen}
-        draftOrders={selectedOrders}
-      />
+      <ReviewOrdersDialog draftOrders={selectedOrders} />
       <div className="flex flex-col gap-2">
         <Table className="w-full rounded-lg">
           <TableHeader className="bg-background">
@@ -87,7 +84,7 @@ export function DraftOrdersTab() {
               <TableRow>
                 <TableCell colSpan={5} className="text-center">
                   <div className="py-4">
-                    No draft orders. Create a new one to get started.
+                    No draft orders. Create one to get started.
                   </div>
                 </TableCell>
               </TableRow>

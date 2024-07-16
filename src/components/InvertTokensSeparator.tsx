@@ -3,14 +3,16 @@ import { UpdateIcon } from "@radix-ui/react-icons";
 import { memo } from "react";
 import { useFormContext } from "react-hook-form";
 
-import { useSwapCardContext } from "#/contexts/swapCardContext";
+import { useOracleStore } from "#/hooks/useOracle";
+import { useSafeApp } from "#/hooks/useSafeApp";
 import { SwapData } from "#/lib/types";
 
 export const InvertTokensSeparator = memo(InvertTokensSeparatorComponent);
 
 function InvertTokensSeparatorComponent() {
+  const { chainId } = useSafeApp();
   const { getValues, setValue } = useFormContext<SwapData>();
-  const { updateOracle } = useSwapCardContext();
+  const updateOracle = useOracleStore((state) => state.updateOracle);
 
   function invertTokens() {
     const [
@@ -34,7 +36,7 @@ function InvertTokensSeparatorComponent() {
     setValue("amountSell", amountBuy);
     if (limitPrice) setValue("limitPrice", 1 / limitPrice);
     if (strikePrice) setValue("strikePrice", 1 / strikePrice);
-    updateOracle({ tokenSell: tokenBuy, tokenBuy: tokenSell });
+    updateOracle({ tokenSell: tokenBuy, tokenBuy: tokenSell, chainId });
   }
 
   return (
