@@ -12,7 +12,7 @@ export function useTransaction() {
 
   const sendTransactions = async (argsArray: AllTransactionArgs[]) => {
     const txs = await Promise.all(
-      argsArray.map((arg) => TransactionFactory.createRawTx(arg.type, arg))
+      argsArray.map((arg) => TransactionFactory.createRawTx(arg.type, arg)),
     );
     const { safeTxHash } = await sdk.txs.send({ txs });
     return safeTxHash as `0x${string}`;

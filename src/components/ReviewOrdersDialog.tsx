@@ -77,10 +77,10 @@ export function ReviewOrdersDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         className={cn(
-          "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-foreground w-[90vw] max-w-[450px]",
+          "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-foreground w-[90vw] max-w-[450px] py-6 px-2",
         )}
       >
-        <div className="flex flex-col gap-2 w-full overflow-y-scroll scrollbar scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-primary scrollbar-track-background scrollbar-w-4 max-h-[85vh]">
+        <div className="flex flex-col gap-2 w-full overflow-y-scroll scrollbar scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-primary scrollbar-track-background scrollbar-w-4 max-h-[85vh] px-3">
           <div className="text-2xl font-medium ">
             Review Stop Loss order{multipleOrders ? "s" : ""}
           </div>
@@ -110,8 +110,8 @@ export function ReviewOrdersDialog({
           )}
           <Button className="w-full mt-3" onClick={onSubmit}>
             {multipleOrders
-              ? `Place all ${draftOrders.length} Stop Loss orders`
-              : `Place Stop Loss order${multipleOrders ? "s" : ""}`}
+              ? `Place all ${draftOrders.length} Stop Loss Orders`
+              : `Place Stop Loss Order`}
           </Button>
           {showAddOrders && (
             <Button
@@ -151,7 +151,10 @@ function OrderContent({ order }: { order: DraftOrder }) {
         token={order.tokenBuy}
         balance={order.amountBuy}
       />
-      <OraclePriceWarning draftOrder={order} />
+      <OraclePriceWarning
+        draftOrder={order}
+        marketPrice={marketPrice || order.fallbackMarketPrice}
+      />
       <div className="w-full flex flex-col gap-1 mt-2">
         <OrderInformation
           title="Trigger price"

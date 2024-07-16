@@ -3,7 +3,7 @@ import { Address } from "viem";
 import { OrderDetails } from "#/components/OrderDetails";
 import { ChainId } from "#/lib/publicClients";
 
-export default async function OrderPage({
+export default function OrderPage({
   params,
 }: {
   params: {

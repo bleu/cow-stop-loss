@@ -4,7 +4,7 @@ export enum TOOLTIP_DESCRIPTIONS {
   CURRENT_ORACLE_PRICE = "The price that will be monitored to trigger the order posting.",
   CURRENT_MARKET_PRICE = "The current price of the token pair in the market.",
   ORDER_CREATION = "The transaction that created this stop loss order.",
-  ORDER_HASH = "The onchain transaction for creating this order.",
+  ORDER_HASH = "The hash of the stop loss order on the Composable CoW framework. Each order for each user has a unique hash.",
   STATUS = "The status can be open, fulfilled, partially filled or cancelled.",
   SUBMISSION_TIME = "The date and time at which the order was submitted.",
   VALIDITY_BUCKET_TIME = "After the oracle price achieves the defined trigger price, how much time the order will wait to be filled on the orderbook.",

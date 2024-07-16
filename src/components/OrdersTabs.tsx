@@ -31,7 +31,10 @@ export function OrderTabs() {
   return (
     <TabsRoot
       className="w-3/4 h-[70vh] flex flex-col gap-2"
-      defaultValue="draft"
+      defaultValue={localStorage.getItem("tabValue") || "draft"}
+      onValueChange={(tabValue) => {
+        localStorage.setItem("tabValue", tabValue);
+      }}
     >
       <div className="flex flex-row justify-between items-center">
         <div className="flex gap-2 items-center">

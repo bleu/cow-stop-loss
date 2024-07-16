@@ -22,6 +22,7 @@ import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
 import { IToken, StopLossOrderType } from "#/lib/types";
 
+import { OrderDropdownMenuCell } from "./OrderDropdownMenuCell";
 import { StatusBadge } from "./StatusBadge";
 import { Spinner } from "./ui/spinner";
 
@@ -53,20 +54,33 @@ export function OpenOrdersTab() {
       <Table className="w-full rounded-lg">
         <TableHeader className="bg-background">
           <TableCell className="rounded-tl-md">
-            <span className="sr-only">Select</span>
+            <Checkbox
+              checked={selectedIds.length === openOrders.length}
+              onCheckedChange={(checked) => {
+                if (checked) {
+                  setSelectedIds(openOrders.map((order) => order.id));
+                  return;
+                }
+                setSelectedIds([]);
+              }}
+            />
           </TableCell>
           <TableCell>Created</TableCell>
           <TableCell>Order</TableCell>
           <TableCell>Trigger price</TableCell>
-          <TableCell>Current market price</TableCell>
+          <TableCell>Current price</TableCell>
           <TableCell>Filled</TableCell>
-          <TableCell className="rounded-tr-md">Status</TableCell>
+          <TableCell>Status</TableCell>
+          <TableCell className="rounded-tr-md">
+            <span className="sr-only">Actions</span>
+          </TableCell>
         </TableHeader>
         <TableBody>
           {openOrders.length ? (
             openOrders.map((order) => {
               return (
                 <OpenOrderRow
+                  checked={selectedIds.includes(order.id)}
                   order={order}
                   key={order.id}
                   onSelect={(selected) => {
@@ -81,7 +95,7 @@ export function OpenOrdersTab() {
             })
           ) : (
             <TableRow>
-              <TableCell colSpan={7} className="text-center">
+              <TableCell colSpan={100} className="text-center">
                 {isLoading ? (
                   <Spinner />
                 ) : (
@@ -112,7 +126,9 @@ export function OpenOrdersTab() {
 export function OpenOrderRow({
   order,
   onSelect,
+  checked,
 }: {
+  checked: boolean;
   order: StopLossOrderType;
   onSelect: (selected: boolean) => void;
 }) {
@@ -121,35 +137,38 @@ export function OpenOrderRow({
 
   const { data: marketPrice } = useTokenPairPrice(
     order.stopLossData?.tokenIn as IToken,
-    order.stopLossData?.tokenOut as IToken
+    order.stopLossData?.tokenOut as IToken,
   );
+
+  const [invertedPrice, setInvertedPrice] = useState(false);
 
   if (!order.stopLossData) {
     return null;
   }
 
-  const priceUnity =
-    order.stopLossData.tokenOut.symbol +
-    "/" +
-    order.stopLossData.tokenIn.symbol;
+  const priceUnity = invertedPrice
+    ? `${order.stopLossData.tokenIn.symbol}/${order.stopLossData.tokenOut.symbol}`
+    : order.stopLossData.tokenOut.symbol +
+      "/" +
+      order.stopLossData.tokenIn.symbol;
 
-  const triggerPrice = formatUnits(order.stopLossData?.strike, 18);
+  const triggerPrice = Number(formatUnits(order.stopLossData?.strike, 18));
 
   const amountSell = Number(
     formatUnits(
       order.stopLossData?.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals
-    )
+      order.stopLossData.tokenIn.decimals,
+    ),
   );
   const amountBuy = Number(
     formatUnits(
       order.stopLossData?.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals
-    )
+      order.stopLossData.tokenOut.decimals,
+    ),
   );
 
   const orderDateTime = epochToDate(
-    Number(order.blockTimestamp)
+    Number(order.blockTimestamp),
   ).toLocaleString();
 
   return (
@@ -163,9 +182,10 @@ export function OpenOrderRow({
         onClick={(e) => {
           e.stopPropagation();
         }}
-        className="cursor-normal"
+        className="cursor-default"
       >
         <Checkbox
+          checked={checked}
           onCheckedChange={(checked) => {
             onSelect(checked as boolean);
           }}
@@ -182,17 +202,23 @@ export function OpenOrderRow({
         </div>
       </TableCell>
       <TableCell>
-        {formatNumber(triggerPrice, 4)} {priceUnity}
+        {formatNumber(invertedPrice ? 1 / triggerPrice : triggerPrice, 4)}{" "}
+        {priceUnity}
       </TableCell>
       <TableCell>
         {marketPrice
-          ? ` ${formatNumber(marketPrice, 4)} ${priceUnity}`
+          ? ` ${formatNumber(invertedPrice ? 1 / marketPrice : triggerPrice, 4)} ${priceUnity}`
           : `Loading...`}
       </TableCell>
       <TableCell>{((order.filledPct || 0) * 100).toFixed()}%</TableCell>
       <TableCell>
         <StatusBadge status={order.status} />
       </TableCell>
+      <OrderDropdownMenuCell
+        orderId={order.id}
+        invertedPrice={invertedPrice}
+        setInvertedPrice={setInvertedPrice}
+      />
     </TableRow>
   );
 }

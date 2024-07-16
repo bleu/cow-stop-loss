@@ -84,6 +84,7 @@ function PriceInputCardComponent({
       setValue(fieldName, newFormPrice);
       setDisplayPrice(inputValue);
     } else {
+      setValue(fieldName, 0);
       setDisplayPrice(undefined);
     }
   };
