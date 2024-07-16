@@ -19,7 +19,7 @@ export function AlertCard({
         <ExclamationTriangleIcon
           className={cn(
             "w-6 h-6",
-            style === "error" ? "text-destructive" : "text-highlight"
+            style === "error" ? "text-destructive" : "text-highlight",
           )}
         />
       </div>

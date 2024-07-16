@@ -12,11 +12,13 @@ import {
 } from "@bleu/ui";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { formatUnits } from "viem";
 
 import { useOrderList } from "#/hooks/useOrderList";
 import { StopLossOrderType } from "#/lib/types";
 
+import { OrderDropdownMenuCell } from "./OrderDropdownMenuCell";
 import { StatusBadge } from "./StatusBadge";
 
 export function HistoryOrdersTab() {
@@ -29,7 +31,10 @@ export function HistoryOrdersTab() {
         <TableCell>Order</TableCell>
         <TableCell>Trigger price</TableCell>
         <TableCell>Filled</TableCell>
-        <TableCell className="rounded-tr-md">Status</TableCell>
+        <TableCell>Status</TableCell>
+        <TableCell className="rounded-tr-md">
+          <span className="sr-only">Actions</span>
+        </TableCell>{" "}
       </TableHeader>
       <TableBody>
         {historyOrders.length ? (
@@ -38,7 +43,7 @@ export function HistoryOrdersTab() {
           })
         ) : (
           <TableRow>
-            <TableCell colSpan={5} className="text-center">
+            <TableCell colSpan={100} className="text-center">
               {isLoading ? (
                 <Spinner />
               ) : (
@@ -57,17 +62,19 @@ export function HistoryOrdersTab() {
 export function HistoryOrderRow({ order }: { order: StopLossOrderType }) {
   const { safe } = useSafeAppsSDK();
   const router = useRouter();
+  const [invertedPrice, setInvertedPrice] = useState(false);
 
   if (!order.stopLossData) {
     return null;
   }
 
-  const priceUnity =
-    order.stopLossData.tokenOut.symbol +
-    "/" +
-    order.stopLossData.tokenIn.symbol;
+  const priceUnity = invertedPrice
+    ? `${order.stopLossData.tokenIn.symbol}/${order.stopLossData.tokenOut.symbol}`
+    : order.stopLossData.tokenOut.symbol +
+      "/" +
+      order.stopLossData.tokenIn.symbol;
 
-  const triggerPrice = formatUnits(order.stopLossData?.strike, 18);
+  const triggerPrice = Number(formatUnits(order.stopLossData?.strike, 18));
 
   const amountSell = Number(
     formatUnits(
@@ -104,12 +111,18 @@ export function HistoryOrderRow({ order }: { order: StopLossOrderType }) {
         </div>
       </TableCell>
       <TableCell>
-        {formatNumber(triggerPrice, 4)} {priceUnity}
+        {formatNumber(invertedPrice ? 1 / triggerPrice : triggerPrice, 4)}{" "}
+        {priceUnity}
       </TableCell>
       <TableCell>{((order.filledPct || 0) * 100).toFixed()}%</TableCell>
       <TableCell>
         <StatusBadge status={order.status} />
       </TableCell>
+      <OrderDropdownMenuCell
+        orderId={order.id}
+        invertedPrice={invertedPrice}
+        setInvertedPrice={setInvertedPrice}
+      />
     </TableRow>
   );
 }

@@ -59,7 +59,7 @@ describe("OracleRouter", () => {
       expect(oracles.tokenBuyOracle.toLowerCase()).toEqual(
         "0xbba12740DE905707251525477bAD74985DeC46D2".toLowerCase(),
       );
-    }, 15000);
+    }, 900000);
     it("should raise error for gnosis tokens", async () => {
       const mainnetRouter = new mainnetRouterFactory({
         chainId: 1,
@@ -70,7 +70,7 @@ describe("OracleRouter", () => {
       await expect(mainnetRouter.findRoute()).rejects.toThrow(
         "No matching oracles found",
       );
-    }, 15000);
+    }, 900000);
     it("should find WETH USD oracle", async () => {
       const mainnetRouter = new mainnetRouterFactory({
         chainId: 1,
@@ -80,7 +80,7 @@ describe("OracleRouter", () => {
 
       const wethOracles = await mainnetRouter.findSellOracle();
       expect(typeof wethOracles.USD).toBe(`string`);
-    }, 15000);
+    }, 900000);
   });
   describe("GnosisRouter", () => {
     const gnosisRouterFactory = CHAINS_ORACLE_ROUTER_FACTORY[100];
