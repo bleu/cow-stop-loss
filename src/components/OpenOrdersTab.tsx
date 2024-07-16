@@ -32,12 +32,14 @@ export function OpenOrdersTab() {
     setTxPendingDialog,
     isLoading,
   } = useOrder();
-  const { openOrders } = useOrderList();
+  const { openOrders, orders, mutate } = useOrderList();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const onCancelOrders = () => {
-    const orders = openOrders.filter((order) => selectedIds.includes(order.id));
-    const deleteTxArgs = orders.map((order) => ({
+    const ordersToCancel = openOrders.filter((order) =>
+      selectedIds.includes(order.id),
+    );
+    const deleteTxArgs = ordersToCancel.map((order) => ({
       type: TRANSACTION_TYPES.ORDER_CANCEL,
       hash: order.hash,
     })) as OrderCancelArgs[];
@@ -45,6 +47,17 @@ export function OpenOrdersTab() {
       onSuccess: () => {
         setSelectedIds([]);
         setTxPendingDialog(true);
+        ordersToCancel.forEach(({ id }) => {
+          localStorage.setItem(`status-${id}`, `cancelling`);
+        });
+        const ordersToCancelIds = ordersToCancel.map(({ id }) => id);
+        const ordersWithNewStatus = orders?.map((order) => {
+          if (ordersToCancelIds.includes(order.id)) {
+            return { ...order, status: "cancelling" as const };
+          }
+          return order;
+        });
+        mutate(ordersWithNewStatus, { revalidate: false });
       },
     });
   };

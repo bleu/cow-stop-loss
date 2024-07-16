@@ -24,9 +24,18 @@ export const useOrderList = () => {
   );
 
   const openOrders =
-    orders?.filter(
-      (order) => order.singleOrder && order.status !== "fulfilled",
-    ) || [];
+    orders
+      ?.filter((order) => order.singleOrder && order.status !== "fulfilled")
+      .map((order) => {
+        const isCancelling =
+          localStorage.getItem(`status-${order.id}`) === `cancelling`;
+        return isCancelling
+          ? {
+              ...order,
+              status: "cancelling" as const,
+            }
+          : order;
+      }) || [];
 
   const historyOrders =
     orders?.filter(
@@ -34,6 +43,7 @@ export const useOrderList = () => {
     ) || [];
 
   return {
+    orders,
     openOrders,
     historyOrders,
     error,
