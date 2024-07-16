@@ -31,9 +31,10 @@ export function StatusBadge({ status }: { status: OrderStatus | string }) {
         </Badge>
       );
     case "canceled":
+    case "cancelling":
       return (
         <Badge color="destructive" className="h-fit py-1 hover:bg-destructive">
-          Cancelled
+          {capitalize(status)}
         </Badge>
       );
     default:
