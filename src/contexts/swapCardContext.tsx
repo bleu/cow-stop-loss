@@ -149,6 +149,7 @@ export const SwapCardContextProvider = ({
       oraclePrice,
       fallbackMarketPrice,
       salt,
+      status: "draft",
     };
     return draftOrder;
   }

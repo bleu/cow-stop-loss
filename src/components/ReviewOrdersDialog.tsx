@@ -44,7 +44,7 @@ export function ReviewOrdersDialog({
 }) {
   const {
     addDraftOrders,
-    removeDraftOrders,
+    changeDraftOrdersStatusToCreating,
     txManager: { writeContract },
     setTxPendingDialog,
   } = useOrder();
@@ -66,7 +66,7 @@ export function ReviewOrdersDialog({
     });
     writeContract(txArgs, {
       onSuccess: () => {
-        removeDraftOrders(draftOrders.map((order) => order.id));
+        changeDraftOrdersStatusToCreating(draftOrders.map((order) => order.id));
         setOpen(false);
         setTxPendingDialog(true);
       },

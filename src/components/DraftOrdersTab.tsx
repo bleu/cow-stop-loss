@@ -21,6 +21,7 @@ import { DraftOrder } from "#/lib/types";
 import { OrderDropdownMenuCell } from "./OrderDropdownMenuCell";
 import { RemoveDraftOrdersDialog } from "./RemoveDraftOrdersDialog";
 import { ReviewOrdersDialog } from "./ReviewOrdersDialog";
+import { StatusBadge } from "./StatusBadge";
 
 export function DraftOrdersTab() {
   const { draftOrders } = useOrder();
@@ -62,6 +63,7 @@ export function DraftOrdersTab() {
               <TableHead>Trigger price</TableHead>
               <TableHead>Limit price</TableHead>
               <TableHead>Current price</TableHead>
+              <TableHead>Status</TableHead>
               <TableCell className="rounded-tr-md">
                 <span className="sr-only">Actions</span>
               </TableCell>
@@ -150,6 +152,7 @@ export function DraftOrderRow({
       <TableCell>
         <Checkbox
           checked={checked}
+          disabled={order.status === "creating"}
           onCheckedChange={(checked) => {
             onSelect(checked as boolean);
           }}
@@ -174,6 +177,9 @@ export function DraftOrderRow({
         {marketPrice
           ? ` ${formatNumber(invertedPrice ? 1 / marketPrice : marketPrice, 4)} ${priceUnity}`
           : `Market price not found`}
+      </TableCell>
+      <TableCell>
+        <StatusBadge status={order.status} />
       </TableCell>
       <OrderDropdownMenuCell
         orderId={order.id}

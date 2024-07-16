@@ -21,6 +21,7 @@ type OrderContextType = {
   setDraftOrders: (orders: DraftOrder[]) => void;
   addDraftOrders: (orders: DraftOrder[]) => void;
   removeDraftOrders: (id: string[]) => void;
+  changeDraftOrdersStatusToCreating: (id: string[]) => void;
   orders: StopLossOrderType[];
   isLoading: boolean;
   error: boolean;
@@ -63,11 +64,28 @@ export function OrderProvider({ children }: PropsWithChildren) {
     setDraftOrders(draftOrders.filter((order) => !ids.includes(order.id)));
   }
 
+  function changeDraftOrdersStatusToCreating(ids: string[]): void {
+    setDraftOrders(
+      draftOrders.map((order) => {
+        if (ids.includes(order.id)) {
+          return {
+            ...order,
+            status: "creating",
+          };
+        }
+        return order;
+      }),
+    );
+  }
+
   const txManager = useTxManager();
 
   useEffect(() => {
     if (!txManager.isPonderUpdating) {
       mutate();
+      setDraftOrders(
+        draftOrders.filter((order) => order.status !== "creating"),
+      );
     }
   }, [txManager.isPonderUpdating]);
 
@@ -85,6 +103,7 @@ export function OrderProvider({ children }: PropsWithChildren) {
         txManager,
         txPendingDialog,
         setTxPendingDialog,
+        changeDraftOrdersStatusToCreating,
       }}
     >
       {children}
