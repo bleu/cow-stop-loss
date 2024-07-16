@@ -12,7 +12,8 @@ export function AdvancedSettingsAlert() {
   const { safeAddress } = useSafeApp();
 
   const isAdvancedSettingsChanged =
-    advancedSettings?.receiver.toLowerCase() !== safeAddress.toLowerCase() ||
+    (advancedSettings?.receiver.toLowerCase() &&
+      advancedSettings?.receiver.toLowerCase() !== safeAddress.toLowerCase()) ||
     advancedSettings?.maxHoursSinceOracleUpdates !== 1 ||
     advancedSettings?.tokenBuyOracle ||
     advancedSettings?.tokenBuyOracle ||
