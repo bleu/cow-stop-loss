@@ -3,6 +3,7 @@ import { useEffect, useMemo } from "react";
 import useSWR from "swr";
 import { Address } from "viem";
 import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 import { useTxManager } from "#/hooks/useTxManager";
 import { getProcessedStopLossOrders } from "#/lib/orderFetcher";
@@ -17,10 +18,18 @@ interface OrderActions {
   setOrders: (orders: StopLossOrderType[]) => void;
 }
 
-const useOrderStore = create<OrderState & OrderActions>((set) => ({
-  orders: [],
-  setOrders: (orders) => set({ orders }),
-}));
+const useOrderStore = create<OrderState & OrderActions>()(
+  persist(
+    (set) => ({
+      orders: [],
+      setOrders: (orders) => set({ orders }),
+    }),
+    {
+      name: "order-storage",
+      storage: createJSONStorage(() => localStorage),
+    },
+  ),
+);
 
 export function useOrderList() {
   const { safe } = useSafeAppsSDK();
@@ -34,7 +43,6 @@ export function useOrderList() {
     },
     getProcessedStopLossOrders,
     {
-      fallbackData: [],
       onSuccess: (data) => setOrders(data),
     },
   );

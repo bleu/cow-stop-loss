@@ -18,6 +18,7 @@ export const swrConfig: SWRConfiguration = {
   revalidateOnReconnect: true,
   refreshInterval: 30_000,
   shouldRetryOnError: false,
+  keepPreviousData: true,
   provider: localStorageProvider,
 };
 

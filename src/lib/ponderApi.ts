@@ -1,6 +1,5 @@
 // @ts-ignore
 import parsePrometeusText from "parse-prometheus-text-format";
-import useSWR from "swr";
 
 import { networkFor } from "#/utils";
 

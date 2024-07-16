@@ -30,26 +30,18 @@ export function SwapCardSubmitButton() {
     state.oracleRoute?.tokenSellOracle,
   ]);
 
-  const [
-    tokenBuy,
-    tokenSell,
-    buyAmount,
-    sellAmount,
-    strikePrice,
-    limitPrice,
-    isSellOrder,
-  ] = useWatch({
-    control,
-    name: [
-      "tokenBuy",
-      "tokenSell",
-      "amountBuy",
-      "amountSell",
-      "strikePrice",
-      "limitPrice",
-      "isSellOrder",
-    ],
-  });
+  const [tokenBuy, tokenSell, buyAmount, sellAmount, strikePrice, limitPrice] =
+    useWatch({
+      control,
+      name: [
+        "tokenBuy",
+        "tokenSell",
+        "amountBuy",
+        "amountSell",
+        "strikePrice",
+        "limitPrice",
+      ],
+    });
 
   const { data: marketPrice } = useTokenPairPrice(tokenSell, tokenBuy);
 
