@@ -65,6 +65,7 @@ export const useDraftOrder = create<DraftOrderState>()((set) => ({
       oraclePrice,
       fallbackMarketPrice,
       salt,
+      status: "draft",
     };
 
     return draftOrder;
