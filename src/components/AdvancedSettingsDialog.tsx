@@ -17,7 +17,7 @@ import cn from "clsx";
 import * as React from "react";
 import { useForm, useWatch } from "react-hook-form";
 
-import { useSwapCardContext } from "#/contexts/swapCardContext";
+import { useAdvancedSettingsStore } from "#/hooks/useAdvancedSettings";
 import { useSafeApp } from "#/hooks/useSafeApp";
 import { ChainId } from "#/lib/publicClients";
 import { generateAdvancedSettingsSchema } from "#/lib/schema";
@@ -49,8 +49,9 @@ function haveSettingsChanged(
 export function AdvancedSettingsDialog() {
   const [open, setOpen] = React.useState(false);
   const { safeAddress, chainId } = useSafeApp();
-  const { setAdvancedSettings, advancedSettings } = useSwapCardContext();
-
+  const [advancedSettings, setAdvancedSettings] = useAdvancedSettingsStore(
+    (state) => [state.advancedSettings, state.setAdvancedSettings],
+  );
   const defaultSettings = {
     receiver: safeAddress,
     maxHoursSinceOracleUpdates: 1,

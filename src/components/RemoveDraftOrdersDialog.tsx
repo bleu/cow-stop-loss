@@ -11,7 +11,7 @@ import {
 } from "@bleu/ui";
 import { useState } from "react";
 
-import { useOrder } from "#/contexts/ordersContext";
+import { useDraftOrders } from "#/hooks/useDraftOrders";
 
 export function RemoveDraftOrdersDialog({
   selectedIds,
@@ -20,7 +20,7 @@ export function RemoveDraftOrdersDialog({
   selectedIds: string[];
   setSelectedIds: (ids: string[]) => void;
 }) {
-  const { removeDraftOrders } = useOrder();
+  const { removeDraftOrders } = useDraftOrders();
   const [open, setOpen] = useState(false);
 
   return (

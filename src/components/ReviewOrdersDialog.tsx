@@ -15,10 +15,12 @@ import cn from "clsx";
 import * as React from "react";
 import { Address } from "viem";
 
-import { useOrder } from "#/contexts/ordersContext";
+import { useDraftOrders } from "#/hooks/useDraftOrders";
 import { useFallbackState } from "#/hooks/useFallbackState";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { useTokenPrice } from "#/hooks/useTokenPrice";
+import { useTxManager } from "#/hooks/useTxManager";
+import { useUIStore } from "#/hooks/useUIState";
 import { ChainId } from "#/lib/publicClients";
 import { formatTimeDelta } from "#/lib/timeDelta";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
@@ -32,22 +34,25 @@ import { TokenInfo } from "./TokenInfo";
 import { InfoTooltip } from "./ui/tooltip";
 
 export function ReviewOrdersDialog({
-  draftOrders,
-  open,
-  setOpen,
   showAddOrders = false,
 }: {
   draftOrders: DraftOrder[];
-  open: boolean;
-  setOpen: (open: boolean) => void;
   showAddOrders?: boolean;
 }) {
-  const {
-    addDraftOrders,
-    changeDraftOrdersStatusToCreating,
-    txManager: { writeContract },
-    setTxPendingDialog,
-  } = useOrder();
+  const { writeContract } = useTxManager();
+
+  const [draftOrders, addDraftOrders, changeDraftOrdersStatusToCreating] =
+    useDraftOrders((state) => [
+      state.draftOrders,
+      state.addDraftOrders,
+      state.changeDraftOrdersStatusToCreating,
+    ]);
+
+  const [setTxPendingDialogOpen, open, setOpen] = useUIStore((state) => [
+    state.setTxPendingDialogOpen,
+    state.reviewDialogOpen,
+    state.setReviewDialogOpen,
+  ]);
   const multipleOrders = draftOrders.length > 1;
   const {
     safe: { safeAddress, chainId },
@@ -68,7 +73,7 @@ export function ReviewOrdersDialog({
       onSuccess: () => {
         changeDraftOrdersStatusToCreating(draftOrders.map((order) => order.id));
         setOpen(false);
-        setTxPendingDialog(true);
+        setTxPendingDialogOpen(true);
       },
     });
   };
@@ -77,7 +82,7 @@ export function ReviewOrdersDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         className={cn(
-          "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-foreground w-[90vw] max-w-[450px] py-6 px-2",
+          "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-foreground w-[90vw] max-w-[450px] py-6 px-2"
         )}
       >
         <div className="flex flex-col gap-2 w-full overflow-y-scroll scrollbar scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-primary scrollbar-track-background scrollbar-w-4 max-h-[85vh] px-3">
@@ -135,7 +140,7 @@ export function ReviewOrdersDialog({
 function OrderContent({ order }: { order: DraftOrder }) {
   const { data: currentMarketPrice } = useTokenPairPrice(
     order.tokenSell,
-    order.tokenBuy,
+    order.tokenBuy
   );
   const marketPrice = currentMarketPrice || order.fallbackMarketPrice;
   return (

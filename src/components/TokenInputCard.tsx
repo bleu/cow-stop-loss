@@ -11,8 +11,9 @@ import { memo, useEffect, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { Address } from "viem";
 
-import { useSwapCardContext } from "#/contexts/swapCardContext";
+import { useOracleStore } from "#/hooks/useOracle";
 import { useSafeApp } from "#/hooks/useSafeApp";
+import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { useTokenPrice } from "#/hooks/useTokenPrice";
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { ChainId } from "#/lib/publicClients";
@@ -46,13 +47,27 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
 
   const { data: usdPrice } = useTokenPrice(token);
 
-  const {
-    updateOracle,
+  const [
     tokenSellBalance,
     tokenBuyBalance,
     setTokenBuyBalance,
     setTokenSellBalance,
-  } = useSwapCardContext();
+  ] = useSwapTokenBalances((state) => [
+    state.tokenSellBalance,
+    state.tokenBuyBalance,
+    state.setTokenBuyBalance,
+    state.setTokenSellBalance,
+  ]);
+  const updateOracle = useOracleStore((state) => state.updateOracle);
+  // const { data: tokenSellBalance } = useBalance({
+  //   address: safeAddress,
+  //   token: currentDraftOrder?.tokenSell.address,
+  // });
+  // const { data: tokenBuyBalance } = useBalance({
+  //   address: safeAddress,
+  //   token: currentDraftOrder?.tokenBuy.address,
+  // });
+
   const tokenBalance = side === "Buy" ? tokenBuyBalance : tokenSellBalance;
   const setTokenBalance =
     side === "Buy" ? setTokenBuyBalance : setTokenSellBalance;
@@ -116,7 +131,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
               const tokenSell = side == "Sell" ? newToken : otherToken;
               const tokenBuy = side == "Sell" ? otherToken : newToken;
               if (otherToken) {
-                updateOracle({ tokenSell, tokenBuy });
+                updateOracle({ tokenSell, tokenBuy, chainId });
               }
               setValue(tokenFieldName, newToken);
             }}

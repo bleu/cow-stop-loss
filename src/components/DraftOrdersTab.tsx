@@ -13,8 +13,9 @@ import {
 } from "@bleu/ui";
 import { useState } from "react";
 
-import { useOrder } from "#/contexts/ordersContext";
+import { useDraftOrders } from "#/hooks/useDraftOrders";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
+import { useUIStore } from "#/hooks/useUIState";
 import { getOrderDescription } from "#/lib/orderDescription";
 import { DraftOrder } from "#/lib/types";
 
@@ -24,8 +25,8 @@ import { ReviewOrdersDialog } from "./ReviewOrdersDialog";
 import { StatusBadge } from "./StatusBadge";
 
 export function DraftOrdersTab() {
-  const { draftOrders } = useOrder();
-  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const draftOrders = useDraftOrders((state) => state.draftOrders);
+  const setReviewDialogOpen = useUIStore((state) => state.setReviewDialogOpen);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const selectableOrders = draftOrders.filter(
@@ -38,11 +39,7 @@ export function DraftOrdersTab() {
 
   return (
     <>
-      <ReviewOrdersDialog
-        open={reviewDialogOpen}
-        setOpen={setReviewDialogOpen}
-        draftOrders={selectedOrders}
-      />
+      <ReviewOrdersDialog draftOrders={selectedOrders} />
       <div className="flex flex-col gap-2">
         <Table className="w-full rounded-lg">
           <TableHeader className="bg-background">
@@ -97,7 +94,7 @@ export function DraftOrdersTab() {
               <TableRow>
                 <TableCell colSpan={100} className="text-center">
                   <div className="py-4">
-                    No draft orders. Create a new one to get started.
+                    No draft orders. Create one to get started.
                   </div>
                 </TableCell>
               </TableRow>

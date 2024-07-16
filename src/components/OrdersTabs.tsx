@@ -3,9 +3,10 @@
 import { TabsContent, TabsList, TabsRoot, TabsTrigger } from "@bleu/ui";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
-import { useOrder } from "#/contexts/ordersContext";
-import { useSwapCardContext } from "#/contexts/swapCardContext";
+import { useDraftOrders } from "#/hooks/useDraftOrders";
 import { useOrderList } from "#/hooks/useOrderList";
+import { useTxManager } from "#/hooks/useTxManager";
+import { useUIStore } from "#/hooks/useUIState";
 
 import { DraftOrdersTab } from "./DraftOrdersTab";
 import { HistoryOrdersTab } from "./HistoryOrdersTab";
@@ -13,15 +14,11 @@ import { OpenOrdersTab } from "./OpenOrdersTab";
 import { Spinner } from "./ui/spinner";
 
 export function OrderTabs() {
-  const {
-    isLoading,
-    mutate,
-    draftOrders,
-    txManager: { isPonderUpdating },
-  } = useOrder();
-  const { historyOrders, openOrders } = useOrderList();
+  const { isPonderUpdating } = useTxManager();
 
-  const { firstAccess } = useSwapCardContext();
+  const draftOrders = useDraftOrders((state) => state.draftOrders);
+  const { historyOrders, openOrders, isLoading, mutate } = useOrderList();
+  const firstAccess = useUIStore((state) => state.firstAccess);
 
   if (firstAccess) {
     return null;

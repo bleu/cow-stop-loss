@@ -1,18 +1,64 @@
-// hooks/useDraftOrders.ts
-import { useCallback, useState } from "react";
+import { create } from "zustand";
+import { createJSONStorage, persist, PersistOptions } from "zustand/middleware";
 
 import { DraftOrder } from "#/lib/types";
 
-export function useDraftOrders() {
-  const [draftOrders, setDraftOrders] = useState<DraftOrder[]>([]);
-
-  const addDraftOrder = useCallback((order: DraftOrder) => {
-    setDraftOrders((prev) => [...prev, order]);
-  }, []);
-
-  const removeDraftOrder = useCallback((id: string) => {
-    setDraftOrders((prev) => prev.filter((order) => order.id !== id));
-  }, []);
-
-  return { draftOrders, addDraftOrder, removeDraftOrder };
+interface DraftOrdersState {
+  draftOrders: DraftOrder[];
+  addDraftOrders: (orders: DraftOrder[]) => void;
+  removeDraftOrder: (id: string) => void;
+  removeDraftOrders: (ids: string[]) => void;
+  getDraftOrders: () => DraftOrder[];
+  setDraftOrders: (orders: DraftOrder[]) => void;
+  changeDraftOrdersStatusToCreating: (ids: string[]) => void;
 }
+
+type DraftOrdersPersist = Pick<DraftOrdersState, "draftOrders">;
+
+type DraftOrdersPersistOptions = PersistOptions<
+  DraftOrdersState,
+  DraftOrdersPersist
+>;
+
+const persistOptions: DraftOrdersPersistOptions = {
+  name: "draft-orders-storage",
+  storage: createJSONStorage(() => localStorage),
+  partialize: (state) => ({ draftOrders: state.draftOrders }),
+};
+
+export const useDraftOrders = create<DraftOrdersState>()(
+  persist(
+    (set, get) => ({
+      draftOrders: [],
+      addDraftOrders: (orders) =>
+        set((state) => ({
+          draftOrders: [...orders, ...state.draftOrders],
+        })),
+      removeDraftOrder: (id) =>
+        set((state) => ({
+          draftOrders: state.draftOrders.filter((order) => order.id !== id),
+        })),
+      removeDraftOrders: (ids) =>
+        set((state) => ({
+          draftOrders: state.draftOrders.filter(
+            (order) => !ids.includes(order.id)
+          ),
+        })),
+      getDraftOrders: () => get().draftOrders,
+      setDraftOrders: (orders) => set({ draftOrders: orders }),
+      changeDraftOrdersStatusToCreating: (ids) =>
+        set((state) => ({
+          draftOrders: state.draftOrders.map((order) => {
+            if (ids.includes(order.id)) {
+              return {
+                ...order,
+                status: "creating",
+              };
+            }
+            return order;
+          }),
+        })),
+    }),
+    persistOptions
+  )
+);

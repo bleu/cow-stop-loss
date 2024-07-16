@@ -1,7 +1,7 @@
 import { Button, Card, CardContent, CardTitle } from "@bleu/ui";
 import { GearIcon } from "@radix-ui/react-icons";
 
-import { useSwapCardContext } from "#/contexts/swapCardContext";
+import { useUIStore } from "#/hooks/useUIState";
 
 const INTRODUCTION_STEPS = [
   "Choose the tokens you want to swap",
@@ -49,7 +49,7 @@ const BulletPointList = ({
 );
 
 export function SwapCardIntroduction() {
-  const { setFirstAccess } = useSwapCardContext();
+  const setFirstAccess = useUIStore((state) => state.setFirstAccess);
 
   return (
     <Card className="bg-foreground w-full p-6 rounded-lg">

@@ -1,12 +1,12 @@
 "use client";
 
-import { useSwapCardContext } from "#/contexts/swapCardContext";
+import { useUIStore } from "#/hooks/useUIState";
 
 import { SwapCardIntroduction } from "./SwapCardIntroduction";
 import { SwapForm } from "./SwapForm";
 
 export function SwapCard() {
-  const { firstAccess } = useSwapCardContext();
+  const firstAccess = useUIStore((state) => state.firstAccess);
   if (firstAccess) {
     return <SwapCardIntroduction />;
   }
