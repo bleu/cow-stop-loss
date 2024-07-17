@@ -25,6 +25,6 @@ export const useUIStore = create<UIState>()(
       setTxPendingDialogOpen: (open) => set({ txPendingDialogOpen: open }),
       setFirstAccess: (value) => set({ firstAccess: value }),
     }),
-    persistOptions
-  )
+    persistOptions,
+  ),
 );

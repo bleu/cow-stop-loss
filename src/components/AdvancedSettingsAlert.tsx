@@ -6,7 +6,7 @@ import { AlertCard } from "./ui/alert-card";
 
 export function AdvancedSettingsAlert() {
   const advancedSettings = useAdvancedSettingsStore(
-    (state) => state.advancedSettings
+    (state) => state.advancedSettings,
   );
 
   const isAdvancedSettingsChanged =

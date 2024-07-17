@@ -17,7 +17,7 @@ interface DraftOrderState {
   createDraftOrder: (
     data: SwapData,
     chainId: ChainId,
-    safeAddress: Address
+    safeAddress: Address,
   ) => Promise<DraftOrder>;
 }
 
