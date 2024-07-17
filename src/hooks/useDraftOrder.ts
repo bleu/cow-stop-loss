@@ -1,3 +1,4 @@
+import { Address } from "viem";
 import { create } from "zustand";
 
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
@@ -13,16 +14,25 @@ import { useOracleStore } from "./useOracle";
 interface DraftOrderState {
   currentDraftOrder?: DraftOrder;
   setCurrentDraftOrder: (order: DraftOrder | undefined) => void;
-  createDraftOrder: (data: SwapData, chainId: ChainId) => Promise<DraftOrder>;
+  createDraftOrder: (
+    data: SwapData,
+    chainId: ChainId,
+    safeAddress: Address
+  ) => Promise<DraftOrder>;
 }
 
 export const useDraftOrder = create<DraftOrderState>()((set) => ({
   currentDraftOrder: undefined,
   setCurrentDraftOrder: (order) => set({ currentDraftOrder: order }),
-  createDraftOrder: async (data, chainId) => {
+  createDraftOrder: async (data, chainId, safeAddress) => {
     const { advancedSettings } = useAdvancedSettingsStore.getState();
     const { oracleRoute } = useOracleStore.getState();
     const draftOrders = useDraftOrders.getState().draftOrders;
+
+    const receiver =
+      advancedSettings.receiver === ""
+        ? safeAddress
+        : advancedSettings.receiver;
 
     let tokenBuyOracle = advancedSettings.tokenBuyOracle;
     let tokenSellOracle = advancedSettings.tokenSellOracle;
@@ -59,6 +69,7 @@ export const useDraftOrder = create<DraftOrderState>()((set) => ({
     const draftOrder: DraftOrder = {
       ...data,
       ...advancedSettings,
+      receiver,
       tokenBuyOracle,
       tokenSellOracle,
       id: `draft-${draftOrders.length}-${Date.now()}`,

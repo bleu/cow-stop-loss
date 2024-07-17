@@ -1,5 +1,5 @@
 import { Address, isAddress } from "viem";
-import { z } from "zod";
+import { literal, z } from "zod";
 import { normalize } from "viem/ens";
 
 import { ChainId, publicClientsFromIds } from "./publicClients";
@@ -53,7 +53,7 @@ const generateOracleSchema = ({ chainId }: { chainId: ChainId }) => {
     },
     {
       message: "Address does not conform to Oracle interface",
-    },
+    }
   );
 };
 
@@ -75,7 +75,7 @@ export const generateSwapSchema = (chainId: ChainId) =>
       {
         path: ["tokenBuy"],
         message: "Tokens sell and buy must be different",
-      },
+      }
     )
     .superRefine((data, ctx) => {
       const amountDecimals = data.isSellOrder
@@ -114,7 +114,11 @@ export const generateAdvancedSettingsSchema = (chainId: ChainId) =>
         generateOracleSchema({ chainId }),
         z.literal(""),
       ]),
-      receiver: z.union([basicAddressSchema, generateEnsSchema(chainId)]),
+      receiver: z.union([
+        basicAddressSchema,
+        generateEnsSchema(chainId),
+        literal(""),
+      ]),
       partiallyFillable: z.coerce.boolean(),
     })
     .refine(
@@ -127,7 +131,7 @@ export const generateAdvancedSettingsSchema = (chainId: ChainId) =>
       {
         message: "If one oracle is set, both must be set",
         path: ["tokenSellOracle"],
-      },
+      }
     )
     .refine(
       (data) => {
@@ -139,5 +143,5 @@ export const generateAdvancedSettingsSchema = (chainId: ChainId) =>
       {
         message: "If one oracle is set, both must be set",
         path: ["tokenBuyOracle"],
-      },
+      }
     );
