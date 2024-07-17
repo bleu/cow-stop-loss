@@ -35,9 +35,13 @@ import { InfoTooltip } from "./ui/tooltip";
 
 export function ReviewOrdersDialog({
   draftOrders,
-  showAddOrders = false,
+  open,
+  setOpen,
+  showAddOrders,
 }: {
   draftOrders: DraftOrder[];
+  open: boolean;
+  setOpen: (open: boolean) => void;
   showAddOrders?: boolean;
 }) {
   const { writeContract } = useTxManager();
@@ -47,10 +51,8 @@ export function ReviewOrdersDialog({
     state.removeDraftOrders,
   ]);
 
-  const [setTxPendingDialogOpen, open, setOpen] = useUIStore((state) => [
+  const [setTxPendingDialogOpen] = useUIStore((state) => [
     state.setTxPendingDialogOpen,
-    state.reviewDialogOpen,
-    state.setReviewDialogOpen,
   ]);
   const multipleOrders = draftOrders.length > 1;
   const {
@@ -81,7 +83,7 @@ export function ReviewOrdersDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         className={cn(
-          "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-foreground w-[90vw] max-w-[450px] py-6 px-2",
+          "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-foreground w-[90vw] max-w-[450px] py-6 px-2"
         )}
       >
         <div className="flex flex-col gap-2 w-full overflow-y-scroll scrollbar scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-primary scrollbar-track-background scrollbar-w-4 max-h-[85vh] px-3">
@@ -117,7 +119,7 @@ export function ReviewOrdersDialog({
               ? `Place all ${draftOrders.length} Stop Loss Orders`
               : `Place Stop Loss Order`}
           </Button>
-          {showAddOrders && (
+          {!showAddOrders && (
             <Button
               variant="link"
               className=" text-wrap text-xs text-white"
@@ -139,7 +141,7 @@ export function ReviewOrdersDialog({
 function OrderContent({ order }: { order: DraftOrder }) {
   const { data: currentMarketPrice } = useTokenPairPrice(
     order.tokenSell,
-    order.tokenBuy,
+    order.tokenBuy
   );
   const marketPrice = currentMarketPrice || order.fallbackMarketPrice;
   return (

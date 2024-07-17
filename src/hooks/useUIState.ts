@@ -2,10 +2,8 @@ import { create } from "zustand";
 import { persist, PersistOptions } from "zustand/middleware";
 
 interface UIState {
-  reviewDialogOpen: boolean;
   txPendingDialogOpen: boolean;
   firstAccess: boolean;
-  setReviewDialogOpen: (open: boolean) => void;
   setTxPendingDialogOpen: (open: boolean) => void;
   setFirstAccess: (value: boolean) => void;
 }
@@ -22,13 +20,11 @@ const persistOptions: UIStatePersistOptions = {
 export const useUIStore = create<UIState>()(
   persist(
     (set) => ({
-      reviewDialogOpen: false,
       txPendingDialogOpen: false,
       firstAccess: true,
-      setReviewDialogOpen: (open) => set({ reviewDialogOpen: open }),
       setTxPendingDialogOpen: (open) => set({ txPendingDialogOpen: open }),
       setFirstAccess: (value) => set({ firstAccess: value }),
     }),
-    persistOptions,
-  ),
+    persistOptions
+  )
 );

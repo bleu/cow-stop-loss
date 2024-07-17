@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 
 import { useDraftOrder } from "#/hooks/useDraftOrder";
 import { useSafeApp } from "#/hooks/useSafeApp";
-import { useUIStore } from "#/hooks/useUIState";
 import { ChainId } from "#/lib/publicClients";
 import { generateSwapSchema } from "#/lib/schema";
 import { SwapData } from "#/lib/types";
@@ -24,11 +23,11 @@ import { Form } from "../ui/form";
 import { SwapCardSubmitButton } from "./SwapCardSubmitButton";
 
 export function SwapForm() {
-  const { chainId } = useSafeApp();
+  const { chainId, safeAddress } = useSafeApp();
 
   const formSchema = React.useMemo(
     () => generateSwapSchema(chainId as ChainId),
-    [chainId],
+    [chainId]
   );
 
   const [currentDraftOrder, setCurrentDraftOrder, createDraftOrder] =
@@ -37,9 +36,6 @@ export function SwapForm() {
       state.setCurrentDraftOrder,
       state.createDraftOrder,
     ]);
-  const [setReviewDialogOpen] = useUIStore((state) => [
-    state.setReviewDialogOpen,
-  ]);
 
   const form = useForm<SwapData>({
     resolver: zodResolver(formSchema),
@@ -48,17 +44,21 @@ export function SwapForm() {
     },
   });
 
+  const [reviewDialogOpen, setReviewDialogOpen] = React.useState(false);
+
   return (
     <Form
       {...form}
       onSubmit={async (data) => {
-        const newOrder = await createDraftOrder(data, chainId);
+        const newOrder = await createDraftOrder(data, chainId, safeAddress);
         setCurrentDraftOrder(newOrder);
         setReviewDialogOpen(true);
       }}
       className="w-full"
     >
       <ReviewOrdersDialog
+        open={reviewDialogOpen}
+        setOpen={setReviewDialogOpen}
         draftOrders={currentDraftOrder ? [currentDraftOrder] : []}
         showAddOrders
       />

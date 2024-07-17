@@ -15,7 +15,6 @@ import { useState } from "react";
 
 import { useDraftOrders } from "#/hooks/useDraftOrders";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
-import { useUIStore } from "#/hooks/useUIState";
 import { getOrderDescription } from "#/lib/orderDescription";
 import { DraftOrder } from "#/lib/types";
 
@@ -25,16 +24,21 @@ import { ReviewOrdersDialog } from "./ReviewOrdersDialog";
 
 export function DraftOrdersTab() {
   const draftOrders = useDraftOrders((state) => state.draftOrders);
-  const setReviewDialogOpen = useUIStore((state) => state.setReviewDialogOpen);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const selectedOrders = draftOrders.filter((order) =>
-    selectedIds.includes(order.id),
+    selectedIds.includes(order.id)
   );
+
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
 
   return (
     <>
-      <ReviewOrdersDialog draftOrders={selectedOrders} />
+      <ReviewOrdersDialog
+        open={reviewDialogOpen}
+        setOpen={setReviewDialogOpen}
+        draftOrders={selectedOrders}
+      />
       <div className="flex flex-col gap-2">
         <Table className="w-full rounded-lg">
           <TableHeader className="bg-background">
@@ -78,7 +82,7 @@ export function DraftOrdersTab() {
                         return;
                       }
                       setSelectedIds(
-                        selectedIds.filter((id) => id !== order.id),
+                        selectedIds.filter((id) => id !== order.id)
                       );
                     }}
                   />
@@ -139,7 +143,7 @@ export function DraftOrderRow({
 
   const { data: marketPrice } = useTokenPairPrice(
     order.tokenSell,
-    order.tokenBuy,
+    order.tokenBuy
   );
 
   return (
@@ -156,14 +160,14 @@ export function DraftOrderRow({
       <TableCell>
         {formatNumber(
           invertedPrice ? 1 / order.strikePrice : order.strikePrice,
-          4,
+          4
         )}{" "}
         {priceUnity}
       </TableCell>
       <TableCell>
         {formatNumber(
           invertedPrice ? 1 / order.limitPrice : order.limitPrice,
-          4,
+          4
         )}{" "}
         {priceUnity}
       </TableCell>

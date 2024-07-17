@@ -30,7 +30,7 @@ import { Spinner } from "./ui/spinner";
 export function OpenOrdersTab() {
   const { writeContract, isWriting } = useTxManager();
   const setTxPendingDialogOpen = useUIStore(
-    (state) => state.setTxPendingDialogOpen,
+    (state) => state.setTxPendingDialogOpen
   );
   const { openOrders, isLoading } = useOrderList();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -137,7 +137,7 @@ export function OpenOrderRow({
 
   const { data: marketPrice } = useTokenPairPrice(
     order.stopLossData?.tokenIn as IToken,
-    order.stopLossData?.tokenOut as IToken,
+    order.stopLossData?.tokenOut as IToken
   );
 
   const [invertedPrice, setInvertedPrice] = useState(false);
@@ -157,18 +157,18 @@ export function OpenOrderRow({
   const amountSell = Number(
     formatUnits(
       order.stopLossData?.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals,
-    ),
+      order.stopLossData.tokenIn.decimals
+    )
   );
   const amountBuy = Number(
     formatUnits(
       order.stopLossData?.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals,
-    ),
+      order.stopLossData.tokenOut.decimals
+    )
   );
 
   const orderDateTime = epochToDate(
-    Number(order.blockTimestamp),
+    Number(order.blockTimestamp)
   ).toLocaleString();
 
   return (
@@ -207,7 +207,7 @@ export function OpenOrderRow({
       </TableCell>
       <TableCell>
         {marketPrice
-          ? ` ${formatNumber(invertedPrice ? 1 / marketPrice : triggerPrice, 4)} ${priceUnity}`
+          ? ` ${formatNumber(invertedPrice ? 1 / marketPrice : marketPrice, 4)} ${priceUnity}`
           : `Loading...`}
       </TableCell>
       <TableCell>{((order.filledPct || 0) * 100).toFixed()}%</TableCell>
