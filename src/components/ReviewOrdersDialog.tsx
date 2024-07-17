@@ -34,6 +34,7 @@ import { TokenInfo } from "./TokenInfo";
 import { InfoTooltip } from "./ui/tooltip";
 
 export function ReviewOrdersDialog({
+  draftOrders,
   showAddOrders = false,
 }: {
   draftOrders: DraftOrder[];
@@ -41,13 +42,10 @@ export function ReviewOrdersDialog({
 }) {
   const { writeContract } = useTxManager();
 
-  const [draftOrders, addDraftOrders, removeDraftOrders] = useDraftOrders(
-    (state) => [
-      state.draftOrders,
-      state.addDraftOrders,
-      state.removeDraftOrders,
-    ],
-  );
+  const [addDraftOrders, removeDraftOrders] = useDraftOrders((state) => [
+    state.addDraftOrders,
+    state.removeDraftOrders,
+  ]);
 
   const [setTxPendingDialogOpen, open, setOpen] = useUIStore((state) => [
     state.setTxPendingDialogOpen,
