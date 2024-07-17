@@ -30,14 +30,14 @@ import { Spinner } from "./ui/spinner";
 export function OpenOrdersTab() {
   const { writeContract, isWriting } = useTxManager();
   const setTxPendingDialogOpen = useUIStore(
-    (state) => state.setTxPendingDialogOpen
+    (state) => state.setTxPendingDialogOpen,
   );
   const { openOrders, orders, isLoading, mutate } = useOrderList();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const onCancelOrders = () => {
     const ordersToCancel = openOrders.filter((order) =>
-      selectedIds.includes(order.id)
+      selectedIds.includes(order.id),
     );
     const deleteTxArgs = ordersToCancel.map((order) => ({
       type: TRANSACTION_TYPES.ORDER_CANCEL,
@@ -156,7 +156,7 @@ export function OpenOrderRow({
 
   const { data: marketPrice } = useTokenPairPrice(
     order.stopLossData?.tokenIn as IToken,
-    order.stopLossData?.tokenOut as IToken
+    order.stopLossData?.tokenOut as IToken,
   );
 
   const [invertedPrice, setInvertedPrice] = useState(false);
@@ -176,18 +176,18 @@ export function OpenOrderRow({
   const amountSell = Number(
     formatUnits(
       order.stopLossData?.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals
-    )
+      order.stopLossData.tokenIn.decimals,
+    ),
   );
   const amountBuy = Number(
     formatUnits(
       order.stopLossData?.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals
-    )
+      order.stopLossData.tokenOut.decimals,
+    ),
   );
 
   const orderDateTime = epochToDate(
-    Number(order.blockTimestamp)
+    Number(order.blockTimestamp),
   ).toLocaleString();
 
   return (

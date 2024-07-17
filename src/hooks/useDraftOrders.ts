@@ -41,7 +41,7 @@ export const useDraftOrders = create<DraftOrdersState>()(
       removeDraftOrders: (ids) =>
         set((state) => ({
           draftOrders: state.draftOrders.filter(
-            (order) => !ids.includes(order.id)
+            (order) => !ids.includes(order.id),
           ),
         })),
       getDraftOrders: () => get().draftOrders,
@@ -59,6 +59,6 @@ export const useDraftOrders = create<DraftOrdersState>()(
           }),
         })),
     }),
-    persistOptions
-  )
+    persistOptions,
+  ),
 );

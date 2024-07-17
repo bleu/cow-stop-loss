@@ -27,8 +27,8 @@ const useOrderStore = create<OrderState & OrderActions>()(
     {
       name: "order-storage",
       storage: createJSONStorage(() => localStorage),
-    }
-  )
+    },
+  ),
 );
 
 export function useOrderList() {
@@ -44,7 +44,7 @@ export function useOrderList() {
     getProcessedStopLossOrders,
     {
       onSuccess: (data) => setOrders(data),
-    }
+    },
   );
 
   useEffect(() => {
@@ -69,15 +69,15 @@ export function useOrderList() {
               }
             : order;
         }),
-    [orders]
+    [orders],
   );
 
   const historyOrders = useMemo(
     () =>
       orders.filter(
-        (order) => !order.singleOrder || order.status === "fulfilled"
+        (order) => !order.singleOrder || order.status === "fulfilled",
       ),
-    [orders]
+    [orders],
   );
 
   return {
