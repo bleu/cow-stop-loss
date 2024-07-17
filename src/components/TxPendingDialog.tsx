@@ -41,8 +41,8 @@ export function TxPendingDialog() {
             </DialogTitle>
             <span className="text-wrap">
               {isPonderUpdating
-                ? "Almost done! Your transaction is being processed"
-                : "Done! Your transaction was processed!"}
+                ? "Almost done! Your transaction is being processed."
+                : "Your transaction was processed."}
               !
             </span>
             <Button
