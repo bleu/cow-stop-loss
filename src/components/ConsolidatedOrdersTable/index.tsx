@@ -63,20 +63,22 @@ export function ConsolidatedOrdersTable() {
 
   return (
     <div>
-      <div className="flex items-center space-x-2 -mt-8">
-        <span className="text-2xl font-semibold">Your orders</span>
-        {isUpdating ? (
-          <Spinner size="sm" />
-        ) : (
-          <button
-            onClick={() => {
-              mutate();
-            }}
-            className="text-primary hover:text-primary/50 px-1"
-          >
-            <ReloadIcon className="size-4" />
-          </button>
-        )}
+      <div className="-mt-10">
+        <div className="flex items-center space-x-2 mb-2">
+          <span className="text-2xl font-semibold ">Your orders</span>
+          {isUpdating ? (
+            <Spinner size="sm" />
+          ) : (
+            <button
+              onClick={() => {
+                mutate();
+              }}
+              className="text-primary hover:text-primary/50 px-1"
+            >
+              <ReloadIcon className="size-4" />
+            </button>
+          )}
+        </div>
       </div>
       <div className="flex rounded-lg bg-muted p-2 max-h-[70vh]">
         <DataTable table={table}>

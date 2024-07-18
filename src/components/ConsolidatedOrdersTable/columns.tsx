@@ -7,7 +7,6 @@ import { DataTableColumnHeader } from "#/components/data-table/data-table-column
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { getOrderDescription } from "#/lib/orderDescription";
 
-import { OrderDropdownMenuCell } from "../OrderDropdownMenuCell";
 import { StatusBadge } from "../StatusBadge";
 import { ConsolidatedOrderType } from ".";
 
@@ -163,17 +162,6 @@ export function getColumns(): ColumnDef<ConsolidatedOrderType>[] {
       filterFn: (row, id, value) => {
         return Array.isArray(value) && value.includes(row.getValue(id));
       },
-    },
-    {
-      id: "actions",
-      cell: ({ row }) => (
-        <OrderDropdownMenuCell
-          orderId={row.original.id}
-          invertedPrice={false}
-          setInvertedPrice={() => {}}
-          showDetails={row.original.status !== "draft"}
-        />
-      ),
     },
   ];
 }
