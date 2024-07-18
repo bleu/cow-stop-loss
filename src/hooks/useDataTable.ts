@@ -133,7 +133,6 @@ const schema = z.object({
 export function useDataTable<TData, TValue>({
   data,
   columns,
-  pageCount,
   defaultPerPage = 5,
   defaultSort,
   filterFields = [],
@@ -325,7 +324,6 @@ export function useDataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
-    pageCount: pageCount ?? -1,
     state: {
       pagination,
       sorting,

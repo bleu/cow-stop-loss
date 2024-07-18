@@ -11,7 +11,7 @@ import {
 import { CheckIcon } from "@radix-ui/react-icons";
 import type { Column } from "@tanstack/react-table";
 
-import type { DataTableFilterOption, Option } from "#/types";
+import type { DataTableFilterOption, Option } from "#/hooks/useDataTable";
 
 interface DataTableAdvancedFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>;

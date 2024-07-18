@@ -2,7 +2,7 @@
 
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 
 import { DataTable } from "#/components/data-table/data-table";
 import { DataTableFilterField, useDataTable } from "#/hooks/useDataTable";
@@ -25,8 +25,6 @@ export function ConsolidatedOrdersTable() {
   const { orders, isLoading, mutate } = useOrderList();
   const { safe } = useSafeAppsSDK();
 
-  const [invertedPrice, setInvertedPrice] = useState(false);
-
   const allOrders: ConsolidatedOrderType[] = useMemo(
     () => [
       ...draftOrders.map((order) => ({ ...order, status: "draft" }) as const),
@@ -36,8 +34,8 @@ export function ConsolidatedOrdersTable() {
   );
 
   const columns = React.useMemo(
-    () => getColumns(invertedPrice, setInvertedPrice),
-    [safe.chainId, safe.safeAddress, invertedPrice],
+    () => getColumns(),
+    [safe.chainId, safe.safeAddress],
   );
   const isUpdating = isLoading || isPonderUpdating;
 
@@ -58,7 +56,6 @@ export function ConsolidatedOrdersTable() {
     data: allOrders,
     columns,
     filterFields,
-    pageCount: Math.ceil(allOrders.length / 10),
   });
 
   return (

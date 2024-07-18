@@ -90,7 +90,7 @@ export function getColumns(): ColumnDef<ConsolidatedOrderType>[] {
       ),
       cell: ({ row }) => {
         const order = row.original;
-        if ("stopLossData" in order) {
+        if (order?.stopLossData) {
           const stopLossData = order.stopLossData;
           return `${formatNumber(formatUnits(stopLossData.strike, 18), 4)} ${stopLossData.tokenOut.symbol}/${stopLossData.tokenIn.symbol}`;
         } else {
