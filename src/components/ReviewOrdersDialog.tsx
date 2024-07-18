@@ -20,7 +20,6 @@ import { useFallbackState } from "#/hooks/useFallbackState";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { useTokenPrice } from "#/hooks/useTokenPrice";
 import { useTxManager } from "#/hooks/useTxManager";
-import { useUIStore } from "#/hooks/useUIState";
 import { ChainId } from "#/lib/publicClients";
 import { formatTimeDelta } from "#/lib/timeDelta";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
@@ -46,13 +45,8 @@ export function ReviewOrdersDialog({
 }) {
   const { writeContract } = useTxManager();
 
-  const [addDraftOrders, changeDraftOrdersStatusToCreating] = useDraftOrders(
-    (state) => [state.addDraftOrders, state.removeDraftOrders]
-  );
+  const { addDraftOrders, changeOrderStatus } = useDraftOrders();
 
-  const [setTxPendingDialogOpen] = useUIStore((state) => [
-    state.setTxPendingDialogOpen,
-  ]);
   const multipleOrders = draftOrders.length > 1;
   const {
     safe: { safeAddress, chainId },
@@ -69,20 +63,25 @@ export function ReviewOrdersDialog({
       fallbackState,
       domainSeparator,
     });
-    writeContract(txArgs, {
-      onSuccess: () => {
-        changeDraftOrdersStatusToCreating(draftOrders.map((order) => order.id));
-        setOpen(false);
-        setTxPendingDialogOpen(true);
-      },
-    });
+
+    try {
+      const { safeTx, safeTxHash } = await writeContract(txArgs);
+      changeOrderStatus(
+        draftOrders.map((order) => order.id),
+        safeTxHash,
+        safeTx.txStatus
+      );
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
+    }
   };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         className={cn(
-          "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-foreground w-[90vw] max-w-[450px] py-6 px-2",
+          "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-foreground w-[90vw] max-w-[450px] py-6 px-2"
         )}
       >
         <div className="flex flex-col gap-2 w-full overflow-y-scroll scrollbar scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-primary scrollbar-track-background scrollbar-w-4 max-h-[85vh] px-3">
@@ -140,7 +139,7 @@ export function ReviewOrdersDialog({
 function OrderContent({ order }: { order: DraftOrder }) {
   const { data: currentMarketPrice } = useTokenPairPrice(
     order.tokenSell,
-    order.tokenBuy,
+    order.tokenBuy
   );
   const marketPrice = currentMarketPrice || order.fallbackMarketPrice;
   return (

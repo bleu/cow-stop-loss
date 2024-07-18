@@ -17,7 +17,7 @@ interface DraftOrderState {
   createDraftOrder: (
     data: SwapData,
     chainId: ChainId,
-    safeAddress: Address,
+    safeAddress: Address
   ) => Promise<DraftOrder>;
 }
 
@@ -27,7 +27,7 @@ export const useDraftOrder = create<DraftOrderState>()((set) => ({
   createDraftOrder: async (data, chainId, safeAddress) => {
     const { advancedSettings } = useAdvancedSettingsStore.getState();
     const { oracleRoute } = useOracleStore.getState();
-    const draftOrders = useDraftOrders.getState().draftOrders;
+    const { draftOrders } = useDraftOrders();
 
     const receiver =
       advancedSettings.receiver === ""

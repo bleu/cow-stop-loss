@@ -3,6 +3,7 @@ import { generateAdvancedSettingsSchema, generateSwapSchema } from "./schema";
 import { z } from "zod";
 import { UserStopLossOrdersQuery } from "./gql/composable-cow/__generated__/1";
 import { ArrElement, GetDeepProp } from "@bleu/ui";
+import { TransactionStatus } from "@safe-global/safe-apps-sdk";
 
 export interface IToken {
   symbol: string;
@@ -16,8 +17,7 @@ export type OrderStatus =
   | "fulfilled"
   | "partiallyFilled"
   | "draft"
-  | "creating"
-  | "cancelling";
+  | TransactionStatus;
 
 export interface ITokenWithValue extends IToken {
   balance: string;
@@ -37,6 +37,7 @@ export type DraftOrder = SwapData &
     fallbackMarketPrice?: number;
     salt: `0x${string}`;
     status: OrderStatus;
+    safeTxHash?: string;
   };
 
 type StopLossOrderTypeRaw = ArrElement<

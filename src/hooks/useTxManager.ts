@@ -1,9 +1,9 @@
-import { TransactionStatus } from "@safe-global/safe-apps-sdk";
-import { useMutation } from "@tanstack/react-query";
-import { useEffect } from "react";
+// import { TransactionStatus } from "@safe-global/safe-apps-sdk";
+// import { useMutation } from "@tanstack/react-query";
+// import { useEffect } from "react";
 
-import { getBlockNumberFromPrometheusMetrics } from "#/lib/ponderApi";
-import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
+// import { getBlockNumberFromPrometheusMetrics } from "#/lib/ponderApi";
+// import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
 import {
   AllTransactionArgs,
   TransactionFactory,
@@ -12,85 +12,87 @@ import {
 import { useSafeApp } from "./useSafeApp";
 
 export function useTxManager() {
-  const { sdk, chainId } = useSafeApp();
+  const { sdk } = useSafeApp();
 
-  const publicClient = publicClientsFromIds[chainId as ChainId];
-  const sendTransactions = async (argsArray: AllTransactionArgs[]) => {
+  // const publicClient = publicClientsFromIds[chainId as ChainId];
+
+  const writeContract = async (argsArray: AllTransactionArgs[]) => {
     const txs = await Promise.all(
       argsArray.map((arg) => {
         return TransactionFactory.createRawTx(arg.type, arg);
-      }),
+      })
     );
     const { safeTxHash } = await sdk.txs.send({ txs });
-    return safeTxHash as `0x${string}`;
+    const safeTx = await sdk.txs.getBySafeTxHash(safeTxHash);
+    return {
+      safeTxHash: safeTxHash as `0x${string}`,
+      safeTx,
+    };
   };
 
-  const getTransactionBlockNumber = async (txHash?: `0x${string}`) => {
-    if (!txHash) return;
-    const transaction = await publicClient.getTransaction({ hash: txHash });
-    return transaction.blockNumber;
-  };
+  // const getTransactionBlockNumber = async (txHash?: `0x${string}`) => {
+  //   if (!txHash) return;
+  //   const transaction = await publicClient.getTransaction({ hash: txHash });
+  //   return transaction.blockNumber;
+  // };
 
-  const {
-    data: txHash,
-    mutate: writeContract,
-    isPending: isWriting,
-  } = useMutation({
-    mutationFn: (txs: AllTransactionArgs[]) => {
-      return sendTransactions(txs);
-    },
-    mutationKey: ["writeContract"],
-  });
+  // const {
+  //   data: txHash,
+  //   mutate: writeContract,
+  //   isPending: isWriting,
+  // } = useMutation({
+  //   mutationFn: (txs: AllTransactionArgs[]) => {
+  //     return sendTransactions(txs);
+  //   },
+  //   mutationKey: ["writeContract"],
+  // });
 
-  const { data: isTxProcessed, mutateAsync: mutateIsTxProcessed } = useMutation(
-    {
-      mutationFn: async (safeTxHash: string) => {
-        const safeTx = await sdk.txs.getBySafeTxHash(safeTxHash);
-        if (!safeTx) return true;
-        if (
-          [TransactionStatus.CANCELLED, TransactionStatus.FAILED].includes(
-            safeTx?.txStatus,
-          )
-        )
-          return true;
-        if (
-          [
-            TransactionStatus.AWAITING_CONFIRMATIONS,
-            TransactionStatus.AWAITING_EXECUTION,
-          ].includes(safeTx?.txStatus) ||
-          !safeTx.txHash
-        )
-          return false;
-        const [txBlockNumber, ponderBlockNumber] = await Promise.all([
-          getTransactionBlockNumber(safeTx.txHash as `0x${string}`),
-          getBlockNumberFromPrometheusMetrics(chainId),
-        ]);
-        if (!txBlockNumber || !ponderBlockNumber) return false;
-        return txBlockNumber < ponderBlockNumber;
-      },
-      mutationKey: ["getSafeTx"],
-    },
-  );
+  // const { data: isTxProcessed, mutateAsync: mutateIsTxProcessed } = useMutation(
+  //   {
+  //     mutationFn: async (safeTxHash: string) => {
+  //       const safeTx = await sdk.txs.getBySafeTxHash(safeTxHash);
+  //       if (!safeTx) return true;
+  //       if (
+  //         [TransactionStatus.CANCELLED, TransactionStatus.FAILED].includes(
+  //           safeTx?.txStatus,
+  //         )
+  //       )
+  //         return true;
+  //       if (
+  //         [
+  //           TransactionStatus.AWAITING_CONFIRMATIONS,
+  //           TransactionStatus.AWAITING_EXECUTION,
+  //         ].includes(safeTx?.txStatus) ||
+  //         !safeTx.txHash
+  //       )
+  //         return false;
+  //       const [txBlockNumber, ponderBlockNumber] = await Promise.all([
+  //         getTransactionBlockNumber(safeTx.txHash as `0x${string}`),
+  //         getBlockNumberFromPrometheusMetrics(chainId),
+  //       ]);
+  //       if (!txBlockNumber || !ponderBlockNumber) return false;
+  //       return txBlockNumber < ponderBlockNumber;
+  //     },
+  //     mutationKey: ["getSafeTx"],
+  //   },
+  // );
 
-  useEffect(() => {
-    if (txHash) {
-      mutateIsTxProcessed(txHash);
-    }
-  }, [txHash]);
+  // useEffect(() => {
+  //   if (txHash) {
+  //     mutateIsTxProcessed(txHash);
+  //   }
+  // }, [txHash]);
 
-  useEffect(() => {
-    if (txHash && !isTxProcessed) {
-      const interval = setInterval(() => {
-        mutateIsTxProcessed(txHash);
-      }, 5_000);
-      return () => clearInterval(interval);
-    }
-  }, [txHash, isTxProcessed]);
+  // useEffect(() => {
+  //   if (txHash && !isTxProcessed) {
+  //     const interval = setInterval(() => {
+  //       mutateIsTxProcessed(txHash);
+  //     }, 5_000);
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [txHash, isTxProcessed]);
 
   return {
     writeContract,
-    txHash,
-    isWriting,
-    isPonderUpdating: !isTxProcessed && !!txHash,
   };
 }

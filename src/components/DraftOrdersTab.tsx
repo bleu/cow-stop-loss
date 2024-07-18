@@ -24,15 +24,15 @@ import { ReviewOrdersDialog } from "./ReviewOrdersDialog";
 import { StatusBadge } from "./StatusBadge";
 
 export function DraftOrdersTab() {
-  const draftOrders = useDraftOrders((state) => state.draftOrders);
+  const { draftOrders } = useDraftOrders();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const selectableOrders = draftOrders.filter(
-    (order) => order.status == "draft",
+    (order) => order.status == "draft"
   );
 
   const selectedOrders = draftOrders.filter((order) =>
-    selectedIds.includes(order.id),
+    selectedIds.includes(order.id)
   );
 
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
@@ -102,7 +102,7 @@ export function DraftOrdersTab() {
                         return;
                       }
                       setSelectedIds(
-                        selectedIds.filter((id) => id !== order.id),
+                        selectedIds.filter((id) => id !== order.id)
                       );
                     }}
                   />
@@ -149,7 +149,7 @@ export function DraftOrderRow({
 
   const { data: marketPrice } = useTokenPairPrice(
     order.tokenSell,
-    order.tokenBuy,
+    order.tokenBuy
   );
 
   return (
@@ -157,7 +157,7 @@ export function DraftOrderRow({
       <TableCell>
         <Checkbox
           checked={checked}
-          disabled={order.status === "creating"}
+          disabled={order.status !== "draft"}
           onCheckedChange={(checked) => {
             onSelect(checked as boolean);
           }}
@@ -167,14 +167,14 @@ export function DraftOrderRow({
       <TableCell>
         {formatNumber(
           invertedPrice ? 1 / order.strikePrice : order.strikePrice,
-          4,
+          4
         )}{" "}
         {priceUnity}
       </TableCell>
       <TableCell>
         {formatNumber(
           invertedPrice ? 1 / order.limitPrice : order.limitPrice,
-          4,
+          4
         )}{" "}
         {priceUnity}
       </TableCell>

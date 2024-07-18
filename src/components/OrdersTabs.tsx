@@ -16,7 +16,7 @@ import { Spinner } from "./ui/spinner";
 export function OrderTabs() {
   const { isPonderUpdating } = useTxManager();
 
-  const draftOrders = useDraftOrders((state) => state.draftOrders);
+  const { draftOrders } = useDraftOrders();
   const { historyOrders, openOrders, isLoading, mutate } = useOrderList();
   const firstAccess = useUIStore((state) => state.firstAccess);
 
