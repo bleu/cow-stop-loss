@@ -7,8 +7,7 @@ import { useForm } from "react-hook-form";
 
 import { useDraftOrder } from "#/hooks/useDraftOrder";
 import { useSafeApp } from "#/hooks/useSafeApp";
-import { ChainId } from "#/lib/publicClients";
-import { generateSwapSchema } from "#/lib/schema";
+import { swapSchema } from "#/lib/schema";
 import { SwapData } from "#/lib/types";
 
 import { AdvancedSettingsAlert } from "../AdvancedSettingsAlert";
@@ -25,11 +24,6 @@ import { SwapCardSubmitButton } from "./SwapCardSubmitButton";
 export function SwapForm() {
   const { chainId, safeAddress } = useSafeApp();
 
-  const formSchema = React.useMemo(
-    () => generateSwapSchema(chainId as ChainId),
-    [chainId],
-  );
-
   const [currentDraftOrder, setCurrentDraftOrder, createDraftOrder] =
     useDraftOrder((state) => [
       state.currentDraftOrder,
@@ -38,7 +32,7 @@ export function SwapForm() {
     ]);
 
   const form = useForm<SwapData>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(swapSchema),
     defaultValues: {
       isSellOrder: true,
     },

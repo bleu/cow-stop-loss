@@ -3,9 +3,7 @@ import { literal, z } from "zod";
 import { normalize } from "viem/ens";
 
 import { ChainId, publicClientsFromIds } from "./publicClients";
-import { fetchCowQuote } from "./cowApi/fetchCowQuote";
 import { oracleMinimalAbi } from "./abis/oracleMinimalAbi";
-import { capitalize } from "@bleu/ui";
 
 const basicAddressSchema = z.custom<Address>((val) => {
   return typeof val === "string" ? isAddress(val) : false;
@@ -57,47 +55,25 @@ const generateOracleSchema = ({ chainId }: { chainId: ChainId }) => {
   );
 };
 
-export const generateSwapSchema = (chainId: ChainId) =>
-  z
-    .object({
-      tokenSell: basicTokenSchema,
-      tokenBuy: basicTokenSchema,
-      amountSell: z.coerce.number().positive(),
-      amountBuy: z.coerce.number().positive(),
-      strikePrice: z.coerce.number().positive(),
-      limitPrice: z.coerce.number().positive(),
-      isSellOrder: z.coerce.boolean(),
-    })
-    .refine(
-      (data) => {
-        return data.tokenSell.address != data.tokenBuy.address;
-      },
-      {
-        path: ["tokenBuy"],
-        message: "Tokens sell and buy must be different",
-      },
-    )
-    .superRefine((data, ctx) => {
-      const amountDecimals = data.isSellOrder
-        ? data.tokenSell.decimals
-        : data.tokenBuy.decimals;
-      const amount = data.isSellOrder ? data.amountSell : data.amountBuy;
-      return fetchCowQuote({
-        tokenIn: data.tokenSell,
-        tokenOut: data.tokenBuy,
-        amount: amount * 10 ** amountDecimals,
-        chainId,
-        priceQuality: "fast",
-        isSell: data.isSellOrder,
-      }).then((res) => {
-        if (res.errorType) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: `${res.errorType}: ${capitalize(res.description)}`,
-          });
-        }
-      });
-    });
+export const swapSchema = z
+  .object({
+    tokenSell: basicTokenSchema,
+    tokenBuy: basicTokenSchema,
+    amountSell: z.coerce.number().positive(),
+    amountBuy: z.coerce.number().positive(),
+    strikePrice: z.coerce.number().positive(),
+    limitPrice: z.coerce.number().positive(),
+    isSellOrder: z.coerce.boolean(),
+  })
+  .refine(
+    (data) => {
+      return data.tokenSell.address != data.tokenBuy.address;
+    },
+    {
+      path: ["tokenBuy"],
+      message: "Tokens sell and buy must be different",
+    },
+  );
 
 export const generateAdvancedSettingsSchema = (chainId: ChainId) =>
   z

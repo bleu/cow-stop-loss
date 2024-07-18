@@ -8,13 +8,24 @@ interface AdvancedSettingsState {
   setAdvancedSettings: (settings: AdvancedSwapSettings) => void;
 }
 
-const defaultAdvancedSettings: AdvancedSwapSettings = {
+export const defaultAdvancedSettings: AdvancedSwapSettings = {
   receiver: "",
   maxHoursSinceOracleUpdates: 1,
   tokenBuyOracle: "",
   tokenSellOracle: "",
   partiallyFillable: false,
 };
+
+export function haveSettingsChanged(
+  current: Partial<AdvancedSwapSettings>,
+  defaults: AdvancedSwapSettings,
+): boolean {
+  return Object.keys(current).some(
+    (key) =>
+      current[key as keyof AdvancedSwapSettings] !==
+      defaults[key as keyof AdvancedSwapSettings],
+  );
+}
 
 export const useAdvancedSettingsStore = create<AdvancedSettingsState>()(
   persist(

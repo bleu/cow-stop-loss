@@ -1,5 +1,5 @@
 import { Address } from "viem";
-import { generateAdvancedSettingsSchema, generateSwapSchema } from "./schema";
+import { generateAdvancedSettingsSchema, swapSchema } from "./schema";
 import { z } from "zod";
 import { UserStopLossOrdersQuery } from "./gql/composable-cow/__generated__/1";
 import { ArrElement, GetDeepProp } from "@bleu/ui";
@@ -21,7 +21,7 @@ export interface ITokenWithValue extends IToken {
 export type AdvancedSwapSettings = z.input<
   ReturnType<typeof generateAdvancedSettingsSchema>
 >;
-export type SwapData = z.input<ReturnType<typeof generateSwapSchema>>;
+export type SwapData = z.input<typeof swapSchema>;
 
 export type DraftOrder = SwapData &
   AdvancedSwapSettings & {

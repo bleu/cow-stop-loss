@@ -59,15 +59,6 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     state.setTokenSellBalance,
   ]);
   const updateOracle = useOracleStore((state) => state.updateOracle);
-  // const { data: tokenSellBalance } = useBalance({
-  //   address: safeAddress,
-  //   token: currentDraftOrder?.tokenSell.address,
-  // });
-  // const { data: tokenBuyBalance } = useBalance({
-  //   address: safeAddress,
-  //   token: currentDraftOrder?.tokenBuy.address,
-  // });
-
   const tokenBalance = side === "Buy" ? tokenBuyBalance : tokenSellBalance;
   const setTokenBalance =
     side === "Buy" ? setTokenBuyBalance : setTokenSellBalance;
@@ -149,24 +140,21 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                   0.0001,
                 )}{" "}
               </span>
-              {!isAmountDisabled &&
-                tokenBalance &&
-                tokenBalance !== "0" &&
-                amount.toString().includes(formatNumber(tokenBalance)) && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    className="py-0 px-1 h-fit text-accent text-xs"
-                    onClick={() => {
-                      setValue(
-                        amountFieldName,
-                        Number(convertStringToNumberAndRoundDown(tokenBalance)),
-                      );
-                    }}
-                  >
-                    Max
-                  </Button>
-                )}
+              {!isAmountDisabled && tokenBalance && tokenBalance !== "0" && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="py-0 px-1 h-fit text-accent text-xs"
+                  onClick={() => {
+                    setValue(
+                      amountFieldName,
+                      Number(convertStringToNumberAndRoundDown(tokenBalance)),
+                    );
+                  }}
+                >
+                  Max
+                </Button>
+              )}
             </span>
           )}
         </div>

@@ -1,6 +1,10 @@
 "use client";
 
-import { useAdvancedSettingsStore } from "#/hooks/useAdvancedSettings";
+import {
+  defaultAdvancedSettings,
+  haveSettingsChanged,
+  useAdvancedSettingsStore,
+} from "#/hooks/useAdvancedSettings";
 
 import { AlertCard } from "./ui/alert-card";
 
@@ -9,12 +13,10 @@ export function AdvancedSettingsAlert() {
     (state) => state.advancedSettings,
   );
 
-  const isAdvancedSettingsChanged =
-    advancedSettings?.receiver.toLowerCase() !== "" ||
-    advancedSettings?.maxHoursSinceOracleUpdates !== 1 ||
-    advancedSettings?.tokenBuyOracle ||
-    advancedSettings?.tokenBuyOracle ||
-    advancedSettings?.partiallyFillable;
+  const isAdvancedSettingsChanged = haveSettingsChanged(
+    advancedSettings,
+    defaultAdvancedSettings,
+  );
 
   if (!isAdvancedSettingsChanged) return null;
 

@@ -17,7 +17,11 @@ import cn from "clsx";
 import * as React from "react";
 import { useForm, useWatch } from "react-hook-form";
 
-import { useAdvancedSettingsStore } from "#/hooks/useAdvancedSettings";
+import {
+  defaultAdvancedSettings,
+  haveSettingsChanged,
+  useAdvancedSettingsStore,
+} from "#/hooks/useAdvancedSettings";
 import { useSafeApp } from "#/hooks/useSafeApp";
 import { ChainId } from "#/lib/publicClients";
 import { generateAdvancedSettingsSchema } from "#/lib/schema";
@@ -35,30 +39,12 @@ import { Checkbox } from "./ui/checkbox";
 import { Form } from "./ui/form";
 import { Input } from "./ui/input";
 
-function haveSettingsChanged(
-  current: Partial<AdvancedSwapSettings>,
-  defaults: AdvancedSwapSettings,
-): boolean {
-  return Object.keys(current).some(
-    (key) =>
-      current[key as keyof AdvancedSwapSettings] !==
-      defaults[key as keyof AdvancedSwapSettings],
-  );
-}
-
 export function AdvancedSettingsDialog() {
   const [open, setOpen] = React.useState(false);
-  const { safeAddress, chainId } = useSafeApp();
+  const { chainId } = useSafeApp();
   const [advancedSettings, setAdvancedSettings] = useAdvancedSettingsStore(
     (state) => [state.advancedSettings, state.setAdvancedSettings],
   );
-  const defaultSettings = {
-    receiver: safeAddress,
-    maxHoursSinceOracleUpdates: 1,
-    tokenBuyOracle: "" as const,
-    tokenSellOracle: "" as const,
-    partiallyFillable: false,
-  } as const;
 
   const form = useForm<AdvancedSwapSettings>({
     resolver: zodResolver(generateAdvancedSettingsSchema(chainId as ChainId)),
@@ -74,7 +60,7 @@ export function AdvancedSettingsDialog() {
   const currentValues = useWatch({ control });
   const areSettingsDifferentFromDefault = haveSettingsChanged(
     currentValues,
-    defaultSettings,
+    defaultAdvancedSettings,
   );
 
   const receiver = useWatch({ control, name: "receiver" });
@@ -207,8 +193,8 @@ export function AdvancedSettingsDialog() {
                 type="button"
                 className="text-xs flex gap-1 text-white items-center pb-0 h-min"
                 onClick={() => {
-                  reset(defaultSettings);
-                  setAdvancedSettings(defaultSettings);
+                  reset(defaultAdvancedSettings);
+                  setAdvancedSettings(defaultAdvancedSettings);
                 }}
               >
                 <ResetIcon className="size-3" /> Reset to default settings
