@@ -28,38 +28,36 @@ import { StatusBadge } from "./StatusBadge";
 import { Spinner } from "./ui/spinner";
 
 export function OpenOrdersTab() {
-  const { writeContract, isWriting } = useTxManager();
+  const { writeContract } = useTxManager();
   const setTxPendingDialogOpen = useUIStore(
-    (state) => state.setTxPendingDialogOpen,
+    (state) => state.setTxPendingDialogOpen
   );
   const { openOrders, orders, isLoading, mutate } = useOrderList();
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const onCancelOrders = () => {
     const ordersToCancel = openOrders.filter((order) =>
-      selectedIds.includes(order.id),
+      selectedIds.includes(order.id)
     );
     const deleteTxArgs = ordersToCancel.map((order) => ({
       type: TRANSACTION_TYPES.ORDER_CANCEL,
       hash: order.hash,
     })) as OrderCancelArgs[];
-    writeContract(deleteTxArgs, {
-      onSuccess: () => {
-        setSelectedIds([]);
-        setTxPendingDialogOpen(true);
-        ordersToCancel.forEach(({ id }) => {
-          localStorage.setItem(`status-${id}`, `cancelling`);
-        });
-        const ordersToCancelIds = ordersToCancel.map(({ id }) => id);
-        const ordersWithNewStatus = orders?.map((order) => {
-          if (ordersToCancelIds.includes(order.id)) {
-            return { ...order, status: "cancelling" as const };
-          }
-          return order;
-        });
-        mutate(ordersWithNewStatus, { revalidate: false });
-      },
+    writeContract(deleteTxArgs);
+
+    setSelectedIds([]);
+    setTxPendingDialogOpen(true);
+    ordersToCancel.forEach(({ id }) => {
+      localStorage.setItem(`status-${id}`, `cancelling`);
     });
+    const ordersToCancelIds = ordersToCancel.map(({ id }) => id);
+    const ordersWithNewStatus = orders?.map((order) => {
+      if (ordersToCancelIds.includes(order.id)) {
+        return { ...order, status: "cancelling" as const };
+      }
+      return order;
+    });
+    mutate(ordersWithNewStatus, { revalidate: false });
   };
 
   const selectableOrders = openOrders.filter((order) => order.status == "open");
@@ -71,7 +69,6 @@ export function OpenOrdersTab() {
           variant="destructive"
           disabled={!selectedIds.length}
           onClick={onCancelOrders}
-          loading={isWriting}
           loadingText={"Cancelling..."}
         >
           Cancel
@@ -156,7 +153,7 @@ export function OpenOrderRow({
 
   const { data: marketPrice } = useTokenPairPrice(
     order.stopLossData?.tokenIn as IToken,
-    order.stopLossData?.tokenOut as IToken,
+    order.stopLossData?.tokenOut as IToken
   );
 
   const [invertedPrice, setInvertedPrice] = useState(false);
@@ -176,18 +173,18 @@ export function OpenOrderRow({
   const amountSell = Number(
     formatUnits(
       order.stopLossData?.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals,
-    ),
+      order.stopLossData.tokenIn.decimals
+    )
   );
   const amountBuy = Number(
     formatUnits(
       order.stopLossData?.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals,
-    ),
+      order.stopLossData.tokenOut.decimals
+    )
   );
 
   const orderDateTime = epochToDate(
-    Number(order.blockTimestamp),
+    Number(order.blockTimestamp)
   ).toLocaleString();
 
   return (

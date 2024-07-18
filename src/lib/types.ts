@@ -17,6 +17,7 @@ export type OrderStatus =
   | "fulfilled"
   | "partiallyFilled"
   | "draft"
+  | "cancelling"
   | TransactionStatus;
 
 export interface ITokenWithValue extends IToken {
@@ -37,7 +38,8 @@ export type DraftOrder = SwapData &
     fallbackMarketPrice?: number;
     salt: `0x${string}`;
     status: OrderStatus;
-    safeTxHash?: string;
+    safeTxHash?: `0x${string}`;
+    txBlockNumber?: number;
   };
 
 type StopLossOrderTypeRaw = ArrElement<

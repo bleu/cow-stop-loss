@@ -61,9 +61,9 @@ export function OrderDetails({
 
   const router = useRouter();
 
-  const { writeContract, isPonderUpdating } = useTxManager();
+  const { writeContract } = useTxManager();
 
-  const isUpdating = isLoading || isPonderUpdating || isValidating;
+  const isUpdating = isLoading || isValidating;
 
   if (isUpdating && !order) {
     return <Spinner />;
@@ -74,13 +74,13 @@ export function OrderDetails({
   }
 
   const orderDateTime = formatDateTime(
-    epochToDate(Number(order?.blockTimestamp)),
+    epochToDate(Number(order?.blockTimestamp))
   );
   const orderWaitTime = formatTimeDelta(
-    order?.stopLossData?.validityBucketSeconds as number,
+    order?.stopLossData?.validityBucketSeconds as number
   );
   const maxOracleUpdateTime = formatTimeDelta(
-    order?.stopLossData?.maxTimeSinceLastOracleUpdate as number,
+    order?.stopLossData?.maxTimeSinceLastOracleUpdate as number
   );
 
   const amountIn =
@@ -262,7 +262,7 @@ export function OrderDetails({
                 {formatNumber(amountOut, 4)}{" "}
                 <InfoTooltip
                   text={amountOut.toFixed(
-                    order?.stopLossData?.tokenOut.decimals,
+                    order?.stopLossData?.tokenOut.decimals
                   )}
                 />
                 {order?.stopLossData?.tokenOut.symbol}
@@ -381,7 +381,7 @@ export function OrderDetails({
                     <Link
                       className={cn(
                         "hover:text-primary hover:underline",
-                        order.status === "fulfilled" ? "font-bold" : "",
+                        order.status === "fulfilled" ? "font-bold" : ""
                       )}
                       href={buildOrderCowExplorerUrl({
                         chainId: order?.chainId as ChainId,

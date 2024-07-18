@@ -3,8 +3,10 @@ import { useEffect } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
+import { publicClientsFromIds } from "#/lib/publicClients";
 import { DraftOrder, OrderStatus } from "#/lib/types";
 
+import { usePonderState } from "./usePonderState";
 import { useSafeApp } from "./useSafeApp";
 
 interface DraftOrdersState {
@@ -20,6 +22,7 @@ interface DraftOrdersActions {
     txHash: `0x${string}`,
     status: OrderStatus
   ) => void;
+  replaceOrder: (id: string, order: DraftOrder) => void;
 }
 
 const useDraftOrderStore = create<DraftOrdersState & DraftOrdersActions>()(
@@ -50,6 +53,15 @@ const useDraftOrderStore = create<DraftOrdersState & DraftOrdersActions>()(
             return order;
           }),
         })),
+      replaceOrder: (id, order) =>
+        set((state) => ({
+          draftOrders: state.draftOrders.map((o) => {
+            if (o.id === id) {
+              return order;
+            }
+            return o;
+          }),
+        })),
     }),
     {
       name: "draft-orders-storage",
@@ -65,40 +77,63 @@ export const useDraftOrders = () => {
     removeDraftOrders,
     changeOrderStatus,
     addDraftOrders,
+    replaceOrder,
   ] = useDraftOrderStore((state) => [
     state.draftOrders,
     state.setDraftOrders,
     state.removeDraftOrders,
     state.changeOrderStatus,
     state.addDraftOrders,
+    state.replaceOrder,
   ]);
 
-  const { sdk } = useSafeApp();
+  const { ponderBlockNumber } = usePonderState();
+
+  const { sdk, chainId } = useSafeApp();
+  const publicClient = publicClientsFromIds[chainId];
 
   const updateCreatingOrder = async (order: DraftOrder) => {
     if (!order.safeTxHash) return;
     const safeTx = await sdk.txs.getBySafeTxHash(order.safeTxHash);
+
+    // Order was cancelled or failed and can be removed
     if (
-      [
-        TransactionStatus.SUCCESS,
-        TransactionStatus.FAILED,
-        TransactionStatus.CANCELLED,
-      ].includes(safeTx.txStatus)
+      [TransactionStatus.FAILED, TransactionStatus.CANCELLED].includes(
+        safeTx.txStatus
+      )
     ) {
       removeDraftOrders([order.id]);
-    } else {
-      changeOrderStatus([order.id], order.safeTxHash, safeTx.txStatus);
+      return;
     }
+
+    // Transaction was successful
+    if (TransactionStatus.SUCCESS === safeTx.txStatus) {
+      const { blockNumber } = await publicClient.getTransaction({
+        hash: safeTx.txHash as `0x${string}`,
+      });
+
+      // Order is on Ponder and and can be removed
+      if (blockNumber > ponderBlockNumber) {
+        removeDraftOrders([order.id]);
+        return;
+      }
+    }
+
+    // Update order status
+    replaceOrder(order.id, {
+      ...order,
+      status: safeTx.txStatus,
+    });
   };
 
-  const checkCreatingOrders = async () => {
+  const updateCreatingOrders = async () => {
     const creatingOrders = draftOrders.filter((order) => order.safeTxHash);
     creatingOrders.forEach(updateCreatingOrder);
   };
 
   useEffect(() => {
-    checkCreatingOrders();
-    const interval = setInterval(checkCreatingOrders, 5000);
+    updateCreatingOrders();
+    const interval = setInterval(updateCreatingOrders, 5000);
     return () => clearInterval(interval);
   }, [draftOrders]);
 

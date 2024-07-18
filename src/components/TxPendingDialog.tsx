@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Button,
   Dialog,
   DialogContent,
   DialogOverlay,
@@ -10,12 +9,9 @@ import {
 } from "@bleu/ui";
 import cn from "clsx";
 
-import { useTxManager } from "#/hooks/useTxManager";
 import { useUIStore } from "#/hooks/useUIState";
 
 export function TxPendingDialog() {
-  const { isPonderUpdating } = useTxManager();
-
   const [txPendingDialogOpen, setTxPendingDialogOpen] = useUIStore((state) => [
     state.txPendingDialogOpen,
     state.setTxPendingDialogOpen,
@@ -27,33 +23,21 @@ export function TxPendingDialog() {
         <DialogOverlay
           id="dialog-overlay"
           className={cn(
-            "bg-black/20 data-[state=open]:animate-overlayShow fixed inset-0 rounded-lg",
+            "bg-black/20 data-[state=open]:animate-overlayShow fixed inset-0 rounded-lg"
           )}
         />
         <DialogContent
           className={cn(
-            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-lg focus:outline-none bg-foreground  w-[90vw] max-w-[450px] p-[25px]",
+            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-lg focus:outline-none bg-foreground  w-[90vw] max-w-[450px] p-[25px]"
           )}
         >
           <div className="flex flex-col gap-2 w-full">
             <DialogTitle className="text-2xl font-medium ">
-              Transaction pending
+              Transaction created
             </DialogTitle>
             <span className="text-wrap">
-              {isPonderUpdating
-                ? "Almost done! Your transaction is being processed."
-                : "Your transaction was processed."}
-              !
+              You can view the status of your transaction in the dashboard!
             </span>
-            <Button
-              className="w-full mt-3"
-              onClick={() => {
-                setTxPendingDialogOpen(false);
-              }}
-              disabled={isPonderUpdating}
-            >
-              Back to the dashboard
-            </Button>
           </div>
         </DialogContent>
       </DialogPortal>

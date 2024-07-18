@@ -1,14 +1,15 @@
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import useSWR from "swr";
 import { Address } from "viem";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-import { useTxManager } from "#/hooks/useTxManager";
 import { getProcessedStopLossOrders } from "#/lib/orderFetcher";
 import { ChainId } from "#/lib/publicClients";
 import { StopLossOrderType } from "#/lib/types";
+
+import { usePonderState } from "./usePonderState";
 
 interface OrderState {
   orders: StopLossOrderType[];
@@ -27,14 +28,14 @@ const useOrderStore = create<OrderState & OrderActions>()(
     {
       name: "order-storage",
       storage: createJSONStorage(() => localStorage),
-    },
-  ),
+    }
+  )
 );
 
 export function useOrderList() {
   const { safe } = useSafeAppsSDK();
   const setOrders = useOrderStore((state) => state.setOrders);
-  const txManager = useTxManager();
+  const { mutate: ponderMutate } = usePonderState();
 
   const { error, isValidating, mutate } = useSWR(
     {
@@ -43,15 +44,12 @@ export function useOrderList() {
     },
     getProcessedStopLossOrders,
     {
-      onSuccess: (data) => setOrders(data),
-    },
-  );
-
-  useEffect(() => {
-    if (!txManager.isPonderUpdating) {
-      mutate();
+      onSuccess: (data) => {
+        setOrders(data);
+        ponderMutate();
+      },
     }
-  }, [txManager.isPonderUpdating, mutate]);
+  );
 
   const orders = useOrderStore((state) => state.orders);
 
@@ -69,15 +67,15 @@ export function useOrderList() {
               }
             : order;
         }),
-    [orders],
+    [orders]
   );
 
   const historyOrders = useMemo(
     () =>
       orders.filter(
-        (order) => !order.singleOrder || order.status === "fulfilled",
+        (order) => !order.singleOrder || order.status === "fulfilled"
       ),
-    [orders],
+    [orders]
   );
 
   return {

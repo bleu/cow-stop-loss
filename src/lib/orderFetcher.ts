@@ -40,12 +40,12 @@ export async function getProcessedStopLossOrder({
 
   const executedSellAmount = cowOrders?.reduce(
     (acc, cowOrder) => acc + Number(cowOrder.executedSellAmount),
-    0,
+    0
   );
 
   const executedBuyAmount = cowOrders?.reduce(
     (acc, cowOrder) => acc + Number(cowOrder.executedBuyAmount),
-    0,
+    0
   );
 
   const filledPct = rawOrderData?.order?.stopLossData?.isSellOrder
@@ -99,18 +99,18 @@ export async function getProcessedStopLossOrders({
 
   const ordersWithStatus = rawOrdersData.orders.items.map((order, index) => {
     const cowOrdersMatch = cowOrders.filter(
-      (cowOrder) => cowOrder.appData === order.stopLossData?.appData,
+      (cowOrder) => cowOrder.appData === order.stopLossData?.appData
     );
     const singleOrderResult = multicallResults[index]?.result;
 
     const executedSellAmount = cowOrdersMatch?.reduce(
       (acc, cowOrder) => acc + Number(cowOrder.executedSellAmount),
-      0,
+      0
     );
 
     const executedBuyAmount = cowOrdersMatch?.reduce(
       (acc, cowOrder) => acc + Number(cowOrder.executedBuyAmount),
-      0,
+      0
     );
 
     const filledPct = order.stopLossData?.isSellOrder

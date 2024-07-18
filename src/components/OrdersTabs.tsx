@@ -5,7 +5,7 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 
 import { useDraftOrders } from "#/hooks/useDraftOrders";
 import { useOrderList } from "#/hooks/useOrderList";
-import { useTxManager } from "#/hooks/useTxManager";
+import { usePonderState } from "#/hooks/usePonderState";
 import { useUIStore } from "#/hooks/useUIState";
 
 import { DraftOrdersTab } from "./DraftOrdersTab";
@@ -14,17 +14,22 @@ import { OpenOrdersTab } from "./OpenOrdersTab";
 import { Spinner } from "./ui/spinner";
 
 export function OrderTabs() {
-  const { isPonderUpdating } = useTxManager();
+  const { isLoading: isPonderUpdating } = usePonderState();
 
   const { draftOrders } = useDraftOrders();
-  const { historyOrders, openOrders, isLoading, mutate } = useOrderList();
+  const {
+    historyOrders,
+    openOrders,
+    isLoading: isOrdersLoading,
+    mutate,
+  } = useOrderList();
   const firstAccess = useUIStore((state) => state.firstAccess);
 
   if (firstAccess) {
     return null;
   }
 
-  const isUpdating = isLoading || isPonderUpdating;
+  const isUpdating = isOrdersLoading || isPonderUpdating;
   return (
     <TabsRoot
       className="w-3/4 h-[70vh] flex flex-col gap-2"
