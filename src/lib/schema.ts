@@ -1,5 +1,5 @@
 import { Address, isAddress } from "viem";
-import { z } from "zod";
+import { literal, z } from "zod";
 import { normalize } from "viem/ens";
 
 import { ChainId, publicClientsFromIds } from "./publicClients";
@@ -114,7 +114,11 @@ export const generateAdvancedSettingsSchema = (chainId: ChainId) =>
         generateOracleSchema({ chainId }),
         z.literal(""),
       ]),
-      receiver: z.union([basicAddressSchema, generateEnsSchema(chainId)]),
+      receiver: z.union([
+        basicAddressSchema,
+        generateEnsSchema(chainId),
+        literal(""),
+      ]),
       partiallyFillable: z.coerce.boolean(),
     })
     .refine(

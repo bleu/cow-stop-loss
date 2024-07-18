@@ -227,7 +227,7 @@ export function OpenOrderRow({
       </TableCell>
       <TableCell>
         {marketPrice
-          ? ` ${formatNumber(invertedPrice ? 1 / marketPrice : triggerPrice, 4)} ${priceUnity}`
+          ? ` ${formatNumber(invertedPrice ? 1 / marketPrice : marketPrice, 4)} ${priceUnity}`
           : `Loading...`}
       </TableCell>
       <TableCell>{((order.filledPct || 0) * 100).toFixed()}%</TableCell>

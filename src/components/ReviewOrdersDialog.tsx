@@ -34,24 +34,24 @@ import { TokenInfo } from "./TokenInfo";
 import { InfoTooltip } from "./ui/tooltip";
 
 export function ReviewOrdersDialog({
-  showAddOrders = false,
+  draftOrders,
+  open,
+  setOpen,
+  showAddOrders,
 }: {
   draftOrders: DraftOrder[];
+  open: boolean;
+  setOpen: (open: boolean) => void;
   showAddOrders?: boolean;
 }) {
   const { writeContract } = useTxManager();
 
-  const [draftOrders, addDraftOrders, changeDraftOrdersStatusToCreating] =
-    useDraftOrders((state) => [
-      state.draftOrders,
-      state.addDraftOrders,
-      state.changeDraftOrdersStatusToCreating,
-    ]);
+  const [addDraftOrders, changeDraftOrdersStatusToCreating] = useDraftOrders(
+    (state) => [state.addDraftOrders, state.removeDraftOrders]
+  );
 
-  const [setTxPendingDialogOpen, open, setOpen] = useUIStore((state) => [
+  const [setTxPendingDialogOpen] = useUIStore((state) => [
     state.setTxPendingDialogOpen,
-    state.reviewDialogOpen,
-    state.setReviewDialogOpen,
   ]);
   const multipleOrders = draftOrders.length > 1;
   const {
@@ -118,7 +118,7 @@ export function ReviewOrdersDialog({
               ? `Place all ${draftOrders.length} Stop Loss Orders`
               : `Place Stop Loss Order`}
           </Button>
-          {showAddOrders && (
+          {!showAddOrders && (
             <Button
               variant="link"
               className=" text-wrap text-xs text-white"

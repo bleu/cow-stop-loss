@@ -15,7 +15,6 @@ import { useState } from "react";
 
 import { useDraftOrders } from "#/hooks/useDraftOrders";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
-import { useUIStore } from "#/hooks/useUIState";
 import { getOrderDescription } from "#/lib/orderDescription";
 import { DraftOrder } from "#/lib/types";
 
@@ -26,7 +25,6 @@ import { StatusBadge } from "./StatusBadge";
 
 export function DraftOrdersTab() {
   const draftOrders = useDraftOrders((state) => state.draftOrders);
-  const setReviewDialogOpen = useUIStore((state) => state.setReviewDialogOpen);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const selectableOrders = draftOrders.filter(
@@ -37,9 +35,15 @@ export function DraftOrdersTab() {
     selectedIds.includes(order.id),
   );
 
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+
   return (
     <>
-      <ReviewOrdersDialog draftOrders={selectedOrders} />
+      <ReviewOrdersDialog
+        open={reviewDialogOpen}
+        setOpen={setReviewDialogOpen}
+        draftOrders={selectedOrders}
+      />
       <div className="flex flex-col gap-2">
         <div className="flex justify-end gap-2">
           <RemoveDraftOrdersDialog

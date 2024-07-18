@@ -91,7 +91,7 @@ export async function stopLossArgsEncoder(
     data.tokenBuy.decimals,
   );
 
-  const validityBucketSeconds = 24 * 3600;
+  const validityBucketSeconds = 600;
 
   return encodeAbiParameters(stopLossDataStructure, [
     data.tokenSell.address,
