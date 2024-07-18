@@ -12,7 +12,7 @@ import {
   STOP_LOSS_ADDRESS,
 } from "./contracts";
 import { FALLBACK_STATES } from "#/hooks/useFallbackState";
-import { ChainId } from "./publicClients";
+import { ChainId, publicClientsFromIds } from "./publicClients";
 
 export enum TRANSACTION_TYPES {
   ERC20_APPROVE = "ERC20_APPROVE",
@@ -30,7 +30,7 @@ export interface ERC20ApproveArgs extends BaseArgs {
   type: TRANSACTION_TYPES.ERC20_APPROVE;
   token: IToken;
   spender: Address;
-  amount: number;
+  amount: bigint;
 }
 
 export interface StopLossOrderArgs extends BaseArgs, DraftOrder {
@@ -63,14 +63,13 @@ class ERC20ApproveRawTx implements ITransaction<ERC20ApproveArgs> {
     spender,
     amount,
   }: ERC20ApproveArgs): Promise<BaseTransaction> {
-    const amountBigInt = parseUnits(String(amount), 18);
     return {
       to: token.address,
       value: "0",
       data: encodeFunctionData({
         abi: erc20Abi,
         functionName: "approve",
-        args: [spender, amountBigInt],
+        args: [spender, amount],
       }),
     };
   }
@@ -211,33 +210,46 @@ export async function createRawTxArgs({
     }
   })();
 
-  const uniqueTokenSell = new Set(data.map((order) => order.tokenSell.address));
+  const uniqueTokenSell = Array.from(
+    new Set(data.map((order) => order.tokenSell.address)),
+  );
 
-  const approveTxs = Array.from(uniqueTokenSell).map((tokenAddress) => {
+  const publicClient = publicClientsFromIds[chainId];
+
+  const currentAllowances = await publicClient.multicall({
+    contracts: uniqueTokenSell.map((token) => ({
+      address: token,
+      abi: erc20Abi,
+      functionName: "allowance",
+      args: [safeAddress, GPV2_VAULT_RELAYER_ADDRESS],
+    })),
+  });
+
+  const approveTxs = uniqueTokenSell.map((tokenAddress, index) => {
     const ordersWithSameTokenSell = data.filter(
       (order) => order.tokenSell.address === tokenAddress,
     );
     const token = ordersWithSameTokenSell[0].tokenSell;
     const totalAmount = ordersWithSameTokenSell.reduce(
-      (acc, order) => acc + order.amountSell,
-      0,
+      (acc, order) =>
+        acc + parseUnits(String(order.amountSell), token.decimals),
+      BigInt(currentAllowances[index].result || 0),
     );
     return {
       type: TRANSACTION_TYPES.ERC20_APPROVE,
       token,
       spender: GPV2_VAULT_RELAYER_ADDRESS,
       amount: totalAmount,
-    } as ERC20ApproveArgs;
-  });
+    };
+  }) as ERC20ApproveArgs[];
 
-  const ordersTxs = await Promise.all(
-    data.map((order) => ({
-      type: TRANSACTION_TYPES.STOP_LOSS_ORDER,
-      ...order,
-      chainId,
-      safeAddress,
-    })),
-  );
+  console.log(approveTxs);
+  const ordersTxs = data.map((order) => ({
+    type: TRANSACTION_TYPES.STOP_LOSS_ORDER,
+    ...order,
+    chainId,
+    safeAddress,
+  })) as StopLossOrderArgs[];
 
   return [...setupTxs, ...approveTxs, ...ordersTxs];
 }
