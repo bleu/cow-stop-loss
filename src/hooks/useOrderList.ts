@@ -1,5 +1,5 @@
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import { useEffect, useMemo } from "react";
+import { useEffect } from "react";
 import useSWR from "swr";
 import { Address } from "viem";
 import { create } from "zustand";
@@ -55,26 +55,8 @@ export function useOrderList() {
 
   const orders = useOrderStore((state) => state.orders);
 
-  const openOrders = useMemo(
-    () =>
-      orders.filter(
-        (order) => order.singleOrder && order.status !== "fulfilled",
-      ),
-    [orders],
-  );
-
-  const historyOrders = useMemo(
-    () =>
-      orders.filter(
-        (order) => !order.singleOrder || order.status === "fulfilled",
-      ),
-    [orders],
-  );
-
   return {
     orders,
-    openOrders,
-    historyOrders,
     isLoading: isValidating,
     error,
     mutate,

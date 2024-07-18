@@ -27,7 +27,8 @@ export function RemoveDraftOrdersDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          variant="destructive"
+          size="sm"
+          variant="outline"
           type="button"
           disabled={!selectedIds.length}
         >

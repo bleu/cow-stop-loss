@@ -19,10 +19,10 @@ div[data-rk] {
 
 @layer base {
   :root {
+    --background: 238 53% 12%;
+    --foreground: 0 0% 100%;
     --border: 238 53% 12%;
     --input: 201 100% 67%;
-    --background: 238 53% 12%;
-    --foreground: 238 42% 16%;
     --primary: 201 100% 67%;
     --primary-foreground: 198 42% 6%;
     --secondary: 266 83% 57%;
@@ -33,13 +33,11 @@ div[data-rk] {
     --muted-foreground: 203 13% 88%;
     --accent: 201 100% 67%;
     --accent-foreground: 198 42% 6%;
-
     --popover: 238 42% 16%;
     --popover-foreground: 0 0% 100%;
     --card: 238 42% 16%;
     --card-foreground: 0 0% 100%;
     --radius: 20px;
-
     --highlight: 42 100% 71%;
     --info: 203 13% 88%;
     --success: 162 99% 40%;
@@ -50,8 +48,14 @@ div[data-rk] {
     @apply border-border;
   }
   body {
-    /* font-feature-settings: "rlig" 1, "calt" 1); */
     font-synthesis-weight: none;
     text-rendering: optimizeLegibility;
+    @apply bg-background text-foreground;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    @apply px-4;
   }
 }

@@ -72,7 +72,7 @@ export function TokenSelect({
             className={cn(
               "flex px-2 justify-between rounded-full space-x-1",
               selectedToken
-                ? "bg-foreground text-white hover:text-primary-foreground"
+                ? "bg-muted text-white hover:text-primary-foreground"
                 : "",
             )}
             disabled={disabled}

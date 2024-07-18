@@ -1,8 +1,13 @@
 /** @type {import('next').NextConfig} */
 const moduleExports = {
   experimental: {
-    reactCompiler: true,
+    ppr: true,
+    reactCompiler: {
+      compilationMode: "annotation",
+    },
+
   },
+  
   webpack: (config) => {
     config.externals.push('pino-pretty');
     return config;

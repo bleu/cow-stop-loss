@@ -155,11 +155,11 @@ export function getOrderStatus({
 }: {
   order: Omit<StopLossOrderType, "status">;
 }): OrderStatus {
-  if (!order.filledPct && !order.singleOrder) return "canceled";
+  if (!order.filledPct && !order.singleOrder) return "cancelled";
 
   if (!order.filledPct) return "open";
 
-  if (order.filledPct >= 1) return "fulfilled";
+  if (order.filledPct >= 1) return "filled";
 
   return "partiallyFilled";
 }

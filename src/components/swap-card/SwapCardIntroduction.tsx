@@ -52,7 +52,7 @@ export function SwapCardIntroduction() {
   const setFirstAccess = useUIStore((state) => state.setFirstAccess);
 
   return (
-    <Card className="bg-foreground w-full p-6 rounded-lg">
+    <Card className="bg-muted w-full p-6 rounded-lg">
       <CardTitle className="w-full flex flex-col items-center">
         <span className="text-lg">Start creating</span>
         <span className="text-4xl text-primary">Stop Loss orders</span>

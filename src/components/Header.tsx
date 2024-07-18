@@ -40,7 +40,7 @@ export function Header({ linkUrl, imageSrc, onLinkClick }: IHeader) {
       </div>
       <div className="flex gap-x-4">
         <div className="ml-auto flex justify-end">
-          <div className="bg-foreground text-center text-sm rounded-lg font-semibold py-3 px-5">
+          <div className="bg-muted text-center text-sm rounded-lg font-semibold py-3 px-5">
             {`${networkAcronym[chainId]}:${truncateAddress(safeAddress)}`}
           </div>
         </div>
