@@ -65,7 +65,7 @@ export function ConsolidatedOrdersTable() {
     <div>
       <div className="md:-mt-10">
         <div className="flex items-center space-x-2 mb-2">
-          <span className="text-2xl font-semibold ">Your orders</span>
+          <span className="text-2xl font-semibold">Your orders</span>
           {isUpdating ? (
             <Spinner size="sm" />
           ) : (

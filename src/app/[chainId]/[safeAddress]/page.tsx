@@ -6,7 +6,7 @@ export default function Page() {
   return (
     <>
       <TxPendingDialog />
-      <div className="grid grid-cols-1 md:grid-cols-3 p-8 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 p-8 gap-4 text-foreground">
         <div className="md:col-span-1">
           <SwapCard />
         </div>
