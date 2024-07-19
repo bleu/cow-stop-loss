@@ -38,7 +38,7 @@ export const stopLossDataStructure = [
     type: "bool",
   },
   {
-    name: "validityBucketSeconds",
+    name: "validTo",
     type: "uint32",
   },
   {
@@ -91,7 +91,9 @@ export async function stopLossArgsEncoder(
     data.tokenBuy.decimals,
   );
 
-  const validityBucketSeconds = 24 * 3600;
+  const validToUnix = data.validTo
+    ? BigInt(Math.floor(data.validTo.getTime() / 1000))
+    : BigInt("4294967295"); // max uint32;
 
   return encodeAbiParameters(stopLossDataStructure, [
     data.tokenSell.address,
@@ -102,7 +104,7 @@ export async function stopLossArgsEncoder(
     data.receiver,
     data.isSellOrder,
     data.partiallyFillable,
-    validityBucketSeconds.toFixed(),
+    validToUnix,
     data.tokenSellOracle,
     data.tokenBuyOracle,
     strikePriceWithDecimals,

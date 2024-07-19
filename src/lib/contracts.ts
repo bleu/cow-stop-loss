@@ -13,17 +13,12 @@ export const GPV2_VAULT_RELAYER_ADDRESS =
   "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110" as const;
 
 export const STOP_LOSS_ADDRESS = {
-  [mainnet.id]: "0x6a8898f43676d8a3e9a5de286195558c3628a6d4",
-  [gnosis.id]: "0x5951ebf7dc5ddb9fd2fd6d5c7f4bc7b7509b463b",
-  [sepolia.id]: "0xb560a403f8450164b8b745ecca41d8ced93c50a1",
+  // TODO: COW-237
+  [mainnet.id]: "0x",
+  [gnosis.id]: "0x",
+  [sepolia.id]: "0xe6CDbC068654C506424F7747357F51d0e7caB00e",
 } as const;
 
 export const PRICE_FEED_REGISTER_ADDRESS = {
   [mainnet.id]: "0x47Fb2585D2C56Fe188D0E6ec628a38b74fCeeeDf",
-} as const;
-
-export const BALANCER_MINTER_ADDRESS = {
-  [mainnet.id]: "0x239e55F427D44C3cc793f49bFB507ebe76638a2b",
-  [gnosis.id]: "0xA8920455934Da4D853faac1f94Fe7bEf72943eF1",
-  [sepolia.id]: "0x1783Cd84b3d01854A96B4eD5843753C2CcbD574A",
 } as const;
