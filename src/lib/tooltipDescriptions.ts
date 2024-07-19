@@ -17,4 +17,5 @@ export enum TOOLTIP_DESCRIPTIONS {
   RELATED_ORDERS = "The orders created based on your initial request",
   MAX_TIME_SINCE_LAST_ORACLE_UPDATE = "The maximum time since the last oracle update. If the oracle has not been updated in this time, the order will not be executed.",
   TYPE = "The order can be fill or kill (entire order must be filled) or partial fill (part of the order can be filled respecting the limit price).",
+  VALID_TO = "The date and time at which the order will expire if not filled. If empty, the order will never expire.",
 }

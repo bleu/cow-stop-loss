@@ -75,8 +75,13 @@ export const swapSchema = z
     },
   );
 
-export const generateAdvancedSettingsSchema = (chainId: ChainId) =>
-  z
+export const generateAdvancedSettingsSchema = (chainId: ChainId) => {
+  const currentDate = new Date();
+  const maxValidTo = new Date(
+    new Date().setFullYear(currentDate.getFullYear() + 10),
+  );
+
+  return z
     .object({
       maxHoursSinceOracleUpdates: z.coerce
         .number()
@@ -96,6 +101,10 @@ export const generateAdvancedSettingsSchema = (chainId: ChainId) =>
         literal(""),
       ]),
       partiallyFillable: z.coerce.boolean(),
+      validTo: z.union([
+        z.coerce.date().min(currentDate).max(maxValidTo),
+        z.literal(""),
+      ]),
     })
     .refine(
       (data) => {
@@ -121,3 +130,4 @@ export const generateAdvancedSettingsSchema = (chainId: ChainId) =>
         path: ["tokenBuyOracle"],
       },
     );
+};

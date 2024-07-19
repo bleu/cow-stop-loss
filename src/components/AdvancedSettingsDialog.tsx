@@ -120,6 +120,12 @@ export function AdvancedSettingsDialog() {
                 />
               }
             />
+            <Input
+              name="validTo"
+              label="Expiration date"
+              type="datetime-local"
+              tooltipText={TOOLTIP_DESCRIPTIONS.VALID_TO}
+            />
             <Separator className="bg-white mt-2" />
             <div className="flex flex-col gap-2">
               <Label className="block text-sm font-semibold">Oracle</Label>

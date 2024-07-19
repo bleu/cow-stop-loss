@@ -14,6 +14,7 @@ export const defaultAdvancedSettings: AdvancedSwapSettings = {
   tokenBuyOracle: "",
   tokenSellOracle: "",
   partiallyFillable: false,
+  validTo: "",
 };
 
 export function haveSettingsChanged(
