@@ -113,8 +113,8 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
       <CardTitle className="w-full flex justify-between font-normal text-xs">
         {getCardTitle(isAmountDisabled, side)}
       </CardTitle>
-      <CardContent className="flex justify-between gap-2 px-0 py-2 items-start">
-        <div className="flex flex-col gap-y-1 min-w-28 w-32">
+      <CardContent className="px-0 py-2 items-start flex flex-row justify-between flex-wrap">
+        <div className="min-w-32 max-w-40 basis-32">
           <TokenSelect
             selectedToken={token}
             onSelectToken={(newToken) => {
@@ -128,6 +128,30 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
             }}
             errorMessage={errors[tokenFieldName]?.message}
           />
+        </div>
+        <div className="flex flex-col gap-y-1 items-end overflow-x-auto basis-1/2 grow">
+          <Input
+            {...register(amountFieldName)}
+            type="number"
+            step={1 / 10 ** (token ? token.decimals : 18)}
+            placeholder="0.0"
+            className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:/70 px-0 text-2xl text-right bg-background"
+            disabled={isAmountDisabled}
+            min={0}
+            max={10 ** 18}
+            onKeyDown={preventNegativeKeyDown}
+            onPaste={pasteAbsoluteValue}
+          />
+          <i className="text-xs pr-1">
+            {`≈ ${formatNumber(
+              amount && usdPrice ? amount * (usdPrice || 0) : 0,
+              2,
+              "currency",
+              "standard",
+            )}`}
+          </i>
+        </div>
+        <div className="w-full">
           {token && (
             <span className="text-xs">
               <span>
@@ -157,28 +181,6 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
               )}
             </span>
           )}
-        </div>
-        <div className="flex flex-col gap-y-1 w-full items-end overflow-x-auto">
-          <Input
-            {...register(amountFieldName)}
-            type="number"
-            step={1 / 10 ** (token ? token.decimals : 18)}
-            placeholder="0.0"
-            className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:/70 px-0 text-2xl text-right bg-background"
-            disabled={isAmountDisabled}
-            min={0}
-            max={10 ** 18}
-            onKeyDown={preventNegativeKeyDown}
-            onPaste={pasteAbsoluteValue}
-          />
-          <i className="text-xs pr-1">
-            {`≈ ${formatNumber(
-              amount && usdPrice ? amount * (usdPrice || 0) : 0,
-              2,
-              "currency",
-              "standard",
-            )}`}
-          </i>
         </div>
       </CardContent>
     </Card>
