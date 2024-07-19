@@ -77,7 +77,7 @@ export function ConsolidatedOrdersTable() {
           )}
         </div>
       </div>
-      <div className="flex rounded-lg bg-muted p-2 max-h-[70vh]">
+      <div className="flex rounded-lg bg-muted p-2 max-h-[80vh]">
         <DataTable table={table}>
           <DataTableToolbar table={table} filterFields={filterFields}>
             <ConsolidatedOrdersTableToolbarActions table={table} />

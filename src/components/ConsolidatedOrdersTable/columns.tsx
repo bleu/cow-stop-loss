@@ -1,14 +1,132 @@
-import { Checkbox, formatNumber } from "@bleu/ui";
+import { Button, Checkbox, formatNumber } from "@bleu/ui";
 import { ColumnDef } from "@tanstack/react-table";
-import React from "react";
+import { ArrowLeftRight } from "lucide-react";
+import React, { useState } from "react";
 import { formatUnits } from "viem";
 
 import { DataTableColumnHeader } from "#/components/data-table/data-table-column-header";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
-import { getOrderDescription } from "#/lib/orderDescription";
+import { DraftOrder, IToken, StopLossOrderType } from "#/lib/types";
 
 import { StatusBadge } from "../StatusBadge";
 import { ConsolidatedOrderType } from ".";
+
+type PriceKey = "strikePrice" | "limitPrice" | "currentPrice";
+
+interface TokenPair {
+  tokenA: Omit<IToken, "__typename">;
+  tokenB: Omit<IToken, "__typename">;
+}
+
+const isStopLossOrder = (
+  order: ConsolidatedOrderType,
+): order is StopLossOrderType => {
+  return "stopLossData" in order && order.stopLossData !== null;
+};
+
+const isDraftOrder = (order: ConsolidatedOrderType): order is DraftOrder => {
+  return "tokenBuy" in order && "tokenSell" in order;
+};
+
+export function getOrderDescription(order: ConsolidatedOrderType): string {
+  if (isStopLossOrder(order) && order.stopLossData) {
+    const { isSellOrder, tokenAmountIn, tokenIn, tokenAmountOut, tokenOut } =
+      order.stopLossData;
+    return `${isSellOrder ? "Sell" : "Buy"} ${formatUnits(tokenAmountIn, tokenIn.decimals)} ${tokenIn.symbol} for ${formatUnits(tokenAmountOut, tokenOut.decimals)} ${tokenOut.symbol}`;
+  } else if (isDraftOrder(order)) {
+    return `${order.isSellOrder ? "Sell" : "Buy"} ${order.amountSell} ${order.tokenSell.symbol} for ${order.amountBuy} ${order.tokenBuy.symbol}`;
+  }
+  return "Invalid order";
+}
+
+const getTokenPair = (order: ConsolidatedOrderType): TokenPair | null => {
+  if (isStopLossOrder(order) && order.stopLossData) {
+    return {
+      tokenA: order.stopLossData.tokenOut,
+      tokenB: order.stopLossData.tokenIn,
+    } as TokenPair;
+  }
+  if (isDraftOrder(order)) {
+    return {
+      tokenA: order.tokenBuy,
+      tokenB: order.tokenSell,
+    };
+  }
+  return null;
+};
+
+const usePrice = (
+  order: ConsolidatedOrderType,
+  priceKey: PriceKey,
+): number | null => {
+  const tokenPair = getTokenPair(order);
+  const { data: marketPrice } = useTokenPairPrice(
+    tokenPair?.tokenB,
+    tokenPair?.tokenA,
+  );
+
+  if (priceKey === "currentPrice") {
+    return marketPrice ?? null;
+  }
+
+  if (
+    isStopLossOrder(order) &&
+    order.stopLossData &&
+    priceKey === "strikePrice"
+  ) {
+    return Number(formatUnits(order.stopLossData.strike, 18));
+  }
+
+  if (isDraftOrder(order) && priceKey in order) {
+    return order[priceKey] as number;
+  }
+
+  return null;
+};
+
+const PriceDisplay: React.FC<{
+  tokenPair: TokenPair;
+  price: number | null;
+}> = ({ tokenPair, price }) => {
+  const [isInverted, setIsInverted] = useState(false);
+  const { tokenA, tokenB } = tokenPair;
+  const displayPrice = price !== null ? (isInverted ? 1 / price : price) : null;
+  const symbols = isInverted
+    ? `${tokenB.symbol}/ ${tokenA.symbol}`
+    : `${tokenA.symbol}/ ${tokenB.symbol}`;
+
+  if (displayPrice === null) return "-";
+  if (displayPrice === 0) return null;
+  return (
+    <div className="flex flex-row gap-1">
+      <div className="my-auto flex-1">{formatNumber(displayPrice, 4)}</div>
+      {displayPrice && (
+        <Button
+          type="button"
+          variant="ghost"
+          className="py-0 px-1 text-accent text-xs whitespace-break-spaces flex-1"
+          onClick={() => setIsInverted(!isInverted)}
+        >
+          {symbols}
+
+          <ArrowLeftRight className="size-4" />
+        </Button>
+      )}
+    </div>
+  );
+};
+
+export const InvertiblePrice: React.FC<{
+  order: ConsolidatedOrderType;
+  priceKey: PriceKey;
+}> = ({ order, priceKey }) => {
+  const tokenPair = getTokenPair(order);
+  const price = usePrice(order, priceKey);
+
+  if (!tokenPair) return <span>Invalid order type</span>;
+
+  return <PriceDisplay tokenPair={tokenPair} price={price} />;
+};
 
 export function getColumns(): ColumnDef<ConsolidatedOrderType>[] {
   return [
@@ -32,109 +150,38 @@ export function getColumns(): ColumnDef<ConsolidatedOrderType>[] {
       enableHiding: false,
     },
     {
-      accessorKey: "blockTimestamp",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Created" />
-      ),
-      cell: ({ row }) => {
-        if (!row.original.blockTimestamp) {
-          return "N/A";
-        }
-        const timestamp = Number(row.original.blockTimestamp);
-        return new Date(timestamp * 1000).toLocaleString();
-      },
-    },
-    {
       accessorKey: "order",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Order" />
       ),
-      cell: ({ row }) => {
-        const order = row.original;
-        if ("stopLossData" in order) {
-          const stopLossData = order.stopLossData;
-          if (!stopLossData) return null;
-
-          return (
-            <div className="flex flex-col">
-              <span>{stopLossData.isSellOrder ? "Sell" : "Buy"} Order</span>
-              <span>
-                {formatNumber(
-                  formatUnits(
-                    stopLossData.tokenAmountIn,
-                    stopLossData.tokenIn.decimals,
-                  ),
-                  4,
-                )}{" "}
-                {stopLossData.tokenIn.symbol} to{" "}
-                {formatNumber(
-                  formatUnits(
-                    stopLossData.tokenAmountOut,
-                    stopLossData.tokenOut.decimals,
-                  ),
-                  4,
-                )}{" "}
-                {stopLossData.tokenOut.symbol}
-              </span>
-            </div>
-          );
-        } else {
-          return getOrderDescription(order);
-        }
-      },
+      cell: ({ row }) => getOrderDescription(row.original),
     },
     {
       accessorKey: "strikePrice",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Trigger price" />
       ),
-      cell: ({ row }) => {
-        const order = row.original;
-        if (order?.stopLossData) {
-          const stopLossData = order.stopLossData;
-          return `${formatNumber(formatUnits(stopLossData.strike, 18), 4)} ${stopLossData.tokenOut.symbol}/${stopLossData.tokenIn.symbol}`;
-        } else {
-          return `${formatNumber(order.strikePrice, 4)} ${order.tokenBuy.symbol}/${order.tokenSell.symbol}`;
-        }
-      },
+      cell: ({ row }) => (
+        <InvertiblePrice order={row.original} priceKey="strikePrice" />
+      ),
     },
     {
       accessorKey: "limitPrice",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Limit price" />
       ),
-      cell: ({ row }) => {
-        const order = row.original;
-        if ("limitPrice" in order) {
-          return `${formatNumber(order.limitPrice, 4)} ${order.tokenBuy.symbol}/${order.tokenSell.symbol}`;
-        }
-        return "N/A";
-      },
+      cell: ({ row }) => (
+        <InvertiblePrice order={row.original} priceKey="limitPrice" />
+      ),
     },
     {
       accessorKey: "currentPrice",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Current price" />
       ),
-      cell: ({ row }) => {
-        const order = row.original;
-        const { data: marketPrice } = useTokenPairPrice(
-          "stopLossData" in order
-            ? order.stopLossData.tokenIn
-            : order.tokenSell,
-          "stopLossData" in order
-            ? order.stopLossData.tokenOut
-            : order.tokenBuy,
-        );
-        if (marketPrice) {
-          return `${formatNumber(marketPrice, 4)} ${
-            "stopLossData" in order
-              ? `${order.stopLossData.tokenOut.symbol}/${order.stopLossData.tokenIn.symbol}`
-              : `${order.tokenBuy.symbol}/${order.tokenSell.symbol}`
-          }`;
-        }
-        return "Loading...";
-      },
+      cell: ({ row }) => (
+        <InvertiblePrice order={row.original} priceKey="currentPrice" />
+      ),
     },
     {
       accessorKey: "filledPct",
@@ -145,7 +192,28 @@ export function getColumns(): ColumnDef<ConsolidatedOrderType>[] {
         if ("filledPct" in row.original) {
           return `${((row.original.filledPct || 0) * 100).toFixed()}%`;
         }
-        return "N/A";
+        return "-";
+      },
+    },
+    {
+      accessorKey: "blockTimestamp",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Created" />
+      ),
+      cell: ({ row }) => {
+        if (!row.original.blockTimestamp) {
+          return "-";
+        }
+        const timestamp = Number(row.original.blockTimestamp);
+        return new Date(timestamp * 1000)
+          .toLocaleTimeString("en-GB", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+          .replace(",", "");
       },
     },
     {

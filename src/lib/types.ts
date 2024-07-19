@@ -30,6 +30,7 @@ export type DraftOrder = SwapData &
     oraclePrice: number;
     fallbackMarketPrice?: number;
     salt: `0x${string}`;
+    blockTimestamp?: null;
   };
 
 type StopLossOrderTypeRaw = ArrElement<

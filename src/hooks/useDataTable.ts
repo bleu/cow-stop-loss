@@ -66,7 +66,7 @@ interface UseDataTableProps<TData, TValue> {
    * The number of pages in the table.
    * @type number
    */
-  pageCount: number;
+  pageCount?: number;
 
   /**
    * The default number of rows per page.
