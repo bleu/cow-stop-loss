@@ -62,6 +62,9 @@ export function ConsolidatedOrdersTableToolbarActions({
     setReviewDialogOpen(true);
   };
 
+  const hasSelectedDraftOrders = selectedDraftOrders.length > 0;
+  const hasSelectedOpenOrders = selectedOpenOrders.length > 0;
+
   return (
     <>
       <div className="flex items-center gap-2">
@@ -69,25 +72,27 @@ export function ConsolidatedOrdersTableToolbarActions({
           variant="outline"
           size="sm"
           onClick={onReviewDraftOrders}
-          disabled={selectedDraftOrders.length === 0}
+          disabled={!hasSelectedDraftOrders || hasSelectedOpenOrders}
         >
-          Review {selectedDraftOrders.length > 1 ? "Orders" : "Order"}
+          Review{" "}
+          {hasSelectedDraftOrders ? `${selectedDraftOrders.length} ` : ""}
+          Draft {selectedDraftOrders.length > 1 ? "Orders" : "Order"}
         </Button>
+        <RemoveDraftOrdersDialog
+          selectedIds={selectedDraftOrders.map((order) => order.id)}
+          setSelectedIds={() => table.resetRowSelection()}
+          disabled={!hasSelectedDraftOrders || hasSelectedOpenOrders}
+        />
         <Button
           variant="outline"
           size="sm"
           onClick={onCancelOrders}
-          disabled={isWriting || selectedOpenOrders.length === 0}
+          disabled={!hasSelectedOpenOrders || hasSelectedDraftOrders}
         >
-          {isWriting
-            ? "Cancelling..."
-            : `Cancel ${selectedOpenOrders.length > 1 ? "Orders" : "Order"}`}
+          Cancel {hasSelectedOpenOrders ? `${selectedOpenOrders.length} ` : ""}
+          {selectedOpenOrders.length > 1 ? "Orders" : "Order"}{" "}
         </Button>
       </div>
-      <RemoveDraftOrdersDialog
-        selectedIds={selectedDraftOrders.map((order) => order.id)}
-        setSelectedIds={() => table.resetRowSelection()}
-      />
       <ReviewOrdersDialog
         open={reviewDialogOpen}
         setOpen={setReviewDialogOpen}
@@ -100,9 +105,11 @@ export function ConsolidatedOrdersTableToolbarActions({
 export function RemoveDraftOrdersDialog({
   selectedIds,
   setSelectedIds,
+  disabled,
 }: {
   selectedIds: string[];
   setSelectedIds: (ids: string[]) => void;
+  disabled: boolean;
 }) {
   const { removeDraftOrders } = useDraftOrders();
   const [open, setOpen] = useState(false);
@@ -110,13 +117,9 @@ export function RemoveDraftOrdersDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button
-          size="sm"
-          variant="outline"
-          type="button"
-          disabled={!selectedIds.length}
-        >
-          Delete
+        <Button size="sm" variant="outline" type="button" disabled={disabled}>
+          Delete {selectedIds.length > 0 ? `${selectedIds.length} ` : ""}
+          Draft {selectedIds.length > 1 ? "Orders" : "Order"}{" "}
         </Button>
       </DialogTrigger>
       <DialogPortal>
