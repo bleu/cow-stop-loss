@@ -10,6 +10,7 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   type PaginationState,
+  RowSelectionOptions,
   type SortingState,
   useReactTable,
   type VisibilityState,
@@ -122,6 +123,10 @@ interface UseDataTableProps<TData, TValue> {
    * @type boolean
    */
   enableAdvancedFilter?: boolean;
+  enableRowSelection?: Pick<
+    RowSelectionOptions<TData>,
+    "enableRowSelection"
+  >["enableRowSelection"];
 }
 
 const schema = z.object({
@@ -137,6 +142,7 @@ export function useDataTable<TData, TValue>({
   defaultSort,
   filterFields = [],
   enableAdvancedFilter = false,
+  enableRowSelection,
 }: UseDataTableProps<TData, TValue>) {
   const router = useRouter();
   const pathname = usePathname();
@@ -172,7 +178,7 @@ export function useDataTable<TData, TValue>({
 
       return newSearchParams.toString();
     },
-    [searchParams],
+    [searchParams]
   );
 
   // Initial column filters
@@ -180,10 +186,10 @@ export function useDataTable<TData, TValue>({
     return Array.from(searchParams.entries()).reduce<ColumnFiltersState>(
       (filters, [key, value]) => {
         const filterableColumn = filterableColumns.find(
-          (column) => column.value === key,
+          (column) => column.value === key
         );
         const searchableColumn = searchableColumns.find(
-          (column) => column.value === key,
+          (column) => column.value === key
         );
 
         if (filterableColumn) {
@@ -200,7 +206,7 @@ export function useDataTable<TData, TValue>({
 
         return filters;
       },
-      [],
+      []
     );
   }, [filterableColumns, searchableColumns, searchParams]);
 
@@ -223,7 +229,7 @@ export function useDataTable<TData, TValue>({
       pageIndex,
       pageSize,
     }),
-    [pageIndex, pageSize],
+    [pageIndex, pageSize]
   );
 
   // Handle server-side sorting
@@ -245,7 +251,7 @@ export function useDataTable<TData, TValue>({
       })}`,
       {
         scroll: false,
-      },
+      }
     );
   }, [pageIndex, pageSize, sorting]);
 
@@ -255,10 +261,10 @@ export function useDataTable<TData, TValue>({
       JSON.stringify(
         columnFilters.filter((filter) => {
           return searchableColumns.find((column) => column.value === filter.id);
-        }),
+        })
       ),
-      500,
-    ),
+      500
+    )
   ) as ColumnFiltersState;
 
   const filterableColumnFilters = columnFilters.filter((filter) => {
@@ -303,7 +309,7 @@ export function useDataTable<TData, TValue>({
       if (
         (searchableColumns.find((column) => column.value === key) &&
           !debouncedSearchableColumnFilters.find(
-            (column) => column.id === key,
+            (column) => column.id === key
           )) ||
         (filterableColumns.find((column) => column.value === key) &&
           !filterableColumnFilters.find((column) => column.id === key))
@@ -331,9 +337,7 @@ export function useDataTable<TData, TValue>({
       rowSelection,
       columnFilters,
     },
-    enableRowSelection: (row) =>
-      // @ts-ignore
-      row.original.status !== "filled" && row.original.status !== "cancelled",
+    enableRowSelection,
     getRowId: (row) => (row as { id: string }).id,
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,

@@ -30,12 +30,12 @@ export function ConsolidatedOrdersTable() {
       ...draftOrders.map((order) => ({ ...order, status: "draft" }) as const),
       ...orders,
     ],
-    [draftOrders, orders],
+    [draftOrders, orders]
   );
 
   const columns = React.useMemo(
     () => getColumns(),
-    [safe.chainId, safe.safeAddress],
+    [safe.chainId, safe.safeAddress]
   );
   const isUpdating = isLoading || isPonderUpdating;
 
@@ -56,6 +56,8 @@ export function ConsolidatedOrdersTable() {
     data: allOrders,
     columns,
     filterFields,
+    enableRowSelection: (row) =>
+      row.original.status !== "filled" && row.original.status !== "cancelled",
   });
 
   return (
