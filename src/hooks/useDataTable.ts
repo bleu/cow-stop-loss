@@ -331,7 +331,9 @@ export function useDataTable<TData, TValue>({
       rowSelection,
       columnFilters,
     },
-    enableRowSelection: true,
+    enableRowSelection: (row) =>
+      // @ts-ignore
+      row.original.status !== "filled" && row.original.status !== "cancelled",
     getRowId: (row) => (row as { id: string }).id,
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
