@@ -24,7 +24,7 @@ export function Header({ linkUrl, imageSrc, onLinkClick }: IHeader) {
   };
 
   return (
-    <div className="flex h-20 w-full items-center bg-background p-4">
+    <div className="flex h-20 w-full items-center bg-background p-8">
       <div className="mr-auto flex justify-start">
         <Link
           href={linkUrl}

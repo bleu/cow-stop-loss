@@ -83,7 +83,7 @@ export function ConsolidatedOrdersTableToolbarActions({
 
   return (
     <>
-      <div className="flex items-center gap-2">
+      <div className="grid gap-2 md:grid-flow-col justify-items-end">
         <TooltipWrapper
           showTooltip={draftOrderActionsDisabled}
           tooltipText={DRAFT_ORDER_ACTIONS_DISABLED_TOOLTIP}

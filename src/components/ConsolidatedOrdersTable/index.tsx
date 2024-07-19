@@ -63,7 +63,7 @@ export function ConsolidatedOrdersTable() {
 
   return (
     <div>
-      <div className="-mt-10">
+      <div className="md:-mt-10">
         <div className="flex items-center space-x-2 mb-2">
           <span className="text-2xl font-semibold ">Your orders</span>
           {isUpdating ? (

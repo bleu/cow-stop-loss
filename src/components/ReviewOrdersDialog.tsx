@@ -86,7 +86,7 @@ export function ReviewOrdersDialog({
           "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-muted w-[90vw] max-w-[450px] py-6 px-2",
         )}
       >
-        <div className="flex flex-col gap-2 w-full overflow-y-scroll scrollbar scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-primary scrollbar-track-background scrollbar-w-2 max-h-[85vh] px-3">
+        <div className="flex flex-col gap-2 w-full overflow-y-auto scrollbar scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-primary scrollbar-track-background scrollbar-w-2 max-h-[85vh] px-3">
           <div className="text-2xl font-medium ">
             Review Stop Loss order{multipleOrders ? "s" : ""}
           </div>

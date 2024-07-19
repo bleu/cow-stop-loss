@@ -197,7 +197,9 @@ export function getColumns(): ColumnDef<ConsolidatedOrderType>[] {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Order" />
       ),
-      cell: ({ row }) => getOrderDescription(row.original),
+      cell: ({ row }) => (
+        <div className="min-w-32">{getOrderDescription(row.original)}</div>
+      ),
     },
     {
       accessorKey: "strikePrice",
@@ -260,8 +262,7 @@ export function getColumns(): ColumnDef<ConsolidatedOrderType>[] {
       },
     },
     {
-      accessorKey: "details",
-      header: "",
+      id: "details",
       cell: ({ row }) => {
         if (isStopLossOrder(row.original) && "id" in row.original) {
           const { safeAddress, chainId } = useSafeApp();
