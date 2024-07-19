@@ -37,7 +37,7 @@ export function TxPendingDialog() {
         >
           <div className="flex flex-col gap-2 w-full">
             <DialogTitle className="text-2xl font-medium ">
-              Transaction pending
+              Submitted
             </DialogTitle>
             <span className="text-wrap">
               {isPonderUpdating ? "Almost done" : "Done"}!

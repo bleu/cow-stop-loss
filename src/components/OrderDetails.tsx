@@ -206,8 +206,8 @@ export function OrderDetails({
             {maxOracleUpdateTime}
           </OrderDetailsInformation>
           <OrderDetailsInformation
-            label="Recipient"
-            tooltipText={TOOLTIP_DESCRIPTIONS.RECIPIENT}
+            label="Receiver"
+            tooltipText={TOOLTIP_DESCRIPTIONS.RECEIVER}
           >
             <div className="flex items-center gap-x-1">
               {order?.stopLossData?.to}

@@ -197,7 +197,7 @@ function OrderContent({ order }: { order: DraftOrder }) {
         </OrderInformation>
         <OrderInformation
           title="Receiver"
-          tooltipText={TOOLTIP_DESCRIPTIONS.RECIPIENT}
+          tooltipText={TOOLTIP_DESCRIPTIONS.RECEIVER}
         >
           <AddressWithLink address={order.receiver} />
         </OrderInformation>

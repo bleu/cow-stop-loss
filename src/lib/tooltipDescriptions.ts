@@ -8,7 +8,7 @@ export enum TOOLTIP_DESCRIPTIONS {
   STATUS = "The status can be open, filled, partially filled or cancelled.",
   SUBMISSION_TIME = "The date and time at which the order was submitted.",
   VALIDITY_BUCKET_TIME = "After the oracle price achieves the defined trigger price, how much time the order will wait to be filled on the orderbook.",
-  RECIPIENT = "Recipient address that will receive the buy tokens of the order.",
+  RECEIVER = "Receiver address that will receive the buy tokens of the order.",
   AMOUNT = "The total sell and buy amount for this order. Sell amount includes the fee.",
   EXECUTION_PRICE = "The actual price at which this order has been matched and executed, after deducting fees from the amount sold.",
   ORDER = "The amount sold/bought. Also surplus for this order. This is the positive difference between the initial limit price and the actual (average) execution price.",

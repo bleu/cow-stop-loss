@@ -110,7 +110,7 @@ export function AdvancedSettingsDialog() {
               name="receiver"
               label="Receiver"
               placeholder="0xabc...123"
-              tooltipText={TOOLTIP_DESCRIPTIONS.RECIPIENT}
+              tooltipText={TOOLTIP_DESCRIPTIONS.RECEIVER}
               extraLabelElement={
                 <BlockExplorerLink
                   type="address"
