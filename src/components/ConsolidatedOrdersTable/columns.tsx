@@ -28,7 +28,7 @@ interface TokenPair {
 }
 
 const isStopLossOrder = (
-  order: ConsolidatedOrderType
+  order: ConsolidatedOrderType,
 ): order is StopLossOrderType => {
   return "stopLossData" in order && order.stopLossData !== null;
 };
@@ -66,12 +66,12 @@ const getTokenPair = (order: ConsolidatedOrderType): TokenPair | null => {
 
 const usePrice = (
   order: ConsolidatedOrderType,
-  priceKey: PriceKey
+  priceKey: PriceKey,
 ): number | null => {
   const tokenPair = getTokenPair(order);
   const { data: marketPrice } = useTokenPairPrice(
     tokenPair?.tokenB,
-    tokenPair?.tokenA
+    tokenPair?.tokenA,
   );
 
   if (priceKey === "currentPrice") {
@@ -85,11 +85,11 @@ const usePrice = (
   ) {
     const amountSell = formatUnits(
       order.stopLossData.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals
+      order.stopLossData.tokenIn.decimals,
     );
     const amountBuy = formatUnits(
       order.stopLossData.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals
+      order.stopLossData.tokenOut.decimals,
     );
     return Number(amountBuy) / Number(amountSell);
   }
