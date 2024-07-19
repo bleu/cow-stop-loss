@@ -65,19 +65,6 @@ export function ConsolidatedOrdersTableToolbarActions({
   return (
     <>
       <div className="flex items-center gap-2">
-        {/* <Button
-          variant="outline"
-          size="sm"
-          onClick={() =>
-            exportTableToCSV(table, {
-              filename: "orders",
-              excludeColumns: ["select", "actions"],
-            })
-          }
-        >
-          <DownloadIcon className="mr-2 size-4" aria-hidden="true" />
-          Export
-        </Button> */}
         <Button
           variant="outline"
           size="sm"
