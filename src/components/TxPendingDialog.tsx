@@ -32,12 +32,12 @@ export function TxPendingDialog() {
         />
         <DialogContent
           className={cn(
-            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-lg focus:outline-none bg-foreground  w-[90vw] max-w-[450px] p-[25px]",
+            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-lg focus:outline-none bg-muted  w-[90vw] max-w-[450px] p-[25px]",
           )}
         >
           <div className="flex flex-col gap-2 w-full">
             <DialogTitle className="text-2xl font-medium ">
-              Transaction pending
+              Submitted
             </DialogTitle>
             <span className="text-wrap">
               {isPonderUpdating ? "Almost done" : "Done"}!

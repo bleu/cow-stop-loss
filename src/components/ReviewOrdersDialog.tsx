@@ -83,10 +83,10 @@ export function ReviewOrdersDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         className={cn(
-          "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-foreground w-[90vw] max-w-[450px] py-6 px-2",
+          "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-muted w-[90vw] max-w-[450px] py-6 px-2",
         )}
       >
-        <div className="flex flex-col gap-2 w-full overflow-y-scroll scrollbar scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-primary scrollbar-track-background scrollbar-w-4 max-h-[85vh] px-3">
+        <div className="flex flex-col gap-2 w-full overflow-y-scroll scrollbar scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-primary scrollbar-track-background scrollbar-w-2 max-h-[85vh] px-3">
           <div className="text-2xl font-medium ">
             Review Stop Loss order{multipleOrders ? "s" : ""}
           </div>
@@ -119,7 +119,7 @@ export function ReviewOrdersDialog({
               ? `Place all ${draftOrders.length} Stop Loss Orders`
               : `Place Stop Loss Order`}
           </Button>
-          {!showAddOrders && (
+          {showAddOrders && (
             <Button
               variant="link"
               className=" text-wrap text-xs text-white"
@@ -197,7 +197,7 @@ function OrderContent({ order }: { order: DraftOrder }) {
         </OrderInformation>
         <OrderInformation
           title="Receiver"
-          tooltipText={TOOLTIP_DESCRIPTIONS.RECIPIENT}
+          tooltipText={TOOLTIP_DESCRIPTIONS.RECEIVER}
         >
           <AddressWithLink address={order.receiver} />
         </OrderInformation>

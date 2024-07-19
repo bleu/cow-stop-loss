@@ -112,7 +112,7 @@ export function OrderDetails({
 
   return (
     <div className="flex size-full justify-center items-center">
-      <div className="bg-foreground my-10 text-white p-10 rounded relative">
+      <div className="bg-muted my-10 text-white p-10 rounded relative">
         <div className="flex flex-row justify-between items-center mb-5">
           <button onClick={router.back}>
             <ArrowLeftIcon className="size-4" />
@@ -206,8 +206,8 @@ export function OrderDetails({
             {maxOracleUpdateTime}
           </OrderDetailsInformation>
           <OrderDetailsInformation
-            label="Recipient"
-            tooltipText={TOOLTIP_DESCRIPTIONS.RECIPIENT}
+            label="Receiver"
+            tooltipText={TOOLTIP_DESCRIPTIONS.RECEIVER}
           >
             <div className="flex items-center gap-x-1">
               {order?.stopLossData?.to}
@@ -381,7 +381,7 @@ export function OrderDetails({
                     <Link
                       className={cn(
                         "hover:text-primary hover:underline",
-                        order.status === "fulfilled" ? "font-bold" : "",
+                        order.status === "filled" ? "font-bold" : "",
                       )}
                       href={buildOrderCowExplorerUrl({
                         chainId: order?.chainId as ChainId,

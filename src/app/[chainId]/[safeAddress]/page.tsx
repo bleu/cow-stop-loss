@@ -1,4 +1,4 @@
-import { OrderTabs } from "#/components/OrdersTabs";
+import { ConsolidatedOrdersTable } from "#/components/ConsolidatedOrdersTable";
 import { SwapCard } from "#/components/swap-card/SwapCard";
 import { TxPendingDialog } from "#/components/TxPendingDialog";
 
@@ -6,11 +6,13 @@ export default function Page() {
   return (
     <>
       <TxPendingDialog />
-      <div className="flex size-full mb-2 mt-16 px-8 gap-6">
-        <div className="mx-auto w-1/3">
+      <div className="grid grid-cols-3 p-8 gap-4">
+        <div className="col-span-1">
           <SwapCard />
         </div>
-        <OrderTabs />
+        <div className="col-span-2">
+          <ConsolidatedOrdersTable />
+        </div>
       </div>
     </>
   );

@@ -10,7 +10,7 @@ export interface IToken {
   address: Address;
 }
 
-export type OrderStatus = "open" | "canceled" | "fulfilled" | "partiallyFilled";
+export type OrderStatus = "open" | "cancelled" | "filled" | "partiallyFilled";
 
 export interface ITokenWithValue extends IToken {
   balance: string;
@@ -26,9 +26,11 @@ export type SwapData = z.input<typeof swapSchema>;
 export type DraftOrder = SwapData &
   AdvancedSwapSettings & {
     id: string;
+    status: "draft";
     oraclePrice: number;
     fallbackMarketPrice?: number;
     salt: `0x${string}`;
+    blockTimestamp?: null;
   };
 
 type StopLossOrderTypeRaw = ArrElement<

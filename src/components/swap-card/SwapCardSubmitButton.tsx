@@ -114,14 +114,15 @@ export function SwapCardSubmitButton() {
     }
     if (Object.values(errors).length) {
       const errorList = Object.values(errors);
-      const firstErrorMessage = errorList[0];
-      const firstErrorKey = Object.keys(errors).find(
-        // @ts-ignore
-        (key) => errors[key] === firstErrorMessage,
-      );
+      // const firstErrorMessage = errorList[0];
+      // const firstErrorKey = Object.keys(errors).find(
+      //   // @ts-ignore
+      //   (key) => errors[key] === firstErrorMessage,
+      // );
+      const errorString = errorList.map(({ message }) => message).join(", ");
       return {
         disabled: false,
-        text: `Error on ${firstErrorKey}: ${firstErrorMessage}. Click to try again`,
+        text: `${errorString}. Click to try again`,
       };
     }
     return {

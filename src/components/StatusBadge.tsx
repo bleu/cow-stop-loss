@@ -12,7 +12,7 @@ export function StatusBadge({ status }: { status: OrderStatus | string }) {
           Open
         </Badge>
       );
-    case "fulfilled":
+    case "filled":
       return (
         <Badge
           color="success"
@@ -30,7 +30,7 @@ export function StatusBadge({ status }: { status: OrderStatus | string }) {
           Partially Filled
         </Badge>
       );
-    case "canceled":
+    case "cancelled":
       return (
         <Badge color="destructive" className="h-fit py-1 hover:bg-destructive">
           Cancelled
@@ -39,7 +39,7 @@ export function StatusBadge({ status }: { status: OrderStatus | string }) {
     default:
       return (
         <Badge className="h-fit py-1 hover:bg-primary bg-primary ">
-          {capitalize(status)}
+          {status && capitalize(status)}
         </Badge>
       );
   }
