@@ -20,10 +20,21 @@ import { DraftOrder, StopLossOrderType } from "#/lib/types";
 
 import { type ConsolidatedOrderType } from "../ConsolidatedOrdersTable";
 import { ReviewOrdersDialog } from "../ReviewOrdersDialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip-primitive";
 
 interface ConsolidatedOrdersTableToolbarActionsProps {
   table: Table<ConsolidatedOrderType>;
 }
+
+const DRAFT_ORDER_ACTIONS_DISABLED_TOOLTIP =
+  "You can perform this action when only draft orders are selected";
+const OPEN_ORDER_ACTIONS_DISABLED_TOOLTIP =
+  "You can perform this action when only open orders are selected";
 
 export function ConsolidatedOrdersTableToolbarActions({
   table,
@@ -65,33 +76,49 @@ export function ConsolidatedOrdersTableToolbarActions({
   const hasSelectedDraftOrders = selectedDraftOrders.length > 0;
   const hasSelectedOpenOrders = selectedOpenOrders.length > 0;
 
+  const draftOrderActionsDisabled =
+    !hasSelectedDraftOrders || hasSelectedOpenOrders;
+  const openOrderActionsDisabled =
+    !hasSelectedOpenOrders || hasSelectedDraftOrders;
+
   return (
     <>
       <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onReviewDraftOrders}
-          disabled={!hasSelectedDraftOrders || hasSelectedOpenOrders}
+        <TooltipWrapper
+          showTooltip={draftOrderActionsDisabled}
+          tooltipText={DRAFT_ORDER_ACTIONS_DISABLED_TOOLTIP}
         >
-          Review{" "}
-          {hasSelectedDraftOrders ? `${selectedDraftOrders.length} ` : ""}
-          Draft {selectedDraftOrders.length > 1 ? "Orders" : "Order"}
-        </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onReviewDraftOrders}
+            disabled={draftOrderActionsDisabled}
+          >
+            Review{" "}
+            {hasSelectedDraftOrders ? `${selectedDraftOrders.length} ` : ""}
+            Draft {selectedDraftOrders.length > 1 ? "Orders" : "Order"}
+          </Button>
+        </TooltipWrapper>
         <RemoveDraftOrdersDialog
           selectedIds={selectedDraftOrders.map((order) => order.id)}
           setSelectedIds={() => table.resetRowSelection()}
-          disabled={!hasSelectedDraftOrders || hasSelectedOpenOrders}
+          disabled={draftOrderActionsDisabled}
         />
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onCancelOrders}
-          disabled={!hasSelectedOpenOrders || hasSelectedDraftOrders}
+        <TooltipWrapper
+          showTooltip={openOrderActionsDisabled}
+          tooltipText={OPEN_ORDER_ACTIONS_DISABLED_TOOLTIP}
         >
-          Cancel {hasSelectedOpenOrders ? `${selectedOpenOrders.length} ` : ""}
-          {selectedOpenOrders.length > 1 ? "Orders" : "Order"}{" "}
-        </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={onCancelOrders}
+            disabled={openOrderActionsDisabled}
+          >
+            Cancel{" "}
+            {hasSelectedOpenOrders ? `${selectedOpenOrders.length} ` : ""}
+            {selectedOpenOrders.length > 1 ? "Orders" : "Order"}{" "}
+          </Button>
+        </TooltipWrapper>
       </div>
       <ReviewOrdersDialog
         open={reviewDialogOpen}
@@ -117,10 +144,15 @@ export function RemoveDraftOrdersDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" variant="outline" type="button" disabled={disabled}>
-          Delete {selectedIds.length > 0 ? `${selectedIds.length} ` : ""}
-          Draft {selectedIds.length > 1 ? "Orders" : "Order"}{" "}
-        </Button>
+        <TooltipWrapper
+          showTooltip={disabled}
+          tooltipText={DRAFT_ORDER_ACTIONS_DISABLED_TOOLTIP}
+        >
+          <Button size="sm" variant="outline" type="button" disabled={disabled}>
+            Delete {selectedIds.length > 0 ? `${selectedIds.length} ` : ""}
+            Draft {selectedIds.length > 1 ? "Orders" : "Order"}{" "}
+          </Button>
+        </TooltipWrapper>
       </DialogTrigger>
       <DialogPortal>
         <DialogOverlay />
@@ -146,5 +178,28 @@ export function RemoveDraftOrdersDialog({
         </DialogContent>
       </DialogPortal>
     </Dialog>
+  );
+}
+
+function TooltipWrapper({
+  children,
+  showTooltip,
+  tooltipText,
+}: {
+  children: React.ReactNode;
+  showTooltip: boolean;
+  tooltipText: string;
+}) {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>{children}</TooltipTrigger>
+        {showTooltip && (
+          <TooltipContent className="bg-primary text-primary-foreground text-sm">
+            {tooltipText}
+          </TooltipContent>
+        )}
+      </Tooltip>
+    </TooltipProvider>
   );
 }
