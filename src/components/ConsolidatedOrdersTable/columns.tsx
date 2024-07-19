@@ -70,6 +70,22 @@ const usePrice = (
   }
 
   if (
+    priceKey === "limitPrice" &&
+    isStopLossOrder(order) &&
+    order.stopLossData
+  ) {
+    const amountSell = formatUnits(
+      order.stopLossData.tokenAmountIn,
+      order.stopLossData.tokenIn.decimals,
+    );
+    const amountBuy = formatUnits(
+      order.stopLossData.tokenAmountOut,
+      order.stopLossData.tokenOut.decimals,
+    );
+    return Number(amountBuy) / Number(amountSell);
+  }
+
+  if (
     isStopLossOrder(order) &&
     order.stopLossData &&
     priceKey === "strikePrice"
