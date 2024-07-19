@@ -1,14 +1,17 @@
 import { Button, Checkbox, formatNumber } from "@bleu/ui";
+import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowLeftRight } from "lucide-react";
 import React, { useState } from "react";
 import { formatUnits } from "viem";
 
 import { DataTableColumnHeader } from "#/components/data-table/data-table-column-header";
+import { useSafeApp } from "#/hooks/useSafeApp";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { DraftOrder, IToken, StopLossOrderType } from "#/lib/types";
 
 import { StatusBadge } from "../StatusBadge";
+import { LinkComponent } from "../ui/link";
 import {
   Tooltip,
   TooltipContent,
@@ -25,7 +28,7 @@ interface TokenPair {
 }
 
 const isStopLossOrder = (
-  order: ConsolidatedOrderType,
+  order: ConsolidatedOrderType
 ): order is StopLossOrderType => {
   return "stopLossData" in order && order.stopLossData !== null;
 };
@@ -63,12 +66,12 @@ const getTokenPair = (order: ConsolidatedOrderType): TokenPair | null => {
 
 const usePrice = (
   order: ConsolidatedOrderType,
-  priceKey: PriceKey,
+  priceKey: PriceKey
 ): number | null => {
   const tokenPair = getTokenPair(order);
   const { data: marketPrice } = useTokenPairPrice(
     tokenPair?.tokenB,
-    tokenPair?.tokenA,
+    tokenPair?.tokenA
   );
 
   if (priceKey === "currentPrice") {
@@ -82,11 +85,11 @@ const usePrice = (
   ) {
     const amountSell = formatUnits(
       order.stopLossData.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals,
+      order.stopLossData.tokenIn.decimals
     );
     const amountBuy = formatUnits(
       order.stopLossData.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals,
+      order.stopLossData.tokenOut.decimals
     );
     return Number(amountBuy) / Number(amountSell);
   }
@@ -223,18 +226,6 @@ export function getColumns(): ColumnDef<ConsolidatedOrderType>[] {
       ),
     },
     {
-      accessorKey: "filledPct",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Filled" />
-      ),
-      cell: ({ row }) => {
-        if ("filledPct" in row.original) {
-          return `${((row.original.filledPct || 0) * 100).toFixed()}%`;
-        }
-        return "-";
-      },
-    },
-    {
       accessorKey: "blockTimestamp",
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Created" />
@@ -261,10 +252,29 @@ export function getColumns(): ColumnDef<ConsolidatedOrderType>[] {
         <DataTableColumnHeader column={column} title="Status" />
       ),
       cell: ({ row }) => {
-        if ("status" in row.original) {
-          return <StatusBadge status={row.original.status} />;
+        return <StatusBadge status={row.original.status} />;
+      },
+      filterFn: (row, id, value) => {
+        return Array.isArray(value) && value.includes(row.getValue(id));
+      },
+    },
+    {
+      accessorKey: "details",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Details" />
+      ),
+      cell: ({ row }) => {
+        if (isStopLossOrder(row.original) && "id" in row.original) {
+          const { safeAddress, chainId } = useSafeApp();
+          return (
+            <LinkComponent
+              href={`/${chainId}/${safeAddress}/${row.original.id}`}
+            >
+              <ArrowTopRightIcon className="size-4 hover:text-primary" />
+            </LinkComponent>
+          );
         }
-        return "Draft";
+        return "-";
       },
       filterFn: (row, id, value) => {
         return Array.isArray(value) && value.includes(row.getValue(id));

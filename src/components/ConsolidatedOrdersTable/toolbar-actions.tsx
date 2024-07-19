@@ -30,7 +30,7 @@ export function ConsolidatedOrdersTableToolbarActions({
 }: ConsolidatedOrdersTableToolbarActionsProps) {
   const { writeContract } = useTxManager();
   const setTxPendingDialogOpen = useUIStore(
-    (state) => state.setTxPendingDialogOpen,
+    (state) => state.setTxPendingDialogOpen
   );
 
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
@@ -39,10 +39,10 @@ export function ConsolidatedOrdersTableToolbarActions({
     .getFilteredSelectedRowModel()
     .rows.map((row) => row.original);
   const selectedDraftOrders = selectedOrders.filter(
-    (order) => order.status === "draft",
+    (order) => order.status === "draft"
   ) as DraftOrder[];
   const selectedOpenOrders = selectedOrders.filter(
-    (order) => order.status === "open",
+    (order) => order.status === "open"
   ) as StopLossOrderType[];
 
   const onCancelOrders = () => {
