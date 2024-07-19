@@ -196,6 +196,20 @@ function OrderContent({ order }: { order: DraftOrder }) {
           {order.partiallyFillable ? "Partial fillable" : "Fill or Kill"}
         </OrderInformation>
         <OrderInformation
+          title="Expiration date"
+          tooltipText={TOOLTIP_DESCRIPTIONS.VALID_TO}
+        >
+          {order.validTo
+            ? order.validTo.toLocaleTimeString("en-GB", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "Good until cancelled or filled"}
+        </OrderInformation>
+        <OrderInformation
           title="Receiver"
           tooltipText={TOOLTIP_DESCRIPTIONS.RECEIVER}
         >
