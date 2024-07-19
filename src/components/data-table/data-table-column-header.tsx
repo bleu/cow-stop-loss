@@ -31,7 +31,7 @@ export function DataTableColumnHeader<TData, TValue>({
   }
 
   return (
-    <div className={cn("flex items-center space-x-2", className)}>
+    <div className={cn("w-full items-center", className)}>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button
@@ -44,16 +44,18 @@ export function DataTableColumnHeader<TData, TValue>({
             }
             variant="ghost"
             size="sm"
-            className="-ml-3 h-8 data-[state=open]:bg-accent"
+            className="-ml-3 h-8 data-[state=open]:bg-accent w-full justify-between"
           >
-            <span>{title}</span>
-            {column.getCanSort() && column.getIsSorted() === "desc" ? (
-              <ArrowDownIcon className="ml-2 size-4" aria-hidden="true" />
-            ) : column.getIsSorted() === "asc" ? (
-              <ArrowUpIcon className="ml-2 size-4" aria-hidden="true" />
-            ) : (
-              <CaretSortIcon className="ml-2 size-4" aria-hidden="true" />
-            )}
+            <span className="">{title}</span>
+            <span className="flex-initial">
+              {column.getCanSort() && column.getIsSorted() === "desc" ? (
+                <ArrowDownIcon className="ml-2 size-4" aria-hidden="true" />
+              ) : column.getIsSorted() === "asc" ? (
+                <ArrowUpIcon className="ml-2 size-4" aria-hidden="true" />
+              ) : (
+                <CaretSortIcon className="ml-2 size-4" aria-hidden="true" />
+              )}
+            </span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start">
