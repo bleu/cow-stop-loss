@@ -338,6 +338,7 @@ export function useDataTable<TData, TValue>({
       columnFilters,
     },
     enableRowSelection,
+    enableHiding: false,
     getRowId: (row) => (row as { id: string }).id,
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
