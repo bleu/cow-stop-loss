@@ -178,7 +178,7 @@ export function useDataTable<TData, TValue>({
 
       return newSearchParams.toString();
     },
-    [searchParams]
+    [searchParams],
   );
 
   // Initial column filters
@@ -186,10 +186,10 @@ export function useDataTable<TData, TValue>({
     return Array.from(searchParams.entries()).reduce<ColumnFiltersState>(
       (filters, [key, value]) => {
         const filterableColumn = filterableColumns.find(
-          (column) => column.value === key
+          (column) => column.value === key,
         );
         const searchableColumn = searchableColumns.find(
-          (column) => column.value === key
+          (column) => column.value === key,
         );
 
         if (filterableColumn) {
@@ -206,7 +206,7 @@ export function useDataTable<TData, TValue>({
 
         return filters;
       },
-      []
+      [],
     );
   }, [filterableColumns, searchableColumns, searchParams]);
 
@@ -229,7 +229,7 @@ export function useDataTable<TData, TValue>({
       pageIndex,
       pageSize,
     }),
-    [pageIndex, pageSize]
+    [pageIndex, pageSize],
   );
 
   // Handle server-side sorting
@@ -251,7 +251,7 @@ export function useDataTable<TData, TValue>({
       })}`,
       {
         scroll: false,
-      }
+      },
     );
   }, [pageIndex, pageSize, sorting]);
 
@@ -261,10 +261,10 @@ export function useDataTable<TData, TValue>({
       JSON.stringify(
         columnFilters.filter((filter) => {
           return searchableColumns.find((column) => column.value === filter.id);
-        })
+        }),
       ),
-      500
-    )
+      500,
+    ),
   ) as ColumnFiltersState;
 
   const filterableColumnFilters = columnFilters.filter((filter) => {
@@ -309,7 +309,7 @@ export function useDataTable<TData, TValue>({
       if (
         (searchableColumns.find((column) => column.value === key) &&
           !debouncedSearchableColumnFilters.find(
-            (column) => column.id === key
+            (column) => column.id === key,
           )) ||
         (filterableColumns.find((column) => column.value === key) &&
           !filterableColumnFilters.find((column) => column.id === key))

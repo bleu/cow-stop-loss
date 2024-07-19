@@ -9,6 +9,12 @@ import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { DraftOrder, IToken, StopLossOrderType } from "#/lib/types";
 
 import { StatusBadge } from "../StatusBadge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip-primitive";
 import { ConsolidatedOrderType } from ".";
 
 type PriceKey = "strikePrice" | "limitPrice" | "currentPrice";
@@ -150,19 +156,33 @@ export function getColumns(): ColumnDef<ConsolidatedOrderType>[] {
       id: "select",
       header: ({ table }) => (
         <Checkbox
+          className="mr-1"
           checked={table.getIsAllPageRowsSelected()}
           onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
         />
       ),
       cell: ({ row }) => {
-        if (!row.getCanSelect()) return;
+        const isSelectable = row.getCanSelect();
         return (
-          <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Select row"
-          />
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <Checkbox
+                  className="mr-1"
+                  checked={row.getIsSelected()}
+                  onCheckedChange={(value) => row.toggleSelected(!!value)}
+                  aria-label="Select row"
+                  disabled={!isSelectable}
+                />
+              </TooltipTrigger>
+              {!isSelectable && (
+                <TooltipContent className="bg-primary text-primary-foreground text-sm">
+                  You can only manage Draft, Open, or Partially Filled orders
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </TooltipProvider>
         );
       },
       enableSorting: false,

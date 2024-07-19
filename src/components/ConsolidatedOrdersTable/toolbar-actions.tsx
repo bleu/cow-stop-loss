@@ -28,7 +28,7 @@ interface ConsolidatedOrdersTableToolbarActionsProps {
 export function ConsolidatedOrdersTableToolbarActions({
   table,
 }: ConsolidatedOrdersTableToolbarActionsProps) {
-  const { writeContract, isWriting } = useTxManager();
+  const { writeContract } = useTxManager();
   const setTxPendingDialogOpen = useUIStore(
     (state) => state.setTxPendingDialogOpen,
   );
