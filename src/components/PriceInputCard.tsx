@@ -33,7 +33,7 @@ function PriceInputCardComponent({
 
   const [isInverted, setIsInverted] = useState(false);
   const [displayPrice, setDisplayPrice] = useState<number | undefined>(
-    formPrice,
+    formPrice
   );
 
   useEffect(() => {
@@ -51,7 +51,7 @@ function PriceInputCardComponent({
     });
     setValue(
       isSellOrder ? "amountBuy" : "amountSell",
-      isSellOrder ? buyAmount : sellAmount,
+      isSellOrder ? buyAmount : sellAmount
     );
   }
 
@@ -96,7 +96,7 @@ function PriceInputCardComponent({
         <div className="flex justify-between font-normal text-xs">
           <div className="flex gap-1">
             <span>{title}</span>
-            <InfoTooltip text={tooltipText} />
+            <InfoTooltip text={tooltipText} side="right" />
           </div>
         </div>
       </CardTitle>

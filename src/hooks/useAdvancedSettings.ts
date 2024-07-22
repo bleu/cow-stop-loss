@@ -14,17 +14,16 @@ export const defaultAdvancedSettings: AdvancedSwapSettings = {
   tokenBuyOracle: "",
   tokenSellOracle: "",
   partiallyFillable: false,
-  validTo: "",
 };
 
 export function haveSettingsChanged(
   current: Partial<AdvancedSwapSettings>,
-  defaults: AdvancedSwapSettings,
+  defaults: AdvancedSwapSettings
 ): boolean {
   return Object.keys(current).some(
     (key) =>
       current[key as keyof AdvancedSwapSettings] !==
-      defaults[key as keyof AdvancedSwapSettings],
+      defaults[key as keyof AdvancedSwapSettings]
   );
 }
 
@@ -37,6 +36,6 @@ export const useAdvancedSettingsStore = create<AdvancedSettingsState>()(
     {
       name: "advanced-settings-storage",
       partialize: (state) => ({ advancedSettings: state.advancedSettings }),
-    },
-  ),
+    }
+  )
 );

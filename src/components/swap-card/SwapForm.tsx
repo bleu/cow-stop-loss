@@ -20,6 +20,7 @@ import { ReviewOrdersDialog } from "../ReviewOrdersDialog";
 import { TokenInputCard } from "../TokenInputCard";
 import { Form } from "../ui/form";
 import { SwapCardSubmitButton } from "./SwapCardSubmitButton";
+import { ValidToInput } from "./ValidToInput";
 
 export function SwapForm() {
   const { chainId, safeAddress } = useSafeApp();
@@ -68,6 +69,7 @@ export function SwapForm() {
             <PriceInputCard fieldName="limitPrice" />
           </div>
           <CurrentMarketPrice />
+          <ValidToInput />
           <InvertTokensSeparator />
           <TokenInputCard side="Buy" />
           <AdvancedSettingsAlert />

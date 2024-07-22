@@ -15,6 +15,25 @@ const basicTokenSchema = z.object({
   symbol: z.string(),
 });
 
+export enum VALID_TO_OPTIONS {
+  MINUTES_30 = "30 minutes",
+  HOUR = "1 hour",
+  DAY = "1 day",
+  DAYS_3 = "3 days",
+  DAYS_7 = "7 days",
+  MONTH_1 = "1 month",
+  MONTHS_6 = "6 months (max)",
+}
+export enum VALID_TO_VALUES_MAP {
+  "30 minutes" = 30 * 60,
+  "1 hour" = 60 * 60,
+  "1 day" = 24 * 60 * 60,
+  "3 days" = 3 * 24 * 60 * 60,
+  "7 days" = 7 * 24 * 60 * 60,
+  "1 month" = 30 * 24 * 60 * 60,
+  "6 months (max)" = 6 * 30 * 24 * 60 * 60,
+}
+
 const generateEnsSchema = (chainId: number) => {
   if (chainId === 1) {
     return z
@@ -51,7 +70,7 @@ const generateOracleSchema = ({ chainId }: { chainId: ChainId }) => {
     },
     {
       message: "Address does not conform to Oracle interface",
-    },
+    }
   );
 };
 
@@ -64,6 +83,7 @@ export const swapSchema = z
     strikePrice: z.coerce.number().positive(),
     limitPrice: z.coerce.number().positive(),
     isSellOrder: z.coerce.boolean(),
+    validTo: z.nativeEnum(VALID_TO_OPTIONS),
   })
   .refine(
     (data) => {
@@ -72,15 +92,10 @@ export const swapSchema = z
     {
       path: ["tokenBuy"],
       message: "Tokens sell and buy must be different",
-    },
+    }
   );
 
 export const generateAdvancedSettingsSchema = (chainId: ChainId) => {
-  const currentDate = new Date();
-  const maxValidTo = new Date(
-    new Date().setFullYear(currentDate.getFullYear() + 10),
-  );
-
   return z
     .object({
       maxHoursSinceOracleUpdates: z.coerce
@@ -101,10 +116,6 @@ export const generateAdvancedSettingsSchema = (chainId: ChainId) => {
         literal(""),
       ]),
       partiallyFillable: z.coerce.boolean(),
-      validTo: z.union([
-        z.coerce.date().min(currentDate).max(maxValidTo),
-        z.literal(""),
-      ]),
     })
     .refine(
       (data) => {
@@ -116,7 +127,7 @@ export const generateAdvancedSettingsSchema = (chainId: ChainId) => {
       {
         message: "If one oracle is set, both must be set",
         path: ["tokenSellOracle"],
-      },
+      }
     )
     .refine(
       (data) => {
@@ -128,6 +139,6 @@ export const generateAdvancedSettingsSchema = (chainId: ChainId) => {
       {
         message: "If one oracle is set, both must be set",
         path: ["tokenBuyOracle"],
-      },
+      }
     );
 };

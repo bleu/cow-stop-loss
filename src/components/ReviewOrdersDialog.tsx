@@ -83,7 +83,7 @@ export function ReviewOrdersDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         className={cn(
-          "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-muted w-[90vw] max-w-[450px] py-6 px-2",
+          "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-muted w-[90vw] max-w-[450px] py-6 px-2"
         )}
       >
         <div className="flex flex-col gap-2 w-full overflow-y-scroll scrollbar scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-primary scrollbar-track-background scrollbar-w-2 max-h-[85vh] px-3">
@@ -141,9 +141,10 @@ export function ReviewOrdersDialog({
 function OrderContent({ order }: { order: DraftOrder }) {
   const { data: currentMarketPrice } = useTokenPairPrice(
     order.tokenSell,
-    order.tokenBuy,
+    order.tokenBuy
   );
   const marketPrice = currentMarketPrice || order.fallbackMarketPrice;
+  const validToDate = new Date(order.validTo * 1000);
   return (
     <div className="flex flex-col items-center gap-2 w-full">
       <TokenInformation
@@ -199,15 +200,13 @@ function OrderContent({ order }: { order: DraftOrder }) {
           title="Expiration date"
           tooltipText={TOOLTIP_DESCRIPTIONS.VALID_TO}
         >
-          {order.validTo
-            ? order.validTo.toLocaleTimeString("en-GB", {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-              })
-            : "Good until cancelled or filled"}
+          {validToDate.toLocaleTimeString("en-GB", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
         </OrderInformation>
         <OrderInformation
           title="Receiver"

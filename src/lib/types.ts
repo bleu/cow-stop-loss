@@ -21,9 +21,9 @@ export interface ITokenWithValue extends IToken {
 export type AdvancedSwapSettings = z.input<
   ReturnType<typeof generateAdvancedSettingsSchema>
 >;
-export type SwapData = z.input<typeof swapSchema>;
+export type SwapData = z.output<typeof swapSchema>;
 
-export type DraftOrder = SwapData &
+export type DraftOrder = Omit<SwapData, "validTo"> &
   AdvancedSwapSettings & {
     id: string;
     status: "draft";
@@ -31,6 +31,7 @@ export type DraftOrder = SwapData &
     fallbackMarketPrice?: number;
     salt: `0x${string}`;
     blockTimestamp?: null;
+    validTo: number;
   };
 
 type StopLossOrderTypeRaw = ArrElement<

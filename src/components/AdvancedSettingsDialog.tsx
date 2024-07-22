@@ -43,7 +43,7 @@ export function AdvancedSettingsDialog() {
   const [open, setOpen] = React.useState(false);
   const { chainId } = useSafeApp();
   const [advancedSettings, setAdvancedSettings] = useAdvancedSettingsStore(
-    (state) => [state.advancedSettings, state.setAdvancedSettings],
+    (state) => [state.advancedSettings, state.setAdvancedSettings]
   );
 
   const form = useForm<AdvancedSwapSettings>({
@@ -60,7 +60,7 @@ export function AdvancedSettingsDialog() {
   const currentValues = useWatch({ control });
   const areSettingsDifferentFromDefault = haveSettingsChanged(
     currentValues,
-    defaultAdvancedSettings,
+    defaultAdvancedSettings
   );
 
   const receiver = useWatch({ control, name: "receiver" });
@@ -85,12 +85,12 @@ export function AdvancedSettingsDialog() {
         <DialogOverlay
           id="dialog-overlay"
           className={cn(
-            "bg-black/20 data-[state=open]:animate-overlayShow fixed inset-0 rounded-lg",
+            "bg-black/20 data-[state=open]:animate-overlayShow fixed inset-0 rounded-lg"
           )}
         />
         <DialogContent
           className={cn(
-            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-lg focus:outline-none bg-muted  w-[90vw] max-w-[450px] p-[25px]",
+            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-lg focus:outline-none bg-muted  w-[90vw] max-w-[450px] p-[25px]"
           )}
         >
           <div className="flex flex-col justify-between w-full">
@@ -119,12 +119,6 @@ export function AdvancedSettingsDialog() {
                   networkId={chainId as ChainId}
                 />
               }
-            />
-            <Input
-              name="validTo"
-              label="Expiration date"
-              type="datetime-local"
-              tooltipText={TOOLTIP_DESCRIPTIONS.VALID_TO}
             />
             <Separator className="bg-white mt-2" />
             <div className="flex flex-col gap-2">
