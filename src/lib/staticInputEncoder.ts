@@ -60,7 +60,7 @@ export const stopLossDataStructure = [
 ];
 
 export async function stopLossArgsEncoder(
-  data: StopLossOrderArgs
+  data: StopLossOrderArgs,
 ): Promise<`0x${string}`> {
   const metadataApi = new MetadataApi();
 
@@ -84,11 +84,11 @@ export async function stopLossArgsEncoder(
   const strikePriceWithDecimals = parseUnits(String(data.strikePrice), 18);
   const sellAmountWithDecimals = parseUnits(
     String(data.amountSell),
-    data.tokenSell.decimals
+    data.tokenSell.decimals,
   );
   const buyAmountWithDecimals = parseUnits(
     String(data.amountBuy),
-    data.tokenBuy.decimals
+    data.tokenBuy.decimals,
   );
 
   return encodeAbiParameters(stopLossDataStructure, [

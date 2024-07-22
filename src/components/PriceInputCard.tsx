@@ -33,7 +33,7 @@ function PriceInputCardComponent({
 
   const [isInverted, setIsInverted] = useState(false);
   const [displayPrice, setDisplayPrice] = useState<number | undefined>(
-    formPrice
+    formPrice,
   );
 
   useEffect(() => {
@@ -51,7 +51,7 @@ function PriceInputCardComponent({
     });
     setValue(
       isSellOrder ? "amountBuy" : "amountSell",
-      isSellOrder ? buyAmount : sellAmount
+      isSellOrder ? buyAmount : sellAmount,
     );
   }
 

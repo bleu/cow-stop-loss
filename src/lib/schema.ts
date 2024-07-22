@@ -70,7 +70,7 @@ const generateOracleSchema = ({ chainId }: { chainId: ChainId }) => {
     },
     {
       message: "Address does not conform to Oracle interface",
-    }
+    },
   );
 };
 
@@ -92,7 +92,7 @@ export const swapSchema = z
     {
       path: ["tokenBuy"],
       message: "Tokens sell and buy must be different",
-    }
+    },
   );
 
 export const generateAdvancedSettingsSchema = (chainId: ChainId) => {
@@ -127,7 +127,7 @@ export const generateAdvancedSettingsSchema = (chainId: ChainId) => {
       {
         message: "If one oracle is set, both must be set",
         path: ["tokenSellOracle"],
-      }
+      },
     )
     .refine(
       (data) => {
@@ -139,6 +139,6 @@ export const generateAdvancedSettingsSchema = (chainId: ChainId) => {
       {
         message: "If one oracle is set, both must be set",
         path: ["tokenBuyOracle"],
-      }
+      },
     );
 };
