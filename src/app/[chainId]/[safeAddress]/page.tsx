@@ -11,7 +11,6 @@ export default function Page({
   };
 }) {
   // TODO: COW-237
-
   if (params.chainId != 11155111) {
     throw new Error("Invalid chainId");
   }

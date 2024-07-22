@@ -148,7 +148,13 @@ export function RemoveDraftOrdersDialog({
           showTooltip={disabled}
           tooltipText={DRAFT_ORDER_ACTIONS_DISABLED_TOOLTIP}
         >
-          <Button size="sm" variant="outline" type="button" disabled={disabled}>
+          <Button
+            size="sm"
+            variant="outline"
+            type="button"
+            disabled={disabled}
+            onClick={() => setOpen(true)}
+          >
             Delete {selectedIds.length > 0 ? `${selectedIds.length} ` : ""}
             Draft {selectedIds.length > 1 ? "Orders" : "Order"}{" "}
           </Button>

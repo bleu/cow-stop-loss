@@ -14,7 +14,7 @@ export enum TOOLTIP_DESCRIPTIONS {
   ORDER = "The amount sold/bought. Also surplus for this order. This is the positive difference between the initial limit price and the actual (average) execution price.",
   ORACLE_TOKEN_SELL = "The oracle that will provide the price of the token being sold to the smart-contract. Both oracles must have the same quote currency.",
   ORACLE_TOKEN_BUY = "The oracle that will provide the price of the token being sold to the smart-contract. Both oracles must have the same quote currency.",
-  RELATED_ORDERS = "The orders created based on your initial request",
+  RELATED_ORDER = "The order posted on the CoW orderbook that is related to this stop loss order.",
   MAX_TIME_SINCE_LAST_ORACLE_UPDATE = "The maximum time since the last oracle update. If the oracle has not been updated in this time, the order will not be executed.",
   TYPE = "The order can be fill or kill (entire order must be filled) or partial fill (part of the order can be filled respecting the limit price).",
   VALID_TO = "The date and time at which the order will expire if not filled.",

@@ -1,8 +1,8 @@
 import { Address } from "viem";
 import { generateAdvancedSettingsSchema, swapSchema } from "./schema";
 import { z } from "zod";
-import { UserStopLossOrdersQuery } from "./gql/composable-cow/__generated__/1";
-import { ArrElement, GetDeepProp } from "@bleu/ui";
+import { ORDER_QUERY } from "./ponderApi/queries";
+import { ResultOf } from "gql.tada";
 
 export interface IToken {
   symbol: string;
@@ -10,8 +10,16 @@ export interface IToken {
   address: Address;
 }
 
-export type OrderStatus = "open" | "cancelled" | "filled" | "partiallyFilled";
-
+export enum OrderStatus {
+  DRAFT = "draft",
+  OPEN = "open",
+  FULFILLED = "fulfilled",
+  CANCELLED = "cancelled",
+  EXPIRED = "expired",
+  PARTIALLY_FILLED = "partiallyFilled",
+  PARTIALLY_FILLED_AND_CANCELLED = "partiallyFilledAndCancelled",
+  PARTIALLY_FILLED_AND_EXPIRED = "partiallyFilledAndExpired",
+}
 export interface ITokenWithValue extends IToken {
   balance: string;
   usdPrice: number;
@@ -26,31 +34,13 @@ export type SwapData = z.output<typeof swapSchema>;
 export type DraftOrder = Omit<SwapData, "validTo"> &
   AdvancedSwapSettings & {
     id: string;
-    status: "draft";
+    status: OrderStatus.DRAFT;
     oraclePrice: number;
     fallbackMarketPrice?: number;
     salt: `0x${string}`;
     blockTimestamp?: null;
     validTo: number;
   };
-
-type StopLossOrderTypeRaw = ArrElement<
-  GetDeepProp<UserStopLossOrdersQuery, "items">
->;
-
-export interface StopLossOrderType extends StopLossOrderTypeRaw {
-  status: OrderStatus;
-  executedBuyAmount?: string;
-  executedSellAmount?: string;
-  executedSurplusFee?: string;
-  filledPct?: number;
-  singleOrder?: Address | boolean | undefined;
-}
-
-export interface StopLossOrderTypeWithCowOrders extends StopLossOrderType {
-  cowOrders: CowOrder[];
-}
-
 export interface CowOrder {
   appData: string;
   availableBalance: string;
@@ -88,3 +78,10 @@ export interface CowOrder {
   uid: string;
   validTo: number;
 }
+export type IStopLossPonder = ResultOf<typeof ORDER_QUERY>["order"];
+
+export type StopLossOrderType = IStopLossPonder & {
+  status: OrderStatus;
+  canceled: boolean;
+  cowOrder?: CowOrder;
+};

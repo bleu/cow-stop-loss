@@ -6,13 +6,13 @@ import { OrderStatus } from "#/lib/types";
 
 export function StatusBadge({ status }: { status: OrderStatus | string }) {
   switch (status) {
-    case "open":
+    case OrderStatus.OPEN:
       return (
         <Badge className="text-black h-fit py-1 bg-highlight hover:bg-highlight">
           Open
         </Badge>
       );
-    case "filled":
+    case OrderStatus.FULFILLED:
       return (
         <Badge
           color="success"
@@ -21,7 +21,9 @@ export function StatusBadge({ status }: { status: OrderStatus | string }) {
           Filled
         </Badge>
       );
-    case "partiallyFilled":
+    case OrderStatus.PARTIALLY_FILLED:
+    case OrderStatus.PARTIALLY_FILLED_AND_CANCELLED:
+    case OrderStatus.PARTIALLY_FILLED_AND_EXPIRED:
       return (
         <Badge
           color="success"
@@ -30,10 +32,11 @@ export function StatusBadge({ status }: { status: OrderStatus | string }) {
           Partially Filled
         </Badge>
       );
-    case "cancelled":
+    case OrderStatus.CANCELLED:
+    case OrderStatus.EXPIRED:
       return (
         <Badge color="destructive" className="h-fit py-1 hover:bg-destructive">
-          Cancelled
+          {status && capitalize(status)}
         </Badge>
       );
     default:
