@@ -2,11 +2,12 @@
 import parsePrometeusText from "parse-prometheus-text-format";
 
 import { networkFor } from "#/utils";
-
-const METRICS_URL = "https://composable-cow-api.up.railway.app/metrics";
+import { NEXT_PUBLIC_API_URL } from ".";
 
 export async function getBlockNumberFromPrometheusMetrics(chainId: number) {
-  const rawMetricsData = await fetch(METRICS_URL).then((res) => res.text());
+  const rawMetricsData = await fetch(NEXT_PUBLIC_API_URL + "/metrics").then(
+    (res) => res.text(),
+  );
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const metrics = parsePrometeusText(rawMetricsData) as Record<string, any>;
 

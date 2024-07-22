@@ -69,6 +69,7 @@
     "cmdk": "^0.2.1",
     "embla-carousel-react": "8.1.6",
     "gql": "^1.1.2",
+    "gql.tada": "^1.8.2",
     "graphql-codegen-plugin-typescript-swr": "^0.8.5",
     "graphql-request": "6.1.0",
     "graphql-tag": "^2.12.6",

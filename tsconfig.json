@@ -24,6 +24,11 @@
     "incremental": true,
     "plugins": [
       {
+        "name": "gql.tada/ts-plugin",
+        "schema": "https://composable-cow-api-staging.up.railway.app/",
+        "tadaOutputLocation": "graphql-env.d.ts"
+      },
+      {
         "name": "next"
       }
     ],

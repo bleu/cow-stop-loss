@@ -1,8 +1,12 @@
-import { gql } from "graphql-tag";
+import { graphql } from "gql.tada";
 
-gql(
-  `query UserStopLossOrders($user: String!) {
-    orders(where: {stopLossDataId_not: null, userId_in:[$user]} orderBy: "blockTimestamp" orderDirection: "desc") {
+export const USER_ORDERS_QUERY = graphql(`
+  query UserStopLossOrders($userId: String!) {
+    orders(
+      where: { stopLossDataId_not: null, userId_in: [$userId] }
+      orderBy: "blockTimestamp"
+      orderDirection: "desc"
+    ) {
       items {
         blockNumber
         blockTimestamp
@@ -13,9 +17,10 @@ gql(
         hash
         staticInput
         stopLossData {
-          appData
-          buyTokenPriceOracle
           id
+          appData
+          orderUid
+          buyTokenPriceOracle
           isPartiallyFillable
           isSellOrder
           maxTimeSinceLastOracleUpdate
@@ -23,30 +28,33 @@ gql(
           sellTokenPriceOracle
           strike
           to
-          tokenAmountIn
-          tokenAmountOut
-          tokenIn {
+          tokenBuyAmount
+          executedTokenBuyAmount
+          tokenSellAmount
+          executedTokenSellAmount
+          validTo
+          orderUid
+          filledPctBpt
+          tokenSell {
             address
             decimals
             name
             symbol
           }
-          tokenOut {
+          tokenBuy {
             address
             decimals
             name
             symbol
           }
-          validityBucketSeconds
         }
       }
     }
-  } 
-  `,
-);
+  }
+`);
 
-gql(
-  `query OrderById($orderId: String!) {
+export const ORDER_QUERY = graphql(`
+  query OrderById($orderId: String!) {
     order(id: $orderId) {
       blockNumber
       blockTimestamp
@@ -56,10 +64,11 @@ gql(
       txHash
       hash
       staticInput
-      stopLossData {li
-        appData
-        buyTokenPriceOracle
+      stopLossData {
         id
+        appData
+        orderUid
+        buyTokenPriceOracle
         isPartiallyFillable
         isSellOrder
         maxTimeSinceLastOracleUpdate
@@ -67,23 +76,26 @@ gql(
         sellTokenPriceOracle
         strike
         to
-        tokenAmountIn
-        tokenAmountOut
-        tokenIn {
+        tokenBuyAmount
+        executedTokenBuyAmount
+        tokenSellAmount
+        executedTokenSellAmount
+        filledPctBpt
+        validTo
+        orderUid
+        tokenSell {
           address
           decimals
           name
           symbol
         }
-        tokenOut {
+        tokenBuy {
           address
           decimals
           name
           symbol
         }
-        validityBucketSeconds
       }
     }
-  } 
-  `,
-);
+  }
+`);
