@@ -2,7 +2,7 @@ import { TransactionStatus } from "@safe-global/safe-apps-sdk";
 import { useMutation } from "@tanstack/react-query";
 import { useEffect } from "react";
 
-import { getBlockNumberFromPrometheusMetrics } from "#/lib/ponderApi";
+import { getBlockNumberFromPrometheusMetrics } from "#/lib/ponderApi/blockNumber";
 import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
 import {
   AllTransactionArgs,

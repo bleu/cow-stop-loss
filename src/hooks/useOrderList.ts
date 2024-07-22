@@ -6,7 +6,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 import { useTxManager } from "#/hooks/useTxManager";
-import { getProcessedStopLossOrders } from "#/lib/orderFetcher";
+import { getProcessedStopLossOrders } from "#/lib/ponderApi/fetchOrders";
 import { ChainId } from "#/lib/publicClients";
 import { StopLossOrderType } from "#/lib/types";
 
@@ -27,8 +27,8 @@ const useOrderStore = create<OrderState & OrderActions>()(
     {
       name: "order-storage",
       storage: createJSONStorage(() => localStorage),
-    },
-  ),
+    }
+  )
 );
 
 export function useOrderList() {
@@ -39,12 +39,12 @@ export function useOrderList() {
   const { error, isValidating, mutate } = useSWR(
     {
       chainId: safe.chainId as ChainId,
-      address: safe.safeAddress as Address,
+      userAddress: safe.safeAddress as Address,
     },
     getProcessedStopLossOrders,
     {
       onSuccess: (data) => setOrders(data),
-    },
+    }
   );
 
   useEffect(() => {
