@@ -181,7 +181,7 @@ export function getColumns(): ColumnDef<ConsolidatedOrderType>[] {
                 />
               </TooltipTrigger>
               {!isSelectable && (
-                <TooltipContent className="bg-primary text-primary-foreground text-sm">
+                <TooltipContent className="bg-primary text-primary-foreground text-xs">
                   You can only manage Draft, Open, or Partially Filled orders
                 </TooltipContent>
               )}
@@ -194,10 +194,13 @@ export function getColumns(): ColumnDef<ConsolidatedOrderType>[] {
     },
     {
       accessorKey: "order",
+      enableSorting: false,
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Order" />
       ),
-      cell: ({ row }) => getOrderDescription(row.original),
+      cell: ({ row }) => (
+        <div className="min-w-32">{getOrderDescription(row.original)}</div>
+      ),
     },
     {
       accessorKey: "strikePrice",
@@ -260,25 +263,28 @@ export function getColumns(): ColumnDef<ConsolidatedOrderType>[] {
       },
     },
     {
-      accessorKey: "details",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Details" />
-      ),
+      id: "details",
       cell: ({ row }) => {
         if (isPostedOrder(row.original) && "id" in row.original) {
           const { safeAddress, chainId } = useSafeApp();
           return (
-            <LinkComponent
-              href={`/${chainId}/${safeAddress}/${row.original.id}`}
-            >
-              <ArrowTopRightIcon className="size-4 hover:text-primary" />
-            </LinkComponent>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <LinkComponent
+                    href={`/${chainId}/${safeAddress}/${row.original.id}`}
+                  >
+                    <ArrowTopRightIcon className="size-4 hover:text-primary" />
+                  </LinkComponent>
+                </TooltipTrigger>
+                <TooltipContent className="bg-primary text-primary-foreground text-xs">
+                  View details
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           );
         }
-        return "-";
-      },
-      filterFn: (row, id, value) => {
-        return Array.isArray(value) && value.includes(row.getValue(id));
+        return <span className="text-center">-</span>;
       },
     },
   ];

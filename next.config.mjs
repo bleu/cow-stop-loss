@@ -9,7 +9,7 @@ const moduleExports = {
   },
   
   webpack: (config) => {
-    config.externals.push('pino-pretty');
+    config.externals.push('pino-pretty', 'encoding');
     return config;
   },
   async headers() {
