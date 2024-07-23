@@ -24,6 +24,7 @@ export function StatusBadge({ status }: { status: OrderStatus | string }) {
     case OrderStatus.PARTIALLY_FILLED:
     case OrderStatus.PARTIALLY_FILLED_AND_CANCELLED:
     case OrderStatus.PARTIALLY_FILLED_AND_EXPIRED:
+    case OrderStatus.PARTIALLY_FILLED_AND_CANCELLING:
       return (
         <Badge
           color="success"
@@ -34,6 +35,7 @@ export function StatusBadge({ status }: { status: OrderStatus | string }) {
       );
     case OrderStatus.CANCELLED:
     case OrderStatus.EXPIRED:
+    case OrderStatus.CANCELLING:
       return (
         <Badge color="destructive" className="h-fit py-1 hover:bg-destructive">
           {status && capitalize(status)}

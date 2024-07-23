@@ -16,9 +16,11 @@ export enum OrderStatus {
   FULFILLED = "fulfilled",
   CANCELLED = "cancelled",
   EXPIRED = "expired",
+  CANCELLING = "cancelling",
   PARTIALLY_FILLED = "partiallyFilled",
   PARTIALLY_FILLED_AND_CANCELLED = "partiallyFilledAndCancelled",
   PARTIALLY_FILLED_AND_EXPIRED = "partiallyFilledAndExpired",
+  PARTIALLY_FILLED_AND_CANCELLING = "partiallyFilledAndCancelling",
 }
 export interface ITokenWithValue extends IToken {
   balance: string;
