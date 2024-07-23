@@ -28,13 +28,13 @@ export const getProcessedStopLossOrder = async ({
     fetchOrdersCancellations([order?.hash || ""], chainId, userAddress),
     getCowOrderByUid(
       order?.stopLossData?.orderUid as `0x${string}`,
-      chainId,
+      chainId
     ).catch(() => undefined),
   ]);
 
   return {
     ...order,
-    status: fetchOrderStatus(order, orderCanceled[0]),
+    status: getOrderStatus(order, orderCanceled[0]),
     cowOrder: relatedCoWOrder,
     canceled: orderCanceled[0],
   };
@@ -54,12 +54,12 @@ export const getProcessedStopLossOrders = async ({
   const ordersCancellations = await fetchOrdersCancellations(
     orders.items.map((order) => order.hash) as string[],
     chainId,
-    userAddress,
+    userAddress
   );
 
   return orders.items.map((order, index) => {
     const orderCanceled = ordersCancellations[index];
-    const status = fetchOrderStatus(order, orderCanceled);
+    const status = getOrderStatus(order, orderCanceled);
     return { ...order, status, canceled: orderCanceled };
   });
 };
@@ -67,7 +67,7 @@ export const getProcessedStopLossOrders = async ({
 export const fetchOrdersCancellations = async (
   orderHashs: string[],
   chainId: ChainId,
-  ownerAddress: string,
+  ownerAddress: string
 ): Promise<boolean[]> => {
   const publicClient = publicClientsFromIds[chainId];
   const multicallResults = await publicClient.multicall({
@@ -81,17 +81,17 @@ export const fetchOrdersCancellations = async (
   return multicallResults.map((result) => !result?.result);
 };
 
-export const fetchOrderStatus = (
+const getOrderStatus = (
   order: IStopLossPonder,
-  orderCanceled: boolean,
+  orderCanceled: boolean
 ): OrderStatus => {
   if (!order?.stopLossData) return OrderStatus.OPEN;
 
-  const filledPctBpt = BigInt(order.stopLossData.filledPctBpt as bigint);
+  const filledPctBps = BigInt(order.stopLossData.filledPctBps as bigint);
   const isValid = Number(order.stopLossData.validTo) * 1000 > Date.now();
 
-  if (filledPctBpt >= BigInt(1000000)) return OrderStatus.FULFILLED;
-  if (filledPctBpt > BigInt(0)) {
+  if (filledPctBps >= BigInt(1_000_000)) return OrderStatus.FULFILLED;
+  if (filledPctBps > BigInt(0)) {
     if (orderCanceled) return OrderStatus.PARTIALLY_FILLED_AND_CANCELLED;
     if (!isValid) return OrderStatus.PARTIALLY_FILLED_AND_EXPIRED;
     return OrderStatus.PARTIALLY_FILLED;

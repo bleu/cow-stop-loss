@@ -34,7 +34,7 @@ export const USER_ORDERS_QUERY = graphql(`
           executedTokenSellAmount
           validTo
           orderUid
-          filledPctBpt
+          filledPctBps
           tokenSell {
             address
             decimals
@@ -80,7 +80,7 @@ export const ORDER_QUERY = graphql(`
         executedTokenBuyAmount
         tokenSellAmount
         executedTokenSellAmount
-        filledPctBpt
+        filledPctBps
         validTo
         orderUid
         tokenSell {
