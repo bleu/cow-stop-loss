@@ -8,6 +8,7 @@ import { COMPOSABLE_COW_ADDRESS } from "../contracts";
 import { getCowOrderByUid } from "../cowApi/fetchCowOrder";
 import { fetchOrderHashOfRemoveQueuedTxs } from "../txQueue/fetchRemoveQueuedTxs";
 import { Address } from "viem";
+import { fetchCreateQueuedOrders } from "../txQueue/fetchCreateQueuedOrders";
 
 export const getProcessedStopLossOrder = async ({
   orderId,
@@ -47,16 +48,24 @@ export const getProcessedStopLossOrders = async ({
     }),
   ]);
 
-  return ordersWithoutStatus.map((order) => {
-    const status = getOrderStatus(order, cancellingOrdersHashs);
-    return { ...order, status };
+  const queuedCreatedOrders = await fetchCreateQueuedOrders({
+    chainId,
+    address: userAddress as Address,
   });
+
+  return [
+    ...ordersWithoutStatus.map((order) => {
+      const status = getOrderStatus(order, cancellingOrdersHashs);
+      return { ...order, status };
+    }),
+    ...queuedCreatedOrders,
+  ];
 };
 
 export const fetchOrdersCancellations = async (
   orderHashs: string[],
   chainId: ChainId,
-  ownerAddress: string
+  ownerAddress: string,
 ): Promise<boolean[]> => {
   const publicClient = publicClientsFromIds[chainId];
   const multicallResults = await publicClient.multicall({
@@ -72,7 +81,7 @@ export const fetchOrdersCancellations = async (
 
 const fetchOrdersWithCancellations = async (
   chainId: ChainId,
-  userAddress: string
+  userAddress: string,
 ): Promise<Omit<StopLossOrderType, `status`>[]> => {
   const { orders } = await request(NEXT_PUBLIC_API_URL, USER_ORDERS_QUERY, {
     userId: `${userAddress}-${chainId}`,
@@ -80,7 +89,7 @@ const fetchOrdersWithCancellations = async (
   const ordersCancellations = await fetchOrdersCancellations(
     orders.items.map((order) => order.hash) as string[],
     chainId,
-    userAddress
+    userAddress,
   );
 
   return orders.items.map((order, index) => {
@@ -92,7 +101,7 @@ const fetchOrdersWithCancellations = async (
 const fetchOrderWithCancellation = async (
   chainId: ChainId,
   userAddress: string,
-  orderId: string
+  orderId: string,
 ): Promise<Omit<StopLossOrderType, `status`>> => {
   const { order } = await request(NEXT_PUBLIC_API_URL, ORDER_QUERY, {
     orderId,
@@ -101,7 +110,7 @@ const fetchOrderWithCancellation = async (
     fetchOrdersCancellations([order?.hash || ""], chainId, userAddress),
     getCowOrderByUid(
       order?.stopLossData?.orderUid as `0x${string}`,
-      chainId
+      chainId,
     ).catch(() => undefined),
   ]);
 
@@ -118,7 +127,7 @@ const fetchOrderWithCancellation = async (
 
 const getOrderStatus = (
   order: Omit<StopLossOrderType, `status`>,
-  cancellingOrdersHashs: string[]
+  cancellingOrdersHashs: string[],
 ): OrderStatus => {
   if (!order?.stopLossData) return OrderStatus.OPEN;
 

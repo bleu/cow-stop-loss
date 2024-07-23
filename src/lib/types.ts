@@ -12,6 +12,7 @@ export interface IToken {
 
 export enum OrderStatus {
   DRAFT = "draft",
+  CREATING = "creating",
   OPEN = "open",
   FULFILLED = "fulfilled",
   CANCELLED = "cancelled",

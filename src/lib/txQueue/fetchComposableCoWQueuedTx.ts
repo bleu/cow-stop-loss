@@ -17,7 +17,7 @@ export async function fetchComposableCoWQueuedTxs({
 }): Promise<TransactionDetails[]> {
   const allQueuedTransactions = await getTransactionQueue(
     String(chainId),
-    address
+    address,
   );
 
   const queuedTransaction = allQueuedTransactions.results.filter((result) => {
@@ -34,16 +34,16 @@ export async function fetchComposableCoWQueuedTxs({
 
   const queuedTransactionQueueDetails = await Promise.all(
     queuedTransaction.map((transaction) =>
-      getTransactionDetails(String(chainId), transaction.transaction.id)
-    )
+      getTransactionDetails(String(chainId), transaction.transaction.id),
+    ),
   );
   return queuedTransactionQueueDetails.filter(
     (transactionDetails) =>
       transactionDetails.txData?.dataDecoded?.parameters?.[0].valueDecoded?.some(
         (value) =>
-          value.to?.toLowerCase() == COMPOSABLE_COW_ADDRESS.toLowerCase()
+          value.to?.toLowerCase() == COMPOSABLE_COW_ADDRESS.toLowerCase(),
       ) ||
       transactionDetails.txData?.to?.value.toLowerCase() ==
-        COMPOSABLE_COW_ADDRESS.toLowerCase()
+        COMPOSABLE_COW_ADDRESS.toLowerCase(),
   );
 }

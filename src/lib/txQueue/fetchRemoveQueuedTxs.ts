@@ -14,7 +14,7 @@ export async function fetchOrderHashOfRemoveQueuedTxs({
     chainId,
     address,
   });
-  const stopLossTxs = composableCowQueuedTxs.filter((tx) => {
+  const composableCoWRemoveTxs = composableCowQueuedTxs.filter((tx) => {
     if (
       tx.txData?.to.value.toLowerCase() === COMPOSABLE_COW_ADDRESS.toLowerCase()
     ) {
@@ -27,13 +27,13 @@ export async function fetchOrderHashOfRemoveQueuedTxs({
             value.to?.toLowerCase() === COMPOSABLE_COW_ADDRESS.toLowerCase() &&
             value.dataDecoded?.method === "remove"
           );
-        }
+        },
       );
     }
     return false;
   });
 
-  return stopLossTxs
+  return composableCoWRemoveTxs
     .map((tx) => {
       if (
         tx.txData?.to.value.toLowerCase() ===
