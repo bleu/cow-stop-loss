@@ -46,11 +46,33 @@ export function ConsolidatedOrdersTable() {
       label: "Status",
       value: "status",
       options: [
-        { label: "Draft", value: "draft" },
-        { label: "Open", value: "open" },
-        { label: "Filled", value: "filled" },
-        { label: "Partially filled", value: "partiallyFilled" },
-        { label: "Cancelled", value: "cancelled" },
+        { label: "Draft", value: OrderStatus.DRAFT },
+        {
+          label: "Open",
+          value: OrderStatus.OPEN || OrderStatus.PARTIALLY_FILLED,
+        },
+        {
+          label: "Filled",
+          value:
+            OrderStatus.FULFILLED || OrderStatus.PARTIALLY_FILLED_AND_EXPIRED,
+        },
+        {
+          label: "Partially filled",
+          value:
+            OrderStatus.PARTIALLY_FILLED ||
+            OrderStatus.PARTIALLY_FILLED_AND_CANCELLED ||
+            OrderStatus.PARTIALLY_FILLED_AND_EXPIRED,
+        },
+        {
+          label: "Cancelled",
+          value:
+            OrderStatus.CANCELLED || OrderStatus.PARTIALLY_FILLED_AND_CANCELLED,
+        },
+        {
+          label: "Expired",
+          value:
+            OrderStatus.EXPIRED || OrderStatus.PARTIALLY_FILLED_AND_EXPIRED,
+        },
       ],
     },
   ];

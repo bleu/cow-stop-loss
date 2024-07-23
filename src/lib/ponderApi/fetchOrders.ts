@@ -28,7 +28,7 @@ export const getProcessedStopLossOrder = async ({
     fetchOrdersCancellations([order?.hash || ""], chainId, userAddress),
     getCowOrderByUid(
       order?.stopLossData?.orderUid as `0x${string}`,
-      chainId
+      chainId,
     ).catch(() => undefined),
   ]);
 
@@ -54,7 +54,7 @@ export const getProcessedStopLossOrders = async ({
   const ordersCancellations = await fetchOrdersCancellations(
     orders.items.map((order) => order.hash) as string[],
     chainId,
-    userAddress
+    userAddress,
   );
 
   return orders.items.map((order, index) => {
@@ -67,7 +67,7 @@ export const getProcessedStopLossOrders = async ({
 export const fetchOrdersCancellations = async (
   orderHashs: string[],
   chainId: ChainId,
-  ownerAddress: string
+  ownerAddress: string,
 ): Promise<boolean[]> => {
   const publicClient = publicClientsFromIds[chainId];
   const multicallResults = await publicClient.multicall({
@@ -83,7 +83,7 @@ export const fetchOrdersCancellations = async (
 
 const getOrderStatus = (
   order: IStopLossPonder,
-  orderCanceled: boolean
+  orderCanceled: boolean,
 ): OrderStatus => {
   if (!order?.stopLossData) return OrderStatus.OPEN;
 

@@ -74,15 +74,15 @@ export function OrderDetails({
   }
 
   const orderDateTime = formatDateTime(
-    epochToDate(Number(order?.blockTimestamp))
+    epochToDate(Number(order?.blockTimestamp)),
   );
 
   const orderValidTo = formatDateTime(
-    epochToDate(Number(order?.stopLossData?.validTo))
+    epochToDate(Number(order?.stopLossData?.validTo)),
   );
 
   const maxOracleUpdateTime = formatTimeDelta(
-    order?.stopLossData?.maxTimeSinceLastOracleUpdate as number
+    order?.stopLossData?.maxTimeSinceLastOracleUpdate as number,
   );
 
   const amountIn =
@@ -242,7 +242,7 @@ export function OrderDetails({
                 {formatNumber(amountIn, 4)}{" "}
                 <InfoTooltip
                   text={amountIn.toFixed(
-                    order?.stopLossData?.tokenSell.decimals
+                    order?.stopLossData?.tokenSell.decimals,
                   )}
                 />
                 {order?.stopLossData?.tokenSell.symbol}
@@ -269,7 +269,7 @@ export function OrderDetails({
                 {formatNumber(amountOut, 4)}{" "}
                 <InfoTooltip
                   text={amountOut.toFixed(
-                    order?.stopLossData?.tokenBuy.decimals
+                    order?.stopLossData?.tokenBuy.decimals,
                   )}
                 />
                 {order?.stopLossData?.tokenBuy.symbol}

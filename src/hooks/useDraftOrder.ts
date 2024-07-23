@@ -5,7 +5,7 @@ import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
 import { ChainId } from "#/lib/publicClients";
 import { VALID_TO_VALUES_MAP } from "#/lib/schema";
 import { fetchPairUsdPrice } from "#/lib/tokenUtils";
-import { DraftOrder, SwapData } from "#/lib/types";
+import { DraftOrder, OrderStatus, SwapData } from "#/lib/types";
 import { generateRandomHex } from "#/utils";
 
 import { useAdvancedSettingsStore } from "./useAdvancedSettings";
@@ -81,7 +81,7 @@ export const useDraftOrder = create<DraftOrderState>()((set) => ({
       fallbackMarketPrice,
       salt,
       validTo,
-      status: "draft",
+      status: OrderStatus.DRAFT,
     };
 
     return draftOrder;
