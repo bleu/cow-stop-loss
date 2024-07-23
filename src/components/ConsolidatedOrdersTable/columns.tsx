@@ -27,7 +27,7 @@ interface TokenPair {
   tokenB: Omit<IToken, "__typename">;
 }
 
-const isStopLossOrder = (
+const isPostedOrder = (
   order: ConsolidatedOrderType,
 ): order is StopLossOrderType => {
   return "stopLossData" in order && order.stopLossData !== null;
@@ -38,10 +38,15 @@ const isDraftOrder = (order: ConsolidatedOrderType): order is DraftOrder => {
 };
 
 export function getOrderDescription(order: ConsolidatedOrderType): string {
-  if (isStopLossOrder(order) && order.stopLossData) {
-    const { isSellOrder, tokenAmountIn, tokenIn, tokenAmountOut, tokenOut } =
-      order.stopLossData;
-    return `${isSellOrder ? "Sell" : "Buy"} ${formatUnits(tokenAmountIn, tokenIn.decimals)} ${tokenIn.symbol} for ${formatUnits(tokenAmountOut, tokenOut.decimals)} ${tokenOut.symbol}`;
+  if (isPostedOrder(order) && order.stopLossData) {
+    const {
+      isSellOrder,
+      tokenSellAmount,
+      tokenSell,
+      tokenBuyAmount,
+      tokenBuy,
+    } = order.stopLossData;
+    return `${isSellOrder ? "Sell" : "Buy"} ${formatUnits(tokenSellAmount as bigint, tokenSell.decimals)} ${tokenSell.symbol} for ${formatUnits(tokenBuyAmount as bigint, tokenBuy.decimals)} ${tokenBuy.symbol}`;
   } else if (isDraftOrder(order)) {
     return `${order.isSellOrder ? "Sell" : "Buy"} ${order.amountSell} ${order.tokenSell.symbol} for ${order.amountBuy} ${order.tokenBuy.symbol}`;
   }
@@ -49,10 +54,10 @@ export function getOrderDescription(order: ConsolidatedOrderType): string {
 }
 
 const getTokenPair = (order: ConsolidatedOrderType): TokenPair | null => {
-  if (isStopLossOrder(order) && order.stopLossData) {
+  if (isPostedOrder(order) && order.stopLossData) {
     return {
-      tokenA: order.stopLossData.tokenOut,
-      tokenB: order.stopLossData.tokenIn,
+      tokenA: order.stopLossData.tokenBuy,
+      tokenB: order.stopLossData.tokenSell,
     } as TokenPair;
   }
   if (isDraftOrder(order)) {
@@ -78,28 +83,24 @@ const usePrice = (
     return marketPrice ?? null;
   }
 
-  if (
-    priceKey === "limitPrice" &&
-    isStopLossOrder(order) &&
-    order.stopLossData
-  ) {
+  if (priceKey === "limitPrice" && isPostedOrder(order) && order.stopLossData) {
     const amountSell = formatUnits(
-      order.stopLossData.tokenAmountIn,
-      order.stopLossData.tokenIn.decimals,
+      order.stopLossData.tokenSellAmount as bigint,
+      order.stopLossData.tokenSell.decimals,
     );
     const amountBuy = formatUnits(
-      order.stopLossData.tokenAmountOut,
-      order.stopLossData.tokenOut.decimals,
+      order.stopLossData.tokenBuyAmount as bigint,
+      order.stopLossData.tokenBuy.decimals,
     );
     return Number(amountBuy) / Number(amountSell);
   }
 
   if (
-    isStopLossOrder(order) &&
+    isPostedOrder(order) &&
     order.stopLossData &&
     priceKey === "strikePrice"
   ) {
-    return Number(formatUnits(order.stopLossData.strike, 18));
+    return Number(formatUnits(order.stopLossData.strike as bigint, 18));
   }
 
   if (isDraftOrder(order) && priceKey in order) {
@@ -264,7 +265,7 @@ export function getColumns(): ColumnDef<ConsolidatedOrderType>[] {
     {
       id: "details",
       cell: ({ row }) => {
-        if (isStopLossOrder(row.original) && "id" in row.original) {
+        if (isPostedOrder(row.original) && "id" in row.original) {
           const { safeAddress, chainId } = useSafeApp();
           return (
             <TooltipProvider>

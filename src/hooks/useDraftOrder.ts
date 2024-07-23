@@ -3,8 +3,9 @@ import { create } from "zustand";
 
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
 import { ChainId } from "#/lib/publicClients";
+import { VALID_TO_VALUES_MAP } from "#/lib/schema";
 import { fetchPairUsdPrice } from "#/lib/tokenUtils";
-import { DraftOrder, SwapData } from "#/lib/types";
+import { DraftOrder, OrderStatus, SwapData } from "#/lib/types";
 import { generateRandomHex } from "#/utils";
 
 import { useAdvancedSettingsStore } from "./useAdvancedSettings";
@@ -62,9 +63,12 @@ export const useDraftOrder = create<DraftOrderState>()((set) => ({
       chainId: chainId as ChainId,
     });
 
-    const timestamp = Date.now().toString(16);
-    const randomPart = generateRandomHex(64 - timestamp.length);
-    const salt = `0x${timestamp}${randomPart}` as `0x${string}`;
+    const timestamp = Date.now();
+    const timestampHex = timestamp.toString(16);
+    const randomPart = generateRandomHex(64 - timestampHex.length);
+    const salt = `0x${timestampHex}${randomPart}` as `0x${string}`;
+    const validTo =
+      Math.floor(timestamp / 1000) + VALID_TO_VALUES_MAP[data.validTo];
 
     const draftOrder: DraftOrder = {
       ...data,
@@ -76,7 +80,8 @@ export const useDraftOrder = create<DraftOrderState>()((set) => ({
       oraclePrice,
       fallbackMarketPrice,
       salt,
-      status: "draft",
+      validTo,
+      status: OrderStatus.DRAFT,
     };
 
     return draftOrder;

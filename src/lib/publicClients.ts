@@ -7,9 +7,9 @@ export type ChainName = "gnosis" | "mainnet" | "sepolia";
 
 export type ChainId = (typeof supportedChainIds)[number];
 
-export const supportedChains = [gnosis, mainnet, sepolia] as const;
+export const supportedChains = [gnosis, mainnet, sepolia] as const; // TODO: COW-237
 
-export const supportedChainIds = [mainnet.id, gnosis.id, sepolia.id] as const;
+export const supportedChainIds = [mainnet.id, gnosis.id, sepolia.id] as const; // TODO: COW-237
 
 export const RPC_PROVIDERS = {
   [mainnet.id]: process.env.NEXT_PUBLIC_RPC_URL_MAINNET,

@@ -3,7 +3,6 @@
 import {
   Button,
   ClickToCopy,
-  cn,
   epochToDate,
   formatDateTime,
   formatNumber,
@@ -27,11 +26,12 @@ import { Spinner } from "#/components/ui/spinner";
 import { InfoTooltip } from "#/components/ui/tooltip";
 import { useTxManager } from "#/hooks/useTxManager";
 import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
-import { getProcessedStopLossOrder } from "#/lib/orderFetcher";
+import { getProcessedStopLossOrder } from "#/lib/ponderApi/fetchOrders";
 import { ChainId } from "#/lib/publicClients";
 import { formatTimeDelta } from "#/lib/timeDelta";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
+import { OrderStatus } from "#/lib/types";
 import { buildOrderCowExplorerUrl, truncateAddress } from "#/utils";
 
 import { BlockExplorerLink } from "./ExplorerLink";
@@ -49,7 +49,7 @@ export function OrderDetails({
     return getProcessedStopLossOrder({
       chainId,
       orderId,
-      address,
+      userAddress: address,
     });
   };
   const {
@@ -76,30 +76,32 @@ export function OrderDetails({
   const orderDateTime = formatDateTime(
     epochToDate(Number(order?.blockTimestamp)),
   );
-  const orderWaitTime = formatTimeDelta(
-    order?.stopLossData?.validityBucketSeconds as number,
+
+  const orderValidTo = formatDateTime(
+    epochToDate(Number(order?.stopLossData?.validTo)),
   );
+
   const maxOracleUpdateTime = formatTimeDelta(
     order?.stopLossData?.maxTimeSinceLastOracleUpdate as number,
   );
 
   const amountIn =
-    Number(order?.stopLossData?.tokenAmountIn) /
-    10 ** Number(order?.stopLossData?.tokenIn.decimals);
+    Number(order?.stopLossData?.tokenSellAmount) /
+    10 ** Number(order?.stopLossData?.tokenSell.decimals);
   const amountOut =
-    Number(order?.stopLossData?.tokenAmountOut) /
-    10 ** Number(order?.stopLossData?.tokenOut.decimals);
+    Number(order?.stopLossData?.tokenBuyAmount) /
+    10 ** Number(order?.stopLossData?.tokenBuy.decimals);
   const executedAmountIn =
-    Number(order?.executedSellAmount) /
-    10 ** Number(order?.stopLossData?.tokenIn.decimals);
+    Number(order?.stopLossData?.executedTokenSellAmount) /
+    10 ** Number(order?.stopLossData?.tokenSell.decimals);
   const executedAmountOut =
-    Number(order?.executedBuyAmount) /
-    10 ** Number(order?.stopLossData?.tokenOut.decimals);
-  const strikePrice = formatUnits(order?.stopLossData?.strike, 18);
+    Number(order?.stopLossData?.executedTokenBuyAmount) /
+    10 ** Number(order?.stopLossData?.tokenBuy.decimals);
+  const strikePrice = formatUnits(order?.stopLossData?.strike as bigint, 18);
   const limitPrice = amountOut / amountIn;
   const executionPrice = executedAmountOut / executedAmountIn;
   const orderSurplus = ((executionPrice - limitPrice) / limitPrice) * 100;
-  const priceUnit = `${order?.stopLossData?.tokenOut.symbol} per ${order?.stopLossData?.tokenIn.symbol}`;
+  const priceUnit = `${order?.stopLossData?.tokenBuy.symbol} per ${order?.stopLossData?.tokenSell.symbol}`;
 
   const onCancelOrder = () => {
     if (!order) return;
@@ -133,7 +135,10 @@ export function OrderDetails({
           <Button
             onClick={onCancelOrder}
             variant="destructive"
-            disabled={order.status !== "open"}
+            disabled={
+              order?.status !== OrderStatus.OPEN &&
+              order?.status !== OrderStatus.PARTIALLY_FILLED
+            }
           >
             Cancel
           </Button>
@@ -194,10 +199,10 @@ export function OrderDetails({
             {orderDateTime}
           </OrderDetailsInformation>
           <OrderDetailsInformation
-            label="Validity Bucket Time"
-            tooltipText={TOOLTIP_DESCRIPTIONS.VALIDITY_BUCKET_TIME}
+            label="Valid To"
+            tooltipText={TOOLTIP_DESCRIPTIONS.VALID_TO}
           >
-            {orderWaitTime}
+            {orderValidTo}
           </OrderDetailsInformation>
           <OrderDetailsInformation
             label="Oracle Validity Time"
@@ -236,17 +241,19 @@ export function OrderDetails({
                 </span>
                 {formatNumber(amountIn, 4)}{" "}
                 <InfoTooltip
-                  text={amountIn.toFixed(order?.stopLossData?.tokenIn.decimals)}
+                  text={amountIn.toFixed(
+                    order?.stopLossData?.tokenSell.decimals,
+                  )}
                 />
-                {order?.stopLossData?.tokenIn.symbol}
+                {order?.stopLossData?.tokenSell.symbol}
                 <BlockExplorerLink
                   type="address"
                   label={<ArrowTopRightIcon />}
-                  identifier={order?.stopLossData?.tokenIn.address}
+                  identifier={order?.stopLossData?.tokenSell.address}
                   networkId={chainId as ChainId}
                 />
                 <TokenLogo
-                  tokenAddress={order?.stopLossData?.tokenIn.address.toLowerCase()}
+                  tokenAddress={order?.stopLossData?.tokenSell.address.toLowerCase()}
                   chainId={order?.chainId as ChainId}
                   className="rounded-full"
                   alt="Token Logo"
@@ -262,18 +269,18 @@ export function OrderDetails({
                 {formatNumber(amountOut, 4)}{" "}
                 <InfoTooltip
                   text={amountOut.toFixed(
-                    order?.stopLossData?.tokenOut.decimals,
+                    order?.stopLossData?.tokenBuy.decimals,
                   )}
                 />
-                {order?.stopLossData?.tokenOut.symbol}
+                {order?.stopLossData?.tokenBuy.symbol}
                 <BlockExplorerLink
                   type="address"
                   label={<ArrowTopRightIcon />}
-                  identifier={order?.stopLossData?.tokenOut.address}
+                  identifier={order?.stopLossData?.tokenBuy.address}
                   networkId={chainId as ChainId}
                 />
                 <TokenLogo
-                  tokenAddress={order?.stopLossData?.tokenOut.address}
+                  tokenAddress={order?.stopLossData?.tokenBuy.address}
                   chainId={order?.chainId as ChainId}
                   className="rounded-full"
                   alt="Token Logo"
@@ -302,7 +309,7 @@ export function OrderDetails({
               <InfoTooltip text={Number(limitPrice).toFixed(18)} /> {priceUnit}
             </div>
           </OrderDetailsInformation>
-          {(order?.filledPct || 0) > 0 && (
+          {(Number(order?.stopLossData?.filledPctBps) || 0) > 0 && (
             <>
               <OrderDetailsInformation
                 label="Execution Price"
@@ -316,9 +323,9 @@ export function OrderDetails({
               >
                 <div className="flex gap-x-2">
                   Swapped {formatNumber(executedAmountIn, 4)}{" "}
-                  {order?.stopLossData?.tokenIn.symbol} for{" "}
+                  {order?.stopLossData?.tokenSell.symbol} for{" "}
                   {formatNumber(executedAmountOut, 4)}{" "}
-                  {order?.stopLossData?.tokenOut.symbol}
+                  {order?.stopLossData?.tokenBuy.symbol}
                   {orderSurplus > 0 && (
                     <span className="text-success text-bold">
                       ({formatNumber(orderSurplus, 4)}% surplus)
@@ -367,40 +374,29 @@ export function OrderDetails({
             </div>
           </OrderDetailsInformation>
         </div>
-        {order?.cowOrders && order.cowOrders.length > 0 && (
-          <>
-            <Separator className="my-3" />
-            <OrderDetailsInformation
-              label="Related Orders"
-              tooltipText={TOOLTIP_DESCRIPTIONS.RELATED_ORDERS}
-            >
-              <div className="flex flex-col gap-1">
-                {order.cowOrders.map((cowOrder) => (
-                  <div className="flex items-center gap-x-1">
-                    {truncateAddress(cowOrder.uid)}
-                    <Link
-                      className={cn(
-                        "hover:text-primary hover:underline",
-                        order.status === "filled" ? "font-bold" : "",
-                      )}
-                      href={buildOrderCowExplorerUrl({
-                        chainId: order?.chainId as ChainId,
-                        orderId: cowOrder.uid as `0x${string}`,
-                      })}
-                      rel="noreferrer noopener"
-                      target="_blank"
-                    >
-                      <ArrowTopRightIcon />
-                    </Link>
-                    <ClickToCopy text={cowOrder.uid}>
-                      <CopyIcon className="hover:text-primary" />
-                    </ClickToCopy>
-                    <StatusBadge status={cowOrder?.status} />
-                  </div>
-                ))}
-              </div>
-            </OrderDetailsInformation>
-          </>
+        {order?.cowOrder && (
+          <OrderDetailsInformation
+            label="Orderbook CoW Order"
+            tooltipText={TOOLTIP_DESCRIPTIONS.RELATED_ORDER}
+          >
+            <div className="flex items-center gap-x-1">
+              {truncateAddress(order.cowOrder.uid)}
+              <Link
+                className="hover:text-primary hover:underline"
+                href={buildOrderCowExplorerUrl({
+                  chainId: order?.chainId as ChainId,
+                  orderId: order?.cowOrder.uid as `0x${string}`,
+                })}
+                rel="noreferrer noopener"
+                target="_blank"
+              >
+                <ArrowTopRightIcon />
+              </Link>
+              <ClickToCopy text={order?.cowOrder.uid}>
+                <CopyIcon className="hover:text-primary" />
+              </ClickToCopy>
+            </div>
+          </OrderDetailsInformation>
         )}
       </div>
     </div>

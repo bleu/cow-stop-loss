@@ -16,7 +16,7 @@ import { useDraftOrders } from "#/hooks/useDraftOrders";
 import { useTxManager } from "#/hooks/useTxManager";
 import { useUIStore } from "#/hooks/useUIState";
 import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
-import { DraftOrder, StopLossOrderType } from "#/lib/types";
+import { DraftOrder, OrderStatus, StopLossOrderType } from "#/lib/types";
 
 import { type ConsolidatedOrderType } from "../ConsolidatedOrdersTable";
 import { ReviewOrdersDialog } from "../ReviewOrdersDialog";
@@ -50,10 +50,12 @@ export function ConsolidatedOrdersTableToolbarActions({
     .getFilteredSelectedRowModel()
     .rows.map((row) => row.original);
   const selectedDraftOrders = selectedOrders.filter(
-    (order) => order.status === "draft",
+    (order) => order.status === OrderStatus.DRAFT,
   ) as DraftOrder[];
   const selectedOpenOrders = selectedOrders.filter(
-    (order) => order.status === "open",
+    (order) =>
+      order.status === OrderStatus.OPEN ||
+      order.status === OrderStatus.PARTIALLY_FILLED,
   ) as StopLossOrderType[];
 
   const onCancelOrders = () => {
@@ -148,7 +150,13 @@ export function RemoveDraftOrdersDialog({
           showTooltip={disabled}
           tooltipText={DRAFT_ORDER_ACTIONS_DISABLED_TOOLTIP}
         >
-          <Button size="sm" variant="outline" type="button" disabled={disabled}>
+          <Button
+            size="sm"
+            variant="outline"
+            type="button"
+            disabled={disabled}
+            onClick={() => setOpen(true)}
+          >
             Delete {selectedIds.length > 0 ? `${selectedIds.length} ` : ""}
             Draft {selectedIds.length > 1 ? "Orders" : "Order"}{" "}
           </Button>

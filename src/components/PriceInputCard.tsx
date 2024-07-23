@@ -96,7 +96,7 @@ function PriceInputCardComponent({
         <div className="flex justify-between font-normal text-xs">
           <div className="flex gap-1">
             <span>{title}</span>
-            <InfoTooltip text={tooltipText} />
+            <InfoTooltip text={tooltipText} side="right" />
           </div>
         </div>
       </CardTitle>

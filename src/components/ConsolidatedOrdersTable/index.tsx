@@ -9,7 +9,7 @@ import { DataTableFilterField, useDataTable } from "#/hooks/useDataTable";
 import { useDraftOrders } from "#/hooks/useDraftOrders";
 import { useOrderList } from "#/hooks/useOrderList";
 import { useTxManager } from "#/hooks/useTxManager";
-import { DraftOrder, StopLossOrderType } from "#/lib/types";
+import { DraftOrder, OrderStatus, StopLossOrderType } from "#/lib/types";
 
 import { DataTableToolbar } from "../data-table/data-table-toolbar";
 import { Spinner } from "../ui/spinner";
@@ -27,7 +27,9 @@ export function ConsolidatedOrdersTable() {
 
   const allOrders: ConsolidatedOrderType[] = useMemo(
     () => [
-      ...draftOrders.map((order) => ({ ...order, status: "draft" }) as const),
+      ...draftOrders.map(
+        (order) => ({ ...order, status: OrderStatus.DRAFT }) as const,
+      ),
       ...orders,
     ],
     [draftOrders, orders],
@@ -44,11 +46,33 @@ export function ConsolidatedOrdersTable() {
       label: "Status",
       value: "status",
       options: [
-        { label: "Draft", value: "draft" },
-        { label: "Open", value: "open" },
-        { label: "Filled", value: "filled" },
-        { label: "Partially filled", value: "partiallyFilled" },
-        { label: "Cancelled", value: "cancelled" },
+        { label: "Draft", value: OrderStatus.DRAFT },
+        {
+          label: "Open",
+          value: OrderStatus.OPEN || OrderStatus.PARTIALLY_FILLED,
+        },
+        {
+          label: "Filled",
+          value:
+            OrderStatus.FULFILLED || OrderStatus.PARTIALLY_FILLED_AND_EXPIRED,
+        },
+        {
+          label: "Partially filled",
+          value:
+            OrderStatus.PARTIALLY_FILLED ||
+            OrderStatus.PARTIALLY_FILLED_AND_CANCELLED ||
+            OrderStatus.PARTIALLY_FILLED_AND_EXPIRED,
+        },
+        {
+          label: "Cancelled",
+          value:
+            OrderStatus.CANCELLED || OrderStatus.PARTIALLY_FILLED_AND_CANCELLED,
+        },
+        {
+          label: "Expired",
+          value:
+            OrderStatus.EXPIRED || OrderStatus.PARTIALLY_FILLED_AND_EXPIRED,
+        },
       ],
     },
   ];
@@ -58,7 +82,11 @@ export function ConsolidatedOrdersTable() {
     columns,
     filterFields,
     enableRowSelection: (row) =>
-      row.original.status !== "filled" && row.original.status !== "cancelled",
+      [
+        OrderStatus.DRAFT,
+        OrderStatus.OPEN,
+        OrderStatus.PARTIALLY_FILLED,
+      ].includes(row.original.status),
   });
 
   return (

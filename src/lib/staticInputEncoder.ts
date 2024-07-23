@@ -38,7 +38,7 @@ export const stopLossDataStructure = [
     type: "bool",
   },
   {
-    name: "validityBucketSeconds",
+    name: "validTo",
     type: "uint32",
   },
   {
@@ -91,8 +91,6 @@ export async function stopLossArgsEncoder(
     data.tokenBuy.decimals,
   );
 
-  const validityBucketSeconds = 24 * 3600;
-
   return encodeAbiParameters(stopLossDataStructure, [
     data.tokenSell.address,
     data.tokenBuy.address,
@@ -102,7 +100,7 @@ export async function stopLossArgsEncoder(
     data.receiver,
     data.isSellOrder,
     data.partiallyFillable,
-    validityBucketSeconds.toFixed(),
+    Math.floor(data.validTo),
     data.tokenSellOracle,
     data.tokenBuyOracle,
     strikePriceWithDecimals,

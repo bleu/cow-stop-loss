@@ -144,6 +144,7 @@ function OrderContent({ order }: { order: DraftOrder }) {
     order.tokenBuy,
   );
   const marketPrice = currentMarketPrice || order.fallbackMarketPrice;
+  const validToDate = new Date(order.validTo * 1000);
   return (
     <div className="flex flex-col items-center gap-2 w-full">
       <TokenInformation
@@ -194,6 +195,18 @@ function OrderContent({ order }: { order: DraftOrder }) {
         )}
         <OrderInformation title="Type" tooltipText={TOOLTIP_DESCRIPTIONS.TYPE}>
           {order.partiallyFillable ? "Partial fillable" : "Fill or Kill"}
+        </OrderInformation>
+        <OrderInformation
+          title="Expiration date"
+          tooltipText={TOOLTIP_DESCRIPTIONS.VALID_TO}
+        >
+          {validToDate.toLocaleTimeString("en-GB", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
         </OrderInformation>
         <OrderInformation
           title="Receiver"

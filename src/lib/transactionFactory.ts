@@ -243,7 +243,6 @@ export async function createRawTxArgs({
     };
   }) as ERC20ApproveArgs[];
 
-  console.log(approveTxs);
   const ordersTxs = data.map((order) => ({
     type: TRANSACTION_TYPES.STOP_LOSS_ORDER,
     ...order,
