@@ -54,7 +54,8 @@ export function ReviewOrdersDialog({
   const [setTxPendingDialogOpen] = useUIStore((state) => [
     state.setTxPendingDialogOpen,
   ]);
-  const multipleOrders = draftOrders.length > 1;
+
+  const multipleOrders = draftOrders.length !== 1;
   const {
     safe: { safeAddress, chainId },
     fallbackState,
@@ -70,13 +71,10 @@ export function ReviewOrdersDialog({
       fallbackState,
       domainSeparator,
     });
-    writeContract(txArgs, {
-      onSuccess: () => {
-        removeDraftOrders(draftOrders.map((order) => order.id));
-        setOpen(false);
-        setTxPendingDialogOpen(true);
-      },
-    });
+    await writeContract(txArgs);
+    setOpen(false);
+    setTxPendingDialogOpen(true);
+    removeDraftOrders(draftOrders.map((order) => order.id));
   };
 
   return (

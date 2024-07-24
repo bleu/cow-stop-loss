@@ -8,7 +8,8 @@ import { DataTable } from "#/components/data-table/data-table";
 import { DataTableFilterField, useDataTable } from "#/hooks/useDataTable";
 import { useDraftOrders } from "#/hooks/useDraftOrders";
 import { useOrderList } from "#/hooks/useOrderList";
-import { useTxManager } from "#/hooks/useTxManager";
+import { usePonderState } from "#/hooks/usePonderState";
+import { useQueuedTxs } from "#/hooks/useQueuedOrders";
 import { DraftOrder, OrderStatus, StopLossOrderType } from "#/lib/types";
 
 import { DataTableToolbar } from "../data-table/data-table-toolbar";
@@ -19,10 +20,11 @@ import { ConsolidatedOrdersTableToolbarActions } from "./toolbar-actions";
 export type ConsolidatedOrderType = DraftOrder | StopLossOrderType;
 
 export function ConsolidatedOrdersTable() {
-  const { isPonderUpdating } = useTxManager();
+  const { isValidating: isPonderUpdating } = usePonderState();
 
   const draftOrders = useDraftOrders((state) => state.draftOrders);
-  const { orders, isLoading, mutate } = useOrderList();
+  const { orders, isLoading, mutate: mutateOrderList } = useOrderList();
+  const { ordersOnQueue, mutate: mutateQueuedOrders } = useQueuedTxs();
   const { safe } = useSafeAppsSDK();
 
   const allOrders: ConsolidatedOrderType[] = useMemo(
@@ -30,6 +32,7 @@ export function ConsolidatedOrdersTable() {
       ...draftOrders.map(
         (order) => ({ ...order, status: OrderStatus.DRAFT }) as const,
       ),
+      ...ordersOnQueue,
       ...orders,
     ],
     [draftOrders, orders],
@@ -99,7 +102,8 @@ export function ConsolidatedOrdersTable() {
           ) : (
             <button
               onClick={() => {
-                mutate();
+                mutateQueuedOrders();
+                mutateOrderList();
               }}
               className="text-primary hover:text-primary/50 px-1"
             >

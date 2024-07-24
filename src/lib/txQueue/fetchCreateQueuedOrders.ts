@@ -64,7 +64,7 @@ export async function fetchCreateQueuedOrders({
     }),
   );
 
-  return decodedArgsList.map((args) => {
+  return decodedArgsList.map((args, index) => {
     const tokenSell = tokensInfo.find(
       (token) => token.address.toLowerCase() === args.sellToken.toLowerCase(),
     ) as IToken;
@@ -79,7 +79,7 @@ export async function fetchCreateQueuedOrders({
       userAddress: address,
       chainId,
       uid: "",
-      id: "",
+      id: `creating-${decodedTxs[index].data}`,
       txHash: "",
       hash: "",
       canceled: false,

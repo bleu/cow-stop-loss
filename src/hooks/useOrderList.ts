@@ -1,11 +1,9 @@
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import { useEffect } from "react";
 import useSWR from "swr";
 import { Address } from "viem";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-import { useTxManager } from "#/hooks/useTxManager";
 import { getProcessedStopLossOrders } from "#/lib/ponderApi/fetchOrders";
 import { ChainId } from "#/lib/publicClients";
 import { StopLossOrderType } from "#/lib/types";
@@ -34,7 +32,6 @@ const useOrderStore = create<OrderState & OrderActions>()(
 export function useOrderList() {
   const { safe } = useSafeAppsSDK();
   const setOrders = useOrderStore((state) => state.setOrders);
-  const txManager = useTxManager();
 
   const { error, isValidating, mutate } = useSWR(
     {
@@ -46,12 +43,6 @@ export function useOrderList() {
       onSuccess: (data) => setOrders(data),
     },
   );
-
-  useEffect(() => {
-    if (!txManager.isPonderUpdating) {
-      mutate();
-    }
-  }, [txManager.isPonderUpdating, mutate]);
 
   const orders = useOrderStore((state) => state.orders);
 

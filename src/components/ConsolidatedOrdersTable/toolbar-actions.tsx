@@ -58,17 +58,14 @@ export function ConsolidatedOrdersTableToolbarActions({
       order.status === OrderStatus.PARTIALLY_FILLED,
   ) as StopLossOrderType[];
 
-  const onCancelOrders = () => {
+  const onCancelOrders = async () => {
     const deleteTxArgs = selectedOpenOrders.map((order) => ({
       type: TRANSACTION_TYPES.ORDER_CANCEL,
       hash: order.hash,
     })) as OrderCancelArgs[];
-    writeContract(deleteTxArgs, {
-      onSuccess: () => {
-        table.resetRowSelection();
-        setTxPendingDialogOpen(true);
-      },
-    });
+    await writeContract(deleteTxArgs);
+    table.resetRowSelection();
+    setTxPendingDialogOpen(true);
   };
 
   const onReviewDraftOrders = () => {

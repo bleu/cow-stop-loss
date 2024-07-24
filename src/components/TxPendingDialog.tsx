@@ -10,12 +10,9 @@ import {
 } from "@bleu/ui";
 import cn from "clsx";
 
-import { useTxManager } from "#/hooks/useTxManager";
 import { useUIStore } from "#/hooks/useUIState";
 
 export function TxPendingDialog() {
-  const { isPonderUpdating } = useTxManager();
-
   const [txPendingDialogOpen, setTxPendingDialogOpen] = useUIStore((state) => [
     state.txPendingDialogOpen,
     state.setTxPendingDialogOpen,
@@ -37,21 +34,20 @@ export function TxPendingDialog() {
         >
           <div className="flex flex-col gap-2 w-full">
             <DialogTitle className="text-2xl font-medium ">
-              Submitted
+              Transaction being processed
             </DialogTitle>
             <span className="text-wrap">
-              {isPonderUpdating ? "Almost done" : "Done"}!
+              Almost there! Your transaction is being processed. You can check
+              the status of your transaction in the Safe App or track the order
+              dashboard.
             </span>
             <Button
               className="w-full mt-3"
               onClick={() => {
                 setTxPendingDialogOpen(false);
               }}
-              disabled={isPonderUpdating}
             >
-              {isPonderUpdating
-                ? "Processing transaction..."
-                : "Back to the dashboard"}
+              Back to dashboard
             </Button>
           </div>
         </DialogContent>

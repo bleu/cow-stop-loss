@@ -8,7 +8,6 @@ import { COMPOSABLE_COW_ADDRESS } from "../contracts";
 import { getCowOrderByUid } from "../cowApi/fetchCowOrder";
 import { fetchOrderHashOfRemoveQueuedTxs } from "../txQueue/fetchRemoveQueuedTxs";
 import { Address } from "viem";
-import { fetchCreateQueuedOrders } from "../txQueue/fetchCreateQueuedOrders";
 
 export const getProcessedStopLossOrder = async ({
   orderId,
@@ -48,18 +47,10 @@ export const getProcessedStopLossOrders = async ({
     }),
   ]);
 
-  const queuedCreatedOrders = await fetchCreateQueuedOrders({
-    chainId,
-    address: userAddress as Address,
+  return ordersWithoutStatus.map((order) => {
+    const status = getOrderStatus(order, cancellingOrdersHashs);
+    return { ...order, status };
   });
-
-  return [
-    ...ordersWithoutStatus.map((order) => {
-      const status = getOrderStatus(order, cancellingOrdersHashs);
-      return { ...order, status };
-    }),
-    ...queuedCreatedOrders,
-  ];
 };
 
 export const fetchOrdersCancellations = async (
