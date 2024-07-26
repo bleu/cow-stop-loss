@@ -1,11 +1,13 @@
 import request from "graphql-request";
 import { NEXT_PUBLIC_API_URL } from ".";
 import { ORDER_QUERY, USER_ORDERS_QUERY } from "./queries";
-import { IStopLossPonder, OrderStatus, StopLossOrderType } from "../types";
+import { OrderStatus, StopLossOrderType } from "../types";
 import { ChainId, publicClientsFromIds } from "../publicClients";
 import { composableCowAbi } from "../abis/composableCow";
 import { COMPOSABLE_COW_ADDRESS } from "../contracts";
 import { getCowOrderByUid } from "../cowApi/fetchCowOrder";
+import { fetchOrderHashOfRemoveQueuedTxs } from "../txQueue/fetchRemoveQueuedTxs";
+import { Address } from "viem";
 
 export const getProcessedStopLossOrder = async ({
   orderId,
@@ -16,27 +18,17 @@ export const getProcessedStopLossOrder = async ({
   userAddress: string;
   chainId: ChainId;
 }): Promise<StopLossOrderType> => {
-  const { order } = await request(NEXT_PUBLIC_API_URL, ORDER_QUERY, {
-    orderId,
-  });
-
-  if (!order) {
-    throw new Error("Order not found");
-  }
-
-  const [orderCanceled, relatedCoWOrder] = await Promise.all([
-    fetchOrdersCancellations([order?.hash || ""], chainId, userAddress),
-    getCowOrderByUid(
-      order?.stopLossData?.orderUid as `0x${string}`,
+  const [order, cancellingOrdersHashs] = await Promise.all([
+    fetchOrderWithCancellation(chainId, userAddress, orderId),
+    fetchOrderHashOfRemoveQueuedTxs({
       chainId,
-    ).catch(() => undefined),
+      address: userAddress as Address,
+    }),
   ]);
 
   return {
     ...order,
-    status: getOrderStatus(order, orderCanceled[0]),
-    cowOrder: relatedCoWOrder,
-    canceled: orderCanceled[0],
+    status: getOrderStatus(order, cancellingOrdersHashs),
   };
 };
 
@@ -47,20 +39,17 @@ export const getProcessedStopLossOrders = async ({
   userAddress: string;
   chainId: ChainId;
 }): Promise<StopLossOrderType[]> => {
-  const { orders } = await request(NEXT_PUBLIC_API_URL, USER_ORDERS_QUERY, {
-    userId: `${userAddress}-${chainId}`,
-  });
+  const [ordersWithoutStatus, cancellingOrdersHashs] = await Promise.all([
+    fetchOrdersWithCancellations(chainId, userAddress),
+    fetchOrderHashOfRemoveQueuedTxs({
+      chainId,
+      address: userAddress as Address,
+    }),
+  ]);
 
-  const ordersCancellations = await fetchOrdersCancellations(
-    orders.items.map((order) => order.hash) as string[],
-    chainId,
-    userAddress,
-  );
-
-  return orders.items.map((order, index) => {
-    const orderCanceled = ordersCancellations[index];
-    const status = getOrderStatus(order, orderCanceled);
-    return { ...order, status, canceled: orderCanceled };
+  return ordersWithoutStatus.map((order) => {
+    const status = getOrderStatus(order, cancellingOrdersHashs);
+    return { ...order, status };
   });
 };
 
@@ -81,22 +70,71 @@ export const fetchOrdersCancellations = async (
   return multicallResults.map((result) => !result?.result);
 };
 
+const fetchOrdersWithCancellations = async (
+  chainId: ChainId,
+  userAddress: string,
+): Promise<Omit<StopLossOrderType, `status`>[]> => {
+  const { orders } = await request(NEXT_PUBLIC_API_URL, USER_ORDERS_QUERY, {
+    userId: `${userAddress}-${chainId}`,
+  });
+  const ordersCancellations = await fetchOrdersCancellations(
+    orders.items.map((order) => order.hash) as string[],
+    chainId,
+    userAddress,
+  );
+
+  return orders.items.map((order, index) => {
+    const orderCanceled = ordersCancellations[index];
+    return { ...order, canceled: orderCanceled };
+  });
+};
+
+const fetchOrderWithCancellation = async (
+  chainId: ChainId,
+  userAddress: string,
+  orderId: string,
+): Promise<Omit<StopLossOrderType, `status`>> => {
+  const { order } = await request(NEXT_PUBLIC_API_URL, ORDER_QUERY, {
+    orderId,
+  });
+  const [orderCanceled, relatedCoWOrder] = await Promise.all([
+    fetchOrdersCancellations([order?.hash || ""], chainId, userAddress),
+    getCowOrderByUid(
+      order?.stopLossData?.orderUid as `0x${string}`,
+      chainId,
+    ).catch(() => undefined),
+  ]);
+
+  if (!order) {
+    throw new Error("Order not found");
+  }
+
+  return {
+    ...order,
+    cowOrder: relatedCoWOrder,
+    canceled: orderCanceled[0],
+  };
+};
+
 const getOrderStatus = (
-  order: IStopLossPonder,
-  orderCanceled: boolean,
+  order: Omit<StopLossOrderType, `status`>,
+  cancellingOrdersHashs: string[],
 ): OrderStatus => {
   if (!order?.stopLossData) return OrderStatus.OPEN;
 
   const filledPctBps = BigInt(order.stopLossData.filledPctBps as bigint);
   const isValid = Number(order.stopLossData.validTo) * 1000 > Date.now();
+  const isCancelling = cancellingOrdersHashs.includes(order.hash as string);
 
   if (filledPctBps >= BigInt(1_000_000)) return OrderStatus.FULFILLED;
   if (filledPctBps > BigInt(0)) {
-    if (orderCanceled) return OrderStatus.PARTIALLY_FILLED_AND_CANCELLED;
+    if (order.canceled) return OrderStatus.PARTIALLY_FILLED_AND_CANCELLED;
     if (!isValid) return OrderStatus.PARTIALLY_FILLED_AND_EXPIRED;
+    if (isCancelling) return OrderStatus.PARTIALLY_FILLED_AND_CANCELLING;
     return OrderStatus.PARTIALLY_FILLED;
   }
-  if (orderCanceled) return OrderStatus.CANCELLED;
+  if (order.canceled) return OrderStatus.CANCELLED;
+  if (isCancelling) return OrderStatus.CANCELLING;
   if (!isValid) return OrderStatus.EXPIRED;
   return OrderStatus.OPEN;
 };

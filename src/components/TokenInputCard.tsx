@@ -3,7 +3,6 @@ import {
   Card,
   CardContent,
   CardTitle,
-  convertStringToNumberAndRoundDown,
   formatNumber,
   Input,
 } from "@bleu/ui";
@@ -19,6 +18,7 @@ import { calculateAmounts } from "#/lib/calculateAmounts";
 import { ChainId } from "#/lib/publicClients";
 import { fetchFormattedBalanceOf } from "#/lib/tokenUtils";
 import { SwapData } from "#/lib/types";
+import { convertStringToNumberAndRoundDown } from "#/utils";
 import { pasteAbsoluteValue, preventNegativeKeyDown } from "#/utils/inputs";
 
 import { TokenSelect } from "./TokenSelect";
@@ -172,7 +172,12 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                   onClick={() => {
                     setValue(
                       amountFieldName,
-                      Number(convertStringToNumberAndRoundDown(tokenBalance)),
+                      Number(
+                        convertStringToNumberAndRoundDown(
+                          tokenBalance,
+                          token.decimals,
+                        ),
+                      ),
                     );
                   }}
                 >

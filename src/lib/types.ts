@@ -12,13 +12,17 @@ export interface IToken {
 
 export enum OrderStatus {
   DRAFT = "draft",
+  ON_QUEUE = "queue",
+  CREATING = "creating",
   OPEN = "open",
   FULFILLED = "fulfilled",
   CANCELLED = "cancelled",
   EXPIRED = "expired",
-  PARTIALLY_FILLED = "partiallyFilled",
-  PARTIALLY_FILLED_AND_CANCELLED = "partiallyFilledAndCancelled",
-  PARTIALLY_FILLED_AND_EXPIRED = "partiallyFilledAndExpired",
+  CANCELLING = "cancelling",
+  PARTIALLY_FILLED = "partially filled and open",
+  PARTIALLY_FILLED_AND_CANCELLED = "partially filled and cancelled",
+  PARTIALLY_FILLED_AND_EXPIRED = "partially filled adn expired",
+  PARTIALLY_FILLED_AND_CANCELLING = "partially filled and cancelling",
 }
 export interface ITokenWithValue extends IToken {
   balance: string;
@@ -38,9 +42,13 @@ export type DraftOrder = Omit<SwapData, "validTo"> &
     oraclePrice: number;
     fallbackMarketPrice?: number;
     salt: `0x${string}`;
-    blockTimestamp?: null;
     validTo: number;
   };
+
+export type CreatingOrder = Omit<DraftOrder, "status"> & {
+  status: OrderStatus.CREATING;
+  safeTxHash: `0x${string}`;
+};
 export interface CowOrder {
   appData: string;
   availableBalance: string;

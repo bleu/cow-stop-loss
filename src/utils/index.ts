@@ -231,3 +231,13 @@ export function generateRandomHex(length: number) {
     .map(() => Math.floor(Math.random() * 16).toString(16))
     .join("");
 }
+
+export function convertStringToNumberAndRoundDown(
+  valueWithDecimals: string,
+  decimals: number,
+) {
+  return (
+    Math.floor(Number(valueWithDecimals) * 10 ** (decimals - 1)) /
+    10 ** (decimals - 1)
+  );
+}

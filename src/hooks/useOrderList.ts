@@ -1,14 +1,12 @@
 import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import { useEffect } from "react";
-import useSWR from "swr";
+import useSWRImmutable from "swr/immutable";
 import { Address } from "viem";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-import { useTxManager } from "#/hooks/useTxManager";
 import { getProcessedStopLossOrders } from "#/lib/ponderApi/fetchOrders";
 import { ChainId } from "#/lib/publicClients";
-import { StopLossOrderType } from "#/lib/types";
+import { OrderStatus, StopLossOrderType } from "#/lib/types";
 
 interface OrderState {
   orders: StopLossOrderType[];
@@ -34,9 +32,8 @@ const useOrderStore = create<OrderState & OrderActions>()(
 export function useOrderList() {
   const { safe } = useSafeAppsSDK();
   const setOrders = useOrderStore((state) => state.setOrders);
-  const txManager = useTxManager();
 
-  const { error, isValidating, mutate } = useSWR(
+  const { error, isValidating, mutate } = useSWRImmutable(
     {
       chainId: safe.chainId as ChainId,
       userAddress: safe.safeAddress as Address,
@@ -47,18 +44,23 @@ export function useOrderList() {
     },
   );
 
-  useEffect(() => {
-    if (!txManager.isPonderUpdating) {
-      mutate();
-    }
-  }, [txManager.isPonderUpdating, mutate]);
-
   const orders = useOrderStore((state) => state.orders);
+
+  const changeOrdersStateToCancelling = (ordersIds: string[]) => {
+    setOrders(
+      orders.map((order) =>
+        ordersIds.includes(order.id)
+          ? { ...order, status: OrderStatus.CANCELLING }
+          : order,
+      ),
+    );
+  };
 
   return {
     orders,
     isLoading: isValidating,
     error,
     mutate,
+    changeOrdersStateToCancelling,
   };
 }

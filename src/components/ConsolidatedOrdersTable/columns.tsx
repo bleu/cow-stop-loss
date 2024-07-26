@@ -37,6 +37,10 @@ const isDraftOrder = (order: ConsolidatedOrderType): order is DraftOrder => {
   return "tokenBuy" in order && "tokenSell" in order;
 };
 
+export function formatNumberWrapper(number: number | string): string {
+  return formatNumber(number, 2, "decimal", "compact", 0.01);
+}
+
 export function getOrderDescription(order: ConsolidatedOrderType): string {
   if (isPostedOrder(order) && order.stopLossData) {
     const {
@@ -46,9 +50,9 @@ export function getOrderDescription(order: ConsolidatedOrderType): string {
       tokenBuyAmount,
       tokenBuy,
     } = order.stopLossData;
-    return `${isSellOrder ? "Sell" : "Buy"} ${formatUnits(tokenSellAmount as bigint, tokenSell.decimals)} ${tokenSell.symbol} for ${formatUnits(tokenBuyAmount as bigint, tokenBuy.decimals)} ${tokenBuy.symbol}`;
+    return `${isSellOrder ? "Sell" : "Buy"} ${formatNumberWrapper(formatUnits(tokenSellAmount as bigint, tokenSell.decimals))} ${tokenSell.symbol} for ${formatNumberWrapper(formatUnits(tokenBuyAmount as bigint, tokenBuy.decimals))} ${tokenBuy.symbol}`;
   } else if (isDraftOrder(order)) {
-    return `${order.isSellOrder ? "Sell" : "Buy"} ${order.amountSell} ${order.tokenSell.symbol} for ${order.amountBuy} ${order.tokenBuy.symbol}`;
+    return `${order.isSellOrder ? "Sell" : "Buy"} ${formatNumberWrapper(order.amountSell)} ${order.tokenSell.symbol} for ${formatNumberWrapper(order.amountBuy)} ${order.tokenBuy.symbol}`;
   }
   return "Invalid order";
 }
@@ -235,19 +239,19 @@ export function getColumns(): ColumnDef<ConsolidatedOrderType>[] {
         <DataTableColumnHeader column={column} title="Created" />
       ),
       cell: ({ row }) => {
-        if (!row.original.blockTimestamp) {
-          return "-";
+        if (isPostedOrder(row.original)) {
+          const timestamp = Number(row.original.blockTimestamp);
+          return new Date(timestamp * 1000)
+            .toLocaleTimeString("en-GB", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+            .replace(",", "");
         }
-        const timestamp = Number(row.original.blockTimestamp);
-        return new Date(timestamp * 1000)
-          .toLocaleTimeString("en-GB", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-          })
-          .replace(",", "");
+        return "-";
       },
     },
     {
@@ -265,7 +269,7 @@ export function getColumns(): ColumnDef<ConsolidatedOrderType>[] {
     {
       id: "details",
       cell: ({ row }) => {
-        if (isPostedOrder(row.original) && "id" in row.original) {
+        if (isPostedOrder(row.original) && row.original.id) {
           const { safeAddress, chainId } = useSafeApp();
           return (
             <TooltipProvider>

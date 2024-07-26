@@ -8,17 +8,12 @@ export const USER_ORDERS_QUERY = graphql(`
       orderDirection: "desc"
     ) {
       items {
-        blockNumber
         blockTimestamp
         chainId
-        decodedSuccess
         id
         txHash
         hash
-        staticInput
         stopLossData {
-          id
-          appData
           orderUid
           buyTokenPriceOracle
           isPartiallyFillable
@@ -33,7 +28,6 @@ export const USER_ORDERS_QUERY = graphql(`
           tokenSellAmount
           executedTokenSellAmount
           validTo
-          orderUid
           filledPctBps
           tokenSell {
             address
@@ -56,17 +50,12 @@ export const USER_ORDERS_QUERY = graphql(`
 export const ORDER_QUERY = graphql(`
   query OrderById($orderId: String!) {
     order(id: $orderId) {
-      blockNumber
       blockTimestamp
       chainId
-      decodedSuccess
       id
       txHash
       hash
-      staticInput
       stopLossData {
-        id
-        appData
         orderUid
         buyTokenPriceOracle
         isPartiallyFillable
@@ -80,19 +69,16 @@ export const ORDER_QUERY = graphql(`
         executedTokenBuyAmount
         tokenSellAmount
         executedTokenSellAmount
-        filledPctBps
         validTo
-        orderUid
+        filledPctBps
         tokenSell {
           address
           decimals
-          name
           symbol
         }
         tokenBuy {
           address
           decimals
-          name
           symbol
         }
       }

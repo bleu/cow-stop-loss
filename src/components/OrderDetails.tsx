@@ -24,6 +24,7 @@ import { StatusBadge } from "#/components/StatusBadge";
 import { TokenLogo } from "#/components/TokenLogo";
 import { Spinner } from "#/components/ui/spinner";
 import { InfoTooltip } from "#/components/ui/tooltip";
+import { usePonderState } from "#/hooks/usePonderState";
 import { useTxManager } from "#/hooks/useTxManager";
 import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 import { getProcessedStopLossOrder } from "#/lib/ponderApi/fetchOrders";
@@ -61,11 +62,12 @@ export function OrderDetails({
 
   const router = useRouter();
 
-  const { writeContract, isPonderUpdating } = useTxManager();
+  const { writeContract } = useTxManager();
+  const { isValidating: isPonderUpdating } = usePonderState();
 
   const isUpdating = isLoading || isPonderUpdating || isValidating;
 
-  if (isUpdating && !order) {
+  if (isLoading && !order) {
     return <Spinner />;
   }
 
@@ -110,6 +112,7 @@ export function OrderDetails({
       hash: order.hash,
     } as OrderCancelArgs;
     writeContract([deleteTxArgs]);
+    mutate({ ...order, status: OrderStatus.CANCELLING });
   };
 
   return (

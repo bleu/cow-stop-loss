@@ -13,6 +13,7 @@ import { type Table } from "@tanstack/react-table";
 import React, { useState } from "react";
 
 import { useDraftOrders } from "#/hooks/useDraftOrders";
+import { useOrderList } from "#/hooks/useOrderList";
 import { useTxManager } from "#/hooks/useTxManager";
 import { useUIStore } from "#/hooks/useUIState";
 import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
@@ -43,6 +44,7 @@ export function ConsolidatedOrdersTableToolbarActions({
   const setTxPendingDialogOpen = useUIStore(
     (state) => state.setTxPendingDialogOpen,
   );
+  const { changeOrdersStateToCancelling } = useOrderList();
 
   const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
 
@@ -58,17 +60,15 @@ export function ConsolidatedOrdersTableToolbarActions({
       order.status === OrderStatus.PARTIALLY_FILLED,
   ) as StopLossOrderType[];
 
-  const onCancelOrders = () => {
+  const onCancelOrders = async () => {
     const deleteTxArgs = selectedOpenOrders.map((order) => ({
       type: TRANSACTION_TYPES.ORDER_CANCEL,
       hash: order.hash,
     })) as OrderCancelArgs[];
-    writeContract(deleteTxArgs, {
-      onSuccess: () => {
-        table.resetRowSelection();
-        setTxPendingDialogOpen(true);
-      },
-    });
+    await writeContract(deleteTxArgs);
+    table.resetRowSelection();
+    changeOrdersStateToCancelling(selectedOpenOrders.map((order) => order.id));
+    setTxPendingDialogOpen(true);
   };
 
   const onReviewDraftOrders = () => {

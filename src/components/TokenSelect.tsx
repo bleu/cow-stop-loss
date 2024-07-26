@@ -17,8 +17,8 @@ import { Address, isAddress } from "viem";
 
 import { useSafeApp } from "#/hooks/useSafeApp";
 import { useTokenList } from "#/hooks/useTokenList";
-import { fetchTokenInfo } from "#/lib/fetchTokenInfo";
 import { ChainId } from "#/lib/publicClients";
+import { fetchTokenInfo } from "#/lib/tokenUtils";
 import { IToken } from "#/lib/types";
 
 import { TokenInfo } from "./TokenInfo";

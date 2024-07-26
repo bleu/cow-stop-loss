@@ -4,7 +4,11 @@ import parsePrometeusText from "parse-prometheus-text-format";
 import { networkFor } from "#/utils";
 import { NEXT_PUBLIC_API_URL } from ".";
 
-export async function getBlockNumberFromPrometheusMetrics(chainId: number) {
+export async function getBlockNumberFromPrometheusMetrics({
+  chainId,
+}: {
+  chainId: number;
+}) {
   const rawMetricsData = await fetch(NEXT_PUBLIC_API_URL + "/metrics").then(
     (res) => res.text(),
   );

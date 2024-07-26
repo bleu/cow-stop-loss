@@ -138,7 +138,7 @@ const schema = z.object({
 export function useDataTable<TData, TValue>({
   data,
   columns,
-  defaultPerPage = 10,
+  defaultPerPage = 5,
   defaultSort,
   filterFields = [],
   enableAdvancedFilter = false,
