@@ -239,19 +239,19 @@ export function getColumns(): ColumnDef<ConsolidatedOrderType>[] {
         <DataTableColumnHeader column={column} title="Created" />
       ),
       cell: ({ row }) => {
-        if (!row.original.blockTimestamp) {
-          return "-";
+        if (isPostedOrder(row.original)) {
+          const timestamp = Number(row.original.blockTimestamp);
+          return new Date(timestamp * 1000)
+            .toLocaleTimeString("en-GB", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+            .replace(",", "");
         }
-        const timestamp = Number(row.original.blockTimestamp);
-        return new Date(timestamp * 1000)
-          .toLocaleTimeString("en-GB", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-          })
-          .replace(",", "");
+        return "-";
       },
     },
     {
