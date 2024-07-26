@@ -24,7 +24,6 @@ export function StatusBadge({ status }: { status: OrderStatus | string }) {
     case OrderStatus.PARTIALLY_FILLED:
     case OrderStatus.PARTIALLY_FILLED_AND_CANCELLED:
     case OrderStatus.PARTIALLY_FILLED_AND_EXPIRED:
-    case OrderStatus.PARTIALLY_FILLED_AND_CANCELLING:
       return (
         <Badge
           color="success"
@@ -33,18 +32,27 @@ export function StatusBadge({ status }: { status: OrderStatus | string }) {
           Partially Filled
         </Badge>
       );
+    case OrderStatus.PARTIALLY_FILLED_AND_CANCELLING:
+      return (
+        <Badge
+          color="destructive"
+          className="bg-destructive h-fit py-1 hover:bg-destructive"
+        >
+          Cancelling
+        </Badge>
+      );
     case OrderStatus.CANCELLED:
     case OrderStatus.EXPIRED:
     case OrderStatus.CANCELLING:
       return (
         <Badge color="destructive" className="h-fit py-1 hover:bg-destructive">
-          {status && capitalize(status)}
+          {capitalize(status)}
         </Badge>
       );
     default:
       return (
         <Badge className="h-fit py-1 hover:bg-primary bg-primary ">
-          {status && capitalize(status)}
+          {capitalize(status)}
         </Badge>
       );
   }

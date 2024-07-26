@@ -1,3 +1,4 @@
+import { GatewayTransactionDetails } from "@safe-global/safe-apps-sdk";
 import { TransactionStatus } from "@safe-global/safe-gateway-typescript-sdk";
 import { useEffect } from "react";
 import { create } from "zustand";
@@ -9,31 +10,44 @@ import {
   TransactionFactory,
 } from "#/lib/transactionFactory";
 
+import { useCreatingOrders } from "./useCreatingOrders";
 import { useOrderList } from "./useOrderList";
 import { usePonderState } from "./usePonderState";
 import { useQueuedTxs } from "./useQueuedOrders";
 import { useSafeApp } from "./useSafeApp";
 
+type TxDetailsWithSafeTxHash = GatewayTransactionDetails & {
+  safeTxHash: `0x${string}`;
+};
 interface TxManagerState {
-  safeTxHashs: `0x${string}`[];
-  pendingTxsBlockNumber: number[];
+  toBeExecutedSafeTxs: TxDetailsWithSafeTxHash[];
+  toBeIndexedSafeTxs: {
+    safeTx: TxDetailsWithSafeTxHash;
+    blockNumber: number;
+  }[];
 }
 
 interface TxManagerActions {
-  setSafeTxHashs: (safeTxHashs: `0x${string}`[]) => void;
-  setPendingTxsBlockNumber: (pendingTxsBlockNumber: number[]) => void;
+  setToBeExecutedSafeTxs: (
+    toBeExecutedSafeTxs: TxDetailsWithSafeTxHash[],
+  ) => void;
+  setToBeIndexedSafeTxs: (
+    toBeIndexedSafeTxs: {
+      safeTx: TxDetailsWithSafeTxHash;
+      blockNumber: number;
+    }[],
+  ) => void;
 }
 
 const useTxManagerStore = create<TxManagerState & TxManagerActions>()(
   persist(
     (set) => ({
-      safeTxHashs: [],
-      pendingTxsBlockNumber: [],
-      creatingOrders: [],
-      deletingOrdersId: [],
-      setSafeTxHashs: (safeTxHashs) => set({ safeTxHashs }),
-      setPendingTxsBlockNumber: (pendingTxsBlockNumber) =>
-        set({ pendingTxsBlockNumber }),
+      toBeExecutedSafeTxs: [],
+      toBeIndexedSafeTxs: [],
+      setToBeExecutedSafeTxs: (toBeExecutedSafeTxs) =>
+        set({ toBeExecutedSafeTxs }),
+      setToBeIndexedSafeTxs: (toBeIndexedSafeTxs) =>
+        set({ toBeIndexedSafeTxs }),
     }),
     {
       name: "tx-manager-storage",
@@ -45,17 +59,20 @@ const useTxManagerStore = create<TxManagerState & TxManagerActions>()(
 export function useTxManager() {
   const { sdk, chainId } = useSafeApp();
   const [
-    safeTxHashs,
-    pendingTxsBlockNumber,
-    setSafeTxHashs,
-    setPendingTxsBlockNumber,
+    toBeExecutedSafeTxs,
+    toBeIndexedSafeTxs,
+    setToBeExecutedSafeTxs,
+    setToBeIndexedSafeTxs,
   ] = useTxManagerStore((state) => [
-    state.safeTxHashs,
-    state.pendingTxsBlockNumber,
-    state.setSafeTxHashs,
-    state.setPendingTxsBlockNumber,
+    state.toBeExecutedSafeTxs,
+    state.toBeIndexedSafeTxs,
+    state.setToBeExecutedSafeTxs,
+    state.setToBeIndexedSafeTxs,
   ]);
 
+  const [removeCreatingOrders] = useCreatingOrders((state) => [
+    state.removeCreatingOrders,
+  ]);
   const { mutate: mutateOrdersQueue } = useQueuedTxs();
   const { mutate: mutateOrdersList } = useOrderList();
   const { mutate: mutatePonder } = usePonderState();
@@ -69,52 +86,65 @@ export function useTxManager() {
       }),
     );
     const { safeTxHash } = await sdk.txs.send({ txs });
-    mutateOrdersQueue();
-    mutateOrdersList();
     return safeTxHash as `0x${string}`;
   };
 
-  const updateTxStates = () => {
-    safeTxHashs.forEach(async (safeTxHash) => {
-      try {
-        const safeTx = await sdk.txs.getBySafeTxHash(safeTxHash);
-        if (
-          [
-            TransactionStatus.AWAITING_CONFIRMATIONS,
-            TransactionStatus.AWAITING_EXECUTION,
-          ].includes(safeTx?.txStatus)
-        )
-          return;
+  const updateTxStates = async () => {
+    const updatedTxStates = await Promise.all(
+      toBeExecutedSafeTxs.map(async ({ safeTxHash }) => {
+        const updatedTx = await sdk.txs.getBySafeTxHash(safeTxHash);
+        return { ...updatedTx, safeTxHash };
+      }),
+    );
 
-        setSafeTxHashs(safeTxHashs.filter((txHash) => txHash !== safeTxHash));
-        if (
-          !safeTx.txHash ||
-          [TransactionStatus.CANCELLED, TransactionStatus.FAILED].includes(
-            safeTx?.txStatus,
-          )
-        )
-          return;
+    const toBeIndexedNewTxs = updatedTxStates.filter(
+      (tx) => TransactionStatus.SUCCESS == tx?.txStatus,
+    );
+
+    const newBlockNumbers = await Promise.all(
+      toBeIndexedNewTxs.map(async ({ txHash }) => {
         const transaction = await publicClient.getTransaction({
-          hash: safeTx.txHash as `0x${string}`,
+          hash: txHash as `0x${string}`,
         });
-        setPendingTxsBlockNumber([
-          ...pendingTxsBlockNumber,
-          Number(transaction.blockNumber),
-        ]);
-      } catch {
-        setSafeTxHashs(safeTxHashs.filter((txHash) => txHash !== safeTxHash));
-      }
-    });
+        return Number(transaction.blockNumber);
+      }),
+    );
+
+    if (toBeIndexedNewTxs.length > 0) {
+      setToBeIndexedSafeTxs(
+        toBeIndexedNewTxs.map((tx, index) => ({
+          safeTx: tx,
+          blockNumber: newBlockNumbers[index],
+        })),
+      );
+    }
+
+    const remainingSafeTxs = updatedTxStates.filter((tx) =>
+      [
+        TransactionStatus.AWAITING_CONFIRMATIONS,
+        TransactionStatus.AWAITING_EXECUTION,
+      ].includes(tx?.txStatus),
+    );
+
+    if (remainingSafeTxs.length !== toBeExecutedSafeTxs.length) {
+      setToBeExecutedSafeTxs(remainingSafeTxs);
+    }
   };
 
   const updateTxBlockNumbers = async () => {
-    if (pendingTxsBlockNumber.length === 0) return;
+    if (toBeIndexedSafeTxs.length === 0) return;
     const ponderNewBlockNumber = await mutatePonder();
-    const toBeCatchBlockNumbers = pendingTxsBlockNumber.filter(
-      (blockNumber) => blockNumber > (ponderNewBlockNumber || 0),
+    const toBeCatchBlockNumbers = toBeIndexedSafeTxs.filter(
+      ({ blockNumber }) => blockNumber + 3 > (ponderNewBlockNumber || 0),
     );
-    if (toBeCatchBlockNumbers.length != pendingTxsBlockNumber.length) {
-      setPendingTxsBlockNumber(toBeCatchBlockNumbers);
+    const toBeRemovedBlockNumbers = toBeIndexedSafeTxs.filter(
+      ({ blockNumber }) => blockNumber + 3 <= (ponderNewBlockNumber || 0),
+    );
+    if (toBeRemovedBlockNumbers.length > 0) {
+      setToBeIndexedSafeTxs(toBeCatchBlockNumbers);
+      removeCreatingOrders(
+        toBeRemovedBlockNumbers.map(({ safeTx: { safeTxHash } }) => safeTxHash),
+      );
       mutateOrdersQueue();
       mutateOrdersList();
     }
@@ -122,21 +152,23 @@ export function useTxManager() {
 
   const writeContract = async (txs: AllTransactionArgs[]) => {
     const safeTxHash = await sendTransactions(txs);
-    setSafeTxHashs([...safeTxHashs, safeTxHash]);
+    const safeTx = await sdk.txs.getBySafeTxHash(safeTxHash);
+    setToBeExecutedSafeTxs([...toBeExecutedSafeTxs, { ...safeTx, safeTxHash }]);
+    mutateOrdersQueue();
     return safeTxHash;
   };
 
   useEffect(() => {
-    if (safeTxHashs.length === 0) return;
-    const interval = setInterval(updateTxStates, 5_000);
+    if (toBeExecutedSafeTxs.length === 0) return;
+    const interval = setInterval(updateTxStates, 1_000);
     return () => clearInterval(interval);
-  }, [safeTxHashs]);
+  }, [toBeExecutedSafeTxs]);
 
   useEffect(() => {
-    if (pendingTxsBlockNumber.length === 0) return;
-    const interval = setInterval(updateTxBlockNumbers, 5_000);
+    if (toBeIndexedSafeTxs.length === 0) return;
+    const interval = setInterval(updateTxBlockNumbers, 1_000);
     return () => clearInterval(interval);
-  }, [pendingTxsBlockNumber]);
+  }, [toBeIndexedSafeTxs]);
 
   return {
     writeContract,

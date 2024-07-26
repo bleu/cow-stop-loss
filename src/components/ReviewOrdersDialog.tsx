@@ -11,10 +11,12 @@ import {
   TabsTrigger,
 } from "@bleu/ui";
 import { ArrowDownIcon } from "@radix-ui/react-icons";
+import { getTransactionQueue } from "@safe-global/safe-gateway-typescript-sdk";
 import cn from "clsx";
 import * as React from "react";
 import { Address } from "viem";
 
+import { useCreatingOrders } from "#/hooks/useCreatingOrders";
 import { useDraftOrders } from "#/hooks/useDraftOrders";
 import { useFallbackState } from "#/hooks/useFallbackState";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
@@ -25,7 +27,7 @@ import { ChainId } from "#/lib/publicClients";
 import { formatTimeDelta } from "#/lib/timeDelta";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { createRawTxArgs } from "#/lib/transactionFactory";
-import { DraftOrder, IToken } from "#/lib/types";
+import { DraftOrder, IToken, OrderStatus } from "#/lib/types";
 
 import { AddressWithLink } from "./AddressWithLink";
 import { OraclePriceWarning } from "./OraclePriceAlert";
@@ -50,6 +52,9 @@ export function ReviewOrdersDialog({
     state.addDraftOrders,
     state.removeDraftOrders,
   ]);
+  const [addCreatingOrders] = useCreatingOrders((state) => [
+    state.addCreatingOrders,
+  ]);
 
   const [setTxPendingDialogOpen] = useUIStore((state) => [
     state.setTxPendingDialogOpen,
@@ -71,9 +76,20 @@ export function ReviewOrdersDialog({
       fallbackState,
       domainSeparator,
     });
-    await writeContract(txArgs);
+    const safeTxHash = await writeContract(txArgs);
     setOpen(false);
     setTxPendingDialogOpen(true);
+    const queueTxs = await getTransactionQueue(String(chainId), safeAddress);
+    if (queueTxs.results.length === 0) {
+      // If there are no transactions in the queue, we have to add the order to the creating orders
+      addCreatingOrders(
+        draftOrders.map((order) => ({
+          ...order,
+          status: OrderStatus.CREATING,
+          safeTxHash,
+        })),
+      );
+    }
     removeDraftOrders(draftOrders.map((order) => order.id));
   };
 

@@ -75,7 +75,7 @@ export async function fetchCreateQueuedOrders({
 
     return {
       blockTimestamp: undefined,
-      status: OrderStatus.CREATING,
+      status: OrderStatus.ON_QUEUE,
       userAddress: address,
       chainId,
       uid: "",

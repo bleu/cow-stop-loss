@@ -112,6 +112,7 @@ export function OrderDetails({
       hash: order.hash,
     } as OrderCancelArgs;
     writeContract([deleteTxArgs]);
+    mutate({ ...order, status: OrderStatus.CANCELLING });
   };
 
   return (
