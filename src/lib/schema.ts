@@ -4,6 +4,7 @@ import { normalize } from "viem/ens";
 
 import { ChainId, publicClientsFromIds } from "./publicClients";
 import { oracleMinimalAbi } from "./abis/oracleMinimalAbi";
+import { mainnet, sepolia } from "viem/chains";
 
 const basicAddressSchema = z.custom<Address>((val) => {
   return typeof val === "string" ? isAddress(val) : false;
@@ -35,7 +36,7 @@ export enum VALID_TO_VALUES_MAP {
 }
 
 const generateEnsSchema = (chainId: number) => {
-  if (chainId === 1) {
+  if (chainId === mainnet.id || chainId === sepolia.id) {
     return z
       .string()
       .min(1)
@@ -43,7 +44,7 @@ const generateEnsSchema = (chainId: number) => {
         message: "Provided address is invalid",
       })
       .transform(async (value) => {
-        const publicClient = publicClientsFromIds[1];
+        const publicClient = publicClientsFromIds[chainId];
         return (await publicClient.getEnsAddress({
           name: normalize(value),
         })) as Address;
