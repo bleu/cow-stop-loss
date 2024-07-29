@@ -33,7 +33,7 @@ export function Header({ linkUrl, imageSrc, onLinkClick }: IHeader) {
         >
           <>
             {imageSrc && (
-              <Image src={imageSrc} height={100} width={300} alt="" />
+              <Image src={imageSrc} height={30} width={150} alt="" />
             )}
           </>
         </Link>

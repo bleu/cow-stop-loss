@@ -48,13 +48,19 @@ export function RootLayout({ children }: React.PropsWithChildren) {
 
 function SafeLoader() {
   return (
-    <div className="bg-background flex size-full flex-col justify-center items-center px-12 py-16 md:py-20 ">
+    <div className="bg-background size-full flex-col justify-center items-center px-12 py-16 md:py-20 flex items-center justify-center">
+      {/* eslint-disable-next-line @next/next/no-img-element*/}
+      <img
+        className="flex justify-center h-32 my-2"
+        alt="CoW Stop Loss logo"
+        src="/assets/stoploss.svg"
+      />
       <div className="text-center text-3xl">This is a Safe (wallet) App</div>
       <p className="text-xl">
         To access please use this
         <Link
           target="_blank"
-          href="https://app.safe.global/share/safe-app?appUrl=https%3A%2F%2Fcomposable-cow-hub.vercel.app&chain=gno"
+          href="https://app.safe.global/share/safe-app?appUrl=https%3A%2F%2Fstoploss.bleu.builders&chain=eth"
           className="text-highlight"
         >
           {" "}

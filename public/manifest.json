@@ -1,5 +1,5 @@
 {
-  "name": "Stop Loss App",
-  "description": "UI for stop loss orders",
+  "name": "CoW Stop Loss App",
+  "description": "UI for creating and managing stop loss orders on CoW Protocol",
   "iconPath": "favicon.ico"
 }
