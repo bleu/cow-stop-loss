@@ -12,9 +12,6 @@ export default function OrderPage({
     orderId: string;
   };
 }) {
-  if (params.chainId != 11155111) {
-    throw new Error("Invalid chainId");
-  }
   return (
     <OrderDetails
       orderId={params.orderId}

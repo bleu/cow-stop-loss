@@ -1,6 +1,6 @@
 // from https://github.com/cowprotocol/cowswap/blob/develop/libs/common-utils/src/explorer.ts
 
-import { gnosis, mainnet, sepolia } from "viem/chains";
+import { gnosis, mainnet, sepolia, arbitrum } from "viem/chains";
 import { ChainId } from "./publicClients";
 
 /**
@@ -18,7 +18,7 @@ function _getExplorerUrlByEnvironment(): Record<ChainId, string> {
   return {
     [mainnet.id]: baseUrl,
     [gnosis.id]: `${baseUrl}/gc`,
-    // [arbitrum.id]: `${baseUrl}/arb1`,
+    [arbitrum.id]: `${baseUrl}/arb1`,
     [sepolia.id]: `${baseUrl}/sepolia`,
   };
 }
@@ -32,7 +32,7 @@ export function getExplorerBaseUrl(chainId: ChainId): string {
   if (!baseUrl) {
     throw new Error(
       "Unsupported Network. The operator API is not deployed in the Network " +
-        chainId,
+        chainId
     );
   } else {
     return baseUrl;
@@ -47,7 +47,7 @@ export function getExplorerOrderLink(chainId: ChainId, orderId: UID): string {
 
 export function getExplorerAddressLink(
   chainId: ChainId,
-  address: string,
+  address: string
 ): string {
   const baseUrl = getExplorerBaseUrl(chainId);
 

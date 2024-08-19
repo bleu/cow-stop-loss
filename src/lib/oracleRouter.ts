@@ -2,7 +2,7 @@ import { Address, PublicClient, formatUnits } from "viem";
 import { IToken } from "./types";
 import { ChainId, publicClientsFromIds } from "./publicClients";
 import { PRICE_FEED_REGISTER_ADDRESS } from "./contracts";
-import { gnosis, mainnet, sepolia } from "viem/chains";
+import { arbitrum, gnosis, mainnet, sepolia } from "viem/chains";
 import { priceFeedRegisterAbi } from "./abis/priceFeedRegister";
 import { oracleMinimalAbi } from "./abis/oracleMinimalAbi";
 
@@ -170,10 +170,10 @@ export class GnosisRouter extends OracleRouter {
         : token.symbol;
     const feeds = await this.fetchPriceFeeds();
     const ETH_ORACLE = feeds.find(
-      (feed) => feed.pair[0] === symbolToFind && feed.pair[1] === "ETH",
+      (feed) => feed.pair[0] === symbolToFind && feed.pair[1] === "ETH"
     );
     const USD_ORACLE = feeds.find(
-      (feed) => feed.pair[0] === symbolToFind && feed.pair[1] === "USD",
+      (feed) => feed.pair[0] === symbolToFind && feed.pair[1] === "USD"
     );
 
     return {
@@ -188,6 +188,14 @@ export class GnosisRouter extends OracleRouter {
 
   async findSellOracle(): Promise<Oracles> {
     return this.findOracle(this.tokenSell);
+  }
+}
+
+export class ArbitrumRouter extends GnosisRouter {
+  constructor(args: IOracleRouterArgs) {
+    super(args);
+    this.PRICE_FEEDS_URL =
+      "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-arbitrum-1.json";
   }
 }
 
@@ -209,4 +217,5 @@ export const CHAINS_ORACLE_ROUTER_FACTORY: Record<
   [mainnet.id]: MainnetRouter,
   [sepolia.id]: SepoliaRouter,
   [gnosis.id]: GnosisRouter,
+  [arbitrum.id]: ArbitrumRouter,
 };

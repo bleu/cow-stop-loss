@@ -1,5 +1,5 @@
 import { Address } from "viem";
-import { gnosis, goerli, mainnet, sepolia } from "viem/chains";
+import { arbitrum, gnosis, goerli, mainnet, sepolia } from "viem/chains";
 
 import { ChainId } from "#/lib/publicClients";
 
@@ -146,15 +146,6 @@ export function buildBlockExplorerAddressURL({
   };
 }
 
-export const DELEGATE_OWNER = "0xBA1BA1ba1BA1bA1bA1Ba1BA1ba1BA1bA1ba1ba1B";
-
-// TODO: is this still supposed to be here?
-export const networkMultisigs = {
-  [Network.Ethereum]: "0x10A19e7eE7d7F8a52822f6817de8ea18204F2e4f",
-  [Network.Polygon]: "0xeE071f4B516F69a1603dA393CdE8e76C40E5Be85",
-  [Network.Arbitrum]: "0xaF23DC5983230E9eEAf93280e312e57539D098D0",
-};
-
 export const networkIdEnumMap = {
   "1": Network.Ethereum,
   "137": Network.Polygon,
@@ -181,8 +172,8 @@ const networksNamesOnBalancer = [
 
 export const networksOnBalancer = Object.fromEntries(
   Object.entries(networkIdEnumMap).filter(([key]) =>
-    networksNamesOnBalancer.includes(key),
-  ),
+    networksNamesOnBalancer.includes(key)
+  )
 );
 
 export function networkFor(key?: string | number) {
@@ -202,7 +193,7 @@ export function networkIdFor(name?: string) {
 
 export function unsafeNetworkIdFor(name: string) {
   return Object.keys(networkIdEnumMap).find(
-    (key) => networkIdEnumMap[key as keyof typeof networkIdEnumMap] === name,
+    (key) => networkIdEnumMap[key as keyof typeof networkIdEnumMap] === name
   );
 }
 export const addressRegex = /0x[a-fA-F0-9]{40}$/;
@@ -214,6 +205,7 @@ const cowExplorerUrl = {
   [goerli.id]: "goerli",
   [gnosis.id]: "gc",
   [sepolia.id]: "sepolia",
+  [arbitrum.id]: "arb1",
 };
 
 export function buildOrderCowExplorerUrl({
@@ -234,7 +226,7 @@ export function generateRandomHex(length: number) {
 
 export function convertStringToNumberAndRoundDown(
   valueWithDecimals: string,
-  decimals: number,
+  decimals: number
 ) {
   return (
     Math.floor(Number(valueWithDecimals) * 10 ** (decimals - 1)) /
