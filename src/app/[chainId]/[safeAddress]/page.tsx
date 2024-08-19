@@ -3,9 +3,10 @@ import { SwapCard } from "#/components/swap-card/SwapCard";
 import { TxPendingDialog } from "#/components/TxPendingDialog";
 
 export default function Page({
-  _params,
+  // eslint-disable-next-line
+  params,
 }: {
-  _params: {
+  params: {
     chainId: number;
     safeAddress: string;
   };
