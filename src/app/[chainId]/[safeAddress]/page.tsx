@@ -3,6 +3,7 @@ import { SwapCard } from "#/components/swap-card/SwapCard";
 import { TxPendingDialog } from "#/components/TxPendingDialog";
 
 export default function Page({
+  // eslint-disable-next-line
   params,
 }: {
   params: {
@@ -10,10 +11,6 @@ export default function Page({
     safeAddress: string;
   };
 }) {
-  // TODO: COW-237
-  if (params.chainId != 11155111) {
-    throw new Error("Invalid chainId");
-  }
   return (
     <>
       <TxPendingDialog />

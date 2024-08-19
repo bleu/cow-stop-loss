@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { Address, getAddress } from "viem";
-import { gnosis, mainnet, sepolia } from "viem/chains";
+import { arbitrum, gnosis, mainnet, sepolia } from "viem/chains";
 
 import { cowTokenList } from "#/lib/cowTokenList";
 import { ChainId } from "#/lib/publicClients";
@@ -29,7 +29,7 @@ export const cowTokenListLogoUrl = (address?: string, chainId?: ChainId) => {
   return cowTokenList.find(
     (token) =>
       token.chainId === chainId &&
-      token.address.toLowerCase() === address?.toLowerCase(),
+      token.address.toLowerCase() === address?.toLowerCase()
   )?.logoURI;
 };
 
@@ -37,6 +37,7 @@ const chainIdToName: Record<ChainId, string> = {
   [mainnet.id]: "ethereum",
   [gnosis.id]: "xdai",
   [sepolia.id]: "ethereum",
+  [arbitrum.id]: "arbitrum",
 };
 
 export function trustTokenLogoUrl(address?: string, chainId?: ChainId): string {

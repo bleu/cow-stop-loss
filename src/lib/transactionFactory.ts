@@ -85,7 +85,7 @@ class StopLossOrderTx implements ITransaction<StopLossOrderArgs> {
         functionName: "create",
         args: [
           {
-            handler: STOP_LOSS_ADDRESS[data.chainId],
+            handler: STOP_LOSS_ADDRESS,
             salt: data.salt,
             staticInput: await stopLossArgsEncoder(data),
           },
@@ -168,7 +168,7 @@ const TRANSACTION_CREATORS: {
 export class TransactionFactory {
   static async createRawTx<T extends TRANSACTION_TYPES>(
     type: T,
-    args: TransactionBindings[T],
+    args: TransactionBindings[T]
   ): Promise<BaseTransaction> {
     const TransactionCreator = TRANSACTION_CREATORS[type];
     const txCreator = new TransactionCreator();
@@ -211,7 +211,7 @@ export async function createRawTxArgs({
   })();
 
   const uniqueTokenSell = Array.from(
-    new Set(data.map((order) => order.tokenSell.address)),
+    new Set(data.map((order) => order.tokenSell.address))
   );
 
   const publicClient = publicClientsFromIds[chainId];
@@ -227,13 +227,13 @@ export async function createRawTxArgs({
 
   const approveTxs = uniqueTokenSell.map((tokenAddress, index) => {
     const ordersWithSameTokenSell = data.filter(
-      (order) => order.tokenSell.address === tokenAddress,
+      (order) => order.tokenSell.address === tokenAddress
     );
     const token = ordersWithSameTokenSell[0].tokenSell;
     const totalAmount = ordersWithSameTokenSell.reduce(
       (acc, order) =>
         acc + parseUnits(String(order.amountSell), token.decimals),
-      BigInt(currentAllowances[index].result || 0),
+      BigInt(currentAllowances[index].result || 0)
     );
     return {
       type: TRANSACTION_TYPES.ERC20_APPROVE,

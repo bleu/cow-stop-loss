@@ -1,6 +1,6 @@
-import { gnosis, mainnet, sepolia } from "viem/chains";
+import { mainnet } from "viem/chains";
 
-// These addresses are the same for all supported chains (mainnet and goerli)
+// These addresses are the same for all supported chains
 export const COMPOSABLE_COW_ADDRESS =
   "0xfdaFc9d1902f4e0b84f65F49f244b32b31013b74" as const;
 export const SETTLEMENT_CONTRACT_ADDRESS =
@@ -11,13 +11,8 @@ export const TRAMPOLINE_ADDRESS =
   "0x01DcB88678aedD0C4cC9552B20F4718550250574" as const;
 export const GPV2_VAULT_RELAYER_ADDRESS =
   "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110" as const;
-
-export const STOP_LOSS_ADDRESS = {
-  // TODO: COW-237
-  [mainnet.id]: "0x",
-  [gnosis.id]: "0x",
-  [sepolia.id]: "0xe6CDbC068654C506424F7747357F51d0e7caB00e",
-} as const;
+export const STOP_LOSS_ADDRESS =
+  "0x412c36e5011cd2517016d243a2dfb37f73a242e7" as const;
 
 export const PRICE_FEED_REGISTER_ADDRESS = {
   [mainnet.id]: "0x47Fb2585D2C56Fe188D0E6ec628a38b74fCeeeDf",

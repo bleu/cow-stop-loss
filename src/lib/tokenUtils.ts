@@ -1,6 +1,6 @@
 import { Address, erc20Abi, formatUnits, parseUnits } from "viem";
 
-import { getCoingeckoUsdPrice } from "./coingeckoApi";
+// import { getCoingeckoUsdPrice } from "./coingeckoApi";
 import { ChainId, publicClientsFromIds } from "./publicClients";
 import { getCowProtocolUsdPrice } from "./cowApi/fetchNativePrice";
 import { IToken } from "./types";
@@ -48,20 +48,21 @@ export async function fetchTokenUsdPrice({
   tokenDecimals: number;
   chainId: ChainId;
 }): Promise<number> {
-  try {
-    const coingeckoPrice = await getCoingeckoUsdPrice({
-      chainId,
-      address: tokenAddress,
-    });
-    return coingeckoPrice;
-  } catch {
-    const cowPrice = await getCowProtocolUsdPrice({
-      chainId,
-      tokenAddress,
-      tokenDecimals,
-    });
-    return cowPrice;
-  }
+  // TODO: FIX Coingecko request
+  // try {
+  //   const coingeckoPrice = await getCoingeckoUsdPrice({
+  //     chainId,
+  //     address: tokenAddress,
+  //   });
+  //   return coingeckoPrice;
+  // } catch {
+  const cowPrice = await getCowProtocolUsdPrice({
+    chainId,
+    tokenAddress,
+    tokenDecimals,
+  });
+  return cowPrice;
+  // }
 }
 
 export async function fetchFormattedBalanceOf({
@@ -86,7 +87,7 @@ export async function fetchFormattedBalanceOf({
 
 export async function fetchTokenInfo(
   tokenAddress: Address,
-  chainId: ChainId,
+  chainId: ChainId
 ): Promise<IToken> {
   const publicClient = publicClientsFromIds[chainId];
   const [symbol, decimals] = await Promise.all([
@@ -110,7 +111,7 @@ export async function fetchTokenInfo(
 
 export const getNewMinTradeToken0 = async (
   newToken0: IToken,
-  chainId: ChainId,
+  chainId: ChainId
 ) => {
   return fetchTokenUsdPrice({
     tokenAddress: newToken0.address as Address,
@@ -123,9 +124,9 @@ export const getNewMinTradeToken0 = async (
       Number(
         formatUnits(
           parseUnits(String(amount), newToken0.decimals),
-          newToken0.decimals,
-        ),
-      ),
+          newToken0.decimals
+        )
+      )
     )
     .catch(() => 0);
 };

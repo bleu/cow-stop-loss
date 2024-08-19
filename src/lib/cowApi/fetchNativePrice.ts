@@ -1,6 +1,6 @@
 import { Address } from "viem";
 import { ChainId } from "../publicClients";
-import { gnosis, mainnet, sepolia } from "viem/chains";
+import { gnosis, mainnet, sepolia, arbitrum } from "viem/chains";
 import { IToken } from "../types";
 
 import { COW_API_URL_BY_CHAIN_ID } from "./api";
@@ -11,7 +11,7 @@ export interface INativePrice {
 
 export async function getNativePrice(
   tokenAddress: Address,
-  chainId: ChainId,
+  chainId: ChainId
 ): Promise<number> {
   const url = COW_API_URL_BY_CHAIN_ID[chainId];
 
@@ -40,6 +40,11 @@ export const USDC: Record<ChainId, IToken> = {
     decimals: 18,
     symbol: "USDC (test)",
   },
+  [arbitrum.id]: {
+    address: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
+    decimals: 6,
+    symbol: "USDC",
+  },
 };
 
 export async function getCowProtocolUsdPrice({
@@ -60,11 +65,11 @@ export async function getCowProtocolUsdPrice({
   if (usdNativePrice && tokenNativePrice) {
     const usdPrice = invertNativeToTokenPrice(
       usdNativePrice,
-      usdcToken.decimals,
+      usdcToken.decimals
     );
     const tokenPrice = invertNativeToTokenPrice(
       tokenNativePrice,
-      tokenDecimals,
+      tokenDecimals
     );
 
     if (!tokenPrice) throw new Error("Token price is 0");

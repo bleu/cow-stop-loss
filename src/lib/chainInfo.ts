@@ -1,4 +1,4 @@
-import { gnosis, mainnet, sepolia } from "viem/chains";
+import { arbitrum, gnosis, mainnet, sepolia } from "viem/chains";
 
 export const COW_PROTOCOL_LINK = "https://cow.fi/";
 
@@ -54,6 +54,17 @@ export const CHAIN_INFO: ChainInfoMap = {
     explorerTitle: "Etherscan",
     urlAlias: "sepolia",
     color: "#C12FF2",
+  },
+  [arbitrum.id]: {
+    docs: "https://docs.cow.fi",
+    explorer: "https://arbiscan.io",
+    infoLink: COW_PROTOCOL_LINK,
+    label: "Arbitrum One",
+    name: "arbitrum_one",
+    addressPrefix: "arb1",
+    explorerTitle: "Arbiscan",
+    urlAlias: "arb1",
+    color: "#29B6AF",
   },
 };
 
