@@ -47,6 +47,7 @@ export function ReviewOrdersDialog({
   showAddOrders?: boolean;
 }) {
   const { writeContract } = useTxManager();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
 
   const [addDraftOrders, removeDraftOrders] = useDraftOrders((state) => [
     state.addDraftOrders,
@@ -69,28 +70,33 @@ export function ReviewOrdersDialog({
 
   const onSubmit = async () => {
     if (!fallbackState || !domainSeparator) return;
-    const txArgs = await createRawTxArgs({
-      data: draftOrders,
-      safeAddress: safeAddress as Address,
-      chainId: chainId as ChainId,
-      fallbackState,
-      domainSeparator,
-    });
-    const safeTxHash = await writeContract(txArgs);
-    setOpen(false);
-    setTxPendingDialogOpen(true);
-    const queueTxs = await getTransactionQueue(String(chainId), safeAddress);
-    if (queueTxs.results.length === 0) {
-      // If there are no transactions in the queue, we have to add the order to the creating orders
-      addCreatingOrders(
-        draftOrders.map((order) => ({
-          ...order,
-          status: OrderStatus.CREATING,
-          safeTxHash,
-        })),
-      );
+    setIsSubmitting(true);
+    try {
+      const txArgs = await createRawTxArgs({
+        data: draftOrders,
+        safeAddress: safeAddress as Address,
+        chainId: chainId as ChainId,
+        fallbackState,
+        domainSeparator,
+      });
+      const safeTxHash = await writeContract(txArgs);
+      setOpen(false);
+      setTxPendingDialogOpen(true);
+      const queueTxs = await getTransactionQueue(String(chainId), safeAddress);
+      if (queueTxs.results.length === 0) {
+        // If there are no transactions in the queue, we have to add the order to the creating orders
+        addCreatingOrders(
+          draftOrders.map((order) => ({
+            ...order,
+            status: OrderStatus.CREATING,
+            safeTxHash,
+          })),
+        );
+      }
+      removeDraftOrders(draftOrders.map((order) => order.id));
+    } finally {
+      setIsSubmitting(false);
     }
-    removeDraftOrders(draftOrders.map((order) => order.id));
   };
 
   return (
@@ -128,7 +134,13 @@ export function ReviewOrdersDialog({
           ) : (
             <OrderContent order={draftOrders[0]} />
           )}
-          <Button className="w-full mt-3" onClick={onSubmit}>
+          <Button
+            className="w-full mt-3"
+            onClick={onSubmit}
+            loading={isSubmitting}
+            disabled={isSubmitting}
+            loadingText="Building transaction..."
+          >
             {multipleOrders
               ? `Place all ${draftOrders.length} Stop Loss Orders`
               : `Place Stop Loss Order`}
