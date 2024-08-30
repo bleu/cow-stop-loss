@@ -11,7 +11,7 @@ export interface INativePrice {
 
 export async function getNativePrice(
   tokenAddress: Address,
-  chainId: ChainId
+  chainId: ChainId,
 ): Promise<number> {
   const url = COW_API_URL_BY_CHAIN_ID[chainId];
 
@@ -65,11 +65,11 @@ export async function getCowProtocolUsdPrice({
   if (usdNativePrice && tokenNativePrice) {
     const usdPrice = invertNativeToTokenPrice(
       usdNativePrice,
-      usdcToken.decimals
+      usdcToken.decimals,
     );
     const tokenPrice = invertNativeToTokenPrice(
       tokenNativePrice,
-      tokenDecimals
+      tokenDecimals,
     );
 
     if (!tokenPrice) throw new Error("Token price is 0");

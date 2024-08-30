@@ -172,8 +172,8 @@ const networksNamesOnBalancer = [
 
 export const networksOnBalancer = Object.fromEntries(
   Object.entries(networkIdEnumMap).filter(([key]) =>
-    networksNamesOnBalancer.includes(key)
-  )
+    networksNamesOnBalancer.includes(key),
+  ),
 );
 
 export function networkFor(key?: string | number) {
@@ -193,7 +193,7 @@ export function networkIdFor(name?: string) {
 
 export function unsafeNetworkIdFor(name: string) {
   return Object.keys(networkIdEnumMap).find(
-    (key) => networkIdEnumMap[key as keyof typeof networkIdEnumMap] === name
+    (key) => networkIdEnumMap[key as keyof typeof networkIdEnumMap] === name,
   );
 }
 export const addressRegex = /0x[a-fA-F0-9]{40}$/;
@@ -226,7 +226,7 @@ export function generateRandomHex(length: number) {
 
 export function convertStringToNumberAndRoundDown(
   valueWithDecimals: string,
-  decimals: number
+  decimals: number,
 ) {
   return (
     Math.floor(Number(valueWithDecimals) * 10 ** (decimals - 1)) /

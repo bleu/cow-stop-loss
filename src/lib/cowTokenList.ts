@@ -9439,7 +9439,7 @@ export const cowTokenList = [
   ...arbitrumUniswapTokenList,
 ]
   .filter((token) =>
-    supportedChains.map((chain) => Number(chain.id)).includes(token?.chainId)
+    supportedChains.map((chain) => Number(chain.id)).includes(token?.chainId),
   )
   .filter(
     (token, index, self) =>
@@ -9447,6 +9447,6 @@ export const cowTokenList = [
       self.findIndex(
         (t) =>
           t.address.toLowerCase() == token.address.toLowerCase() &&
-          t.chainId == token.chainId
-      )
+          t.chainId == token.chainId,
+      ),
   );

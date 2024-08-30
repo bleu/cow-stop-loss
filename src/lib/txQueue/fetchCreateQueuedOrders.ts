@@ -37,14 +37,14 @@ export async function fetchCreateQueuedOrders({
                 COMPOSABLE_COW_ADDRESS.toLowerCase() &&
               value.dataDecoded?.method === "create"
             );
-          }
+          },
         ) || []
       );
     })
     .flat();
 
   const decodedArgsList = decodedTxs.map((tx) =>
-    decodeComposableCowCreateTxData(tx.data as `0x${string}`)
+    decodeComposableCowCreateTxData(tx.data as `0x${string}`),
   );
 
   const allTokensSet = new Set(
@@ -52,22 +52,22 @@ export async function fetchCreateQueuedOrders({
       .map((args) => {
         return [args.buyToken, args.sellToken];
       })
-      .flat()
+      .flat(),
   );
 
   const tokensInfo = await Promise.all(
     Array.from(allTokensSet).map(async (token) => {
       return fetchTokenInfo(token, chainId);
-    })
+    }),
   );
 
   return decodedArgsList.map((args, index) => {
     const tokenSell = tokensInfo.find(
-      (token) => token.address.toLowerCase() === args.sellToken.toLowerCase()
+      (token) => token.address.toLowerCase() === args.sellToken.toLowerCase(),
     ) as IToken;
 
     const tokenBuy = tokensInfo.find(
-      (token) => token.address.toLowerCase() === args.buyToken.toLowerCase()
+      (token) => token.address.toLowerCase() === args.buyToken.toLowerCase(),
     ) as IToken;
 
     return {
