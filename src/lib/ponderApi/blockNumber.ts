@@ -3,26 +3,36 @@ import parsePrometeusText from "parse-prometheus-text-format";
 
 import { networkFor } from "#/utils";
 import { NEXT_PUBLIC_API_URL } from ".";
+interface ChainStatus {
+  id: number;
+  block: {
+    number: number;
+    timestamp: number;
+  };
+}
 
-export async function getBlockNumberFromPrometheusMetrics({
+interface StatusResponse {
+  mainnet: ChainStatus;
+  arbitrum: ChainStatus;
+  gnosis: ChainStatus;
+  sepolia: ChainStatus;
+  // Accept any chain string key here in addition to explicit mainnet/arbitrum/etc fields
+  [key: string]: ChainStatus;
+}
+
+export async function getBlockNumberFromStatus({
   chainId,
 }: {
   chainId: number;
 }) {
-  const rawMetricsData = await fetch(NEXT_PUBLIC_API_URL + "/metrics").then(
-    (res) => res.text(),
+  const response = await fetch(NEXT_PUBLIC_API_URL + "/status").then((res) =>
+    res.json()
   );
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const metrics = parsePrometeusText(rawMetricsData) as Record<string, any>;
+  const status = response.data as StatusResponse;
+  if (!status) return;
 
-  const latestBlockNumber = Object.values(metrics)
-    .find(({ name }) => name === "ponder_realtime_latest_block_number")
-    ?.["metrics"]?.find(
-      // @ts-ignore
-      ({ labels }) => labels.network === networkFor(chainId),
-    )?.value;
+  const chainStatus = status[networkFor(chainId)];
 
-  if (!latestBlockNumber) return undefined;
-
-  return Number(latestBlockNumber);
+  if (!chainStatus) return;
+  return Number(chainStatus.block.number);
 }
