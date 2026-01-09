@@ -68,6 +68,7 @@ export async function stopLossArgsEncoder(
     metadata: {
       widget: {
         appCode: "Stop Loss",
+        // @ts-expect-error
         ponderId: `${data.salt}-${data.safeAddress}-${data.chainId}`,
       },
     },
