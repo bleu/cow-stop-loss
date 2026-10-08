@@ -4,9 +4,7 @@ import { Button } from "@bleu/ui";
 import { useCallback } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
-import { useAdvancedSettingsStore } from "#/hooks/useAdvancedSettings";
 import { useDraftOrders } from "#/hooks/useDraftOrders";
-import { useOracleStore } from "#/hooks/useOracle";
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { SwapData } from "#/lib/types";
@@ -17,18 +15,10 @@ export function SwapCardSubmitButton() {
     formState: { isSubmitting, errors },
     control,
   } = useFormContext<SwapData>();
-  const isLoading = useOracleStore((state) => state.isLoading);
 
   const tokenSellBalance = useSwapTokenBalances(
     (state) => state.tokenSellBalance,
   );
-  const advancedSettings = useAdvancedSettingsStore(
-    (state) => state.advancedSettings,
-  );
-  const [tokenBuyOracle, tokenSellOracle] = useOracleStore((state) => [
-    state.oracleRoute?.tokenBuyOracle,
-    state.oracleRoute?.tokenSellOracle,
-  ]);
 
   const [tokenBuy, tokenSell, buyAmount, sellAmount, strikePrice, limitPrice] =
     useWatch({
@@ -70,6 +60,12 @@ export function SwapCardSubmitButton() {
         text: "Enter amounts",
       };
     }
+    if (tokenSellBalance === undefined) {
+      return {
+        disabled: true,
+        text: "Sell token balance unavailable",
+      };
+    }
     if (sellAmount > Number(tokenSellBalance)) {
       return {
         disabled: true,
@@ -96,29 +92,16 @@ export function SwapCardSubmitButton() {
       };
     }
 
-    if (
-      (!tokenBuyOracle && !advancedSettings.tokenBuyOracle) ||
-      (!tokenSellOracle && !advancedSettings.tokenSellOracle)
-    ) {
-      return {
-        disabled: true,
-        text: "Error finding token oracles, set it manually in advanced settings",
-      };
-    }
-
     if (!marketPrice) {
       return {
         disabled: true,
         text: "Error quoting tokens, make sure that CoW supports them.",
       };
     }
-    if (Object.values(errors).length) {
-      const errorList = Object.values(errors);
-      // const firstErrorMessage = errorList[0];
-      // const firstErrorKey = Object.keys(errors).find(
-      //   // @ts-ignore
-      //   (key) => errors[key] === firstErrorMessage,
-      // );
+    const errorList = Object.entries(errors)
+      .filter(([name]) => name !== "root")
+      .map(([, error]) => error);
+    if (errorList.length) {
       const errorString = errorList.map(({ message }) => message).join(", ");
       return {
         disabled: false,
@@ -130,8 +113,6 @@ export function SwapCardSubmitButton() {
       text: "Review Stop Loss order",
     };
   }, [
-    advancedSettings.tokenBuyOracle,
-    advancedSettings.tokenSellOracle,
     buyAmount,
     draftOrders.length,
     errors,
@@ -150,9 +131,9 @@ export function SwapCardSubmitButton() {
     <Button
       className="rounded-lg text-wrap py-2 mt-2 h-auto"
       type="submit"
-      loading={isSubmitting || isLoading}
-      loadingText={isSubmitting ? "Validating..." : "Loading..."}
-      disabled={disabled}
+      loading={isSubmitting}
+      loadingText="Validating..."
+      disabled={disabled || isSubmitting}
     >
       {text}
     </Button>

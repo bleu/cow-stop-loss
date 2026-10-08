@@ -1,8 +1,10 @@
-import { Address } from "viem";
-import { generateAdvancedSettingsSchema, swapSchema } from "./schema";
-import { z } from "zod";
-import { ORDER_QUERY } from "./ponderApi/queries";
 import { ResultOf } from "gql.tada";
+import { Address } from "viem";
+import { z } from "zod";
+
+import type { IRoute } from "./oracleRouter";
+import { ORDER_QUERY } from "./ponderApi/queries";
+import { generateAdvancedSettingsSchema, swapSchema } from "./schema";
 
 export interface IToken {
   symbol: string;
@@ -36,7 +38,8 @@ export type AdvancedSwapSettings = z.input<
 export type SwapData = z.output<typeof swapSchema>;
 
 export type DraftOrder = Omit<SwapData, "validTo"> &
-  AdvancedSwapSettings & {
+  AdvancedSwapSettings &
+  IRoute & {
     id: string;
     status: OrderStatus.DRAFT;
     oraclePrice: number;

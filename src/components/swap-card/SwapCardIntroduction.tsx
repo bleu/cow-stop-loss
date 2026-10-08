@@ -4,7 +4,7 @@ import { GearIcon } from "@radix-ui/react-icons";
 import { useUIStore } from "#/hooks/useUIState";
 
 const INTRODUCTION_STEPS = [
-  "Choose the tokens you want to swap",
+  "Choose a supported token to sell for USDC",
   "Define the token amount to sell or buy",
   "Set up a trigger and limit price to condition your order",
   "Review the order and you are ready to go or...",
@@ -13,8 +13,7 @@ const INTRODUCTION_STEPS = [
 const ADVANCED_OPTIONS = [
   "Change order to be partially fillable",
   "Choose a different receiver",
-  "Select different oracles for both tokens",
-  "Change oracles maximum time since last update",
+  "Set the maximum time since the last oracle update",
 ];
 
 const StepBulletPoint = ({

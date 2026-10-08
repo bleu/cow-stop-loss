@@ -1,8 +1,7 @@
 import { Address } from "viem";
-import { ChainId } from "../publicClients";
-import { gnosis, mainnet, sepolia, arbitrum } from "viem/chains";
-import { IToken } from "../types";
 
+import { ChainId } from "../publicClients";
+import { getSupportedTokens } from "../supportedTokens";
 import { COW_API_URL_BY_CHAIN_ID } from "./api";
 
 export interface INativePrice {
@@ -24,29 +23,6 @@ export async function getNativePrice(
     .then((data) => data.price);
 }
 
-export const USDC: Record<ChainId, IToken> = {
-  [mainnet.id]: {
-    address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-    decimals: 6,
-    symbol: "USDC",
-  },
-  [gnosis.id]: {
-    address: "0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83",
-    decimals: 6,
-    symbol: "USDC",
-  },
-  [sepolia.id]: {
-    address: "0xbe72E441BF55620febc26715db68d3494213D8Cb",
-    decimals: 18,
-    symbol: "USDC (test)",
-  },
-  [arbitrum.id]: {
-    address: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831",
-    decimals: 6,
-    symbol: "USDC",
-  },
-};
-
 export async function getCowProtocolUsdPrice({
   chainId,
   tokenAddress,
@@ -56,9 +32,9 @@ export async function getCowProtocolUsdPrice({
   tokenAddress: Address;
   tokenDecimals: number;
 }): Promise<number> {
-  const usdcToken = USDC[chainId];
+  const usdcToken = getSupportedTokens(chainId).buyToken.token;
   const [usdNativePrice, tokenNativePrice] = await Promise.all([
-    getNativePrice(USDC[chainId].address as Address, chainId),
+    getNativePrice(usdcToken.address, chainId),
     getNativePrice(tokenAddress, chainId),
   ]);
 

@@ -5,7 +5,6 @@ import { useState } from "react";
 import { Address, getAddress } from "viem";
 import { arbitrum, gnosis, mainnet, sepolia } from "viem/chains";
 
-import { cowTokenList } from "#/lib/cowTokenList";
 import { ChainId } from "#/lib/publicClients";
 
 type ImageAttributes = React.DetailedHTMLProps<
@@ -24,14 +23,6 @@ const tokenUrlRoot =
 
 export const cowprotocolTokenLogoUrl = (address?: string, chainId?: ChainId) =>
   `${tokenUrlRoot}/${chainId}/${address}/logo.png`;
-
-export const cowTokenListLogoUrl = (address?: string, chainId?: ChainId) => {
-  return cowTokenList.find(
-    (token) =>
-      token.chainId === chainId &&
-      token.address.toLowerCase() === address?.toLowerCase(),
-  )?.logoURI;
-};
 
 const chainIdToName: Record<ChainId, string> = {
   [mainnet.id]: "ethereum",
@@ -59,8 +50,6 @@ export const TokenLogo = ({
     cowprotocolTokenLogoUrl(getAddress(tokenAddress as Address), chainId),
     cowprotocolTokenLogoUrl(tokenAddress?.toLowerCase(), 1),
     cowprotocolTokenLogoUrl(getAddress(tokenAddress as Address), 1),
-    cowTokenListLogoUrl(tokenAddress, chainId),
-    cowTokenListLogoUrl(tokenAddress, 1),
     trustTokenLogoUrl(tokenAddress, chainId),
     trustTokenLogoUrl(tokenAddress?.toLowerCase(), chainId),
     trustTokenLogoUrl(getAddress(tokenAddress as Address), chainId),

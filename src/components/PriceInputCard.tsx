@@ -74,6 +74,8 @@ function PriceInputCardComponent({
   const updateDisplayPrice = (price: number | undefined) => {
     if (price !== undefined && price !== 0) {
       setDisplayPrice(isInverted ? 1 / price : price);
+    } else {
+      setDisplayPrice(undefined);
     }
   };
 
