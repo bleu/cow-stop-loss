@@ -6,17 +6,14 @@ import {
   formatNumber,
   Input,
 } from "@bleu/ui";
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 
 import { useSafeApp } from "#/hooks/useSafeApp";
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { useTokenPrice } from "#/hooks/useTokenPrice";
-import { calculateAmounts } from "#/lib/calculateAmounts";
 import { fetchFormattedBalanceOf } from "#/lib/tokenUtils";
 import { SwapData } from "#/lib/types";
-import { convertStringToNumberAndRoundDown } from "#/utils";
-import { pasteAbsoluteValue, preventNegativeKeyDown } from "#/utils/inputs";
 
 import { TokenInfo } from "./TokenInfo";
 import { TokenSelect } from "./TokenSelect";
@@ -28,13 +25,10 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     setValue,
     register,
     control,
-    getValues,
     formState: { errors, isSubmitting },
   } = useFormContext<SwapData>();
   const tokenFieldName = `token${side}` as const;
   const amountFieldName = `amount${side}` as const;
-
-  const [isAmountDisabled, setIsAmountDisabled] = useState(false);
 
   const [token, isSellOrder, amount] = useWatch({
     control,
@@ -58,27 +52,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   const setTokenBalance =
     side === "Buy" ? setTokenBuyBalance : setTokenSellBalance;
 
-  async function updateOtherSideAmount() {
-    const limitPrice = getValues("limitPrice");
-    if (!limitPrice) return;
-    const [sellAmount, buyAmount] = calculateAmounts({
-      isSellOrder,
-      amount,
-      limitPrice,
-    });
-    const anotherSideAmount = side === "Buy" ? sellAmount : buyAmount;
-    setValue(
-      `amount${side === "Buy" ? "Sell" : "Buy"}` as const,
-      anotherSideAmount,
-    );
-  }
-
-  useEffect(() => {
-    // Control if the amount field should be disabled
-    setIsAmountDisabled(
-      (isSellOrder && side === "Buy") || (!isSellOrder && side === "Sell"),
-    );
-  }, [isSellOrder, side]);
+  const isAmountDisabled = isSellOrder ? side === "Buy" : side === "Sell";
 
   useEffect(() => {
     let active = true;
@@ -100,13 +74,6 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
       active = false;
     };
   }, [token, chainId, safeAddress, setTokenBalance]);
-
-  useEffect(() => {
-    // Update other side amount on amount change
-    if (!isAmountDisabled) {
-      updateOtherSideAmount();
-    }
-  }, [amount]);
 
   return (
     <Card className="bg-background w-full p-2 rounded-lg">
@@ -135,19 +102,16 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
         <div className="flex flex-col gap-y-1 items-end overflow-x-auto basis-1/2 grow">
           <Input
             {...register(amountFieldName)}
-            type="number"
-            step={1 / 10 ** (token ? token.decimals : 18)}
+            type="text"
+            inputMode="decimal"
+            aria-label={getCardTitle(isAmountDisabled, side)}
             placeholder="0.0"
             className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:/70 px-0 text-2xl text-right bg-background"
             disabled={isAmountDisabled}
-            min={0}
-            max={10 ** 18}
-            onKeyDown={preventNegativeKeyDown}
-            onPaste={pasteAbsoluteValue}
           />
           <i className="text-xs pr-1">
             {`≈ ${formatNumber(
-              amount && usdPrice ? amount * (usdPrice || 0) : 0,
+              amount && usdPrice ? Number(amount) * usdPrice : 0,
               2,
               "currency",
               "standard",
@@ -173,15 +137,10 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                   variant="ghost"
                   className="py-0 px-1 h-fit text-accent text-xs"
                   onClick={() => {
-                    setValue(
-                      amountFieldName,
-                      Number(
-                        convertStringToNumberAndRoundDown(
-                          tokenBalance,
-                          token.decimals,
-                        ),
-                      ),
-                    );
+                    setValue(amountFieldName, tokenBalance, {
+                      shouldValidate: true,
+                      shouldDirty: true,
+                    });
                   }}
                 >
                   Max

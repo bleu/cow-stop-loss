@@ -4,6 +4,7 @@ import {
   Button,
   Dialog,
   DialogContent,
+  DialogTitle,
   formatNumber,
   TabsContent,
   TabsList,
@@ -102,14 +103,15 @@ export function ReviewOrdersDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
+        aria-describedby={undefined}
         className={cn(
           "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-muted w-[90vw] max-w-[450px] py-6 px-2",
         )}
       >
         <div className="flex flex-col gap-2 w-full overflow-y-auto scrollbar scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-primary scrollbar-track-background scrollbar-w-2 max-h-[85vh] px-3">
-          <div className="text-2xl font-medium ">
+          <DialogTitle className="text-2xl font-medium">
             Review Stop Loss order{multipleOrders ? "s" : ""}
-          </div>
+          </DialogTitle>
           {multipleOrders ? (
             <TabsRoot>
               <TabsList defaultValue={String(0)} className="flex justify-start">
@@ -196,12 +198,8 @@ function OrderContent({ order }: { order: DraftOrder }) {
           {order.tokenSell.symbol} = {formatNumber(order.strikePrice, 4)}{" "}
           {order.tokenBuy.symbol}
         </OrderInformation>
-        <OrderInformation
-          title="Limit price"
-          tooltipText={TOOLTIP_DESCRIPTIONS.LIMIT_PRICE}
-        >
-          {order.tokenSell.symbol} = {formatNumber(order.limitPrice, 4)}{" "}
-          {order.tokenBuy.symbol}
+        <OrderInformation title="Slippage">
+          {order.slippagePercent}%
         </OrderInformation>
         <OrderInformation
           title="Current oracle price"
@@ -290,7 +288,7 @@ function TokenInformation({
 }: {
   title: string;
   token: IToken;
-  balance: number;
+  balance: string;
 }) {
   const { data: tokenPrice } = useTokenPrice(token);
 

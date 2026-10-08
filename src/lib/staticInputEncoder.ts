@@ -1,6 +1,7 @@
 import { encodeAbiParameters, parseUnits } from "viem";
 
 import { MetadataApi } from "@cowprotocol/app-data";
+import { getOrderAmounts } from "./calculateAmounts";
 import { uploadAppData } from "./cowApi/uploadAppData";
 import { StopLossOrderArgs } from "./transactionFactory";
 
@@ -60,16 +61,15 @@ export const stopLossDataStructure = [
 ];
 
 export async function stopLossArgsEncoder(
-  data: StopLossOrderArgs
+  data: StopLossOrderArgs,
 ): Promise<`0x${string}`> {
+  const { sellAtoms, buyAtoms } = getOrderAmounts(data);
   const metadataApi = new MetadataApi();
 
   const appDataDoc = await metadataApi.generateAppDataDoc({
     metadata: {
       widget: {
         appCode: "Stop Loss",
-        // @ts-expect-error
-        ponderId: `${data.salt}-${data.safeAddress}-${data.chainId}`,
       },
     },
   });
@@ -81,21 +81,13 @@ export async function stopLossArgsEncoder(
     chainId: data.chainId,
   });
 
-  const strikePriceWithDecimals = parseUnits(String(data.strikePrice), 18);
-  const sellAmountWithDecimals = parseUnits(
-    String(data.amountSell),
-    data.tokenSell.decimals
-  );
-  const buyAmountWithDecimals = parseUnits(
-    String(data.amountBuy),
-    data.tokenBuy.decimals
-  );
+  const strikePriceWithDecimals = parseUnits(data.strikePrice, 18);
 
   return encodeAbiParameters(stopLossDataStructure, [
     data.tokenSell.address,
     data.tokenBuy.address,
-    sellAmountWithDecimals,
-    buyAmountWithDecimals,
+    sellAtoms,
+    buyAtoms,
     appDataHex,
     data.receiver,
     data.isSellOrder,

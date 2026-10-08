@@ -1,6 +1,7 @@
 import { Address } from "viem";
 import { create } from "zustand";
 
+import { calculateAmounts } from "#/lib/calculateAmounts";
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
 import { ChainId } from "#/lib/publicClients";
 import { generateSwapSchema, VALID_TO_VALUES_MAP } from "#/lib/schema";
@@ -26,6 +27,14 @@ export const useDraftOrder = create<DraftOrderState>()((set) => ({
   setCurrentDraftOrder: (order) => set({ currentDraftOrder: order }),
   createDraftOrder: async (data, chainId, safeAddress) => {
     const swapData = generateSwapSchema(chainId).parse(data);
+    const amounts = calculateAmounts({
+      isSellOrder: swapData.isSellOrder,
+      amount: swapData.isSellOrder ? swapData.amountSell : swapData.amountBuy,
+      strikePrice: swapData.strikePrice,
+      slippagePercent: swapData.slippagePercent,
+      sellDecimals: swapData.tokenSell.decimals,
+      buyDecimals: swapData.tokenBuy.decimals,
+    });
     const { advancedSettings } = useAdvancedSettingsStore.getState();
     const draftOrders = useDraftOrders.getState().draftOrders;
 
@@ -63,6 +72,7 @@ export const useDraftOrder = create<DraftOrderState>()((set) => ({
 
     const draftOrder: DraftOrder = {
       ...swapData,
+      ...amounts,
       maxHoursSinceOracleUpdates: advancedSettings.maxHoursSinceOracleUpdates,
       partiallyFillable: advancedSettings.partiallyFillable,
       receiver,
