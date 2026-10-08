@@ -108,7 +108,7 @@ const usePrice = (
   }
 
   if (isDraftOrder(order) && priceKey in order) {
-    return order[priceKey] as number;
+    return Number(order[priceKey as "strikePrice" | "limitPrice"]);
   }
 
   return null;

@@ -1,8 +1,9 @@
 import { BaseTransaction } from "@safe-global/safe-apps-sdk";
-import { Address, encodeFunctionData, erc20Abi, parseUnits } from "viem";
+import { Address, encodeFunctionData, erc20Abi } from "viem";
 
 import { composableCowAbi } from "./abis/composableCow";
 import { signatureVerifierMuxerAbi } from "./abis/signatureVerifierMuxer";
+import { getOrderAmounts } from "./calculateAmounts";
 import { stopLossArgsEncoder } from "./staticInputEncoder";
 import { DraftOrder, IToken } from "./types";
 import {
@@ -231,8 +232,7 @@ export async function createRawTxArgs({
     );
     const token = ordersWithSameTokenSell[0].tokenSell;
     const totalAmount = ordersWithSameTokenSell.reduce(
-      (acc, order) =>
-        acc + parseUnits(String(order.amountSell), token.decimals),
+      (acc, order) => acc + getOrderAmounts(order).sellAtoms,
       BigInt(currentAllowances[index].result || 0),
     );
     return {

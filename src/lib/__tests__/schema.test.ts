@@ -13,15 +13,72 @@ const ethereumSwap = {
     symbol: "USDC",
     decimals: 6,
   },
-  amountSell: 1,
-  amountBuy: 1800,
-  strikePrice: 1900,
-  limitPrice: 1800,
+  amountSell: "1",
+  amountBuy: "1898.1",
+  strikePrice: "1900",
+  slippagePercent: "0.1",
   isSellOrder: true,
   validTo: VALID_TO_OPTIONS.DAY,
 };
 
 describe("Supported stop loss order input", () => {
+  it.each(["0", "0.1", "0.5", "1", "0.25", "99.99"])(
+    "accepts %s%% slippage in the order configuration",
+    (slippagePercent) => {
+      expect(
+        generateSwapSchema(1).safeParse({ ...ethereumSwap, slippagePercent })
+          .success,
+      ).toBe(true);
+    },
+  );
+
+  it.each(["-1", "100", "0.001", "", ".", "1e-1", "NaN", "Infinity"])(
+    "rejects %j slippage at the configuration interface",
+    (slippagePercent) => {
+      expect(
+        generateSwapSchema(1).safeParse({ ...ethereumSwap, slippagePercent })
+          .success,
+      ).toBe(false);
+    },
+  );
+
+  it.each(["0", "-1", "", "NaN"])(
+    "rejects exact sell amount %j",
+    (amountSell) => {
+      expect(
+        generateSwapSchema(1).safeParse({ ...ethereumSwap, amountSell })
+          .success,
+      ).toBe(false);
+    },
+  );
+
+  it("rejects an exact buy configuration whose sell amount rounds to zero", () => {
+    expect(
+      generateSwapSchema(1).safeParse({
+        ...ethereumSwap,
+        tokenSell: getSupportedTokens(1).sellTokens[1].token,
+        isSellOrder: false,
+        amountBuy: "0.000001",
+        strikePrice: "2000",
+      }).success,
+    ).toBe(false);
+  });
+
+  it("accepts slippage configuration without an independently editable limit", () => {
+    const result = generateSwapSchema(1).safeParse(ethereumSwap);
+
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects an exact sell amount that cannot be represented by its token", () => {
+    const result = generateSwapSchema(1).safeParse({
+      ...ethereumSwap,
+      amountSell: "0.0000000000000000001",
+    });
+
+    expect(result.success).toBe(false);
+  });
+
   it.each([
     { chainId: 1 as const, sell: ["WETH", "WBTC"], buy: "USDC" },
     { chainId: 100 as const, sell: ["WETH", "WBTC"], buy: "USDC.e" },

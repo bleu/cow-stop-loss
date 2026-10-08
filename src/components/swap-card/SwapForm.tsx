@@ -8,6 +8,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { useDraftOrder } from "#/hooks/useDraftOrder";
 import { useSafeApp } from "#/hooks/useSafeApp";
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
+import { calculateAmounts } from "#/lib/calculateAmounts";
 import { generateSwapSchema } from "#/lib/schema";
 import { getSupportedTokens } from "#/lib/supportedTokens";
 import { SwapData } from "#/lib/types";
@@ -18,6 +19,7 @@ import { CurrentMarketPrice } from "../CurrentMarketPrice";
 import { OrderTypeSwitch } from "../OrderTypeSwitch";
 import { PriceInputCard } from "../PriceInputCard";
 import { ReviewOrdersDialog } from "../ReviewOrdersDialog";
+import { SlippageInputCard } from "../SlippageInputCard";
 import { TokenInputCard } from "../TokenInputCard";
 import { Form } from "../ui/form";
 import { SwapCardSubmitButton } from "./SwapCardSubmitButton";
@@ -35,22 +37,79 @@ export function SwapForm() {
 
   const form = useForm<SwapData>({
     resolver: zodResolver(generateSwapSchema(chainId)),
+    mode: "onChange",
     defaultValues: {
       isSellOrder: true,
+      slippagePercent: "0.1",
+      amountSell: "",
+      amountBuy: "",
+      strikePrice: "",
       tokenBuy: getSupportedTokens(chainId).buyToken.token,
     },
   });
-  const { reset, clearErrors } = form;
-  const [tokenSell, tokenBuy] = useWatch({
+  const { reset, clearErrors, setValue, getValues } = form;
+  const [
+    tokenSell,
+    tokenBuy,
+    isSellOrder,
+    amountSell,
+    amountBuy,
+    strikePrice,
+    slippagePercent,
+  ] = useWatch({
     control: form.control,
-    name: ["tokenSell", "tokenBuy"],
+    name: [
+      "tokenSell",
+      "tokenBuy",
+      "isSellOrder",
+      "amountSell",
+      "amountBuy",
+      "strikePrice",
+      "slippagePercent",
+    ],
   });
+  React.useEffect(() => {
+    const derivedField = isSellOrder ? "amountBuy" : "amountSell";
+    let derivedAmount = "";
+    if (tokenSell && tokenBuy) {
+      try {
+        const amounts = calculateAmounts({
+          isSellOrder,
+          amount: isSellOrder ? amountSell : amountBuy,
+          strikePrice,
+          slippagePercent,
+          sellDecimals: tokenSell.decimals,
+          buyDecimals: tokenBuy.decimals,
+        });
+        derivedAmount = amounts[derivedField];
+      } catch {
+        derivedAmount = "";
+      }
+    }
+    if (getValues(derivedField) !== derivedAmount) {
+      setValue(derivedField, derivedAmount, { shouldValidate: true });
+    }
+  }, [
+    isSellOrder,
+    amountSell,
+    amountBuy,
+    strikePrice,
+    slippagePercent,
+    tokenSell,
+    tokenBuy,
+    getValues,
+    setValue,
+  ]);
   const [reviewDialogOpen, setReviewDialogOpen] = React.useState(false);
   const submissionId = React.useRef(0);
 
   React.useEffect(() => {
     reset({
       isSellOrder: true,
+      slippagePercent: "0.1",
+      amountSell: "",
+      amountBuy: "",
+      strikePrice: "",
       tokenBuy: getSupportedTokens(chainId).buyToken.token,
     });
     const balances = useSwapTokenBalances.getState();
@@ -116,10 +175,8 @@ export function SwapForm() {
               <AdvancedSettingsDialog />
             </div>
             <TokenInputCard side="Sell" />
-            <div className="flex gap-2 justify-between">
-              <PriceInputCard fieldName="strikePrice" />
-              <PriceInputCard fieldName="limitPrice" />
-            </div>
+            <PriceInputCard />
+            <SlippageInputCard />
             <CurrentMarketPrice />
             <ValidToInput />
             <TokenInputCard side="Buy" />
