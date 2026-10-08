@@ -19,6 +19,7 @@ export function useTokenPrice(token?: IToken) {
           })
         : null,
     {
+      keepPreviousData: false,
       revalidateOnFocus: false,
       refreshInterval: 10_000,
     },

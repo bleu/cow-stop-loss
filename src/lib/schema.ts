@@ -1,10 +1,11 @@
 import { Address, isAddress } from "viem";
-import { literal, z } from "zod";
+import { mainnet, sepolia } from "viem/chains";
 import { normalize } from "viem/ens";
+import { literal, z } from "zod";
 
 import { ChainId, publicClientsFromIds } from "./publicClients";
-import { oracleMinimalAbi } from "./abis/oracleMinimalAbi";
-import { mainnet, sepolia } from "viem/chains";
+import { getSupportedTokens } from "./supportedTokens";
+import type { IToken } from "./types";
 
 const basicAddressSchema = z.custom<Address>((val) => {
   return typeof val === "string" ? isAddress(val) : false;
@@ -56,25 +57,6 @@ const generateEnsSchema = (chainId: number) => {
   return basicAddressSchema;
 };
 
-const generateOracleSchema = ({ chainId }: { chainId: ChainId }) => {
-  const publicClient = publicClientsFromIds[chainId];
-  return basicAddressSchema.refine(
-    async (value) => {
-      return publicClient
-        .readContract({
-          address: value as Address,
-          abi: oracleMinimalAbi,
-          functionName: "latestRoundData",
-        })
-        .then(() => true)
-        .catch(() => false);
-    },
-    {
-      message: "Address does not conform to Oracle interface",
-    },
-  );
-};
-
 export const swapSchema = z
   .object({
     tokenSell: basicTokenSchema,
@@ -96,50 +78,45 @@ export const swapSchema = z
     },
   );
 
+function matchesToken(token: IToken, supportedToken: IToken) {
+  return (
+    token.address.toLowerCase() === supportedToken.address.toLowerCase() &&
+    token.decimals === supportedToken.decimals &&
+    token.symbol === supportedToken.symbol
+  );
+}
+
+export const generateSwapSchema = (chainId: ChainId) => {
+  const { sellTokens, buyToken } = getSupportedTokens(chainId);
+  return swapSchema.superRefine((data, context) => {
+    if (!sellTokens.some(({ token }) => matchesToken(data.tokenSell, token))) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["tokenSell"],
+        message: "Unsupported sell token on this chain",
+      });
+    }
+    if (!matchesToken(data.tokenBuy, buyToken.token)) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["tokenBuy"],
+        message: "Use the fixed USDC buy token for this chain",
+      });
+    }
+  });
+};
+
 export const generateAdvancedSettingsSchema = (chainId: ChainId) => {
-  return z
-    .object({
-      maxHoursSinceOracleUpdates: z.coerce
-        .number()
-        .positive()
-        .max(365 * 24),
-      tokenSellOracle: z.union([
-        generateOracleSchema({ chainId }),
-        z.literal(""),
-      ]),
-      tokenBuyOracle: z.union([
-        generateOracleSchema({ chainId }),
-        z.literal(""),
-      ]),
-      receiver: z.union([
-        basicAddressSchema,
-        generateEnsSchema(chainId),
-        literal(""),
-      ]),
-      partiallyFillable: z.coerce.boolean(),
-    })
-    .refine(
-      (data) => {
-        if (!data.tokenSellOracle && data.tokenBuyOracle) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "If one oracle is set, both must be set",
-        path: ["tokenSellOracle"],
-      },
-    )
-    .refine(
-      (data) => {
-        if (!data.tokenBuyOracle && data.tokenSellOracle) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: "If one oracle is set, both must be set",
-        path: ["tokenBuyOracle"],
-      },
-    );
+  return z.object({
+    maxHoursSinceOracleUpdates: z.coerce
+      .number()
+      .positive()
+      .max(365 * 24),
+    receiver: z.union([
+      basicAddressSchema,
+      generateEnsSchema(chainId),
+      literal(""),
+    ]),
+    partiallyFillable: z.coerce.boolean(),
+  });
 };

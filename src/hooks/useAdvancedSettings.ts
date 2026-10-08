@@ -11,8 +11,6 @@ interface AdvancedSettingsState {
 export const defaultAdvancedSettings: AdvancedSwapSettings = {
   receiver: "",
   maxHoursSinceOracleUpdates: 1,
-  tokenBuyOracle: "",
-  tokenSellOracle: "",
   partiallyFillable: false,
 };
 

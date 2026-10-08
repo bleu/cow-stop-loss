@@ -2,9 +2,16 @@
 
 ## Introduction
 
-The stop loss is designed to sell a token if its price drops below a certain threshold. It uses the [Composable CoW framework](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/composable-cow) to post an order on the CoW Protocol. To check if the price of the token has dropped below the threshold, the stop loss uses the Chainlink price feed. In the UI, the oracles have to be set by the user, there is a button to load available Chainlink oracles.
+The stop loss sells a token if its price drops below the trigger price. It uses [Composable CoW](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/composable-cow) to post an order on the CoW Protocol. The app uses configured Chainlink price feeds. You select the sell token; the buy token is fixed for each chain. Token imports and manual oracle addresses are not supported.
 
-The oracles and the strike price are among the token prices. This means that if you select two non-stable tokens and the buy token price increases, the stop loss can be triggered even if the buy token price didn't change.
+| Chain    | Sell tokens | Buy token   |
+| -------- | ----------- | ----------- |
+| Ethereum | WETH, WBTC  | USDC        |
+| Gnosis   | WETH, WBTC  | USDC.e      |
+| Arbitrum | WETH, WBTC  | Native USDC |
+| Sepolia  | WETH        | USDC (test) |
+
+The trigger price is in buy-token units per sell token. Production feeds quote prices in USD. Sepolia keeps its two fixed test feeds. If a configured feed cannot be read, the app shows an error and does not open order review. Supported tokens and feeds are kept in the app repository and change with an app release.
 
 ## Requirements
 

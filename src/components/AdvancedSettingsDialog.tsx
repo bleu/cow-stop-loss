@@ -29,12 +29,6 @@ import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { AdvancedSwapSettings } from "#/lib/types";
 
 import { BlockExplorerLink } from "./ExplorerLink";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "./ui/accordion";
 import { Checkbox } from "./ui/checkbox";
 import { Form } from "./ui/form";
 import { Input } from "./ui/input";
@@ -123,50 +117,16 @@ export function AdvancedSettingsDialog() {
             <Separator className="bg-white mt-2" />
             <div className="flex flex-col gap-2">
               <Label className="block text-sm font-semibold">Oracle</Label>
-              <Accordion
-                className="flex flex-col gap-2 text-sm w-full"
-                type="single"
-                collapsible
-              >
-                <AccordionItem
-                  value="advancedOptions"
-                  className="w-full border-none p-0"
-                  key="advancedOption"
-                >
-                  <div className="flex gap-1 items-center">
-                    Chainlink is used by default.
-                    <AccordionTrigger className="p-1">
-                      Edit Oracle
-                    </AccordionTrigger>
-                  </div>
-                  <AccordionContent className="p-0">
-                    <div className="flex flex-col gap-2 mt-1">
-                      <Input
-                        name="tokenSellOracle"
-                        label="Token sell oracle"
-                        placeholder="0xabc...123"
-                        tooltipText={TOOLTIP_DESCRIPTIONS.ORACLE_TOKEN_SELL}
-                      />
-                      <Input
-                        name="tokenBuyOracle"
-                        label="Token buy oracle"
-                        placeholder="0xabc...123"
-                        tooltipText={TOOLTIP_DESCRIPTIONS.ORACLE_TOKEN_BUY}
-                      />
-                    </div>
-                  </AccordionContent>
-                </AccordionItem>
-                <Input
-                  name="maxHoursSinceOracleUpdates"
-                  label="Maximum hours since last oracle update"
-                  type="number"
-                  tooltipText={
-                    TOOLTIP_DESCRIPTIONS.MAX_TIME_SINCE_LAST_ORACLE_UPDATE
-                  }
-                  min={0}
-                  max={24 * 365}
-                />
-              </Accordion>
+              <Input
+                name="maxHoursSinceOracleUpdates"
+                label="Maximum hours since last oracle update"
+                type="number"
+                tooltipText={
+                  TOOLTIP_DESCRIPTIONS.MAX_TIME_SINCE_LAST_ORACLE_UPDATE
+                }
+                min={0}
+                max={24 * 365}
+              />
             </div>
             <Separator className="bg-white my-2" />
             <div className="flex flex-col gap-2">
