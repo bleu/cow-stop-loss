@@ -1,4 +1,3 @@
-vendor/bleu-ui/
 **/node_modules/**
 **/.next/**
 **/__generated__/**

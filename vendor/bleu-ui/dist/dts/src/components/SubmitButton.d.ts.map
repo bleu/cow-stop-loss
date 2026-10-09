@@ -1,1 +1,0 @@
-{"version":3,"file":"SubmitButton.d.ts","sourceRoot":"","sources":["../../../../src/components/SubmitButton.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAC;AAG1B,OAAO,EAAU,WAAW,EAAE,MAAM,aAAa,CAAC;AAElD,MAAM,WAAW,iBAAkB,SAAQ,WAAW;IACpD,YAAY,CAAC,EAAE,OAAO,CAAC;IACvB,cAAc,CAAC,EAAE,MAAM,CAAC;CACzB;AAED,eAAO,MAAM,YAAY,6FAgBvB,CAAC"}

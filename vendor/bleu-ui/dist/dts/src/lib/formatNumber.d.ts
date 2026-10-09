@@ -1,7 +1,0 @@
-type Notation = "compact" | "engineering" | "scientific" | "standard";
-export declare const formatNumber: (number: number | string | bigint, decimals?: number, style?: string, notation?: Notation, lessThanThresholdToReplace?: number, language?: string) => string;
-export declare function numberToPercent(value?: number): number | undefined;
-export declare function percentToNumber(value: number): number;
-export declare function convertStringToNumberAndRoundDown(value: string): number;
-export {};
-//# sourceMappingURL=formatNumber.d.ts.map

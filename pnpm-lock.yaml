@@ -20,8 +20,8 @@ importers:
   .:
     dependencies:
       '@bleu/ui':
-        specifier: file:vendor/bleu-ui
-        version: file:vendor/bleu-ui(@types/react-dom@18.3.0)(@types/react@18.3.3)(mapbox-gl@1.13.3)(react-dom@19.0.0-rc-df5f2736-20240712(react@19.0.0-rc-df5f2736-20240712))(react-hook-form@7.52.1(react@19.0.0-rc-df5f2736-20240712))(react-native@0.74.3(@babel/core@7.24.7)(@babel/preset-env@7.24.8(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@19.0.0-rc-df5f2736-20240712)(utf-8-validate@5.0.10))(react-router-dom@6.22.3(react-dom@19.0.0-rc-df5f2736-20240712(react@19.0.0-rc-df5f2736-20240712))(react@19.0.0-rc-df5f2736-20240712))(react@19.0.0-rc-df5f2736-20240712)
+        specifier: ^0.1.127
+        version: 0.1.127(@types/react-dom@18.3.0)(@types/react@18.3.3)(mapbox-gl@1.13.3)(react-dom@19.0.0-rc-df5f2736-20240712(react@19.0.0-rc-df5f2736-20240712))(react-hook-form@7.52.1(react@19.0.0-rc-df5f2736-20240712))(react-native@0.74.3(@babel/core@7.24.7)(@babel/preset-env@7.24.8(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@19.0.0-rc-df5f2736-20240712)(utf-8-validate@5.0.10))(react-router-dom@6.22.3(react-dom@19.0.0-rc-df5f2736-20240712(react@19.0.0-rc-df5f2736-20240712))(react@19.0.0-rc-df5f2736-20240712))(react@19.0.0-rc-df5f2736-20240712)
       '@cowprotocol/app-data':
         specifier: ^2.1.0
         version: 2.1.0(cross-fetch@4.0.0)(ethers@5.7.2(bufferutil@4.0.8)(utf-8-validate@5.0.10))(ipfs-only-hash@4.0.0)(multiformats@9.9.0)
@@ -1436,8 +1436,8 @@ packages:
   '@bcoe/v8-coverage@0.2.3':
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  '@bleu/ui@file:vendor/bleu-ui':
-    resolution: {directory: vendor/bleu-ui, type: directory}
+  '@bleu/ui@0.1.127':
+    resolution: {integrity: sha512-ORQpEJQGffCpff/64uNGMv/1ujA8KSc/0Bv0SxoYTRBrYMsZH3uZFJA1yjPCFg4ha7VZvqVUjx2PGYnnbVbT9w==, tarball: https://npm.pkg.github.com/download/@bleu/ui/0.1.127/8fa05fdec67be574a021c5585003c22642effe37}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: '>=18'
@@ -12651,7 +12651,7 @@ snapshots:
 
   '@bcoe/v8-coverage@0.2.3': {}
 
-  '@bleu/ui@file:vendor/bleu-ui(@types/react-dom@18.3.0)(@types/react@18.3.3)(mapbox-gl@1.13.3)(react-dom@19.0.0-rc-df5f2736-20240712(react@19.0.0-rc-df5f2736-20240712))(react-hook-form@7.52.1(react@19.0.0-rc-df5f2736-20240712))(react-native@0.74.3(@babel/core@7.24.7)(@babel/preset-env@7.24.8(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@19.0.0-rc-df5f2736-20240712)(utf-8-validate@5.0.10))(react-router-dom@6.22.3(react-dom@19.0.0-rc-df5f2736-20240712(react@19.0.0-rc-df5f2736-20240712))(react@19.0.0-rc-df5f2736-20240712))(react@19.0.0-rc-df5f2736-20240712)':
+  '@bleu/ui@0.1.127(@types/react-dom@18.3.0)(@types/react@18.3.3)(mapbox-gl@1.13.3)(react-dom@19.0.0-rc-df5f2736-20240712(react@19.0.0-rc-df5f2736-20240712))(react-hook-form@7.52.1(react@19.0.0-rc-df5f2736-20240712))(react-native@0.74.3(@babel/core@7.24.7)(@babel/preset-env@7.24.8(@babel/core@7.24.7))(@types/react@18.3.3)(bufferutil@4.0.8)(react@19.0.0-rc-df5f2736-20240712)(utf-8-validate@5.0.10))(react-router-dom@6.22.3(react-dom@19.0.0-rc-df5f2736-20240712(react@19.0.0-rc-df5f2736-20240712))(react@19.0.0-rc-df5f2736-20240712))(react@19.0.0-rc-df5f2736-20240712)':
     dependencies:
       '@radix-ui/react-accordion': 1.2.0(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@19.0.0-rc-df5f2736-20240712(react@19.0.0-rc-df5f2736-20240712))(react@19.0.0-rc-df5f2736-20240712)
       '@radix-ui/react-alert-dialog': 1.1.1(@types/react-dom@18.3.0)(@types/react@18.3.3)(react-dom@19.0.0-rc-df5f2736-20240712(react@19.0.0-rc-df5f2736-20240712))(react@19.0.0-rc-df5f2736-20240712)
