@@ -23,7 +23,7 @@ export enum OrderStatus {
   CANCELLING = "cancelling",
   PARTIALLY_FILLED = "partially filled and open",
   PARTIALLY_FILLED_AND_CANCELLED = "partially filled and cancelled",
-  PARTIALLY_FILLED_AND_EXPIRED = "partially filled adn expired",
+  PARTIALLY_FILLED_AND_EXPIRED = "partially filled and expired",
   PARTIALLY_FILLED_AND_CANCELLING = "partially filled and cancelling",
 }
 export interface ITokenWithValue extends IToken {
