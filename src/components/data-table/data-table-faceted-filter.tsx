@@ -8,7 +8,6 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -35,9 +34,22 @@ export function DataTableFacetedFilter<TData, TValue>({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 border-dashed">
-          <PlusCircledIcon className="mr-2 size-4" />
+        <Button
+          variant="outline"
+          size="sm"
+          aria-label={title}
+          className="h-8 rounded-lg border-foreground/15 bg-muted/50 hover:bg-muted hover:text-primary"
+        >
+          <PlusCircledIcon className="mr-2 size-4" aria-hidden="true" />
           {title}
+          {selectedValues.size === 0 && (
+            <Badge
+              variant="secondary"
+              className="ml-2 rounded px-1.5 font-normal bg-primary/10 text-primary"
+            >
+              All
+            </Badge>
+          )}
           {selectedValues?.size > 0 && (
             <>
               <Separator orientation="vertical" className="mx-2 h-4" />
@@ -76,15 +88,35 @@ export function DataTableFacetedFilter<TData, TValue>({
       <PopoverContent className="w-[12.5rem] p-0" align="start">
         <Command>
           <CommandInput placeholder={title} />
-          <CommandList>
+          <CommandList aria-multiselectable="true">
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
+              <CommandItem
+                aria-label="All"
+                aria-checked={selectedValues.size === 0}
+                onSelect={() => column?.setFilterValue(undefined)}
+              >
+                <div
+                  aria-hidden="true"
+                  className={cn(
+                    "mr-2 flex size-4 items-center justify-center rounded-sm border border-primary",
+                    selectedValues.size === 0
+                      ? "bg-primary text-primary-foreground"
+                      : "opacity-50 [&_svg]:invisible",
+                  )}
+                >
+                  <CheckIcon className="size-4" aria-hidden="true" />
+                </div>
+                <span>All</span>
+              </CommandItem>
               {options.map((option) => {
                 const isSelected = selectedValues.has(option.value);
 
                 return (
                   <CommandItem
                     key={option.value}
+                    aria-label={option.label}
+                    aria-checked={isSelected}
                     onSelect={() => {
                       if (isSelected) {
                         selectedValues.delete(option.value);
@@ -98,6 +130,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     }}
                   >
                     <div
+                      aria-hidden="true"
                       className={cn(
                         "mr-2 flex size-4 items-center justify-center rounded-sm border border-primary",
                         isSelected
@@ -124,19 +157,6 @@ export function DataTableFacetedFilter<TData, TValue>({
                 );
               })}
             </CommandGroup>
-            {selectedValues.size > 0 && (
-              <>
-                <CommandSeparator />
-                <CommandGroup>
-                  <CommandItem
-                    onSelect={() => column?.setFilterValue(undefined)}
-                    className="justify-center text-center"
-                  >
-                    Clear filters
-                  </CommandItem>
-                </CommandGroup>
-              </>
-            )}
           </CommandList>
         </Command>
       </PopoverContent>

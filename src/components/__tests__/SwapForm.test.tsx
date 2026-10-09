@@ -3,10 +3,12 @@
  * @jest-environment-options {"customExportConditions": ["node", "node-addons"]}
  */
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SWRConfig } from "swr";
 import type { Address } from "viem";
+import { WagmiProvider } from "wagmi";
 
 import {
   defaultAdvancedSettings,
@@ -17,6 +19,7 @@ import { useDraftOrders } from "#/hooks/useDraftOrders";
 import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 import { publicClientsFromIds } from "#/lib/publicClients";
 import { getSupportedTokens } from "#/lib/supportedTokens";
+import { createWagmiConfig } from "#/utils/wagmi";
 
 import { SwapForm } from "../swap-card/SwapForm";
 
@@ -51,17 +54,15 @@ beforeEach(() => {
     .getState()
     .setAdvancedSettings(defaultAdvancedSettings);
   const { sellTokens } = getSupportedTokens(1);
-  global.fetch = jest
-    .fn()
-    .mockImplementation(async (input) => ({
-      json: async () => ({
-        price: String(input)
-          .toLowerCase()
-          .includes(sellTokens[0].token.address.toLowerCase())
-          ? 2000
-          : 1e12,
-      }),
-    }));
+  global.fetch = jest.fn().mockImplementation(async (input) => ({
+    json: async () => ({
+      price: String(input)
+        .toLowerCase()
+        .includes(sellTokens[0].token.address.toLowerCase())
+        ? 2000
+        : 1e12,
+    }),
+  }));
   jest
     .spyOn(publicClientsFromIds[1], "readContract")
     .mockImplementation(async ({ functionName, address }) => {
@@ -83,10 +84,21 @@ beforeEach(() => {
 afterEach(() => jest.restoreAllMocks());
 
 function renderForm() {
+  const config = createWagmiConfig();
+  const queryClient = new QueryClient();
   return render(
     <SWRConfig value={{ provider: () => new Map(), revalidateOnFocus: false }}>
       <SwapForm />
     </SWRConfig>,
+    {
+      wrapper: ({ children }) => (
+        <WagmiProvider config={config} reconnectOnMount={false}>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        </WagmiProvider>
+      ),
+    },
   );
 }
 

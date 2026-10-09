@@ -1,10 +1,10 @@
 "use client";
 
+import { Button } from "@bleu/ui";
+import { ChevronDownIcon, PersonIcon } from "@radix-ui/react-icons";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
 import Link from "next/link";
-
-import { useSafeApp } from "#/hooks/useSafeApp";
-import { NetworkChainId, truncateAddress } from "#/utils";
 
 interface IHeader {
   linkUrl: string;
@@ -13,38 +13,75 @@ interface IHeader {
 }
 
 export function Header({ linkUrl, imageSrc, onLinkClick }: IHeader) {
-  const { safeAddress, chainId } = useSafeApp();
-
-  const networkAcronym: {
-    [key: string]: string;
-  } = {
-    [NetworkChainId.ETHEREUM]: "eth",
-    [NetworkChainId.GNOSIS]: "gn",
-    [NetworkChainId.SEPOLIA]: "sep",
-  };
-
   return (
-    <div className="flex h-20 w-full items-center bg-background p-8">
-      <div className="mr-auto flex justify-start">
-        <Link
-          href={linkUrl}
-          onClick={onLinkClick}
-          className="flex items-center gap-3 justify-self-start"
-        >
-          <>
-            {imageSrc && (
-              <Image src={imageSrc} height={30} width={150} alt="" />
+    <header className="flex min-h-20 w-full flex-wrap items-center gap-4 border-b border-foreground/10 bg-background px-4 py-5 sm:px-8">
+      <Link
+        href={linkUrl}
+        onClick={onLinkClick}
+        aria-label="CoW Stop Loss"
+        className="mr-auto flex shrink-0 items-center gap-3"
+      >
+        {imageSrc && (
+          <Image src={imageSrc} height={30} width={150} alt="CoW Stop Loss" />
+        )}
+      </Link>
+      <ConnectButton.Custom>
+        {({
+          account,
+          chain,
+          mounted,
+          openConnectModal,
+          openAccountModal,
+          openChainModal,
+        }) => (
+          <div className="flex flex-wrap items-center gap-2">
+            {mounted && account ? (
+              <>
+                <Button
+                  variant="outline"
+                  aria-label="Switch wallet network"
+                  onClick={openChainModal}
+                  className="h-10 gap-2 rounded-xl border-foreground/15 bg-muted/50 px-3 text-foreground hover:bg-muted hover:text-primary"
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`size-2 shrink-0 rounded-full ${chain?.unsupported ? "bg-destructive" : "bg-primary"}`}
+                  />
+                  {chain?.unsupported
+                    ? "Unsupported network"
+                    : (chain?.name ?? "Select network")}
+                  <ChevronDownIcon
+                    aria-hidden="true"
+                    className="size-4 opacity-70"
+                  />
+                </Button>
+                <Button
+                  variant="outline"
+                  title={account.address}
+                  onClick={openAccountModal}
+                  className="h-10 gap-2 rounded-xl border-primary/30 bg-primary/10 px-4 text-primary hover:bg-primary/20 hover:text-primary"
+                >
+                  <PersonIcon aria-hidden="true" className="size-4" />
+                  {account.displayName}
+                  <ChevronDownIcon
+                    aria-hidden="true"
+                    className="size-4 opacity-70"
+                  />
+                </Button>
+              </>
+            ) : (
+              <Button
+                disabled={!mounted}
+                onClick={openConnectModal}
+                className="h-10 gap-2 rounded-xl bg-primary px-4 text-primary-foreground hover:bg-primary/90"
+              >
+                <PersonIcon aria-hidden="true" className="size-4" />
+                Connect wallet
+              </Button>
             )}
-          </>
-        </Link>
-      </div>
-      <div className="flex gap-x-4">
-        <div className="ml-auto flex justify-end">
-          <div className="bg-muted text-center text-sm rounded-lg font-semibold py-3 px-5">
-            {`${networkAcronym[chainId]}:${truncateAddress(safeAddress)}`}
           </div>
-        </div>
-      </div>
-    </div>
+        )}
+      </ConnectButton.Custom>
+    </header>
   );
 }

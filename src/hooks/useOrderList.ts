@@ -1,66 +1,54 @@
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
-import useSWRImmutable from "swr/immutable";
-import { Address } from "viem";
-import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMemo } from "react";
+import { useAccount } from "wagmi";
 
-import { getProcessedStopLossOrders } from "#/lib/ponderApi/fetchOrders";
-import { ChainId } from "#/lib/publicClients";
-import { OrderStatus, StopLossOrderType } from "#/lib/types";
-
-interface OrderState {
-  orders: StopLossOrderType[];
-}
-
-interface OrderActions {
-  setOrders: (orders: StopLossOrderType[]) => void;
-}
-
-const useOrderStore = create<OrderState & OrderActions>()(
-  persist(
-    (set) => ({
-      orders: [],
-      setOrders: (orders) => set({ orders }),
-    }),
-    {
-      name: "order-storage",
-      storage: createJSONStorage(() => localStorage),
-    },
-  ),
-);
+import { loadStopLossOrders } from "#/lib/stopLossOrders";
 
 export function useOrderList() {
-  const { safe } = useSafeAppsSDK();
-  const setOrders = useOrderStore((state) => state.setOrders);
+  const { address } = useAccount();
+  const queryClient = useQueryClient();
+  const queryKey = ["stop-loss-orders", address?.toLowerCase()];
+  const query = useQuery({
+    queryKey,
+    queryFn: async ({ signal }) => {
+      const result = await loadStopLossOrders({ account: address!, signal });
+      const previous =
+        queryClient.getQueryData<
+          Awaited<ReturnType<typeof loadStopLossOrders>>
+        >(queryKey);
+      return {
+        ...result,
+        chains: result.chains.map((chain) =>
+          chain.status === "error"
+            ? {
+                ...chain,
+                orders:
+                  previous?.chains.find((old) => old.chainId === chain.chainId)
+                    ?.orders ?? [],
+              }
+            : chain,
+        ),
+      };
+    },
+    enabled: !!address,
+    gcTime: 0,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchInterval: false,
+    retry: false,
+  });
 
-  const { error, isValidating, mutate } = useSWRImmutable(
-    {
-      chainId: safe.chainId as ChainId,
-      userAddress: safe.safeAddress as Address,
-    },
-    getProcessedStopLossOrders,
-    {
-      onSuccess: (data) => setOrders(data),
-    },
+  const orders = useMemo(
+    () => query.data?.chains.flatMap((chain) => chain.orders) ?? [],
+    [query.data],
   );
-
-  const orders = useOrderStore((state) => state.orders);
-
-  const changeOrdersStateToCancelling = (ordersIds: string[]) => {
-    setOrders(
-      orders.map((order) =>
-        ordersIds.includes(order.id)
-          ? { ...order, status: OrderStatus.CANCELLING }
-          : order,
-      ),
-    );
-  };
 
   return {
     orders,
-    isLoading: isValidating,
-    error,
-    mutate,
-    changeOrdersStateToCancelling,
+    chains: query.data?.chains ?? [],
+    isLoading: query.isFetching,
+    error: query.error,
+    mutate: query.refetch,
   };
 }

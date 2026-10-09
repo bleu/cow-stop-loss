@@ -1,4 +1,5 @@
 "use client";
+import "@rainbow-me/rainbowkit/styles.css";
 import "./globals.css";
 
 import { cn } from "@bleu/ui";

@@ -4,6 +4,16 @@ import { Badge, capitalize } from "@bleu/ui";
 
 import { OrderStatus } from "#/lib/types";
 
+export const stopLossStatusLabels = {
+  [OrderStatus.OPEN]: "Open",
+  [OrderStatus.FULFILLED]: "Filled",
+  [OrderStatus.CANCELLED]: "Cancelled",
+  [OrderStatus.EXPIRED]: "Expired",
+  [OrderStatus.PARTIALLY_FILLED]: "Partially filled",
+  [OrderStatus.PARTIALLY_FILLED_AND_CANCELLED]: "Partially filled, cancelled",
+  [OrderStatus.PARTIALLY_FILLED_AND_EXPIRED]: "Partially filled, expired",
+};
+
 export function StatusBadge({ status }: { status: OrderStatus | string }) {
   switch (status) {
     case OrderStatus.OPEN:
@@ -29,7 +39,7 @@ export function StatusBadge({ status }: { status: OrderStatus | string }) {
           color="success"
           className="bg-success h-fit py-1 hover:bg-success "
         >
-          Partially Filled
+          {stopLossStatusLabels[status]}
         </Badge>
       );
     case OrderStatus.PARTIALLY_FILLED_AND_CANCELLING:

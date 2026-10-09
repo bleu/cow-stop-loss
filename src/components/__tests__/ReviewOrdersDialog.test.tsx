@@ -3,8 +3,10 @@
  * @jest-environment-options {"customExportConditions": ["node", "node-addons"]}
  */
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import { SWRConfig } from "swr";
+import { WagmiProvider } from "wagmi";
 
 import {
   defaultAdvancedSettings,
@@ -15,6 +17,7 @@ import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 import { publicClientsFromIds } from "#/lib/publicClients";
 import { VALID_TO_OPTIONS } from "#/lib/schema";
 import { getSupportedTokens } from "#/lib/supportedTokens";
+import { createWagmiConfig } from "#/utils/wagmi";
 
 import { ReviewOrdersDialog } from "../ReviewOrdersDialog";
 
@@ -36,17 +39,15 @@ it("reviews slippage and exact amounts without a limit price row", async () => {
   useAdvancedSettingsStore
     .getState()
     .setAdvancedSettings(defaultAdvancedSettings);
-  global.fetch = jest
-    .fn()
-    .mockImplementation(async (input) => ({
-      json: async () => ({
-        price: String(input)
-          .toLowerCase()
-          .includes(sellTokens[0].token.address.toLowerCase())
-          ? 2000
-          : 1e12,
-      }),
-    }));
+  global.fetch = jest.fn().mockImplementation(async (input) => ({
+    json: async () => ({
+      price: String(input)
+        .toLowerCase()
+        .includes(sellTokens[0].token.address.toLowerCase())
+        ? 2000
+        : 1e12,
+    }),
+  }));
   jest
     .spyOn(publicClientsFromIds[1], "readContract")
     .mockImplementation(async ({ functionName, address }) => {
@@ -77,10 +78,21 @@ it("reviews slippage and exact amounts without a limit price row", async () => {
     1,
     safe.safeAddress,
   );
+  const config = createWagmiConfig();
+  const queryClient = new QueryClient();
   render(
     <SWRConfig value={{ provider: () => new Map() }}>
       <ReviewOrdersDialog draftOrders={[draft]} open setOpen={() => {}} />
     </SWRConfig>,
+    {
+      wrapper: ({ children }) => (
+        <WagmiProvider config={config} reconnectOnMount={false}>
+          <QueryClientProvider client={queryClient}>
+            {children}
+          </QueryClientProvider>
+        </WagmiProvider>
+      ),
+    },
   );
 
   expect(await screen.findByText("Slippage")).toBeInTheDocument();

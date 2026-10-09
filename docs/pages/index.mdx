@@ -1,71 +1,56 @@
 # Stop Loss Documentation
 
-## Introduction
+A stop-loss order sells a token if its oracle price drops below the trigger price. It uses [Composable CoW](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/composable-cow) to post an order on CoW Protocol. A stop-loss parent produces one CoW order, which can have partial fills.
 
-The stop loss sells a token if its price drops below the trigger price. It uses [Composable CoW](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/composable-cow) to post an order on the CoW Protocol. The app uses configured Chainlink price feeds. You select the sell token; the buy token is fixed for each chain. Token imports and manual oracle addresses are not supported.
+## View your orders
 
-| Chain    | Sell tokens | Buy token   |
-| -------- | ----------- | ----------- |
-| Ethereum | WETH, WBTC  | USDC        |
-| Gnosis   | WETH, WBTC  | USDC.e      |
-| Arbitrum | WETH, WBTC  | Native USDC |
-| Sepolia  | WETH        | USDC (test) |
+Open the app directly and use `Connect wallet` to select a browser wallet or WalletConnect in RainbowKit. A Safe connected through WalletConnect uses the Safe account address. You do not need to open the app inside Safe UI. This version is read-only: creation, review, and cancellation controls are unavailable.
 
-The trigger price is in buy-token units per sell token. Production feeds quote prices in USD. Sepolia keeps its two fixed test feeds. If a configured feed cannot be read, the app shows an error and does not open order review. Supported tokens and feeds are kept in the app repository and change with an app release.
+The list combines the connected account's orders and its CowShed orders across Ethereum, Gnosis, Arbitrum, and Sepolia. Sepolia is marked as a testnet. Connection and browsing do not switch your wallet chain. Use the header network control when you want to switch it. The list's chain and status filters both default to `All` and do not change the wallet network. Open an order's details to see its amounts, trigger and limit prices, oracle settings, and available execution data.
 
-## Requirements
+Orders load on connection and account changes. Use the reload icon beside `Status` to get later changes. The app does not poll or refresh on focus or network reconnect. Expiry is calculated when data loads; there is no local expiry timer.
 
-- Order must be created from a `Safe`.
-- The `Safe Multisig` must have the token to be sold at the order creation time.
-- The `Safe` has its fallback handler set to `ExtensibleFallbackHandler`.
-- The `Safe` has set the domainVerifier for the `GPv2Settlement.domainSeparator()` to ComposableCoW.
+If one chain fails, its warning and retry button appear while other chains remain visible. A failed refresh can leave previously loaded orders visible with a warning that they may be out of date. Switching accounts or disconnecting clears the prior account's data. A detail link for another account asks you to connect that account before loading its orders.
 
-## Contracts
+## Prices and tokens
 
-- `ComposableCoW`: `0xfdaFc9d1902f4e0b84f65F49f244b32b31013b74`
-- `ExtensibleFallbackHandler`: `0x2f55e8b20D0B9FEFA187AA7d00B6Cbe563605bF5`
-- `StopLoss`: `0xE8212F30C28B4AAB467DF3725C14d6e89C2eB967`
+Trigger, limit, and execution prices are in buy-token units per sell token. Amounts use configured token decimals where available. Historical orders with unknown token metadata show raw base units instead of estimated token amounts. Execution fees also show raw base units because the order API does not supply the fee token.
 
-## Hooks
+The configured tokens and Chainlink price feeds remain unchanged:
 
-In addition to the Stop Loss order, the user can add additional hooks to be executed before and after the order execution. Hooks execution isn't guaranteed; this means that if the hook fails, the order can still be executed. The hooks are executed in the order they are added. For more information about the hooks, check the [CoW Hooks](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/hooks-trampoline) documentation.
+| Chain | Sell tokens | Buy token |
+| --- | --- | --- |
+| Ethereum | WETH, WBTC | USDC |
+| Gnosis | WETH, WBTC | USDC.e |
+| Arbitrum | WETH, WBTC | Native USDC |
+| Sepolia (testnet) | WETH | USDC (test) |
 
-These actions are static, meaning that all hook parameters must be defined at the time of the order creation.
+Production feeds quote prices in USD. Sepolia keeps its two fixed test feeds. Tokens and feeds are kept in the app repository and change with an app release. Viewing historical orders does not require their tokens to be in this configuration.
 
-### Pre Hooks
+## Order data
 
-Pre Hooks are the blockchain actions that will be executed before the order is posted. The user can add multiple pre hooks to the order. The pre hooks are executed in the order they are added. In the case of partially filled orders, the pre hooks will be executed just before the first order.
+The app reads all pages from the [programmatic orders API](https://programmatic-orders.cow.fi/graphql), including parents that have not triggered. It filters by chain, connected account or CowShed ownership, and the configured StopLoss handler: `0x412c36e5011cd2517016d243a2dfb37f73a242e7`.
 
-### Post Hooks
+State uses execution data and absolute expiry. Partially filled orders that were cancelled have a different label from partially filled orders that expired. Parent `Active` alone does not mean an order is still open.
 
-Post Hooks are the blockchain actions that will be executed after the order is posted. The user can add multiple post hooks to the order. The post hooks are executed in the order they are added. In the case of partially filled orders, the post hooks will be executed after all orders.
+## WalletConnect deployment
 
-### Hooks Types
-
-- BAL Mint: Use this hook to mint BAL from Balancer Gauges. To mint BAL you need to be a liquidity provider in a Balancer pool that has this incentive.
+Set `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` and `NEXT_PUBLIC_APP_URL` before building the app. Allow the deployed origin in your WalletConnect project settings. If no project ID is supplied, the connect modal offers only browser wallet connection. See the repository README for local setup and checks.
 
 ## FAQ
 
-:::details[Are all hooks executed in the same transaction?]
-Yes, all hooks are executed in the same settlement transaction alongside the swap execution.
+:::details[Can I create or cancel an order?]
+This version only displays orders. It does not create, review, or cancel them.
 :::
 
-:::details[Are the hooks executed in the same order that I set them?]
-Yes, the hooks are executed in the same order that you set them.
+:::details[Do I need to switch chains to view orders?]
+No. All supported chains are loaded together. Enable testnets in your wallet when needed, but Sepolia orders remain visible without switching the wallet chain.
 :::
 
-:::details[What happens if a hook fails?]
-If a hook fails, it will be skipped. So, the next hooks and the swap can still be executed. To know more about the hooks execution, check the [CoW Hooks](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/hooks-trampoline) documentation.
+:::details[Will viewing orders move my tokens?]
+No. Connecting and viewing orders does not submit a transaction or move tokens.
 :::
 
-:::details[In partially filled orders, are the hooks executed on each order settlement?]
-Pre hooks are executed in the first one, and the post hooks in all settlements.
-:::
-
-:::details[Can I cancel an order?]
-Yes, if the order isn't posted yet. You can cancel it from the UI.
-:::
-
-:::details[Will my tokens be held by a third party?]
-No, your tokens remain in your wallet until the swap execution.
+:::details[Where can I learn about CoW hooks?]
+See the [CoW Hooks documentation](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/hooks-trampoline). This read-only app does not configure hooks.
 :::

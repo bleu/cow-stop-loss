@@ -1,0 +1,21 @@
+diff --git a/dist/index.js b/dist/index.js
+index f324b4e1e7ccf0ffe56beb714630021862b35ec7..cd593da3e399c15b669819afbfcb52fc8b484bd0 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -1914,15 +1914,8 @@ function useWalletConnectors(mergeEIP6963WithRkConnectors = false) {
+     ...connector.rkDetails || {}
+   }));
+   async function connectWallet(connector) {
+-    const walletChainId = await connector.getChainId();
+     const result = await connectAsync({
+-      chainId: (
+-        // The goal here is to ensure users are always on a supported chain when connecting.
+-        // If an `initialChain` prop was provided to RainbowKitProvider, use that.
+-        intialChainId ?? // Otherwise, if the wallet is already on a supported chain, use that to avoid a chain switch prompt.
+-        rainbowKitChains.find(({ id }) => id === walletChainId)?.id ?? // Finally, fall back to the first chain provided to RainbowKitProvider.
+-        rainbowKitChains[0]?.id
+-      ),
++      chainId: intialChainId,
+       connector
+     });
+     if (result) {

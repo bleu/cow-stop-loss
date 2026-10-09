@@ -1,5 +1,5 @@
 {
   "name": "CoW Stop Loss App",
-  "description": "UI for creating and managing stop loss orders on CoW Protocol",
+  "description": "Read-only view of your stop-loss orders across supported CoW Protocol chains",
   "iconPath": "favicon.ico"
 }

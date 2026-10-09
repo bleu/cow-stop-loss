@@ -6,12 +6,15 @@ module.exports = {
   setupFiles: ["<rootDir>/jest.polyfills.ts"],
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   transform: {
-    "^.+\\.[jt]sx?$": [
-      "ts-jest",
-      { tsconfig: { jsx: "react-jsx", allowJs: true } },
+    "^.+\\.tsx?$": ["ts-jest", { tsconfig: { jsx: "react-jsx" } }],
+    "^.+\\.jsx?$": [
+      require.resolve("next/dist/build/swc/jest-transformer"),
+      {},
     ],
   },
-  transformIgnorePatterns: ["node_modules/(?!(?:\\.pnpm/)?@bleu[+/]ui)"],
+  transformIgnorePatterns: [
+    "node_modules/(?!.*(?:@bleu[+/]ui|@rainbow-me[+/]rainbowkit|wagmi|@wagmi[+/]|uint8arrays|multiformats))",
+  ],
   moduleNameMapper: {
     "^#/(.*)$": "<rootDir>/src/$1",
   },

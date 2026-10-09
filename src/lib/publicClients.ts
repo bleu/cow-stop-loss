@@ -16,6 +16,13 @@ export const supportedChainIds = [
   arbitrum.id,
 ] as const;
 
+export const chainNames: Record<ChainId, string> = {
+  1: "Ethereum",
+  100: "Gnosis",
+  42161: "Arbitrum",
+  11155111: "Sepolia (testnet)",
+};
+
 export const RPC_PROVIDERS = {
   [mainnet.id]: process.env.NEXT_PUBLIC_RPC_URL_MAINNET,
   [gnosis.id]: process.env.NEXT_PUBLIC_RPC_URL_GNOSIS,
