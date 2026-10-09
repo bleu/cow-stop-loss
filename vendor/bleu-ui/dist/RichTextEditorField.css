@@ -1,0 +1,56 @@
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+.merge-field-popup {
+  width: 300px;
+}
+
+.merge-field-label {
+  width: 250px;
+}
+
+.merge-field-select {
+  width: 250px;
+}
+
+.merge-field-select-option {
+  font-size: 16px;
+  padding: 3px;
+  background: #333;
+}
+
+.merge-field-select-option-label {
+  font-size: 14px;
+  padding: 3px;
+  background: #666;
+}
+
+.merge-field {
+  font-weight: bold;
+}
+
+.jodit_theme_dark .jodit-wysiwyg {
+  background-color: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.jodit_theme_dark.jodit-container {
+  background-color: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.jodit_theme_dark .jodit-toolbar__box:not(:empty) {
+  background: hsl(var(--background)) !important;
+}
+
+.jodit_theme_dark .jodit-toolbar__box .jodit-toolbar-button:hover {
+  background-color: transparent !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.jodit_theme_dark .jodit-status-bar {
+  background-color: transparent !important;
+  color: hsl(var(--foreground)) !important;
+}

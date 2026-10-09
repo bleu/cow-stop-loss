@@ -6,7 +6,7 @@ Orders for the connected account and its CowShed proxies appear in one list acro
 
 ## Local setup
 
-Use Node.js 20.9 or later and pnpm 9. The private `@bleu/ui` package requires a package-read `NPM_TOKEN` in the install environment.
+Use Node.js 20.9 or later and pnpm 9. The app installs `@bleu/ui` from `vendor/bleu-ui`; no package token is required.
 
 ```bash
 corepack pnpm@9 install
@@ -14,6 +14,12 @@ corepack pnpm@9 dev:next
 ```
 
 Open http://localhost:3000. Run `corepack pnpm@9 dev` to start the app and documentation together.
+
+## Local UI package
+
+`vendor/bleu-ui` contains the installed `@bleu/ui@0.1.127` distribution and its existing license notice. Runtime files, declarations, and styles are unchanged; the local package has no development or publishing scripts. CI and deployments use this copy instead of downloading the private package. See [the snapshot notes](vendor/bleu-ui/README.md) for provenance.
+
+After registry access is fixed, replace `file:vendor/bleu-ui` in `package.json` with the registry version and regenerate `pnpm-lock.yaml` with pnpm 9. Restore the Tailwind package scan, then verify a clean install and both builds before removing the local copy.
 
 ## WalletConnect setup
 

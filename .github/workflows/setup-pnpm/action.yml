@@ -1,9 +1,5 @@
 name: "Setup JS Dependencies"
 description: "Install JS dependencies using PNPM"
-inputs:
-  npm_token:
-    description: "NPM token for authentication"
-    required: true
 runs:
   using: "composite"
   steps:
@@ -23,5 +19,3 @@ runs:
     - name: Install dependencies
       run: pnpm install --frozen-lockfile
       shell: bash
-      env:
-        NPM_TOKEN: ${{ inputs.npm_token }}

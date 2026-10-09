@@ -20,8 +20,6 @@ jobs:
 
       - name: Setup JS dependencies
         uses: ./.github/workflows/setup-pnpm
-        with:
-          npm_token: ${{ secrets.NPM_TOKEN }}
 
       - name: Run tests
         run: pnpm test:jest
