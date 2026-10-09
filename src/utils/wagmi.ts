@@ -10,6 +10,7 @@ export function createWagmiConfig() {
       ? "http://localhost:3000"
       : window.location.origin);
   return createConfig({
+    ssr: true,
     chains: [mainnet, sepolia, gnosis, arbitrum],
     connectors: [
       injected(),

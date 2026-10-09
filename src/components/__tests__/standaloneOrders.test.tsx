@@ -1,4 +1,7 @@
-/** @jest-environment jsdom */
+/**
+ * @jest-environment jsdom
+ * @jest-environment-options {"customExportConditions": ["node", "node-addons"]}
+ */
 
 import {
   act,
@@ -15,6 +18,8 @@ import {
   SearchParamsContext,
 } from "next/dist/shared/lib/hooks-client-context.shared-runtime";
 import React from "react";
+import { hydrateRoot } from "react-dom/client";
+import { renderToString } from "react-dom/server";
 import { disconnect } from "wagmi/actions";
 
 import OrderPage from "#/app/[chainId]/[safeAddress]/[orderId]/page";
@@ -167,6 +172,57 @@ afterEach(async () => {
   Reflect.deleteProperty(window, "ethereum");
   localStorage.clear();
   jest.restoreAllMocks();
+});
+
+test("hydrates the wallet header before showing browser-discovered wallets", async () => {
+  const container = document.createElement("div");
+  document.body.appendChild(container);
+  const view = (walletConfig: typeof config) => (
+    <Router>
+      <AppRootLayout config={walletConfig}>
+        <HomePage />
+      </AppRootLayout>
+    </Router>
+  );
+  container.innerHTML = renderToString(view(config));
+
+  const provider = new BrowserWallet();
+  provider.accounts = [];
+  const announceWallet = () => {
+    window.dispatchEvent(
+      new CustomEvent("eip6963:announceProvider", {
+        detail: {
+          info: {
+            uuid: "9be2a2b0-6cb1-4690-aad2-11d392e07713",
+            name: "Discovered browser wallet",
+            icon: "data:image/svg+xml;base64,PHN2Zy8+",
+            rdns: "test.wallet",
+          },
+          provider,
+        },
+      }),
+    );
+  };
+  window.addEventListener("eip6963:requestProvider", announceWallet);
+  const hydrationError = jest.fn();
+  let root: ReturnType<typeof hydrateRoot> | undefined;
+  try {
+    config = createWagmiConfig();
+    await act(async () => {
+      root = hydrateRoot(container, view(config), {
+        onRecoverableError: hydrationError,
+      });
+    });
+
+    expect(
+      await screen.findByRole("button", { name: "Discovered browser wallet" }),
+    ).toBeInTheDocument();
+    expect(hydrationError).not.toHaveBeenCalled();
+  } finally {
+    await act(async () => root?.unmount());
+    window.removeEventListener("eip6963:requestProvider", announceWallet);
+    container.remove();
+  }
 });
 
 test("opens without a Safe frame and asks users to connect a wallet", async () => {
