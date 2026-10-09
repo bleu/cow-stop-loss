@@ -13,7 +13,7 @@ module.exports = {
     ],
   },
   transformIgnorePatterns: [
-    "node_modules/(?!.*(?:@bleu[+/]ui|wagmi|@wagmi[+/]|uint8arrays|multiformats))",
+    "node_modules/(?!.*(?:@bleu[+/]ui|@rainbow-me[+/]rainbowkit|wagmi|@wagmi[+/]|uint8arrays|multiformats))",
   ],
   moduleNameMapper: {
     "^#/(.*)$": "<rootDir>/src/$1",

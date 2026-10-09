@@ -4,11 +4,11 @@ A stop-loss order sells a token if its oracle price drops below the trigger pric
 
 ## View your orders
 
-Open the app directly and connect a browser wallet or use WalletConnect. A Safe connected through WalletConnect uses the Safe account address. You do not need to open the app inside Safe UI. This version is read-only: creation, review, and cancellation controls are unavailable.
+Open the app directly and use `Connect wallet` to select a browser wallet or WalletConnect in RainbowKit. A Safe connected through WalletConnect uses the Safe account address. You do not need to open the app inside Safe UI. This version is read-only: creation, review, and cancellation controls are unavailable.
 
-The list combines the connected account's orders and its CowShed orders across Ethereum, Gnosis, Arbitrum, and Sepolia. Sepolia is marked as a testnet. Browsing does not switch your wallet chain. Filter by chain or status, then open an order's details to see its amounts, trigger and limit prices, oracle settings, and available execution data.
+The list combines the connected account's orders and its CowShed orders across Ethereum, Gnosis, Arbitrum, and Sepolia. Sepolia is marked as a testnet. Connection and browsing do not switch your wallet chain. Use the header network control when you want to switch it. The list's chain and status filters both default to `All` and do not change the wallet network. Open an order's details to see its amounts, trigger and limit prices, oracle settings, and available execution data.
 
-Orders load on connection and account changes. Use `Refresh orders` to get later changes. The app does not poll or refresh on focus or network reconnect. Expiry is calculated when data loads; there is no local expiry timer.
+Orders load on connection and account changes. Use the reload icon beside `Status` to get later changes. The app does not poll or refresh on focus or network reconnect. Expiry is calculated when data loads; there is no local expiry timer.
 
 If one chain fails, its warning and retry button appear while other chains remain visible. A failed refresh can leave previously loaded orders visible with a warning that they may be out of date. Switching accounts or disconnecting clears the prior account's data. A detail link for another account asks you to connect that account before loading its orders.
 
@@ -35,7 +35,7 @@ State uses execution data and absolute expiry. Partially filled orders that were
 
 ## WalletConnect deployment
 
-Set `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` and `NEXT_PUBLIC_APP_URL` before building the app. Allow the deployed origin in your WalletConnect project settings. If no project ID is supplied, the app shows a configuration notice and offers only browser wallet connection. See the repository README for local setup and checks.
+Set `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` and `NEXT_PUBLIC_APP_URL` before building the app. Allow the deployed origin in your WalletConnect project settings. If no project ID is supplied, the connect modal offers only browser wallet connection. See the repository README for local setup and checks.
 
 ## FAQ
 

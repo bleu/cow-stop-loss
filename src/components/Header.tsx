@@ -1,11 +1,10 @@
 "use client";
 
 import { Button } from "@bleu/ui";
+import { ChevronDownIcon, PersonIcon } from "@radix-ui/react-icons";
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
 import Link from "next/link";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
-
-import { truncateAddress } from "#/utils";
 
 interface IHeader {
   linkUrl: string;
@@ -14,59 +13,75 @@ interface IHeader {
 }
 
 export function Header({ linkUrl, imageSrc, onLinkClick }: IHeader) {
-  const { address, chain, chainId } = useAccount();
-  const { connectors, connect, isPending, error } = useConnect();
-  const { disconnect } = useDisconnect();
-
   return (
-    <header className="flex min-h-20 w-full flex-wrap items-center gap-4 bg-background p-8">
+    <header className="flex min-h-20 w-full flex-wrap items-center gap-4 border-b border-foreground/10 bg-background px-4 py-5 sm:px-8">
       <Link
         href={linkUrl}
         onClick={onLinkClick}
         aria-label="CoW Stop Loss"
-        className="mr-auto flex items-center gap-3"
+        className="mr-auto flex shrink-0 items-center gap-3"
       >
         {imageSrc && (
           <Image src={imageSrc} height={30} width={150} alt="CoW Stop Loss" />
         )}
       </Link>
-      <div className="flex flex-wrap items-center gap-3">
-        {address ? (
-          <>
-            <span
-              className="rounded-lg bg-muted px-5 py-3 text-sm"
-              title={address}
-            >
-              {truncateAddress(address)} ({chain?.name ?? `Chain ${chainId}`})
-            </span>
-            <Button variant="outline" onClick={() => disconnect()}>
-              Disconnect wallet
-            </Button>
-          </>
-        ) : (
-          connectors.map((connector) => (
-            <Button
-              key={connector.uid}
-              variant="outline"
-              disabled={isPending}
-              onClick={() => connect({ connector })}
-            >
-              {connector.id === "injected" ? "Browser wallet" : connector.name}
-            </Button>
-          ))
+      <ConnectButton.Custom>
+        {({
+          account,
+          chain,
+          mounted,
+          openConnectModal,
+          openAccountModal,
+          openChainModal,
+        }) => (
+          <div className="flex flex-wrap items-center gap-2">
+            {mounted && account ? (
+              <>
+                <Button
+                  variant="outline"
+                  aria-label="Switch wallet network"
+                  onClick={openChainModal}
+                  className="h-10 gap-2 rounded-xl border-foreground/15 bg-muted/50 px-3 text-foreground hover:bg-muted hover:text-primary"
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`size-2 shrink-0 rounded-full ${chain?.unsupported ? "bg-destructive" : "bg-primary"}`}
+                  />
+                  {chain?.unsupported
+                    ? "Unsupported network"
+                    : (chain?.name ?? "Select network")}
+                  <ChevronDownIcon
+                    aria-hidden="true"
+                    className="size-4 opacity-70"
+                  />
+                </Button>
+                <Button
+                  variant="outline"
+                  title={account.address}
+                  onClick={openAccountModal}
+                  className="h-10 gap-2 rounded-xl border-primary/30 bg-primary/10 px-4 text-primary hover:bg-primary/20 hover:text-primary"
+                >
+                  <PersonIcon aria-hidden="true" className="size-4" />
+                  {account.displayName}
+                  <ChevronDownIcon
+                    aria-hidden="true"
+                    className="size-4 opacity-70"
+                  />
+                </Button>
+              </>
+            ) : (
+              <Button
+                disabled={!mounted}
+                onClick={openConnectModal}
+                className="h-10 gap-2 rounded-xl bg-primary px-4 text-primary-foreground hover:bg-primary/90"
+              >
+                <PersonIcon aria-hidden="true" className="size-4" />
+                Connect wallet
+              </Button>
+            )}
+          </div>
         )}
-        {!address &&
-          !connectors.some((connector) => connector.id === "walletConnect") && (
-            <p className="text-sm text-muted-foreground">
-              WalletConnect is not configured for this app.
-            </p>
-          )}
-        {error && (
-          <p role="alert" className="text-sm text-destructive">
-            {error.message}
-          </p>
-        )}
-      </div>
+      </ConnectButton.Custom>
     </header>
   );
 }

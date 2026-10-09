@@ -1,6 +1,10 @@
+import { connectorsForWallets } from "@rainbow-me/rainbowkit";
+import {
+  injectedWallet,
+  walletConnectWallet,
+} from "@rainbow-me/rainbowkit/wallets";
 import { createConfig, http } from "wagmi";
 import { arbitrum, gnosis, mainnet, sepolia } from "wagmi/chains";
-import { injected, walletConnect } from "wagmi/connectors";
 
 export function createWagmiConfig() {
   const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
@@ -9,26 +13,55 @@ export function createWagmiConfig() {
     (typeof window === "undefined"
       ? "http://localhost:3000"
       : window.location.origin);
+  const browserWallet = () => ({ ...injectedWallet(), name: "Browser wallet" });
+  const {
+    createConnector,
+    hidden: _hidden,
+    ...browserDetails
+  } = browserWallet();
+  const connectors = projectId
+    ? connectorsForWallets(
+        [
+          {
+            groupName: "Wallets",
+            wallets: [browserWallet, walletConnectWallet],
+          },
+        ],
+        {
+          appName: "CoW Stop Loss",
+          projectId,
+          walletConnectParameters: {
+            metadata: {
+              name: "CoW Stop Loss",
+              description:
+                "View your stop-loss orders across supported chains.",
+              url: appUrl,
+              icons: [`${appUrl}/assets/stoploss.svg`],
+            },
+          },
+        },
+      )
+    : [
+        createConnector({
+          rkDetails: {
+            ...browserDetails,
+            index: 0,
+            groupIndex: 0,
+            groupName: "Wallets",
+            isRainbowKitConnector: true,
+          },
+        }),
+      ];
+
   return createConfig({
     ssr: true,
-    chains: [mainnet, sepolia, gnosis, arbitrum],
-    connectors: [
-      injected(),
-      ...(projectId
-        ? [
-            walletConnect({
-              projectId,
-              metadata: {
-                name: "CoW Stop Loss",
-                description:
-                  "View your stop-loss orders across supported chains.",
-                url: appUrl,
-                icons: [`${appUrl}/assets/stoploss.svg`],
-              },
-            }),
-          ]
-        : []),
+    chains: [
+      mainnet,
+      { ...sepolia, name: "Sepolia (testnet)" },
+      gnosis,
+      { ...arbitrum, name: "Arbitrum" },
     ],
+    connectors,
     transports: {
       [mainnet.id]: http(),
       [sepolia.id]: http(),

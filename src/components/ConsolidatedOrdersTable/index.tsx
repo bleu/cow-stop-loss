@@ -1,5 +1,13 @@
 "use client";
 
+import {
+  Button,
+  TooltipContent,
+  TooltipProvider,
+  TooltipRoot,
+  TooltipTrigger,
+} from "@bleu/ui";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import React, { useMemo } from "react";
 import { useAccount } from "wagmi";
 
@@ -51,14 +59,6 @@ export function ConsolidatedOrdersTable() {
 
   return (
     <>
-      <button
-        disabled={isLoading}
-        onClick={() => mutate()}
-        className="mb-4 text-primary underline"
-      >
-        Refresh orders
-      </button>
-      {isLoading && <p role="status">Refreshing orders...</p>}
       {chains
         .filter((chain) => chain.status === "error")
         .map((chain) => (
@@ -87,7 +87,33 @@ export function ConsolidatedOrdersTable() {
       {orders.length > 0 ||
       chains.some((chain) => chain.status === "success") ? (
         <DataTable table={table}>
-          <DataTableToolbar table={table} filterFields={filterFields} />
+          <DataTableToolbar
+            table={table}
+            filterFields={filterFields}
+            afterFilters={
+              <TooltipProvider>
+                <TooltipRoot>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="size-8 shrink-0 rounded-lg border-foreground/15 bg-muted/50 text-muted-foreground hover:bg-muted hover:text-primary"
+                      aria-label="Refresh orders"
+                      aria-busy={isLoading}
+                      disabled={isLoading}
+                      onClick={() => mutate()}
+                    >
+                      <ReloadIcon
+                        aria-hidden="true"
+                        className={`size-4 ${isLoading ? "motion-safe:animate-spin" : ""}`}
+                      />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Refresh orders</TooltipContent>
+                </TooltipRoot>
+              </TooltipProvider>
+            }
+          />
         </DataTable>
       ) : (
         <p>Orders are unavailable on all supported chains.</p>

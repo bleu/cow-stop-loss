@@ -108,8 +108,14 @@ function Router({ children }: React.PropsWithChildren) {
   const [url, setUrl] = React.useState(new URL("http://localhost/"));
   const router = React.useMemo(
     () => ({
-      push: (href: string) => setUrl(new URL(href, "http://localhost")),
-      replace: (href: string) => setUrl(new URL(href, "http://localhost")),
+      push: (href: string) => {
+        window.history.pushState(null, "", href);
+        setUrl(new URL(href, "http://localhost"));
+      },
+      replace: (href: string) => {
+        window.history.replaceState(null, "", href);
+        setUrl(new URL(href, "http://localhost"));
+      },
       back: () => {},
       forward: () => {},
       refresh: () => {},
@@ -132,6 +138,19 @@ function render(view: React.ReactNode) {
   return renderView(<Router>{view}</Router>);
 }
 
+async function connectBrowserWallet() {
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Connect wallet" }),
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Browser wallet" }),
+  );
+  await screen.findByTitle(wallet);
+  await waitFor(() =>
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+  );
+}
+
 beforeAll(() => {
   Object.assign(globalThis, {
     ResizeObserver: class {
@@ -144,6 +163,7 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
+  window.history.replaceState(null, "", "/");
   config = createWagmiConfig();
   serveOrders([]);
 });
@@ -151,8 +171,18 @@ beforeEach(() => {
 class BrowserWallet extends EventEmitter {
   accounts = [wallet];
   chainId = 1;
+  rejectSwitch = false;
 
-  async request({ method }: { method: string }) {
+  async request({ method, params }: { method: string; params?: unknown[] }) {
+    if (method === "wallet_switchEthereumChain") {
+      if (this.rejectSwitch)
+        throw Object.assign(new Error("User rejected the request."), {
+          code: 4001,
+        });
+      this.chainId = Number((params?.[0] as { chainId: string }).chainId);
+      this.emit("chainChanged", `0x${this.chainId.toString(16)}`);
+      return null;
+    }
     if (method === "eth_requestAccounts" || method === "eth_accounts")
       return this.accounts;
     if (method === "eth_chainId") return `0x${this.chainId.toString(16)}`;
@@ -188,6 +218,8 @@ test("hydrates the wallet header before showing browser-discovered wallets", asy
 
   const provider = new BrowserWallet();
   provider.accounts = [];
+  provider.chainId = 137;
+  const request = jest.spyOn(provider, "request");
   const announceWallet = () => {
     window.dispatchEvent(
       new CustomEvent("eip6963:announceProvider", {
@@ -214,9 +246,21 @@ test("hydrates the wallet header before showing browser-discovered wallets", asy
       });
     });
 
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Connect wallet" }),
+    );
     expect(
       await screen.findByRole("button", { name: "Discovered browser wallet" }),
     ).toBeInTheDocument();
+    provider.accounts = [wallet];
+    fireEvent.click(
+      screen.getByRole("button", { name: "Discovered browser wallet" }),
+    );
+    expect(await screen.findByTitle(wallet)).toBeInTheDocument();
+    expect(provider.chainId).toBe(137);
+    expect(request).not.toHaveBeenCalledWith(
+      expect.objectContaining({ method: "wallet_switchEthereumChain" }),
+    );
     expect(hydrationError).not.toHaveBeenCalled();
   } finally {
     await act(async () => root?.unmount());
@@ -249,7 +293,7 @@ test("shows a connected wallet's untriggered order with a read-only detail link"
     </RootLayout>,
   );
 
-  fireEvent.click(screen.getByRole("button", { name: "Browser wallet" }));
+  await connectBrowserWallet();
 
   expect(
     await screen.findByRole("link", {
@@ -277,7 +321,7 @@ test("keeps the legacy list route read-only and scoped to the connected account"
       />
     </RootLayout>,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Browser wallet" }));
+  await connectBrowserWallet();
 
   expect(
     await screen.findByRole("link", {
@@ -298,6 +342,7 @@ test("combines all four chains and filters Sepolia as a testnet without switchin
     [1, 100, 42161, 11155111].map((chainId) => ({ ...parent, chainId })),
   );
   const provider = new BrowserWallet();
+  const request = jest.spyOn(provider, "request");
   provider.chainId = 137;
   Object.defineProperty(window, "ethereum", {
     configurable: true,
@@ -308,7 +353,7 @@ test("combines all four chains and filters Sepolia as a testnet without switchin
       <HomePage />
     </RootLayout>,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Browser wallet" }));
+  await connectBrowserWallet();
 
   expect(
     await screen.findAllByRole("link", { name: /^View order/ }),
@@ -328,6 +373,189 @@ test("combines all four chains and filters Sepolia as a testnet without switchin
       name: "View order stop-loss-1 on Sepolia (testnet)",
     }),
   ).toHaveAttribute("href", `/11155111/${wallet}/stop-loss-1`);
+  expect(provider.chainId).toBe(137);
+  expect(request).not.toHaveBeenCalledWith(
+    expect.objectContaining({ method: "wallet_switchEthereumChain" }),
+  );
+});
+
+test("switches the wallet network only through the header and keeps all chains visible", async () => {
+  serveOrders(
+    [1, 100, 42161, 11155111].map((chainId) => ({ ...parent, chainId })),
+  );
+  const provider = new BrowserWallet();
+  const request = jest.spyOn(provider, "request");
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: provider,
+  });
+  render(
+    <RootLayout>
+      <HomePage />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  await screen.findByTitle(wallet);
+  await waitFor(() =>
+    expect(screen.getAllByRole("link", { name: /^View order/ })).toHaveLength(
+      4,
+    ),
+  );
+  expect(request).not.toHaveBeenCalledWith(
+    expect.objectContaining({ method: "wallet_switchEthereumChain" }),
+  );
+
+  fireEvent.click(
+    screen.getByRole("button", { name: "Switch wallet network" }),
+  );
+  expect(
+    await screen.findByRole("button", { name: /Ethereum/ }),
+  ).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /Gnosis/ })).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: /Arbitrum/ })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: /Sepolia \(testnet\)/ }));
+
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Switch wallet network" }),
+    ).toHaveTextContent("Sepolia (testnet)"),
+  );
+  expect(provider.chainId).toBe(11155111);
+  expect(request).toHaveBeenCalledWith(
+    expect.objectContaining({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: "0xaa36a7" }],
+    }),
+  );
+  expect(screen.getAllByRole("link", { name: /^View order/ })).toHaveLength(4);
+});
+
+test("keeps account access and orders when a wallet network switch is rejected", async () => {
+  serveOrders([parent]);
+  const provider = new BrowserWallet();
+  provider.rejectSwitch = true;
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: provider,
+  });
+  render(
+    <RootLayout>
+      <HomePage />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  await screen.findByRole("link", {
+    name: "View order stop-loss-1 on Ethereum",
+  });
+  fireEvent.click(
+    screen.getByRole("button", { name: "Switch wallet network" }),
+  );
+  fireEvent.click(await screen.findByRole("button", { name: /Gnosis/ }));
+  await waitFor(() =>
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+  );
+
+  expect(
+    screen.getByRole("button", { name: "Switch wallet network" }),
+  ).toHaveTextContent("Ethereum");
+  expect(screen.getByTitle(wallet)).toBeInTheDocument();
+  expect(
+    screen.getByRole("link", { name: "View order stop-loss-1 on Ethereum" }),
+  ).toBeInTheDocument();
+  expect(provider.chainId).toBe(1);
+});
+
+test("selects All by default and clears each filter without clearing the other", async () => {
+  serveOrders([
+    parent,
+    { ...parent, chainId: 100 },
+    { ...parent, eventId: "cancelled-order", status: "Cancelled" },
+  ]);
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: new BrowserWallet(),
+  });
+  render(
+    <RootLayout>
+      <HomePage />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  await screen.findByRole("link", { name: "View order stop-loss-1 on Gnosis" });
+
+  fireEvent.click(screen.getByRole("button", { name: /^Status/ }));
+  expect(await screen.findByRole("option", { name: "All" })).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
+  fireEvent.click(screen.getByRole("option", { name: "Open" }));
+  expect(screen.getByRole("option", { name: "All" })).toHaveAttribute(
+    "aria-checked",
+    "false",
+  );
+  fireEvent.keyDown(screen.getByPlaceholderText("Status"), { key: "Escape" });
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("option", { name: "All" }),
+    ).not.toBeInTheDocument(),
+  );
+
+  fireEvent.click(screen.getByRole("button", { name: /^Chain/ }));
+  expect(await screen.findByRole("option", { name: "All" })).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
+  fireEvent.click(screen.getByRole("option", { name: "Ethereum" }));
+  expect(screen.getByRole("option", { name: "All" })).toHaveAttribute(
+    "aria-checked",
+    "false",
+  );
+  await waitFor(() =>
+    expect(screen.getAllByRole("link", { name: /^View order/ })).toHaveLength(
+      1,
+    ),
+  );
+  fireEvent.click(screen.getByRole("option", { name: "All" }));
+  expect(screen.getByRole("option", { name: "All" })).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
+  await waitFor(() => {
+    expect(screen.getAllByRole("link", { name: /^View order/ })).toHaveLength(
+      2,
+    );
+    expect(new URLSearchParams(window.location.search).has("chainId")).toBe(
+      false,
+    );
+    expect(new URLSearchParams(window.location.search).get("status")).toBe(
+      "open",
+    );
+  });
+  fireEvent.click(screen.getByRole("option", { name: "Ethereum" }));
+  fireEvent.keyDown(screen.getByPlaceholderText("Chain"), { key: "Escape" });
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("option", { name: "All" }),
+    ).not.toBeInTheDocument(),
+  );
+
+  fireEvent.click(screen.getByRole("button", { name: /^Status/ }));
+  fireEvent.click(await screen.findByRole("option", { name: "All" }));
+  expect(screen.getByRole("option", { name: "All" })).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
+  await waitFor(() => {
+    expect(screen.getAllByRole("link", { name: /^View order/ })).toHaveLength(
+      2,
+    );
+    expect(new URLSearchParams(window.location.search).has("status")).toBe(
+      false,
+    );
+    expect(new URLSearchParams(window.location.search).get("chainId")).toBe(
+      "1",
+    );
+  });
 });
 
 test("shows distinct partial terminal states and filters them separately", async () => {
@@ -359,7 +587,7 @@ test("shows distinct partial terminal states and filters them separately", async
       <HomePage />
     </RootLayout>,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Browser wallet" }));
+  await connectBrowserWallet();
 
   expect(
     await screen.findByRole("cell", { name: "Partially filled, cancelled" }),
@@ -397,7 +625,7 @@ test("keeps successful chains visible and retries a failed chain", async () => {
       <HomePage />
     </RootLayout>,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Browser wallet" }));
+  await connectBrowserWallet();
 
   expect(
     await screen.findByRole("link", {
@@ -432,7 +660,7 @@ test("does not show an API outage as an empty order list", async () => {
       <HomePage />
     </RootLayout>,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Browser wallet" }));
+  await connectBrowserWallet();
 
   await waitFor(() => expect(screen.getAllByRole("alert")).toHaveLength(4));
   expect(screen.queryByText("No results.")).not.toBeInTheDocument();
@@ -453,7 +681,7 @@ test("updates orders only after manual refresh, not on focus, reconnect or time"
       <HomePage />
     </RootLayout>,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Browser wallet" }));
+  await connectBrowserWallet();
   await screen.findByRole("link", {
     name: "View order stop-loss-1 on Ethereum",
   });
@@ -483,6 +711,43 @@ test("updates orders only after manual refresh, not on focus, reconnect or time"
   ).toBeInTheDocument();
 });
 
+test("uses an icon-only reload control and disables it while orders refresh", async () => {
+  serveOrders([parent]);
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: new BrowserWallet(),
+  });
+  render(
+    <RootLayout>
+      <HomePage />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  await screen.findByRole("link", {
+    name: "View order stop-loss-1 on Ethereum",
+  });
+
+  const fetchOrders = global.fetch;
+  let release!: () => void;
+  const pending = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  global.fetch = jest.fn(async (...args) => {
+    await pending;
+    return fetchOrders(...args);
+  });
+  const reload = screen.getByRole("button", { name: "Refresh orders" });
+  fireEvent.click(reload);
+  try {
+    await waitFor(() => expect(reload).toBeDisabled());
+    expect(reload.textContent).toBe("");
+    expect(screen.queryByText("Refreshing orders...")).not.toBeInTheDocument();
+  } finally {
+    await act(async () => release());
+  }
+  await waitFor(() => expect(reload).toBeEnabled());
+});
+
 test("keeps this account's last loaded orders with a warning when refresh fails", async () => {
   const unavailable = new Set<number>();
   serveOrders([parent], unavailable);
@@ -495,7 +760,7 @@ test("keeps this account's last loaded orders with a warning when refresh fails"
       <HomePage />
     </RootLayout>,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Browser wallet" }));
+  await connectBrowserWallet();
   await screen.findByRole("link", {
     name: "View order stop-loss-1 on Ethereum",
   });
@@ -536,7 +801,7 @@ test("clears orders on account changes and disconnect, and fetches again when an
       <HomePage />
     </RootLayout>,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Browser wallet" }));
+  await connectBrowserWallet();
   await screen.findByRole("link", {
     name: "View order stop-loss-1 on Ethereum",
   });
@@ -568,7 +833,8 @@ test("clears orders on account changes and disconnect, and fetches again when an
     }),
   ).toBeInTheDocument();
 
-  fireEvent.click(screen.getByRole("button", { name: "Disconnect wallet" }));
+  fireEvent.click(await screen.findByTitle(wallet));
+  fireEvent.click(await screen.findByRole("button", { name: /Disconnect/ }));
   await screen.findByText("Connect a wallet to view your stop-loss orders.");
   expect(
     screen.queryByRole("link", { name: /^View order/ }),
@@ -627,9 +893,7 @@ test("ignores late responses from the previous account", async () => {
       <HomePage />
     </RootLayout>,
   );
-  await act(async () => {
-    fireEvent.click(screen.getByRole("button", { name: "Browser wallet" }));
-  });
+  await connectBrowserWallet();
   await oldRequestStarted;
 
   await act(async () => {
@@ -668,7 +932,7 @@ test("keeps a mismatched detail link without fetching the other account's orders
       />
     </RootLayout>,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Browser wallet" }));
+  await connectBrowserWallet();
   await screen.findByTitle(wallet);
 
   expect(
@@ -709,7 +973,7 @@ test("shows owned order details, prices and partial execution without cancellati
       />
     </RootLayout>,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Browser wallet" }));
+  await connectBrowserWallet();
 
   expect(
     await screen.findByRole("heading", { name: "Order details" }),
@@ -779,7 +1043,7 @@ test("links the creation transaction to the order's chain explorer", async () =>
       />
     </RootLayout>,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Browser wallet" }));
+  await connectBrowserWallet();
 
   expect(
     await screen.findByRole("link", { name: "View creation transaction" }),
@@ -815,7 +1079,7 @@ test("shows the reported fee in base units without assuming its token", async ()
       />
     </RootLayout>,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Browser wallet" }));
+  await connectBrowserWallet();
 
   expect(
     await screen.findByRole("definition", { name: "Executed fee" }),
@@ -836,7 +1100,7 @@ test("refreshes a missing order when it becomes available in the index", async (
       />
     </RootLayout>,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Browser wallet" }));
+  await connectBrowserWallet();
   await screen.findByText(
     "Order not found for the connected account on Ethereum.",
   );
@@ -861,7 +1125,7 @@ test("rejects an unsupported detail chain before fetching any orders", async () 
       />
     </RootLayout>,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Browser wallet" }));
+  await connectBrowserWallet();
   await screen.findByTitle(wallet);
 
   expect(screen.getByRole("alert")).toHaveTextContent(
@@ -884,7 +1148,7 @@ test("keeps detail API failure separate from not found and retries the requested
       />
     </RootLayout>,
   );
-  fireEvent.click(screen.getByRole("button", { name: "Browser wallet" }));
+  await connectBrowserWallet();
 
   expect(await screen.findByRole("alert")).toHaveTextContent(
     "Ethereum order data is unavailable.",
@@ -910,6 +1174,10 @@ test("keeps browser connection available when WalletConnect is not configured", 
   delete process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
   try {
     config = createWagmiConfig();
+    Object.defineProperty(window, "ethereum", {
+      configurable: true,
+      value: new BrowserWallet(),
+    });
     render(
       <RootLayout>
         <HomePage />
@@ -917,14 +1185,20 @@ test("keeps browser connection available when WalletConnect is not configured", 
     );
 
     expect(
-      screen.getByRole("button", { name: "Browser wallet" }),
+      await screen.findByRole("button", { name: "Connect wallet" }),
     ).toBeEnabled();
+    expect(
+      screen.queryByRole("button", { name: "Browser wallet" }),
+    ).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Connect wallet" }));
+    const browserWallet = await screen.findByRole("button", {
+      name: "Browser wallet",
+    });
     expect(
       screen.queryByRole("button", { name: "WalletConnect" }),
     ).not.toBeInTheDocument();
-    expect(
-      screen.getByText("WalletConnect is not configured for this app."),
-    ).toBeInTheDocument();
+    fireEvent.click(browserWallet);
+    expect(await screen.findByTitle(wallet)).toBeInTheDocument();
   } finally {
     if (projectId !== undefined)
       process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID = projectId;
@@ -973,7 +1247,12 @@ test("uses the Safe account returned by WalletConnect instead of a browser signe
         <HomePage />
       </RootLayout>,
     );
-    fireEvent.click(screen.getByRole("button", { name: "WalletConnect" }));
+    fireEvent.click(
+      await screen.findByRole("button", { name: "Connect wallet" }),
+    );
+    fireEvent.click(
+      await screen.findByRole("button", { name: "WalletConnect" }),
+    );
 
     expect(
       await screen.findByRole("link", {
@@ -986,7 +1265,8 @@ test("uses the Safe account returned by WalletConnect instead of a browser signe
       }),
     ).not.toBeInTheDocument();
     expect(screen.getByTitle(safe)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Disconnect wallet" }));
+    fireEvent.click(screen.getByTitle(safe));
+    fireEvent.click(await screen.findByRole("button", { name: /Disconnect/ }));
     await screen.findByText("Connect a wallet to view your stop-loss orders.");
   } finally {
     if (projectId === undefined)
@@ -1007,12 +1287,20 @@ test("connects and disconnects a browser wallet without a chain switch", async (
     </RootLayout>,
   );
 
-  fireEvent.click(screen.getByRole("button", { name: "Browser wallet" }));
   fireEvent.click(
-    await screen.findByRole("button", { name: "Disconnect wallet" }),
+    await screen.findByRole("button", { name: "Connect wallet" }),
   );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Browser wallet" }),
+  );
+  const account = await screen.findByTitle(wallet);
+  fireEvent.click(account);
+  fireEvent.click(await screen.findByRole("button", { name: /Disconnect/ }));
 
   expect(
-    await screen.findByRole("button", { name: "Browser wallet" }),
+    await screen.findByRole("button", { name: "Connect wallet" }),
   ).toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Browser wallet" }),
+  ).not.toBeInTheDocument();
 });
