@@ -41,6 +41,7 @@ export type DraftOrder = Omit<SwapData, "validTo"> &
   AdvancedSwapSettings &
   IRoute & {
     id: string;
+    readonly limitPrice: string;
     status: OrderStatus.DRAFT;
     oraclePrice: number;
     fallbackMarketPrice?: number;

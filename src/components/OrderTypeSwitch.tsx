@@ -1,27 +1,22 @@
-import { useEffect, useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 
 import { ToggleGroup, ToggleGroupItem } from "#/components/ui/toggle-group";
 import { SwapData } from "#/lib/types";
 
 export function OrderTypeToggleGroup({
+  value,
   onChange,
 }: {
+  value: string;
   onChange: (value: string) => void;
 }) {
-  const [value, setValue] = useState("sell");
-
-  useEffect(() => {
-    onChange(value);
-  }, [value]);
-
   return (
     <ToggleGroup
       type="single"
       size="sm"
       value={value}
       onValueChange={(value) => {
-        if (value) setValue(value);
+        if (value) onChange(value);
       }}
     >
       <ToggleGroupItem
@@ -43,13 +38,15 @@ export function OrderTypeToggleGroup({
 }
 
 export function OrderTypeSwitch() {
-  const { setValue } = useFormContext<SwapData>();
+  const { setValue, control } = useFormContext<SwapData>();
+  const isSellOrder = useWatch({ control, name: "isSellOrder" });
 
   return (
     <div className="flex gap-2 items-center">
       <span className="text-base font-bold inline-flex items-center space-x-1">
         <span>Create</span>
         <OrderTypeToggleGroup
+          value={isSellOrder ? "sell" : "buy"}
           onChange={(value) => {
             setValue("isSellOrder", value === "sell");
           }}

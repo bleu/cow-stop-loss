@@ -3,6 +3,7 @@ import { mainnet, sepolia } from "viem/chains";
 import { normalize } from "viem/ens";
 import { literal, z } from "zod";
 
+import { calculateAmounts, slippagePercentSchema } from "./calculateAmounts";
 import { ChainId, publicClientsFromIds } from "./publicClients";
 import { getSupportedTokens } from "./supportedTokens";
 import type { IToken } from "./types";
@@ -61,10 +62,10 @@ export const swapSchema = z
   .object({
     tokenSell: basicTokenSchema,
     tokenBuy: basicTokenSchema,
-    amountSell: z.coerce.number().positive(),
-    amountBuy: z.coerce.number().positive(),
-    strikePrice: z.coerce.number().positive(),
-    limitPrice: z.coerce.number().positive(),
+    amountSell: z.string(),
+    amountBuy: z.string(),
+    strikePrice: z.string(),
+    slippagePercent: slippagePercentSchema,
     isSellOrder: z.coerce.boolean(),
     validTo: z.nativeEnum(VALID_TO_OPTIONS),
   })
@@ -76,7 +77,34 @@ export const swapSchema = z
       path: ["tokenBuy"],
       message: "Tokens sell and buy must be different",
     },
-  );
+  )
+  .superRefine((data, context) => {
+    if (!slippagePercentSchema.safeParse(data.slippagePercent).success) return;
+    try {
+      calculateAmounts({
+        isSellOrder: data.isSellOrder,
+        amount: data.isSellOrder ? data.amountSell : data.amountBuy,
+        strikePrice: data.strikePrice,
+        slippagePercent: data.slippagePercent,
+        sellDecimals: data.tokenSell.decimals,
+        buyDecimals: data.tokenBuy.decimals,
+      });
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Invalid order amount";
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: [
+          message.startsWith("Trigger price")
+            ? "strikePrice"
+            : data.isSellOrder
+              ? "amountSell"
+              : "amountBuy",
+        ],
+        message,
+      });
+    }
+  });
 
 function matchesToken(token: IToken, supportedToken: IToken) {
   return (

@@ -3,10 +3,12 @@
 import { Button } from "@bleu/ui";
 import { useCallback } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
+import { parseUnits } from "viem";
 
 import { useDraftOrders } from "#/hooks/useDraftOrders";
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
+import { calculateAmounts } from "#/lib/calculateAmounts";
 import { SwapData } from "#/lib/types";
 
 export function SwapCardSubmitButton() {
@@ -20,18 +22,26 @@ export function SwapCardSubmitButton() {
     (state) => state.tokenSellBalance,
   );
 
-  const [tokenBuy, tokenSell, buyAmount, sellAmount, strikePrice, limitPrice] =
-    useWatch({
-      control,
-      name: [
-        "tokenBuy",
-        "tokenSell",
-        "amountBuy",
-        "amountSell",
-        "strikePrice",
-        "limitPrice",
-      ],
-    });
+  const [
+    tokenBuy,
+    tokenSell,
+    buyAmount,
+    sellAmount,
+    strikePrice,
+    slippagePercent,
+    isSellOrder,
+  ] = useWatch({
+    control,
+    name: [
+      "tokenBuy",
+      "tokenSell",
+      "amountBuy",
+      "amountSell",
+      "strikePrice",
+      "slippagePercent",
+      "isSellOrder",
+    ],
+  });
 
   const { data: marketPrice } = useTokenPairPrice(tokenSell, tokenBuy);
 
@@ -54,10 +64,27 @@ export function SwapCardSubmitButton() {
         text: "Tokens must be different",
       };
     }
-    if (!buyAmount && !sellAmount) {
+    if (!(isSellOrder ? sellAmount : buyAmount)) {
       return {
         disabled: true,
         text: "Enter amounts",
+      };
+    }
+    if (!strikePrice) return { disabled: true, text: "Set the trigger price" };
+    let requiredSell: string;
+    try {
+      requiredSell = calculateAmounts({
+        isSellOrder,
+        amount: isSellOrder ? sellAmount : buyAmount,
+        strikePrice,
+        slippagePercent,
+        sellDecimals: tokenSell.decimals,
+        buyDecimals: tokenBuy.decimals,
+      }).amountSell;
+    } catch (error) {
+      return {
+        disabled: true,
+        text: error instanceof Error ? error.message : "Invalid order amounts",
       };
     }
     if (tokenSellBalance === undefined) {
@@ -66,29 +93,23 @@ export function SwapCardSubmitButton() {
         text: "Sell token balance unavailable",
       };
     }
-    if (sellAmount > Number(tokenSellBalance)) {
+    if (
+      parseUnits(requiredSell, tokenSell.decimals) >
+      parseUnits(tokenSellBalance, tokenSell.decimals)
+    ) {
       return {
         disabled: true,
         text: "Insufficient balance",
       };
     }
-    if (!limitPrice) {
-      return {
-        disabled: true,
-        text: "Set the limit price",
-      };
-    }
-    if (!strikePrice) {
-      return {
-        disabled: true,
-        text: "Set the trigger price",
-      };
-    }
 
-    if (marketPrice && strikePrice > marketPrice) {
+    if (
+      marketPrice &&
+      parseUnits(strikePrice, 18) > parseUnits(marketPrice.toFixed(18), 18)
+    ) {
       return {
         disabled: true,
-        text: "Trigger price must be lower than market price",
+        text: "Trigger price must be at or below market price",
       };
     }
 
@@ -116,7 +137,8 @@ export function SwapCardSubmitButton() {
     buyAmount,
     draftOrders.length,
     errors,
-    limitPrice,
+    slippagePercent,
+    isSellOrder,
     marketPrice,
     sellAmount,
     strikePrice,
