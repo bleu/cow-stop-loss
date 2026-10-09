@@ -1,22 +1,29 @@
-import { Address } from "viem";
+"use client";
+
+import { useAccount } from "wagmi";
 
 import { OrderDetails } from "#/components/OrderDetails";
-import { ChainId } from "#/lib/publicClients";
+import { ChainId, supportedChainIds } from "#/lib/publicClients";
 
 export default function OrderPage({
   params,
 }: {
-  params: {
-    safeAddress: Address;
-    chainId: ChainId;
-    orderId: string;
-  };
+  params: { safeAddress: string; chainId: string | number; orderId: string };
 }) {
-  return (
-    <OrderDetails
-      orderId={params.orderId}
-      chainId={params.chainId}
-      address={params.safeAddress}
-    />
-  );
+  const { address } = useAccount();
+  const chainId = Number(params.chainId) as ChainId;
+  if (!supportedChainIds.includes(chainId))
+    return (
+      <main className="mx-auto max-w-7xl px-4 py-10">
+        <p role="alert">Unsupported chain: {params.chainId}.</p>
+      </main>
+    );
+  if (!address || address.toLowerCase() !== params.safeAddress.toLowerCase()) {
+    return (
+      <main className="mx-auto max-w-7xl px-4 py-10">
+        <p>Connect {params.safeAddress} to view this order.</p>
+      </main>
+    );
+  }
+  return <OrderDetails orderId={params.orderId} chainId={chainId} />;
 }

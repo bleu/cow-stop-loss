@@ -1,139 +1,97 @@
 "use client";
 
-import { ReloadIcon } from "@radix-ui/react-icons";
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
 import React, { useMemo } from "react";
+import { useAccount } from "wagmi";
 
 import { DataTable } from "#/components/data-table/data-table";
-import { useCreatingOrders } from "#/hooks/useCreatingOrders";
+import { DataTableToolbar } from "#/components/data-table/data-table-toolbar";
 import { DataTableFilterField, useDataTable } from "#/hooks/useDataTable";
-import { useDraftOrders } from "#/hooks/useDraftOrders";
 import { useOrderList } from "#/hooks/useOrderList";
-import { useQueuedTxs } from "#/hooks/useQueuedOrders";
-import {
-  CreatingOrder,
-  DraftOrder,
-  OrderStatus,
-  StopLossOrderType,
-} from "#/lib/types";
+import { chainNames } from "#/lib/publicClients";
+import { StopLossOrder } from "#/lib/stopLossOrders";
 
-import { DataTableToolbar } from "../data-table/data-table-toolbar";
-import { Spinner } from "../ui/spinner";
+import { stopLossStatusLabels } from "../StatusBadge";
 import { getColumns } from "./columns";
-import { ConsolidatedOrdersTableToolbarActions } from "./toolbar-actions";
 
-export type ConsolidatedOrderType =
-  | DraftOrder
-  | StopLossOrderType
-  | CreatingOrder;
+const filterFields: DataTableFilterField<StopLossOrder>[] = [
+  {
+    label: "Chain",
+    value: "chainId",
+    options: Object.entries(chainNames).map(([value, label]) => ({
+      value,
+      label,
+    })),
+  },
+  {
+    label: "Status",
+    value: "status",
+    options: Object.entries(stopLossStatusLabels).map(([value, label]) => ({
+      value,
+      label,
+    })),
+  },
+];
+
+export type ConsolidatedOrderType = StopLossOrder;
 
 export function ConsolidatedOrdersTable() {
-  const draftOrders = useDraftOrders((state) => state.draftOrders);
-  const { orders, isLoading, mutate: mutateOrderList } = useOrderList();
-  const { ordersOnQueue, mutate: mutateQueuedOrders } = useQueuedTxs();
-  const [creatingOrders] = useCreatingOrders((state) => [state.creatingOrders]);
-  const { safe } = useSafeAppsSDK();
-
-  const allOrders: ConsolidatedOrderType[] = useMemo(
-    () => [
-      ...creatingOrders,
-      ...draftOrders.map(
-        (order) => ({ ...order, status: OrderStatus.DRAFT }) as const,
-      ),
-      ...ordersOnQueue,
-      ...orders,
-    ],
-    [draftOrders, orders, creatingOrders, ordersOnQueue],
-  );
-
-  const columns = React.useMemo(
-    () => getColumns(),
-    [safe.chainId, safe.safeAddress],
-  );
-
-  const filterFields: DataTableFilterField<ConsolidatedOrderType>[] = [
-    {
-      label: "Status",
-      value: "status",
-      options: [
-        { label: "Draft", value: OrderStatus.DRAFT },
-        { label: "Queue", value: OrderStatus.ON_QUEUE },
-        { label: "Creating", value: OrderStatus.CREATING },
-        {
-          label: "Open",
-          value: OrderStatus.OPEN || OrderStatus.PARTIALLY_FILLED,
-        },
-        {
-          label: "Filled",
-          value:
-            OrderStatus.FULFILLED || OrderStatus.PARTIALLY_FILLED_AND_EXPIRED,
-        },
-        {
-          label: "Partially filled",
-          value:
-            OrderStatus.PARTIALLY_FILLED ||
-            OrderStatus.PARTIALLY_FILLED_AND_CANCELLED ||
-            OrderStatus.PARTIALLY_FILLED_AND_EXPIRED,
-        },
-        {
-          label: "Cancelled",
-          value:
-            OrderStatus.CANCELLED || OrderStatus.PARTIALLY_FILLED_AND_CANCELLED,
-        },
-        {
-          label: "Cancelling",
-          value:
-            OrderStatus.CANCELLING ||
-            OrderStatus.PARTIALLY_FILLED_AND_CANCELLING,
-        },
-        {
-          label: "Expired",
-          value:
-            OrderStatus.EXPIRED || OrderStatus.PARTIALLY_FILLED_AND_EXPIRED,
-        },
-      ],
-    },
-  ];
-
+  const { address } = useAccount();
+  const { orders, chains, isLoading, mutate } = useOrderList();
+  const columns = useMemo(() => getColumns(address!), [address]);
   const { table } = useDataTable({
-    data: allOrders,
+    data: orders,
     columns,
     filterFields,
-    enableRowSelection: (row) =>
-      [
-        OrderStatus.DRAFT,
-        OrderStatus.OPEN,
-        OrderStatus.PARTIALLY_FILLED,
-      ].includes(row.original.status),
+    defaultSort: "chainId.asc",
+    enableRowSelection: false,
   });
 
+  if (isLoading && !chains.length)
+    return <p role="status">Loading stop-loss orders...</p>;
+
   return (
-    <div>
-      <div className="md:-mt-10">
-        <div className="flex items-center space-x-2 mb-2">
-          <span className="text-2xl font-semibold">Your orders</span>
-          {isLoading ? (
-            <Spinner size="sm" />
-          ) : (
+    <>
+      <button
+        disabled={isLoading}
+        onClick={() => mutate()}
+        className="mb-4 text-primary underline"
+      >
+        Refresh orders
+      </button>
+      {isLoading && <p role="status">Refreshing orders...</p>}
+      {chains
+        .filter((chain) => chain.status === "error")
+        .map((chain) => (
+          <div
+            key={chain.chainId}
+            role="alert"
+            className="mb-4 rounded border border-destructive p-3"
+          >
+            <p>{chainNames[chain.chainId]} orders are unavailable.</p>
+            <p>{chain.error}</p>
+            {chain.orders.length > 0 && (
+              <p>
+                Previously loaded {chainNames[chain.chainId]} orders may be out
+                of date.
+              </p>
+            )}
             <button
-              onClick={() => {
-                mutateQueuedOrders();
-                mutateOrderList();
-              }}
-              className="text-primary hover:text-primary/50 px-1"
+              disabled={isLoading}
+              onClick={() => mutate()}
+              className="text-primary underline"
             >
-              <ReloadIcon className="size-4" />
+              Retry {chainNames[chain.chainId]}
             </button>
-          )}
-        </div>
-      </div>
-      <div className="flex rounded-lg bg-muted p-2">
+          </div>
+        ))}
+      {orders.length > 0 ||
+      chains.some((chain) => chain.status === "success") ? (
         <DataTable table={table}>
-          <DataTableToolbar table={table} filterFields={filterFields}>
-            <ConsolidatedOrdersTableToolbarActions table={table} />
-          </DataTableToolbar>
+          <DataTableToolbar table={table} filterFields={filterFields} />
         </DataTable>
-      </div>
-    </div>
+      ) : (
+        <p>Orders are unavailable on all supported chains.</p>
+      )}
+    </>
   );
 }

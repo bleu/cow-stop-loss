@@ -1,10 +1,11 @@
 "use client";
 
+import { Button } from "@bleu/ui";
 import Image from "next/image";
 import Link from "next/link";
+import { useAccount, useConnect, useDisconnect } from "wagmi";
 
-import { useSafeApp } from "#/hooks/useSafeApp";
-import { NetworkChainId, truncateAddress } from "#/utils";
+import { truncateAddress } from "#/utils";
 
 interface IHeader {
   linkUrl: string;
@@ -13,38 +14,59 @@ interface IHeader {
 }
 
 export function Header({ linkUrl, imageSrc, onLinkClick }: IHeader) {
-  const { safeAddress, chainId } = useSafeApp();
-
-  const networkAcronym: {
-    [key: string]: string;
-  } = {
-    [NetworkChainId.ETHEREUM]: "eth",
-    [NetworkChainId.GNOSIS]: "gn",
-    [NetworkChainId.SEPOLIA]: "sep",
-  };
+  const { address, chain, chainId } = useAccount();
+  const { connectors, connect, isPending, error } = useConnect();
+  const { disconnect } = useDisconnect();
 
   return (
-    <div className="flex h-20 w-full items-center bg-background p-8">
-      <div className="mr-auto flex justify-start">
-        <Link
-          href={linkUrl}
-          onClick={onLinkClick}
-          className="flex items-center gap-3 justify-self-start"
-        >
+    <header className="flex min-h-20 w-full flex-wrap items-center gap-4 bg-background p-8">
+      <Link
+        href={linkUrl}
+        onClick={onLinkClick}
+        aria-label="CoW Stop Loss"
+        className="mr-auto flex items-center gap-3"
+      >
+        {imageSrc && (
+          <Image src={imageSrc} height={30} width={150} alt="CoW Stop Loss" />
+        )}
+      </Link>
+      <div className="flex flex-wrap items-center gap-3">
+        {address ? (
           <>
-            {imageSrc && (
-              <Image src={imageSrc} height={30} width={150} alt="" />
-            )}
+            <span
+              className="rounded-lg bg-muted px-5 py-3 text-sm"
+              title={address}
+            >
+              {truncateAddress(address)} ({chain?.name ?? `Chain ${chainId}`})
+            </span>
+            <Button variant="outline" onClick={() => disconnect()}>
+              Disconnect wallet
+            </Button>
           </>
-        </Link>
+        ) : (
+          connectors.map((connector) => (
+            <Button
+              key={connector.uid}
+              variant="outline"
+              disabled={isPending}
+              onClick={() => connect({ connector })}
+            >
+              {connector.id === "injected" ? "Browser wallet" : connector.name}
+            </Button>
+          ))
+        )}
+        {!address &&
+          !connectors.some((connector) => connector.id === "walletConnect") && (
+            <p className="text-sm text-muted-foreground">
+              WalletConnect is not configured for this app.
+            </p>
+          )}
+        {error && (
+          <p role="alert" className="text-sm text-destructive">
+            {error.message}
+          </p>
+        )}
       </div>
-      <div className="flex gap-x-4">
-        <div className="ml-auto flex justify-end">
-          <div className="bg-muted text-center text-sm rounded-lg font-semibold py-3 px-5">
-            {`${networkAcronym[chainId]}:${truncateAddress(safeAddress)}`}
-          </div>
-        </div>
-      </div>
-    </div>
+    </header>
   );
 }

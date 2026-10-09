@@ -1,407 +1,199 @@
 "use client";
 
-import {
-  Button,
-  ClickToCopy,
-  epochToDate,
-  formatDateTime,
-  formatNumber,
-  Separator,
-} from "@bleu/ui";
-import {
-  ArrowLeftIcon,
-  ArrowTopRightIcon,
-  CopyIcon,
-  ReloadIcon,
-} from "@radix-ui/react-icons";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import useSWR from "swr";
-import { Address, formatUnits } from "viem";
+import React, { useId } from "react";
+import { formatUnits } from "viem";
 
-import { OrderDetailsInformation } from "#/components/OrderDetailsInformation";
-import { StatusBadge } from "#/components/StatusBadge";
-import { TokenLogo } from "#/components/TokenLogo";
-import { Spinner } from "#/components/ui/spinner";
-import { InfoTooltip } from "#/components/ui/tooltip";
-import { usePonderState } from "#/hooks/usePonderState";
-import { useTxManager } from "#/hooks/useTxManager";
-import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
-import { getProcessedStopLossOrder } from "#/lib/ponderApi/fetchOrders";
-import { ChainId } from "#/lib/publicClients";
-import { formatTimeDelta } from "#/lib/timeDelta";
-import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
-import { OrderCancelArgs, TRANSACTION_TYPES } from "#/lib/transactionFactory";
-import { OrderStatus } from "#/lib/types";
-import { buildOrderCowExplorerUrl, truncateAddress } from "#/utils";
+import { useOrderList } from "#/hooks/useOrderList";
+import { ChainId, chainNames } from "#/lib/publicClients";
+import { OrderToken } from "#/lib/stopLossOrders";
+import { buildBlockExplorerTxUrl, buildOrderCowExplorerUrl } from "#/utils";
 
-import { BlockExplorerLink } from "./ExplorerLink";
+import { StatusBadge } from "./StatusBadge";
+
+function Field({
+  label,
+  children,
+}: React.PropsWithChildren<{ label: string }>) {
+  const id = useId();
+  return (
+    <div className="grid gap-2 border-b py-3 sm:grid-cols-2">
+      <dt id={id} className="font-medium">
+        {label}
+      </dt>
+      <dd aria-labelledby={id} className="break-all">
+        {children}
+      </dd>
+    </div>
+  );
+}
+
+function amount(value: bigint | null, token: OrderToken) {
+  if (value === null) return "Not available";
+  return `${token.decimals === null ? `${value} base units` : formatUnits(value, token.decimals)} ${token.symbol}`;
+}
+
+function date(timestamp?: number) {
+  return timestamp === undefined
+    ? "Not available"
+    : new Date(timestamp * 1000)
+        .toISOString()
+        .replace("T", " ")
+        .replace(".000Z", " UTC");
+}
 
 export function OrderDetails({
   orderId,
   chainId,
-  address,
 }: {
   orderId: string;
-  address: Address;
   chainId: ChainId;
 }) {
-  const orderFetcher = async () => {
-    return getProcessedStopLossOrder({
-      chainId,
-      orderId,
-      userAddress: address,
-    });
-  };
-  const {
-    data: order,
-    isValidating,
-    isLoading,
-    mutate,
-  } = useSWR([orderId], orderFetcher);
+  const { chains, isLoading, mutate } = useOrderList();
+  const chain = chains.find((chain) => chain.chainId === chainId);
+  const order = chain?.orders.find((order) => order.parentId === orderId);
 
-  const router = useRouter();
-
-  const { writeContract } = useTxManager();
-  const { isValidating: isPonderUpdating } = usePonderState();
-
-  const isUpdating = isLoading || isPonderUpdating || isValidating;
-
-  if (isLoading && !order) {
-    return <Spinner />;
-  }
-
-  if (!order) {
-    return null;
-  }
-
-  const orderDateTime = formatDateTime(
-    epochToDate(Number(order?.blockTimestamp)),
-  );
-
-  const orderValidTo = formatDateTime(
-    epochToDate(Number(order?.stopLossData?.validTo)),
-  );
-
-  const maxOracleUpdateTime = formatTimeDelta(
-    order?.stopLossData?.maxTimeSinceLastOracleUpdate as number,
-  );
-
-  const amountIn =
-    Number(order?.stopLossData?.tokenSellAmount) /
-    10 ** Number(order?.stopLossData?.tokenSell.decimals);
-  const amountOut =
-    Number(order?.stopLossData?.tokenBuyAmount) /
-    10 ** Number(order?.stopLossData?.tokenBuy.decimals);
-  const executedAmountIn =
-    Number(order?.stopLossData?.executedTokenSellAmount) /
-    10 ** Number(order?.stopLossData?.tokenSell.decimals);
-  const executedAmountOut =
-    Number(order?.stopLossData?.executedTokenBuyAmount) /
-    10 ** Number(order?.stopLossData?.tokenBuy.decimals);
-  const strikePrice = formatUnits(order?.stopLossData?.strike as bigint, 18);
-  const limitPrice = amountOut / amountIn;
-  const executionPrice = executedAmountOut / executedAmountIn;
-  const orderSurplus = ((executionPrice - limitPrice) / limitPrice) * 100;
-  const priceUnit = `${order?.stopLossData?.tokenBuy.symbol} per ${order?.stopLossData?.tokenSell.symbol}`;
-
-  const onCancelOrder = () => {
-    if (!order) return;
-    const deleteTxArgs = {
-      type: TRANSACTION_TYPES.ORDER_CANCEL,
-      hash: order.hash,
-    } as OrderCancelArgs;
-    writeContract([deleteTxArgs]);
-    mutate({ ...order, status: OrderStatus.CANCELLING });
-  };
-
-  return (
-    <div className="flex size-full justify-center items-center">
-      <div className="bg-muted my-10 text-white p-10 rounded relative">
-        <div className="flex flex-row justify-between items-center mb-5">
-          <button onClick={router.back}>
-            <ArrowLeftIcon className="size-4" />
-          </button>
-          <div className="flex gap-2 items-center justify-start">
-            <h1 className="text-2xl font-bold">Order Details</h1>
-            {isUpdating ? (
-              <Spinner size="sm" />
-            ) : (
-              <button
-                onClick={() => mutate()}
-                className="hover:text-primary px-1"
-              >
-                <ReloadIcon className="size-4" />
-              </button>
-            )}
-          </div>
-          <Button
-            onClick={onCancelOrder}
-            variant="destructive"
-            disabled={
-              order?.status !== OrderStatus.OPEN &&
-              order?.status !== OrderStatus.PARTIALLY_FILLED
-            }
-          >
-            Cancel
-          </Button>
-        </div>
-        <div className="flex flex-col gap-y-1">
-          <OrderDetailsInformation
-            label="Order Creation"
-            tooltipText={TOOLTIP_DESCRIPTIONS.ORDER_CREATION}
-          >
-            <div className="flex items-center gap-x-1">
-              {order?.txHash}
-              <BlockExplorerLink
-                type="transaction"
-                label={<ArrowTopRightIcon />}
-                identifier={order?.txHash}
-                networkId={chainId as ChainId}
-              />
-              <ClickToCopy text={order?.txHash as string}>
-                <CopyIcon className="hover:text-primary" />
-              </ClickToCopy>
-            </div>
-          </OrderDetailsInformation>
-          <OrderDetailsInformation
-            label="Order Hash"
-            tooltipText={TOOLTIP_DESCRIPTIONS.ORDER_HASH}
-          >
-            <div className="flex items-center gap-x-1">
-              {order?.hash}
-              <BlockExplorerLink
-                type="address"
-                label={<ArrowTopRightIcon />}
-                identifier={COMPOSABLE_COW_ADDRESS}
-                networkId={chainId as ChainId}
-              />
-              <ClickToCopy text={order?.hash as string}>
-                <CopyIcon className="hover:text-primary" />
-              </ClickToCopy>
-            </div>
-          </OrderDetailsInformation>
-          <OrderDetailsInformation
-            label="Status"
-            tooltipText={TOOLTIP_DESCRIPTIONS.STATUS}
-          >
-            <StatusBadge status={order?.status || ""} />
-          </OrderDetailsInformation>
-          <OrderDetailsInformation
-            label="Type"
-            tooltipText={TOOLTIP_DESCRIPTIONS.TYPE}
-          >
-            {order?.stopLossData?.isPartiallyFillable
-              ? "Partially fillable order"
-              : "Fill or kill order"}
-          </OrderDetailsInformation>
-          <OrderDetailsInformation
-            label="Submission Time"
-            tooltipText={TOOLTIP_DESCRIPTIONS.SUBMISSION_TIME}
-          >
-            {orderDateTime}
-          </OrderDetailsInformation>
-          <OrderDetailsInformation
-            label="Valid To"
-            tooltipText={TOOLTIP_DESCRIPTIONS.VALID_TO}
-          >
-            {orderValidTo}
-          </OrderDetailsInformation>
-          <OrderDetailsInformation
-            label="Oracle Validity Time"
-            tooltipText={TOOLTIP_DESCRIPTIONS.MAX_TIME_SINCE_LAST_ORACLE_UPDATE}
-          >
-            {maxOracleUpdateTime}
-          </OrderDetailsInformation>
-          <OrderDetailsInformation
-            label="Receiver"
-            tooltipText={TOOLTIP_DESCRIPTIONS.RECEIVER}
-          >
-            <div className="flex items-center gap-x-1">
-              {order?.stopLossData?.to}
-              <BlockExplorerLink
-                type="address"
-                label={<ArrowTopRightIcon />}
-                identifier={order?.stopLossData?.to}
-                networkId={chainId as ChainId}
-              />
-              <ClickToCopy text={order?.stopLossData?.to as string}>
-                <CopyIcon className="hover:text-primary" />
-              </ClickToCopy>
-            </div>
-          </OrderDetailsInformation>
-        </div>
-        <Separator className="my-3" />
-        <div className="flex flex-col gap-y-1">
-          <OrderDetailsInformation
-            label="Amount"
-            tooltipText={TOOLTIP_DESCRIPTIONS.AMOUNT}
-          >
-            <div className="flex flex-col">
-              <div className="flex gap-x-2 items-center">
-                <span className="font-bold">
-                  {order?.stopLossData?.isSellOrder ? "From" : "From at most"}
-                </span>
-                {formatNumber(amountIn, 4)}{" "}
-                <InfoTooltip
-                  text={amountIn.toFixed(
-                    order?.stopLossData?.tokenSell.decimals,
-                  )}
-                />
-                {order?.stopLossData?.tokenSell.symbol}
-                <BlockExplorerLink
-                  type="address"
-                  label={<ArrowTopRightIcon />}
-                  identifier={order?.stopLossData?.tokenSell.address}
-                  networkId={chainId as ChainId}
-                />
-                <TokenLogo
-                  tokenAddress={order?.stopLossData?.tokenSell.address.toLowerCase()}
-                  chainId={order?.chainId as ChainId}
-                  className="rounded-full"
-                  alt="Token Logo"
-                  height={22}
-                  width={22}
-                  quality={100}
-                />
-              </div>
-              <div className="flex gap-x-2 items-center">
-                <span className="font-bold">
-                  {order?.stopLossData?.isSellOrder ? "To at least" : "To"}
-                </span>
-                {formatNumber(amountOut, 4)}{" "}
-                <InfoTooltip
-                  text={amountOut.toFixed(
-                    order?.stopLossData?.tokenBuy.decimals,
-                  )}
-                />
-                {order?.stopLossData?.tokenBuy.symbol}
-                <BlockExplorerLink
-                  type="address"
-                  label={<ArrowTopRightIcon />}
-                  identifier={order?.stopLossData?.tokenBuy.address}
-                  networkId={chainId as ChainId}
-                />
-                <TokenLogo
-                  tokenAddress={order?.stopLossData?.tokenBuy.address}
-                  chainId={order?.chainId as ChainId}
-                  className="rounded-full"
-                  alt="Token Logo"
-                  height={22}
-                  width={22}
-                  quality={100}
-                />
-              </div>
-            </div>
-          </OrderDetailsInformation>
-          <OrderDetailsInformation
-            label="Trigger Price"
-            tooltipText={TOOLTIP_DESCRIPTIONS.TRIGGER_PRICE}
-          >
-            <div className="flex gap-1">
-              {formatNumber(strikePrice, 4)}{" "}
-              <InfoTooltip text={Number(strikePrice).toFixed(18)} /> {priceUnit}
-            </div>
-          </OrderDetailsInformation>
-          <OrderDetailsInformation
-            label="Limit Price"
-            tooltipText={TOOLTIP_DESCRIPTIONS.LIMIT_PRICE}
-          >
-            <div className="flex gap-1">
-              {formatNumber(limitPrice, 4)}{" "}
-              <InfoTooltip text={Number(limitPrice).toFixed(18)} /> {priceUnit}
-            </div>
-          </OrderDetailsInformation>
-          {(Number(order?.stopLossData?.filledPctBps) || 0) > 0 && (
-            <>
-              <OrderDetailsInformation
-                label="Execution Price"
-                tooltipText={TOOLTIP_DESCRIPTIONS.LIMIT_PRICE}
-              >
-                {formatNumber(executionPrice, 4)} {priceUnit}
-              </OrderDetailsInformation>
-              <OrderDetailsInformation
-                label="Order"
-                tooltipText={TOOLTIP_DESCRIPTIONS.ORDER}
-              >
-                <div className="flex gap-x-2">
-                  Swapped {formatNumber(executedAmountIn, 4)}{" "}
-                  {order?.stopLossData?.tokenSell.symbol} for{" "}
-                  {formatNumber(executedAmountOut, 4)}{" "}
-                  {order?.stopLossData?.tokenBuy.symbol}
-                  {orderSurplus > 0 && (
-                    <span className="text-success text-bold">
-                      ({formatNumber(orderSurplus, 4)}% surplus)
-                    </span>
-                  )}
-                </div>
-              </OrderDetailsInformation>
-            </>
-          )}
-          <OrderDetailsInformation
-            label="Token Sell Oracle"
-            tooltipText={TOOLTIP_DESCRIPTIONS.ORACLE_TOKEN_SELL}
-          >
-            <div className="flex items-center gap-x-1">
-              {order?.stopLossData?.sellTokenPriceOracle}
-              <BlockExplorerLink
-                type="address"
-                label={<ArrowTopRightIcon />}
-                identifier={order?.stopLossData?.sellTokenPriceOracle}
-                networkId={chainId as ChainId}
-              />
-              <ClickToCopy
-                text={order?.stopLossData?.sellTokenPriceOracle as string}
-              >
-                <CopyIcon className="hover:text-primary" />
-              </ClickToCopy>
-            </div>
-          </OrderDetailsInformation>
-          <OrderDetailsInformation
-            label="Token Buy Oracle"
-            tooltipText={TOOLTIP_DESCRIPTIONS.ORACLE_TOKEN_BUY}
-          >
-            <div className="flex items-center gap-x-1">
-              {order?.stopLossData?.buyTokenPriceOracle}
-              <BlockExplorerLink
-                type="address"
-                label={<ArrowTopRightIcon />}
-                identifier={order?.stopLossData?.buyTokenPriceOracle}
-                networkId={chainId as ChainId}
-              />
-              <ClickToCopy
-                text={order?.stopLossData?.buyTokenPriceOracle as string}
-              >
-                <CopyIcon className="hover:text-primary" />
-              </ClickToCopy>
-            </div>
-          </OrderDetailsInformation>
-        </div>
-        {order?.cowOrder && (
-          <OrderDetailsInformation
-            label="Orderbook CoW Order"
-            tooltipText={TOOLTIP_DESCRIPTIONS.RELATED_ORDER}
-          >
-            <div className="flex items-center gap-x-1">
-              {truncateAddress(order.cowOrder.uid)}
-              <Link
-                className="hover:text-primary hover:underline"
-                href={buildOrderCowExplorerUrl({
-                  chainId: order?.chainId as ChainId,
-                  orderId: order?.cowOrder.uid as `0x${string}`,
-                })}
-                rel="noreferrer noopener"
-                target="_blank"
-              >
-                <ArrowTopRightIcon />
-              </Link>
-              <ClickToCopy text={order?.cowOrder.uid}>
-                <CopyIcon className="hover:text-primary" />
-              </ClickToCopy>
-            </div>
-          </OrderDetailsInformation>
-        )}
-      </div>
+  const warning = chain?.status === "error" && (
+    <div role="alert" className="my-4 rounded border border-destructive p-3">
+      <p>{chainNames[chainId]} order data is unavailable.</p>
+      <p>{chain.error}</p>
+      {order && (
+        <p>
+          Previously loaded {chainNames[chainId]} orders may be out of date.
+        </p>
+      )}
+      <button
+        disabled={isLoading}
+        onClick={() => mutate()}
+        className="text-primary underline"
+      >
+        Retry {chainNames[chainId]}
+      </button>
     </div>
+  );
+
+  if (!order)
+    return (
+      <main className="mx-auto max-w-4xl px-4 py-10">
+        <Link href="/" className="text-primary underline">
+          Back to orders
+        </Link>
+        <button
+          disabled={isLoading}
+          onClick={() => mutate()}
+          className="ml-4 text-primary underline"
+        >
+          Refresh orders
+        </button>
+        {warning || (
+          <p role="status">
+            {isLoading
+              ? "Loading order..."
+              : `Order not found for the connected account on ${chainNames[chainId]}.`}
+          </p>
+        )}
+      </main>
+    );
+
+  const price = (value?: string) =>
+    value === undefined
+      ? "Not available"
+      : `${value} ${order.buyToken.symbol} per ${order.sellToken.symbol}`;
+  return (
+    <main className="mx-auto max-w-4xl px-4 py-10">
+      <Link href="/" className="text-primary underline">
+        Back to orders
+      </Link>
+      <h1 className="my-4 text-2xl font-semibold">Order details</h1>
+      <button
+        disabled={isLoading}
+        onClick={() => mutate()}
+        className="text-primary underline"
+      >
+        Refresh orders
+      </button>
+      {warning}
+      <dl>
+        <Field label="Chain">{chainNames[chainId]}</Field>
+        <Field label="Order ID">{order.parentId}</Field>
+        <Field label="Order hash">{order.hash}</Field>
+        <Field label="Owner">{order.owner}</Field>
+        <Field label="Status">
+          <StatusBadge status={order.status} />
+        </Field>
+        <Field label="Kind">{order.isSellOrder ? "Sell" : "Buy"}</Field>
+        <Field label="Partial fills">
+          {order.partiallyFillable ? "Allowed" : "Not allowed"}
+        </Field>
+        <Field label="Created">{date(order.createdAt)}</Field>
+        <Field label="Creation transaction">
+          {order.transactionHash ? (
+            <Link
+              href={
+                buildBlockExplorerTxUrl({
+                  chainId,
+                  txHash: order.transactionHash,
+                })!
+              }
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              View creation transaction
+            </Link>
+          ) : (
+            "Not available"
+          )}
+        </Field>
+        <Field label="Valid until">{date(order.validTo)}</Field>
+        <Field label="Receiver">{order.receiver}</Field>
+        <Field label="Sell token">{order.sellToken.address}</Field>
+        <Field label="Buy token">{order.buyToken.address}</Field>
+        <Field
+          label={order.isSellOrder ? "Sell amount" : "Maximum sell amount"}
+        >
+          {amount(order.sellAmount, order.sellToken)}
+        </Field>
+        <Field label={order.isSellOrder ? "Minimum buy amount" : "Buy amount"}>
+          {amount(order.buyAmount, order.buyToken)}
+        </Field>
+        <Field label="Trigger price">
+          {price(formatUnits(order.strike, 18))}
+        </Field>
+        <Field label="Limit price">{price(order.limitPrice)}</Field>
+        <Field label="Executed sell amount">
+          {amount(order.executedSellAmount, order.sellToken)}
+        </Field>
+        <Field label="Executed buy amount">
+          {amount(order.executedBuyAmount, order.buyToken)}
+        </Field>
+        <Field label="Executed fee">
+          {order.executedFee === null
+            ? "Not available"
+            : `${order.executedFee} base units (fee token not supplied)`}
+        </Field>
+        <Field label="Execution price">{price(order.executionPrice)}</Field>
+        <Field label="Maximum oracle age">
+          {order.maxTimeSinceLastOracleUpdate} seconds
+        </Field>
+        <Field label="Sell token oracle">{order.sellTokenPriceOracle}</Field>
+        <Field label="Buy token oracle">{order.buyTokenPriceOracle}</Field>
+        <Field label="CoW order">
+          {order.cowOrder ? (
+            <Link
+              href={buildOrderCowExplorerUrl({
+                chainId,
+                orderId: order.cowOrder.uid as `0x${string}`,
+              })}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              View CoW order
+            </Link>
+          ) : (
+            "Not triggered"
+          )}
+        </Field>
+      </dl>
+    </main>
   );
 }
