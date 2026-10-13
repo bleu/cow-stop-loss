@@ -76,6 +76,7 @@ export const BlockExplorerLink: React.FC<Props> = (props: Props) => {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
+      title={identifier}
       className={className}
     >
       <>

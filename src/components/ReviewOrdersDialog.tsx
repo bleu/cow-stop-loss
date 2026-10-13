@@ -6,10 +6,14 @@ import { formatUnits } from "viem";
 
 import { GPV2_VAULT_RELAYER_ADDRESS } from "#/lib/contracts";
 import type { FundingSnapshot, PreparedPlacement } from "#/lib/pollerStopLoss";
+import type { ChainId } from "#/lib/publicClients";
 import { formatTimeDelta } from "#/lib/timeDelta";
 import type { DraftOrder } from "#/lib/types";
 
+import { BlockExplorerLink } from "./ExplorerLink";
+
 export interface ReviewOrdersDialogProps {
+  chainId: ChainId;
   order: DraftOrder;
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -25,6 +29,7 @@ export interface ReviewOrdersDialogProps {
 }
 
 export function ReviewOrdersDialog({
+  chainId,
   order,
   open,
   setOpen,
@@ -78,15 +83,15 @@ export function ReviewOrdersDialog({
               {order.tokenSell.symbol} = {order.strikePrice}{" "}
               {order.tokenBuy.symbol}
             </OrderInformation>
-            <OrderInformation title="Limit price">
-              {order.tokenSell.symbol} = {order.limitPrice}{" "}
-              {order.tokenBuy.symbol}
-            </OrderInformation>
             <OrderInformation title="Slippage">
               {order.slippagePercent}%
             </OrderInformation>
             <OrderInformation title="Receiver">
-              <code>{order.receiver}</code>
+              <BlockExplorerLink
+                type="address"
+                identifier={order.receiver}
+                networkId={chainId}
+              />
             </OrderInformation>
             <OrderInformation title="Expiration date">
               {new Date(order.validTo * 1000)
@@ -94,126 +99,198 @@ export function ReviewOrdersDialog({
                 .replace("T", " ")
                 .replace(".000Z", " UTC")}
             </OrderInformation>
-            <OrderInformation title="Maximum oracle age">
-              {formatTimeDelta(order.maxHoursSinceOracleUpdates * 3600)}
-            </OrderInformation>
-            <OrderInformation title="Partial fills">
-              {order.partiallyFillable
-                ? "Allowed"
-                : "Not allowed (Fill or Kill)"}
-            </OrderInformation>
-            <OrderInformation title={`${order.tokenSell.symbol} oracle`}>
-              <code>{order.tokenSellOracle}</code>
-            </OrderInformation>
-            <OrderInformation title={`${order.tokenBuy.symbol} oracle`}>
-              <code>{order.tokenBuyOracle}</code>
-            </OrderInformation>
           </dl>
           {funding && (
-            <section aria-label="Funding" className="flex flex-col gap-2">
-              <h3 className="font-medium">Funding</h3>
-              <dl className="flex flex-col gap-2">
-                <OrderInformation title="Required allowance">
-                  {sellAmount(funding.requiredAllowance)}
-                </OrderInformation>
-                <OrderInformation title="Outstanding unfunded orders">
-                  {sellAmount(funding.outstandingSellAmount)}
-                </OrderInformation>
-                <OrderInformation title="Wallet balance">
-                  {sellAmount(funding.balance)}
-                </OrderInformation>
-              </dl>
-              <p className="text-sm">
-                Funding totals use indexed orders and orders confirmed in this
-                browser. Orders created elsewhere can be missing until the API
-                indexes them.
+            <div className="text-sm">
+              <p>
+                {funding.approvalRequired
+                  ? `Approve ${sellAmount(funding.requiredAllowance)} for the Poller.`
+                  : "Wallet approval is sufficient."}
+                {prepared && funding.approvalRequired && (
+                  <>
+                    {" "}
+                    <BlockExplorerLink
+                      type="address"
+                      identifier={prepared.poller}
+                      networkId={chainId}
+                    />
+                  </>
+                )}
               </p>
               {funding.combinedCommitmentsExceedBalance && (
-                <p role="alert" className="text-sm text-yellow-400">
+                <p role="alert" className="text-yellow-400">
                   Combined commitments exceed your wallet balance. Funds are not
                   reserved.
                 </p>
               )}
-            </section>
+            </div>
           )}
           {prepared && (
-            <>
-              <section
-                aria-label="Wallet approval"
-                className="flex flex-col gap-2"
-              >
-                <h3 className="font-medium">Wallet approval</h3>
-                <dl className="flex flex-col gap-2">
-                  <OrderInformation title="Token">
-                    <span>{order.tokenSell.symbol}</span>
-                    <code className="block">{order.tokenSell.address}</code>
-                  </OrderInformation>
-                  <OrderInformation title="Owner (wallet)">
-                    <code>{prepared.account}</code>
-                  </OrderInformation>
-                  <OrderInformation title="Spender (Poller)">
-                    <code>{prepared.poller}</code>
-                  </OrderInformation>
-                  <OrderInformation title="Current allowance">
-                    {funding
-                      ? sellAmount(funding.currentAllowance)
-                      : "Unavailable"}
-                  </OrderInformation>
-                  {funding?.approvalRequired && (
-                    <>
-                      {resetRequired && (
-                        <OrderInformation title="Reset allowance to">
-                          {sellAmount(BigInt(0))}
-                        </OrderInformation>
-                      )}
-                      <OrderInformation
-                        title={
-                          resetRequired
-                            ? "Approval after reset"
-                            : "Approval amount"
-                        }
-                      >
-                        {sellAmount(funding.requiredAllowance)}
-                      </OrderInformation>
-                    </>
-                  )}
-                </dl>
-                {funding && (
-                  <p className="text-sm">
-                    {funding.approvalRequired
-                      ? "Approve only the required total for this order and outstanding unfunded orders."
-                      : "Allowance is sufficient. Your existing allowance will not be reduced."}
-                  </p>
-                )}
-              </section>
-              <section
-                aria-label="CowShed settlement approval"
-                className="flex flex-col gap-2"
-              >
-                <h3 className="font-medium">CowShed settlement approval</h3>
-                <dl className="flex flex-col gap-2">
-                  <OrderInformation title="Token">
-                    <span>{order.tokenSell.symbol}</span>
-                    <code className="block">{order.tokenSell.address}</code>
-                  </OrderInformation>
-                  <OrderInformation title="Owner (CowShed)">
-                    <code>{prepared.owner}</code>
-                  </OrderInformation>
-                  <OrderInformation title="Spender (Vault Relayer)">
-                    <code>{GPV2_VAULT_RELAYER_ADDRESS}</code>
-                  </OrderInformation>
-                  <OrderInformation title="Approval amount">
-                    Unlimited {order.tokenSell.symbol}
-                  </OrderInformation>
-                </dl>
-                <p className="text-sm">
-                  Place order permits the Vault Relayer to spend{" "}
-                  {order.tokenSell.symbol} held by this CowShed without an
-                  amount limit.
-                </p>
-              </section>
-            </>
+            <p className="text-sm">
+              Placement grants unlimited {order.tokenSell.symbol} settlement
+              approval from the CowShed.
+            </p>
           )}
+          <details className="text-sm">
+            <summary className="cursor-pointer">
+              Order and approval details
+            </summary>
+            <div className="flex flex-col gap-3 pt-3">
+              <dl className="flex flex-col gap-2">
+                <OrderInformation title="Limit price">
+                  {order.tokenSell.symbol} = {order.limitPrice}{" "}
+                  {order.tokenBuy.symbol}
+                </OrderInformation>
+                <OrderInformation title="Maximum oracle age">
+                  {formatTimeDelta(order.maxHoursSinceOracleUpdates * 3600)}
+                </OrderInformation>
+                <OrderInformation title="Partial fills">
+                  {order.partiallyFillable
+                    ? "Allowed"
+                    : "Not allowed (Fill or Kill)"}
+                </OrderInformation>
+                <OrderInformation title={`${order.tokenSell.symbol} oracle`}>
+                  <BlockExplorerLink
+                    type="address"
+                    identifier={order.tokenSellOracle}
+                    networkId={chainId}
+                  />
+                </OrderInformation>
+                <OrderInformation title={`${order.tokenBuy.symbol} oracle`}>
+                  <BlockExplorerLink
+                    type="address"
+                    identifier={order.tokenBuyOracle}
+                    networkId={chainId}
+                  />
+                </OrderInformation>
+              </dl>
+              {funding && (
+                <section aria-label="Funding" className="flex flex-col gap-2">
+                  <h3 className="font-medium">Funding</h3>
+                  <dl className="flex flex-col gap-2">
+                    <OrderInformation title="Required allowance">
+                      {sellAmount(funding.requiredAllowance)}
+                    </OrderInformation>
+                    <OrderInformation title="Outstanding unfunded orders">
+                      {sellAmount(funding.outstandingSellAmount)}
+                    </OrderInformation>
+                    <OrderInformation title="Wallet balance">
+                      {sellAmount(funding.balance)}
+                    </OrderInformation>
+                  </dl>
+                  <p className="text-sm">
+                    Funding totals use indexed orders and orders confirmed in
+                    this browser. Orders created elsewhere can be missing until
+                    the API indexes them.
+                  </p>
+                </section>
+              )}
+              {prepared && (
+                <>
+                  <section
+                    aria-label="Wallet approval"
+                    className="flex flex-col gap-2"
+                  >
+                    <h3 className="font-medium">Wallet approval</h3>
+                    <dl className="flex flex-col gap-2">
+                      <OrderInformation title="Token">
+                        <span>{order.tokenSell.symbol}</span>
+                        <BlockExplorerLink
+                          type="token"
+                          identifier={order.tokenSell.address}
+                          networkId={chainId}
+                          className="block"
+                        />
+                      </OrderInformation>
+                      <OrderInformation title="Owner (wallet)">
+                        <BlockExplorerLink
+                          type="address"
+                          identifier={prepared.account}
+                          networkId={chainId}
+                        />
+                      </OrderInformation>
+                      <OrderInformation title="Spender (Poller)">
+                        <BlockExplorerLink
+                          type="address"
+                          identifier={prepared.poller}
+                          networkId={chainId}
+                        />
+                      </OrderInformation>
+                      <OrderInformation title="Current allowance">
+                        {funding
+                          ? sellAmount(funding.currentAllowance)
+                          : "Unavailable"}
+                      </OrderInformation>
+                      {funding?.approvalRequired && (
+                        <>
+                          {resetRequired && (
+                            <OrderInformation title="Reset allowance to">
+                              {sellAmount(BigInt(0))}
+                            </OrderInformation>
+                          )}
+                          <OrderInformation
+                            title={
+                              resetRequired
+                                ? "Approval after reset"
+                                : "Approval amount"
+                            }
+                          >
+                            {sellAmount(funding.requiredAllowance)}
+                          </OrderInformation>
+                        </>
+                      )}
+                    </dl>
+                    {funding && (
+                      <p className="text-sm">
+                        {funding.approvalRequired
+                          ? "Approve only the required total for this order and outstanding unfunded orders."
+                          : "Allowance is sufficient. Your existing allowance will not be reduced."}
+                      </p>
+                    )}
+                  </section>
+                  <section
+                    aria-label="CowShed settlement approval"
+                    className="flex flex-col gap-2"
+                  >
+                    <h3 className="font-medium">CowShed settlement approval</h3>
+                    <dl className="flex flex-col gap-2">
+                      <OrderInformation title="Token">
+                        <span>{order.tokenSell.symbol}</span>
+                        <BlockExplorerLink
+                          type="token"
+                          identifier={order.tokenSell.address}
+                          networkId={chainId}
+                          className="block"
+                        />
+                      </OrderInformation>
+                      <OrderInformation title="Owner (CowShed)">
+                        <BlockExplorerLink
+                          type="address"
+                          identifier={prepared.owner}
+                          networkId={chainId}
+                        />
+                      </OrderInformation>
+                      <OrderInformation title="Spender (Vault Relayer)">
+                        <BlockExplorerLink
+                          type="address"
+                          identifier={GPV2_VAULT_RELAYER_ADDRESS}
+                          networkId={chainId}
+                        />
+                      </OrderInformation>
+                      <OrderInformation title="Approval amount">
+                        Unlimited {order.tokenSell.symbol}
+                      </OrderInformation>
+                    </dl>
+                    <p className="text-sm">
+                      Place order permits the Vault Relayer to spend{" "}
+                      {order.tokenSell.symbol} held by this CowShed without an
+                      amount limit.
+                    </p>
+                  </section>
+                </>
+              )}
+            </div>
+          </details>
           {pending ? (
             <p role="status" className="text-sm">
               Transaction pending. You can close this review. Tracking will
@@ -245,8 +322,7 @@ export function ReviewOrdersDialog({
           )}
           {resetRequired && (
             <p className="text-sm">
-              Resetting the allowance to zero is an extra approval. You must
-              then approve the required total before placing the order.
+              Reset the allowance to zero, then approve the required amount.
             </p>
           )}
           <div className="flex gap-2">

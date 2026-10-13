@@ -387,6 +387,7 @@ export function StopLossCreation() {
       />
       {review && (
         <ReviewOrdersDialog
+          chainId={review.chainId}
           order={review.order}
           open={open}
           setOpen={(nextOpen) => {

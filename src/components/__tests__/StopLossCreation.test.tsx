@@ -515,6 +515,10 @@ it("shows a saved-storage error without crashing or sending a wallet request", a
   expect(await screen.findByRole("dialog")).toHaveTextContent(
     "Unsupported placement storage version",
   );
+  expect(screen.getByRole("link", { name: "0x1111…1111" })).toHaveAttribute(
+    "href",
+    `https://etherscan.io/address/${account}`,
+  );
   expect(sendTransactionAsync).not.toHaveBeenCalled();
 });
 
