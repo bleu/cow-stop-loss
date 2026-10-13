@@ -281,7 +281,7 @@ it("Close discards temporary slippage and receiver edits and reopens the saved v
   );
 });
 
-it("Reset immediately restores default slippage and advanced settings without Save", async () => {
+it("Reset immediately restores default slippage and the six-hour oracle limit without Save", async () => {
   const user = userEvent.setup();
   const onReviewOrder = jest.fn();
   renderForm(onReviewOrder);
@@ -316,7 +316,7 @@ it("Reset immediately restores default slippage and advanced settings without Sa
   );
   expect(screen.getByRole("textbox", { name: "Slippage" })).toHaveValue("0.1");
   expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue("");
-  expect(screen.getByRole("spinbutton")).toHaveValue(1);
+  expect(screen.getByRole("spinbutton")).toHaveValue(6);
   expect(
     screen.getByRole("checkbox", { name: "Enable partially fillable orders" }),
   ).not.toBeChecked();
@@ -331,7 +331,7 @@ it("Reset immediately restores default slippage and advanced settings without Sa
         slippagePercent: "0.1",
         amountBuy: "1998",
         receiver: safe.safeAddress,
-        maxHoursSinceOracleUpdates: 1,
+        maxHoursSinceOracleUpdates: 6,
         partiallyFillable: false,
       }),
       1,
@@ -339,6 +339,78 @@ it("Reset immediately restores default slippage and advanced settings without Sa
     ),
   );
 });
+
+it("uses a six-hour oracle limit in fresh settings and the reviewed draft", async () => {
+  localStorage.removeItem("advanced-settings-storage");
+  const user = userEvent.setup();
+  const onReviewOrder = jest.fn();
+  renderForm(onReviewOrder);
+  await user.click(screen.getByRole("button", { name: "Advanced Settings" }));
+  expect(screen.getByRole("spinbutton")).toHaveValue(6);
+  await user.click(screen.getByRole("button", { name: "Close" }));
+  await selectWeth(user);
+  await user.type(
+    screen.getByRole("textbox", { name: "Trigger price" }),
+    "2000",
+  );
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  await user.click(
+    await screen.findByRole("button", { name: "Review Stop Loss order" }),
+  );
+
+  await waitFor(() =>
+    expect(onReviewOrder).toHaveBeenCalledWith(
+      expect.objectContaining({ maxHoursSinceOracleUpdates: 6 }),
+      1,
+      safe.safeAddress,
+    ),
+  );
+});
+
+it.each([1, 2.5])(
+  "preserves a saved %s-hour oracle limit in settings and review",
+  async (maxHoursSinceOracleUpdates) => {
+    localStorage.setItem(
+      "advanced-settings-storage",
+      JSON.stringify({
+        state: {
+          advancedSettings: {
+            receiver: "",
+            maxHoursSinceOracleUpdates,
+            partiallyFillable: false,
+          },
+        },
+        version: 0,
+      }),
+    );
+    await useAdvancedSettingsStore.persist.rehydrate();
+    const user = userEvent.setup();
+    const onReviewOrder = jest.fn();
+    renderForm(onReviewOrder);
+    await user.click(screen.getByRole("button", { name: "Advanced Settings" }));
+    expect(screen.getByRole("spinbutton")).toHaveValue(
+      maxHoursSinceOracleUpdates,
+    );
+    await user.click(screen.getByRole("button", { name: "Close" }));
+    await selectWeth(user);
+    await user.type(
+      screen.getByRole("textbox", { name: "Trigger price" }),
+      "2000",
+    );
+    await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+    await user.click(
+      await screen.findByRole("button", { name: "Review Stop Loss order" }),
+    );
+
+    await waitFor(() =>
+      expect(onReviewOrder).toHaveBeenCalledWith(
+        expect.objectContaining({ maxHoursSinceOracleUpdates }),
+        1,
+        safe.safeAddress,
+      ),
+    );
+  },
+);
 
 it("marks saved slippage changes on the gear and offers Reset for slippage alone", async () => {
   const user = userEvent.setup();

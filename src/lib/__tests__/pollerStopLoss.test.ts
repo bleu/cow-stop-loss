@@ -8,6 +8,7 @@ import {
   zeroAddress,
 } from "viem";
 
+import { defaultAdvancedSettings } from "#/hooks/useAdvancedSettings";
 import {
   buildPlacementApproval,
   buildPlacementSetup,
@@ -180,6 +181,23 @@ test("encodes the reviewed receiver, amounts and advanced settings with the uplo
     BigInt("2000000000000000000000"),
     1800,
   ]);
+});
+
+test("encodes a new default draft's oracle limit as 21600 seconds", async () => {
+  const prepared = await preparePlacement({
+    draft: { ...draft, ...defaultAdvancedSettings, receiver: account },
+    account,
+    chainId: 1,
+    client: checkingClient(),
+  });
+  const staticInput = decodeAbiParameters(
+    parseAbiParameters(
+      "address,address,uint256,uint256,bytes32,address,bool,bool,uint32,address,address,int256,uint32",
+    ),
+    prepared.staticInput,
+  );
+
+  expect(staticInput[12]).toBe(21600);
 });
 
 test("keeps schedule, conditional-order and CoW digest identities distinct", async () => {
@@ -517,9 +535,73 @@ test("blocks wallet actions when a required price is older than the reviewed max
 
   expect(await refreshPlacementChecks(prepared, { client })).toMatchObject({
     status: "unknown",
-    error: "Required price feed is stale",
+    error:
+      "Oracle price data is stale. Try again later, or increase the oracle time limit in Advanced Settings.",
   });
 });
+
+test.each([
+  [1, 1799996400],
+  [2.5, 1799991000],
+  [6, 1799978400],
+])(
+  "accepts prices exactly at the reviewed %s-hour limit and blocks one second older",
+  async (maxHoursSinceOracleUpdates, updatedAt) => {
+    const client = checkingClient({
+      latestRoundData: [
+        BigInt(1),
+        BigInt(200000000000),
+        BigInt(updatedAt),
+        BigInt(updatedAt),
+        BigInt(1),
+      ],
+    });
+    const prepared = await preparePlacement({
+      draft: { ...draft, maxHoursSinceOracleUpdates },
+      account,
+      chainId: 1,
+      client,
+    });
+    emptyFundingApi();
+
+    expect(await refreshPlacementChecks(prepared, { client })).toMatchObject({
+      status: "known",
+    });
+
+    const olderClient = checkingClient({
+      latestRoundData: [
+        BigInt(1),
+        BigInt(200000000000),
+        BigInt(updatedAt - 1),
+        BigInt(updatedAt - 1),
+        BigInt(1),
+      ],
+    });
+    expect(
+      await refreshPlacementChecks(prepared, { client: olderClient }),
+    ).toMatchObject({
+      status: "unknown",
+      error:
+        "Oracle price data is stale. Try again later, or increase the oracle time limit in Advanced Settings.",
+    });
+    await expect(
+      buildPlacementApproval(prepared, {
+        client: olderClient,
+        reviewedRequiredAllowance: BigInt("1000000000000000000"),
+      }),
+    ).rejects.toThrow(
+      "Oracle price data is stale. Try again later, or increase the oracle time limit in Advanced Settings.",
+    );
+    await expect(
+      buildPlacementSetup(prepared, {
+        client: olderClient,
+        reviewedRequiredAllowance: BigInt("1000000000000000000"),
+      }),
+    ).rejects.toThrow(
+      "Oracle price data is stale. Try again later, or increase the oracle time limit in Advanced Settings.",
+    );
+  },
+);
 
 test.each([
   [BigInt(1), BigInt(0), BigInt(1800000000), BigInt(1800000000), BigInt(1)],
@@ -553,6 +635,40 @@ test.each([
     status: "unknown",
     error: "Required price feed is invalid",
   });
+});
+
+test("keeps an oracle RPC failure distinct from a stale price", async () => {
+  const client = checkingClient();
+  const prepared = await preparePlacement({
+    draft,
+    account,
+    chainId: 1,
+    client,
+  });
+  const read = client.readContract;
+  client.readContract = jest.fn(async (args) => {
+    if (args.functionName === "latestRoundData")
+      throw new Error("Oracle RPC unavailable");
+    return read(args);
+  }) as PublicClient["readContract"];
+  emptyFundingApi();
+
+  expect(await refreshPlacementChecks(prepared, { client })).toMatchObject({
+    status: "unknown",
+    error: "Oracle RPC unavailable",
+  });
+  await expect(
+    buildPlacementApproval(prepared, {
+      client,
+      reviewedRequiredAllowance: BigInt("1000000000000000000"),
+    }),
+  ).rejects.toThrow("Oracle RPC unavailable");
+  await expect(
+    buildPlacementSetup(prepared, {
+      client,
+      reviewedRequiredAllowance: BigInt("1000000000000000000"),
+    }),
+  ).rejects.toThrow("Oracle RPC unavailable");
 });
 
 test("blocks an individual order above the wallet balance", async () => {

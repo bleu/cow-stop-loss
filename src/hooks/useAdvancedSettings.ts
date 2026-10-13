@@ -10,7 +10,7 @@ interface AdvancedSettingsState {
 
 export const defaultAdvancedSettings: AdvancedSwapSettings = {
   receiver: "",
-  maxHoursSinceOracleUpdates: 1,
+  maxHoursSinceOracleUpdates: 6,
   partiallyFillable: false,
 };
 

@@ -35,7 +35,9 @@ export async function readOraclePrice({
     throw new Error("Required price feed is invalid");
   }
   if (timestamp - round[3] > BigInt(Math.floor(maxAge))) {
-    throw new Error("Required price feed is stale");
+    throw new Error(
+      "Oracle price data is stale. Try again later, or increase the oracle time limit in Advanced Settings.",
+    );
   }
   const decimals = (await client.readContract({
     address: oracle,
