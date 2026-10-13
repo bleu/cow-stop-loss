@@ -6,7 +6,7 @@ import {
   formatNumber,
   Input,
 } from "@bleu/ui";
-import { memo, useEffect } from "react";
+import { memo, useEffect, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { useAccount } from "wagmi";
 
@@ -37,6 +37,9 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     name: [tokenFieldName, "isSellOrder", amountFieldName],
   });
 
+  const tokenAddress = token?.address;
+  const tokenDecimals = token?.decimals;
+  const tokenSymbol = token?.symbol;
   const { data: usdPrice } = useTokenPrice(token);
 
   const [
@@ -50,32 +53,66 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     state.setTokenBuyBalance,
     state.setTokenSellBalance,
   ]);
-  const tokenBalance = side === "Buy" ? tokenBuyBalance : tokenSellBalance;
+  const storedBalance = side === "Buy" ? tokenBuyBalance : tokenSellBalance;
   const setTokenBalance =
     side === "Buy" ? setTokenBuyBalance : setTokenSellBalance;
 
   const isAmountDisabled = isSellOrder ? side === "Buy" : side === "Sell";
+  const [balanceFailed, setBalanceError] = useState(false);
+  const [balanceScope, setBalanceScope] = useState<string>();
+  const [balanceAttempt, retryBalance] = useState(0);
+  const currentBalanceScope = `${walletAddress?.toLowerCase()}:${chainId}:${tokenAddress?.toLowerCase()}:${tokenDecimals}`;
+  const balanceError = balanceScope === currentBalanceScope && balanceFailed;
+  const tokenBalance =
+    balanceScope === currentBalanceScope ? storedBalance : undefined;
 
   useEffect(() => {
     let active = true;
+    setBalanceError(false);
+    setBalanceScope(undefined);
     setTokenBalance(undefined);
-    if (token && walletAddress) {
+    if (
+      tokenAddress &&
+      tokenDecimals !== undefined &&
+      tokenSymbol !== undefined &&
+      walletAddress
+    ) {
       fetchFormattedBalanceOf({
-        token,
+        token: {
+          address: tokenAddress,
+          decimals: tokenDecimals,
+          symbol: tokenSymbol,
+        },
         address: walletAddress,
         chainId,
       })
         .then((balance) => {
-          if (active) setTokenBalance(balance);
+          if (active) {
+            setTokenBalance(balance);
+            setBalanceScope(currentBalanceScope);
+          }
         })
         .catch(() => {
-          if (active) setTokenBalance(undefined);
+          if (active) {
+            setTokenBalance(undefined);
+            setBalanceScope(currentBalanceScope);
+            setBalanceError(true);
+          }
         });
     }
     return () => {
       active = false;
     };
-  }, [token, chainId, walletAddress, setTokenBalance]);
+  }, [
+    tokenAddress,
+    tokenDecimals,
+    tokenSymbol,
+    chainId,
+    walletAddress,
+    setTokenBalance,
+    balanceAttempt,
+    currentBalanceScope,
+  ]);
 
   return (
     <Card className="bg-background w-full p-2 rounded-lg">
@@ -124,15 +161,34 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
           {token && (
             <span className="text-xs">
               <span>
-                Balance:{" "}
-                {formatNumber(
-                  tokenBalance || "0",
-                  4,
-                  "decimal",
-                  "standard",
-                  0.0001,
-                )}{" "}
+                {balanceError ? (
+                  "Balance unavailable"
+                ) : (
+                  <>
+                    Balance:{" "}
+                    {tokenBalance === undefined
+                      ? "Loading..."
+                      : formatNumber(
+                          tokenBalance,
+                          4,
+                          "decimal",
+                          "standard",
+                          0.0001,
+                        )}{" "}
+                  </>
+                )}
               </span>
+              {balanceError && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  aria-label={`Retry ${token.symbol} balance`}
+                  className="py-0 px-1 h-fit text-accent text-xs"
+                  onClick={() => retryBalance((attempt) => attempt + 1)}
+                >
+                  Retry
+                </Button>
+              )}
               {!isAmountDisabled && tokenBalance && tokenBalance !== "0" && (
                 <Button
                   type="button"
