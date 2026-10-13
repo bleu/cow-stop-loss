@@ -1,12 +1,13 @@
 import useSWR from "swr";
+import { useAccount } from "wagmi";
 
+import { ChainId } from "#/lib/publicClients";
 import { fetchTokenUsdPrice } from "#/lib/tokenUtils";
 import { IToken } from "#/lib/types";
 
-import { useSafeApp } from "./useSafeApp";
-
 export function useTokenPrice(token?: IToken) {
-  const { chainId } = useSafeApp();
+  const { chainId: accountChainId } = useAccount();
+  const chainId = (accountChainId ?? 1) as ChainId;
 
   const { data, error } = useSWR(
     token ? ["tokenPrice", token.address, chainId] : null,
@@ -25,8 +26,10 @@ export function useTokenPrice(token?: IToken) {
     },
   );
 
+  const price = typeof data === "number" && Number.isFinite(data) && data > 0 ? data : undefined;
+
   return {
-    data,
+    data: price,
     isLoading: !error && !data,
     error,
   };

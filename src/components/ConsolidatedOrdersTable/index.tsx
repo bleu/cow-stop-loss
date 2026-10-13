@@ -16,12 +16,13 @@ import { DataTableToolbar } from "#/components/data-table/data-table-toolbar";
 import { DataTableFilterField, useDataTable } from "#/hooks/useDataTable";
 import { useOrderList } from "#/hooks/useOrderList";
 import { chainNames } from "#/lib/publicClients";
-import { StopLossOrder } from "#/lib/stopLossOrders";
+import { PlacementRow } from "#/lib/stopLossPlacement";
+import { OrderStatus } from "#/lib/types";
 
 import { stopLossStatusLabels } from "../StatusBadge";
 import { getColumns } from "./columns";
 
-const filterFields: DataTableFilterField<StopLossOrder>[] = [
+const filterFields: DataTableFilterField<PlacementRow>[] = [
   {
     label: "Chain",
     value: "chainId",
@@ -33,18 +34,21 @@ const filterFields: DataTableFilterField<StopLossOrder>[] = [
   {
     label: "Status",
     value: "status",
-    options: Object.entries(stopLossStatusLabels).map(([value, label]) => ({
+    options: Object.entries({
+      ...stopLossStatusLabels,
+      [OrderStatus.CREATING]: "Pending",
+    }).map(([value, label]) => ({
       value,
       label,
     })),
   },
 ];
 
-export type ConsolidatedOrderType = StopLossOrder;
+export type ConsolidatedOrderType = PlacementRow;
 
 export function ConsolidatedOrdersTable() {
   const { address } = useAccount();
-  const { orders, chains, isLoading, mutate } = useOrderList();
+  const { orders, chains, isLoading, mutate, trackingError } = useOrderList();
   const columns = useMemo(() => getColumns(address!), [address]);
   const { table } = useDataTable({
     data: orders,
@@ -54,11 +58,16 @@ export function ConsolidatedOrdersTable() {
     enableRowSelection: false,
   });
 
-  if (isLoading && !chains.length)
+  if (isLoading && !chains.length && !orders.length)
     return <p role="status">Loading stop-loss orders...</p>;
 
   return (
     <>
+      {trackingError && (
+        <p role="alert" className="mb-4 rounded border border-destructive p-3">
+          Placement tracking is unavailable. {trackingError}
+        </p>
+      )}
       {chains
         .filter((chain) => chain.status === "error")
         .map((chain) => (

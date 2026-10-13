@@ -1,10 +1,10 @@
-import { Address } from "viem";
+import { Address, zeroAddress } from "viem";
 import { create } from "zustand";
 
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
 import { ChainId } from "#/lib/publicClients";
-import { generateSwapSchema, VALID_TO_VALUES_MAP } from "#/lib/schema";
+import { generateAdvancedSettingsSchema, generateSwapSchema, VALID_TO_VALUES_MAP } from "#/lib/schema";
 import { fetchPairUsdPrice } from "#/lib/tokenUtils";
 import { DraftOrder, OrderStatus, SwapData } from "#/lib/types";
 import { generateRandomHex } from "#/utils";
@@ -18,14 +18,14 @@ interface DraftOrderState {
   createDraftOrder: (
     data: SwapData,
     chainId: ChainId,
-    safeAddress: Address,
+    walletAddress: Address,
   ) => Promise<DraftOrder>;
 }
 
 export const useDraftOrder = create<DraftOrderState>()((set) => ({
   currentDraftOrder: undefined,
   setCurrentDraftOrder: (order) => set({ currentDraftOrder: order }),
-  createDraftOrder: async (data, chainId, safeAddress) => {
+  createDraftOrder: async (data, chainId, walletAddress) => {
     const swapData = generateSwapSchema(chainId).parse(data);
     const amounts = calculateAmounts({
       isSellOrder: swapData.isSellOrder,
@@ -35,13 +35,18 @@ export const useDraftOrder = create<DraftOrderState>()((set) => ({
       sellDecimals: swapData.tokenSell.decimals,
       buyDecimals: swapData.tokenBuy.decimals,
     });
-    const { advancedSettings } = useAdvancedSettingsStore.getState();
+    const advancedSettings = await generateAdvancedSettingsSchema(chainId).parseAsync(
+      useAdvancedSettingsStore.getState().advancedSettings,
+    );
     const draftOrders = useDraftOrders.getState().draftOrders;
 
     const receiver =
       advancedSettings.receiver === ""
-        ? safeAddress
+        ? walletAddress
         : advancedSettings.receiver;
+    if (receiver.toLowerCase() === zeroAddress) {
+      throw new Error("Receiver must not be the zero address.");
+    }
 
     const oracleRouterClass = CHAINS_ORACLE_ROUTER_FACTORY[chainId];
     const oracleRouter = new oracleRouterClass({
@@ -56,6 +61,10 @@ export const useDraftOrder = create<DraftOrderState>()((set) => ({
       tokenBuyOracle,
       tokenSellOracle,
     });
+
+    if (!Number.isFinite(oraclePrice) || oraclePrice <= 0) {
+      throw new Error("Required price feeds are unavailable or invalid.");
+    }
 
     const fallbackMarketPrice = await fetchPairUsdPrice({
       sellToken: swapData.tokenSell,

@@ -4,7 +4,7 @@
  */
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SWRConfig } from "swr";
 import type { Address } from "viem";
@@ -27,11 +27,9 @@ let safe: { chainId: number; safeAddress: Address } = {
   chainId: 1,
   safeAddress: "0x1111111111111111111111111111111111111111",
 };
-jest.mock("@safe-global/safe-apps-react-sdk", () => ({
-  useSafeAppsSDK: () => ({ safe, sdk: {} }),
-}));
-jest.mock("@safe-global/safe-gateway-typescript-sdk", () => ({
-  getTransactionQueue: jest.fn().mockResolvedValue({ results: [] }),
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useAccount: () => ({ address: safe.safeAddress, chainId: safe.chainId, isConnected: true }),
 }));
 
 beforeAll(() => {
@@ -83,12 +81,12 @@ beforeEach(() => {
 });
 afterEach(() => jest.restoreAllMocks());
 
-function renderForm() {
+function renderForm(onReviewOrder = jest.fn()) {
   const config = createWagmiConfig();
   const queryClient = new QueryClient();
   return render(
     <SWRConfig value={{ provider: () => new Map(), revalidateOnFocus: false }}>
-      <SwapForm />
+      <SwapForm onReviewOrder={onReviewOrder} />
     </SWRConfig>,
     {
       wrapper: ({ children }) => (
@@ -175,39 +173,12 @@ it("clears a stale derived amount and blocks review while slippage is invalid", 
   ).toBeDisabled();
 });
 
-it("keeps the exact buy authoritative when mode, trigger and custom slippage change", async () => {
-  const user = userEvent.setup();
+it("offers one exact-sell order without buy mode or draft-basket actions", () => {
   renderForm();
-  await selectWeth(user);
-  await user.click(screen.getByRole("radio", { name: "Toggle buy" }));
-  const trigger = screen.getByRole("textbox", { name: "Trigger price" });
-  const slippage = screen.getByRole("textbox", { name: "Slippage" });
-  await user.type(trigger, "3");
-  await user.clear(slippage);
-  await user.type(slippage, "0");
-  await user.type(screen.getByRole("textbox", { name: "Buy amount" }), "1");
-
-  await waitFor(() =>
-    expect(screen.getByRole("textbox", { name: "Sell at most" })).toHaveValue(
-      "0.333333333333333333",
-    ),
-  );
-  expect(screen.getByRole("textbox", { name: "Sell at most" })).toBeDisabled();
-  await user.clear(trigger);
-  await user.type(trigger, "4");
-  await waitFor(() =>
-    expect(screen.getByRole("textbox", { name: "Sell at most" })).toHaveValue(
-      "0.25",
-    ),
-  );
-  await user.clear(slippage);
-  await user.type(slippage, "50");
-  await waitFor(() =>
-    expect(screen.getByRole("textbox", { name: "Sell at most" })).toHaveValue(
-      "0.5",
-    ),
-  );
-  expect(screen.getByRole("textbox", { name: "Buy amount" })).toHaveValue("1");
+  expect(screen.getByRole("textbox", { name: "Sell amount" })).toBeEnabled();
+  expect(screen.getByRole("textbox", { name: "Receive at least" })).toBeDisabled();
+  expect(screen.queryByRole("radio", { name: /Toggle/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole("button", { name: /Add.*order|draft orders/i })).not.toBeInTheDocument();
 });
 
 it("blocks a sell amount one atomic unit above the wallet balance", async () => {
@@ -247,56 +218,127 @@ it("accepts a trigger at market and rejects one atomic price unit above it", asy
   ).toBeDisabled();
 });
 
-it("opens review with the same exact amounts shown by the form", async () => {
+it("hands one wallet-scoped exact-sell draft to review and keeps form values for a fresh review", async () => {
+  const user = userEvent.setup();
+  const onReviewOrder = jest.fn();
+  renderForm(onReviewOrder);
+  await selectWeth(user);
+  await user.type(screen.getByRole("textbox", { name: "Trigger price" }), "2000");
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "0.123456789012345678");
+  await user.click(await screen.findByRole("button", { name: "Review Stop Loss order" }));
+
+  await waitFor(() => expect(onReviewOrder).toHaveBeenCalledWith(
+    expect.objectContaining({
+      amountSell: "0.123456789012345678",
+      amountBuy: "246.666665",
+      slippagePercent: "0.1",
+      isSellOrder: true,
+      receiver: safe.safeAddress,
+    }),
+    1,
+    safe.safeAddress,
+  ));
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  expect(screen.getByRole("textbox", { name: "Sell amount" })).toHaveValue("0.123456789012345678");
+  const firstDraft = onReviewOrder.mock.calls[0][0];
+  useDraftOrders.getState().setDraftOrders(Array(5).fill(firstDraft));
+  await user.click(screen.getByRole("button", { name: "Review Stop Loss order" }));
+  await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(2));
+  expect(onReviewOrder.mock.calls[1][0].salt).not.toBe(firstDraft.salt);
+});
+
+it("blocks review when the market price is not positive and available", async () => {
+  const { sellTokens } = getSupportedTokens(1);
+  global.fetch = jest.fn().mockImplementation(async (input) => ({
+    json: async () => ({ price: String(input).toLowerCase().includes(sellTokens[0].token.address.toLowerCase()) ? -2000 : 1e12 }),
+  }));
   const user = userEvent.setup();
   renderForm();
   await selectWeth(user);
-  await user.type(
-    screen.getByRole("textbox", { name: "Trigger price" }),
-    "2000",
-  );
-  await user.type(
-    screen.getByRole("textbox", { name: "Sell amount" }),
-    "0.123456789012345678",
-  );
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
-
-  const review = within(
-    await screen.findByRole("dialog", { name: "Review Stop Loss order" }),
-  );
-  expect(review.getByText("0.123456789012345678 WETH")).toBeInTheDocument();
-  expect(review.getByText("246.666665 USDC")).toBeInTheDocument();
-  expect(review.getByText("0.1%")).toBeInTheDocument();
-  expect(review.queryByText("Limit price")).not.toBeInTheDocument();
+  await user.type(screen.getByRole("textbox", { name: "Trigger price" }), "2000");
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  expect(await screen.findByRole("button", { name: "Market price unavailable. Try again." })).toBeDisabled();
 });
 
-it("resets slippage and the visible exact mode when the wallet changes", async () => {
+it("resolves a saved custom receiver and preserves expiry, oracle age and partial-fill settings in review", async () => {
+  const receiver: Address = "0x2222222222222222222222222222222222222222";
+  jest.spyOn(publicClientsFromIds[1], "getEnsAddress").mockResolvedValue(receiver);
+  useAdvancedSettingsStore.getState().setAdvancedSettings({
+    receiver: "receiver.eth",
+    maxHoursSinceOracleUpdates: 2,
+    partiallyFillable: true,
+  });
   const user = userEvent.setup();
-  const { rerender } = renderForm();
+  const onReviewOrder = jest.fn();
+  renderForm(onReviewOrder);
   await selectWeth(user);
-  await user.click(screen.getByRole("radio", { name: "Toggle buy" }));
+  await user.type(screen.getByRole("textbox", { name: "Trigger price" }), "2000");
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  screen.getByRole("combobox").focus();
+  await user.keyboard("[Space]");
+  await user.click(await screen.findByRole("option", { name: "30 minutes" }));
+  const beforeReview = Math.floor(Date.now() / 1000);
+  await user.click(await screen.findByRole("button", { name: "Review Stop Loss order" }));
+  await waitFor(() => expect(onReviewOrder).toHaveBeenCalledWith(
+    expect.objectContaining({ receiver, maxHoursSinceOracleUpdates: 2, partiallyFillable: true }),
+    1,
+    safe.safeAddress,
+  ));
+  expect(onReviewOrder.mock.calls[0][0].validTo).toBeGreaterThanOrEqual(beforeReview + 1800);
+  expect(onReviewOrder.mock.calls[0][0].validTo).toBeLessThanOrEqual(Math.floor(Date.now() / 1000) + 1800);
+});
+
+it("does not prepare a draft from a non-positive required oracle price", async () => {
+  const readContract = jest.mocked(publicClientsFromIds[1].readContract);
+  const read = readContract.getMockImplementation()!;
+  readContract.mockImplementation(async (args) => args.functionName === "latestRoundData"
+    ? [BigInt(1), BigInt(0), BigInt(1), BigInt(1), BigInt(1)]
+    : read(args));
+  const user = userEvent.setup();
+  const onReviewOrder = jest.fn();
+  renderForm(onReviewOrder);
+  await selectWeth(user);
+  await user.type(screen.getByRole("textbox", { name: "Trigger price" }), "2000");
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  await user.click(await screen.findByRole("button", { name: "Review Stop Loss order" }));
+  expect(await screen.findByText("Required price feeds are unavailable or invalid.")).toHaveAttribute("role", "alert");
+  expect(onReviewOrder).not.toHaveBeenCalled();
+});
+
+it("rejects a zero receiver without clearing the editable form", async () => {
+  useAdvancedSettingsStore.getState().setAdvancedSettings({
+    ...defaultAdvancedSettings,
+    receiver: "0x0000000000000000000000000000000000000000",
+  });
+  const user = userEvent.setup();
+  const onReviewOrder = jest.fn();
+  renderForm(onReviewOrder);
+  await selectWeth(user);
+  await user.type(screen.getByRole("textbox", { name: "Trigger price" }), "2000");
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  await user.click(await screen.findByRole("button", { name: "Review Stop Loss order" }));
+  expect(await screen.findByText("Receiver must not be the zero address.")).toHaveAttribute("role", "alert");
+  expect(onReviewOrder).not.toHaveBeenCalled();
+  expect(screen.getByRole("textbox", { name: "Sell amount" })).toHaveValue("1");
+});
+
+it("resets the exact-sell form when the wallet changes", async () => {
+  const user = userEvent.setup();
+  const onReviewOrder = jest.fn();
+  const { rerender } = renderForm(onReviewOrder);
+  await selectWeth(user);
   await user.click(screen.getByRole("radio", { name: "1%" }));
-  await user.type(screen.getByRole("textbox", { name: "Buy amount" }), "1");
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
   safe = { ...safe, safeAddress: "0x2222222222222222222222222222222222222222" };
   rerender(
     <SWRConfig value={{ provider: () => new Map(), revalidateOnFocus: false }}>
-      <SwapForm />
+      <SwapForm onReviewOrder={onReviewOrder} />
     </SWRConfig>,
   );
 
   await waitFor(() =>
-    expect(screen.getByRole("textbox", { name: "Slippage" })).toHaveValue(
-      "0.1",
-    ),
-  );
-  expect(screen.getByRole("radio", { name: "Toggle sell" })).toHaveAttribute(
-    "aria-checked",
-    "true",
+    expect(screen.getByRole("textbox", { name: "Slippage" })).toHaveValue("0.1"),
   );
   expect(screen.getByRole("textbox", { name: "Sell amount" })).toHaveValue("");
-  expect(
-    screen.getByRole("button", { name: "Select token" }),
-  ).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Select token" })).toBeInTheDocument();
 });

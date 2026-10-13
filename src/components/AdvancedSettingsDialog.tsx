@@ -16,13 +16,13 @@ import { ArrowTopRightIcon, GearIcon, ResetIcon } from "@radix-ui/react-icons";
 import cn from "clsx";
 import * as React from "react";
 import { useForm, useWatch } from "react-hook-form";
+import { useAccount } from "wagmi";
 
 import {
   defaultAdvancedSettings,
   haveSettingsChanged,
   useAdvancedSettingsStore,
 } from "#/hooks/useAdvancedSettings";
-import { useSafeApp } from "#/hooks/useSafeApp";
 import { ChainId } from "#/lib/publicClients";
 import { generateAdvancedSettingsSchema } from "#/lib/schema";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
@@ -35,7 +35,8 @@ import { Input } from "./ui/input";
 
 export function AdvancedSettingsDialog() {
   const [open, setOpen] = React.useState(false);
-  const { chainId } = useSafeApp();
+  const { chainId: accountChainId } = useAccount();
+  const chainId = (accountChainId ?? 1) as ChainId;
   const [advancedSettings, setAdvancedSettings] = useAdvancedSettingsStore(
     (state) => [state.advancedSettings, state.setAdvancedSettings],
   );

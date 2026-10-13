@@ -12,12 +12,12 @@ import type { SwapData } from "#/lib/types";
 import { TokenInputCard } from "../TokenInputCard";
 import { Form } from "../ui/form";
 
-jest.mock("@safe-global/safe-apps-react-sdk", () => ({
-  useSafeAppsSDK: () => ({
-    safe: {
-      chainId: 1,
-      safeAddress: "0x1111111111111111111111111111111111111111",
-    },
+jest.mock("wagmi", () => ({
+  ...jest.requireActual("wagmi"),
+  useAccount: () => ({
+    chainId: 1,
+    address: "0x1111111111111111111111111111111111111111",
+    isConnected: true,
   }),
 }));
 

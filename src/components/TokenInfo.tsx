@@ -1,9 +1,9 @@
 "use client";
 import { formatNumber } from "@bleu/ui";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
+import { useAccount } from "wagmi";
 
 import { TokenLogo } from "#/components/TokenLogo";
-import { useSafeApp } from "#/hooks/useSafeApp";
 import { ChainId } from "#/lib/publicClients";
 import { IToken, ITokenWithValue } from "#/lib/types";
 
@@ -18,7 +18,8 @@ export function TokenInfo({
   showBalance?: boolean;
   showExplorerLink?: boolean;
 }) {
-  const { chainId } = useSafeApp();
+  const { chainId: accountChainId } = useAccount();
+  const chainId = (accountChainId ?? 1) as ChainId;
   return (
     <div className="flex items-center gap-x-1">
       <div className="flex shrink-0 items-center justify-center">

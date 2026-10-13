@@ -8,10 +8,11 @@ import {
 } from "@bleu/ui";
 import { memo, useEffect } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
+import { useAccount } from "wagmi";
 
-import { useSafeApp } from "#/hooks/useSafeApp";
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { useTokenPrice } from "#/hooks/useTokenPrice";
+import { ChainId } from "#/lib/publicClients";
 import { fetchFormattedBalanceOf } from "#/lib/tokenUtils";
 import { SwapData } from "#/lib/types";
 
@@ -19,7 +20,8 @@ import { TokenInfo } from "./TokenInfo";
 import { TokenSelect } from "./TokenSelect";
 
 function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
-  const { safeAddress, chainId } = useSafeApp();
+  const { address: walletAddress, chainId: accountChainId } = useAccount();
+  const chainId = accountChainId as ChainId;
 
   const {
     setValue,
@@ -57,10 +59,10 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   useEffect(() => {
     let active = true;
     setTokenBalance(undefined);
-    if (token) {
+    if (token && walletAddress) {
       fetchFormattedBalanceOf({
         token,
-        address: safeAddress,
+        address: walletAddress,
         chainId,
       })
         .then((balance) => {
@@ -73,7 +75,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     return () => {
       active = false;
     };
-  }, [token, chainId, safeAddress, setTokenBalance]);
+  }, [token, chainId, walletAddress, setTokenBalance]);
 
   return (
     <Card className="bg-background w-full p-2 rounded-lg">

@@ -281,6 +281,27 @@ test("opens without a Safe frame and asks users to connect a wallet", async () =
   ).toBeInTheDocument();
 });
 
+test("mounts the single-order form before the read-only table in equal desktop panels and stacks on mobile", async () => {
+  serveOrders([parent]);
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: new BrowserWallet(),
+  });
+  render(<RootLayout><HomePage /></RootLayout>);
+  expect(screen.queryByRole("textbox", { name: "Sell amount" })).not.toBeInTheDocument();
+  await connectBrowserWallet();
+
+  const formPanel = await screen.findByRole("region", { name: "Place a stop-loss order" });
+  const ordersPanel = screen.getByRole("region", { name: "Your stop-loss orders" });
+  expect(formPanel).toContainElement(screen.getByRole("textbox", { name: "Sell amount" }));
+  expect(formPanel.compareDocumentPosition(ordersPanel) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  expect(formPanel.parentElement).toHaveClass("grid-cols-1", "lg:grid-cols-2");
+  expect(formPanel).toHaveClass("lg:h-[48rem]", "lg:overflow-y-auto");
+  expect(ordersPanel).toHaveClass("lg:h-[48rem]", "lg:overflow-y-auto");
+  expect(await screen.findByRole("link", { name: "View order stop-loss-1 on Ethereum" })).toHaveAttribute("href", `/1/${wallet}/stop-loss-1`);
+  expect(screen.queryByRole("button", { name: /Cancel|Add.*order/i })).not.toBeInTheDocument();
+});
+
 test("shows a connected wallet's untriggered order with a read-only detail link", async () => {
   serveOrders([parent]);
   Object.defineProperty(window, "ethereum", {
@@ -469,7 +490,7 @@ test("selects All by default and clears each filter without clearing the other",
   serveOrders([
     parent,
     { ...parent, chainId: 100 },
-    { ...parent, eventId: "cancelled-order", status: "Cancelled" },
+    { ...parent, eventId: "cancelled-order", hash: `0x${"ca".repeat(32)}`, status: "Cancelled" },
   ]);
   Object.defineProperty(window, "ethereum", {
     configurable: true,
@@ -564,6 +585,7 @@ test("shows distinct partial terminal states and filters them separately", async
     ...["cancelled", "expired"].map((status) => ({
       ...parent,
       eventId: `partial-${status}`,
+      hash: status === "cancelled" ? `0x${"ca".repeat(32)}` : `0x${"ed".repeat(32)}`,
       discreteOrders: {
         items: [
           {
@@ -686,7 +708,7 @@ test("updates orders only after manual refresh, not on focus, reconnect or time"
     name: "View order stop-loss-1 on Ethereum",
   });
 
-  orders.push({ ...parent, eventId: "later-order" });
+  orders.push({ ...parent, eventId: "later-order", hash: `0x${"cd".repeat(32)}` });
   jest.useFakeTimers({ doNotFake: ["queueMicrotask"] });
   try {
     await act(async () => {
@@ -818,7 +840,7 @@ test("clears orders on account changes and disconnect, and fetches again when an
     name: "View order other-wallet on Ethereum",
   });
 
-  orders.push({ ...parent, eventId: "after-return" });
+  orders.push({ ...parent, eventId: "after-return", hash: `0x${"cd".repeat(32)}` });
   await act(async () => {
     provider.accounts = [wallet];
     provider.emit("accountsChanged", [wallet]);

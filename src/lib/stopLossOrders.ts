@@ -1,4 +1,11 @@
-import { formatUnits, parseUnits, type Address } from "viem";
+import {
+  formatUnits,
+  Hex,
+  isAddress,
+  isHex,
+  parseUnits,
+  type Address,
+} from "viem";
 
 import { STOP_LOSS_ADDRESS } from "./contracts";
 import { supportedChainIds, type ChainId } from "./publicClients";
@@ -111,6 +118,99 @@ const ordersQuery = `
     }
   }
 `;
+
+export interface FundingParent {
+  chainId: ChainId;
+  owner: Address;
+  handler: Address;
+  salt: Hex;
+  hash: Hex;
+  staticInput: Hex;
+}
+
+const fundingOrdersQuery = `
+  query StopLossFunding($chain: Int!, $wallet: String!, $handler: String!, $owners: [String!]!, $after: String) {
+    conditionalOrderGenerators(
+      where: {
+        chainId: $chain, handler: $handler, orderType: StopLoss
+        OR: [{ owner_in: $owners }, { resolvedOwner: $wallet }]
+      }
+      limit: 50, after: $after
+    ) {
+      items { chainId owner resolvedOwner handler orderType salt hash staticInput }
+      pageInfo { hasNextPage endCursor }
+    }
+  }
+`;
+
+export async function loadStopLossFundingParents({
+  account,
+  chainId,
+  cowShed,
+  signal,
+}: {
+  account: Address;
+  chainId: ChainId;
+  cowShed: Address;
+  signal?: AbortSignal;
+}): Promise<FundingParent[]> {
+  const wallet = account.toLowerCase();
+  const mappings = await fetchPages<{
+    address: Address;
+    owner: Address;
+    chainId: ChainId;
+    addressType: string;
+  }>(ownerMappingsQuery, "ownerMappings", { chain: chainId, wallet }, signal);
+  const owners = [
+    wallet,
+    cowShed.toLowerCase(),
+    ...mappings
+      .filter(
+        (mapping) =>
+          mapping.chainId === chainId &&
+          mapping.owner.toLowerCase() === wallet &&
+          mapping.addressType === "cowshed_proxy",
+      )
+      .map((mapping) => mapping.address.toLowerCase()),
+  ];
+  const parents = await fetchPages<
+    FundingParent & {
+      orderType: string;
+      resolvedOwner: Address | null;
+    }
+  >(
+    fundingOrdersQuery,
+    "conditionalOrderGenerators",
+    {
+      chain: chainId,
+      wallet,
+      handler: STOP_LOSS_ADDRESS,
+      owners,
+    },
+    signal,
+  );
+  return parents.filter((parent) => {
+    if (
+      !isAddress(parent.owner) ||
+      !isAddress(parent.handler) ||
+      !isHex(parent.salt) ||
+      parent.salt.length !== 66 ||
+      !isHex(parent.hash) ||
+      parent.hash.length !== 66 ||
+      !isHex(parent.staticInput) ||
+      parent.staticInput.length < 2
+    ) {
+      throw new Error("Order API returned incomplete funding data");
+    }
+    return (
+      parent.chainId === chainId &&
+      parent.handler.toLowerCase() === STOP_LOSS_ADDRESS.toLowerCase() &&
+      parent.orderType === "StopLoss" &&
+      (owners.includes(parent.owner.toLowerCase()) ||
+        parent.resolvedOwner?.toLowerCase() === wallet)
+    );
+  });
+}
 
 interface Page<T> {
   items: T[];

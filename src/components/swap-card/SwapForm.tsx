@@ -4,36 +4,39 @@ import { Card, CardContent } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod";
 import React from "react";
 import { useForm, useWatch } from "react-hook-form";
+import { Address } from "viem";
+import { useAccount } from "wagmi";
 
 import { useDraftOrder } from "#/hooks/useDraftOrder";
-import { useSafeApp } from "#/hooks/useSafeApp";
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { calculateAmounts } from "#/lib/calculateAmounts";
+import { ChainId } from "#/lib/publicClients";
 import { generateSwapSchema } from "#/lib/schema";
 import { getSupportedTokens } from "#/lib/supportedTokens";
-import { SwapData } from "#/lib/types";
+import { DraftOrder, SwapData } from "#/lib/types";
 
 import { AdvancedSettingsAlert } from "../AdvancedSettingsAlert";
 import { AdvancedSettingsDialog } from "../AdvancedSettingsDialog";
 import { CurrentMarketPrice } from "../CurrentMarketPrice";
-import { OrderTypeSwitch } from "../OrderTypeSwitch";
 import { PriceInputCard } from "../PriceInputCard";
-import { ReviewOrdersDialog } from "../ReviewOrdersDialog";
 import { SlippageInputCard } from "../SlippageInputCard";
 import { TokenInputCard } from "../TokenInputCard";
 import { Form } from "../ui/form";
 import { SwapCardSubmitButton } from "./SwapCardSubmitButton";
 import { ValidToInput } from "./ValidToInput";
 
-export function SwapForm() {
-  const { chainId, safeAddress } = useSafeApp();
+export interface SwapFormProps {
+  onReviewOrder: (draft: DraftOrder, chainId: ChainId, account: Address) => void;
+}
 
-  const [currentDraftOrder, setCurrentDraftOrder, createDraftOrder] =
-    useDraftOrder((state) => [
-      state.currentDraftOrder,
-      state.setCurrentDraftOrder,
-      state.createDraftOrder,
-    ]);
+export function SwapForm({ onReviewOrder }: SwapFormProps) {
+  const { chainId: accountChainId, address: walletAddress } = useAccount();
+  const chainId = accountChainId as ChainId;
+
+  const [setCurrentDraftOrder, createDraftOrder] = useDraftOrder((state) => [
+    state.setCurrentDraftOrder,
+    state.createDraftOrder,
+  ]);
 
   const form = useForm<SwapData>({
     resolver: zodResolver(generateSwapSchema(chainId)),
@@ -100,7 +103,6 @@ export function SwapForm() {
     getValues,
     setValue,
   ]);
-  const [reviewDialogOpen, setReviewDialogOpen] = React.useState(false);
   const submissionId = React.useRef(0);
 
   React.useEffect(() => {
@@ -115,19 +117,18 @@ export function SwapForm() {
     const balances = useSwapTokenBalances.getState();
     balances.setTokenSellBalance(undefined);
     balances.setTokenBuyBalance(undefined);
-  }, [chainId, safeAddress, reset]);
+  }, [chainId, walletAddress, reset]);
 
   React.useEffect(() => {
     submissionId.current += 1;
     setCurrentDraftOrder(undefined);
-    setReviewDialogOpen(false);
     clearErrors("root");
     return () => {
       submissionId.current += 1;
     };
   }, [
     chainId,
-    safeAddress,
+    walletAddress,
     tokenSell?.address,
     tokenBuy?.address,
     setCurrentDraftOrder,
@@ -141,10 +142,12 @@ export function SwapForm() {
         const requestId = ++submissionId.current;
         clearErrors("root");
         try {
-          const newOrder = await createDraftOrder(data, chainId, safeAddress);
+          if (!walletAddress) throw new Error("Connect a wallet to prepare an order.");
+          if (!data.isSellOrder) throw new Error("Only exact-sell orders are supported.");
+          const newOrder = await createDraftOrder(data, chainId, walletAddress);
           if (requestId !== submissionId.current) return;
           setCurrentDraftOrder(newOrder);
-          setReviewDialogOpen(true);
+          onReviewOrder(newOrder, chainId, walletAddress);
         } catch (error) {
           if (requestId !== submissionId.current) return;
           form.setError("root", {
@@ -158,12 +161,6 @@ export function SwapForm() {
       }}
       className="w-full"
     >
-      <ReviewOrdersDialog
-        open={reviewDialogOpen}
-        setOpen={setReviewDialogOpen}
-        draftOrders={currentDraftOrder ? [currentDraftOrder] : []}
-        showAddOrders
-      />
       <fieldset
         disabled={form.formState.isSubmitting}
         className="w-full min-w-0"
@@ -171,7 +168,6 @@ export function SwapForm() {
         <Card className="bg-muted w-full p-4 rounded-lg">
           <CardContent className="flex flex-col gap-2 p-0">
             <div className="w-full flex justify-between pb-4">
-              <OrderTypeSwitch />
               <AdvancedSettingsDialog />
             </div>
             <TokenInputCard side="Sell" />

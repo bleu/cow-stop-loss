@@ -12,8 +12,9 @@ import {
 } from "@bleu/ui";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
 import React, { useState } from "react";
+import { useAccount } from "wagmi";
 
-import { useSafeApp } from "#/hooks/useSafeApp";
+import { ChainId } from "#/lib/publicClients";
 import { getSupportedTokens } from "#/lib/supportedTokens";
 import { IToken } from "#/lib/types";
 
@@ -30,7 +31,8 @@ export function TokenSelect({
   disabled?: boolean;
   errorMessage?: string;
 }) {
-  const { chainId } = useSafeApp();
+  const { chainId: accountChainId } = useAccount();
+  const chainId = (accountChainId ?? 1) as ChainId;
   const [open, setOpen] = useState(false);
   const { sellTokens } = getSupportedTokens(chainId);
 
