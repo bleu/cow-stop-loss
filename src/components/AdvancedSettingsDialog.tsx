@@ -23,17 +23,29 @@ import {
   haveSettingsChanged,
   useAdvancedSettingsStore,
 } from "#/hooks/useAdvancedSettings";
+import { slippagePercentSchema } from "#/lib/calculateAmounts";
 import { ChainId } from "#/lib/publicClients";
 import { generateAdvancedSettingsSchema } from "#/lib/schema";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { AdvancedSwapSettings } from "#/lib/types";
 
 import { BlockExplorerLink } from "./ExplorerLink";
+import { SlippageInputCard } from "./SlippageInputCard";
 import { Checkbox } from "./ui/checkbox";
 import { Form } from "./ui/form";
 import { Input } from "./ui/input";
 
-export function AdvancedSettingsDialog() {
+type AdvancedSettingsDraft = AdvancedSwapSettings & { slippagePercent: string };
+
+interface AdvancedSettingsDialogProps {
+  slippagePercent: string;
+  onApplySlippage: (value: string) => void;
+}
+
+export function AdvancedSettingsDialog({
+  slippagePercent,
+  onApplySlippage,
+}: AdvancedSettingsDialogProps) {
   const [open, setOpen] = React.useState(false);
   const { chainId: accountChainId } = useAccount();
   const chainId = (accountChainId ?? 1) as ChainId;
@@ -41,9 +53,13 @@ export function AdvancedSettingsDialog() {
     (state) => [state.advancedSettings, state.setAdvancedSettings],
   );
 
-  const form = useForm<AdvancedSwapSettings>({
-    resolver: zodResolver(generateAdvancedSettingsSchema(chainId as ChainId)),
-    defaultValues: advancedSettings,
+  const form = useForm<AdvancedSettingsDraft>({
+    resolver: zodResolver(
+      generateAdvancedSettingsSchema(chainId).extend({
+        slippagePercent: slippagePercentSchema,
+      }),
+    ),
+    defaultValues: { ...advancedSettings, slippagePercent },
   });
 
   const {
@@ -52,18 +68,20 @@ export function AdvancedSettingsDialog() {
     formState: { isSubmitting },
   } = form;
 
-  const currentValues = useWatch({ control });
-  const areSettingsDifferentFromDefault = haveSettingsChanged(
-    currentValues,
-    defaultAdvancedSettings,
-  );
+  const { slippagePercent: draftSlippage, ...currentValues } = useWatch({
+    control,
+  });
+  const areSettingsDifferentFromDefault =
+    haveSettingsChanged(currentValues, defaultAdvancedSettings) ||
+    Number(draftSlippage) !== 0.1;
+  const areSavedSettingsDifferentFromDefault =
+    haveSettingsChanged(advancedSettings, defaultAdvancedSettings) ||
+    Number(slippagePercent) !== 0.1;
 
   const receiver = useWatch({ control, name: "receiver" });
 
   const handleOpenChange = (isOpen: boolean) => {
-    if (!isOpen) {
-      reset(advancedSettings);
-    }
+    reset({ ...advancedSettings, slippagePercent });
     setOpen(isOpen);
   };
 
@@ -71,7 +89,9 @@ export function AdvancedSettingsDialog() {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <button
-          className={cn(areSettingsDifferentFromDefault && "text-primary")}
+          type="button"
+          aria-label="Advanced Settings"
+          className={cn(areSavedSettingsDifferentFromDefault && "text-primary")}
         >
           <GearIcon className="size-6" />
         </button>
@@ -85,7 +105,7 @@ export function AdvancedSettingsDialog() {
         />
         <DialogContent
           className={cn(
-            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-lg focus:outline-none bg-muted  w-[90vw] max-w-[450px] p-[25px] text-foreground",
+            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] overflow-y-auto translate-x-[-50%] translate-y-[-50%] rounded-lg focus:outline-none bg-muted  w-[90vw] max-w-[450px] p-[25px] text-foreground",
           )}
         >
           <div className="flex flex-col justify-between w-full">
@@ -96,11 +116,13 @@ export function AdvancedSettingsDialog() {
           <Form
             {...form}
             className="mt-2 w-full flex flex-col gap-2"
-            onSubmit={(data) => {
-              setAdvancedSettings(data);
+            onSubmit={({ slippagePercent: savedSlippage, ...settings }) => {
+              setAdvancedSettings(settings);
+              onApplySlippage(savedSlippage);
               setOpen(false);
             }}
           >
+            <SlippageInputCard />
             <Input
               name="receiver"
               label="Receiver"
@@ -154,8 +176,9 @@ export function AdvancedSettingsDialog() {
                 type="button"
                 className="text-xs flex gap-1 text-white items-center pb-0 h-min"
                 onClick={() => {
-                  reset(defaultAdvancedSettings);
+                  reset({ ...defaultAdvancedSettings, slippagePercent: "0.1" });
                   setAdvancedSettings(defaultAdvancedSettings);
+                  onApplySlippage("0.1");
                 }}
               >
                 <ResetIcon className="size-3" /> Reset to default settings

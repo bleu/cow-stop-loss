@@ -50,6 +50,26 @@ afterEach(() => {
   mockAccount.address = "0x3ebC89534d84Ca51987Af62EBCc7B356BFd65728";
 });
 
+it("focuses the amount before the token selector", async () => {
+  global.fetch = jest
+    .fn()
+    .mockResolvedValue({ json: async () => ({ price: 1 }) });
+  jest
+    .spyOn(publicClientsFromIds[1], "readContract")
+    .mockResolvedValue(BigInt(0));
+  const user = userEvent.setup();
+  render(
+    <SWRConfig value={{ provider: () => new Map() }}>
+      <TokenForm />
+    </SWRConfig>,
+  );
+
+  await user.tab();
+  expect(screen.getByRole("textbox", { name: "Sell amount" })).toHaveFocus();
+  await user.tab();
+  expect(screen.getByRole("button", { name: /WETH/ })).toHaveFocus();
+});
+
 it("shows a pending balance read as loading instead of zero", () => {
   global.fetch = jest
     .fn()

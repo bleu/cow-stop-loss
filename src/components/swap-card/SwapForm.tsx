@@ -17,16 +17,18 @@ import { DraftOrder, SwapData } from "#/lib/types";
 
 import { AdvancedSettingsAlert } from "../AdvancedSettingsAlert";
 import { AdvancedSettingsDialog } from "../AdvancedSettingsDialog";
-import { CurrentMarketPrice } from "../CurrentMarketPrice";
 import { PriceInputCard } from "../PriceInputCard";
-import { SlippageInputCard } from "../SlippageInputCard";
 import { TokenInputCard } from "../TokenInputCard";
 import { Form } from "../ui/form";
 import { SwapCardSubmitButton } from "./SwapCardSubmitButton";
 import { ValidToInput } from "./ValidToInput";
 
 export interface SwapFormProps {
-  onReviewOrder: (draft: DraftOrder, chainId: ChainId, account: Address) => void;
+  onReviewOrder: (
+    draft: DraftOrder,
+    chainId: ChainId,
+    account: Address,
+  ) => void;
 }
 
 export function SwapForm({ onReviewOrder }: SwapFormProps) {
@@ -142,8 +144,10 @@ export function SwapForm({ onReviewOrder }: SwapFormProps) {
         const requestId = ++submissionId.current;
         clearErrors("root");
         try {
-          if (!walletAddress) throw new Error("Connect a wallet to prepare an order.");
-          if (!data.isSellOrder) throw new Error("Only exact-sell orders are supported.");
+          if (!walletAddress)
+            throw new Error("Connect a wallet to prepare an order.");
+          if (!data.isSellOrder)
+            throw new Error("Only exact-sell orders are supported.");
           const newOrder = await createDraftOrder(data, chainId, walletAddress);
           if (requestId !== submissionId.current) return;
           setCurrentDraftOrder(newOrder);
@@ -168,13 +172,21 @@ export function SwapForm({ onReviewOrder }: SwapFormProps) {
         <Card className="bg-muted w-full p-4 rounded-lg">
           <CardContent className="flex flex-col gap-2 p-0">
             <div className="w-full flex justify-between pb-4">
-              <AdvancedSettingsDialog />
+              <AdvancedSettingsDialog
+                slippagePercent={slippagePercent}
+                onApplySlippage={(value) =>
+                  setValue("slippagePercent", value, {
+                    shouldValidate: true,
+                    shouldDirty: true,
+                  })
+                }
+              />
             </div>
             <TokenInputCard side="Sell" />
-            <PriceInputCard />
-            <SlippageInputCard />
-            <CurrentMarketPrice />
-            <ValidToInput />
+            <div className="grid gap-2 sm:grid-cols-2">
+              <PriceInputCard />
+              <ValidToInput />
+            </div>
             <TokenInputCard side="Buy" />
             <AdvancedSettingsAlert />
             {form.formState.errors.root?.message && (

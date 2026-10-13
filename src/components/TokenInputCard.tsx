@@ -119,8 +119,27 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
       <CardTitle className="w-full flex justify-between font-normal text-xs">
         {getCardTitle(isAmountDisabled, side)}
       </CardTitle>
-      <CardContent className="px-0 py-2 items-start flex flex-row justify-between flex-wrap">
-        <div className="min-w-32 max-w-40 basis-32">
+      <CardContent className="px-0 py-2 items-start flex flex-row justify-between flex-wrap gap-x-2">
+        <div className="flex min-w-0 flex-1 flex-col gap-y-1 items-start">
+          <Input
+            {...register(amountFieldName)}
+            type="text"
+            inputMode="decimal"
+            aria-label={getCardTitle(isAmountDisabled, side)}
+            placeholder="0.0"
+            className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:/70 px-0 text-2xl text-left bg-background"
+            disabled={isAmountDisabled}
+          />
+          <i className="text-xs">
+            {`≈ ${formatNumber(
+              amount && usdPrice ? Number(amount) * usdPrice : 0,
+              2,
+              "currency",
+              "standard",
+            )}`}
+          </i>
+        </div>
+        <div className="min-w-32 max-w-40 basis-32 shrink-0">
           {side === "Buy" ? (
             token && (
               <div className="flex h-9 items-center px-2">
@@ -137,25 +156,6 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
               errorMessage={errors.tokenSell?.message}
             />
           )}
-        </div>
-        <div className="flex flex-col gap-y-1 items-end overflow-x-auto basis-1/2 grow">
-          <Input
-            {...register(amountFieldName)}
-            type="text"
-            inputMode="decimal"
-            aria-label={getCardTitle(isAmountDisabled, side)}
-            placeholder="0.0"
-            className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:/70 px-0 text-2xl text-right bg-background"
-            disabled={isAmountDisabled}
-          />
-          <i className="text-xs pr-1">
-            {`≈ ${formatNumber(
-              amount && usdPrice ? Number(amount) * usdPrice : 0,
-              2,
-              "currency",
-              "standard",
-            )}`}
-          </i>
         </div>
         <div className="w-full">
           {token && (
