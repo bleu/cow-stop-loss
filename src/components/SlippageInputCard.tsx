@@ -2,7 +2,6 @@ import { Card, CardContent, CardTitle, Input } from "@bleu/ui";
 import { useFormContext } from "react-hook-form";
 
 import { slippagePercentSchema } from "#/lib/calculateAmounts";
-import type { SwapData } from "#/lib/types";
 
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
 
@@ -12,7 +11,7 @@ export function SlippageInputCard() {
     watch,
     setValue,
     formState: { errors },
-  } = useFormContext<SwapData>();
+  } = useFormContext<{ slippagePercent: string }>();
   const slippage = watch("slippagePercent");
   const presets = ["0.1", "0.5", "1"];
   const selectedPreset = slippagePercentSchema.safeParse(slippage).success

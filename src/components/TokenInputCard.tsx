@@ -6,12 +6,13 @@ import {
   formatNumber,
   Input,
 } from "@bleu/ui";
-import { memo, useEffect } from "react";
+import { memo, useEffect, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
+import { useAccount } from "wagmi";
 
-import { useSafeApp } from "#/hooks/useSafeApp";
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { useTokenPrice } from "#/hooks/useTokenPrice";
+import { ChainId } from "#/lib/publicClients";
 import { fetchFormattedBalanceOf } from "#/lib/tokenUtils";
 import { SwapData } from "#/lib/types";
 
@@ -19,7 +20,8 @@ import { TokenInfo } from "./TokenInfo";
 import { TokenSelect } from "./TokenSelect";
 
 function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
-  const { safeAddress, chainId } = useSafeApp();
+  const { address: walletAddress, chainId: accountChainId } = useAccount();
+  const chainId = accountChainId as ChainId;
 
   const {
     setValue,
@@ -35,6 +37,9 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     name: [tokenFieldName, "isSellOrder", amountFieldName],
   });
 
+  const tokenAddress = token?.address;
+  const tokenDecimals = token?.decimals;
+  const tokenSymbol = token?.symbol;
   const { data: usdPrice } = useTokenPrice(token);
 
   const [
@@ -48,40 +53,93 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     state.setTokenBuyBalance,
     state.setTokenSellBalance,
   ]);
-  const tokenBalance = side === "Buy" ? tokenBuyBalance : tokenSellBalance;
+  const storedBalance = side === "Buy" ? tokenBuyBalance : tokenSellBalance;
   const setTokenBalance =
     side === "Buy" ? setTokenBuyBalance : setTokenSellBalance;
 
   const isAmountDisabled = isSellOrder ? side === "Buy" : side === "Sell";
+  const [balanceFailed, setBalanceError] = useState(false);
+  const [balanceScope, setBalanceScope] = useState<string>();
+  const [balanceAttempt, retryBalance] = useState(0);
+  const currentBalanceScope = `${walletAddress?.toLowerCase()}:${chainId}:${tokenAddress?.toLowerCase()}:${tokenDecimals}`;
+  const balanceError = balanceScope === currentBalanceScope && balanceFailed;
+  const tokenBalance =
+    balanceScope === currentBalanceScope ? storedBalance : undefined;
 
   useEffect(() => {
     let active = true;
+    setBalanceError(false);
+    setBalanceScope(undefined);
     setTokenBalance(undefined);
-    if (token) {
+    if (
+      tokenAddress &&
+      tokenDecimals !== undefined &&
+      tokenSymbol !== undefined &&
+      walletAddress
+    ) {
       fetchFormattedBalanceOf({
-        token,
-        address: safeAddress,
+        token: {
+          address: tokenAddress,
+          decimals: tokenDecimals,
+          symbol: tokenSymbol,
+        },
+        address: walletAddress,
         chainId,
       })
         .then((balance) => {
-          if (active) setTokenBalance(balance);
+          if (active) {
+            setTokenBalance(balance);
+            setBalanceScope(currentBalanceScope);
+          }
         })
         .catch(() => {
-          if (active) setTokenBalance(undefined);
+          if (active) {
+            setTokenBalance(undefined);
+            setBalanceScope(currentBalanceScope);
+            setBalanceError(true);
+          }
         });
     }
     return () => {
       active = false;
     };
-  }, [token, chainId, safeAddress, setTokenBalance]);
+  }, [
+    tokenAddress,
+    tokenDecimals,
+    tokenSymbol,
+    chainId,
+    walletAddress,
+    setTokenBalance,
+    balanceAttempt,
+    currentBalanceScope,
+  ]);
 
   return (
     <Card className="bg-background w-full p-2 rounded-lg">
       <CardTitle className="w-full flex justify-between font-normal text-xs">
         {getCardTitle(isAmountDisabled, side)}
       </CardTitle>
-      <CardContent className="px-0 py-2 items-start flex flex-row justify-between flex-wrap">
-        <div className="min-w-32 max-w-40 basis-32">
+      <CardContent className="px-0 py-2 items-start flex flex-row justify-between flex-wrap gap-x-2">
+        <div className="flex min-w-0 flex-1 flex-col gap-y-1 items-start">
+          <Input
+            {...register(amountFieldName)}
+            type="text"
+            inputMode="decimal"
+            aria-label={getCardTitle(isAmountDisabled, side)}
+            placeholder="0.0"
+            className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:/70 px-0 text-2xl text-left bg-background"
+            disabled={isAmountDisabled}
+          />
+          <i className="text-xs">
+            {`≈ ${formatNumber(
+              amount && usdPrice ? Number(amount) * usdPrice : 0,
+              2,
+              "currency",
+              "standard",
+            )}`}
+          </i>
+        </div>
+        <div className="min-w-32 max-w-40 basis-32 shrink-0">
           {side === "Buy" ? (
             token && (
               <div className="flex h-9 items-center px-2">
@@ -99,38 +157,38 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
             />
           )}
         </div>
-        <div className="flex flex-col gap-y-1 items-end overflow-x-auto basis-1/2 grow">
-          <Input
-            {...register(amountFieldName)}
-            type="text"
-            inputMode="decimal"
-            aria-label={getCardTitle(isAmountDisabled, side)}
-            placeholder="0.0"
-            className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:/70 px-0 text-2xl text-right bg-background"
-            disabled={isAmountDisabled}
-          />
-          <i className="text-xs pr-1">
-            {`≈ ${formatNumber(
-              amount && usdPrice ? Number(amount) * usdPrice : 0,
-              2,
-              "currency",
-              "standard",
-            )}`}
-          </i>
-        </div>
         <div className="w-full">
           {token && (
             <span className="text-xs">
               <span>
-                Balance:{" "}
-                {formatNumber(
-                  tokenBalance || "0",
-                  4,
-                  "decimal",
-                  "standard",
-                  0.0001,
-                )}{" "}
+                {balanceError ? (
+                  "Balance unavailable"
+                ) : (
+                  <>
+                    Balance:{" "}
+                    {tokenBalance === undefined
+                      ? "Loading..."
+                      : formatNumber(
+                          tokenBalance,
+                          4,
+                          "decimal",
+                          "standard",
+                          0.0001,
+                        )}{" "}
+                  </>
+                )}
               </span>
+              {balanceError && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  aria-label={`Retry ${token.symbol} balance`}
+                  className="py-0 px-1 h-fit text-accent text-xs"
+                  onClick={() => retryBalance((attempt) => attempt + 1)}
+                >
+                  Retry
+                </Button>
+              )}
               {!isAmountDisabled && tokenBalance && tokenBalance !== "0" && (
                 <Button
                   type="button"

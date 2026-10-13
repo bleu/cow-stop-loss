@@ -3,8 +3,10 @@ import {
   injectedWallet,
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { createConfig, http } from "wagmi";
+import { createConfig } from "wagmi";
 import { arbitrum, gnosis, mainnet, sepolia } from "wagmi/chains";
+
+import { createRpcTransport } from "#/lib/publicClients";
 
 export function createWagmiConfig() {
   const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
@@ -63,10 +65,10 @@ export function createWagmiConfig() {
     ],
     connectors,
     transports: {
-      [mainnet.id]: http(),
-      [sepolia.id]: http(),
-      [gnosis.id]: http(),
-      [arbitrum.id]: http(),
+      [mainnet.id]: createRpcTransport(mainnet),
+      [sepolia.id]: createRpcTransport(sepolia),
+      [gnosis.id]: createRpcTransport(gnosis),
+      [arbitrum.id]: createRpcTransport(arbitrum),
     },
   });
 }

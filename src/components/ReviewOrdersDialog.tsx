@@ -1,308 +1,367 @@
 "use client";
 
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  formatNumber,
-  TabsContent,
-  TabsList,
-  TabsRoot,
-  TabsTrigger,
-} from "@bleu/ui";
-import { ArrowDownIcon } from "@radix-ui/react-icons";
-import { getTransactionQueue } from "@safe-global/safe-gateway-typescript-sdk";
-import cn from "clsx";
-import * as React from "react";
-import { Address } from "viem";
+import { Button, Dialog, DialogContent, DialogTitle } from "@bleu/ui";
+import type { ReactNode } from "react";
+import { formatUnits } from "viem";
 
-import { useCreatingOrders } from "#/hooks/useCreatingOrders";
-import { useDraftOrders } from "#/hooks/useDraftOrders";
-import { useFallbackState } from "#/hooks/useFallbackState";
-import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
-import { useTokenPrice } from "#/hooks/useTokenPrice";
-import { useTxManager } from "#/hooks/useTxManager";
-import { useUIStore } from "#/hooks/useUIState";
-import { ChainId } from "#/lib/publicClients";
+import { GPV2_VAULT_RELAYER_ADDRESS } from "#/lib/contracts";
+import type { FundingSnapshot, PreparedPlacement } from "#/lib/pollerStopLoss";
+import type { ChainId } from "#/lib/publicClients";
 import { formatTimeDelta } from "#/lib/timeDelta";
-import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
-import { createRawTxArgs } from "#/lib/transactionFactory";
-import { DraftOrder, IToken, OrderStatus } from "#/lib/types";
+import type { DraftOrder } from "#/lib/types";
 
-import { AddressWithLink } from "./AddressWithLink";
-import { OraclePriceWarning } from "./OraclePriceAlert";
-import { TokenAmount } from "./TokenAmount";
-import { TokenInfo } from "./TokenInfo";
-import { InfoTooltip } from "./ui/tooltip";
+import { BlockExplorerLink } from "./ExplorerLink";
 
-export function ReviewOrdersDialog({
-  draftOrders,
-  open,
-  setOpen,
-  showAddOrders,
-}: {
-  draftOrders: DraftOrder[];
+export interface ReviewOrdersDialogProps {
+  chainId: ChainId;
+  order: DraftOrder;
   open: boolean;
   setOpen: (open: boolean) => void;
-  showAddOrders?: boolean;
-}) {
-  const { writeContract } = useTxManager();
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  prepared?: PreparedPlacement;
+  checks?: FundingSnapshot;
+  busy?: boolean;
+  error?: string;
+  approvalStage?: "reset" | "approval";
+  pending?: boolean;
+  onApprove: () => void;
+  onPlace: () => void;
+  onRetry: () => void;
+}
 
-  const [addDraftOrders, removeDraftOrders] = useDraftOrders((state) => [
-    state.addDraftOrders,
-    state.removeDraftOrders,
-  ]);
-  const [addCreatingOrders] = useCreatingOrders((state) => [
-    state.addCreatingOrders,
-  ]);
-
-  const [setTxPendingDialogOpen] = useUIStore((state) => [
-    state.setTxPendingDialogOpen,
-  ]);
-
-  const multipleOrders = draftOrders.length !== 1;
-  const {
-    safe: { safeAddress, chainId },
-    fallbackState,
-    domainSeparator,
-  } = useFallbackState();
-
-  const onSubmit = async () => {
-    if (!fallbackState || !domainSeparator) return;
-    setIsSubmitting(true);
-    try {
-      const txArgs = await createRawTxArgs({
-        data: draftOrders,
-        safeAddress: safeAddress as Address,
-        chainId: chainId as ChainId,
-        fallbackState,
-        domainSeparator,
-      });
-      const safeTxHash = await writeContract(txArgs);
-      setOpen(false);
-      setTxPendingDialogOpen(true);
-      const queueTxs = await getTransactionQueue(String(chainId), safeAddress);
-      if (queueTxs.results.length === 0) {
-        // If there are no transactions in the queue, we have to add the order to the creating orders
-        addCreatingOrders(
-          draftOrders.map((order) => ({
-            ...order,
-            status: OrderStatus.CREATING,
-            safeTxHash,
-          })),
-        );
-      }
-      removeDraftOrders(draftOrders.map((order) => order.id));
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+export function ReviewOrdersDialog({
+  chainId,
+  order,
+  open,
+  setOpen,
+  prepared,
+  checks,
+  busy = false,
+  pending = false,
+  error,
+  approvalStage,
+  onApprove,
+  onPlace,
+  onRetry,
+}: ReviewOrdersDialogProps) {
+  const funding = checks?.status === "known" ? checks : undefined;
+  const reviewError =
+    error || (checks?.status === "unknown" ? checks.error : undefined);
+  const actionsBlocked =
+    !prepared || !funding || Boolean(reviewError) || busy || pending;
+  const resetRequired =
+    funding?.approvalRequired &&
+    (approvalStage === "reset" ||
+      (funding.currentAllowance > BigInt(0) &&
+        funding.currentAllowance < funding.requiredAllowance));
+  const sellAmount = (amount: bigint) =>
+    `${formatUnits(amount, order.tokenSell.decimals)} ${order.tokenSell.symbol}`;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent
         aria-describedby={undefined}
-        className={cn(
-          "data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-muted w-[90vw] max-w-[450px] py-6 px-2",
-        )}
+        className="data-[state=open]:animate-contentShow rounded-lg focus:outline-none bg-muted w-[90vw] max-w-[450px] py-6 px-2"
       >
-        <div className="flex flex-col gap-2 w-full overflow-y-auto scrollbar scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-primary scrollbar-track-background scrollbar-w-2 max-h-[85vh] px-3">
+        <div className="flex flex-col gap-3 w-full overflow-y-auto max-h-[85vh] px-3">
           <DialogTitle className="text-2xl font-medium">
-            Review Stop Loss order{multipleOrders ? "s" : ""}
+            Review Stop Loss order
           </DialogTitle>
-          {multipleOrders ? (
-            <TabsRoot>
-              <TabsList defaultValue={String(0)} className="flex justify-start">
-                {draftOrders.map((order, index) => {
-                  return (
-                    <TabsTrigger
-                      value={order.id}
-                      className="data-[state=active]:text-white"
-                    >{`#${index + 1}`}</TabsTrigger>
-                  );
-                })}
-              </TabsList>
-
-              {draftOrders.map((order) => {
-                return (
-                  <TabsContent value={order.id}>
-                    <OrderContent order={order} />
-                  </TabsContent>
-                );
-              })}
-            </TabsRoot>
-          ) : (
-            <OrderContent order={draftOrders[0]} />
+          <div className="bg-background/80 rounded-lg p-2">
+            <p className="text-xs">Sell exactly</p>
+            <p>
+              {order.amountSell} {order.tokenSell.symbol}
+            </p>
+          </div>
+          <div className="bg-background/80 rounded-lg p-2">
+            <p className="text-xs">Receive at least</p>
+            <p>
+              {order.amountBuy} {order.tokenBuy.symbol}
+            </p>
+          </div>
+          <dl className="flex flex-col gap-2">
+            <OrderInformation title="Trigger price">
+              {order.tokenSell.symbol} = {order.strikePrice}{" "}
+              {order.tokenBuy.symbol}
+            </OrderInformation>
+            <OrderInformation title="Slippage">
+              {order.slippagePercent}%
+            </OrderInformation>
+            <OrderInformation title="Receiver">
+              <BlockExplorerLink
+                type="address"
+                identifier={order.receiver}
+                networkId={chainId}
+              />
+            </OrderInformation>
+            <OrderInformation title="Expiration date">
+              {new Date(order.validTo * 1000)
+                .toISOString()
+                .replace("T", " ")
+                .replace(".000Z", " UTC")}
+            </OrderInformation>
+          </dl>
+          {funding && (
+            <div className="text-sm">
+              <p>
+                {funding.approvalRequired
+                  ? `Approve ${sellAmount(funding.requiredAllowance)} for the Poller.`
+                  : "Wallet approval is sufficient."}
+                {prepared && funding.approvalRequired && (
+                  <>
+                    {" "}
+                    <BlockExplorerLink
+                      type="address"
+                      identifier={prepared.poller}
+                      networkId={chainId}
+                    />
+                  </>
+                )}
+              </p>
+              {funding.combinedCommitmentsExceedBalance && (
+                <p role="alert" className="text-yellow-400">
+                  Combined commitments exceed your wallet balance. Funds are not
+                  reserved.
+                </p>
+              )}
+            </div>
           )}
-          <Button
-            className="w-full mt-3"
-            onClick={onSubmit}
-            loading={isSubmitting}
-            disabled={isSubmitting}
-            loadingText="Building transaction..."
-          >
-            {multipleOrders
-              ? `Place all ${draftOrders.length} Stop Loss Orders`
-              : `Place Stop Loss Order`}
-          </Button>
-          {showAddOrders && (
+          {prepared && (
+            <p className="text-sm">
+              Placement grants unlimited {order.tokenSell.symbol} settlement
+              approval from the CowShed.
+            </p>
+          )}
+          <details className="text-sm">
+            <summary className="cursor-pointer">
+              Order and approval details
+            </summary>
+            <div className="flex flex-col gap-3 pt-3">
+              <dl className="flex flex-col gap-2">
+                <OrderInformation title="Limit price">
+                  {order.tokenSell.symbol} = {order.limitPrice}{" "}
+                  {order.tokenBuy.symbol}
+                </OrderInformation>
+                <OrderInformation title="Maximum oracle age">
+                  {formatTimeDelta(order.maxHoursSinceOracleUpdates * 3600)}
+                </OrderInformation>
+                <OrderInformation title="Partial fills">
+                  {order.partiallyFillable
+                    ? "Allowed"
+                    : "Not allowed (Fill or Kill)"}
+                </OrderInformation>
+                <OrderInformation title={`${order.tokenSell.symbol} oracle`}>
+                  <BlockExplorerLink
+                    type="address"
+                    identifier={order.tokenSellOracle}
+                    networkId={chainId}
+                  />
+                </OrderInformation>
+                <OrderInformation title={`${order.tokenBuy.symbol} oracle`}>
+                  <BlockExplorerLink
+                    type="address"
+                    identifier={order.tokenBuyOracle}
+                    networkId={chainId}
+                  />
+                </OrderInformation>
+              </dl>
+              {funding && (
+                <section aria-label="Funding" className="flex flex-col gap-2">
+                  <h3 className="font-medium">Funding</h3>
+                  <dl className="flex flex-col gap-2">
+                    <OrderInformation title="Required allowance">
+                      {sellAmount(funding.requiredAllowance)}
+                    </OrderInformation>
+                    <OrderInformation title="Outstanding unfunded orders">
+                      {sellAmount(funding.outstandingSellAmount)}
+                    </OrderInformation>
+                    <OrderInformation title="Wallet balance">
+                      {sellAmount(funding.balance)}
+                    </OrderInformation>
+                  </dl>
+                  <p className="text-sm">
+                    Funding totals use indexed orders and orders confirmed in
+                    this browser. Orders created elsewhere can be missing until
+                    the API indexes them.
+                  </p>
+                </section>
+              )}
+              {prepared && (
+                <>
+                  <section
+                    aria-label="Wallet approval"
+                    className="flex flex-col gap-2"
+                  >
+                    <h3 className="font-medium">Wallet approval</h3>
+                    <dl className="flex flex-col gap-2">
+                      <OrderInformation title="Token">
+                        <span>{order.tokenSell.symbol}</span>
+                        <BlockExplorerLink
+                          type="token"
+                          identifier={order.tokenSell.address}
+                          networkId={chainId}
+                          className="block"
+                        />
+                      </OrderInformation>
+                      <OrderInformation title="Owner (wallet)">
+                        <BlockExplorerLink
+                          type="address"
+                          identifier={prepared.account}
+                          networkId={chainId}
+                        />
+                      </OrderInformation>
+                      <OrderInformation title="Spender (Poller)">
+                        <BlockExplorerLink
+                          type="address"
+                          identifier={prepared.poller}
+                          networkId={chainId}
+                        />
+                      </OrderInformation>
+                      <OrderInformation title="Current allowance">
+                        {funding
+                          ? sellAmount(funding.currentAllowance)
+                          : "Unavailable"}
+                      </OrderInformation>
+                      {funding?.approvalRequired && (
+                        <>
+                          {resetRequired && (
+                            <OrderInformation title="Reset allowance to">
+                              {sellAmount(BigInt(0))}
+                            </OrderInformation>
+                          )}
+                          <OrderInformation
+                            title={
+                              resetRequired
+                                ? "Approval after reset"
+                                : "Approval amount"
+                            }
+                          >
+                            {sellAmount(funding.requiredAllowance)}
+                          </OrderInformation>
+                        </>
+                      )}
+                    </dl>
+                    {funding && (
+                      <p className="text-sm">
+                        {funding.approvalRequired
+                          ? "Approve only the required total for this order and outstanding unfunded orders."
+                          : "Allowance is sufficient. Your existing allowance will not be reduced."}
+                      </p>
+                    )}
+                  </section>
+                  <section
+                    aria-label="CowShed settlement approval"
+                    className="flex flex-col gap-2"
+                  >
+                    <h3 className="font-medium">CowShed settlement approval</h3>
+                    <dl className="flex flex-col gap-2">
+                      <OrderInformation title="Token">
+                        <span>{order.tokenSell.symbol}</span>
+                        <BlockExplorerLink
+                          type="token"
+                          identifier={order.tokenSell.address}
+                          networkId={chainId}
+                          className="block"
+                        />
+                      </OrderInformation>
+                      <OrderInformation title="Owner (CowShed)">
+                        <BlockExplorerLink
+                          type="address"
+                          identifier={prepared.owner}
+                          networkId={chainId}
+                        />
+                      </OrderInformation>
+                      <OrderInformation title="Spender (Vault Relayer)">
+                        <BlockExplorerLink
+                          type="address"
+                          identifier={GPV2_VAULT_RELAYER_ADDRESS}
+                          networkId={chainId}
+                        />
+                      </OrderInformation>
+                      <OrderInformation title="Approval amount">
+                        Unlimited {order.tokenSell.symbol}
+                      </OrderInformation>
+                    </dl>
+                    <p className="text-sm">
+                      Place order permits the Vault Relayer to spend{" "}
+                      {order.tokenSell.symbol} held by this CowShed without an
+                      amount limit.
+                    </p>
+                  </section>
+                </>
+              )}
+            </div>
+          </details>
+          {pending ? (
+            <p role="status" className="text-sm">
+              Transaction pending. You can close this review. Tracking will
+              continue.
+            </p>
+          ) : busy ? (
+            <p role="status" className="text-sm">
+              Checking order...
+            </p>
+          ) : !reviewError && (!prepared || !checks) ? (
+            <p role="status" className="text-sm">
+              Preparing review...
+            </p>
+          ) : null}
+          {reviewError && (
+            <p role="alert" className="text-sm text-red-400">
+              {reviewError}
+            </p>
+          )}
+          {(reviewError || pending) && (
             <Button
-              variant="link"
-              className=" text-wrap text-xs text-white"
-              onClick={() => {
-                addDraftOrders(draftOrders);
-                setOpen(false);
-              }}
+              type="button"
+              variant="outline"
+              onClick={onRetry}
+              disabled={busy}
             >
-              Want to place another orders to save fees? Click here to save this
-              one into drafts and create another one.
+              Retry
             </Button>
           )}
+          {resetRequired && (
+            <p className="text-sm">
+              Reset the allowance to zero, then approve the required amount.
+            </p>
+          )}
+          <div className="flex gap-2">
+            <Button
+              type="button"
+              className="flex-1"
+              disabled={actionsBlocked || !funding?.approvalRequired}
+              onClick={onApprove}
+            >
+              {resetRequired
+                ? `Reset ${order.tokenSell.symbol} allowance`
+                : `Approve ${order.tokenSell.symbol}`}
+            </Button>
+            <Button
+              type="button"
+              className="flex-1"
+              disabled={actionsBlocked || funding?.approvalRequired}
+              onClick={onPlace}
+            >
+              Place order
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
   );
 }
 
-function OrderContent({ order }: { order: DraftOrder }) {
-  const { data: currentMarketPrice } = useTokenPairPrice(
-    order.tokenSell,
-    order.tokenBuy,
-  );
-  const marketPrice = currentMarketPrice || order.fallbackMarketPrice;
-  const validToDate = new Date(order.validTo * 1000);
-  return (
-    <div className="flex flex-col items-center gap-2 w-full">
-      <TokenInformation
-        title={order.isSellOrder ? "Sell exactly" : "Sell at most"}
-        token={order.tokenSell}
-        balance={order.amountSell}
-      />
-      <ArrowDownIcon className="size-8" />
-      <TokenInformation
-        title={order.isSellOrder ? "Receive at least" : "Receive exactly"}
-        token={order.tokenBuy}
-        balance={order.amountBuy}
-      />
-      <OraclePriceWarning
-        draftOrder={order}
-        marketPrice={marketPrice || order.fallbackMarketPrice}
-      />
-      <div className="w-full flex flex-col gap-1 mt-2">
-        <OrderInformation
-          title="Trigger price"
-          tooltipText={TOOLTIP_DESCRIPTIONS.TRIGGER_PRICE}
-        >
-          {order.tokenSell.symbol} = {formatNumber(order.strikePrice, 4)}{" "}
-          {order.tokenBuy.symbol}
-        </OrderInformation>
-        <OrderInformation title="Slippage">
-          {order.slippagePercent}%
-        </OrderInformation>
-        <OrderInformation
-          title="Current oracle price"
-          tooltipText={TOOLTIP_DESCRIPTIONS.CURRENT_ORACLE_PRICE}
-        >
-          {order.tokenSell.symbol} = {formatNumber(order.oraclePrice, 4)}{" "}
-          {order.tokenBuy.symbol}
-        </OrderInformation>
-        {marketPrice && (
-          <OrderInformation
-            title="Current market price"
-            tooltipText={TOOLTIP_DESCRIPTIONS.CURRENT_MARKET_PRICE}
-          >
-            {order.tokenSell.symbol} = {formatNumber(marketPrice, 4)}{" "}
-            {order.tokenBuy.symbol}
-          </OrderInformation>
-        )}
-        <OrderInformation title="Type" tooltipText={TOOLTIP_DESCRIPTIONS.TYPE}>
-          {order.partiallyFillable ? "Partial fillable" : "Fill or Kill"}
-        </OrderInformation>
-        <OrderInformation
-          title="Expiration date"
-          tooltipText={TOOLTIP_DESCRIPTIONS.VALID_TO}
-        >
-          {validToDate.toLocaleTimeString("en-GB", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </OrderInformation>
-        <OrderInformation
-          title="Receiver"
-          tooltipText={TOOLTIP_DESCRIPTIONS.RECEIVER}
-        >
-          <AddressWithLink address={order.receiver} />
-        </OrderInformation>
-        <OrderInformation
-          title={`${order.tokenSell.symbol} oracle`}
-          tooltipText={TOOLTIP_DESCRIPTIONS.ORACLE_TOKEN_SELL}
-        >
-          <AddressWithLink address={order.tokenSellOracle} />
-        </OrderInformation>
-        <OrderInformation
-          title={`${order.tokenBuy.symbol} oracle`}
-          tooltipText={TOOLTIP_DESCRIPTIONS.ORACLE_TOKEN_BUY}
-        >
-          <AddressWithLink address={order.tokenBuyOracle} />
-        </OrderInformation>
-        <OrderInformation
-          title="Oracles validity time"
-          tooltipText={TOOLTIP_DESCRIPTIONS.MAX_TIME_SINCE_LAST_ORACLE_UPDATE}
-        >
-          {formatTimeDelta(order.maxHoursSinceOracleUpdates * 3600)}
-        </OrderInformation>
-      </div>
-    </div>
-  );
-}
-
 function OrderInformation({
   title,
-  tooltipText,
   children,
 }: {
   title: string;
-  tooltipText?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
-    <div className="flex justify-between text-sm pb-1 border-b border-background">
-      <div className="flex gap-1">
-        <span>{title}</span>
-        <InfoTooltip text={tooltipText} />
-      </div>
-      <span>{children}</span>
-    </div>
-  );
-}
-
-function TokenInformation({
-  title,
-  token,
-  balance,
-}: {
-  title: string;
-  token: IToken;
-  balance: string;
-}) {
-  const { data: tokenPrice } = useTokenPrice(token);
-
-  return (
-    <div className="flex flex-col gap-2 bg-background/80 rounded-lg p-2 w-full">
-      <span className="text-xs">{title}</span>
-      <div className="flex items-center justify-between">
-        <TokenInfo token={token} />
-        <TokenAmount
-          token={token}
-          balance={balance}
-          usdPrice={tokenPrice || 0}
-        />
-      </div>
+    <div className="flex justify-between gap-3 text-sm pb-1 border-b border-background">
+      <dt>{title}</dt>
+      <dd className="text-right break-all">{children}</dd>
     </div>
   );
 }

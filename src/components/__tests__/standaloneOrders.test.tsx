@@ -9,6 +9,7 @@ import {
   render as renderView,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { EthereumProvider } from "@walletconnect/ethereum-provider";
 import { EventEmitter } from "events";
@@ -62,7 +63,8 @@ const parent = {
   discreteOrders: { items: [] },
 };
 
-type ApiParent = Omit<typeof parent, "discreteOrders"> & {
+type ApiParent = Omit<typeof parent, "discreteOrders" | "transaction"> & {
+  transaction: typeof parent.transaction | null;
   discreteOrders: {
     items: {
       orderUid: string;
@@ -281,6 +283,67 @@ test("opens without a Safe frame and asks users to connect a wallet", async () =
   ).toBeInTheDocument();
 });
 
+test("lets the creation form size the desktop row and keeps the read-only orders panel in normal flow on mobile", async () => {
+  serveOrders([parent]);
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: new BrowserWallet(),
+  });
+  render(
+    <RootLayout>
+      <HomePage />
+    </RootLayout>,
+  );
+  expect(
+    screen.queryByRole("textbox", { name: "Sell amount" }),
+  ).not.toBeInTheDocument();
+  await connectBrowserWallet();
+
+  const formPanel = await screen.findByRole("region", {
+    name: "Place a stop-loss order",
+  });
+  const ordersPanel = screen.getByRole("region", {
+    name: "Your stop-loss orders",
+  });
+  expect(formPanel).toContainElement(
+    screen.getByRole("textbox", { name: "Sell amount" }),
+  );
+  expect(
+    formPanel.compareDocumentPosition(ordersPanel) &
+      Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeTruthy();
+  expect(formPanel.parentElement).toHaveClass("grid-cols-1", "lg:grid-cols-2");
+  for (const panel of [formPanel, ordersPanel]) {
+    expect(panel).not.toHaveClass("lg:h-[48rem]");
+    expect(panel).not.toHaveClass("lg:overflow-y-auto");
+  }
+  expect(ordersPanel).toHaveClass("relative", "min-h-0");
+  const ordersContent = screen.getByRole("heading", {
+    name: "Your stop-loss orders",
+  }).parentElement;
+  expect(ordersContent).toHaveClass(
+    "flex",
+    "min-h-0",
+    "flex-col",
+    "lg:absolute",
+    "lg:inset-0",
+  );
+  for (const className of ["absolute", "h-full", "overflow-y-auto"]) {
+    expect(ordersContent).not.toHaveClass(className);
+  }
+  expect(
+    screen.getByRole("heading", { name: "Your stop-loss orders" }),
+  ).toHaveClass("shrink-0");
+  expect(
+    await screen.findByRole("link", {
+      name: "View order stop-loss-1 on Ethereum",
+    }),
+  ).toHaveAttribute("href", `/1/${wallet}/stop-loss-1`);
+  expect(
+    screen.queryByRole("button", { name: /Cancel|Add.*order/i }),
+  ).not.toBeInTheDocument();
+});
+
 test("shows a connected wallet's untriggered order with a read-only detail link", async () => {
   serveOrders([parent]);
   Object.defineProperty(window, "ethereum", {
@@ -469,7 +532,12 @@ test("selects All by default and clears each filter without clearing the other",
   serveOrders([
     parent,
     { ...parent, chainId: 100 },
-    { ...parent, eventId: "cancelled-order", status: "Cancelled" },
+    {
+      ...parent,
+      eventId: "cancelled-order",
+      hash: `0x${"ca".repeat(32)}`,
+      status: "Cancelled",
+    },
   ]);
   Object.defineProperty(window, "ethereum", {
     configurable: true,
@@ -564,6 +632,10 @@ test("shows distinct partial terminal states and filters them separately", async
     ...["cancelled", "expired"].map((status) => ({
       ...parent,
       eventId: `partial-${status}`,
+      hash:
+        status === "cancelled"
+          ? `0x${"ca".repeat(32)}`
+          : `0x${"ed".repeat(32)}`,
       discreteOrders: {
         items: [
           {
@@ -686,7 +758,11 @@ test("updates orders only after manual refresh, not on focus, reconnect or time"
     name: "View order stop-loss-1 on Ethereum",
   });
 
-  orders.push({ ...parent, eventId: "later-order" });
+  orders.push({
+    ...parent,
+    eventId: "later-order",
+    hash: `0x${"cd".repeat(32)}`,
+  });
   jest.useFakeTimers({ doNotFake: ["queueMicrotask"] });
   try {
     await act(async () => {
@@ -818,7 +894,11 @@ test("clears orders on account changes and disconnect, and fetches again when an
     name: "View order other-wallet on Ethereum",
   });
 
-  orders.push({ ...parent, eventId: "after-return" });
+  orders.push({
+    ...parent,
+    eventId: "after-return",
+    hash: `0x${"cd".repeat(32)}`,
+  });
   await act(async () => {
     provider.accounts = [wallet];
     provider.emit("accountsChanged", [wallet]);
@@ -944,6 +1024,209 @@ test("keeps a mismatched detail link without fetching the other account's orders
   ).not.toBeInTheDocument();
 });
 
+test("places an accessible back arrow beside the detail heading without a detail refresh control", async () => {
+  serveOrders([parent]);
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: new BrowserWallet(),
+  });
+  render(
+    <RootLayout>
+      <OrderPage
+        params={{ safeAddress: wallet, chainId: 1, orderId: "stop-loss-1" }}
+      />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  await screen.findByRole("definition", { name: "Order ID" });
+
+  const heading = screen.getByRole("heading", { name: "Order details" });
+  const back = screen.getByRole("link", { name: "Back to orders" });
+  expect(back).toHaveAttribute("href", "/");
+  expect(heading.parentElement).toContainElement(back);
+  expect(back.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
+  expect(
+    screen.queryByRole("button", { name: "Refresh orders" }),
+  ).not.toBeInTheDocument();
+});
+
+test("omits unavailable optional detail rows without adding placeholders", async () => {
+  serveOrders([
+    {
+      ...parent,
+      transaction: null,
+      decodedParams: {
+        ...parent.decodedParams,
+        sellToken: "0x7777777777777777777777777777777777777777",
+      },
+    },
+  ]);
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: new BrowserWallet(),
+  });
+  render(
+    <RootLayout>
+      <OrderPage
+        params={{ safeAddress: wallet, chainId: 1, orderId: "stop-loss-1" }}
+      />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  await screen.findByRole("definition", { name: "Order ID" });
+
+  for (const label of [
+    "Created",
+    "Creation transaction",
+    "Limit price",
+    "Executed sell amount",
+    "Executed buy amount",
+    "Executed fee",
+    "Execution price",
+    "CoW order",
+  ]) {
+    expect(
+      screen.queryByRole("definition", { name: label }),
+    ).not.toBeInTheDocument();
+  }
+  expect(
+    screen.queryByText(/Not available|Not triggered/),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole("definition", { name: "Sell amount" }),
+  ).toHaveTextContent("1000000000000000000 base units Unknown token");
+});
+
+test.each(["0", "1000000000000000000"])(
+  "retains zero values and false flags in available details with %s executed sell units",
+  async (executedSellAmount) => {
+    serveOrders([
+      {
+        ...parent,
+        transaction: { ...parent.transaction, blockTimestamp: "0" },
+        decodedParams: {
+          ...parent.decodedParams,
+          sellAmount: "1234567890123456789",
+          buyAmount: "0",
+          validTo: 0,
+          strike: "0",
+          isSellOrder: false,
+          isPartiallyFillable: false,
+          maxTimeSinceLastOracleUpdate: 0,
+        },
+        discreteOrders: {
+          items: [
+            {
+              orderUid: `0x${"cd".repeat(56)}`,
+              status: "open",
+              validTo: 0,
+              executedSellAmount,
+              executedBuyAmount: "0",
+              executedFee: "0",
+            },
+          ],
+        },
+      },
+    ]);
+    Object.defineProperty(window, "ethereum", {
+      configurable: true,
+      value: new BrowserWallet(),
+    });
+    render(
+      <RootLayout>
+        <OrderPage
+          params={{ safeAddress: wallet, chainId: 1, orderId: "stop-loss-1" }}
+        />
+      </RootLayout>,
+    );
+    await connectBrowserWallet();
+    await screen.findByRole("definition", { name: "Order ID" });
+
+    for (const [field, value] of [
+      ["Created", "1970-01-01 00:00:00 UTC"],
+      ["Valid until", "1970-01-01 00:00:00 UTC"],
+      ["Kind", "Buy"],
+      ["Partial fills", "Not allowed"],
+      ["Maximum sell amount", "1.234567890123456789 WETH"],
+      ["Buy amount", "0 USDC"],
+      ["Trigger price", "0 USDC per WETH"],
+      ["Limit price", "0 USDC per WETH"],
+      [
+        "Executed sell amount",
+        executedSellAmount === "0" ? "0 WETH" : "1 WETH",
+      ],
+      ["Executed buy amount", "0 USDC"],
+      ["Executed fee", "0 base units (fee token not supplied)"],
+      ["Maximum oracle age", "0 seconds"],
+    ]) {
+      expect(screen.getByRole("definition", { name: field })).toHaveTextContent(
+        value,
+      );
+    }
+    expect(
+      screen.getByRole("link", { name: "View creation transaction" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "View CoW order" }),
+    ).toBeInTheDocument();
+    if (executedSellAmount === "0") {
+      expect(
+        screen.queryByRole("definition", { name: "Execution price" }),
+      ).not.toBeInTheDocument();
+    } else {
+      expect(
+        screen.getByRole("definition", { name: "Execution price" }),
+      ).toHaveTextContent("0 USDC per WETH");
+    }
+  },
+);
+
+test("keeps the shared detail heading while order data is loading", async () => {
+  serveOrders([parent]);
+  const fetchOrders = global.fetch;
+  let release!: () => void;
+  const pending = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  global.fetch = jest.fn(async (...args) => {
+    await pending;
+    return fetchOrders(...args);
+  });
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: new BrowserWallet(),
+  });
+  render(
+    <RootLayout>
+      <OrderPage
+        params={{ safeAddress: wallet, chainId: 1, orderId: "stop-loss-1" }}
+      />
+    </RootLayout>,
+  );
+  try {
+    await connectBrowserWallet();
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      "Loading order...",
+    );
+    const heading = screen.getByRole("heading", { name: "Order details" });
+    const back = screen.getByRole("link", { name: "Back to orders" });
+    expect(heading.parentElement).toContainElement(back);
+    expect(back).toHaveAttribute("href", "/");
+    expect(back.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
+    expect(
+      screen.queryByRole("button", { name: "Refresh orders" }),
+    ).not.toBeInTheDocument();
+    await act(async () => release());
+    await screen.findByRole("definition", { name: "Order ID" });
+    expect(screen.getByRole("heading", { name: "Order details" })).toBe(
+      heading,
+    );
+    expect(screen.getByRole("link", { name: "Back to orders" })).toBe(back);
+  } finally {
+    await act(async () => release());
+  }
+});
+
 test("shows owned order details, prices and partial execution without cancellation", async () => {
   serveOrders([
     {
@@ -1000,8 +1283,10 @@ test("shows owned order details, prices and partial execution without cancellati
     screen.getByRole("definition", { name: "Executed buy amount" }),
   ).toHaveTextContent("840 USDC");
   expect(
-    screen.getByRole("definition", { name: "Receiver" }),
-  ).toHaveTextContent(wallet);
+    within(screen.getByRole("definition", { name: "Receiver" })).getByRole(
+      "link",
+    ),
+  ).toHaveAttribute("href", `https://etherscan.io/address/${wallet}`);
   expect(
     screen.getByRole("definition", { name: "Valid until" }),
   ).toHaveTextContent("2100-01-01 00:00:00 UTC");
@@ -1009,11 +1294,21 @@ test("shows owned order details, prices and partial execution without cancellati
     screen.getByRole("definition", { name: "Maximum oracle age" }),
   ).toHaveTextContent("3600 seconds");
   expect(
-    screen.getByRole("definition", { name: "Sell token oracle" }),
-  ).toHaveTextContent(parent.decodedParams.sellTokenPriceOracle);
+    within(
+      screen.getByRole("definition", { name: "Sell token oracle" }),
+    ).getByRole("link"),
+  ).toHaveAttribute(
+    "href",
+    `https://etherscan.io/address/${parent.decodedParams.sellTokenPriceOracle}`,
+  );
   expect(
-    screen.getByRole("definition", { name: "Buy token oracle" }),
-  ).toHaveTextContent(parent.decodedParams.buyTokenPriceOracle);
+    within(
+      screen.getByRole("definition", { name: "Buy token oracle" }),
+    ).getByRole("link"),
+  ).toHaveAttribute(
+    "href",
+    `https://etherscan.io/address/${parent.decodedParams.buyTokenPriceOracle}`,
+  );
   expect(screen.getByRole("link", { name: "View CoW order" })).toHaveAttribute(
     "href",
     expect.stringContaining("/orders/0xcd"),
@@ -1021,6 +1316,66 @@ test("shows owned order details, prices and partial execution without cancellati
   expect(
     screen.queryByRole("button", { name: /Cancel/ }),
   ).not.toBeInTheDocument();
+});
+
+test("links shortened detail addresses using the page chain instead of the wallet chain", async () => {
+  const owner = "0x3333333333333333333333333333333333333333";
+  serveOrders([{ ...parent, owner, chainId: 42161 }]);
+  const provider = new BrowserWallet();
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: provider,
+  });
+  render(
+    <RootLayout>
+      <OrderPage
+        params={{
+          safeAddress: wallet,
+          chainId: "42161",
+          orderId: "stop-loss-1",
+        }}
+      />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  await screen.findByRole("definition", { name: "Order ID" });
+
+  for (const [field, short, identifier, type] of [
+    ["Owner", "0x3333…3333", owner, "address"],
+    ["Receiver", "0x1111…1111", wallet, "address"],
+    ["Sell token", "0xC02a…6Cc2", parent.decodedParams.sellToken, "token"],
+    ["Buy token", "0xA0b8…eB48", parent.decodedParams.buyToken, "token"],
+    [
+      "Sell token oracle",
+      "0x5f4e…8419",
+      parent.decodedParams.sellTokenPriceOracle,
+      "address",
+    ],
+    [
+      "Buy token oracle",
+      "0x8fFf…18f6",
+      parent.decodedParams.buyTokenPriceOracle,
+      "address",
+    ],
+  ]) {
+    const value = screen.getByRole("definition", { name: field });
+    const link = within(value).getByRole("link");
+    expect(link).toHaveTextContent(short);
+    expect(link).toHaveAttribute(
+      "href",
+      `https://arbiscan.io/${type}/${identifier}`,
+    );
+    expect(link).toHaveAttribute("target", "_blank");
+  }
+  expect(
+    within(screen.getByRole("definition", { name: "Order hash" })).queryByRole(
+      "link",
+    ),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.getByRole("definition", { name: "Order hash" }),
+  ).toHaveTextContent(parent.hash);
+  expect(provider.chainId).toBe(1);
 });
 
 test("links the creation transaction to the order's chain explorer", async () => {
@@ -1086,31 +1441,53 @@ test("shows the reported fee in base units without assuming its token", async ()
   ).toHaveTextContent("10000000000000000 base units (fee token not supplied)");
 });
 
-test("refreshes a missing order when it becomes available in the index", async () => {
+test("directs a missing order back to the table for refresh before reopening its details", async () => {
   const orders: ApiParent[] = [];
   serveOrders(orders);
   Object.defineProperty(window, "ethereum", {
     configurable: true,
     value: new BrowserWallet(),
   });
-  render(
+  const details = (
     <RootLayout>
       <OrderPage
         params={{ safeAddress: wallet, chainId: "1", orderId: "stop-loss-1" }}
       />
-    </RootLayout>,
+    </RootLayout>
   );
+  const view = render(details);
   await connectBrowserWallet();
-  await screen.findByText(
-    "Order not found for the connected account on Ethereum.",
+  expect(await screen.findByRole("status")).toHaveTextContent(
+    "Order not found for the connected account on Ethereum. Return to the orders table and refresh.",
   );
+  const heading = screen.getByRole("heading", { name: "Order details" });
+  const back = screen.getByRole("link", { name: "Back to orders" });
+  expect(heading.parentElement).toContainElement(back);
+  expect(
+    screen.queryByRole("button", { name: "Refresh orders" }),
+  ).not.toBeInTheDocument();
 
   orders.push(parent);
-  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
+  fireEvent.click(back);
+  view.rerender(
+    <Router>
+      <RootLayout>
+        <HomePage />
+      </RootLayout>
+    </Router>,
+  );
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Refresh orders" }),
+  );
+  const detailLink = await screen.findByRole("link", {
+    name: "View order stop-loss-1 on Ethereum",
+  });
+  fireEvent.click(detailLink);
+  view.rerender(<Router>{details}</Router>);
 
   expect(
-    await screen.findByRole("heading", { name: "Order details" }),
-  ).toBeInTheDocument();
+    await screen.findByRole("definition", { name: "Order ID" }),
+  ).toHaveTextContent("stop-loss-1");
 });
 
 test("rejects an unsupported detail chain before fetching any orders", async () => {
@@ -1154,19 +1531,27 @@ test("keeps detail API failure separate from not found and retries the requested
     "Ethereum order data is unavailable.",
   );
   expect(screen.queryByText(/Order not found/)).not.toBeInTheDocument();
+  const heading = screen.getByRole("heading", { name: "Order details" });
+  const back = screen.getByRole("link", { name: "Back to orders" });
+  expect(heading.parentElement).toContainElement(back);
+  expect(back).toHaveAttribute("href", "/");
+  expect(back.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
+  expect(
+    screen.queryByRole("button", { name: "Refresh orders" }),
+  ).not.toBeInTheDocument();
   unavailable.delete(1);
   fireEvent.click(screen.getByRole("button", { name: "Retry Ethereum" }));
 
-  expect(
-    await screen.findByRole("heading", { name: "Order details" }),
-  ).toBeInTheDocument();
+  await screen.findByRole("definition", { name: "Order ID" });
+  expect(screen.getByRole("heading", { name: "Order details" })).toBe(heading);
+  expect(screen.getByRole("link", { name: "Back to orders" })).toBe(back);
   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   expect(
-    screen.getByRole("definition", { name: "CoW order" }),
-  ).toHaveTextContent("Not triggered");
+    screen.queryByRole("definition", { name: "CoW order" }),
+  ).not.toBeInTheDocument();
   expect(
-    screen.getByRole("definition", { name: "Executed sell amount" }),
-  ).toHaveTextContent("Not available");
+    screen.queryByRole("definition", { name: "Executed sell amount" }),
+  ).not.toBeInTheDocument();
 });
 
 test("keeps browser connection available when WalletConnect is not configured", async () => {

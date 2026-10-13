@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import React, { useId } from "react";
 import { formatUnits } from "viem";
@@ -7,8 +8,13 @@ import { formatUnits } from "viem";
 import { useOrderList } from "#/hooks/useOrderList";
 import { ChainId, chainNames } from "#/lib/publicClients";
 import { OrderToken } from "#/lib/stopLossOrders";
-import { buildBlockExplorerTxUrl, buildOrderCowExplorerUrl } from "#/utils";
+import {
+  buildBlockExplorerTxUrl,
+  buildOrderCowExplorerUrl,
+  truncateAddress,
+} from "#/utils";
 
+import { BlockExplorerLink } from "./ExplorerLink";
 import { StatusBadge } from "./StatusBadge";
 
 function Field({
@@ -28,18 +34,30 @@ function Field({
   );
 }
 
-function amount(value: bigint | null, token: OrderToken) {
-  if (value === null) return "Not available";
+function amount(value: bigint, token: OrderToken) {
   return `${token.decimals === null ? `${value} base units` : formatUnits(value, token.decimals)} ${token.symbol}`;
 }
 
-function date(timestamp?: number) {
-  return timestamp === undefined
-    ? "Not available"
-    : new Date(timestamp * 1000)
-        .toISOString()
-        .replace("T", " ")
-        .replace(".000Z", " UTC");
+function date(timestamp: number) {
+  return new Date(timestamp * 1000)
+    .toISOString()
+    .replace("T", " ")
+    .replace(".000Z", " UTC");
+}
+
+function OrderDetailsHeading() {
+  return (
+    <header className="mb-4 flex items-center gap-3">
+      <Link
+        href="/"
+        aria-label="Back to orders"
+        className="rounded p-2 text-primary"
+      >
+        <ArrowLeftIcon className="size-5" aria-hidden="true" />
+      </Link>
+      <h1 className="text-2xl font-semibold">Order details</h1>
+    </header>
+  );
 }
 
 export function OrderDetails({
@@ -75,49 +93,35 @@ export function OrderDetails({
   if (!order)
     return (
       <main className="mx-auto max-w-4xl px-4 py-10">
-        <Link href="/" className="text-primary underline">
-          Back to orders
-        </Link>
-        <button
-          disabled={isLoading}
-          onClick={() => mutate()}
-          className="ml-4 text-primary underline"
-        >
-          Refresh orders
-        </button>
+        <OrderDetailsHeading />
         {warning || (
           <p role="status">
             {isLoading
               ? "Loading order..."
-              : `Order not found for the connected account on ${chainNames[chainId]}.`}
+              : `Order not found for the connected account on ${chainNames[chainId]}. Return to the orders table and refresh.`}
           </p>
         )}
       </main>
     );
 
-  const price = (value?: string) =>
-    value === undefined
-      ? "Not available"
-      : `${value} ${order.buyToken.symbol} per ${order.sellToken.symbol}`;
+  const price = (value: string) =>
+    `${value} ${order.buyToken.symbol} per ${order.sellToken.symbol}`;
   return (
     <main className="mx-auto max-w-4xl px-4 py-10">
-      <Link href="/" className="text-primary underline">
-        Back to orders
-      </Link>
-      <h1 className="my-4 text-2xl font-semibold">Order details</h1>
-      <button
-        disabled={isLoading}
-        onClick={() => mutate()}
-        className="text-primary underline"
-      >
-        Refresh orders
-      </button>
+      <OrderDetailsHeading />
       {warning}
       <dl>
         <Field label="Chain">{chainNames[chainId]}</Field>
         <Field label="Order ID">{order.parentId}</Field>
         <Field label="Order hash">{order.hash}</Field>
-        <Field label="Owner">{order.owner}</Field>
+        <Field label="Owner">
+          <BlockExplorerLink
+            type="address"
+            identifier={order.owner}
+            networkId={chainId}
+            label={truncateAddress(order.owner) ?? undefined}
+          />
+        </Field>
         <Field label="Status">
           <StatusBadge status={order.status} />
         </Field>
@@ -125,9 +129,11 @@ export function OrderDetails({
         <Field label="Partial fills">
           {order.partiallyFillable ? "Allowed" : "Not allowed"}
         </Field>
-        <Field label="Created">{date(order.createdAt)}</Field>
-        <Field label="Creation transaction">
-          {order.transactionHash ? (
+        {order.createdAt !== undefined && (
+          <Field label="Created">{date(order.createdAt)}</Field>
+        )}
+        {order.transactionHash !== undefined && (
+          <Field label="Creation transaction">
             <Link
               href={
                 buildBlockExplorerTxUrl({
@@ -140,14 +146,33 @@ export function OrderDetails({
             >
               View creation transaction
             </Link>
-          ) : (
-            "Not available"
-          )}
-        </Field>
+          </Field>
+        )}
         <Field label="Valid until">{date(order.validTo)}</Field>
-        <Field label="Receiver">{order.receiver}</Field>
-        <Field label="Sell token">{order.sellToken.address}</Field>
-        <Field label="Buy token">{order.buyToken.address}</Field>
+        <Field label="Receiver">
+          <BlockExplorerLink
+            type="address"
+            identifier={order.receiver}
+            networkId={chainId}
+            label={truncateAddress(order.receiver) ?? undefined}
+          />
+        </Field>
+        <Field label="Sell token">
+          <BlockExplorerLink
+            type="token"
+            identifier={order.sellToken.address}
+            networkId={chainId}
+            label={truncateAddress(order.sellToken.address) ?? undefined}
+          />
+        </Field>
+        <Field label="Buy token">
+          <BlockExplorerLink
+            type="token"
+            identifier={order.buyToken.address}
+            networkId={chainId}
+            label={truncateAddress(order.buyToken.address) ?? undefined}
+          />
+        </Field>
         <Field
           label={order.isSellOrder ? "Sell amount" : "Maximum sell amount"}
         >
@@ -159,26 +184,48 @@ export function OrderDetails({
         <Field label="Trigger price">
           {price(formatUnits(order.strike, 18))}
         </Field>
-        <Field label="Limit price">{price(order.limitPrice)}</Field>
-        <Field label="Executed sell amount">
-          {amount(order.executedSellAmount, order.sellToken)}
-        </Field>
-        <Field label="Executed buy amount">
-          {amount(order.executedBuyAmount, order.buyToken)}
-        </Field>
-        <Field label="Executed fee">
-          {order.executedFee === null
-            ? "Not available"
-            : `${order.executedFee} base units (fee token not supplied)`}
-        </Field>
-        <Field label="Execution price">{price(order.executionPrice)}</Field>
+        {order.limitPrice !== undefined && (
+          <Field label="Limit price">{price(order.limitPrice)}</Field>
+        )}
+        {order.executedSellAmount !== null && (
+          <Field label="Executed sell amount">
+            {amount(order.executedSellAmount, order.sellToken)}
+          </Field>
+        )}
+        {order.executedBuyAmount !== null && (
+          <Field label="Executed buy amount">
+            {amount(order.executedBuyAmount, order.buyToken)}
+          </Field>
+        )}
+        {order.executedFee !== null && (
+          <Field label="Executed fee">
+            {order.executedFee} base units (fee token not supplied)
+          </Field>
+        )}
+        {order.executionPrice !== undefined && (
+          <Field label="Execution price">{price(order.executionPrice)}</Field>
+        )}
         <Field label="Maximum oracle age">
           {order.maxTimeSinceLastOracleUpdate} seconds
         </Field>
-        <Field label="Sell token oracle">{order.sellTokenPriceOracle}</Field>
-        <Field label="Buy token oracle">{order.buyTokenPriceOracle}</Field>
-        <Field label="CoW order">
-          {order.cowOrder ? (
+        <Field label="Sell token oracle">
+          <BlockExplorerLink
+            type="address"
+            identifier={order.sellTokenPriceOracle}
+            networkId={chainId}
+            label={truncateAddress(order.sellTokenPriceOracle) ?? undefined}
+          />
+        </Field>
+        <Field label="Buy token oracle">
+          <BlockExplorerLink
+            type="address"
+            identifier={order.buyTokenPriceOracle}
+            networkId={chainId}
+            label={truncateAddress(order.buyTokenPriceOracle) ?? undefined}
+          />
+        </Field>
+        {order.cowOrder !== undefined && (
+          <Field label="CoW order">
             <Link
               href={buildOrderCowExplorerUrl({
                 chainId,
@@ -189,10 +236,8 @@ export function OrderDetails({
             >
               View CoW order
             </Link>
-          ) : (
-            "Not triggered"
-          )}
-        </Field>
+          </Field>
+        )}
       </dl>
     </main>
   );

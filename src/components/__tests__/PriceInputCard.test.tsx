@@ -12,12 +12,10 @@ import { CurrentMarketPrice } from "../CurrentMarketPrice";
 import { PriceInputCard } from "../PriceInputCard";
 import { Form } from "../ui/form";
 
-jest.mock("@safe-global/safe-apps-react-sdk", () => ({
-  useSafeAppsSDK: () => ({
-    safe: {
-      chainId: 1,
-      safeAddress: "0x1111111111111111111111111111111111111111",
-    },
+jest.mock("wagmi", () => ({
+  useAccount: () => ({
+    chainId: 1,
+    address: "0x1111111111111111111111111111111111111111",
   }),
 }));
 

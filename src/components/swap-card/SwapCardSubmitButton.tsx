@@ -5,14 +5,12 @@ import { useCallback } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { parseUnits } from "viem";
 
-import { useDraftOrders } from "#/hooks/useDraftOrders";
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { SwapData } from "#/lib/types";
 
 export function SwapCardSubmitButton() {
-  const { draftOrders } = useDraftOrders();
   const {
     formState: { isSubmitting, errors },
     control,
@@ -46,12 +44,6 @@ export function SwapCardSubmitButton() {
   const { data: marketPrice } = useTokenPairPrice(tokenSell, tokenBuy);
 
   const getButtonState = useCallback(() => {
-    if (draftOrders.length > 4) {
-      return {
-        disabled: true,
-        text: "You can only have 5 draft orders at a time",
-      };
-    }
     if (!tokenBuy || !tokenSell) {
       return {
         disabled: true,
@@ -103,8 +95,13 @@ export function SwapCardSubmitButton() {
       };
     }
 
+    if (!marketPrice || !Number.isFinite(marketPrice) || marketPrice <= 0) {
+      return {
+        disabled: true,
+        text: "Market price unavailable. Try again.",
+      };
+    }
     if (
-      marketPrice &&
       parseUnits(strikePrice, 18) > parseUnits(marketPrice.toFixed(18), 18)
     ) {
       return {
@@ -113,12 +110,6 @@ export function SwapCardSubmitButton() {
       };
     }
 
-    if (!marketPrice) {
-      return {
-        disabled: true,
-        text: "Error quoting tokens, make sure that CoW supports them.",
-      };
-    }
     const errorList = Object.entries(errors)
       .filter(([name]) => name !== "root")
       .map(([, error]) => error);
@@ -135,7 +126,6 @@ export function SwapCardSubmitButton() {
     };
   }, [
     buyAmount,
-    draftOrders.length,
     errors,
     slippagePercent,
     isSellOrder,

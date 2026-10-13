@@ -1,9 +1,10 @@
-import { encodeAbiParameters, parseUnits } from "viem";
+import { encodeAbiParameters, Hex, parseUnits } from "viem";
 
 import { MetadataApi } from "@cowprotocol/app-data";
 import { getOrderAmounts } from "./calculateAmounts";
 import { uploadAppData } from "./cowApi/uploadAppData";
 import { StopLossOrderArgs } from "./transactionFactory";
+import { DraftOrder } from "./types";
 
 export const stopLossDataStructure = [
   {
@@ -63,7 +64,7 @@ export const stopLossDataStructure = [
 export async function stopLossArgsEncoder(
   data: StopLossOrderArgs,
 ): Promise<`0x${string}`> {
-  const { sellAtoms, buyAtoms } = getOrderAmounts(data);
+  getOrderAmounts(data);
   const metadataApi = new MetadataApi();
 
   const appDataDoc = await metadataApi.generateAppDataDoc({
@@ -81,6 +82,14 @@ export async function stopLossArgsEncoder(
     chainId: data.chainId,
   });
 
+  return encodeStopLossStaticInput(data, appDataHex as Hex);
+}
+
+export function encodeStopLossStaticInput(
+  data: DraftOrder,
+  appDataHex: Hex,
+): Hex {
+  const { sellAtoms, buyAtoms } = getOrderAmounts(data);
   const strikePriceWithDecimals = parseUnits(data.strikePrice, 18);
 
   return encodeAbiParameters(stopLossDataStructure, [

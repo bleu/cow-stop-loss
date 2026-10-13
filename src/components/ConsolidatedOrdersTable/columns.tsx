@@ -3,28 +3,58 @@ import Link from "next/link";
 import { Address, formatUnits } from "viem";
 
 import { chainNames } from "#/lib/publicClients";
-import { StopLossOrder } from "#/lib/stopLossOrders";
+import { PlacementRecord, PlacementRow } from "#/lib/stopLossPlacement";
 
 import { StatusBadge } from "../StatusBadge";
 
-export function getColumns(account: Address): ColumnDef<StopLossOrder>[] {
+function placementLabel({ stage, status }: PlacementRecord) {
+  const stageLabel = {
+    "approval-reset": "Approval reset",
+    approval: "Approval",
+    setup: "Setup",
+  }[stage];
+  if (status === "confirmed") return "Waiting for API indexing";
+  if (status === "prompting")
+    return `Waiting for wallet: ${stageLabel.toLowerCase()}`;
+  if (status === "ready")
+    return stage === "approval-reset"
+      ? "Approval reset confirmed. Approval required."
+      : "Approval confirmed. Ready to place.";
+  return `${stageLabel} pending`;
+}
+
+function shortAmount(value: string) {
+  const [whole, fraction = ""] = value.split(".");
+  const visibleFraction = fraction.slice(0, 4).replace(/0+$/, "");
+  const shortened = /[1-9]/.test(fraction.slice(4));
+  if (whole === "0" && !visibleFraction && shortened) return "<0.0001";
+  return `${shortened ? "~" : ""}${whole}${visibleFraction ? `.${visibleFraction}` : ""}`;
+}
+
+export function getColumns(account: Address): ColumnDef<PlacementRow>[] {
   return [
     {
       id: "order",
       header: "Order",
-      cell: ({ row: { original: order } }) => (
-        <span>
-          {order.sellToken.decimals === null
+      cell: ({ row: { original: order } }) => {
+        const sell =
+          order.sellToken.decimals === null
             ? `${order.sellAmount} base units`
-            : formatUnits(order.sellAmount, order.sellToken.decimals)}{" "}
-          {order.sellToken.symbol}
-          {" for "}
-          {order.buyToken.decimals === null
+            : formatUnits(order.sellAmount, order.sellToken.decimals);
+        const buy =
+          order.buyToken.decimals === null
             ? `${order.buyAmount} base units`
-            : formatUnits(order.buyAmount, order.buyToken.decimals)}{" "}
-          {order.buyToken.symbol}
-        </span>
-      ),
+            : formatUnits(order.buyAmount, order.buyToken.decimals);
+        return (
+          <span
+            title={`${sell} ${order.sellToken.symbol} for ${buy} ${order.buyToken.symbol}`}
+          >
+            {shortAmount(sell)} {order.sellToken.symbol}
+            {" for "}
+            {shortAmount(buy)} {order.buyToken.symbol}
+          </span>
+        );
+      },
     },
     {
       accessorKey: "chainId",
@@ -36,21 +66,36 @@ export function getColumns(account: Address): ColumnDef<StopLossOrder>[] {
     {
       accessorKey: "status",
       header: "Status",
-      cell: ({ row }) => <StatusBadge status={row.original.status} />,
+      cell: ({ row: { original: order } }) =>
+        order.source === "local" && order.placement.status !== "confirmed" ? (
+          <span>Pending</span>
+        ) : (
+          <StatusBadge status={order.status} />
+        ),
       filterFn: (row, id, values: string[]) =>
         values.includes(row.getValue(id)),
     },
     {
       id: "details",
       header: "Details",
-      cell: ({ row: { original: order } }) => (
-        <Link
-          href={`/${order.chainId}/${account}/${encodeURIComponent(order.parentId)}`}
-          aria-label={`View order ${order.parentId} on ${chainNames[order.chainId]}`}
-        >
-          View details
-        </Link>
-      ),
+      cell: ({ row: { original: order } }) =>
+        order.canLink ? (
+          <Link
+            href={`/${order.chainId}/${account}/${encodeURIComponent(order.parentId)}`}
+            aria-label={`View order ${order.parentId} on ${chainNames[order.chainId]}`}
+          >
+            View details
+          </Link>
+        ) : (
+          <div>
+            <p>{placementLabel(order.placement)}</p>
+            {order.error && (
+              <p role="alert" className="text-destructive">
+                {order.error}
+              </p>
+            )}
+          </div>
+        ),
     },
   ];
 }

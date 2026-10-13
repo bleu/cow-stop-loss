@@ -30,10 +30,19 @@ export const RPC_PROVIDERS = {
   [arbitrum.id]: process.env.NEXT_PUBLIC_RPC_URL_ARBITRUM,
 } as const;
 
+export function createRpcTransport(chain: ChainType) {
+  const url =
+    RPC_PROVIDERS[chain.id] ||
+    (chain.id === mainnet.id
+      ? "https://ethereum-rpc.publicnode.com"
+      : undefined);
+  return http(url, { retryCount: 1, timeout: 10000 });
+}
+
 export function createClientForChain(chain: ChainType) {
   return createPublicClient({
     chain,
-    transport: http(RPC_PROVIDERS[chain.id]),
+    transport: createRpcTransport(chain),
     cacheTime: 0,
   });
 }

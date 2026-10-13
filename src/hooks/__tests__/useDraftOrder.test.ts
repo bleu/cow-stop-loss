@@ -44,8 +44,14 @@ describe("Supported stop loss draft creation", () => {
       .setAdvancedSettings(defaultAdvancedSettings);
     useDraftOrder.getState().setCurrentDraftOrder(undefined);
     useDraftOrders.getState().setDraftOrders([]);
-    global.fetch = jest.fn().mockResolvedValue({
-      json: async () => ({ price: 1 }),
+    global.fetch = jest.fn().mockImplementation(async (input) => {
+      const url = String(input);
+      return {
+        ok: true,
+        status: 200,
+        json: async () =>
+          url.includes("/app_data/") ? url.split("/").pop() : { price: 1 },
+      };
     });
     jest
       .spyOn(publicClientsFromIds[1], "readContract")
@@ -116,7 +122,7 @@ describe("Supported stop loss draft creation", () => {
       isSellOrder: true,
       isPartiallyFillable: false,
       validTo: 1700086400,
-      maxTimeSinceLastOracleUpdate: 3600,
+      maxTimeSinceLastOracleUpdate: 21600,
     });
   });
 

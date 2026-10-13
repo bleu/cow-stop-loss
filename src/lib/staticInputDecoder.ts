@@ -20,10 +20,11 @@ export function decodeComposableCowCreateTxData(data: `0x${string}`) {
     throw new Error("Invalid function name");
   }
 
-  const argList = decodeAbiParameters(
-    stopLossDataStructure,
-    args[0].staticInput,
-  ) as argType[];
+  return decodeStopLossStaticInput(args[0].staticInput);
+}
+
+export function decodeStopLossStaticInput(data: `0x${string}`) {
+  const argList = decodeAbiParameters(stopLossDataStructure, data) as argType[];
 
   return {
     sellToken: argList[0] as Address,
@@ -34,10 +35,10 @@ export function decodeComposableCowCreateTxData(data: `0x${string}`) {
     receiver: argList[5] as Address,
     isSellOrder: argList[6] as boolean,
     isPartiallyFillable: argList[7] as boolean,
-    validTo: argList[8] as bigint,
+    validTo: Number(argList[8]),
     sellTokenPriceOracle: argList[9] as Address,
     buyTokenPriceOracle: argList[10] as Address,
     strike: argList[11] as bigint,
-    maxTimeSinceLastOracleUpdate: argList[12] as bigint,
+    maxTimeSinceLastOracleUpdate: Number(argList[12]),
   };
 }
