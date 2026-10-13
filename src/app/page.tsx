@@ -13,7 +13,7 @@ export default function Page() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
           <section
             aria-labelledby="place-order-title"
-            className="min-w-0 rounded-lg border p-4 lg:h-[48rem] lg:overflow-y-auto"
+            className="min-w-0 rounded-lg border p-4"
           >
             <h1 id="place-order-title" className="mb-4 text-2xl font-semibold">
               Place a stop-loss order
@@ -22,12 +22,17 @@ export default function Page() {
           </section>
           <section
             aria-labelledby="orders-title"
-            className="min-w-0 rounded-lg border p-4 lg:h-[48rem] lg:overflow-y-auto"
+            className="relative min-h-0 min-w-0 rounded-lg border"
           >
-            <h2 id="orders-title" className="mb-4 text-2xl font-semibold">
-              Your stop-loss orders
-            </h2>
-            <ConsolidatedOrdersTable />
+            <div className="flex min-h-0 flex-col p-4 lg:absolute lg:inset-0">
+              <h2
+                id="orders-title"
+                className="mb-4 shrink-0 text-2xl font-semibold"
+              >
+                Your stop-loss orders
+              </h2>
+              <ConsolidatedOrdersTable />
+            </div>
           </section>
         </div>
       ) : (

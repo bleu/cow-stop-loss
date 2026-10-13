@@ -290,6 +290,154 @@ afterAll(() => {
   global.structuredClone = originalClone;
 });
 
+test("fills the empty orders viewport without putting filters or pagination in its scroll area", async () => {
+  render(<TableView />);
+  await connectWallet();
+  await screen.findByRole("cell", { name: "No results." });
+
+  const table = screen.getByRole("table");
+  const viewport = table.parentElement!.parentElement!;
+  const panel = viewport.parentElement!;
+  expect(panel).toHaveClass("flex", "h-full", "min-h-0", "flex-1", "flex-col");
+  expect(viewport).toHaveClass(
+    "min-h-0",
+    "flex-1",
+    "max-h-none",
+    "overflow-y-auto",
+    "[&>div]:overflow-visible",
+    "[&>div]:h-full",
+  );
+  expect(viewport).not.toHaveClass("max-h-96");
+  expect(table).toHaveClass("h-full");
+  expect(table.querySelector("thead")).toHaveClass(
+    "sticky",
+    "top-0",
+    "z-10",
+    "bg-background",
+  );
+  expect(panel.firstElementChild).toHaveClass("shrink-0");
+  expect(panel.firstElementChild).toContainElement(
+    screen.getByRole("button", { name: "Refresh orders" }),
+  );
+  expect(panel.lastElementChild).toHaveClass("shrink-0");
+  expect(panel.lastElementChild).toContainElement(
+    screen.getByRole("button", { name: "Go to next page" }),
+  );
+  expect(viewport).not.toContainElement(
+    screen.getByRole("button", { name: "Chain" }),
+  );
+  expect(viewport).not.toContainElement(screen.getByText("Rows per page"));
+});
+
+test("keeps the expanding table shell while the connected account's first orders are loading", async () => {
+  const fetchOrders = global.fetch;
+  let release!: () => void;
+  const pending = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  global.fetch = jest.fn(async (...args) => {
+    await pending;
+    return fetchOrders(...args);
+  });
+  render(<TableView />);
+  await connectWallet();
+
+  try {
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      "Loading stop-loss orders...",
+    );
+    const table = screen.getByRole("table");
+    expect(table).toContainElement(screen.getByRole("status"));
+    expect(screen.queryByText("No results.")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Refresh orders" }),
+    ).toBeDisabled();
+    const viewport = table.parentElement!.parentElement!;
+    expect(viewport).toHaveClass("min-h-0", "flex-1", "max-h-none");
+    expect(viewport.parentElement!.parentElement).toHaveClass(
+      "flex",
+      "min-h-0",
+      "flex-1",
+      "flex-col",
+    );
+
+    await act(async () => release());
+    await screen.findByRole("cell", { name: "No results." });
+    expect(screen.getByRole("table")).toBe(table);
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Refresh orders" }),
+    ).toBeEnabled();
+  } finally {
+    await act(async () => release());
+  }
+});
+
+test("keeps an expanding unavailable viewport and retries into the same table without showing an empty account", async () => {
+  const unavailable = new Set([1, 100, 42161, 11155111]);
+  serveOrders([apiParent()], unavailable);
+  render(<TableView />);
+  await connectWallet();
+  await waitFor(() => expect(screen.getAllByRole("alert")).toHaveLength(4));
+
+  const table = screen.getByRole("table");
+  expect(table).toContainElement(
+    screen.getByText("Orders are unavailable on all supported chains."),
+  );
+  expect(screen.queryByText("No results.")).not.toBeInTheDocument();
+  expect(table.parentElement!.parentElement).toHaveClass(
+    "min-h-0",
+    "flex-1",
+    "max-h-none",
+  );
+  expect(screen.getByRole("button", { name: "Refresh orders" })).toBeEnabled();
+  expect(
+    screen.getByRole("button", { name: "Go to next page" }),
+  ).toBeDisabled();
+
+  unavailable.delete(1);
+  fireEvent.click(screen.getByRole("button", { name: "Retry Ethereum" }));
+  expect(
+    await screen.findByRole("link", {
+      name: "View order indexed-order on Ethereum",
+    }),
+  ).toHaveAttribute("href", `/1/${account}/indexed-order`);
+  expect(screen.getByRole("table")).toBe(table);
+  expect(screen.getAllByRole("alert")).toHaveLength(3);
+  expect(
+    screen.queryByText("Orders are unavailable on all supported chains."),
+  ).not.toBeInTheDocument();
+});
+
+test("keeps chain and placement warnings inside the scroll area so pagination remains outside", async () => {
+  const getItem = Storage.prototype.getItem;
+  jest.spyOn(Storage.prototype, "getItem").mockImplementation(function (
+    this: Storage,
+    key,
+  ) {
+    return key === "stop-loss-placement"
+      ? '{"version":2,"state":{"records":[]}}'
+      : getItem.call(this, key);
+  });
+  serveOrders([], new Set([1, 100, 42161, 11155111]));
+  render(<TableView />);
+  await connectWallet();
+  await waitFor(() => expect(screen.getAllByRole("alert")).toHaveLength(5));
+
+  const viewport = screen.getByRole("table").parentElement!.parentElement!;
+  for (const warning of screen.getAllByRole("alert")) {
+    expect(viewport).toContainElement(warning);
+  }
+  expect(viewport).not.toContainElement(
+    screen.getByRole("button", { name: "Refresh orders" }),
+  );
+  expect(viewport).not.toContainElement(
+    screen.getByRole("button", { name: "Go to next page" }),
+  );
+  expect(screen.getByRole("button", { name: "Retry Ethereum" })).toBeEnabled();
+  expect(screen.queryByText("No results.")).not.toBeInTheDocument();
+});
+
 test("keeps indexed API orders visible with a tracking error when saved placement storage is unreadable", async () => {
   const getItem = Storage.prototype.getItem;
   jest.spyOn(Storage.prototype, "getItem").mockImplementation(function (

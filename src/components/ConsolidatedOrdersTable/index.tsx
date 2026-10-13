@@ -58,75 +58,87 @@ export function ConsolidatedOrdersTable() {
     enableRowSelection: false,
   });
 
-  if (isLoading && !chains.length && !orders.length)
-    return <p role="status">Loading stop-loss orders...</p>;
+  const isInitialLoading = isLoading && !chains.length && !orders.length;
+  const hasAvailableOrders =
+    orders.length > 0 || chains.some((chain) => chain.status === "success");
+  const emptyMessage = isInitialLoading ? (
+    <p role="status">Loading stop-loss orders...</p>
+  ) : hasAvailableOrders ? (
+    "No results."
+  ) : (
+    "Orders are unavailable on all supported chains."
+  );
 
-  return (
-    <>
+  const failedChains = chains.filter((chain) => chain.status === "error");
+  const notice = (trackingError || failedChains.length > 0) && (
+    <div className="space-y-4 text-left">
       {trackingError && (
-        <p role="alert" className="mb-4 rounded border border-destructive p-3">
+        <p role="alert" className="rounded border border-destructive p-3">
           Placement tracking is unavailable. {trackingError}
         </p>
       )}
-      {chains
-        .filter((chain) => chain.status === "error")
-        .map((chain) => (
-          <div
-            key={chain.chainId}
-            role="alert"
-            className="mb-4 rounded border border-destructive p-3"
+      {failedChains.map((chain) => (
+        <div
+          key={chain.chainId}
+          role="alert"
+          className="rounded border border-destructive p-3"
+        >
+          <p>{chainNames[chain.chainId]} orders are unavailable.</p>
+          <p>{chain.error}</p>
+          {chain.orders.length > 0 && (
+            <p>
+              Previously loaded {chainNames[chain.chainId]} orders may be out of
+              date.
+            </p>
+          )}
+          <button
+            disabled={isLoading}
+            onClick={() => mutate()}
+            className="text-primary underline"
           >
-            <p>{chainNames[chain.chainId]} orders are unavailable.</p>
-            <p>{chain.error}</p>
-            {chain.orders.length > 0 && (
-              <p>
-                Previously loaded {chainNames[chain.chainId]} orders may be out
-                of date.
-              </p>
-            )}
-            <button
-              disabled={isLoading}
-              onClick={() => mutate()}
-              className="text-primary underline"
-            >
-              Retry {chainNames[chain.chainId]}
-            </button>
-          </div>
-        ))}
-      {orders.length > 0 ||
-      chains.some((chain) => chain.status === "success") ? (
-        <DataTable table={table}>
-          <DataTableToolbar
-            table={table}
-            filterFields={filterFields}
-            afterFilters={
-              <TooltipProvider>
-                <TooltipRoot>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="size-8 shrink-0 rounded-lg border-foreground/15 bg-muted/50 text-muted-foreground hover:bg-muted hover:text-primary"
-                      aria-label="Refresh orders"
-                      aria-busy={isLoading}
-                      disabled={isLoading}
-                      onClick={() => mutate()}
-                    >
-                      <ReloadIcon
-                        aria-hidden="true"
-                        className={`size-4 ${isLoading ? "motion-safe:animate-spin" : ""}`}
-                      />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Refresh orders</TooltipContent>
-                </TooltipRoot>
-              </TooltipProvider>
-            }
-          />
-        </DataTable>
-      ) : (
-        <p>Orders are unavailable on all supported chains.</p>
-      )}
-    </>
+            Retry {chainNames[chain.chainId]}
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="flex min-h-0 flex-1 flex-col gap-4">
+      <DataTable
+        table={table}
+        fillPanel
+        emptyMessage={emptyMessage}
+        notice={notice}
+      >
+        <DataTableToolbar
+          table={table}
+          filterFields={filterFields}
+          afterFilters={
+            <TooltipProvider>
+              <TooltipRoot>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="size-8 shrink-0 rounded-lg border-foreground/15 bg-muted/50 text-muted-foreground hover:bg-muted hover:text-primary"
+                    aria-label="Refresh orders"
+                    aria-busy={isLoading}
+                    disabled={isLoading}
+                    onClick={() => mutate()}
+                  >
+                    <ReloadIcon
+                      aria-hidden="true"
+                      className={`size-4 ${isLoading ? "motion-safe:animate-spin" : ""}`}
+                    />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Refresh orders</TooltipContent>
+              </TooltipRoot>
+            </TooltipProvider>
+          }
+        />
+      </DataTable>
+    </div>
   );
 }
