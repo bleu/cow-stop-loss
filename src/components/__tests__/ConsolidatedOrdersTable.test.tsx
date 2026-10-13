@@ -463,6 +463,101 @@ test("keeps indexed API orders visible with a tracking error when saved placemen
   expect(screen.getAllByRole("link", { name: /^View order/ })).toHaveLength(1);
 });
 
+test("shortens API and local amounts without rounding up and retains the full amounts on hover", async () => {
+  const indexed = apiParent();
+  indexed.decodedParams.sellAmount = "1234567890123456789";
+  indexed.decodedParams.buyAmount = "4000123456";
+  serveOrders([indexed]);
+  const local = prepared();
+  local.draft.amountSell = "2.100123456789012345";
+  local.draft.amountBuy = "4158.244445";
+  local.staticInput = encodeStopLossStaticInput(local.draft, local.appDataHash);
+  await confirm(local);
+  render(<TableView />);
+  await connectWallet();
+
+  const apiAmount = await screen.findByRole("cell", {
+    name: "~1.2345 WETH for ~4000.1234 USDC",
+  });
+  expect(
+    within(apiAmount).getByTitle(
+      "1.234567890123456789 WETH for 4000.123456 USDC",
+    ),
+  ).toBeInTheDocument();
+  const localAmount = screen.getByRole("cell", {
+    name: "~2.1001 WETH for ~4158.2444 USDC",
+  });
+  expect(
+    within(localAmount).getByTitle(
+      "2.100123456789012345 WETH for 4158.244445 USDC",
+    ),
+  ).toBeInTheDocument();
+});
+
+test("distinguishes tiny positive amounts from zero and preserves exact integer and base-unit amounts", async () => {
+  const examples = [
+    {
+      sellAmount: "1",
+      buyAmount: "1",
+      display: "<0.0001 WETH for <0.0001 USDC",
+      full: "0.000000000000000001 WETH for 0.000001 USDC",
+    },
+    {
+      sellAmount: "0",
+      buyAmount: "0",
+      display: "0 WETH for 0 USDC",
+      full: "0 WETH for 0 USDC",
+    },
+    {
+      sellAmount: "100000000000000",
+      buyAmount: "100",
+      display: "0.0001 WETH for 0.0001 USDC",
+      full: "0.0001 WETH for 0.0001 USDC",
+    },
+    {
+      sellAmount: "9007199254740993123400000000000000",
+      buyAmount: "2100000001",
+      display: "9007199254740993.1234 WETH for ~2100 USDC",
+      full: "9007199254740993.1234 WETH for 2100.000001 USDC",
+    },
+    {
+      sellAmount: "9007199254740993123456789",
+      buyAmount: "123456789",
+      sellToken: "0x7777777777777777777777777777777777777777",
+      buyToken: "0x8888888888888888888888888888888888888888",
+      display:
+        "9007199254740993123456789 base units Unknown token for 123456789 base units Unknown token",
+      full: "9007199254740993123456789 base units Unknown token for 123456789 base units Unknown token",
+    },
+  ];
+  serveOrders(
+    examples.map((example, index) => {
+      const order = apiParent(
+        1,
+        `amount-${index}`,
+        `0x${String(index).repeat(64)}`,
+      );
+      return {
+        ...order,
+        decodedParams: {
+          ...order.decodedParams,
+          sellAmount: example.sellAmount,
+          buyAmount: example.buyAmount,
+          sellToken: example.sellToken ?? order.decodedParams.sellToken,
+          buyToken: example.buyToken ?? order.decodedParams.buyToken,
+        },
+      };
+    }),
+  );
+  render(<TableView />);
+  await connectWallet();
+
+  for (const example of examples) {
+    const cell = await screen.findByRole("cell", { name: example.display });
+    expect(within(cell).getByTitle(example.full)).toBeInTheDocument();
+  }
+});
+
 test("shows a pending setup stage and its RPC error on the unindexed row", async () => {
   const order = prepared();
   await writer.submit(order, "setup", {
