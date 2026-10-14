@@ -19,6 +19,7 @@ export type TransactionReference = {
 export type PlacementRecord = {
   id: string;
   revision: number;
+  attempt?: string;
   prepared: PreparedPlacement;
   stage: PlacementStage;
   status:
@@ -166,17 +167,21 @@ export function createStopLossPlacement({
     stage: PlacementStage,
     adapter: PlacementSender,
   ) {
+    if (
+      prepared.draft.isSellOrder !== true ||
+      !decodeStopLossStaticInput(prepared.staticInput).isSellOrder
+    )
+      throw new Error("Only exact-sell orders are supported.");
     prepared = structuredClone(prepared);
     const record = await locked(() => {
       const active = getRecords(prepared).find(
-        (entry) =>
-          entry.status !== "failed" &&
-          entry.status !== "rejected" &&
-          entry.status !== "confirmed",
+        (entry) => entry.status !== "confirmed",
       );
       if (active) {
         if (
-          active.status !== "ready" ||
+          (active.status !== "ready" &&
+            active.status !== "failed" &&
+            active.status !== "rejected") ||
           active.prepared.paramsHash.toLowerCase() !==
             prepared.paramsHash.toLowerCase()
         ) {
@@ -184,11 +189,12 @@ export function createStopLossPlacement({
             "A placement is already active for this wallet and chain",
           );
         }
-        if (active.stage === "approval-reset" && stage !== "approval")
+        if (active.stage === "approval-reset" && stage === "setup")
           throw new Error("Approval is required after a reset");
         const next: PlacementRecord = {
           ...active,
           revision: active.revision + 1,
+          attempt: crypto.randomUUID(),
           stage,
           status: "prompting",
           error: undefined,
@@ -203,6 +209,7 @@ export function createStopLossPlacement({
       const entry: PlacementRecord = {
         id: crypto.randomUUID(),
         revision: 0,
+        attempt: crypto.randomUUID(),
         prepared,
         stage,
         status: "prompting",
@@ -213,6 +220,10 @@ export function createStopLossPlacement({
       save([...read(), entry]);
       return entry;
     });
+    const isCurrentAttempt = (entry: PlacementRecord) =>
+      entry.id === record.id &&
+      entry.stage === record.stage &&
+      entry.attempt === record.attempt;
     let reference: TransactionReference;
     try {
       reference = await adapter.send(structuredClone(record));
@@ -220,35 +231,41 @@ export function createStopLossPlacement({
       const rejected = isRejected(error);
       await locked(() =>
         save(
-          read().map((entry) =>
-            entry.id === record.id && entry.revision === record.revision
-              ? {
-                  ...entry,
-                  revision: entry.revision + 1,
-                  status: rejected
-                    ? "rejected"
-                    : isDefiniteFailure(error)
-                      ? "failed"
-                      : entry.status,
-                  error: error instanceof Error ? error.message : String(error),
-                }
-              : entry,
-          ),
+          read().flatMap((entry) => {
+            if (!isCurrentAttempt(entry) || entry.status === "confirmed")
+              return [entry];
+            if (
+              (rejected || isDefiniteFailure(error)) &&
+              !Object.values(entry.transactions).some(Boolean)
+            )
+              return [];
+            return [
+              {
+                ...entry,
+                revision: entry.revision + 1,
+                status: rejected
+                  ? ("rejected" as const)
+                  : isDefiniteFailure(error)
+                    ? ("failed" as const)
+                    : entry.status,
+                error: error instanceof Error ? error.message : String(error),
+              },
+            ];
+          }),
         ),
       );
       throw error;
     }
-    const pending: PlacementRecord = {
-      ...record,
-      revision: record.revision + 1,
-      status: "pending",
-      transactions: { ...record.transactions, [stage]: reference },
-    };
     await locked(() =>
       save(
         read().map((entry) =>
-          entry.id === record.id && entry.revision === record.revision
-            ? pending
+          isCurrentAttempt(entry)
+            ? {
+                ...entry,
+                revision: entry.revision + 1,
+                status: entry.status === "prompting" ? "pending" : entry.status,
+                transactions: { ...entry.transactions, [stage]: reference },
+              }
             : entry,
         ),
       ),
@@ -261,11 +278,21 @@ export function createStopLossPlacement({
       if (record.status !== "pending" && record.status !== "prompting")
         continue;
       let reference = record.transactions[record.stage];
+      if (record.stage !== "setup" && record.status === "prompting") continue;
       try {
-        if (reference && adapter.readTransaction) {
+        let transactionSucceeded = false;
+        let created = false;
+        if (
+          record.status !== "prompting" &&
+          reference &&
+          adapter.readTransaction
+        ) {
           const receipt = await adapter.readTransaction(record, reference);
+          transactionSucceeded = receipt.status === "success";
           reference = receipt.reference ?? reference;
-          if (receipt.status === "failed") {
+          if (receipt.status === "failed" && record.stage === "setup")
+            created = await adapter.checkState(record);
+          if (receipt.status === "failed" && !created) {
             await locked(() =>
               save(
                 read().map((entry) =>
@@ -287,7 +314,12 @@ export function createStopLossPlacement({
             continue;
           }
         }
-        const confirmed = await adapter.checkState(record);
+        const confirmed =
+          created ||
+          ((record.stage === "setup" || transactionSucceeded) &&
+            (await adapter.checkState(record)));
+        const allowanceChanged =
+          record.stage !== "setup" && transactionSucceeded && !confirmed;
         await locked(() =>
           save(
             read().map((entry) =>
@@ -299,14 +331,20 @@ export function createStopLossPlacement({
                       ? record.stage === "setup"
                         ? "confirmed"
                         : "ready"
-                      : entry.status,
+                      : allowanceChanged
+                        ? "failed"
+                        : entry.status,
                     confirmedAt:
                       confirmed && record.stage === "setup" ? now() : undefined,
                     transactions: {
                       ...entry.transactions,
                       [record.stage]: reference,
                     },
-                    error: undefined,
+                    error: allowanceChanged
+                      ? "Approval completed, but allowance changed. Review the order again."
+                      : !confirmed && entry.status === "prompting"
+                        ? entry.error
+                        : undefined,
                   }
                 : entry,
             ),
@@ -334,6 +372,57 @@ export function createStopLossPlacement({
       }
     }
     return getRecords(scope);
+  }
+
+  async function abandon(
+    scope: PlacementScope,
+    id: string,
+    adapter: PlacementReader,
+  ) {
+    await resume(scope, adapter);
+    const record = getRecords(scope).find((entry) => entry.id === id);
+    if (!record || record.status === "confirmed") return;
+    if (record.status === "prompting" || record.status === "pending")
+      throw new Error(
+        "Transaction outcome is unknown. Placement cannot be abandoned.",
+      );
+    const created = await adapter.checkState({ ...record, stage: "setup" });
+    if (!created) {
+      for (const [stage, reference] of Object.entries(record.transactions)) {
+        if (!reference) continue;
+        const receipt = await adapter.readTransaction?.(
+          { ...record, stage: stage as PlacementStage },
+          reference,
+        );
+        if (!receipt || receipt.status === "pending")
+          throw new Error(
+            "Transaction outcome is unknown. Placement cannot be abandoned.",
+          );
+      }
+    }
+    await locked(() => {
+      const current = getRecords(scope).find((entry) => entry.id === id);
+      if (!current) return;
+      if (current.revision !== record.revision)
+        throw new Error("Placement changed. Check it again.");
+      save(
+        read().flatMap((entry) =>
+          entry.id !== id
+            ? [entry]
+            : created
+              ? [
+                  {
+                    ...entry,
+                    revision: entry.revision + 1,
+                    status: "confirmed" as const,
+                    confirmedAt: now(),
+                    error: undefined,
+                  },
+                ]
+              : [],
+        ),
+      );
+    });
   }
 
   function getConfirmedPlacements(scope: PlacementScope) {
@@ -471,6 +560,7 @@ export function createStopLossPlacement({
     getConfirmedPlacements,
     submit,
     resume,
+    abandon,
     mergeRows,
     subscribe,
   };

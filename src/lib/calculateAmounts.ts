@@ -41,25 +41,18 @@ export function calculateAmounts({
   sellDecimals,
   buyDecimals,
 }: AmountInput) {
+  if (isSellOrder !== true)
+    throw new Error("Only exact-sell orders are supported.");
   const slippage = slippagePercentSchema.safeParse(slippagePercent);
   if (!slippage.success) throw new Error(slippageMessage);
   const limit =
     parsePositiveDecimal(strikePrice, 18, "Trigger price") *
     (BigInt(10000) - parseUnits(slippage.data, 2));
-  const primaryAmount = parsePositiveDecimal(
-    amount,
-    isSellOrder ? sellDecimals : buyDecimals,
-    "Amount",
-  );
-  const buyNumerator = primaryAmount * limit * parseUnits("1", buyDecimals);
+  const sellAmount = parsePositiveDecimal(amount, sellDecimals, "Amount");
+  const buyNumerator = sellAmount * limit * parseUnits("1", buyDecimals);
   const buyDenominator = parseUnits("1", sellDecimals + 22);
-  const sellAmount = isSellOrder
-    ? primaryAmount
-    : (primaryAmount * parseUnits("1", sellDecimals + 22)) /
-      (limit * parseUnits("1", buyDecimals));
-  const buyAmount = isSellOrder
-    ? (buyNumerator + buyDenominator - BigInt(1)) / buyDenominator
-    : primaryAmount;
+  const buyAmount =
+    (buyNumerator + buyDenominator - BigInt(1)) / buyDenominator;
 
   if (sellAmount === BigInt(0) || buyAmount === BigInt(0)) {
     throw new Error("Amount is too small for this token's precision");
@@ -75,7 +68,7 @@ export function calculateAmounts({
 export function getOrderAmounts(data: Omit<SwapData, "validTo">) {
   const amounts = calculateAmounts({
     isSellOrder: data.isSellOrder,
-    amount: data.isSellOrder ? data.amountSell : data.amountBuy,
+    amount: data.amountSell,
     strikePrice: data.strikePrice,
     slippagePercent: data.slippagePercent,
     sellDecimals: data.tokenSell.decimals,

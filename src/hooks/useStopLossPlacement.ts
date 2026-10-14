@@ -17,6 +17,7 @@ import {
 } from "#/lib/publicClients";
 import {
   createStopLossPlacement,
+  PlacementReader,
   PlacementRecord,
 } from "#/lib/stopLossPlacement";
 
@@ -111,66 +112,82 @@ export function resumeStopLossPlacement(account: Address, chainId: ChainId) {
 }
 
 async function readSavedPlacement(account: Address, chainId: ChainId) {
-  const client = publicClientsFromIds[chainId];
   return getStopLossPlacement().resume(
     { account, chainId },
-    {
-      async readTransaction(_record, reference) {
-        if (!reference.transactionHash) return { status: "pending" };
-        try {
-          let replacementError: string | undefined;
-          const receipt = await client.waitForTransactionReceipt({
-            hash: reference.transactionHash,
-            timeout: 10000,
-            onReplaced: ({ reason }) => {
-              if (reason === "cancelled")
-                replacementError = "Transaction cancelled";
-              if (reason === "replaced")
-                replacementError =
-                  "Transaction replaced with a different action";
-            },
-          });
-          return {
-            status:
-              receipt.status === "success" && !replacementError
-                ? "success"
-                : "failed",
-            error:
-              replacementError ??
-              (receipt.status === "reverted"
-                ? "Transaction reverted"
-                : undefined),
-            reference: {
-              ...reference,
-              transactionHash: receipt.transactionHash,
-              blockNumber: receipt.blockNumber,
-            },
-          };
-        } catch (error) {
-          if (
-            error instanceof TransactionNotFoundError ||
-            error instanceof TransactionReceiptNotFoundError ||
-            error instanceof WaitForTransactionReceiptTimeoutError
-          )
-            return { status: "pending" };
-          throw error;
-        }
-      },
-      async checkState(record) {
-        if (record.stage === "setup")
-          return verifyPlacementConfirmation(record.prepared, { client });
-        const allowance = await client.readContract({
-          address: record.prepared.draft.tokenSell.address,
-          abi: erc20Abi,
-          functionName: "allowance",
-          args: [record.prepared.account, record.prepared.poller],
-        });
-        if (record.stage === "approval-reset") return allowance === BigInt(0);
-        return (
-          record.approvalAmount !== undefined &&
-          allowance >= record.approvalAmount
-        );
-      },
-    },
+    placementReader(chainId),
   );
+}
+
+export async function abandonStopLossPlacement(
+  account: Address,
+  chainId: ChainId,
+  id: string,
+) {
+  await resumeStopLossPlacement(account, chainId);
+  return getStopLossPlacement().abandon(
+    { account, chainId },
+    id,
+    placementReader(chainId),
+  );
+}
+
+function placementReader(chainId: ChainId): PlacementReader {
+  const client = publicClientsFromIds[chainId];
+  return {
+    async readTransaction(_record, reference) {
+      if (!reference.transactionHash) return { status: "pending" };
+      try {
+        let replacementError: string | undefined;
+        const receipt = await client.waitForTransactionReceipt({
+          hash: reference.transactionHash,
+          timeout: 10000,
+          onReplaced: ({ reason }) => {
+            if (reason === "cancelled")
+              replacementError = "Transaction cancelled";
+            if (reason === "replaced")
+              replacementError = "Transaction replaced with a different action";
+          },
+        });
+        return {
+          status:
+            receipt.status === "success" && !replacementError
+              ? "success"
+              : "failed",
+          error:
+            replacementError ??
+            (receipt.status === "reverted"
+              ? "Transaction reverted"
+              : undefined),
+          reference: {
+            ...reference,
+            transactionHash: receipt.transactionHash,
+            blockNumber: receipt.blockNumber,
+          },
+        };
+      } catch (error) {
+        if (
+          error instanceof TransactionNotFoundError ||
+          error instanceof TransactionReceiptNotFoundError ||
+          error instanceof WaitForTransactionReceiptTimeoutError
+        )
+          return { status: "pending" };
+        throw error;
+      }
+    },
+    async checkState(record) {
+      if (record.stage === "setup")
+        return verifyPlacementConfirmation(record.prepared, { client });
+      const allowance = await client.readContract({
+        address: record.prepared.draft.tokenSell.address,
+        abi: erc20Abi,
+        functionName: "allowance",
+        args: [record.prepared.account, record.prepared.poller],
+      });
+      if (record.stage === "approval-reset") return allowance === BigInt(0);
+      return (
+        record.approvalAmount !== undefined &&
+        allowance >= record.approvalAmount
+      );
+    },
+  };
 }

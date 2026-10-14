@@ -10,7 +10,11 @@ import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { SwapData } from "#/lib/types";
 
-export function SwapCardSubmitButton() {
+export function SwapCardSubmitButton({
+  disabled: reviewDisabled = false,
+}: {
+  disabled?: boolean;
+}) {
   const {
     formState: { isSubmitting, errors },
     control,
@@ -20,26 +24,17 @@ export function SwapCardSubmitButton() {
     (state) => state.tokenSellBalance,
   );
 
-  const [
-    tokenBuy,
-    tokenSell,
-    buyAmount,
-    sellAmount,
-    strikePrice,
-    slippagePercent,
-    isSellOrder,
-  ] = useWatch({
-    control,
-    name: [
-      "tokenBuy",
-      "tokenSell",
-      "amountBuy",
-      "amountSell",
-      "strikePrice",
-      "slippagePercent",
-      "isSellOrder",
-    ],
-  });
+  const [tokenBuy, tokenSell, sellAmount, strikePrice, slippagePercent] =
+    useWatch({
+      control,
+      name: [
+        "tokenBuy",
+        "tokenSell",
+        "amountSell",
+        "strikePrice",
+        "slippagePercent",
+      ],
+    });
 
   const { data: marketPrice } = useTokenPairPrice(tokenSell, tokenBuy);
 
@@ -56,7 +51,7 @@ export function SwapCardSubmitButton() {
         text: "Tokens must be different",
       };
     }
-    if (!(isSellOrder ? sellAmount : buyAmount)) {
+    if (!sellAmount) {
       return {
         disabled: true,
         text: "Enter amounts",
@@ -66,8 +61,8 @@ export function SwapCardSubmitButton() {
     let requiredSell: string;
     try {
       requiredSell = calculateAmounts({
-        isSellOrder,
-        amount: isSellOrder ? sellAmount : buyAmount,
+        isSellOrder: true,
+        amount: sellAmount,
         strikePrice,
         slippagePercent,
         sellDecimals: tokenSell.decimals,
@@ -101,9 +96,7 @@ export function SwapCardSubmitButton() {
         text: "Market price unavailable. Try again.",
       };
     }
-    if (
-      parseUnits(strikePrice, 18) > parseUnits(marketPrice.toFixed(18), 18)
-    ) {
+    if (parseUnits(strikePrice, 18) > parseUnits(marketPrice.toFixed(18), 18)) {
       return {
         disabled: true,
         text: "Trigger price must be at or below market price",
@@ -125,10 +118,8 @@ export function SwapCardSubmitButton() {
       text: "Review Stop Loss order",
     };
   }, [
-    buyAmount,
     errors,
     slippagePercent,
-    isSellOrder,
     marketPrice,
     sellAmount,
     strikePrice,
@@ -145,7 +136,7 @@ export function SwapCardSubmitButton() {
       type="submit"
       loading={isSubmitting}
       loadingText="Validating..."
-      disabled={disabled || isSubmitting}
+      disabled={reviewDisabled || disabled || isSubmitting}
     >
       {text}
     </Button>

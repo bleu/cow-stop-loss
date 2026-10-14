@@ -44,7 +44,7 @@ export async function preparePlacement({
   chainId: ChainId;
   client?: PublicClient;
 }) {
-  if (!draft.isSellOrder) {
+  if (draft.isSellOrder !== true) {
     throw new Error("Only exact-sell placement is supported");
   }
   if (draft.receiver === zeroAddress) {
@@ -164,6 +164,11 @@ export async function refreshPlacementChecks(
   }: { client?: PublicClient; localOrders?: readonly PreparedPlacement[] } = {},
 ): Promise<FundingSnapshot> {
   try {
+    if (
+      prepared.draft.isSellOrder !== true ||
+      !decodeStopLossStaticInput(prepared.staticInput).isSellOrder
+    )
+      throw new Error("Only exact-sell orders are supported.");
     const parents = await loadStopLossFundingParents({
       account: prepared.account,
       chainId: prepared.chainId,
@@ -416,6 +421,13 @@ export async function buildPlacementSetup(
   if (checks.approvalRequired) {
     throw new Error("Approve the funding amount before placing this order");
   }
+  const authorized = await client.readContract({
+    address: COMPOSABLE_COW_ADDRESS,
+    abi: composableCowAbi,
+    functionName: "singleOrders",
+    args: [prepared.owner, prepared.paramsHash],
+  });
+  if (authorized) throw new Error("This order has already been created.");
   const schedule = await client.readContract({
     address: prepared.poller,
     abi: composableCowPollerAbi,

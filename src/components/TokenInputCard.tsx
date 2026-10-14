@@ -32,9 +32,9 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   const tokenFieldName = `token${side}` as const;
   const amountFieldName = `amount${side}` as const;
 
-  const [token, isSellOrder, amount] = useWatch({
+  const [token, amount] = useWatch({
     control,
-    name: [tokenFieldName, "isSellOrder", amountFieldName],
+    name: [tokenFieldName, amountFieldName],
   });
 
   const tokenAddress = token?.address;
@@ -57,7 +57,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   const setTokenBalance =
     side === "Buy" ? setTokenBuyBalance : setTokenSellBalance;
 
-  const isAmountDisabled = isSellOrder ? side === "Buy" : side === "Sell";
+  const isAmountDisabled = side === "Buy";
   const [balanceFailed, setBalanceError] = useState(false);
   const [balanceScope, setBalanceScope] = useState<string>();
   const [balanceAttempt, retryBalance] = useState(0);
@@ -117,7 +117,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   return (
     <Card className="bg-background w-full p-2 rounded-lg">
       <CardTitle className="w-full flex justify-between font-normal text-xs">
-        {getCardTitle(isAmountDisabled, side)}
+        {getCardTitle(side)}
       </CardTitle>
       <CardContent className="px-0 py-2 items-start flex flex-row justify-between flex-wrap gap-x-2">
         <div className="flex min-w-0 flex-1 flex-col gap-y-1 items-start">
@@ -125,7 +125,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
             {...register(amountFieldName)}
             type="text"
             inputMode="decimal"
-            aria-label={getCardTitle(isAmountDisabled, side)}
+            aria-label={getCardTitle(side)}
             placeholder="0.0"
             className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:/70 px-0 text-2xl text-left bg-background"
             disabled={isAmountDisabled}
@@ -214,13 +214,6 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
 
 export const TokenInputCard = memo(TokenInputCardComponent);
 
-export function getCardTitle(isAmountDisabled: boolean, side: "Sell" | "Buy") {
-  if (!isAmountDisabled) {
-    return `${side} amount`;
-  }
-  if (side === "Buy") {
-    return "Receive at least";
-  } else {
-    return "Sell at most";
-  }
+function getCardTitle(side: "Sell" | "Buy") {
+  return side === "Sell" ? "Sell amount" : "Receive at least";
 }

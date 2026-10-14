@@ -5,6 +5,7 @@ import { Address } from "viem";
 import { useAccount, useSendTransaction } from "wagmi";
 
 import {
+  abandonStopLossPlacement,
   getStopLossPlacement,
   resumeStopLossPlacement,
   useStopLossPlacement,
@@ -60,16 +61,14 @@ export function StopLossCreation() {
     const placement = getStopLossPlacement();
     const update = () => {
       try {
-        if (
-          placement
-            .getRecords(prepared)
-            .some(
-              (record) =>
-                record.status === "confirmed" &&
-                record.prepared.paramsHash === prepared.paramsHash,
-            )
-        )
-          setOpen(false);
+        const record = placement
+          .getRecords(prepared)
+          .find((entry) => entry.prepared.paramsHash === prepared.paramsHash);
+        if (record?.status === "confirmed") setOpen(false);
+        else if (record?.error)
+          setReview(
+            (current) => current && { ...current, error: record.error },
+          );
       } catch (error) {
         setReview(
           (current) =>
@@ -99,28 +98,33 @@ export function StopLossCreation() {
     setOpen(true);
     try {
       const placement = getStopLossPlacement();
-      const localOrders = placement.getConfirmedPlacements({
-        account,
-        chainId: selectedChain,
-      });
-      const saved =
-        existing ??
-        placement
-          .getRecords({ account, chainId: selectedChain })
-          .find(
-            (record) =>
-              record.status === "prompting" ||
-              record.status === "pending" ||
-              record.status === "ready",
-          )?.prepared;
+      if (!existing) {
+        await resumeStopLossPlacement(account, selectedChain);
+        if (
+          placement
+            .getRecords({ account, chainId: selectedChain })
+            .some((record) => record.status !== "confirmed")
+        ) {
+          if (
+            currentScope.current === selectedScope &&
+            request.current === revision
+          ) {
+            setOpen(false);
+            setReview(undefined);
+          }
+          return;
+        }
+      }
       const prepared =
-        saved ??
+        existing ??
         (await preparePlacement({
           draft: order,
           account,
           chainId: selectedChain,
         }));
-      const checks = await refreshPlacementChecks(prepared, { localOrders });
+      const checks = await refreshPlacementChecks(prepared, {
+        localOrders: placement.getConfirmedPlacements(prepared),
+      });
       if (
         currentScope.current !== selectedScope ||
         request.current !== revision
@@ -144,6 +148,7 @@ export function StopLossCreation() {
         order,
         account,
         chainId: selectedChain,
+        prepared: existing,
         busy: false,
         error: error instanceof Error ? error.message : "Review is unavailable",
       });
@@ -342,12 +347,51 @@ export function StopLossCreation() {
     }
   }
 
-  const active = records.find(
-    (record) =>
-      record.status === "prompting" ||
-      record.status === "pending" ||
-      record.status === "ready",
-  );
+  async function abandon() {
+    if (!review?.prepared || review.busy) return;
+    const prepared = review.prepared;
+    const selectedScope = `${prepared.account.toLowerCase()}:${prepared.chainId}`;
+    const revision = request.current;
+    const record = getStopLossPlacement()
+      .getRecords(prepared)
+      .find((entry) => entry.prepared.paramsHash === prepared.paramsHash);
+    if (!record) return;
+    setReview({ ...review, busy: true });
+    try {
+      await abandonStopLossPlacement(
+        prepared.account,
+        prepared.chainId,
+        record.id,
+      );
+      if (
+        currentScope.current !== selectedScope ||
+        request.current !== revision
+      )
+        return;
+      request.current += 1;
+      setOpen(false);
+      setReview(undefined);
+    } catch (error) {
+      if (
+        currentScope.current !== selectedScope ||
+        request.current !== revision
+      )
+        return;
+      setReview(
+        (current) =>
+          current && {
+            ...current,
+            busy: false,
+            error:
+              error instanceof Error
+                ? error.message
+                : "Placement cannot be abandoned",
+          },
+      );
+    }
+  }
+
+  const active = records.find((record) => record.status !== "confirmed");
   const latest = records.at(-1);
   const pending =
     active?.status === "prompting" || active?.status === "pending";
@@ -381,6 +425,7 @@ export function StopLossCreation() {
         </div>
       )}
       <SwapCard
+        reviewDisabled={Boolean(active)}
         onReviewOrder={(order, selectedChain, account) => {
           void loadReview(order, selectedChain, account);
         }}
@@ -397,8 +442,15 @@ export function StopLossCreation() {
           prepared={review.prepared}
           checks={review.checks}
           busy={review.busy}
-          error={review.error ?? trackingError ?? active?.error}
+          error={review.error ?? trackingError}
           pending={pending}
+          onAbandon={
+            active && active.prepared.paramsHash === review.prepared?.paramsHash
+              ? () => {
+                  void abandon();
+                }
+              : undefined
+          }
           onApprove={() => {
             void approve();
           }}
