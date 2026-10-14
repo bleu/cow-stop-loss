@@ -14,6 +14,7 @@ import {
   truncateAddress,
 } from "#/utils";
 
+import { CancelOrderDialog } from "./CancelOrderDialog";
 import { BlockExplorerLink } from "./ExplorerLink";
 import { StatusBadge } from "./StatusBadge";
 
@@ -109,6 +110,7 @@ export function OrderDetails({
   return (
     <main className="mx-auto max-w-4xl px-4 py-10">
       <OrderDetailsHeading />
+      <CancelOrderDialog order={order} />
       {warning}
       <dl>
         <Field label="Chain">{chainNames[chainId]}</Field>

@@ -27,6 +27,8 @@ import OrderPage from "#/app/[chainId]/[safeAddress]/[orderId]/page";
 import LegacyListPage from "#/app/[chainId]/[safeAddress]/page";
 import HomePage from "#/app/page";
 import { RootLayout as AppRootLayout } from "#/components/RootLayout";
+import { useOrderList } from "#/hooks/useOrderList";
+import { publicClientsFromIds } from "#/lib/publicClients";
 import { createWagmiConfig } from "#/utils/wagmi";
 
 let config: ReturnType<typeof createWagmiConfig>;
@@ -153,6 +155,760 @@ async function connectBrowserWallet() {
   );
 }
 
+test("reviews one sell order before asking the wallet to cancel", async () => {
+  cancellationRpc();
+  serveOrders([parent]);
+  const provider = new BrowserWallet();
+  const request = jest.spyOn(provider, "request");
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: provider,
+  });
+  render(
+    <RootLayout>
+      <HomePage />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Cancel order stop-loss-1 on Ethereum",
+    }),
+  );
+
+  const dialog = await screen.findByRole("dialog");
+  expect(within(dialog).getByText("1 WETH for 2000 USDC")).toBeInTheDocument();
+  expect(
+    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+  ).toBeInTheDocument();
+  expect(
+    request.mock.calls.some(([args]) => args.method === "eth_sendTransaction"),
+  ).toBe(false);
+});
+
+test("keeps cancellation loading after a wallet proposal and confirms only mined removal", async () => {
+  serveOrders([parent]);
+  const provider = new BrowserWallet();
+  const request = jest.spyOn(provider, "request");
+  const chain = cancellationRpc();
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: provider,
+  });
+  render(
+    <RootLayout>
+      <HomePage />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Cancel order stop-loss-1 on Ethereum",
+    }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+  );
+  await waitFor(() =>
+    expect({
+      methods: request.mock.calls.map(([args]) => args.method),
+      dialog: dialog.textContent,
+    }).toEqual(
+      expect.objectContaining({
+        methods: expect.arrayContaining(["eth_sendTransaction"]),
+      }),
+    ),
+  );
+  expect(within(dialog).getByRole("status")).toHaveTextContent(
+    "Waiting for cancellation...",
+  );
+  expect(
+    within(dialog).queryByText("Order cancelled."),
+  ).not.toBeInTheDocument();
+  chain.active = false;
+  chain.block = BigInt(101);
+  expect(
+    await within(dialog).findByText("Order cancelled.", {}, { timeout: 4000 }),
+  ).toBeInTheDocument();
+  expect(
+    within(dialog).getAllByRole("button", { name: "Close" }).length,
+  ).toBeGreaterThan(0);
+});
+
+test("hides cancellation for an order outside the current factory CowShed", async () => {
+  serveOrders([
+    { ...parent, owner: "0x4444444444444444444444444444444444444444" },
+  ]);
+  cancellationRpc();
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: new BrowserWallet(),
+  });
+  render(
+    <RootLayout>
+      <HomePage />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  await screen.findByRole("link", {
+    name: "View order stop-loss-1 on Ethereum",
+  });
+  expect(
+    screen.queryByRole("button", { name: /Cancel order/ }),
+  ).not.toBeInTheDocument();
+});
+
+test("keeps confirmed cancellation in the table after stale API refresh", async () => {
+  serveOrders([parent]);
+  const chain = cancellationRpc();
+  const provider = new BrowserWallet();
+  const request = jest.spyOn(provider, "request");
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: provider,
+  });
+  render(
+    <RootLayout>
+      <HomePage />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Cancel order stop-loss-1 on Ethereum",
+    }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+  );
+  await within(dialog).findByRole("status");
+  await waitFor(() =>
+    expect(
+      request.mock.calls.some(
+        ([args]) => args.method === "eth_sendTransaction",
+      ),
+    ).toBe(true),
+  );
+  chain.active = false;
+  chain.block = BigInt(101);
+  await within(dialog).findByText("Order cancelled.", {}, { timeout: 4000 });
+  fireEvent.click(within(dialog).getAllByRole("button", { name: "Close" })[0]);
+  expect(
+    await screen.findByRole("cell", { name: "Cancelled" }),
+  ).toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Refresh orders" }),
+    ).toBeEnabled(),
+  );
+  expect(screen.getByRole("cell", { name: "Cancelled" })).toBeInTheDocument();
+  expect(screen.getAllByRole("link", { name: /^View order/ })).toHaveLength(1);
+});
+
+test("reviews the remaining amounts when cancelling a partially filled order from details", async () => {
+  serveOrders([
+    {
+      ...parent,
+      discreteOrders: {
+        items: [
+          {
+            orderUid: `0x${"cd".repeat(56)}`,
+            status: "open",
+            validTo: 4102444800,
+            executedSellAmount: "400000000000000000",
+            executedBuyAmount: "840000000",
+            executedFee: "0",
+          },
+        ],
+      },
+    },
+  ]);
+  cancellationRpc();
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: new BrowserWallet(),
+  });
+  render(
+    <RootLayout>
+      <OrderPage
+        params={{ safeAddress: wallet, chainId: 1, orderId: "stop-loss-1" }}
+      />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Cancel order stop-loss-1 on Ethereum",
+    }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  expect(
+    within(dialog).getByText("0.6 WETH for 1200 USDC"),
+  ).toBeInTheDocument();
+  expect(dialog).not.toHaveTextContent(
+    /fund|schedule|approval|race|factory|hash/i,
+  );
+});
+
+test("invalidates cancellation when the wallet chain changes during preflight", async () => {
+  serveOrders([parent]);
+  cancellationRpc();
+  const provider = new BrowserWallet();
+  const request = jest.spyOn(provider, "request");
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: provider,
+  });
+  render(
+    <RootLayout>
+      <OrderPage
+        params={{ safeAddress: wallet, chainId: 1, orderId: "stop-loss-1" }}
+      />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Cancel order stop-loss-1 on Ethereum",
+    }),
+  );
+  let finish!: (block: bigint) => void;
+  jest.spyOn(publicClientsFromIds[1], "getBlockNumber").mockImplementationOnce(
+    () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
+  );
+  fireEvent.click(
+    within(await screen.findByRole("dialog")).getByRole("button", {
+      name: "Confirm cancellation",
+    }),
+  );
+  await waitFor(() => expect(finish).toBeDefined());
+  act(() => {
+    provider.chainId = 100;
+    provider.emit("chainChanged", "0x64");
+  });
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  await act(async () => finish(BigInt(100)));
+  expect(
+    request.mock.calls.some(([args]) => args.method === "eth_sendTransaction"),
+  ).toBe(false);
+});
+
+test("requires a deliberate retry after wallet rejection and checks the order again", async () => {
+  serveOrders([parent]);
+  const chain = cancellationRpc();
+  const provider = new BrowserWallet();
+  provider.rejectSend = true;
+  const request = jest.spyOn(provider, "request");
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: provider,
+  });
+  render(
+    <RootLayout>
+      <OrderPage
+        params={{ safeAddress: wallet, chainId: 1, orderId: "stop-loss-1" }}
+      />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Cancel order stop-loss-1 on Ethereum",
+    }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+  );
+  expect(await within(dialog).findByRole("alert")).toHaveTextContent(
+    /rejected/i,
+  );
+  expect(
+    within(dialog).queryByText("Order cancelled."),
+  ).not.toBeInTheDocument();
+  const sent = request.mock.calls.filter(
+    ([args]) => args.method === "eth_sendTransaction",
+  ).length;
+  chain.active = false;
+  provider.rejectSend = false;
+  fireEvent.click(within(dialog).getByRole("button", { name: "Retry" }));
+  await waitFor(() =>
+    expect(within(dialog).getByRole("alert")).toHaveTextContent(
+      "This order is no longer active.",
+    ),
+  );
+  expect(
+    request.mock.calls.filter(
+      ([args]) => args.method === "eth_sendTransaction",
+    ),
+  ).toHaveLength(sent);
+});
+
+test("retries only observation after an uncertain RPC failure", async () => {
+  serveOrders([parent]);
+  const chain = cancellationRpc();
+  const provider = new BrowserWallet();
+  const request = jest.spyOn(provider, "request");
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: provider,
+  });
+  render(
+    <RootLayout>
+      <OrderPage
+        params={{ safeAddress: wallet, chainId: 1, orderId: "stop-loss-1" }}
+      />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Cancel order stop-loss-1 on Ethereum",
+    }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+  );
+  await waitFor(() =>
+    expect(
+      request.mock.calls.some(
+        ([args]) => args.method === "eth_sendTransaction",
+      ),
+    ).toBe(true),
+  );
+  chain.block = BigInt(101);
+  jest
+    .spyOn(publicClientsFromIds[1], "getTransactionReceipt")
+    .mockRejectedValue(new Error("Receipt RPC unavailable"));
+  expect(
+    await within(dialog).findByRole("alert", {}, { timeout: 4000 }),
+  ).toHaveTextContent("Receipt RPC unavailable");
+  chain.active = false;
+  jest
+    .spyOn(publicClientsFromIds[1], "getTransactionReceipt")
+    .mockRejectedValue(
+      Object.assign(new Error("not found"), {
+        name: "TransactionReceiptNotFoundError",
+      }),
+    );
+  fireEvent.click(within(dialog).getByRole("button", { name: "Retry" }));
+  expect(
+    await within(dialog).findByText("Order cancelled."),
+  ).toBeInTheDocument();
+  expect(
+    request.mock.calls.filter(
+      ([args]) => args.method === "eth_sendTransaction",
+    ),
+  ).toHaveLength(1);
+});
+
+test("allows a new deliberate submission after a reverted execution", async () => {
+  serveOrders([parent]);
+  const chain = cancellationRpc();
+  const provider = new BrowserWallet();
+  const request = jest.spyOn(provider, "request");
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: provider,
+  });
+  render(
+    <RootLayout>
+      <OrderPage
+        params={{ safeAddress: wallet, chainId: 1, orderId: "stop-loss-1" }}
+      />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Cancel order stop-loss-1 on Ethereum",
+    }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+  );
+  await waitFor(() =>
+    expect(
+      request.mock.calls.filter(
+        ([args]) => args.method === "eth_sendTransaction",
+      ),
+    ).toHaveLength(1),
+  );
+  chain.block = BigInt(101);
+  jest
+    .spyOn(publicClientsFromIds[1], "getTransactionReceipt")
+    .mockResolvedValue({ status: "reverted" } as never);
+  expect(
+    await within(dialog).findByRole("alert", {}, { timeout: 4000 }),
+  ).toHaveTextContent("Cancellation transaction reverted.");
+  expect(
+    within(dialog).queryByText("Order cancelled."),
+  ).not.toBeInTheDocument();
+  fireEvent.click(within(dialog).getByRole("button", { name: "Retry" }));
+  await waitFor(() =>
+    expect(
+      request.mock.calls.filter(
+        ([args]) => args.method === "eth_sendTransaction",
+      ),
+    ).toHaveLength(2),
+  );
+});
+
+test("checks state instead of resending when the wallet response is lost", async () => {
+  serveOrders([parent]);
+  const chain = cancellationRpc();
+  const provider = new BrowserWallet();
+  provider.loseSendResponse = true;
+  const request = jest.spyOn(provider, "request");
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: provider,
+  });
+  render(
+    <RootLayout>
+      <OrderPage
+        params={{ safeAddress: wallet, chainId: 1, orderId: "stop-loss-1" }}
+      />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Cancel order stop-loss-1 on Ethereum",
+    }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+  );
+  await within(dialog).findByRole("alert");
+  const sends = request.mock.calls.filter(
+    ([args]) => args.method === "eth_sendTransaction",
+  ).length;
+  chain.block = BigInt(101);
+  chain.active = false;
+  fireEvent.click(within(dialog).getByRole("button", { name: "Retry" }));
+  expect(
+    await within(dialog).findByText("Order cancelled."),
+  ).toBeInTheDocument();
+  expect(
+    request.mock.calls.filter(
+      ([args]) => args.method === "eth_sendTransaction",
+    ),
+  ).toHaveLength(sends);
+});
+
+test("preserves confirmed partial execution in both order-list projections when the API goes stale", async () => {
+  const orders: ApiParent[] = [
+    {
+      ...parent,
+      discreteOrders: {
+        items: [
+          {
+            orderUid: `0x${"cd".repeat(56)}`,
+            status: "open",
+            validTo: 4102444800,
+            executedSellAmount: "400000000000000000",
+            executedBuyAmount: "840000000",
+            executedFee: "0",
+          },
+        ],
+      },
+    },
+  ];
+  serveOrders(orders);
+  const chain = cancellationRpc();
+  const provider = new BrowserWallet();
+  const request = jest.spyOn(provider, "request");
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: provider,
+  });
+  render(
+    <RootLayout>
+      <HomePage />
+      <OrderListProjection />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Cancel order stop-loss-1 on Ethereum",
+    }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+  );
+  await waitFor(() =>
+    expect(
+      request.mock.calls.some(
+        ([args]) => args.method === "eth_sendTransaction",
+      ),
+    ).toBe(true),
+  );
+  chain.active = false;
+  chain.block = BigInt(101);
+  await within(dialog).findByText("Order cancelled.", {}, { timeout: 4000 });
+  fireEvent.click(within(dialog).getAllByRole("button", { name: "Close" })[0]);
+  orders[0] = parent;
+  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Refresh orders" }),
+    ).toBeEnabled(),
+  );
+  expect(screen.getByLabelText("Merged execution")).toHaveTextContent(
+    "400000000000000000/840000000/partially filled and cancelled",
+  );
+  expect(screen.getByLabelText("Chain execution")).toHaveTextContent(
+    "400000000000000000/840000000/partially filled and cancelled",
+  );
+});
+
+function OrderListProjection() {
+  const { orders, chains } = useOrderList();
+  const show = (order: (typeof orders)[number] | undefined) =>
+    `${order?.executedSellAmount}/${order?.executedBuyAmount}/${order?.status}`;
+  return (
+    <>
+      <output aria-label="Merged execution">{show(orders[0])}</output>
+      <output aria-label="Chain execution">
+        {show(chains[0]?.orders[0] as (typeof orders)[number])}
+      </output>
+    </>
+  );
+}
+
+test("can submit cancellation when React checks effect cleanup before review", async () => {
+  serveOrders([parent]);
+  cancellationRpc();
+  const provider = new BrowserWallet();
+  const request = jest.spyOn(provider, "request");
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: provider,
+  });
+  render(
+    <React.StrictMode>
+      <RootLayout>
+        <OrderPage
+          params={{ safeAddress: wallet, chainId: 1, orderId: "stop-loss-1" }}
+        />
+      </RootLayout>
+    </React.StrictMode>,
+  );
+  await connectBrowserWallet();
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Cancel order stop-loss-1 on Ethereum",
+    }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+  );
+  await waitFor(() =>
+    expect(
+      request.mock.calls.some(
+        ([args]) => args.method === "eth_sendTransaction",
+      ),
+    ).toBe(true),
+  );
+});
+
+test("closes the review when an in-flight refresh replaces the selected row", async () => {
+  const orders = [parent];
+  serveOrders(orders);
+  cancellationRpc();
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: new BrowserWallet(),
+  });
+  render(
+    <RootLayout>
+      <HomePage />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  const cancel = await screen.findByRole("button", {
+    name: "Cancel order stop-loss-1 on Ethereum",
+  });
+  const fetchOrders = global.fetch;
+  let release!: () => void;
+  const pending = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  global.fetch = jest.fn(async (...args) => {
+    await pending;
+    return fetchOrders(...args);
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
+  fireEvent.click(cancel);
+  await screen.findByRole("dialog");
+  orders[0] = {
+    ...parent,
+    hash: `0x${"ef".repeat(32)}`,
+    decodedParams: {
+      ...parent.decodedParams,
+      sellAmount: "2000000000000000000",
+    },
+  };
+  await act(async () => release());
+  await waitFor(() =>
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+  );
+  expect(
+    await screen.findByRole("button", {
+      name: "Cancel order stop-loss-1 on Ethereum",
+    }),
+  ).toBeInTheDocument();
+});
+
+test("keeps wrong-network retry ready without submitting or observing a transaction", async () => {
+  serveOrders([parent]);
+  cancellationRpc();
+  const provider = new BrowserWallet();
+  provider.chainId = 100;
+  const request = jest.spyOn(provider, "request");
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: provider,
+  });
+  render(
+    <RootLayout>
+      <OrderPage
+        params={{ safeAddress: wallet, chainId: 1, orderId: "stop-loss-1" }}
+      />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Cancel order stop-loss-1 on Ethereum",
+    }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+  );
+  expect(await within(dialog).findByRole("alert")).toHaveTextContent(
+    "Switch the wallet to Ethereum before cancelling.",
+  );
+  fireEvent.click(within(dialog).getByRole("button", { name: "Retry" }));
+  expect(await within(dialog).findByRole("alert")).toHaveTextContent(
+    "Switch the wallet to Ethereum before cancelling.",
+  );
+  expect(
+    request.mock.calls.some(([args]) => args.method === "eth_sendTransaction"),
+  ).toBe(false);
+});
+
+test("stops observation on close and starts a fresh review without the abandoned transaction", async () => {
+  serveOrders([parent]);
+  const chain = cancellationRpc();
+  const provider = new BrowserWallet();
+  const request = jest.spyOn(provider, "request");
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: provider,
+  });
+  render(
+    <RootLayout>
+      <OrderPage
+        params={{ safeAddress: wallet, chainId: 1, orderId: "stop-loss-1" }}
+      />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Cancel order stop-loss-1 on Ethereum",
+    }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+  );
+  await waitFor(() =>
+    expect(
+      request.mock.calls.some(
+        ([args]) => args.method === "eth_sendTransaction",
+      ),
+    ).toBe(true),
+  );
+  fireEvent.click(within(dialog).getByRole("button", { name: "Close" }));
+  const reads = (publicClientsFromIds[1].getBlockNumber as jest.Mock).mock.calls
+    .length;
+  chain.active = false;
+  chain.block = BigInt(101);
+  jest.useFakeTimers({ doNotFake: ["queueMicrotask"] });
+  await act(async () => {
+    await jest.advanceTimersByTimeAsync(5000);
+  });
+  expect(
+    (publicClientsFromIds[1].getBlockNumber as jest.Mock).mock.calls,
+  ).toHaveLength(reads);
+  jest.useRealTimers();
+  expect(screen.getByRole("definition", { name: "Status" })).toHaveTextContent(
+    "Open",
+  );
+  fireEvent.click(
+    screen.getByRole("button", {
+      name: "Cancel order stop-loss-1 on Ethereum",
+    }),
+  );
+  const fresh = await screen.findByRole("dialog");
+  expect(within(fresh).queryByRole("status")).not.toBeInTheDocument();
+  fireEvent.click(
+    within(fresh).getByRole("button", { name: "Confirm cancellation" }),
+  );
+  expect(await within(fresh).findByRole("alert")).toHaveTextContent(
+    "This order is no longer active.",
+  );
+  expect(
+    request.mock.calls.filter(
+      ([args]) => args.method === "eth_sendTransaction",
+    ),
+  ).toHaveLength(1);
+});
+
+function cancellationRpc() {
+  const chain = { active: true, block: BigInt(100) };
+  jest
+    .spyOn(publicClientsFromIds[1], "getBlockNumber")
+    .mockImplementation(async () => chain.block);
+  jest
+    .spyOn(publicClientsFromIds[1], "readContract")
+    .mockImplementation((async ({ functionName }: { functionName: string }) => {
+      if (
+        functionName === "COW_SHED_FACTORY" ||
+        functionName === "trustedExecutor"
+      )
+        return "0x3333333333333333333333333333333333333333";
+      if (functionName === "proxyOf") return wallet;
+      if (functionName === "singleOrders") return chain.active;
+      throw new Error(`Unexpected RPC read: ${functionName}`);
+    }) as (typeof publicClientsFromIds)[1]["readContract"]);
+  jest
+    .spyOn(publicClientsFromIds[1], "getTransactionReceipt")
+    .mockRejectedValue(
+      Object.assign(new Error("not found"), {
+        name: "TransactionReceiptNotFoundError",
+      }),
+    );
+  return chain;
+}
+
 beforeAll(() => {
   Object.assign(globalThis, {
     ResizeObserver: class {
@@ -167,6 +923,11 @@ beforeAll(() => {
 beforeEach(() => {
   window.history.replaceState(null, "", "/");
   config = createWagmiConfig();
+  for (const client of Object.values(publicClientsFromIds)) {
+    jest
+      .spyOn(client, "getBlockNumber")
+      .mockRejectedValue(new Error("RPC unavailable"));
+  }
   serveOrders([]);
 });
 
@@ -174,6 +935,8 @@ class BrowserWallet extends EventEmitter {
   accounts = [wallet];
   chainId = 1;
   rejectSwitch = false;
+  rejectSend = false;
+  loseSendResponse = false;
 
   async request({ method, params }: { method: string; params?: unknown[] }) {
     if (method === "wallet_switchEthereumChain") {
@@ -187,6 +950,15 @@ class BrowserWallet extends EventEmitter {
     }
     if (method === "eth_requestAccounts" || method === "eth_accounts")
       return this.accounts;
+    if (method === "eth_estimateGas") return "0x493e0";
+    if (method === "eth_sendTransaction") {
+      if (this.loseSendResponse) throw new Error("Wallet response lost.");
+      if (this.rejectSend)
+        throw Object.assign(new Error("User rejected the request."), {
+          code: 4001,
+        });
+      return `0x${"cd".repeat(32)}`;
+    }
     if (method === "eth_chainId") return `0x${this.chainId.toString(16)}`;
     if (method === "wallet_requestPermissions")
       return [{ parentCapability: "eth_accounts" }];

@@ -26,6 +26,7 @@ import { ConsolidatedOrdersTable } from "#/components/ConsolidatedOrdersTable";
 import { RootLayout } from "#/components/RootLayout";
 import { getStopLossPlacement } from "#/hooks/useStopLossPlacement";
 import type { PreparedPlacement } from "#/lib/pollerStopLoss";
+import { publicClientsFromIds } from "#/lib/publicClients";
 import { encodeStopLossStaticInput } from "#/lib/staticInputEncoder";
 import { createStopLossPlacement } from "#/lib/stopLossPlacement";
 import { OrderStatus } from "#/lib/types";
@@ -173,6 +174,8 @@ class BrowserWallet extends EventEmitter {
   async request({ method }: { method: string }) {
     if (method === "eth_accounts" || method === "eth_requestAccounts")
       return this.accounts;
+    if (method === "eth_estimateGas") return "0x493e0";
+    if (method === "eth_sendTransaction") return `0x${"cd".repeat(32)}`;
     if (method === "eth_chainId") return `0x${this.chainId.toString(16)}`;
     if (method === "wallet_requestPermissions")
       return [{ parentCapability: "eth_accounts" }];
@@ -288,6 +291,103 @@ afterAll(() => {
   if (originalLocks) Object.defineProperty(navigator, "locks", originalLocks);
   else Reflect.deleteProperty(navigator, "locks");
   global.structuredClone = originalClone;
+});
+
+test("reviews cancellation of a confirmed local order before API indexing", async () => {
+  jest
+    .spyOn(publicClientsFromIds[1], "getBlockNumber")
+    .mockResolvedValue(BigInt(100));
+  jest
+    .spyOn(publicClientsFromIds[1], "readContract")
+    .mockImplementation(async ({ functionName }) => {
+      if (
+        functionName === "COW_SHED_FACTORY" ||
+        functionName === "trustedExecutor"
+      )
+        return "0x3333333333333333333333333333333333333333";
+      if (functionName === "proxyOf") return owner;
+      if (functionName === "singleOrders") return true;
+      throw new Error(`Unexpected RPC read: ${functionName}`);
+    });
+  await confirm(prepared(1));
+  render(<TableView />);
+  await connectWallet();
+  await screen.findByText("Waiting for API indexing");
+  expect(
+    screen.queryByRole("link", { name: /^View order/ }),
+  ).not.toBeInTheDocument();
+  fireEvent.click(await screen.findByRole("button", { name: /^Cancel order/ }));
+  const dialog = await screen.findByRole("dialog");
+  expect(within(dialog).getByText("1 WETH for 1980 USDC")).toBeInTheDocument();
+  expect(
+    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+  ).toBeInTheDocument();
+});
+
+test("keeps a cancelled local creation cancelled when its stale API row arrives", async () => {
+  const indexed: ReturnType<typeof apiParent>[] = [];
+  serveOrders(indexed);
+  let active = true;
+  let block = BigInt(100);
+  jest
+    .spyOn(publicClientsFromIds[1], "getBlockNumber")
+    .mockImplementation(async () => block);
+  jest
+    .spyOn(publicClientsFromIds[1], "readContract")
+    .mockImplementation(async ({ functionName }) => {
+      if (
+        functionName === "COW_SHED_FACTORY" ||
+        functionName === "trustedExecutor"
+      )
+        return "0x3333333333333333333333333333333333333333";
+      if (functionName === "proxyOf") return owner;
+      if (functionName === "singleOrders") return active;
+      throw new Error(`Unexpected RPC read: ${functionName}`);
+    });
+  jest
+    .spyOn(publicClientsFromIds[1], "getTransactionReceipt")
+    .mockRejectedValue(
+      Object.assign(new Error("not found"), {
+        name: "TransactionReceiptNotFoundError",
+      }),
+    );
+  const local = prepared(1);
+  await confirm(local);
+  const request = jest.spyOn(provider, "request");
+  render(<TableView />);
+  await connectWallet();
+  fireEvent.click(await screen.findByRole("button", { name: /^Cancel order/ }));
+  const dialog = await screen.findByRole("dialog");
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+  );
+  await waitFor(() =>
+    expect(
+      request.mock.calls.some(
+        ([args]) => args.method === "eth_sendTransaction",
+      ),
+    ).toBe(true),
+  );
+  active = false;
+  block = BigInt(101);
+  await within(dialog).findByText("Order cancelled.", {}, { timeout: 4000 });
+  fireEvent.click(within(dialog).getAllByRole("button", { name: "Close" })[0]);
+  indexed.push(apiParent(1, "indexed-local", local.paramsHash));
+  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
+  await screen.findByRole("link", {
+    name: "View order indexed-local on Ethereum",
+  });
+  expect(screen.getByRole("cell", { name: "Cancelled" })).toBeInTheDocument();
+  expect(screen.getAllByRole("row")).toHaveLength(2);
+  active = true;
+  block = BigInt(102);
+  indexed[0] = apiParent(1, "recreated-local", local.paramsHash);
+  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
+  await screen.findByRole("link", {
+    name: "View order recreated-local on Ethereum",
+  });
+  expect(screen.getByRole("cell", { name: "Open" })).toBeInTheDocument();
+  expect(screen.getAllByRole("row")).toHaveLength(2);
 });
 
 test("fills the empty orders viewport without putting filters or pagination in its scroll area", async () => {
