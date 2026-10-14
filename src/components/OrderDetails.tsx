@@ -14,6 +14,7 @@ import {
   truncateAddress,
 } from "#/utils";
 
+import { ApprovalRepair } from "./ApprovalRepair";
 import { CancelOrderDialog } from "./CancelOrderDialog";
 import { BlockExplorerLink } from "./ExplorerLink";
 import { StatusBadge } from "./StatusBadge";
@@ -112,6 +113,7 @@ export function OrderDetails({
       <OrderDetailsHeading />
       <CancelOrderDialog order={order} />
       {warning}
+      <ApprovalRepair order={order} onRefresh={mutate} />
       <dl>
         <Field label="Chain">{chainNames[chainId]}</Field>
         <Field label="Order ID">{order.parentId}</Field>

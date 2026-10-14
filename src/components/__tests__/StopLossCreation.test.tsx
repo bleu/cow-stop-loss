@@ -186,7 +186,9 @@ it("confirms approval before enabling Place and does not send setup automaticall
   await waitFor(() =>
     expect(screen.getByRole("button", { name: "Place order" })).toBeEnabled(),
   );
-  expect(screen.getByRole("button", { name: "Approve WETH" })).toBeDisabled();
+  expect(
+    screen.queryByRole("button", { name: "Approve WETH" }),
+  ).not.toBeInTheDocument();
   expect(sendTransactionAsync).toHaveBeenCalledWith(
     expect.objectContaining({
       account,
@@ -573,7 +575,7 @@ it("keeps a rejected wallet request out of the next step", async () => {
   expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
 });
 
-it("requires a separate approval after a confirmed allowance reset", async () => {
+it("submits unlimited approval directly from a nonzero insufficient allowance", async () => {
   const user = userEvent.setup();
   let allowance = BigInt("500000000000000000");
   const readContract = jest.mocked(publicClientsFromIds[1].readContract);
@@ -599,21 +601,18 @@ it("requires a separate approval after a confirmed allowance reset", async () =>
       blockNumber: BigInt(101),
     } as never);
   showCreation();
-  await reviewOneOrder(user, true, "Reset WETH allowance");
-  await user.click(
-    screen.getByRole("button", { name: "Reset WETH allowance" }),
-  );
-
-  await waitFor(() =>
-    expect(screen.getByRole("button", { name: "Approve WETH" })).toBeEnabled(),
-  );
-  expect(screen.getByRole("button", { name: "Place order" })).toBeDisabled();
-  expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
+  await reviewOneOrder(user);
+  await user.click(screen.getByRole("radio", { name: "Unlimited" }));
   await user.click(screen.getByRole("button", { name: "Approve WETH" }));
   await waitFor(() =>
     expect(screen.getByRole("button", { name: "Place order" })).toBeEnabled(),
   );
-  expect(sendTransactionAsync).toHaveBeenCalledTimes(2);
+  expect(allowance).toBe(
+    BigInt(
+      "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+    ),
+  );
+  expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
 });
 
 it("retains a cancelled approval for explicit retry or abandonment", async () => {

@@ -10,9 +10,11 @@ import {
 
 import { defaultAdvancedSettings } from "#/hooks/useAdvancedSettings";
 import {
+  buildApprovalRepair,
   buildPlacementApproval,
   buildPlacementSetup,
   preparePlacement,
+  refreshApprovalRepair,
   refreshPlacementChecks,
   verifyPlacementConfirmation,
 } from "#/lib/pollerStopLoss";
@@ -586,8 +588,7 @@ test.each([
     });
     await expect(
       buildPlacementApproval(prepared, {
-        client: olderClient,
-        reviewedRequiredAllowance: BigInt("1000000000000000000"),
+        checks: await refreshPlacementChecks(prepared, { client: olderClient }),
       }),
     ).rejects.toThrow(
       "Oracle price data is stale. Try again later, or increase the oracle time limit in Advanced Settings.",
@@ -595,7 +596,7 @@ test.each([
     await expect(
       buildPlacementSetup(prepared, {
         client: olderClient,
-        reviewedRequiredAllowance: BigInt("1000000000000000000"),
+        checks: await refreshPlacementChecks(prepared, { client: olderClient }),
       }),
     ).rejects.toThrow(
       "Oracle price data is stale. Try again later, or increase the oracle time limit in Advanced Settings.",
@@ -659,14 +660,13 @@ test("keeps an oracle RPC failure distinct from a stale price", async () => {
   });
   await expect(
     buildPlacementApproval(prepared, {
-      client,
-      reviewedRequiredAllowance: BigInt("1000000000000000000"),
+      checks: await refreshPlacementChecks(prepared, { client }),
     }),
   ).rejects.toThrow("Oracle RPC unavailable");
   await expect(
     buildPlacementSetup(prepared, {
       client,
-      reviewedRequiredAllowance: BigInt("1000000000000000000"),
+      checks: await refreshPlacementChecks(prepared, { client }),
     }),
   ).rejects.toThrow("Oracle RPC unavailable");
 });
@@ -687,21 +687,26 @@ test("blocks an individual order above the wallet balance", async () => {
   });
 });
 
-test("blocks placement after the reviewed expiry", async () => {
-  const client = checkingClient();
-  const prepared = await preparePlacement({
-    draft: { ...draft, validTo: 1800000000 },
-    account,
-    chainId: 1,
-    client,
-  });
-  emptyFundingApi();
+test.each([
+  [1799999999, "unknown"],
+  [1800000000, "known"],
+])(
+  "uses chain expiry semantics for a new order valid until %s",
+  async (validTo, status) => {
+    const client = checkingClient();
+    const prepared = await preparePlacement({
+      draft: { ...draft, validTo: Number(validTo) },
+      account,
+      chainId: 1,
+      client,
+    });
+    emptyFundingApi();
 
-  expect(await refreshPlacementChecks(prepared, { client })).toMatchObject({
-    status: "unknown",
-    error: "Reviewed order has expired",
-  });
-});
+    expect(await refreshPlacementChecks(prepared, { client })).toMatchObject({
+      status,
+    });
+  },
+);
 
 test("blocks placement when the configured Poller has no deployed code", async () => {
   const client = checkingClient();
@@ -774,7 +779,12 @@ test("rejects an unsupported token or price-feed route before uploading", async 
 test("excludes funded orders even before the API reports a fill", async () => {
   const client = checkingClient();
   const existing = await preparePlacement({
-    draft: { ...draft, salt: `0x${"cd".repeat(32)}` },
+    draft: {
+      ...draft,
+      salt: `0x${"cd".repeat(32)}`,
+      amountSell: "2",
+      amountBuy: "3960",
+    },
     account,
     chainId: 1,
     client,
@@ -800,7 +810,7 @@ test("excludes funded orders even before the API reports a fill", async () => {
     if (args.functionName === "funded") return true;
     return read(args);
   }) as PublicClient["readContract"];
-  emptyFundingApi();
+  executionApi(existing, "0");
 
   expect(
     await refreshPlacementChecks(prepared, { client, localOrders: [existing] }),
@@ -897,8 +907,8 @@ test("excludes an order whose Poller schedule was revoked or never registered", 
   });
 });
 
-test("excludes an existing order that expires at the funding snapshot", async () => {
-  const client = checkingClient();
+test("includes an existing order at its exact expiry timestamp", async () => {
+  const client = checkingClient({ singleOrders: true, funded: false });
   const existing = await preparePlacement({
     draft: { ...draft, salt: `0x${"cd".repeat(32)}`, validTo: 1800000000 },
     account,
@@ -911,12 +921,25 @@ test("excludes an existing order that expires at the funding snapshot", async ()
     chainId: 1,
     client,
   });
+  const read = client.readContract;
+  client.readContract = jest.fn(async (args) =>
+    args.functionName === "schedules"
+      ? [
+          "0x412c36e5011cd2517016d243a2dfb37f73a242e7",
+          BigInt(0),
+          account,
+          existing.owner,
+          existing.draft.salt,
+          existing.staticInput,
+        ]
+      : read(args),
+  ) as PublicClient["readContract"];
   fundingApi([fundingParent(existing)]);
 
   expect(await refreshPlacementChecks(prepared, { client })).toMatchObject({
     status: "known",
-    outstandingSellAmount: BigInt(0),
-    requiredAllowance: BigInt("1000000000000000000"),
+    outstandingSellAmount: BigInt("1000000000000000000"),
+    requiredAllowance: BigInt("2000000000000000000"),
   });
 });
 
@@ -1205,7 +1228,7 @@ test("builds one atomic factory transaction for a new shed with dispatch and cur
 
   const transaction = await buildPlacementSetup(prepared, {
     client,
-    reviewedRequiredAllowance: BigInt("1000000000000000000"),
+    checks: await refreshPlacementChecks(prepared, { client }),
   });
   expect(transaction).toMatchObject({
     to: prepared.factory,
@@ -1301,7 +1324,7 @@ test("does not recreate an authorized order when browser recovery is absent", as
   await expect(
     buildPlacementSetup(prepared, {
       client,
-      reviewedRequiredAllowance: BigInt("1000000000000000000"),
+      checks: await refreshPlacementChecks(prepared, { client }),
     }),
   ).rejects.toThrow("This order has already been created.");
 });
@@ -1329,12 +1352,12 @@ test("does not build setup before wallet-to-Poller approval is sufficient", asyn
   await expect(
     buildPlacementSetup(prepared, {
       client,
-      reviewedRequiredAllowance: BigInt("1000000000000000000"),
+      checks: await refreshPlacementChecks(prepared, { client }),
     }),
   ).rejects.toThrow("Approve the funding amount before placing this order");
 });
 
-test("requires another review when the funding total changes before placement", async () => {
+test("builds transactions from the reviewed snapshot without another API check", async () => {
   const client = checkingClient({
     schedules: [
       zeroAddress,
@@ -1352,16 +1375,732 @@ test("requires another review when the funding total changes before placement", 
     client,
   });
   emptyFundingApi();
+  const checks = await refreshPlacementChecks(prepared, { client });
+  jest
+    .mocked(global.fetch)
+    .mockRejectedValue(new Error("API became unavailable"));
 
+  await expect(buildPlacementApproval(prepared, { checks })).resolves.toEqual({
+    kind: "none",
+    transaction: null,
+  });
   await expect(
-    buildPlacementSetup(prepared, {
-      client,
-      reviewedRequiredAllowance: BigInt("2000000000000000000"),
-    }),
-  ).rejects.toThrow("Funding total changed. Review the order again.");
+    buildPlacementSetup(prepared, { client, checks }),
+  ).resolves.toMatchObject({
+    to: prepared.factory,
+  });
 });
 
-test("keeps an existing unlimited CowShed settlement allowance unchanged", async () => {
+test.each([
+  BigInt("5000000000000000000"),
+  BigInt(
+    "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+  ),
+])(
+  "keeps a sufficient CowShed settlement allowance of %s unchanged",
+  async (settlementAllowance) => {
+    const client = checkingClient({
+      schedules: [
+        zeroAddress,
+        BigInt(0),
+        zeroAddress,
+        zeroAddress,
+        `0x${"00".repeat(32)}`,
+        "0x",
+      ],
+    });
+    const prepared = await preparePlacement({
+      draft,
+      account,
+      chainId: 1,
+      client,
+    });
+    const read = client.readContract;
+    client.readContract = jest.fn(async (args) => {
+      if (
+        args.functionName === "allowance" &&
+        Array.isArray(args.args) &&
+        args.args[0] === prepared.owner
+      )
+        return settlementAllowance;
+      return read(args);
+    }) as PublicClient["readContract"];
+    emptyFundingApi();
+
+    const transaction = await buildPlacementSetup(prepared, {
+      client,
+      checks: await refreshPlacementChecks(prepared, { client }),
+    });
+    const { args } = decodeFunctionData({
+      abi: parseAbi([
+        "function executeOwnHooks((address target,uint256 value,bytes callData,bool allowFailure,bool isDelegateCall)[] calls) payable returns (address proxy)",
+      ]),
+      data: transaction.data,
+    });
+    expect(args![0]).toHaveLength(2);
+    expect(args![0][0].target.toLowerCase()).toBe(
+      "0xfdafc9d1902f4e0b84f65f49f244b32b31013b74",
+    );
+  },
+);
+
+test("covers shared unfunded settlement obligations rather than only the new order", async () => {
+  const client = checkingClient({
+    schedules: [
+      zeroAddress,
+      BigInt(0),
+      zeroAddress,
+      zeroAddress,
+      `0x${"00".repeat(32)}`,
+      "0x",
+    ],
+  });
+  const existing = await preparePlacement({
+    draft: {
+      ...draft,
+      salt: `0x${"cd".repeat(32)}`,
+      amountSell: "2",
+      amountBuy: "3960",
+    },
+    account,
+    chainId: 1,
+    client,
+  });
+  const prepared = await preparePlacement({
+    draft,
+    account,
+    chainId: 1,
+    client,
+  });
+  const read = client.readContract;
+  client.readContract = jest.fn(async (args) => {
+    if (
+      args.functionName === "schedules" &&
+      (Array.isArray(args.args) ? args.args[0] : undefined) ===
+        existing.scheduleId
+    )
+      return [
+        "0x412c36e5011cd2517016d243a2dfb37f73a242e7",
+        BigInt(0),
+        account,
+        existing.owner,
+        existing.draft.salt,
+        existing.staticInput,
+      ];
+    if (args.functionName === "singleOrders")
+      return (
+        (Array.isArray(args.args) ? args.args[1] : undefined) ===
+        existing.paramsHash
+      );
+    if (args.functionName === "funded") return false;
+    if (
+      args.functionName === "allowance" &&
+      (Array.isArray(args.args) ? args.args[0] : undefined) === prepared.owner
+    )
+      return BigInt("2000000000000000000");
+    return read(args);
+  }) as PublicClient["readContract"];
+  fundingApi([fundingParent(existing), fundingParent(existing)]);
+  const checks = await refreshPlacementChecks(prepared, {
+    client,
+    localOrders: [existing],
+  });
+  const transaction = await buildPlacementSetup(prepared, { client, checks });
+  const { args } = decodeFunctionData({
+    abi: parseAbi([
+      "function executeOwnHooks((address target,uint256 value,bytes callData,bool allowFailure,bool isDelegateCall)[] calls) payable returns (address proxy)",
+    ]),
+    data: transaction.data,
+  });
+  expect(args![0]).toHaveLength(3);
+  expect(
+    decodeFunctionData({
+      abi: parseAbi([
+        "function approve(address spender,uint256 amount) returns (bool)",
+      ]),
+      data: args![0][0].callData,
+    }).args,
+  ).toEqual([
+    "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110",
+    BigInt(
+      "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+    ),
+  ]);
+});
+
+test("keeps finite settlement permission that covers a funded partial order plus the new order", async () => {
+  const client = checkingClient({
+    schedules: [
+      zeroAddress,
+      BigInt(0),
+      zeroAddress,
+      zeroAddress,
+      `0x${"00".repeat(32)}`,
+      "0x",
+    ],
+  });
+  const existing = await preparePlacement({
+    draft: {
+      ...draft,
+      salt: `0x${"cd".repeat(32)}`,
+      amountSell: "2",
+      amountBuy: "3960",
+    },
+    account,
+    chainId: 1,
+    client,
+  });
+  const prepared = await preparePlacement({
+    draft,
+    account,
+    chainId: 1,
+    client,
+  });
+  const read = client.readContract;
+  client.readContract = jest.fn(async (args) => {
+    if (
+      args.functionName === "schedules" &&
+      Array.isArray(args.args) &&
+      args.args[0] === existing.scheduleId
+    )
+      return [
+        "0x412c36e5011cd2517016d243a2dfb37f73a242e7",
+        BigInt(0),
+        account,
+        existing.owner,
+        existing.draft.salt,
+        existing.staticInput,
+      ];
+    if (args.functionName === "singleOrders")
+      return Array.isArray(args.args) && args.args[1] === existing.paramsHash;
+    if (args.functionName === "funded") return true;
+    if (
+      args.functionName === "allowance" &&
+      Array.isArray(args.args) &&
+      args.args[0] === prepared.owner
+    )
+      return BigInt("2500000000000000000");
+    return read(args);
+  }) as PublicClient["readContract"];
+  executionApi(existing, "500000000000000000");
+  const checks = await refreshPlacementChecks(prepared, {
+    client,
+    localOrders: [existing],
+  });
+  expect(checks).toMatchObject({
+    status: "known",
+    requiredAllowance: BigInt("1000000000000000000"),
+    requiredSettlementAllowance: BigInt("2500000000000000000"),
+  });
+  const transaction = await buildPlacementSetup(prepared, { client, checks });
+  const { args } = decodeFunctionData({
+    abi: parseAbi([
+      "function executeOwnHooks((address target,uint256 value,bytes callData,bool allowFailure,bool isDelegateCall)[] calls) payable returns (address proxy)",
+    ]),
+    data: transaction.data,
+  });
+  expect(args![0]).toHaveLength(2);
+});
+
+test.each(["3960000000", null])(
+  "checks legacy exact-buy completion with executed buy amount %s",
+  async (executedBuyAmount) => {
+    const owner = "0x4444444444444444444444444444444444444444";
+    const salt = `0x${"cd".repeat(32)}` as const;
+    const hash =
+      "0x2b26b81dbe61b632268031e5f7c71d95597e8973e45e09777536a1f263d39d30";
+    const staticInput = encodeAbiParameters(
+      parseAbiParameters(
+        "address,address,uint256,uint256,bytes32,address,bool,bool,uint32,address,address,int256,uint32",
+      ),
+      [
+        draft.tokenSell.address,
+        draft.tokenBuy.address,
+        BigInt("2000000000000000000"),
+        BigInt("3960000000"),
+        `0x${"aa".repeat(32)}`,
+        account,
+        false,
+        true,
+        1800003600,
+        draft.tokenSellOracle,
+        draft.tokenBuyOracle,
+        BigInt("2000000000000000000000"),
+        3600,
+      ],
+    );
+    const client = checkingClient({
+      schedules: [
+        "0x412c36e5011cd2517016d243a2dfb37f73a242e7",
+        BigInt(0),
+        account,
+        owner,
+        salt,
+        staticInput,
+      ],
+      funded: true,
+      allowance: BigInt("1000000000000000000"),
+    });
+    const prepared = await preparePlacement({
+      draft,
+      account,
+      chainId: 1,
+      client,
+    });
+    const read = client.readContract;
+    client.readContract = jest.fn(async (args) =>
+      args.functionName === "singleOrders"
+        ? Array.isArray(args.args) && args.args[1] === hash
+        : read(args),
+    ) as PublicClient["readContract"];
+    fundingApi([
+      {
+        eventId: "legacy-buy",
+        chainId: 1,
+        owner,
+        resolvedOwner: account,
+        handler: "0x412c36e5011cd2517016d243a2dfb37f73a242e7",
+        orderType: "StopLoss",
+        status: "Active",
+        salt,
+        hash,
+        staticInput,
+        transaction: null,
+        decodedParams: {
+          receiver: account,
+          sellToken: draft.tokenSell.address,
+          buyToken: draft.tokenBuy.address,
+          sellAmount: "2000000000000000000",
+          buyAmount: "3960000000",
+          validTo: 1800003600,
+          strike: "2000000000000000000000",
+          isSellOrder: false,
+          isPartiallyFillable: true,
+          sellTokenPriceOracle: draft.tokenSellOracle,
+          buyTokenPriceOracle: draft.tokenBuyOracle,
+          maxTimeSinceLastOracleUpdate: 3600,
+        },
+        discreteOrders: {
+          items: [
+            {
+              orderUid:
+                "0xdc7004f3a8f387eff6f1510ee5d2b6a7c232e7610026eeb35226accf01e9f02944444444444444444444444444444444444444446b49e010",
+              status: "fulfilled",
+              validTo: 1800003600,
+              executedSellAmount: "1500000000000000000",
+              executedBuyAmount,
+              executedFee: "100000000000000000",
+            },
+          ],
+        },
+      },
+    ]);
+
+    const checks = await refreshPlacementChecks(prepared, { client });
+    if (executedBuyAmount === null) {
+      expect(checks).toEqual({
+        status: "unknown",
+        error: "Settlement execution data is missing or inconsistent",
+      });
+      await expect(
+        buildPlacementSetup(prepared, { client, checks }),
+      ).rejects.toThrow("Settlement execution data is missing or inconsistent");
+      return;
+    }
+    expect(checks).toMatchObject({
+      status: "known",
+      requiredAllowance: BigInt("1000000000000000000"),
+      requiredSettlementAllowance: BigInt("1000000000000000000"),
+      settlementApprovalRequired: false,
+    });
+    const transaction = await buildPlacementSetup(prepared, { client, checks });
+    const { args } = decodeFunctionData({
+      abi: parseAbi([
+        "function executeOwnHooks((address target,uint256 value,bytes callData,bool allowFailure,bool isDelegateCall)[] calls) payable returns (address proxy)",
+      ]),
+      data: transaction.data,
+    });
+    expect(args![0]).toHaveLength(2);
+  },
+);
+
+test("still covers funded settlement after its wallet funding schedule is revoked", async () => {
+  const client = checkingClient({
+    schedules: [
+      zeroAddress,
+      BigInt(1),
+      zeroAddress,
+      zeroAddress,
+      `0x${"00".repeat(32)}`,
+      "0x",
+    ],
+    singleOrders: true,
+    funded: true,
+  });
+  const existing = await preparePlacement({
+    draft: {
+      ...draft,
+      salt: `0x${"cd".repeat(32)}`,
+      amountSell: "2",
+      amountBuy: "3960",
+    },
+    account,
+    chainId: 1,
+    client,
+  });
+  const prepared = await preparePlacement({
+    draft,
+    account,
+    chainId: 1,
+    client,
+  });
+  executionApi(existing, "500000000000000000");
+  expect(await refreshPlacementChecks(prepared, { client })).toMatchObject({
+    status: "known",
+    requiredAllowance: BigInt("1000000000000000000"),
+    requiredSettlementAllowance: BigInt("2500000000000000000"),
+  });
+});
+
+function executionApi(
+  existing: Awaited<ReturnType<typeof preparePlacement>>,
+  executedSellAmount: string | null,
+  uid?: string,
+) {
+  jest.mocked(global.fetch).mockImplementation(async (_url, init) => {
+    const { query } = JSON.parse(String(init?.body));
+    const mappings = query.includes("ownerMappings");
+    const display = query.includes("query StopLossOrders");
+    return new Response(
+      JSON.stringify({
+        data: {
+          [mappings ? "ownerMappings" : "conditionalOrderGenerators"]: {
+            items: mappings
+              ? []
+              : display
+                ? [
+                    {
+                      ...fundingParent(existing),
+                      eventId: "existing",
+                      status: "Active",
+                      transaction: null,
+                      decodedParams: {
+                        receiver: account,
+                        sellToken: draft.tokenSell.address,
+                        buyToken: draft.tokenBuy.address,
+                        sellAmount: "2000000000000000000",
+                        buyAmount: "3960000000",
+                        validTo: 1800003600,
+                        strike: "2000000000000000000000",
+                        isPartiallyFillable: true,
+                        isSellOrder: true,
+                        sellTokenPriceOracle: draft.tokenSellOracle,
+                        buyTokenPriceOracle: draft.tokenBuyOracle,
+                        maxTimeSinceLastOracleUpdate: 3600,
+                      },
+                      discreteOrders: {
+                        items: [
+                          {
+                            orderUid:
+                              uid ??
+                              `${existing.orderDigest}${existing.owner.slice(2)}6b49e010`,
+                            status: "open",
+                            validTo: 1800003600,
+                            executedSellAmount,
+                            executedBuyAmount: "990000000",
+                            executedFee: "100000000000000000",
+                          },
+                        ],
+                      },
+                    },
+                  ]
+                : [fundingParent(existing)],
+            pageInfo: { hasNextPage: false, endCursor: null },
+          },
+        },
+      }),
+    );
+  });
+}
+
+test("repairs the selected existing wallet obligation once without creating an order", async () => {
+  const client = checkingClient({
+    allowance: BigInt(1),
+    singleOrders: true,
+    funded: false,
+  });
+  const existing = await preparePlacement({
+    draft,
+    account,
+    chainId: 1,
+    client,
+  });
+  const read = client.readContract;
+  client.readContract = jest.fn(async (args) => {
+    if (args.functionName === "schedules")
+      return [
+        "0x412c36e5011cd2517016d243a2dfb37f73a242e7",
+        BigInt(0),
+        account,
+        existing.owner,
+        existing.draft.salt,
+        existing.staticInput,
+      ];
+    if (
+      args.functionName === "allowance" &&
+      Array.isArray(args.args) &&
+      args.args[0] === existing.owner
+    )
+      return BigInt("1000000000000000000");
+    return read(args);
+  }) as PublicClient["readContract"];
+  fundingApi([fundingParent(existing), fundingParent(existing)]);
+  const review = await refreshApprovalRepair(
+    { account, chainId: 1, owner: existing.owner, hash: existing.paramsHash },
+    { client, localOrders: [existing] },
+  );
+  expect(review.checks).toMatchObject({
+    status: "known",
+    requiredAllowance: BigInt("1000000000000000000"),
+    requiredSettlementAllowance: BigInt("1000000000000000000"),
+    settlementApprovalRequired: false,
+  });
+  if (!review.prepared) throw new Error("Repair identity unavailable");
+  const work = await buildApprovalRepair(review.prepared, {
+    checks: review.checks,
+  });
+  expect(work).toHaveLength(1);
+  expect(work[0].stage).toBe("wallet");
+  expect(
+    decodeFunctionData({
+      abi: parseAbi([
+        "function approve(address spender,uint256 amount) returns (bool)",
+      ]),
+      data: work[0].transaction.data,
+    }).args,
+  ).toEqual([
+    "0xd8088f0d57dB91AC6404FB3a9723A890100a6bB3",
+    BigInt("1000000000000000000"),
+  ]);
+});
+
+test("repairs only deficient settlement for a funded order without new registration", async () => {
+  const client = checkingClient({
+    allowance: BigInt(1),
+    singleOrders: true,
+    funded: true,
+  });
+  const existing = await preparePlacement({
+    draft: { ...draft, amountSell: "2", amountBuy: "3960" },
+    account,
+    chainId: 1,
+    client,
+  });
+  const read = client.readContract;
+  client.readContract = jest.fn(async (args) =>
+    args.functionName === "schedules"
+      ? [
+          "0x412c36e5011cd2517016d243a2dfb37f73a242e7",
+          BigInt(0),
+          account,
+          existing.owner,
+          existing.draft.salt,
+          existing.staticInput,
+        ]
+      : read(args),
+  ) as PublicClient["readContract"];
+  executionApi(existing, "500000000000000000");
+  const review = await refreshApprovalRepair(
+    { account, chainId: 1, owner: existing.owner, hash: existing.paramsHash },
+    { client },
+  );
+  expect(review.checks).toMatchObject({
+    status: "known",
+    requiredAllowance: BigInt(0),
+    requiredSettlementAllowance: BigInt("1500000000000000000"),
+    settlementApprovalRequired: true,
+  });
+  if (!review.prepared) throw new Error("Repair identity unavailable");
+  const work = await buildApprovalRepair(review.prepared, {
+    checks: review.checks,
+  });
+  expect(work.map(({ stage }) => stage)).toEqual(["settlement"]);
+  const { args } = decodeFunctionData({
+    abi: parseAbi([
+      "function executeOwnHooks((address target,uint256 value,bytes callData,bool allowFailure,bool isDelegateCall)[] calls) payable returns (address proxy)",
+    ]),
+    data: work[0].transaction.data,
+  });
+  expect(work[0].transaction.to).toBe(existing.factory);
+  expect(args![0]).toHaveLength(1);
+  expect(
+    decodeFunctionData({
+      abi: parseAbi([
+        "function approve(address spender,uint256 amount) returns (bool)",
+      ]),
+      data: args![0][0].callData,
+    }).args,
+  ).toEqual([
+    "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110",
+    BigInt(
+      "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+    ),
+  ]);
+});
+
+test("builds creation settlement permission from the reviewed snapshot without another allowance read", async () => {
+  const client = checkingClient({
+    schedules: [
+      zeroAddress,
+      BigInt(0),
+      zeroAddress,
+      zeroAddress,
+      `0x${"00".repeat(32)}`,
+      "0x",
+    ],
+    allowance: BigInt("1000000000000000000"),
+  });
+  const prepared = await preparePlacement({
+    draft,
+    account,
+    chainId: 1,
+    client,
+  });
+  emptyFundingApi();
+  const checks = await refreshPlacementChecks(prepared, { client });
+  const read = client.readContract;
+  client.readContract = jest.fn(async (args) => {
+    if (args.functionName === "allowance")
+      throw new Error("Allowance RPC became unavailable");
+    return read(args);
+  }) as PublicClient["readContract"];
+  await expect(
+    buildPlacementSetup(prepared, { client, checks }),
+  ).resolves.toMatchObject({ to: prepared.factory });
+});
+
+test("does not confirm creation when settlement covers only its new amount", async () => {
+  const client = checkingClient({
+    singleOrders: true,
+    allowance: BigInt("1000000000000000000"),
+  });
+  const prepared = await preparePlacement({
+    draft,
+    account,
+    chainId: 1,
+    client,
+  });
+  const read = client.readContract;
+  client.readContract = jest.fn(async (args) =>
+    args.functionName === "schedules"
+      ? [
+          "0x412c36e5011cd2517016d243a2dfb37f73a242e7",
+          BigInt(0),
+          account,
+          prepared.owner,
+          prepared.draft.salt,
+          prepared.staticInput,
+        ]
+      : read(args),
+  ) as PublicClient["readContract"];
+  const confirmation = {
+    client,
+    requiredSettlementAllowance: BigInt("3000000000000000000"),
+  };
+  await expect(
+    verifyPlacementConfirmation(prepared, confirmation),
+  ).resolves.toBe(false);
+});
+
+test("blocks repair when the displayed selected order is no longer authorized", async () => {
+  const client = checkingClient({
+    singleOrders: false,
+    schedules: [
+      zeroAddress,
+      BigInt(0),
+      zeroAddress,
+      zeroAddress,
+      `0x${"00".repeat(32)}`,
+      "0x",
+    ],
+  });
+  const existing = await preparePlacement({
+    draft,
+    account,
+    chainId: 1,
+    client,
+  });
+  fundingApi([fundingParent(existing)]);
+  const review = await refreshApprovalRepair(
+    { account, chainId: 1, owner: existing.owner, hash: existing.paramsHash },
+    { client },
+  );
+  expect(review.checks).toMatchObject({
+    status: "unknown",
+    error: "Selected order is no longer authorized",
+  });
+});
+
+test("blocks repair instead of treating missing funded execution as zero", async () => {
+  const client = checkingClient({ singleOrders: true, funded: true });
+  const existing = await preparePlacement({
+    draft: { ...draft, amountSell: "2", amountBuy: "3960" },
+    account,
+    chainId: 1,
+    client,
+  });
+  const read = client.readContract;
+  client.readContract = jest.fn(async (args) =>
+    args.functionName === "schedules"
+      ? [
+          "0x412c36e5011cd2517016d243a2dfb37f73a242e7",
+          BigInt(0),
+          account,
+          existing.owner,
+          existing.draft.salt,
+          existing.staticInput,
+        ]
+      : read(args),
+  ) as PublicClient["readContract"];
+  executionApi(existing, null);
+  const review = await refreshApprovalRepair(
+    { account, chainId: 1, owner: existing.owner, hash: existing.paramsHash },
+    { client },
+  );
+  expect(review.checks).toMatchObject({
+    status: "unknown",
+    error: "Settlement execution data is missing or inconsistent",
+  });
+  if (!review.prepared) throw new Error("Repair identity unavailable");
+  await expect(
+    buildApprovalRepair(review.prepared, { checks: review.checks }),
+  ).rejects.toThrow("Settlement execution data is missing or inconsistent");
+});
+
+test("excludes other strategies before requiring StopLoss funding input", async () => {
+  const client = checkingClient();
+  const prepared = await preparePlacement({
+    draft,
+    account,
+    chainId: 1,
+    client,
+  });
+  fundingApi([
+    {
+      ...fundingParent(prepared),
+      orderType: "TWAP",
+      handler: "0x5555555555555555555555555555555555555555",
+      staticInput: null,
+    },
+  ]);
+  expect(await refreshPlacementChecks(prepared, { client })).toMatchObject({
+    status: "known",
+    requiredAllowance: BigInt("1000000000000000000"),
+    requiredSettlementAllowance: BigInt("1000000000000000000"),
+  });
+});
+
+test("directly grants unlimited settlement permission for a shortfall", async () => {
   const client = checkingClient({
     schedules: [
       zeroAddress,
@@ -1379,22 +2118,18 @@ test("keeps an existing unlimited CowShed settlement allowance unchanged", async
     client,
   });
   const read = client.readContract;
-  client.readContract = jest.fn(async (args) => {
-    if (
-      args.functionName === "allowance" &&
-      Array.isArray(args.args) &&
-      args.args[0] === prepared.owner
-    )
-      return BigInt(
-        "115792089237316195423570985008687907853269984665640564039457584007913129639935",
-      );
-    return read(args);
-  }) as PublicClient["readContract"];
+  client.readContract = jest.fn(async (args) =>
+    args.functionName === "allowance" &&
+    Array.isArray(args.args) &&
+    args.args[0] === prepared.owner
+      ? BigInt(1)
+      : read(args),
+  ) as PublicClient["readContract"];
   emptyFundingApi();
 
   const transaction = await buildPlacementSetup(prepared, {
     client,
-    reviewedRequiredAllowance: BigInt("1000000000000000000"),
+    checks: await refreshPlacementChecks(prepared, { client }),
   });
   const { args } = decodeFunctionData({
     abi: parseAbi([
@@ -1402,53 +2137,16 @@ test("keeps an existing unlimited CowShed settlement allowance unchanged", async
     ]),
     data: transaction.data,
   });
-  expect(args![0]).toHaveLength(2);
-  expect(args![0][0].target.toLowerCase()).toBe(
-    "0xfdafc9d1902f4e0b84f65f49f244b32b31013b74",
-  );
-});
-
-test("resets a nonzero settlement allowance inside the atomic setup", async () => {
-  const client = checkingClient({
-    schedules: [
-      zeroAddress,
-      BigInt(0),
-      zeroAddress,
-      zeroAddress,
-      `0x${"00".repeat(32)}`,
-      "0x",
-    ],
-  });
-  const prepared = await preparePlacement({
-    draft,
-    account,
-    chainId: 1,
-    client,
-  });
-  emptyFundingApi();
-
-  const transaction = await buildPlacementSetup(prepared, {
-    client,
-    reviewedRequiredAllowance: BigInt("1000000000000000000"),
-  });
-  const { args } = decodeFunctionData({
-    abi: parseAbi([
-      "function executeOwnHooks((address target,uint256 value,bytes callData,bool allowFailure,bool isDelegateCall)[] calls) payable returns (address proxy)",
-    ]),
-    data: transaction.data,
-  });
-  expect(args![0]).toHaveLength(4);
-  const amounts = args![0].slice(0, 2).map(
-    (call) =>
-      decodeFunctionData({
-        abi: parseAbi([
-          "function approve(address spender,uint256 amount) returns (bool)",
-        ]),
-        data: call.callData,
-      }).args![1],
-  );
-  expect(amounts).toEqual([
-    BigInt(0),
+  expect(args![0]).toHaveLength(3);
+  expect(
+    decodeFunctionData({
+      abi: parseAbi([
+        "function approve(address spender,uint256 amount) returns (bool)",
+      ]),
+      data: args![0][0].callData,
+    }).args,
+  ).toEqual([
+    "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110",
     BigInt(
       "115792089237316195423570985008687907853269984665640564039457584007913129639935",
     ),
@@ -1466,8 +2164,7 @@ test("builds a limited wallet approval only for the reviewed funding total", asy
   emptyFundingApi();
 
   const approval = await buildPlacementApproval(prepared, {
-    client,
-    reviewedRequiredAllowance: BigInt("1000000000000000000"),
+    checks: await refreshPlacementChecks(prepared, { client }),
   });
   expect(approval.kind).toBe("approval");
   expect(approval.transaction).toMatchObject({
@@ -1489,6 +2186,35 @@ test("builds a limited wallet approval only for the reviewed funding total", asy
   ]);
 });
 
+test("uses max uint256 when unlimited wallet approval is selected", async () => {
+  const client = checkingClient({ allowance: BigInt(1) });
+  const prepared = await preparePlacement({
+    draft,
+    account,
+    chainId: 1,
+    client,
+  });
+  emptyFundingApi();
+
+  const approval = await buildPlacementApproval(prepared, {
+    checks: await refreshPlacementChecks(prepared, { client }),
+    mode: "unlimited",
+  });
+  expect(
+    decodeFunctionData({
+      abi: parseAbi([
+        "function approve(address spender,uint256 amount) returns (bool)",
+      ]),
+      data: approval.transaction!.data,
+    }).args,
+  ).toEqual([
+    "0xd8088f0d57dB91AC6404FB3a9723A890100a6bB3",
+    BigInt(
+      "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+    ),
+  ]);
+});
+
 test("does not lower or resubmit a sufficient wallet allowance", async () => {
   const client = checkingClient();
   const prepared = await preparePlacement({
@@ -1501,13 +2227,12 @@ test("does not lower or resubmit a sufficient wallet allowance", async () => {
 
   expect(
     await buildPlacementApproval(prepared, {
-      client,
-      reviewedRequiredAllowance: BigInt("1000000000000000000"),
+      checks: await refreshPlacementChecks(prepared, { client }),
     }),
   ).toEqual({ kind: "none", transaction: null });
 });
 
-test("makes a nonzero wallet allowance reset an explicit approval step", async () => {
+test("directly approves the required total from a nonzero insufficient wallet allowance", async () => {
   const client = checkingClient({ allowance: BigInt(1) });
   const prepared = await preparePlacement({
     draft,
@@ -1518,10 +2243,9 @@ test("makes a nonzero wallet allowance reset an explicit approval step", async (
   emptyFundingApi();
 
   const approval = await buildPlacementApproval(prepared, {
-    client,
-    reviewedRequiredAllowance: BigInt("1000000000000000000"),
+    checks: await refreshPlacementChecks(prepared, { client }),
   });
-  expect(approval.kind).toBe("reset");
+  expect(approval.kind).toBe("approval");
   expect(
     decodeFunctionData({
       abi: parseAbi([
@@ -1529,43 +2253,51 @@ test("makes a nonzero wallet allowance reset an explicit approval step", async (
       ]),
       data: approval.transaction!.data,
     }).args,
-  ).toEqual(["0xd8088f0d57dB91AC6404FB3a9723A890100a6bB3", BigInt(0)]);
+  ).toEqual([
+    "0xd8088f0d57dB91AC6404FB3a9723A890100a6bB3",
+    BigInt("1000000000000000000"),
+  ]);
 });
 
-test("requires authorized matching registration and shed setup before confirmation", async () => {
-  const client = checkingClient({ singleOrders: false });
-  const prepared = await preparePlacement({
-    draft,
-    account,
-    chainId: 1,
-    client,
-  });
+test.each([
+  BigInt("1000000000000000000"),
+  BigInt(
+    "115792089237316195423570985008687907853269984665640564039457584007913129639935",
+  ),
+])(
+  "requires matching registration and sufficient settlement permission of %s before confirmation",
+  async (settlementAllowance) => {
+    const client = checkingClient({ singleOrders: false });
+    const prepared = await preparePlacement({
+      draft,
+      account,
+      chainId: 1,
+      client,
+    });
 
-  await expect(verifyPlacementConfirmation(prepared, { client })).resolves.toBe(
-    false,
-  );
-  const read = client.readContract;
-  client.readContract = jest.fn(async (args) => {
-    if (args.functionName === "singleOrders") return true;
-    if (args.functionName === "schedules")
-      return [
-        "0x412c36e5011cd2517016d243a2dfb37f73a242e7",
-        BigInt(0),
-        account,
-        prepared.owner,
-        prepared.draft.salt,
-        prepared.staticInput,
-      ];
-    if (args.functionName === "allowance")
-      return BigInt(
-        "115792089237316195423570985008687907853269984665640564039457584007913129639935",
-      );
-    return read(args);
-  }) as PublicClient["readContract"];
-  await expect(verifyPlacementConfirmation(prepared, { client })).resolves.toBe(
-    true,
-  );
-});
+    await expect(
+      verifyPlacementConfirmation(prepared, { client }),
+    ).resolves.toBe(false);
+    const read = client.readContract;
+    client.readContract = jest.fn(async (args) => {
+      if (args.functionName === "singleOrders") return true;
+      if (args.functionName === "schedules")
+        return [
+          "0x412c36e5011cd2517016d243a2dfb37f73a242e7",
+          BigInt(0),
+          account,
+          prepared.owner,
+          prepared.draft.salt,
+          prepared.staticInput,
+        ];
+      if (args.functionName === "allowance") return settlementAllowance;
+      return read(args);
+    }) as PublicClient["readContract"];
+    await expect(
+      verifyPlacementConfirmation(prepared, { client }),
+    ).resolves.toBe(true);
+  },
+);
 
 test("blocks a required price whose feed scale cannot be read", async () => {
   const client = checkingClient();
@@ -1695,7 +2427,7 @@ test.each([buildPlacementApproval, buildPlacementSetup])(
     await expect(
       build(prepared, {
         client,
-        reviewedRequiredAllowance: BigInt("1000000000000000000"),
+        checks: await refreshPlacementChecks(prepared, { client }),
       }),
     ).rejects.toThrow("Only exact-sell orders are supported.");
   },

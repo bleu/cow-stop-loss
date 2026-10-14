@@ -42,13 +42,16 @@ let config: ReturnType<typeof createWagmiConfig>;
 let provider: BrowserWallet;
 let writer: ReturnType<typeof createStopLossPlacement>;
 let stopWriter: () => void;
-let previousLock = Promise.resolve();
+const previousLocks = new Map<string, Promise<unknown>>();
 const locks = {
-  request<T>(_name: string, action: () => T | Promise<T>) {
-    const result = previousLock.then(action);
-    previousLock = result.then(
-      () => undefined,
-      () => undefined,
+  request<T>(name: string, action: () => T | Promise<T>) {
+    const result = (previousLocks.get(name) ?? Promise.resolve()).then(action);
+    previousLocks.set(
+      name,
+      result.then(
+        () => undefined,
+        () => undefined,
+      ),
     );
     return result;
   },

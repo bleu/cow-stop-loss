@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Address } from "viem";
+import { Address, maxUint256 } from "viem";
 import { useAccount, useSendTransaction } from "wagmi";
 
 import {
@@ -11,6 +11,7 @@ import {
   useStopLossPlacement,
 } from "#/hooks/useStopLossPlacement";
 import {
+  ApprovalMode,
   buildPlacementApproval,
   buildPlacementSetup,
   FundingSnapshot,
@@ -155,7 +156,7 @@ export function StopLossCreation() {
     }
   }
 
-  async function approve() {
+  async function approve(mode: ApprovalMode) {
     if (!review?.prepared || review.checks?.status !== "known" || review.busy)
       return;
     const prepared = review.prepared;
@@ -165,8 +166,8 @@ export function StopLossCreation() {
     try {
       const placement = getStopLossPlacement();
       const approval = await buildPlacementApproval(prepared, {
-        reviewedRequiredAllowance: review.checks.requiredAllowance,
-        localOrders: placement.getConfirmedPlacements(prepared),
+        checks: review.checks,
+        mode,
       });
       if (
         currentScope.current !== selectedScope ||
@@ -175,26 +176,23 @@ export function StopLossCreation() {
         return;
       if (approval.transaction) {
         const transaction = approval.transaction;
-        await placement.submit(
-          prepared,
-          approval.kind === "reset" ? "approval-reset" : "approval",
-          {
-            approvalAmount: review.checks.requiredAllowance,
-            send: async () => {
-              if (currentScope.current !== selectedScope)
-                throw new PlacementNotSubmittedError(
-                  "Wallet or chain changed. Review the order again.",
-                );
-              const hash = await sendTransactionAsync(transaction);
-              return {
-                id: hash,
-                transactionHash: /^0x[0-9a-fA-F]{64}$/.test(hash)
-                  ? hash
-                  : undefined,
-              };
-            },
+        await placement.submit(prepared, "approval", {
+          approvalAmount:
+            mode === "unlimited" ? maxUint256 : review.checks.requiredAllowance,
+          send: async () => {
+            if (currentScope.current !== selectedScope)
+              throw new PlacementNotSubmittedError(
+                "Wallet or chain changed. Review the order again.",
+              );
+            const hash = await sendTransactionAsync(transaction);
+            return {
+              id: hash,
+              transactionHash: /^0x[0-9a-fA-F]{64}$/.test(hash)
+                ? hash
+                : undefined,
+            };
           },
-        );
+        });
         const saved = await resumeStopLossPlacement(
           prepared.account,
           prepared.chainId,
@@ -244,8 +242,7 @@ export function StopLossCreation() {
     try {
       const placement = getStopLossPlacement();
       const transaction = await buildPlacementSetup(prepared, {
-        reviewedRequiredAllowance: review.checks.requiredAllowance,
-        localOrders: placement.getConfirmedPlacements(prepared),
+        checks: review.checks,
       });
       if (
         currentScope.current !== selectedScope ||
@@ -253,6 +250,7 @@ export function StopLossCreation() {
       )
         return;
       await placement.submit(prepared, "setup", {
+        settlementAmount: review.checks.requiredSettlementAllowance,
         send: async () => {
           if (currentScope.current !== selectedScope)
             throw new PlacementNotSubmittedError(
@@ -451,8 +449,8 @@ export function StopLossCreation() {
                 }
               : undefined
           }
-          onApprove={() => {
-            void approve();
+          onApprove={(mode) => {
+            void approve(mode);
           }}
           onPlace={() => {
             void place();
