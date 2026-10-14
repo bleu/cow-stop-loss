@@ -5,6 +5,7 @@ import { Address, formatUnits } from "viem";
 import { chainNames } from "#/lib/publicClients";
 import { PlacementRecord, PlacementRow } from "#/lib/stopLossPlacement";
 
+import { CancelOrderDialog } from "../CancelOrderDialog";
 import { StatusBadge } from "../StatusBadge";
 
 function placementLabel({ stage, status }: PlacementRecord) {
@@ -78,24 +79,28 @@ export function getColumns(account: Address): ColumnDef<PlacementRow>[] {
     {
       id: "details",
       header: "Details",
-      cell: ({ row: { original: order } }) =>
-        order.canLink ? (
-          <Link
-            href={`/${order.chainId}/${account}/${encodeURIComponent(order.parentId)}`}
-            aria-label={`View order ${order.parentId} on ${chainNames[order.chainId]}`}
-          >
-            View details
-          </Link>
-        ) : (
-          <div>
-            <p>{placementLabel(order.placement)}</p>
-            {order.error && (
-              <p role="alert" className="text-destructive">
-                {order.error}
-              </p>
-            )}
-          </div>
-        ),
+      cell: ({ row: { original: order } }) => (
+        <div className="flex gap-2">
+          {order.canLink ? (
+            <Link
+              href={`/${order.chainId}/${account}/${encodeURIComponent(order.parentId)}`}
+              aria-label={`View order ${order.parentId} on ${chainNames[order.chainId]}`}
+            >
+              View details
+            </Link>
+          ) : (
+            <div>
+              <p>{placementLabel(order.placement)}</p>
+              {order.error && (
+                <p role="alert" className="text-destructive">
+                  {order.error}
+                </p>
+              )}
+            </div>
+          )}
+          <CancelOrderDialog order={order} />
+        </div>
+      ),
     },
   ];
 }

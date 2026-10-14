@@ -15,6 +15,7 @@ import {
 } from "#/utils";
 
 import { ApprovalRepair } from "./ApprovalRepair";
+import { CancelOrderDialog } from "./CancelOrderDialog";
 import { BlockExplorerLink } from "./ExplorerLink";
 import { StatusBadge } from "./StatusBadge";
 
@@ -110,6 +111,7 @@ export function OrderDetails({
   return (
     <main className="mx-auto max-w-4xl px-4 py-10">
       <OrderDetailsHeading />
+      <CancelOrderDialog order={order} />
       {warning}
       <ApprovalRepair order={order} onRefresh={mutate} />
       <dl>
