@@ -1,11 +1,15 @@
 "use client";
 
 import { Button, Dialog, DialogContent, DialogTitle } from "@bleu/ui";
-import type { ReactNode } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import { formatUnits } from "viem";
 
 import { GPV2_VAULT_RELAYER_ADDRESS } from "#/lib/contracts";
-import type { FundingSnapshot, PreparedPlacement } from "#/lib/pollerStopLoss";
+import type {
+  ApprovalMode,
+  FundingSnapshot,
+  PreparedPlacement,
+} from "#/lib/pollerStopLoss";
 import type { ChainId } from "#/lib/publicClients";
 import { formatTimeDelta } from "#/lib/timeDelta";
 import type { DraftOrder } from "#/lib/types";
@@ -21,9 +25,8 @@ export interface ReviewOrdersDialogProps {
   checks?: FundingSnapshot;
   busy?: boolean;
   error?: string;
-  approvalStage?: "reset" | "approval";
   pending?: boolean;
-  onApprove: () => void;
+  onApprove: (mode: ApprovalMode) => void;
   onPlace: () => void;
   onRetry: () => void;
   onAbandon?: () => void;
@@ -39,22 +42,18 @@ export function ReviewOrdersDialog({
   busy = false,
   pending = false,
   error,
-  approvalStage,
   onApprove,
   onPlace,
   onRetry,
   onAbandon,
 }: ReviewOrdersDialogProps) {
+  const [mode, setMode] = useState<ApprovalMode>("limited");
+  useEffect(() => setMode("limited"), [order.id, chainId]);
   const funding = checks?.status === "known" ? checks : undefined;
   const reviewError =
     error || (checks?.status === "unknown" ? checks.error : undefined);
   const actionsBlocked =
     !prepared || !funding || Boolean(reviewError) || busy || pending;
-  const resetRequired =
-    funding?.approvalRequired &&
-    (approvalStage === "reset" ||
-      (funding.currentAllowance > BigInt(0) &&
-        funding.currentAllowance < funding.requiredAllowance));
   const sellAmount = (amount: bigint) =>
     `${formatUnits(amount, order.tokenSell.decimals)} ${order.tokenSell.symbol}`;
 
@@ -106,7 +105,7 @@ export function ReviewOrdersDialog({
             <div className="text-sm">
               <p>
                 {funding.approvalRequired
-                  ? `Approve ${sellAmount(funding.requiredAllowance)} for the Poller.`
+                  ? `Approve ${mode === "unlimited" ? `unlimited ${order.tokenSell.symbol}` : sellAmount(funding.requiredAllowance)} for the Poller.`
                   : "Wallet approval is sufficient."}
                 {prepared && funding.approvalRequired && (
                   <>
@@ -119,6 +118,32 @@ export function ReviewOrdersDialog({
                   </>
                 )}
               </p>
+              {funding.approvalRequired && (
+                <fieldset
+                  disabled={actionsBlocked}
+                  className="my-2 flex flex-col gap-2"
+                >
+                  <legend>Wallet approval limit</legend>
+                  {(["limited", "unlimited"] as const).map((choice) => (
+                    <label key={choice} className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name="approval-limit"
+                        checked={mode === choice}
+                        onChange={() => setMode(choice)}
+                      />
+                      {choice === "limited" ? "Limited" : "Unlimited"}
+                    </label>
+                  ))}
+                  <p>
+                    Allowances are shared by orders using the same wallet,
+                    token, and spender.
+                  </p>
+                  {mode === "unlimited" && (
+                    <p>Unlimited approval does not reserve funds.</p>
+                  )}
+                </fieldset>
+              )}
               {funding.combinedCommitmentsExceedBalance && (
                 <p role="alert" className="text-yellow-400">
                   Combined commitments exceed your wallet balance. Funds are not
@@ -127,10 +152,11 @@ export function ReviewOrdersDialog({
               )}
             </div>
           )}
-          {prepared && (
+          {prepared && funding && (
             <p className="text-sm">
-              Placement grants unlimited {order.tokenSell.symbol} settlement
-              approval from the CowShed.
+              {funding.settlementApprovalRequired
+                ? `Placement grants unlimited ${order.tokenSell.symbol} settlement approval from the CowShed.`
+                : "CowShed settlement approval is sufficient and will stay unchanged."}
             </p>
           )}
           <details className="text-sm">
@@ -224,28 +250,19 @@ export function ReviewOrdersDialog({
                           : "Unavailable"}
                       </OrderInformation>
                       {funding?.approvalRequired && (
-                        <>
-                          {resetRequired && (
-                            <OrderInformation title="Reset allowance to">
-                              {sellAmount(BigInt(0))}
-                            </OrderInformation>
-                          )}
-                          <OrderInformation
-                            title={
-                              resetRequired
-                                ? "Approval after reset"
-                                : "Approval amount"
-                            }
-                          >
-                            {sellAmount(funding.requiredAllowance)}
-                          </OrderInformation>
-                        </>
+                        <OrderInformation title="Approval amount">
+                          {mode === "unlimited"
+                            ? `Unlimited ${order.tokenSell.symbol}`
+                            : sellAmount(funding.requiredAllowance)}
+                        </OrderInformation>
                       )}
                     </dl>
                     {funding && (
                       <p className="text-sm">
                         {funding.approvalRequired
-                          ? "Approve only the required total for this order and outstanding unfunded orders."
+                          ? mode === "unlimited"
+                            ? "Approve the maximum token allowance for the Poller."
+                            : "Approve only the required total for this order and outstanding unfunded orders."
                           : "Allowance is sufficient. Your existing allowance will not be reduced."}
                       </p>
                     )}
@@ -279,15 +296,29 @@ export function ReviewOrdersDialog({
                           networkId={chainId}
                         />
                       </OrderInformation>
-                      <OrderInformation title="Approval amount">
-                        Unlimited {order.tokenSell.symbol}
+                      <OrderInformation title="Current allowance">
+                        {funding
+                          ? sellAmount(funding.currentSettlementAllowance)
+                          : "Unavailable"}
                       </OrderInformation>
+                      {funding && (
+                        <OrderInformation title="Required remaining total">
+                          {sellAmount(funding.requiredSettlementAllowance)}
+                        </OrderInformation>
+                      )}
+                      {funding?.settlementApprovalRequired && (
+                        <OrderInformation title="Approval amount">
+                          Unlimited {order.tokenSell.symbol}
+                        </OrderInformation>
+                      )}
                     </dl>
-                    <p className="text-sm">
-                      Place order permits the Vault Relayer to spend{" "}
-                      {order.tokenSell.symbol} held by this CowShed without an
-                      amount limit.
-                    </p>
+                    {funding?.settlementApprovalRequired && (
+                      <p className="text-sm">
+                        Place order permits the Vault Relayer to spend{" "}
+                        {order.tokenSell.symbol} held by this CowShed without an
+                        amount limit.
+                      </p>
+                    )}
                   </section>
                 </>
               )}
@@ -332,22 +363,17 @@ export function ReviewOrdersDialog({
               Abandon placement
             </Button>
           )}
-          {resetRequired && (
-            <p className="text-sm">
-              Reset the allowance to zero, then approve the required amount.
-            </p>
-          )}
           <div className="flex gap-2">
-            <Button
-              type="button"
-              className="flex-1"
-              disabled={actionsBlocked || !funding?.approvalRequired}
-              onClick={onApprove}
-            >
-              {resetRequired
-                ? `Reset ${order.tokenSell.symbol} allowance`
-                : `Approve ${order.tokenSell.symbol}`}
-            </Button>
+            {funding?.approvalRequired !== false && (
+              <Button
+                type="button"
+                className="flex-1"
+                disabled={actionsBlocked || !funding?.approvalRequired}
+                onClick={() => onApprove(mode)}
+              >
+                Approve {order.tokenSell.symbol}
+              </Button>
+            )}
             <Button
               type="button"
               className="flex-1"

@@ -14,6 +14,7 @@ import {
   truncateAddress,
 } from "#/utils";
 
+import { ApprovalRepair } from "./ApprovalRepair";
 import { BlockExplorerLink } from "./ExplorerLink";
 import { StatusBadge } from "./StatusBadge";
 
@@ -110,6 +111,7 @@ export function OrderDetails({
     <main className="mx-auto max-w-4xl px-4 py-10">
       <OrderDetailsHeading />
       {warning}
+      <ApprovalRepair order={order} onRefresh={mutate} />
       <dl>
         <Field label="Chain">{chainNames[chainId]}</Field>
         <Field label="Order ID">{order.parentId}</Field>
@@ -199,7 +201,7 @@ export function OrderDetails({
         )}
         {order.executedFee !== null && (
           <Field label="Executed fee">
-            {order.executedFee} base units (fee token not supplied)
+            {order.executedFee.toString()} base units (fee token not supplied)
           </Field>
         )}
         {order.executionPrice !== undefined && (
