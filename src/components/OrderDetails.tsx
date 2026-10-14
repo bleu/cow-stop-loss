@@ -201,7 +201,7 @@ export function OrderDetails({
         )}
         {order.executedFee !== null && (
           <Field label="Executed fee">
-            {order.executedFee} base units (fee token not supplied)
+            {order.executedFee.toString()} base units (fee token not supplied)
           </Field>
         )}
         {order.executionPrice !== undefined && (
