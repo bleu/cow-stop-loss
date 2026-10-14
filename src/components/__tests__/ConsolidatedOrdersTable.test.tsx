@@ -590,7 +590,10 @@ test("shows each approval stage and the setup wallet prompt without offering an 
   expect(await screen.findByText("Approval reset pending")).toBeInTheDocument();
 
   await act(async () => {
-    await placement.resume(order, { checkState: async () => true });
+    await placement.resume(order, {
+      readTransaction: async () => ({ status: "success" }),
+      checkState: async () => true,
+    });
   });
   expect(
     await screen.findByText("Approval reset confirmed. Approval required."),
@@ -603,7 +606,10 @@ test("shows each approval stage and the setup wallet prompt without offering an 
   });
   expect(await screen.findByText("Approval pending")).toBeInTheDocument();
   await act(async () => {
-    await placement.resume(order, { checkState: async () => true });
+    await placement.resume(order, {
+      readTransaction: async () => ({ status: "success" }),
+      checkState: async () => true,
+    });
   });
   expect(
     await screen.findByText("Approval confirmed. Ready to place."),

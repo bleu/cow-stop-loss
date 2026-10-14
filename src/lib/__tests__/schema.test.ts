@@ -22,6 +22,13 @@ const ethereumSwap = {
 };
 
 describe("Supported stop loss order input", () => {
+  it("rejects exact-buy configuration even when its amounts are valid", () => {
+    expect(
+      generateSwapSchema(1).safeParse({ ...ethereumSwap, isSellOrder: false })
+        .success,
+    ).toBe(false);
+  });
+
   it.each(["0", "0.1", "0.5", "1", "0.25", "99.99"])(
     "accepts %s%% slippage in the order configuration",
     (slippagePercent) => {

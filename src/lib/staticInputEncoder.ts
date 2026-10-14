@@ -1,9 +1,6 @@
 import { encodeAbiParameters, Hex, parseUnits } from "viem";
 
-import { MetadataApi } from "@cowprotocol/app-data";
 import { getOrderAmounts } from "./calculateAmounts";
-import { uploadAppData } from "./cowApi/uploadAppData";
-import { StopLossOrderArgs } from "./transactionFactory";
 import { DraftOrder } from "./types";
 
 export const stopLossDataStructure = [
@@ -60,30 +57,6 @@ export const stopLossDataStructure = [
     type: "uint32",
   },
 ];
-
-export async function stopLossArgsEncoder(
-  data: StopLossOrderArgs,
-): Promise<`0x${string}`> {
-  getOrderAmounts(data);
-  const metadataApi = new MetadataApi();
-
-  const appDataDoc = await metadataApi.generateAppDataDoc({
-    metadata: {
-      widget: {
-        appCode: "Stop Loss",
-      },
-    },
-  });
-  const { appDataHex, appDataContent } =
-    await metadataApi.appDataToCid(appDataDoc);
-  await uploadAppData({
-    fullAppData: appDataContent,
-    appDataHex,
-    chainId: data.chainId,
-  });
-
-  return encodeStopLossStaticInput(data, appDataHex as Hex);
-}
 
 export function encodeStopLossStaticInput(
   data: DraftOrder,

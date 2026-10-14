@@ -4,13 +4,16 @@ import { create } from "zustand";
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
 import { ChainId } from "#/lib/publicClients";
-import { generateAdvancedSettingsSchema, generateSwapSchema, VALID_TO_VALUES_MAP } from "#/lib/schema";
+import {
+  generateAdvancedSettingsSchema,
+  generateSwapSchema,
+  VALID_TO_VALUES_MAP,
+} from "#/lib/schema";
 import { fetchPairUsdPrice } from "#/lib/tokenUtils";
 import { DraftOrder, OrderStatus, SwapData } from "#/lib/types";
 import { generateRandomHex } from "#/utils";
 
 import { useAdvancedSettingsStore } from "./useAdvancedSettings";
-import { useDraftOrders } from "./useDraftOrders";
 
 interface DraftOrderState {
   currentDraftOrder?: DraftOrder;
@@ -29,16 +32,15 @@ export const useDraftOrder = create<DraftOrderState>()((set) => ({
     const swapData = generateSwapSchema(chainId).parse(data);
     const amounts = calculateAmounts({
       isSellOrder: swapData.isSellOrder,
-      amount: swapData.isSellOrder ? swapData.amountSell : swapData.amountBuy,
+      amount: swapData.amountSell,
       strikePrice: swapData.strikePrice,
       slippagePercent: swapData.slippagePercent,
       sellDecimals: swapData.tokenSell.decimals,
       buyDecimals: swapData.tokenBuy.decimals,
     });
-    const advancedSettings = await generateAdvancedSettingsSchema(chainId).parseAsync(
-      useAdvancedSettingsStore.getState().advancedSettings,
-    );
-    const draftOrders = useDraftOrders.getState().draftOrders;
+    const advancedSettings = await generateAdvancedSettingsSchema(
+      chainId,
+    ).parseAsync(useAdvancedSettingsStore.getState().advancedSettings);
 
     const receiver =
       advancedSettings.receiver === ""
@@ -87,7 +89,7 @@ export const useDraftOrder = create<DraftOrderState>()((set) => ({
       receiver,
       tokenBuyOracle,
       tokenSellOracle,
-      id: `draft-${draftOrders.length}-${Date.now()}`,
+      id: crypto.randomUUID(),
       oraclePrice,
       fallbackMarketPrice,
       salt,

@@ -3,17 +3,9 @@
  * @jest-environment-options {"customExportConditions": ["node", "node-addons"]}
  */
 
-import { decodeFunctionData, erc20Abi } from "viem";
-
 import { publicClientsFromIds } from "#/lib/publicClients";
 import { VALID_TO_OPTIONS } from "#/lib/schema";
-import { decodeComposableCowCreateTxData } from "#/lib/staticInputDecoder";
 import { getSupportedTokens } from "#/lib/supportedTokens";
-import {
-  createRawTxArgs,
-  TRANSACTION_TYPES,
-  TransactionFactory,
-} from "#/lib/transactionFactory";
 import type { SwapData } from "#/lib/types";
 
 import {
@@ -21,8 +13,6 @@ import {
   useAdvancedSettingsStore,
 } from "../useAdvancedSettings";
 import { useDraftOrder } from "../useDraftOrder";
-import { useDraftOrders } from "../useDraftOrders";
-import { FALLBACK_STATES } from "../useFallbackState";
 
 const safeAddress = "0x1111111111111111111111111111111111111111";
 const { sellTokens, buyToken } = getSupportedTokens(1);
@@ -43,7 +33,6 @@ describe("Supported stop loss draft creation", () => {
       .getState()
       .setAdvancedSettings(defaultAdvancedSettings);
     useDraftOrder.getState().setCurrentDraftOrder(undefined);
-    useDraftOrders.getState().setDraftOrders([]);
     global.fetch = jest.fn().mockImplementation(async (input) => {
       const url = String(input);
       return {
@@ -89,7 +78,7 @@ describe("Supported stop loss draft creation", () => {
     });
   });
 
-  it("encodes rounded draft quantities and absolute expiry without number conversion", async () => {
+  it("prepares rounded quantities and absolute expiry without number conversion", async () => {
     jest.spyOn(Date, "now").mockReturnValue(1700000000000);
     const draft = await useDraftOrder.getState().createDraftOrder(
       {
@@ -102,135 +91,17 @@ describe("Supported stop loss draft creation", () => {
       1,
       safeAddress,
     );
-    const tx = await TransactionFactory.createRawTx(
-      TRANSACTION_TYPES.STOP_LOSS_ORDER,
-      {
-        ...draft,
-        type: TRANSACTION_TYPES.STOP_LOSS_ORDER,
-        chainId: 1,
-        safeAddress,
-      },
-    );
 
-    expect(
-      decodeComposableCowCreateTxData(tx.data as `0x${string}`),
-    ).toMatchObject({
-      sellAmount: BigInt("123456789012345678"),
-      buyAmount: BigInt("246666665"),
-      strike: BigInt("2000000000000000000000"),
+    expect(draft).toMatchObject({
+      amountSell: "0.123456789012345678",
+      amountBuy: "246.666665",
+      strikePrice: "2000",
       receiver: safeAddress,
       isSellOrder: true,
-      isPartiallyFillable: false,
+      partiallyFillable: false,
       validTo: 1700086400,
-      maxTimeSinceLastOracleUpdate: 21600,
+      maxHoursSinceOracleUpdates: 6,
     });
-  });
-
-  it("refuses to encode a draft whose amounts no longer match its slippage", async () => {
-    const draft = await useDraftOrder
-      .getState()
-      .createDraftOrder(orderInput, 1, safeAddress);
-
-    await expect(
-      TransactionFactory.createRawTx(TRANSACTION_TYPES.STOP_LOSS_ORDER, {
-        ...draft,
-        amountBuy: "1",
-        type: TRANSACTION_TYPES.STOP_LOSS_ORDER,
-        chainId: 1,
-        safeAddress,
-      }),
-    ).rejects.toThrow("Draft amounts do not match its trigger and slippage");
-  });
-
-  it("refuses to prepare approvals for a draft that no longer matches its slippage", async () => {
-    jest
-      .spyOn(publicClientsFromIds[1], "multicall")
-      .mockResolvedValue([{ result: BigInt(0), status: "success" }]);
-    const draft = await useDraftOrder
-      .getState()
-      .createDraftOrder(orderInput, 1, safeAddress);
-
-    await expect(
-      createRawTxArgs({
-        data: [{ ...draft, amountBuy: "1" }],
-        safeAddress,
-        chainId: 1,
-        domainSeparator: safeAddress,
-        fallbackState: FALLBACK_STATES.HAS_DOMAIN_VERIFIER,
-      }),
-    ).rejects.toThrow("Draft amounts do not match its trigger and slippage");
-  });
-
-  it("encodes the rounded maximum sell in an exact buy order", async () => {
-    const draft = await useDraftOrder.getState().createDraftOrder(
-      {
-        ...orderInput,
-        tokenSell: sellTokens[0].token,
-        isSellOrder: false,
-        amountBuy: "1",
-        amountSell: "999",
-        strikePrice: "3",
-        slippagePercent: "0",
-      },
-      1,
-      safeAddress,
-    );
-    const tx = await TransactionFactory.createRawTx(
-      TRANSACTION_TYPES.STOP_LOSS_ORDER,
-      {
-        ...draft,
-        type: TRANSACTION_TYPES.STOP_LOSS_ORDER,
-        chainId: 1,
-        safeAddress,
-      },
-    );
-
-    expect(
-      decodeComposableCowCreateTxData(tx.data as `0x${string}`),
-    ).toMatchObject({
-      sellAmount: BigInt("333333333333333333"),
-      buyAmount: BigInt("1000000"),
-      isSellOrder: false,
-    });
-  });
-
-  it("approves the same exact sell amount used by the encoded buy order", async () => {
-    jest
-      .spyOn(publicClientsFromIds[1], "multicall")
-      .mockResolvedValue([{ result: BigInt(0), status: "success" }]);
-    const draft = await useDraftOrder.getState().createDraftOrder(
-      {
-        ...orderInput,
-        tokenSell: sellTokens[0].token,
-        isSellOrder: false,
-        amountBuy: "1",
-        strikePrice: "3",
-        slippagePercent: "0",
-      },
-      1,
-      safeAddress,
-    );
-    const args = await createRawTxArgs({
-      data: [draft],
-      safeAddress,
-      chainId: 1,
-      domainSeparator: safeAddress,
-      fallbackState: FALLBACK_STATES.HAS_DOMAIN_VERIFIER,
-    });
-    const approval = args.find(
-      (arg) => arg.type === TRANSACTION_TYPES.ERC20_APPROVE,
-    );
-    if (!approval || !("amount" in approval))
-      throw new Error("Missing approval");
-    const tx = await TransactionFactory.createRawTx(
-      TRANSACTION_TYPES.ERC20_APPROVE,
-      approval,
-    );
-
-    expect(
-      decodeFunctionData({ abi: erc20Abi, data: tx.data as `0x${string}` })
-        .args?.[1],
-    ).toBe(BigInt("333333333333333333"));
   });
 
   it("uses the current pair's configured feeds without a cached route", async () => {

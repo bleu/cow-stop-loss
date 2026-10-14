@@ -26,6 +26,7 @@ export interface ReviewOrdersDialogProps {
   onApprove: () => void;
   onPlace: () => void;
   onRetry: () => void;
+  onAbandon?: () => void;
 }
 
 export function ReviewOrdersDialog({
@@ -42,6 +43,7 @@ export function ReviewOrdersDialog({
   onApprove,
   onPlace,
   onRetry,
+  onAbandon,
 }: ReviewOrdersDialogProps) {
   const funding = checks?.status === "known" ? checks : undefined;
   const reviewError =
@@ -318,6 +320,16 @@ export function ReviewOrdersDialog({
               disabled={busy}
             >
               Retry
+            </Button>
+          )}
+          {onAbandon && (
+            <Button
+              type="button"
+              variant="outline"
+              disabled={busy || pending}
+              onClick={onAbandon}
+            >
+              Abandon placement
             </Button>
           )}
           {resetRequired && (

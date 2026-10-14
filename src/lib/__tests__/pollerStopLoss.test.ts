@@ -1279,6 +1279,33 @@ test("builds one atomic factory transaction for a new shed with dispatch and cur
   ]);
 });
 
+test("does not recreate an authorized order when browser recovery is absent", async () => {
+  const client = checkingClient({
+    singleOrders: true,
+    schedules: [
+      zeroAddress,
+      BigInt(0),
+      zeroAddress,
+      zeroAddress,
+      `0x${"00".repeat(32)}`,
+      "0x",
+    ],
+  });
+  const prepared = await preparePlacement({
+    draft,
+    account,
+    chainId: 1,
+    client,
+  });
+  emptyFundingApi();
+  await expect(
+    buildPlacementSetup(prepared, {
+      client,
+      reviewedRequiredAllowance: BigInt("1000000000000000000"),
+    }),
+  ).rejects.toThrow("This order has already been created.");
+});
+
 test("does not build setup before wallet-to-Poller approval is sufficient", async () => {
   const client = checkingClient({
     allowance: BigInt(0),
@@ -1594,6 +1621,7 @@ function checkingClient(overrides: Record<string, unknown> = {}) {
           BigInt(1),
         ],
         decimals: 8,
+        singleOrders: false,
         allowance: BigInt("5000000000000000000"),
         balanceOf: BigInt("5000000000000000000"),
         ...overrides,
@@ -1627,12 +1655,51 @@ function emptyFundingApi() {
 test("rejects exact-buy placement in the single-sell flow", async () => {
   await expect(
     preparePlacement({
-      draft: { ...draft, isSellOrder: false },
+      draft: { ...draft, isSellOrder: false } as unknown as DraftOrder,
       account,
       chainId: 1,
     }),
   ).rejects.toThrow("Only exact-sell placement is supported");
 });
+
+test.each([buildPlacementApproval, buildPlacementSetup])(
+  "%p rejects prepared exact-buy input before building a transaction",
+  async (build) => {
+    const client = checkingClient();
+    const prepared = await preparePlacement({
+      draft,
+      account,
+      chainId: 1,
+      client,
+    });
+    const parameters = parseAbiParameters(
+      "address,address,uint256,uint256,bytes32,address,bool,bool,uint32,address,address,int256,uint32",
+    );
+    const values = decodeAbiParameters(parameters, prepared.staticInput);
+    prepared.staticInput = encodeAbiParameters(parameters, [
+      values[0],
+      values[1],
+      values[2],
+      values[3],
+      values[4],
+      values[5],
+      false,
+      values[7],
+      values[8],
+      values[9],
+      values[10],
+      values[11],
+      values[12],
+    ]);
+    emptyFundingApi();
+    await expect(
+      build(prepared, {
+        client,
+        reviewedRequiredAllowance: BigInt("1000000000000000000"),
+      }),
+    ).rejects.toThrow("Only exact-sell orders are supported.");
+  },
+);
 
 test("rejects a zero receiver instead of sending proceeds to the CowShed", async () => {
   await expect(

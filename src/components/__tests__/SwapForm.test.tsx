@@ -4,7 +4,7 @@
  */
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SWRConfig } from "swr";
 import type { Address } from "viem";
@@ -15,7 +15,6 @@ import {
   useAdvancedSettingsStore,
 } from "#/hooks/useAdvancedSettings";
 import { useDraftOrder } from "#/hooks/useDraftOrder";
-import { useDraftOrders } from "#/hooks/useDraftOrders";
 import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 import { publicClientsFromIds } from "#/lib/publicClients";
 import { getSupportedTokens } from "#/lib/supportedTokens";
@@ -50,7 +49,6 @@ beforeEach(() => {
     chainId: 1,
     safeAddress: "0x1111111111111111111111111111111111111111",
   };
-  useDraftOrders.getState().setDraftOrders([]);
   useDraftOrder.getState().setCurrentDraftOrder(undefined);
   useAdvancedSettingsStore
     .getState()
@@ -103,6 +101,25 @@ function renderForm(onReviewOrder = jest.fn()) {
     },
   );
 }
+
+it("keeps applied form settings in memory without saving browser data", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  const write = jest.spyOn(Storage.prototype, "setItem");
+  await user.click(screen.getByRole("button", { name: "Advanced Settings" }));
+  await user.type(
+    screen.getByPlaceholderText("0xabc...123"),
+    "0x2222222222222222222222222222222222222222",
+  );
+  await user.click(screen.getByRole("button", { name: "Save Settings" }));
+  await waitFor(() =>
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+  );
+  expect(write).not.toHaveBeenCalledWith(
+    "advanced-settings-storage",
+    expect.anything(),
+  );
+});
 
 it("omits the market amount summary but keeps Set to market and minimum received", async () => {
   const user = userEvent.setup();
@@ -368,25 +385,21 @@ it("uses a six-hour oracle limit in fresh settings and the reviewed draft", asyn
 });
 
 it.each([1, 2.5])(
-  "preserves a saved %s-hour oracle limit in settings and review",
+  "preserves an applied %s-hour oracle limit in settings and review",
   async (maxHoursSinceOracleUpdates) => {
-    localStorage.setItem(
-      "advanced-settings-storage",
-      JSON.stringify({
-        state: {
-          advancedSettings: {
-            receiver: "",
-            maxHoursSinceOracleUpdates,
-            partiallyFillable: false,
-          },
-        },
-        version: 0,
-      }),
-    );
-    await useAdvancedSettingsStore.persist.rehydrate();
     const user = userEvent.setup();
     const onReviewOrder = jest.fn();
     renderForm(onReviewOrder);
+    await user.click(screen.getByRole("button", { name: "Advanced Settings" }));
+    await user.clear(screen.getByRole("spinbutton"));
+    await user.type(
+      screen.getByRole("spinbutton"),
+      String(maxHoursSinceOracleUpdates),
+    );
+    await user.click(screen.getByRole("button", { name: "Save Settings" }));
+    await waitFor(() =>
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    );
     await user.click(screen.getByRole("button", { name: "Advanced Settings" }));
     expect(screen.getByRole("spinbutton")).toHaveValue(
       maxHoursSinceOracleUpdates,
@@ -529,7 +542,6 @@ it("hands one wallet-scoped exact-sell draft to review and keeps form values for
     "0.123456789012345678",
   );
   const firstDraft = onReviewOrder.mock.calls[0][0];
-  useDraftOrders.getState().setDraftOrders(Array(5).fill(firstDraft));
   await user.click(
     screen.getByRole("button", { name: "Review Stop Loss order" }),
   );
@@ -704,6 +716,67 @@ it("resets committed slippage and exact-sell inputs when the chain changes", asy
   ).not.toHaveClass("text-primary");
   await user.click(screen.getByRole("button", { name: "Advanced Settings" }));
   expect(screen.getByRole("textbox", { name: "Slippage" })).toHaveValue("0.1");
+  expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue("");
+  expect(screen.getByRole("spinbutton")).toHaveValue(6);
+  expect(
+    screen.getByRole("checkbox", { name: "Enable partially fillable orders" }),
+  ).not.toBeChecked();
+});
+
+it("closes unapplied settings and resets expiry when the wallet changes", async () => {
+  const user = userEvent.setup();
+  const onReviewOrder = jest.fn();
+  const { rerender } = renderForm(onReviewOrder);
+  screen.getByRole("combobox").focus();
+  await user.keyboard("[Space]");
+  await user.click(await screen.findByRole("option", { name: "30 minutes" }));
+  await user.click(screen.getByRole("button", { name: "Advanced Settings" }));
+  await user.click(screen.getByRole("radio", { name: "1%" }));
+  await user.type(
+    screen.getByPlaceholderText("0xabc...123"),
+    "0x3333333333333333333333333333333333333333",
+  );
+  safe = { ...safe, safeAddress: "0x2222222222222222222222222222222222222222" };
+  rerender(
+    <SWRConfig value={{ provider: () => new Map(), revalidateOnFocus: false }}>
+      <SwapForm onReviewOrder={onReviewOrder} />
+    </SWRConfig>,
+  );
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  expect(screen.getByRole("combobox")).toHaveTextContent("6 months");
+  await user.click(screen.getByRole("button", { name: "Advanced Settings" }));
+  expect(screen.getByRole("textbox", { name: "Slippage" })).toHaveValue("0.1");
+  expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue("");
+});
+
+it("ignores settings validation that finishes after a wallet change", async () => {
+  const user = userEvent.setup();
+  const onReviewOrder = jest.fn();
+  const { rerender } = renderForm(onReviewOrder);
+  let finish!: (address: Address) => void;
+  const delayed = new Promise<Address>((resolve) => {
+    finish = resolve;
+  });
+  const ens = jest
+    .spyOn(publicClientsFromIds[1], "getEnsAddress")
+    .mockImplementation(async () => delayed);
+  await user.click(screen.getByRole("button", { name: "Advanced Settings" }));
+  await user.type(screen.getByPlaceholderText("0xabc...123"), "receiver.eth");
+  await user.click(screen.getByRole("radio", { name: "1%" }));
+  await user.click(screen.getByRole("button", { name: "Save Settings" }));
+  await waitFor(() => expect(ens).toHaveBeenCalled());
+  safe = { ...safe, safeAddress: "0x2222222222222222222222222222222222222222" };
+  rerender(
+    <SWRConfig value={{ provider: () => new Map(), revalidateOnFocus: false }}>
+      <SwapForm onReviewOrder={onReviewOrder} />
+    </SWRConfig>,
+  );
+  await act(async () => {
+    finish("0x3333333333333333333333333333333333333333");
+  });
+  await user.click(screen.getByRole("button", { name: "Advanced Settings" }));
+  expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue("");
+  expect(screen.getByRole("textbox", { name: "Slippage" })).toHaveValue("0.1");
 });
 
 it("resets the exact-sell form when the wallet changes", async () => {
@@ -713,6 +786,15 @@ it("resets the exact-sell form when the wallet changes", async () => {
   await selectWeth(user);
   await user.click(screen.getByRole("button", { name: "Advanced Settings" }));
   await user.click(screen.getByRole("radio", { name: "1%" }));
+  await user.type(
+    screen.getByPlaceholderText("0xabc...123"),
+    "0x3333333333333333333333333333333333333333",
+  );
+  await user.clear(screen.getByRole("spinbutton"));
+  await user.type(screen.getByRole("spinbutton"), "2");
+  await user.click(
+    screen.getByRole("checkbox", { name: "Enable partially fillable orders" }),
+  );
   await user.click(screen.getByRole("button", { name: "Save Settings" }));
   await waitFor(() =>
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
@@ -731,4 +813,9 @@ it("resets the exact-sell form when the wallet changes", async () => {
   ).toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "Advanced Settings" }));
   expect(screen.getByRole("textbox", { name: "Slippage" })).toHaveValue("0.1");
+  expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue("");
+  expect(screen.getByRole("spinbutton")).toHaveValue(6);
+  expect(
+    screen.getByRole("checkbox", { name: "Enable partially fillable orders" }),
+  ).not.toBeChecked();
 });

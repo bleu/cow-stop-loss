@@ -7,6 +7,10 @@ import { useForm, useWatch } from "react-hook-form";
 import { Address } from "viem";
 import { useAccount } from "wagmi";
 
+import {
+  defaultAdvancedSettings,
+  useAdvancedSettingsStore,
+} from "#/hooks/useAdvancedSettings";
 import { useDraftOrder } from "#/hooks/useDraftOrder";
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { calculateAmounts } from "#/lib/calculateAmounts";
@@ -24,6 +28,7 @@ import { SwapCardSubmitButton } from "./SwapCardSubmitButton";
 import { ValidToInput } from "./ValidToInput";
 
 export interface SwapFormProps {
+  reviewDisabled?: boolean;
   onReviewOrder: (
     draft: DraftOrder,
     chainId: ChainId,
@@ -31,7 +36,17 @@ export interface SwapFormProps {
   ) => void;
 }
 
-export function SwapForm({ onReviewOrder }: SwapFormProps) {
+export function SwapForm(props: SwapFormProps) {
+  const { address, chainId } = useAccount();
+  return (
+    <WalletSwapForm key={`${address?.toLowerCase()}:${chainId}`} {...props} />
+  );
+}
+
+function WalletSwapForm({
+  onReviewOrder,
+  reviewDisabled = false,
+}: SwapFormProps) {
   const { chainId: accountChainId, address: walletAddress } = useAccount();
   const chainId = accountChainId as ChainId;
 
@@ -53,51 +68,38 @@ export function SwapForm({ onReviewOrder }: SwapFormProps) {
     },
   });
   const { reset, clearErrors, setValue, getValues } = form;
-  const [
-    tokenSell,
-    tokenBuy,
-    isSellOrder,
-    amountSell,
-    amountBuy,
-    strikePrice,
-    slippagePercent,
-  ] = useWatch({
-    control: form.control,
-    name: [
-      "tokenSell",
-      "tokenBuy",
-      "isSellOrder",
-      "amountSell",
-      "amountBuy",
-      "strikePrice",
-      "slippagePercent",
-    ],
-  });
+  const [tokenSell, tokenBuy, amountSell, strikePrice, slippagePercent] =
+    useWatch({
+      control: form.control,
+      name: [
+        "tokenSell",
+        "tokenBuy",
+        "amountSell",
+        "strikePrice",
+        "slippagePercent",
+      ],
+    });
   React.useEffect(() => {
-    const derivedField = isSellOrder ? "amountBuy" : "amountSell";
     let derivedAmount = "";
     if (tokenSell && tokenBuy) {
       try {
-        const amounts = calculateAmounts({
-          isSellOrder,
-          amount: isSellOrder ? amountSell : amountBuy,
+        derivedAmount = calculateAmounts({
+          isSellOrder: true,
+          amount: amountSell,
           strikePrice,
           slippagePercent,
           sellDecimals: tokenSell.decimals,
           buyDecimals: tokenBuy.decimals,
-        });
-        derivedAmount = amounts[derivedField];
+        }).amountBuy;
       } catch {
         derivedAmount = "";
       }
     }
-    if (getValues(derivedField) !== derivedAmount) {
-      setValue(derivedField, derivedAmount, { shouldValidate: true });
+    if (getValues("amountBuy") !== derivedAmount) {
+      setValue("amountBuy", derivedAmount, { shouldValidate: true });
     }
   }, [
-    isSellOrder,
     amountSell,
-    amountBuy,
     strikePrice,
     slippagePercent,
     tokenSell,
@@ -106,6 +108,15 @@ export function SwapForm({ onReviewOrder }: SwapFormProps) {
     setValue,
   ]);
   const submissionId = React.useRef(0);
+
+  React.useEffect(
+    () => () => {
+      useAdvancedSettingsStore
+        .getState()
+        .setAdvancedSettings(defaultAdvancedSettings);
+    },
+    [chainId, walletAddress],
+  );
 
   React.useEffect(() => {
     reset({
@@ -141,6 +152,7 @@ export function SwapForm({ onReviewOrder }: SwapFormProps) {
     <Form
       {...form}
       onSubmit={async (data) => {
+        if (reviewDisabled) return;
         const requestId = ++submissionId.current;
         clearErrors("root");
         try {
@@ -194,7 +206,7 @@ export function SwapForm({ onReviewOrder }: SwapFormProps) {
                 {form.formState.errors.root.message}
               </p>
             )}
-            <SwapCardSubmitButton />
+            <SwapCardSubmitButton disabled={reviewDisabled} />
           </CardContent>
         </Card>
       </fieldset>

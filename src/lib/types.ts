@@ -49,10 +49,6 @@ export type DraftOrder = Omit<SwapData, "validTo"> &
     validTo: number;
   };
 
-export type CreatingOrder = Omit<DraftOrder, "status"> & {
-  status: OrderStatus.CREATING;
-  safeTxHash: `0x${string}`;
-};
 export interface CowOrder {
   appData: string;
   availableBalance: string;

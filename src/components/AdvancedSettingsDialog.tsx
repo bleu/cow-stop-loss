@@ -47,6 +47,13 @@ export function AdvancedSettingsDialog({
   onApplySlippage,
 }: AdvancedSettingsDialogProps) {
   const [open, setOpen] = React.useState(false);
+  const mounted = React.useRef(false);
+  React.useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
   const { chainId: accountChainId } = useAccount();
   const chainId = (accountChainId ?? 1) as ChainId;
   const [advancedSettings, setAdvancedSettings] = useAdvancedSettingsStore(
@@ -117,6 +124,7 @@ export function AdvancedSettingsDialog({
             {...form}
             className="mt-2 w-full flex flex-col gap-2"
             onSubmit={({ slippagePercent: savedSlippage, ...settings }) => {
+              if (!mounted.current) return;
               setAdvancedSettings(settings);
               onApplySlippage(savedSlippage);
               setOpen(false);
@@ -144,6 +152,7 @@ export function AdvancedSettingsDialog({
                 name="maxHoursSinceOracleUpdates"
                 label="Maximum hours since last oracle update"
                 type="number"
+                step="any"
                 tooltipText={
                   TOOLTIP_DESCRIPTIONS.MAX_TIME_SINCE_LAST_ORACLE_UPDATE
                 }

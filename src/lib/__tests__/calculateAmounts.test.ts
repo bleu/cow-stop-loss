@@ -34,8 +34,8 @@ it("rounds minimum buy up without losing the exact sell amount", () => {
   });
 });
 
-it("rounds maximum sell down while preserving the exact buy amount", () => {
-  expect(
+it("rejects exact-buy amounts instead of deriving a maximum sell amount", () => {
+  expect(() =>
     calculateAmounts({
       isSellOrder: false,
       amount: "1",
@@ -44,11 +44,7 @@ it("rounds maximum sell down while preserving the exact buy amount", () => {
       sellDecimals: 18,
       buyDecimals: 6,
     }),
-  ).toEqual({
-    amountSell: "0.333333333333333333",
-    amountBuy: "1",
-    limitPrice: "3",
-  });
+  ).toThrow("Only exact-sell orders are supported.");
 });
 
 it.each([
@@ -80,30 +76,17 @@ it.each([
   },
 );
 
-it("rejects an exact buy amount with more decimal places than its token", () => {
+it("rejects a sell amount with more decimal places than its token", () => {
   expect(() =>
     calculateAmounts({
-      isSellOrder: false,
-      amount: "1.0000001",
-      strikePrice: "2000",
-      slippagePercent: "0.1",
-      sellDecimals: 18,
-      buyDecimals: 6,
-    }),
-  ).toThrow("Amount must be positive with at most 6 decimal places");
-});
-
-it("rejects an exact buy whose maximum sell rounds to zero", () => {
-  expect(() =>
-    calculateAmounts({
-      isSellOrder: false,
-      amount: "0.000001",
+      isSellOrder: true,
+      amount: "1.000000001",
       strikePrice: "2000",
       slippagePercent: "0.1",
       sellDecimals: 8,
       buyDecimals: 6,
     }),
-  ).toThrow("Amount is too small for this token's precision");
+  ).toThrow("Amount must be positive with at most 8 decimal places");
 });
 
 it.each([
@@ -129,17 +112,17 @@ it.each([
   },
 );
 
-it("uses WBTC's eight decimals for the maximum sell amount", () => {
+it("preserves WBTC's eight-decimal exact sell amount", () => {
   expect(
     calculateAmounts({
-      isSellOrder: false,
-      amount: "1",
+      isSellOrder: true,
+      amount: "0.33333333",
       strikePrice: "3",
       slippagePercent: "0",
       sellDecimals: 8,
       buyDecimals: 6,
-    }).amountSell,
-  ).toBe("0.33333333");
+    }),
+  ).toMatchObject({ amountSell: "0.33333333", amountBuy: "1" });
 });
 
 it("keeps Sepolia USDC's eighteen-decimal minimum buy amount", () => {

@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
 import { AdvancedSwapSettings } from "#/lib/types";
 
@@ -26,14 +25,8 @@ export function haveSettingsChanged(
 }
 
 export const useAdvancedSettingsStore = create<AdvancedSettingsState>()(
-  persist(
-    (set) => ({
-      advancedSettings: defaultAdvancedSettings,
-      setAdvancedSettings: (settings) => set({ advancedSettings: settings }),
-    }),
-    {
-      name: "advanced-settings-storage",
-      partialize: (state) => ({ advancedSettings: state.advancedSettings }),
-    },
-  ),
+  (set) => ({
+    advancedSettings: defaultAdvancedSettings,
+    setAdvancedSettings: (settings) => set({ advancedSettings: settings }),
+  }),
 );

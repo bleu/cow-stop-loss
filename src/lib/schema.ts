@@ -66,7 +66,7 @@ export const swapSchema = z
     amountBuy: z.string(),
     strikePrice: z.string(),
     slippagePercent: slippagePercentSchema,
-    isSellOrder: z.coerce.boolean(),
+    isSellOrder: z.literal(true),
     validTo: z.nativeEnum(VALID_TO_OPTIONS),
   })
   .refine(
@@ -83,7 +83,7 @@ export const swapSchema = z
     try {
       calculateAmounts({
         isSellOrder: data.isSellOrder,
-        amount: data.isSellOrder ? data.amountSell : data.amountBuy,
+        amount: data.amountSell,
         strikePrice: data.strikePrice,
         slippagePercent: data.slippagePercent,
         sellDecimals: data.tokenSell.decimals,
@@ -95,11 +95,7 @@ export const swapSchema = z
       context.addIssue({
         code: z.ZodIssueCode.custom,
         path: [
-          message.startsWith("Trigger price")
-            ? "strikePrice"
-            : data.isSellOrder
-              ? "amountSell"
-              : "amountBuy",
+          message.startsWith("Trigger price") ? "strikePrice" : "amountSell",
         ],
         message,
       });

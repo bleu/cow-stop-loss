@@ -14,7 +14,11 @@ import {
   defaultAdvancedSettings,
   useAdvancedSettingsStore,
 } from "#/hooks/useAdvancedSettings";
+import { getStopLossPlacement } from "#/hooks/useStopLossPlacement";
+import { STOP_LOSS_ADDRESS } from "#/lib/contracts";
+import type { PreparedPlacement } from "#/lib/pollerStopLoss";
 import { publicClientsFromIds } from "#/lib/publicClients";
+import { createStopLossPlacement } from "#/lib/stopLossPlacement";
 import { createWagmiConfig } from "#/utils/wagmi";
 
 import { StopLossCreation } from "../StopLossCreation";
@@ -101,6 +105,7 @@ beforeEach(() => {
     .mockImplementation(async ({ functionName, address }) => {
       if (functionName === "balanceOf") return BigInt("5000000000000000000");
       if (functionName === "allowance") return BigInt(0);
+      if (functionName === "singleOrders") return false;
       if (
         functionName === "COW_SHED_FACTORY" ||
         functionName === "trustedExecutor"
@@ -279,6 +284,77 @@ it("places only on request, closes after on-chain checks, and keeps the form val
   );
 });
 
+it("includes orders confirmed during preparation in the next review funding total", async () => {
+  const user = userEvent.setup();
+  let firstOrder!: PreparedPlacement;
+  let created = false;
+  let confirmDuringPreparation = false;
+  const readContract = jest.mocked(publicClientsFromIds[1].readContract);
+  const read = readContract.getMockImplementation()!;
+  readContract.mockImplementation(async (args) => {
+    if (args.functionName === "allowance")
+      return BigInt("100000000000000000000");
+    if (args.functionName === "singleOrders") return created;
+    if (args.functionName === "funded") return false;
+    if (args.functionName === "schedules")
+      return created
+        ? [
+            STOP_LOSS_ADDRESS,
+            BigInt(0),
+            account,
+            firstOrder.owner,
+            firstOrder.draft.salt,
+            firstOrder.staticInput,
+          ]
+        : [
+            zeroAddress,
+            BigInt(0),
+            zeroAddress,
+            zeroAddress,
+            `0x${"00".repeat(32)}`,
+            "0x",
+          ];
+    return read(args);
+  });
+  sendTransactionAsync.mockImplementation(async () => {
+    firstOrder = getStopLossPlacement().getRecords({ account, chainId: 1 })[0]
+      .prepared;
+    throw Object.assign(new Error("User rejected the request"), { code: 4001 });
+  });
+  const fetch = global.fetch;
+  global.fetch = jest.fn(async (input, init) => {
+    if (String(input).includes("/app_data/") && confirmDuringPreparation) {
+      confirmDuringPreparation = false;
+      created = true;
+      const otherTab = createStopLossPlacement({
+        storage: localStorage,
+        locks: navigator.locks,
+      });
+      await otherTab.submit(firstOrder, "setup", {
+        send: async () => ({ id: "other-tab-creation" }),
+      });
+      await otherTab.resume(firstOrder, { checkState: async () => true });
+    }
+    return fetch(input, init);
+  });
+  showCreation();
+  await reviewOneOrder(user, false);
+  await user.click(screen.getByRole("button", { name: "Place order" }));
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "User rejected the request",
+  );
+  await user.click(screen.getByRole("button", { name: "Close" }));
+  confirmDuringPreparation = true;
+  await user.click(
+    screen.getByRole("button", { name: "Review Stop Loss order" }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  await waitFor(() =>
+    expect(dialog).toHaveTextContent("Required allowance2 WETH"),
+  );
+  expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
+});
+
 it("reopens saved pending approval after reload without another wallet request", async () => {
   const user = userEvent.setup();
   sendTransactionAsync.mockResolvedValue("opaque-wallet-reference");
@@ -303,7 +379,87 @@ it("reopens saved pending approval after reload without another wallet request",
   expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
 });
 
-it("retries pending approval reads without sending another wallet request", async () => {
+it("blocks a new review while an unfinished placement is saved", async () => {
+  const user = userEvent.setup();
+  sendTransactionAsync.mockResolvedValue("unknown-approval");
+  showCreation();
+  await reviewOneOrder(user);
+  await user.click(screen.getByRole("button", { name: "Approve WETH" }));
+  await waitFor(() =>
+    expect(screen.getByRole("button", { name: "Close" })).toBeEnabled(),
+  );
+  await user.click(screen.getByRole("button", { name: "Close" }));
+  const amount = screen.getByRole("textbox", { name: "Sell amount" });
+  await user.clear(amount);
+  await user.type(amount, "2");
+  expect(
+    screen.getByRole("button", { name: "Review Stop Loss order" }),
+  ).toBeDisabled();
+  await user.click(screen.getByRole("button", { name: "Continue placement" }));
+  expect(await screen.findByRole("dialog")).toHaveTextContent(
+    "Sell exactly1 WETH",
+  );
+  expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
+});
+
+it("abandons an expired approval-only placement and permits a fresh review", async () => {
+  const user = userEvent.setup();
+  let allowance = BigInt(0);
+  const readContract = jest.mocked(publicClientsFromIds[1].readContract);
+  const read = readContract.getMockImplementation()!;
+  readContract.mockImplementation(async (args) => {
+    if (args.functionName === "allowance") return allowance;
+    if (args.functionName === "singleOrders") return false;
+    return read(args);
+  });
+  sendTransactionAsync.mockImplementation(async () => {
+    allowance = BigInt("1000000000000000000");
+    return `0x${"ab".repeat(32)}`;
+  });
+  jest
+    .spyOn(publicClientsFromIds[1], "waitForTransactionReceipt")
+    .mockResolvedValue({
+      status: "success",
+      transactionHash: `0x${"ab".repeat(32)}`,
+      blockNumber: BigInt(101),
+    } as never);
+  showCreation();
+  await reviewOneOrder(user);
+  await user.click(screen.getByRole("button", { name: "Approve WETH" }));
+  await waitFor(() =>
+    expect(screen.getByRole("button", { name: "Place order" })).toBeEnabled(),
+  );
+  await user.click(screen.getByRole("button", { name: "Close" }));
+  chainTime += BigInt(10 * 365 * 24 * 3600);
+  jest
+    .mocked(publicClientsFromIds[1].getBlock)
+    .mockImplementation(async () => ({ timestamp: chainTime }) as never);
+  await user.click(screen.getByRole("button", { name: "Continue placement" }));
+  expect(await screen.findByRole("alert")).toHaveTextContent(
+    "Reviewed order has expired",
+  );
+  await user.click(screen.getByRole("button", { name: "Abandon placement" }));
+  await waitFor(() =>
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+  );
+  expect(
+    screen.queryByRole("button", { name: "Continue placement" }),
+  ).not.toBeInTheDocument();
+  expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
+  expect(allowance).toBe(BigInt("1000000000000000000"));
+  chainTime = BigInt(Math.floor(Date.now() / 1000));
+  const amount = screen.getByRole("textbox", { name: "Sell amount" });
+  await user.clear(amount);
+  await user.type(amount, "2");
+  await user.click(
+    screen.getByRole("button", { name: "Review Stop Loss order" }),
+  );
+  expect(await screen.findByRole("dialog")).toHaveTextContent(
+    "Sell exactly2 WETH",
+  );
+});
+
+it("keeps an unknown approval pending even when allowance becomes sufficient", async () => {
   const user = userEvent.setup();
   let allowance = BigInt(0);
   const readContract = jest.mocked(publicClientsFromIds[1].readContract);
@@ -324,8 +480,12 @@ it("retries pending approval reads without sending another wallet request", asyn
   await user.click(screen.getByRole("button", { name: "Retry" }));
 
   await waitFor(() =>
-    expect(screen.getByRole("button", { name: "Place order" })).toBeEnabled(),
+    expect(screen.getByRole("button", { name: "Retry" })).toBeEnabled(),
   );
+  expect(screen.getByRole("button", { name: "Place order" })).toBeDisabled();
+  expect(
+    screen.getByRole("button", { name: "Abandon placement" }),
+  ).toBeDisabled();
   expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
 });
 
@@ -456,7 +616,7 @@ it("requires a separate approval after a confirmed allowance reset", async () =>
   expect(sendTransactionAsync).toHaveBeenCalledTimes(2);
 });
 
-it("releases a cancelled approval and retains the replacement error", async () => {
+it("retains a cancelled approval for explicit retry or abandonment", async () => {
   const user = userEvent.setup();
   sendTransactionAsync.mockResolvedValue(`0x${"ab".repeat(32)}`);
   jest
@@ -482,8 +642,8 @@ it("releases a cancelled approval and retains the replacement error", async () =
   );
   await user.click(screen.getByRole("button", { name: "Close" }));
   expect(
-    screen.queryByRole("button", { name: "Continue placement" }),
-  ).not.toBeInTheDocument();
+    screen.getByRole("button", { name: "Continue placement" }),
+  ).toBeInTheDocument();
   expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
 });
 
@@ -583,9 +743,7 @@ it("does not open the old wallet request after waiting for a cross-tab lock", as
   connectedAccount = account;
   view.refreshWallet();
 
-  expect(await screen.findByRole("alert")).toHaveTextContent(
-    "Wallet or chain changed",
-  );
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   expect(sendTransactionAsync).not.toHaveBeenCalled();
   expect(
     screen.queryByRole("button", { name: "Continue placement" }),
