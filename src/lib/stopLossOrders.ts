@@ -1,16 +1,16 @@
 import {
+  type Address,
   formatUnits,
   Hex,
   isAddress,
   isHex,
   parseUnits,
-  type Address,
 } from "viem";
 
 import { STOP_LOSS_ADDRESS } from "./contracts";
-import { supportedChainIds, type ChainId } from "./publicClients";
+import { type ChainId, supportedChainIds } from "./publicClients";
 import { getSupportedTokens } from "./supportedTokens";
-import { OrderStatus, type IToken } from "./types";
+import { type IToken, OrderStatus } from "./types";
 
 export type OrderToken = Omit<IToken, "decimals"> & { decimals: number | null };
 
@@ -190,6 +190,13 @@ export async function loadStopLossFundingParents({
     signal,
   );
   return parents.filter((parent) => {
+    if (
+      parent.chainId !== chainId ||
+      (isAddress(parent.handler) &&
+        parent.handler.toLowerCase() !== STOP_LOSS_ADDRESS.toLowerCase()) ||
+      (parent.orderType && parent.orderType !== "StopLoss")
+    )
+      return false;
     if (
       !isAddress(parent.owner) ||
       !isAddress(parent.handler) ||

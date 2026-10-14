@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   Address,
   erc20Abi,
+  PublicClient,
   TransactionNotFoundError,
   TransactionReceiptNotFoundError,
   WaitForTransactionReceiptTimeoutError,
@@ -19,6 +20,7 @@ import {
   createStopLossPlacement,
   PlacementReader,
   PlacementRecord,
+  TransactionReference,
 } from "#/lib/stopLossPlacement";
 
 let controller: ReturnType<typeof createStopLossPlacement> | undefined;
@@ -131,52 +133,135 @@ export async function abandonStopLossPlacement(
   );
 }
 
+export async function readStopLossTransaction(
+  reference: TransactionReference,
+  client: PublicClient,
+  saveReference?: (reference: TransactionReference) => Promise<void>,
+): Promise<
+  Awaited<ReturnType<NonNullable<PlacementReader["readTransaction"]>>>
+> {
+  if (!reference.transactionHash) return { status: "pending" };
+  reference = structuredClone(reference);
+  try {
+    if (!reference.submitted) {
+      try {
+        const transaction = await client.getTransaction({
+          hash: reference.transactionHash!,
+        });
+        reference.submitted = {
+          from: transaction.from,
+          to: transaction.to,
+          input: transaction.input,
+          value: transaction.value,
+          nonce: transaction.nonce,
+          nextBlock: transaction.blockNumber ?? (await client.getBlockNumber()),
+        };
+      } catch {
+        // The original transaction can be unavailable before or after replacement.
+      }
+    }
+    if (reference.submitted) await findStopLossReplacement(reference, client);
+    await saveReference?.(reference);
+    let replacementError = reference.replacementError;
+    const receipt = await client.waitForTransactionReceipt({
+      hash: reference.transactionHash!,
+      timeout: 10000,
+      onReplaced: ({ reason, replacedTransaction, transaction }) => {
+        if (transaction?.hash) reference.transactionHash = transaction.hash;
+        if (reason === "cancelled") replacementError = "Transaction cancelled";
+        else if (
+          !replacedTransaction ||
+          !transaction ||
+          replacedTransaction.from.toLowerCase() !==
+            transaction.from.toLowerCase() ||
+          replacedTransaction.to?.toLowerCase() !==
+            transaction.to?.toLowerCase() ||
+          replacedTransaction.value !== transaction.value ||
+          replacedTransaction.input.toLowerCase() !==
+            transaction.input.toLowerCase()
+        )
+          replacementError = "Transaction replaced with a different action";
+        reference.replacementError = replacementError;
+      },
+    });
+    return {
+      status:
+        receipt.status === "success" && !replacementError
+          ? "success"
+          : "failed",
+      error:
+        replacementError ??
+        (receipt.status === "reverted" ? "Transaction reverted" : undefined),
+      reference: {
+        ...reference,
+        transactionHash: receipt.transactionHash,
+        blockNumber: receipt.blockNumber,
+      },
+    };
+  } catch (error) {
+    if (
+      error instanceof TransactionNotFoundError ||
+      error instanceof TransactionReceiptNotFoundError ||
+      error instanceof WaitForTransactionReceiptTimeoutError
+    )
+      return { status: "pending", reference };
+    return {
+      status: "pending",
+      reference,
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
+}
+
+async function findStopLossReplacement(
+  reference: TransactionReference,
+  client: PublicClient,
+) {
+  const submitted = reference.submitted!;
+  const latest = await client.getBlockNumber();
+  const end =
+    latest < submitted.nextBlock + BigInt(99)
+      ? latest
+      : submitted.nextBlock + BigInt(99);
+  for (
+    let blockNumber = submitted.nextBlock;
+    blockNumber <= end;
+    blockNumber++
+  ) {
+    const block = await client.getBlock({
+      blockNumber,
+      includeTransactions: true,
+    });
+    const replacement = block.transactions.find(
+      (transaction) =>
+        transaction.from.toLowerCase() === submitted.from.toLowerCase() &&
+        transaction.nonce === submitted.nonce,
+    );
+    submitted.nextBlock = blockNumber + BigInt(1);
+    if (!replacement) continue;
+    reference.transactionHash = replacement.hash;
+    if (
+      submitted.to?.toLowerCase() !== replacement.to?.toLowerCase() ||
+      submitted.value !== replacement.value ||
+      submitted.input.toLowerCase() !== replacement.input.toLowerCase()
+    )
+      reference.replacementError =
+        "Transaction replaced with a different action";
+    break;
+  }
+}
+
 function placementReader(chainId: ChainId): PlacementReader {
   const client = publicClientsFromIds[chainId];
   return {
-    async readTransaction(_record, reference) {
-      if (!reference.transactionHash) return { status: "pending" };
-      try {
-        let replacementError: string | undefined;
-        const receipt = await client.waitForTransactionReceipt({
-          hash: reference.transactionHash,
-          timeout: 10000,
-          onReplaced: ({ reason }) => {
-            if (reason === "cancelled")
-              replacementError = "Transaction cancelled";
-            if (reason === "replaced")
-              replacementError = "Transaction replaced with a different action";
-          },
-        });
-        return {
-          status:
-            receipt.status === "success" && !replacementError
-              ? "success"
-              : "failed",
-          error:
-            replacementError ??
-            (receipt.status === "reverted"
-              ? "Transaction reverted"
-              : undefined),
-          reference: {
-            ...reference,
-            transactionHash: receipt.transactionHash,
-            blockNumber: receipt.blockNumber,
-          },
-        };
-      } catch (error) {
-        if (
-          error instanceof TransactionNotFoundError ||
-          error instanceof TransactionReceiptNotFoundError ||
-          error instanceof WaitForTransactionReceiptTimeoutError
-        )
-          return { status: "pending" };
-        throw error;
-      }
-    },
+    readTransaction: (_record, reference, saveReference) =>
+      readStopLossTransaction(reference, client, saveReference),
     async checkState(record) {
       if (record.stage === "setup")
-        return verifyPlacementConfirmation(record.prepared, { client });
+        return verifyPlacementConfirmation(record.prepared, {
+          client,
+          requiredSettlementAllowance: record.settlementAmount,
+        });
       const allowance = await client.readContract({
         address: record.prepared.draft.tokenSell.address,
         abi: erc20Abi,

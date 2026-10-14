@@ -62,6 +62,9 @@ const checks: Extract<FundingSnapshot, { status: "known" }> = {
   blockTimestamp: 1800000000,
   outstandingSellAmount: BigInt("500000000000000000"),
   requiredAllowance: BigInt("623456789012345678"),
+  requiredSettlementAllowance: BigInt("623456789012345678"),
+  currentSettlementAllowance: BigInt(0),
+  settlementApprovalRequired: true,
   currentAllowance: BigInt(0),
   balance: BigInt("750000000000000000"),
   approvalRequired: true,
@@ -79,6 +82,40 @@ function props() {
     onRetry: jest.fn(),
   };
 }
+
+it("discloses that sufficient finite settlement permission stays unchanged", async () => {
+  const user = userEvent.setup();
+  render(
+    <ReviewOrdersDialog
+      {...props()}
+      prepared={prepared}
+      checks={{
+        ...checks,
+        currentSettlementAllowance: BigInt("1000000000000000000"),
+        settlementApprovalRequired: false,
+      }}
+    />,
+  );
+  expect(
+    screen.getByText(
+      "CowShed settlement approval is sufficient and will stay unchanged.",
+    ),
+  ).toBeVisible();
+  expect(
+    screen.queryByText(
+      "Placement grants unlimited WETH settlement approval from the CowShed.",
+    ),
+  ).not.toBeInTheDocument();
+  await user.click(screen.getByText("Order and approval details"));
+  const settlement = within(
+    screen.getByRole("region", { name: "CowShed settlement approval" }),
+  );
+  expect(settlement.getByText("Current allowance")).toBeVisible();
+  expect(settlement.getByText("1 WETH")).toBeVisible();
+  expect(settlement.getByText("Required remaining total")).toBeVisible();
+  expect(settlement.getByText("0.623456789012345678 WETH")).toBeVisible();
+  expect(settlement.queryByText("Unlimited WETH")).not.toBeInTheDocument();
+});
 
 it("links short addresses on the reviewed chain before preparation completes", async () => {
   const user = userEvent.setup();
@@ -330,7 +367,9 @@ it("requires a separate Place order action after approval becomes sufficient", a
       }}
     />,
   );
-  expect(screen.getByRole("button", { name: "Approve WETH" })).toBeDisabled();
+  expect(
+    screen.queryByRole("button", { name: "Approve WETH" }),
+  ).not.toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Place order" })).toBeEnabled();
   expect(input.onPlace).not.toHaveBeenCalled();
   await user.click(screen.getByRole("button", { name: "Place order" }));
@@ -367,60 +406,62 @@ it("keeps a higher sufficient allowance without claiming it will be reduced", ()
   expect(
     walletApproval.queryByText("0.623456789012345678 WETH"),
   ).not.toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Approve WETH" })).toBeDisabled();
+  expect(
+    screen.queryByRole("button", { name: "Approve WETH" }),
+  ).not.toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Place order" })).toBeEnabled();
 });
 
-it("requires a zero reset as an extra approval before approving and placing", async () => {
+it("offers a direct approval for a nonzero insufficient allowance without a reset", async () => {
   const user = userEvent.setup();
   const input = props();
-  const { rerender } = render(
+  render(
     <ReviewOrdersDialog
       {...input}
       prepared={prepared}
       checks={{ ...checks, currentAllowance: BigInt("100000000000000000") }}
-      approvalStage="approval"
     />,
   );
 
-  const reset = screen.getByRole("button", { name: "Reset WETH allowance" });
-  expect(reset).toBeEnabled();
-  expect(screen.getByRole("button", { name: "Place order" })).toBeDisabled();
   expect(
-    screen.getByText(
-      "Reset the allowance to zero, then approve the required amount.",
-    ),
-  ).toBeInTheDocument();
+    screen.queryByRole("button", { name: /Reset/ }),
+  ).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Approve WETH" })).toBeEnabled();
+  expect(screen.getByRole("button", { name: "Place order" })).toBeDisabled();
   fireEvent.click(screen.getByText("Order and approval details"));
   const walletApproval = within(
     screen.getByRole("region", { name: "Wallet approval" }),
   );
-  expect(walletApproval.getByText("Reset allowance to")).toBeInTheDocument();
-  expect(walletApproval.getByText("0 WETH")).toBeInTheDocument();
-  expect(walletApproval.getByText("Approval after reset")).toBeInTheDocument();
+  expect(
+    walletApproval.queryByText("Reset allowance to"),
+  ).not.toBeInTheDocument();
+  expect(walletApproval.getByText("Approval amount")).toBeInTheDocument();
   expect(
     walletApproval.getByText("0.623456789012345678 WETH"),
   ).toBeInTheDocument();
-  await user.click(reset);
+  await user.click(screen.getByRole("button", { name: "Approve WETH" }));
   expect(input.onApprove).toHaveBeenCalledTimes(1);
   expect(input.onPlace).not.toHaveBeenCalled();
+});
 
-  rerender(
-    <ReviewOrdersDialog
-      {...input}
-      prepared={prepared}
-      checks={checks}
-      approvalStage="approval"
-    />,
-  );
+it("defaults to limited approval and submits the selected unlimited mode", async () => {
+  const user = userEvent.setup();
+  const input = props();
+  render(<ReviewOrdersDialog {...input} prepared={prepared} checks={checks} />);
+
+  expect(screen.getByRole("radio", { name: "Limited" })).toBeChecked();
+  expect(screen.getByRole("radio", { name: "Unlimited" })).not.toBeChecked();
+  await user.click(screen.getByRole("radio", { name: "Unlimited" }));
   expect(
-    screen.queryByRole("button", { name: "Reset WETH allowance" }),
-  ).not.toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Approve WETH" })).toBeEnabled();
-  expect(screen.getByRole("button", { name: "Place order" })).toBeDisabled();
+    screen.getByText("Unlimited approval does not reserve funds."),
+  ).toBeVisible();
+  fireEvent.click(screen.getByText("Order and approval details"));
+  const walletApproval = within(
+    screen.getByRole("region", { name: "Wallet approval" }),
+  );
+  expect(walletApproval.getByText("Unlimited WETH")).toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "Approve WETH" }));
-  expect(input.onApprove).toHaveBeenCalledTimes(2);
-  expect(input.onPlace).not.toHaveBeenCalled();
+  expect(input.onApprove).toHaveBeenCalledWith("unlimited");
 });
 
 it("blocks unknown funding, shows its error, and retries only through the parent callback", async () => {
@@ -572,7 +613,9 @@ it("blocks wallet actions while pending but lets the user retry tracking and clo
   expect(screen.getByRole("alert")).toHaveTextContent(
     "Confirmation RPC unavailable.",
   );
-  expect(screen.getByRole("button", { name: "Approve WETH" })).toBeDisabled();
+  expect(
+    screen.queryByRole("button", { name: "Approve WETH" }),
+  ).not.toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Place order" })).toBeDisabled();
   await user.click(screen.getByRole("button", { name: "Retry" }));
   expect(input.onRetry).toHaveBeenCalledTimes(1);

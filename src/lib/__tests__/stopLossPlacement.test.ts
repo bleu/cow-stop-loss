@@ -1,8 +1,12 @@
 import { InsufficientFundsError } from "viem";
 
+import { readStopLossTransaction } from "#/hooks/useStopLossPlacement";
 import type { PreparedPlacement } from "#/lib/pollerStopLoss";
+import { publicClientsFromIds } from "#/lib/publicClients";
 import { encodeStopLossStaticInput } from "#/lib/staticInputEncoder";
+import { createStopLossApprovalRepair } from "#/lib/stopLossApprovalRepair";
 import type { StopLossOrder } from "#/lib/stopLossOrders";
+import type { TransactionReference } from "#/lib/stopLossPlacement";
 import { createStopLossPlacement } from "#/lib/stopLossPlacement";
 import { OrderStatus } from "#/lib/types";
 
@@ -53,6 +57,126 @@ prepared.staticInput = encodeStopLossStaticInput(
   prepared.draft,
   prepared.appDataHash,
 );
+
+const repairPrepared = { ...prepared, kind: "repair" as const };
+const repairWork = {
+  stage: "wallet" as const,
+  target: BigInt(1),
+  transaction: {
+    account: prepared.account,
+    chainId: 1 as const,
+    to: prepared.draft.tokenSell.address,
+    data: "0x" as const,
+    value: BigInt(0),
+  },
+};
+
+test("blocks a smaller repair while a persisted placement approval is unresolved", async () => {
+  const env = environment();
+  await createStopLossPlacement(env).submit(prepared, "approval", {
+    approvalAmount: BigInt(3),
+    send: async () => ({ id: "larger-approval" }),
+  });
+  const send = jest.fn(async () => ({ id: "smaller-approval" }));
+  await expect(
+    createStopLossApprovalRepair(env).submit(repairPrepared, repairWork, send),
+  ).rejects.toThrow(/already active|pending/);
+  expect(send).not.toHaveBeenCalled();
+});
+
+test("keeps a stale smaller repair blocked after placement approval is ready for setup", async () => {
+  const env = environment();
+  const placement = createStopLossPlacement(env);
+  await placement.submit(prepared, "approval", {
+    approvalAmount: BigInt(3),
+    send: async () => ({ id: "larger-approval" }),
+  });
+  await placement.resume(scope, {
+    readTransaction: async () => ({ status: "success" }),
+    checkState: async () => true,
+  });
+  expect(placement.getRecords(scope)[0].status).toBe("ready");
+  const send = jest.fn(async () => ({ id: "smaller-approval" }));
+  await expect(
+    createStopLossApprovalRepair(env).submit(repairPrepared, repairWork, send),
+  ).rejects.toThrow("already active");
+  expect(send).not.toHaveBeenCalled();
+  await expect(
+    placement.submit(prepared, "setup", {
+      send: async () => ({ id: "setup" }),
+    }),
+  ).resolves.toMatchObject({ status: "pending", stage: "setup" });
+});
+
+test("blocks placement while a persisted repair approval is unresolved", async () => {
+  const env = environment();
+  await createStopLossApprovalRepair(env).submit(
+    repairPrepared,
+    repairWork,
+    async () => ({ id: "repair-approval" }),
+  );
+  const send = jest.fn(async () => ({ id: "placement-approval" }));
+  await expect(
+    createStopLossPlacement(env).submit(prepared, "approval", { send }),
+  ).rejects.toThrow("already active");
+  expect(send).not.toHaveBeenCalled();
+});
+
+test("persists placement transaction identity before its receipt wait finishes", async () => {
+  const client = publicClientsFromIds[1];
+  const transactionHash = `0x${"cd".repeat(32)}` as const;
+  jest.spyOn(client, "getTransaction").mockResolvedValue({
+    from: account,
+    to: prepared.draft.tokenSell.address,
+    input: "0x1234",
+    value: BigInt(0),
+    nonce: 7,
+    blockNumber: null,
+  } as never);
+  jest.spyOn(client, "getBlockNumber").mockResolvedValue(BigInt(100));
+  jest
+    .spyOn(client, "getBlock")
+    .mockResolvedValue({ transactions: [] } as never);
+  let release!: () => void;
+  const waiting = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  const receipt = jest
+    .spyOn(client, "waitForTransactionReceipt")
+    .mockImplementation(async () => {
+      await waiting;
+      return {
+        status: "success",
+        transactionHash,
+        blockNumber: BigInt(101),
+      } as never;
+    });
+  const env = environment();
+  const placement = createStopLossPlacement(env);
+  await placement.submit(prepared, "approval", {
+    send: async () => ({ id: transactionHash, transactionHash }),
+  });
+  const task = placement.resume(scope, {
+    readTransaction: (
+      _record,
+      reference,
+      ...writers: ((reference: TransactionReference) => Promise<void>)[]
+    ) => readStopLossTransaction(reference, client, writers[0]),
+    checkState: async () => true,
+  });
+  try {
+    while (!receipt.mock.calls.length)
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(
+      createStopLossPlacement(env).getRecords(scope)[0].transactions.approval
+        ?.submitted?.nonce,
+    ).toBe(7);
+  } finally {
+    release();
+    await task;
+    jest.restoreAllMocks();
+  }
+});
 
 test("rejects unsupported kinds before opening a wallet prompt", async () => {
   const placement = createStopLossPlacement(environment());
@@ -122,13 +246,16 @@ function memoryStorage() {
 }
 
 function sharedLocks() {
-  let previous = Promise.resolve();
+  const previous = new Map<string, Promise<unknown>>();
   return {
-    request<T>(_name: string, action: () => Promise<T> | T): Promise<T> {
-      const result = previous.then(action);
-      previous = result.then(
-        () => undefined,
-        () => undefined,
+    request<T>(name: string, action: () => Promise<T> | T): Promise<T> {
+      const result = (previous.get(name) ?? Promise.resolve()).then(action);
+      previous.set(
+        name,
+        result.then(
+          () => undefined,
+          () => undefined,
+        ),
       );
       return result;
     },

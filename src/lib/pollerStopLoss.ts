@@ -4,6 +4,7 @@ import {
   concatHex,
   encodeAbiParameters,
   encodeFunctionData,
+  encodePacked,
   erc20Abi,
   Hex,
   keccak256,
@@ -17,19 +18,23 @@ import {
 import { composableCowAbi } from "./abis/composableCow";
 import { composableCowPollerAbi } from "./abis/composableCowPoller";
 import { cowShedAbi, cowShedFactoryAbi } from "./abis/cowShedFactory";
+import { getOrderAmounts } from "./calculateAmounts";
 import {
   COMPOSABLE_COW_ADDRESS,
   GPV2_VAULT_RELAYER_ADDRESS,
   POLLER_ADDRESS_BY_CHAIN_ID,
   STOP_LOSS_ADDRESS,
 } from "./contracts";
-import { getOrderAmounts } from "./calculateAmounts";
 import { uploadAppData } from "./cowApi/uploadAppData";
 import { readOraclePrice } from "./oracleRouter";
 import { ChainId, publicClientsFromIds } from "./publicClients";
 import { decodeStopLossStaticInput } from "./staticInputDecoder";
 import { encodeStopLossStaticInput } from "./staticInputEncoder";
-import { loadStopLossFundingParents } from "./stopLossOrders";
+import {
+  FundingParent,
+  loadStopLossFundingParents,
+  loadStopLossOrders,
+} from "./stopLossOrders";
 import { getSupportedTokens } from "./supportedTokens";
 import { DraftOrder } from "./types";
 
@@ -142,6 +147,33 @@ export async function preparePlacement({
 }
 
 export type PreparedPlacement = Awaited<ReturnType<typeof preparePlacement>>;
+export type PreparedApprovalRepair = Omit<
+  PreparedPlacement,
+  "draft" | "appDataHash" | "fullAppData"
+> & {
+  kind: "repair";
+  draft: Pick<
+    DraftOrder,
+    | "isSellOrder"
+    | "tokenSell"
+    | "salt"
+    | "validTo"
+    | "tokenSellOracle"
+    | "tokenBuyOracle"
+    | "maxHoursSinceOracleUpdates"
+  >;
+};
+export type ApprovalRepairSelection = {
+  account: Address;
+  chainId: ChainId;
+  owner: Address;
+  hash: Hex;
+};
+export type ApprovalRepairReview = {
+  prepared?: PreparedApprovalRepair;
+  checks: FundingSnapshot;
+};
+
 export type FundingSnapshot =
   | {
       status: "known";
@@ -149,6 +181,9 @@ export type FundingSnapshot =
       blockTimestamp: number;
       outstandingSellAmount: bigint;
       requiredAllowance: bigint;
+      requiredSettlementAllowance: bigint;
+      currentSettlementAllowance: bigint;
+      settlementApprovalRequired: boolean;
       currentAllowance: bigint;
       balance: bigint;
       approvalRequired: boolean;
@@ -158,10 +193,25 @@ export type FundingSnapshot =
 
 export async function refreshPlacementChecks(
   prepared: PreparedPlacement,
+  options: {
+    client?: PublicClient;
+    localOrders?: readonly PreparedPlacement[];
+  } = {},
+): Promise<FundingSnapshot> {
+  return refreshFundingChecks(prepared, options);
+}
+
+async function refreshFundingChecks(
+  prepared: PreparedPlacement | PreparedApprovalRepair,
   {
     client = publicClientsFromIds[prepared.chainId],
     localOrders = [],
-  }: { client?: PublicClient; localOrders?: readonly PreparedPlacement[] } = {},
+    parents: reviewedParents,
+  }: {
+    client?: PublicClient;
+    localOrders?: readonly PreparedPlacement[];
+    parents?: FundingParent[];
+  } = {},
 ): Promise<FundingSnapshot> {
   try {
     if (
@@ -169,11 +219,14 @@ export async function refreshPlacementChecks(
       !decodeStopLossStaticInput(prepared.staticInput).isSellOrder
     )
       throw new Error("Only exact-sell orders are supported.");
-    const parents = await loadStopLossFundingParents({
-      account: prepared.account,
-      chainId: prepared.chainId,
-      cowShed: prepared.owner,
-    });
+    const repair = "kind" in prepared && prepared.kind === "repair";
+    const parents =
+      reviewedParents ??
+      (await loadStopLossFundingParents({
+        account: prepared.account,
+        chainId: prepared.chainId,
+        cowShed: prepared.owner,
+      }));
     const blockNumber = await client.getBlockNumber();
     const block = await client.getBlock({ blockNumber });
     const codes = await Promise.all(
@@ -213,21 +266,22 @@ export async function refreshPlacementChecks(
         throw new Error("CowShed does not trust the Poller-pinned factory");
       }
     }
-    if (prepared.draft.validTo <= Number(block.timestamp)) {
+    if (prepared.draft.validTo < Number(block.timestamp)) {
       throw new Error("Reviewed order has expired");
     }
-    await Promise.all(
-      [prepared.draft.tokenSellOracle, prepared.draft.tokenBuyOracle].map(
-        (oracle) =>
-          readOraclePrice({
-            client,
-            oracle,
-            blockNumber,
-            timestamp: block.timestamp,
-            maxAge: prepared.draft.maxHoursSinceOracleUpdates * 3600,
-          }),
-      ),
-    );
+    if (!repair)
+      await Promise.all(
+        [prepared.draft.tokenSellOracle, prepared.draft.tokenBuyOracle].map(
+          (oracle) =>
+            readOraclePrice({
+              client,
+              oracle,
+              blockNumber,
+              timestamp: block.timestamp,
+              maxAge: prepared.draft.maxHoursSinceOracleUpdates * 3600,
+            }),
+        ),
+      );
     const fundingParents = [
       ...parents,
       ...localOrders
@@ -246,6 +300,8 @@ export async function refreshPlacementChecks(
         })),
     ];
     let outstandingSellAmount = BigInt(0);
+    let outstandingSettlementAmount = BigInt(0);
+    let displayed: Awaited<ReturnType<typeof loadStopLossOrders>> | undefined;
     const seen = new Set<string>();
     for (const parent of fundingParents) {
       const key = `${parent.owner.toLowerCase()}:${parent.hash.toLowerCase()}`;
@@ -264,7 +320,7 @@ export async function refreshPlacementChecks(
       if (
         order.sellToken.toLowerCase() !==
           prepared.draft.tokenSell.address.toLowerCase() ||
-        order.validTo <= block.timestamp
+        order.validTo < block.timestamp
       )
         continue;
       const id = keccak256(
@@ -280,34 +336,94 @@ export async function refreshPlacementChecks(
         args: [id],
         blockNumber,
       });
-      if (
-        schedule[0].toLowerCase() !== parent.handler.toLowerCase() ||
-        schedule[2].toLowerCase() !== prepared.account.toLowerCase() ||
-        schedule[3].toLowerCase() !== parent.owner.toLowerCase() ||
-        schedule[4].toLowerCase() !== parent.salt.toLowerCase() ||
-        schedule[5].toLowerCase() !== parent.staticInput.toLowerCase()
-      )
+      const registered =
+        schedule[0].toLowerCase() === parent.handler.toLowerCase() &&
+        schedule[2].toLowerCase() === prepared.account.toLowerCase() &&
+        schedule[3].toLowerCase() === parent.owner.toLowerCase() &&
+        schedule[4].toLowerCase() === parent.salt.toLowerCase() &&
+        schedule[5].toLowerCase() === parent.staticInput.toLowerCase();
+      const authorized = await client.readContract({
+        address: COMPOSABLE_COW_ADDRESS,
+        abi: composableCowAbi,
+        functionName: "singleOrders",
+        args: [parent.owner, parent.hash],
+        blockNumber,
+      });
+      if (!authorized) {
+        if (
+          repair &&
+          parent.owner.toLowerCase() === prepared.owner.toLowerCase() &&
+          parent.hash.toLowerCase() === prepared.paramsHash.toLowerCase()
+        )
+          throw new Error("Selected order is no longer authorized");
         continue;
-      const [authorized, funded] = await Promise.all([
-        client.readContract({
-          address: COMPOSABLE_COW_ADDRESS,
-          abi: composableCowAbi,
-          functionName: "singleOrders",
-          args: [parent.owner, parent.hash],
-          blockNumber,
-        }),
-        client.readContract({
-          address: prepared.poller,
-          abi: composableCowPollerAbi,
-          functionName: "funded",
-          args: [
-            id,
+      }
+      const funded = await client.readContract({
+        address: prepared.poller,
+        abi: composableCowPollerAbi,
+        functionName: "funded",
+        args: [
+          id,
+          cowOrderDigest(parent.staticInput, prepared.domainSeparator),
+        ],
+        blockNumber,
+      });
+      if (authorized && !funded) {
+        if (registered) outstandingSellAmount += order.sellAmount;
+        if (parent.owner.toLowerCase() === prepared.owner.toLowerCase())
+          outstandingSettlementAmount += order.sellAmount;
+      } else if (
+        authorized &&
+        funded &&
+        parent.owner.toLowerCase() === prepared.owner.toLowerCase()
+      ) {
+        displayed ??= await loadStopLossOrders({ account: prepared.account });
+        const chain = displayed.chains.find(
+          ({ chainId }) => chainId === prepared.chainId,
+        );
+        if (!chain || chain.status === "error")
+          throw new Error(
+            chain?.error ?? "Settlement execution data is unavailable",
+          );
+        const execution = chain.orders.find(
+          (candidate) =>
+            candidate.owner.toLowerCase() === parent.owner.toLowerCase() &&
+            candidate.hash.toLowerCase() === parent.hash.toLowerCase(),
+        );
+        const expectedUid = encodePacked(
+          ["bytes32", "address", "uint32"],
+          [
             cowOrderDigest(parent.staticInput, prepared.domainSeparator),
+            parent.owner,
+            Number(order.validTo),
           ],
-          blockNumber,
-        }),
-      ]);
-      if (authorized && !funded) outstandingSellAmount += order.sellAmount;
+        );
+        if (
+          !execution?.cowOrder ||
+          execution.cowOrder.uid.toLowerCase() !== expectedUid.toLowerCase() ||
+          execution.cowOrder.validTo !== Number(order.validTo) ||
+          execution.sellAmount !== order.sellAmount ||
+          execution.sellToken.address.toLowerCase() !==
+            order.sellToken.toLowerCase() ||
+          execution.executedSellAmount === null ||
+          execution.executedSellAmount < BigInt(0) ||
+          execution.executedSellAmount > order.sellAmount ||
+          (!order.isSellOrder &&
+            (execution.executedBuyAmount === null ||
+              execution.executedBuyAmount < BigInt(0)))
+        )
+          throw new Error(
+            "Settlement execution data is missing or inconsistent",
+          );
+        if (
+          !order.isSellOrder &&
+          execution.executedBuyAmount !== null &&
+          execution.executedBuyAmount >= order.buyAmount
+        )
+          continue;
+        outstandingSettlementAmount +=
+          order.sellAmount - execution.executedSellAmount;
+      }
     }
     const [currentAllowance, balance] = await Promise.all([
       client.readContract({
@@ -325,9 +441,23 @@ export async function refreshPlacementChecks(
         blockNumber,
       }),
     ]);
-    const sellAmount = getOrderAmounts(prepared.draft).sellAtoms;
-    if (balance < sellAmount)
+    const sellAmount = repair
+      ? BigInt(0)
+      : decodeStopLossStaticInput(prepared.staticInput).sellAmount;
+    if (!repair && balance < sellAmount)
       throw new Error("Insufficient balance for this order");
+    const currentSettlementAllowance =
+      shedCode && shedCode !== "0x"
+        ? await client.readContract({
+            address: prepared.draft.tokenSell.address,
+            abi: erc20Abi,
+            functionName: "allowance",
+            args: [prepared.owner, GPV2_VAULT_RELAYER_ADDRESS],
+            blockNumber,
+          })
+        : BigInt(0);
+    const requiredSettlementAllowance =
+      sellAmount + outstandingSettlementAmount;
     const requiredAllowance = sellAmount + outstandingSellAmount;
     return {
       status: "known",
@@ -335,6 +465,10 @@ export async function refreshPlacementChecks(
       blockTimestamp: Number(block.timestamp),
       outstandingSellAmount,
       requiredAllowance,
+      requiredSettlementAllowance,
+      currentSettlementAllowance,
+      settlementApprovalRequired:
+        currentSettlementAllowance < requiredSettlementAllowance,
       currentAllowance,
       balance,
       approvalRequired: currentAllowance < requiredAllowance,
@@ -349,6 +483,160 @@ export async function refreshPlacementChecks(
   }
 }
 
+export async function refreshApprovalRepair(
+  selection: ApprovalRepairSelection,
+  {
+    client = publicClientsFromIds[selection.chainId],
+    localOrders = [],
+  }: { client?: PublicClient; localOrders?: readonly PreparedPlacement[] } = {},
+): Promise<ApprovalRepairReview> {
+  try {
+    const poller = POLLER_ADDRESS_BY_CHAIN_ID[selection.chainId];
+    const factory = await client.readContract({
+      address: poller,
+      abi: composableCowPollerAbi,
+      functionName: "COW_SHED_FACTORY",
+    });
+    const owner = await client.readContract({
+      address: factory,
+      abi: cowShedFactoryAbi,
+      functionName: "proxyOf",
+      args: [selection.account],
+    });
+    if (owner.toLowerCase() !== selection.owner.toLowerCase())
+      throw new Error("This CowShed is not controlled by the connected wallet");
+    const parents = await loadStopLossFundingParents({
+      account: selection.account,
+      chainId: selection.chainId,
+      cowShed: owner,
+    });
+    const parent = parents.find(
+      (candidate) =>
+        candidate.owner.toLowerCase() === owner.toLowerCase() &&
+        candidate.hash.toLowerCase() === selection.hash.toLowerCase(),
+    );
+    if (
+      !parent ||
+      conditionalOrderHash(parent.handler, parent.salt, parent.staticInput) !==
+        parent.hash.toLowerCase()
+    )
+      throw new Error(
+        "Selected order funding identity is unavailable or inconsistent",
+      );
+    const order = decodeStopLossStaticInput(parent.staticInput);
+    const tokenSell = getSupportedTokens(selection.chainId).sellTokens.find(
+      ({ token }) =>
+        token.address.toLowerCase() === order.sellToken.toLowerCase(),
+    )?.token;
+    if (!order.isSellOrder || !tokenSell)
+      throw new Error("Only supported exact-sell orders can update approval");
+    const domainSeparator = await client.readContract({
+      address: COMPOSABLE_COW_ADDRESS,
+      abi: composableCowAbi,
+      functionName: "domainSeparator",
+    });
+    const prepared: PreparedApprovalRepair = {
+      kind: "repair",
+      account: selection.account,
+      chainId: selection.chainId,
+      owner,
+      poller,
+      factory,
+      staticInput: parent.staticInput,
+      paramsHash: parent.hash,
+      domainSeparator,
+      orderDigest: cowOrderDigest(parent.staticInput, domainSeparator),
+      scheduleId: keccak256(
+        encodeAbiParameters(
+          parseAbiParameters("address, address, address, bytes32"),
+          [selection.account, parent.handler, owner, parent.salt],
+        ),
+      ),
+      draft: {
+        tokenSell,
+        isSellOrder: true,
+        salt: parent.salt,
+        validTo: order.validTo,
+        tokenSellOracle: order.sellTokenPriceOracle,
+        tokenBuyOracle: order.buyTokenPriceOracle,
+        maxHoursSinceOracleUpdates: order.maxTimeSinceLastOracleUpdate / 3600,
+      },
+    };
+    const checks = await refreshFundingChecks(prepared, {
+      client,
+      localOrders,
+      parents,
+    });
+    return { prepared, checks };
+  } catch (cause) {
+    return {
+      checks: {
+        status: "unknown",
+        error:
+          cause instanceof Error
+            ? cause.message
+            : "Approval state is unavailable",
+      },
+    };
+  }
+}
+
+export type ApprovalRepairStage = "wallet" | "settlement";
+export type ApprovalRepairWork = {
+  stage: ApprovalRepairStage;
+  target: bigint;
+  transaction: PlacementTransaction;
+};
+
+export async function buildApprovalRepair(
+  prepared: PreparedApprovalRepair,
+  {
+    checks,
+    mode = "limited",
+  }: { checks: FundingSnapshot; mode?: ApprovalMode },
+): Promise<ApprovalRepairWork[]> {
+  if (checks.status === "unknown") throw new Error(checks.error);
+  const work: ApprovalRepairWork[] = [];
+  const wallet = await buildPlacementApproval(prepared, { checks, mode });
+  if (wallet.transaction)
+    work.push({
+      stage: "wallet",
+      target: mode === "unlimited" ? maxUint256 : checks.requiredAllowance,
+      transaction: wallet.transaction,
+    });
+  if (checks.settlementApprovalRequired)
+    work.push({
+      stage: "settlement",
+      target: maxUint256,
+      transaction: {
+        account: prepared.account,
+        chainId: prepared.chainId,
+        to: prepared.factory,
+        value: BigInt(0),
+        data: encodeFunctionData({
+          abi: cowShedFactoryAbi,
+          functionName: "executeOwnHooks",
+          args: [
+            [
+              {
+                target: prepared.draft.tokenSell.address,
+                value: BigInt(0),
+                allowFailure: false,
+                isDelegateCall: false,
+                callData: encodeFunctionData({
+                  abi: erc20Abi,
+                  functionName: "approve",
+                  args: [GPV2_VAULT_RELAYER_ADDRESS, maxUint256],
+                }),
+              },
+            ],
+          ],
+        }),
+      },
+    });
+  return work;
+}
+
 export interface PlacementTransaction {
   account: Address;
   chainId: ChainId;
@@ -357,33 +645,27 @@ export interface PlacementTransaction {
   value: bigint;
 }
 
+export type ApprovalMode = "limited" | "unlimited";
+
 export async function buildPlacementApproval(
-  prepared: PreparedPlacement,
+  prepared: PreparedPlacement | PreparedApprovalRepair,
   {
-    client = publicClientsFromIds[prepared.chainId],
-    localOrders = [],
-    reviewedRequiredAllowance,
-  }: {
-    client?: PublicClient;
-    reviewedRequiredAllowance: bigint;
-    localOrders?: readonly PreparedPlacement[];
-  },
+    checks,
+    mode = "limited",
+  }: { checks: FundingSnapshot; mode?: ApprovalMode },
 ): Promise<{
-  kind: "approval" | "reset" | "none";
+  kind: "approval" | "none";
   transaction: PlacementTransaction | null;
 }> {
-  const checks = await refreshPlacementChecks(prepared, {
-    client,
-    localOrders,
-  });
+  if (
+    prepared.draft.isSellOrder !== true ||
+    !decodeStopLossStaticInput(prepared.staticInput).isSellOrder
+  )
+    throw new Error("Only exact-sell orders are supported.");
   if (checks.status === "unknown") throw new Error(checks.error);
-  if (checks.requiredAllowance !== reviewedRequiredAllowance) {
-    throw new Error("Funding total changed. Review the order again.");
-  }
   if (!checks.approvalRequired) return { kind: "none", transaction: null };
-  const reset = checks.currentAllowance > BigInt(0);
   return {
-    kind: reset ? "reset" : "approval",
+    kind: "approval",
     transaction: {
       account: prepared.account,
       chainId: prepared.chainId,
@@ -392,7 +674,10 @@ export async function buildPlacementApproval(
       data: encodeFunctionData({
         abi: erc20Abi,
         functionName: "approve",
-        args: [prepared.poller, reset ? BigInt(0) : checks.requiredAllowance],
+        args: [
+          prepared.poller,
+          mode === "unlimited" ? maxUint256 : checks.requiredAllowance,
+        ],
       }),
     },
   };
@@ -402,22 +687,15 @@ export async function buildPlacementSetup(
   prepared: PreparedPlacement,
   {
     client = publicClientsFromIds[prepared.chainId],
-    localOrders = [],
-    reviewedRequiredAllowance,
-  }: {
-    client?: PublicClient;
-    reviewedRequiredAllowance: bigint;
-    localOrders?: readonly PreparedPlacement[];
-  },
+    checks,
+  }: { client?: PublicClient; checks: FundingSnapshot },
 ): Promise<PlacementTransaction> {
-  const checks = await refreshPlacementChecks(prepared, {
-    client,
-    localOrders,
-  });
+  if (
+    prepared.draft.isSellOrder !== true ||
+    !decodeStopLossStaticInput(prepared.staticInput).isSellOrder
+  )
+    throw new Error("Only exact-sell orders are supported.");
   if (checks.status === "unknown") throw new Error(checks.error);
-  if (checks.requiredAllowance !== reviewedRequiredAllowance) {
-    throw new Error("Funding total changed. Review the order again.");
-  }
   if (checks.approvalRequired) {
     throw new Error("Approve the funding amount before placing this order");
   }
@@ -434,34 +712,8 @@ export async function buildPlacementSetup(
     functionName: "schedules",
     args: [prepared.scheduleId],
   });
-  const shedCode = await client.getBytecode({
-    address: prepared.owner,
-    blockNumber: checks.blockNumber,
-  });
-  const settlementAllowance =
-    shedCode && shedCode !== "0x"
-      ? await client.readContract({
-          address: prepared.draft.tokenSell.address,
-          abi: erc20Abi,
-          functionName: "allowance",
-          args: [prepared.owner, GPV2_VAULT_RELAYER_ADDRESS],
-          blockNumber: checks.blockNumber,
-        })
-      : BigInt(0);
   const calls = [
-    ...(settlementAllowance > BigInt(0) && settlementAllowance < maxUint256
-      ? [
-          {
-            target: prepared.draft.tokenSell.address,
-            callData: encodeFunctionData({
-              abi: erc20Abi,
-              functionName: "approve",
-              args: [GPV2_VAULT_RELAYER_ADDRESS, BigInt(0)],
-            }),
-          },
-        ]
-      : []),
-    ...(settlementAllowance === maxUint256
+    ...(!checks.settlementApprovalRequired
       ? []
       : [
           {
@@ -528,7 +780,10 @@ export async function verifyPlacementConfirmation(
   prepared: PreparedPlacement,
   {
     client = publicClientsFromIds[prepared.chainId],
-  }: { client?: PublicClient } = {},
+    requiredSettlementAllowance = decodeStopLossStaticInput(
+      prepared.staticInput,
+    ).sellAmount,
+  }: { client?: PublicClient; requiredSettlementAllowance?: bigint } = {},
 ): Promise<boolean> {
   const blockNumber = await client.getBlockNumber();
   const shedCode = await client.getBytecode({
@@ -573,7 +828,7 @@ export async function verifyPlacementConfirmation(
     schedule[4].toLowerCase() === prepared.draft.salt.toLowerCase() &&
     schedule[5].toLowerCase() === prepared.staticInput.toLowerCase() &&
     trustedExecutor.toLowerCase() === prepared.factory.toLowerCase() &&
-    settlementAllowance === maxUint256
+    settlementAllowance >= requiredSettlementAllowance
   );
 }
 

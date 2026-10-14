@@ -15,6 +15,15 @@ export type TransactionReference = {
   id: string;
   transactionHash?: Hex;
   blockNumber?: bigint;
+  submitted?: {
+    from: Address;
+    to: Address | null;
+    input: Hex;
+    value: bigint;
+    nonce: number;
+    nextBlock: bigint;
+  };
+  replacementError?: string;
 };
 export type PlacementRecord = {
   id: string;
@@ -31,6 +40,7 @@ export type PlacementRecord = {
     | "ready";
   confirmedAt?: number;
   approvalAmount?: bigint;
+  settlementAmount?: bigint;
   error?: string;
   transactions: Partial<Record<PlacementStage, TransactionReference>>;
 };
@@ -45,12 +55,14 @@ export type PlacementOptions = {
 };
 export type PlacementSender = {
   approvalAmount?: bigint;
+  settlementAmount?: bigint;
   send(record: PlacementRecord): Promise<TransactionReference>;
 };
 export type PlacementReader = {
   readTransaction?(
     record: PlacementRecord,
     reference: TransactionReference,
+    saveReference?: (reference: TransactionReference) => Promise<void>,
   ): Promise<{
     status: "pending" | "success" | "failed";
     error?: string;
@@ -70,7 +82,7 @@ export type PlacementRow = StopLossOrder &
       }
   );
 
-function isRejected(error: unknown): boolean {
+export function isRejected(error: unknown): boolean {
   const seen = new Set<object>();
   while (error && typeof error === "object" && !seen.has(error)) {
     seen.add(error);
@@ -86,7 +98,7 @@ function isRejected(error: unknown): boolean {
 
 export class PlacementNotSubmittedError extends Error {}
 
-function isDefiniteFailure(error: unknown): boolean {
+export function isDefiniteFailure(error: unknown): boolean {
   const seen = new Set<object>();
   while (error && typeof error === "object" && !seen.has(error)) {
     seen.add(error);
@@ -101,6 +113,54 @@ function isDefiniteFailure(error: unknown): boolean {
 }
 
 const storageName = "stop-loss-placement";
+
+export function withStopLossSubmission<T>(
+  scope: PlacementScope,
+  flow: "placement" | "repair",
+  options: Required<Pick<PlacementOptions, "storage">> &
+    Pick<PlacementOptions, "locks">,
+  action: () => T | Promise<T>,
+): Promise<T> {
+  if (!options.locks)
+    throw new Error(
+      "This browser does not support Web Locks. Submission is unavailable.",
+    );
+  return options.locks.request(
+    `stop-loss-submission:${scope.chainId}:${scope.account.toLowerCase()}`,
+    () => {
+      const otherKey =
+        flow === "placement" ? "stop-loss-approval-repair" : storageName;
+      const raw = options.storage.getItem(otherKey);
+      if (raw) {
+        const saved = JSON.parse(raw) as {
+          version: number;
+          state: {
+            records: {
+              prepared: PlacementScope;
+              status: PlacementRecord["status"];
+            }[];
+          };
+        };
+        if (saved.version !== 1)
+          throw new Error("Unsupported stop-loss submission storage version");
+        if (
+          saved.state.records.some(
+            ({ prepared, status }) =>
+              prepared.chainId === scope.chainId &&
+              prepared.account.toLowerCase() === scope.account.toLowerCase() &&
+              (flow === "repair"
+                ? status !== "confirmed"
+                : status === "pending" || status === "prompting"),
+          )
+        )
+          throw new Error(
+            "A stop-loss transaction is already active for this wallet and chain",
+          );
+      }
+      return action();
+    },
+  );
+}
 
 export function createStopLossPlacement({
   storage = localStorage,
@@ -173,53 +233,68 @@ export function createStopLossPlacement({
     )
       throw new Error("Only exact-sell orders are supported.");
     prepared = structuredClone(prepared);
-    const record = await locked(() => {
-      const active = getRecords(prepared).find(
-        (entry) => entry.status !== "confirmed",
-      );
-      if (active) {
-        if (
-          (active.status !== "ready" &&
-            active.status !== "failed" &&
-            active.status !== "rejected") ||
-          active.prepared.paramsHash.toLowerCase() !==
-            prepared.paramsHash.toLowerCase()
-        ) {
-          throw new Error(
-            "A placement is already active for this wallet and chain",
+    getRecords(prepared);
+    const record = await withStopLossSubmission(
+      prepared,
+      "placement",
+      { storage, locks },
+      () =>
+        locked(() => {
+          const active = getRecords(prepared).find(
+            (entry) => entry.status !== "confirmed",
           );
-        }
-        if (active.stage === "approval-reset" && stage === "setup")
-          throw new Error("Approval is required after a reset");
-        const next: PlacementRecord = {
-          ...active,
-          revision: active.revision + 1,
-          attempt: crypto.randomUUID(),
-          stage,
-          status: "prompting",
-          error: undefined,
-          approvalAmount:
-            stage === "approval"
-              ? adapter.approvalAmount
-              : active.approvalAmount,
-        };
-        save(read().map((entry) => (entry.id === active.id ? next : entry)));
-        return next;
-      }
-      const entry: PlacementRecord = {
-        id: crypto.randomUUID(),
-        revision: 0,
-        attempt: crypto.randomUUID(),
-        prepared,
-        stage,
-        status: "prompting",
-        approvalAmount:
-          stage === "approval" ? adapter.approvalAmount : undefined,
-        transactions: {},
-      };
-      save([...read(), entry]);
-      return entry;
-    });
+          if (active) {
+            if (
+              (active.status !== "ready" &&
+                active.status !== "failed" &&
+                active.status !== "rejected") ||
+              active.prepared.paramsHash.toLowerCase() !==
+                prepared.paramsHash.toLowerCase()
+            ) {
+              throw new Error(
+                "A placement is already active for this wallet and chain",
+              );
+            }
+            if (active.stage === "approval-reset" && stage === "setup")
+              throw new Error("Approval is required after a reset");
+            const next: PlacementRecord = {
+              ...active,
+              revision: active.revision + 1,
+              attempt: crypto.randomUUID(),
+              stage,
+              status: "prompting",
+              error: undefined,
+              settlementAmount:
+                stage === "setup"
+                  ? adapter.settlementAmount
+                  : active.settlementAmount,
+              approvalAmount:
+                stage === "approval"
+                  ? adapter.approvalAmount
+                  : active.approvalAmount,
+            };
+            save(
+              read().map((entry) => (entry.id === active.id ? next : entry)),
+            );
+            return next;
+          }
+          const entry: PlacementRecord = {
+            id: crypto.randomUUID(),
+            revision: 0,
+            attempt: crypto.randomUUID(),
+            prepared,
+            stage,
+            status: "prompting",
+            settlementAmount:
+              stage === "setup" ? adapter.settlementAmount : undefined,
+            approvalAmount:
+              stage === "approval" ? adapter.approvalAmount : undefined,
+            transactions: {},
+          };
+          save([...read(), entry]);
+          return entry;
+        }),
+    );
     const isCurrentAttempt = (entry: PlacementRecord) =>
       entry.id === record.id &&
       entry.stage === record.stage &&
@@ -287,7 +362,27 @@ export function createStopLossPlacement({
           reference &&
           adapter.readTransaction
         ) {
-          const receipt = await adapter.readTransaction(record, reference);
+          const receipt = await adapter.readTransaction(
+            record,
+            reference,
+            async (next) => {
+              await locked(() =>
+                save(
+                  read().map((entry) =>
+                    entry.id === record.id && entry.revision === record.revision
+                      ? {
+                          ...entry,
+                          transactions: {
+                            ...entry.transactions,
+                            [record.stage]: next,
+                          },
+                        }
+                      : entry,
+                  ),
+                ),
+              );
+            },
+          );
           transactionSucceeded = receipt.status === "success";
           reference = receipt.reference ?? reference;
           if (receipt.status === "failed" && record.stage === "setup")
