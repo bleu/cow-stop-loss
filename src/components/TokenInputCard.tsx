@@ -1,16 +1,14 @@
 import { Button, formatNumber, Input } from "@bleu/ui";
 import { ChevronDownIcon } from "@radix-ui/react-icons";
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { useAccount } from "wagmi";
 
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
-import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { useTokenPrice } from "#/hooks/useTokenPrice";
 import { ChainId } from "#/lib/publicClients";
 import { fetchFormattedBalanceOf } from "#/lib/tokenUtils";
 import { SwapData } from "#/lib/types";
-import { formatMarketPriceForInput } from "#/utils/priceFormatting";
 
 import { ValidToInput } from "./swap-card/ValidToInput";
 import { TokenInfo } from "./TokenInfo";
@@ -22,7 +20,6 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
 
   const {
     setValue,
-    getValues,
     register,
     control,
     formState: { errors, isSubmitting },
@@ -34,34 +31,10 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     control,
     name: [tokenFieldName, amountFieldName],
   });
-  const tokenBuy = useWatch({ control, name: "tokenBuy" });
-  const { data: marketPrice } = useTokenPairPrice(
-    side === "Sell" ? token : undefined,
-    side === "Sell" ? tokenBuy : undefined,
-  );
-  const pendingMarketToken = useRef<string>();
-
   const tokenAddress = token?.address;
   const tokenDecimals = token?.decimals;
   const tokenSymbol = token?.symbol;
   const { data: usdPrice } = useTokenPrice(token);
-
-  useEffect(() => {
-    if (
-      side !== "Sell" ||
-      !token ||
-      !marketPrice ||
-      pendingMarketToken.current !== token.address.toLowerCase()
-    )
-      return;
-    if (!getValues("strikePrice")) {
-      setValue("strikePrice", formatMarketPriceForInput(marketPrice), {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
-    }
-    pendingMarketToken.current = undefined;
-  }, [getValues, marketPrice, setValue, side, token]);
 
   const [tokenSellBalance, setTokenSellBalance] = useSwapTokenBalances(
     (state) => [state.tokenSellBalance, state.setTokenSellBalance],
@@ -184,7 +157,6 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                 selectedToken={token}
                 disabled={isSubmitting}
                 onSelectToken={(newToken) => {
-                  pendingMarketToken.current = newToken.address.toLowerCase();
                   setValue("strikePrice", "");
                   setValue("tokenSell", newToken, { shouldValidate: true });
                 }}

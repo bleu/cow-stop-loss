@@ -155,6 +155,21 @@ function showCreation() {
   return { ...view, refreshWallet: () => view.rerender(content()) };
 }
 
+it("does not fill the trigger price when a sell token is selected", async () => {
+  const user = userEvent.setup();
+  showCreation();
+
+  await user.click(screen.getByRole("button", { name: "Select token" }));
+  await user.click(await screen.findByRole("option", { name: /WETH/ }));
+  await screen.findByRole("button", {
+    name: /Set trigger to current market price/,
+  });
+
+  expect(screen.getByRole("textbox", { name: "Trigger price" })).toHaveValue(
+    "",
+  );
+});
+
 it("confirms approval before enabling Place and does not send setup automatically", async () => {
   const user = userEvent.setup();
   let allowance = BigInt(0);
