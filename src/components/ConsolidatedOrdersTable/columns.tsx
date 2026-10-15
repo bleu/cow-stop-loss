@@ -1,6 +1,5 @@
 import { ColumnDef } from "@tanstack/react-table";
-import Link from "next/link";
-import { Address, formatUnits } from "viem";
+import { formatUnits } from "viem";
 
 import { NetworkLogo } from "#/components/NetworkLogo";
 import { TokenLogo } from "#/components/TokenLogo";
@@ -57,15 +56,17 @@ function MarketDistance({ order }: { order: PlacementRow }) {
     buyToken,
     order.chainId,
   );
-  if (!marketPrice) return <span className="text-muted-foreground">—</span>;
+  if (!marketPrice)
+    return <span className="text-muted-foreground">Market unavailable</span>;
 
   const triggerPrice = Number(formatUnits(order.strike, 18));
   const distance = ((marketPrice - triggerPrice) / marketPrice) * 100;
+  if (Math.abs(distance) < 0.005) return <span>At market</span>;
+
   return (
     <span className="tabular-nums">
-      {Math.abs(distance) < 0.005
-        ? "At market"
-        : `${Math.abs(distance).toFixed(2)}% ${distance >= 0 ? "below" : "above"}`}
+      {Math.abs(distance).toFixed(2)}% {distance >= 0 ? "below" : "above"}{" "}
+      market
     </span>
   );
 }
@@ -82,7 +83,7 @@ function expiryLabel(validTo: number) {
   };
 }
 
-export function getColumns(account: Address): ColumnDef<PlacementRow>[] {
+export function getColumns(): ColumnDef<PlacementRow>[] {
   return [
     {
       id: "chainId",
@@ -150,16 +151,16 @@ export function getColumns(account: Address): ColumnDef<PlacementRow>[] {
       id: "trigger",
       header: "Trigger",
       cell: ({ row: { original: order } }) => (
-        <span className="whitespace-nowrap text-sm font-medium tabular-nums">
-          {formatPrice(Number(formatUnits(order.strike, 18)))}{" "}
-          {order.buyToken.symbol}
-        </span>
+        <div className="min-w-32">
+          <p className="whitespace-nowrap text-sm font-semibold tabular-nums">
+            {formatPrice(Number(formatUnits(order.strike, 18)))}{" "}
+            {order.buyToken.symbol}
+          </p>
+          <p className="mt-0.5 whitespace-nowrap text-xs text-muted-foreground">
+            <MarketDistance order={order} />
+          </p>
+        </div>
       ),
-    },
-    {
-      id: "distance",
-      header: "From market",
-      cell: ({ row: { original: order } }) => <MarketDistance order={order} />,
     },
     {
       id: "expiry",
@@ -239,19 +240,10 @@ export function getColumns(account: Address): ColumnDef<PlacementRow>[] {
       },
     },
     {
-      id: "details",
-      header: "Details",
+      id: "actions",
+      header: "Actions",
       cell: ({ row: { original: order } }) => (
-        <div className="flex items-center gap-2">
-          {order.canLink && (
-            <Link
-              href={`/${order.chainId}/${account}/${encodeURIComponent(order.parentId)}`}
-              aria-label={`View order ${order.parentId} on ${chainNames[order.chainId]}`}
-              className="text-sm font-medium text-primary underline-offset-4 hover:underline"
-            >
-              View details
-            </Link>
-          )}
+        <div className="flex justify-end">
           <CancelOrderDialog order={order} />
         </div>
       ),

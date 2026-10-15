@@ -282,9 +282,9 @@ function TokenAmount({
   );
 }
 
-function OrderDetailsHeading() {
+function OrderDetailsHeading({ children }: React.PropsWithChildren) {
   return (
-    <header className="mb-6 flex items-center gap-4">
+    <header className="mb-6 flex items-center justify-between gap-4">
       <div className="relative pl-14">
         <Link
           href="/"
@@ -300,6 +300,7 @@ function OrderDetailsHeading() {
           Order details
         </h1>
       </div>
+      {children && <div className="shrink-0">{children}</div>}
     </header>
   );
 }
@@ -544,10 +545,11 @@ export function OrderDetails({
     order.cowOrder !== undefined;
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
-      <OrderDetailsHeading />
+      <OrderDetailsHeading>
+        <CancelOrderDialog order={order} />
+      </OrderDetailsHeading>
       <OrderStatusSummary status={order.status} />
       <OrderHealth order={order} />
-      <CancelOrderDialog order={order} />
       <ApprovalRepair order={order} onRefresh={mutate} />
       {warning}
 

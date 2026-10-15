@@ -346,9 +346,10 @@ test("reviews the remaining amounts when cancelling a partially filled order fro
     }),
   );
   const dialog = await screen.findByRole("dialog");
-  expect(
-    within(dialog).getByText("0.6 WETH for 1200 USDC"),
-  ).toBeInTheDocument();
+  expect(within(dialog).getByText("Remaining sell")).toBeInTheDocument();
+  expect(within(dialog).getByText("0.6 WETH")).toBeInTheDocument();
+  expect(within(dialog).getByText("Minimum buy")).toBeInTheDocument();
+  expect(within(dialog).getByText("1200 USDC")).toBeInTheDocument();
   expect(dialog).not.toHaveTextContent(
     /fund|schedule|approval|race|factory|hash/i,
   );

@@ -88,7 +88,6 @@ export function DataTable<TData>({
                       key={header.id}
                       className={cn(
                         "h-12 whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.13em] text-muted-foreground",
-                        header.id === "distance" && "hidden xl:table-cell",
                       )}
                     >
                       {header.isPlaceholder
@@ -145,10 +144,7 @@ export function DataTable<TData>({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
-                      className={cn(
-                        "py-2.5 align-middle",
-                        cell.column.id === "distance" && "hidden xl:table-cell",
-                      )}
+                      className="py-2.5 align-middle"
                     >
                       {flexRender(
                         cell.column.columnDef.cell,

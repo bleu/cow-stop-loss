@@ -1,6 +1,12 @@
 "use client";
 
-import { Button, Dialog, DialogContent, DialogTitle } from "@bleu/ui";
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from "@bleu/ui";
 import { useEffect, useRef, useState } from "react";
 import { formatUnits, type Hex } from "viem";
 import { useAccount, useConfig, useSendTransaction } from "wagmi";
@@ -51,8 +57,12 @@ function OrderCancellation({ order }: { order: StopLossOrder }) {
       {authorized && (
         <Button
           variant="outline"
+          className="h-10 min-h-10 rounded-xl border-destructive/30 bg-destructive/5 px-3 text-sm font-semibold text-destructive shadow-none hover:border-destructive/50 hover:bg-destructive/10 hover:text-destructive focus-visible:ring-destructive/30"
           aria-label={`Cancel order ${order.parentId} on ${chainNames[order.chainId]}`}
-          onClick={() => setOpen(true)}
+          onClick={(event) => {
+            event.stopPropagation();
+            setOpen(true);
+          }}
         >
           Cancel
         </Button>
@@ -170,33 +180,77 @@ function CancellationReview({
   const amount = (value: bigint, token: StopLossOrder["sellToken"]) =>
     `${token.decimals === null ? `${value} base units` : formatUnits(value, token.decimals)} ${token.symbol}`;
   return (
-    <DialogContent aria-describedby={undefined}>
-      <DialogTitle>Review cancellation</DialogTitle>
-      <p>
-        {amount(
-          order.sellAmount - (order.executedSellAmount ?? BigInt(0)),
-          order.sellToken,
-        )}{" "}
-        for{" "}
-        {amount(
-          order.sellAmount > BigInt(0)
-            ? (order.buyAmount *
-                (order.sellAmount - (order.executedSellAmount ?? BigInt(0)))) /
-                order.sellAmount
-            : BigInt(0),
-          order.buyToken,
-        )}
-      </p>
-      {status === "loading" && <p role="status">Waiting for cancellation...</p>}
-      {error && <p role="alert">{error}</p>}
+    <DialogContent className="w-[calc(100vw-2rem)] max-w-md rounded-3xl border border-border/70 bg-card p-5 text-foreground shadow-2xl sm:p-6">
+      <div className="mb-5">
+        <DialogTitle className="text-xl font-semibold tracking-tight">
+          Cancel this order?
+        </DialogTitle>
+        <DialogDescription className="mt-1 leading-relaxed">
+          Review the remaining amounts before confirming cancellation.
+        </DialogDescription>
+      </div>
+      <div className="mb-5 grid grid-cols-2 gap-3">
+        <div className="min-w-0 rounded-2xl border border-border/70 bg-background/70 p-3.5">
+          <p className="text-xs font-medium text-muted-foreground">
+            Remaining sell
+          </p>
+          <p className="mt-1 break-words text-sm font-semibold tabular-nums">
+            {amount(
+              order.sellAmount - (order.executedSellAmount ?? BigInt(0)),
+              order.sellToken,
+            )}
+          </p>
+        </div>
+        <div className="min-w-0 rounded-2xl border border-border/70 bg-background/70 p-3.5">
+          <p className="text-xs font-medium text-muted-foreground">
+            Minimum buy
+          </p>
+          <p className="mt-1 break-words text-sm font-semibold tabular-nums">
+            {amount(
+              order.sellAmount > BigInt(0)
+                ? (order.buyAmount *
+                    (order.sellAmount -
+                      (order.executedSellAmount ?? BigInt(0)))) /
+                    order.sellAmount
+                : BigInt(0),
+              order.buyToken,
+            )}
+          </p>
+        </div>
+      </div>
+      {status === "loading" && (
+        <p
+          role="status"
+          className="mb-4 rounded-xl bg-muted/70 px-3 py-2 text-sm text-muted-foreground"
+        >
+          Waiting for cancellation confirmation…
+        </p>
+      )}
+      {error && (
+        <p
+          role="alert"
+          className="mb-4 rounded-xl border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive"
+        >
+          {error}
+        </p>
+      )}
       {status === "confirmed" ? (
-        <>
-          <p>Order cancelled.</p>
-          <Button onClick={close}>Close</Button>
-        </>
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-sm font-medium text-foreground">
+            Order cancelled.
+          </p>
+          <Button className="rounded-xl" onClick={close}>
+            Close
+          </Button>
+        </div>
       ) : (
-        <Button disabled={status === "loading"} onClick={() => void submit()}>
-          {status === "failed" ? "Retry" : "Confirm cancellation"}
+        <Button
+          variant="destructive"
+          className="h-11 w-full rounded-xl font-semibold"
+          disabled={status === "loading"}
+          onClick={() => void submit()}
+        >
+          {status === "failed" ? "Retry cancellation" : "Confirm cancellation"}
         </Button>
       )}
     </DialogContent>

@@ -90,7 +90,7 @@ function WalletRequiredOrders() {
 function ConnectedOrdersTable({ account }: { account: Address }) {
   const router = useRouter();
   const { orders, chains, isLoading, mutate, trackingError } = useOrderList();
-  const columns = useMemo(() => getColumns(account), [account]);
+  const columns = useMemo(() => getColumns(), []);
   const { table } = useDataTable({
     data: orders,
     columns,
