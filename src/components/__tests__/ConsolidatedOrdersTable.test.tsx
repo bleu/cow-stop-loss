@@ -350,7 +350,8 @@ test("opens cancellation from an order row without navigating to its details", a
   render(<TableView />);
   await connectWallet();
 
-  fireEvent.click(await screen.findByRole("button", { name: /^Cancel order/ }));
+  const cancelButton = screen.getByRole("button", { name: /^Cancel order/ });
+  fireEvent.click(cancelButton);
 
   expect(window.location.pathname).toBe("/");
   expect(
@@ -359,6 +360,15 @@ test("opens cancellation from an order row without navigating to its details", a
   expect(
     screen.queryByRole("heading", { name: "Order details" }),
   ).not.toBeInTheDocument();
+  fireEvent.click(
+    within(await screen.findByRole("dialog")).getByRole("button", {
+      name: "Close",
+    }),
+  );
+  await waitFor(() =>
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+  );
+  expect(window.location.pathname).toBe("/");
 });
 
 test("keeps a cancelled local creation cancelled when its stale API row arrives", async () => {

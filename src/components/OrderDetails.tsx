@@ -30,7 +30,6 @@ import {
   truncateAddress,
 } from "#/utils";
 
-import { ApprovalRepair } from "./ApprovalRepair";
 import { CancelOrderDialog } from "./CancelOrderDialog";
 import { BlockExplorerLink } from "./ExplorerLink";
 import { OracleTokenPrice } from "./OracleTokenPrice";
@@ -405,7 +404,10 @@ function getOrderStatusMessage(status: OrderStatus | string) {
   }
 }
 
-function OrderStatusSummary({ status }: { status: OrderStatus | string }) {
+function OrderStatusSummary({
+  status,
+  children,
+}: React.PropsWithChildren<{ status: OrderStatus | string }>) {
   const message = getOrderStatusMessage(status);
   const Icon =
     message.tone === "success"
@@ -425,14 +427,20 @@ function OrderStatusSummary({ status }: { status: OrderStatus | string }) {
           : "text-primary";
 
   return (
-    <aside className="mb-5 flex items-start gap-3 rounded-2xl border border-border/70 bg-card/60 p-4">
-      <Icon aria-hidden="true" className={`mt-0.5 size-5 shrink-0 ${color}`} />
-      <div>
-        <p className="font-semibold">{message.title}</p>
-        <p className="mt-0.5 text-[13px] leading-5 text-muted-foreground">
-          {message.detail}
-        </p>
+    <aside className="mb-5 flex flex-wrap items-center gap-3 rounded-2xl border border-border/70 bg-card/60 p-4">
+      <div className="flex min-w-0 flex-1 items-start gap-3">
+        <Icon
+          aria-hidden="true"
+          className={`mt-0.5 size-5 shrink-0 ${color}`}
+        />
+        <div>
+          <p className="font-semibold">{message.title}</p>
+          <p className="mt-0.5 text-[13px] leading-5 text-muted-foreground">
+            {message.detail}
+          </p>
+        </div>
       </div>
+      {children && <div className="ml-auto shrink-0">{children}</div>}
     </aside>
   );
 }
@@ -545,12 +553,11 @@ export function OrderDetails({
     order.cowOrder !== undefined;
   return (
     <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
-      <OrderDetailsHeading>
+      <OrderDetailsHeading />
+      <OrderStatusSummary status={order.status}>
         <CancelOrderDialog order={order} />
-      </OrderDetailsHeading>
-      <OrderStatusSummary status={order.status} />
+      </OrderStatusSummary>
       <OrderHealth order={order} />
-      <ApprovalRepair order={order} onRefresh={mutate} />
       {warning}
 
       <section className="mb-5 overflow-hidden rounded-[32px] border border-primary/20 bg-gradient-to-br from-card via-card to-secondary/10 p-4 shadow-[0_24px_80px_-45px_rgba(0,0,0,0.9)] sm:p-7">

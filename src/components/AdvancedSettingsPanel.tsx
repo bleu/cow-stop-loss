@@ -9,7 +9,7 @@ import {
   ResetIcon,
 } from "@radix-ui/react-icons";
 import * as React from "react";
-import { FormProvider, useForm, useWatch } from "react-hook-form";
+import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
 import { useAccount } from "wagmi";
 
 import {
@@ -25,8 +25,15 @@ import { AdvancedSwapSettings } from "#/lib/types";
 
 import { BlockExplorerLink } from "./ExplorerLink";
 import { SlippageInputCard } from "./SlippageInputCard";
-import { Checkbox } from "./ui/checkbox";
 import { Input } from "./ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { InfoTooltip } from "./ui/tooltip";
 
 type AdvancedSettingsDraft = AdvancedSwapSettings & { slippagePercent: string };
 
@@ -214,11 +221,42 @@ export function AdvancedSettingsPanel({
                   }
                   className="h-11 rounded-xl"
                 />
-                <div className="flex min-h-9 items-center text-[13px]">
-                  <Checkbox
+                <div className="grid gap-1.5">
+                  <div className="flex items-center gap-1.5">
+                    <label
+                      htmlFor="execution-mode"
+                      className="text-sm font-medium leading-none"
+                    >
+                      Execution
+                    </label>
+                    <InfoTooltip text={TOOLTIP_DESCRIPTIONS.TYPE} />
+                  </div>
+                  <Controller
+                    control={control}
                     name="partiallyFillable"
-                    label="Allow partial execution"
-                    tooltipText={TOOLTIP_DESCRIPTIONS.TYPE}
+                    render={({ field }) => (
+                      <Select
+                        value={field.value ? "partial" : "fill-or-kill"}
+                        onValueChange={(value) =>
+                          field.onChange(value === "partial")
+                        }
+                      >
+                        <SelectTrigger
+                          id="execution-mode"
+                          className="h-11 rounded-xl"
+                        >
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="partial">
+                            Allow partial executions
+                          </SelectItem>
+                          <SelectItem value="fill-or-kill">
+                            Fill or kill execution only
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
                   />
                 </div>
               </fieldset>

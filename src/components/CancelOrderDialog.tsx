@@ -31,30 +31,15 @@ export function CancelOrderDialog({ order }: { order: StopLossOrder }) {
 function OrderCancellation({ order }: { order: StopLossOrder }) {
   const [open, setOpen] = useState(false);
   const { address } = useAccount();
-  const [authorized, setAuthorized] = useState(false);
-  useEffect(() => {
-    let stopped = false;
-    setAuthorized(false);
-    if (
-      address &&
+  const canCancel = Boolean(
+    address &&
       order.isSellOrder &&
-      [OrderStatus.OPEN, OrderStatus.PARTIALLY_FILLED].includes(order.status)
-    ) {
-      void buildCancellation({ account: address, order }).then(
-        () => {
-          if (!stopped) setAuthorized(true);
-        },
-        () => {},
-      );
-    }
-    return () => {
-      stopped = true;
-    };
-  }, [address, order]);
-  if (!authorized && !open) return null;
+      [OrderStatus.OPEN, OrderStatus.PARTIALLY_FILLED].includes(order.status),
+  );
+  if (!canCancel && !open) return null;
   return (
     <>
-      {authorized && (
+      {canCancel && (
         <Button
           variant="outline"
           className="h-10 min-h-10 rounded-xl border-destructive/30 bg-destructive/5 px-3 text-sm font-semibold text-destructive shadow-none hover:border-destructive/50 hover:bg-destructive/10 hover:text-destructive focus-visible:ring-destructive/30"
@@ -180,7 +165,10 @@ function CancellationReview({
   const amount = (value: bigint, token: StopLossOrder["sellToken"]) =>
     `${token.decimals === null ? `${value} base units` : formatUnits(value, token.decimals)} ${token.symbol}`;
   return (
-    <DialogContent className="w-[calc(100vw-2rem)] max-w-md rounded-3xl border border-border/70 bg-card p-5 text-foreground shadow-2xl sm:p-6">
+    <DialogContent
+      className="w-[calc(100vw-2rem)] max-w-md rounded-3xl border border-border/70 bg-card p-5 text-foreground shadow-2xl sm:p-6"
+      onClick={(event) => event.stopPropagation()}
+    >
       <div className="mb-5">
         <DialogTitle className="text-xl font-semibold tracking-tight">
           Cancel this order?

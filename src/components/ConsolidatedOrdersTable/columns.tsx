@@ -241,9 +241,9 @@ export function getColumns(): ColumnDef<PlacementRow>[] {
     },
     {
       id: "actions",
-      header: "Actions",
+      header: () => <span className="block text-center">Actions</span>,
       cell: ({ row: { original: order } }) => (
-        <div className="flex justify-end">
+        <div className="flex items-center justify-center">
           <CancelOrderDialog order={order} />
         </div>
       ),
