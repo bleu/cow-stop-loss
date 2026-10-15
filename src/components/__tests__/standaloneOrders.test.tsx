@@ -271,7 +271,11 @@ test("hydrates the wallet header before showing browser-discovered wallets", asy
   }
 });
 
-test("opens without a Safe frame and asks users to connect a wallet", async () => {
+test("shows the order builder and connect actions before a wallet is connected", async () => {
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: new BrowserWallet(),
+  });
   render(
     <RootLayout>
       <HomePage />
@@ -279,7 +283,22 @@ test("opens without a Safe frame and asks users to connect a wallet", async () =
   );
 
   expect(
-    await screen.findByText("Connect a wallet to view your stop-loss orders."),
+    await screen.findByRole("textbox", { name: "Sell amount" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByRole("button", { name: "Connect wallet to place order" }),
+  ).toBeEnabled();
+  expect(
+    screen.getByRole("button", { name: "Connect wallet to view orders" }),
+  ).toBeEnabled();
+  expect(
+    screen.queryByText("Connect a wallet to view your stop-loss orders."),
+  ).not.toBeInTheDocument();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Connect wallet to place order" }),
+  );
+  expect(
+    await screen.findByRole("button", { name: "Browser wallet" }),
   ).toBeInTheDocument();
 });
 
@@ -295,8 +314,8 @@ test("lets the creation form size the desktop row and keeps the read-only orders
     </RootLayout>,
   );
   expect(
-    screen.queryByRole("textbox", { name: "Sell amount" }),
-  ).not.toBeInTheDocument();
+    screen.getByRole("textbox", { name: "Sell amount" }),
+  ).toBeInTheDocument();
   await connectBrowserWallet();
 
   const formPanel = await screen.findByRole("region", {
@@ -312,7 +331,10 @@ test("lets the creation form size the desktop row and keeps the read-only orders
     formPanel.compareDocumentPosition(ordersPanel) &
       Node.DOCUMENT_POSITION_FOLLOWING,
   ).toBeTruthy();
-  expect(formPanel.parentElement).toHaveClass("grid-cols-1", "lg:grid-cols-2");
+  expect(formPanel.parentElement).toHaveClass(
+    "grid-cols-1",
+    "lg:grid-cols-[minmax(24rem,0.82fr)_minmax(0,1.38fr)]",
+  );
   for (const panel of [formPanel, ordersPanel]) {
     expect(panel).not.toHaveClass("lg:h-[48rem]");
     expect(panel).not.toHaveClass("lg:overflow-y-auto");
@@ -320,7 +342,7 @@ test("lets the creation form size the desktop row and keeps the read-only orders
   expect(ordersPanel).toHaveClass("relative", "min-h-0");
   const ordersContent = screen.getByRole("heading", {
     name: "Your stop-loss orders",
-  }).parentElement;
+  }).parentElement?.parentElement;
   expect(ordersContent).toHaveClass(
     "flex",
     "min-h-0",
@@ -332,7 +354,8 @@ test("lets the creation form size the desktop row and keeps the read-only orders
     expect(ordersContent).not.toHaveClass(className);
   }
   expect(
-    screen.getByRole("heading", { name: "Your stop-loss orders" }),
+    screen.getByRole("heading", { name: "Your stop-loss orders" })
+      .parentElement,
   ).toHaveClass("shrink-0");
   expect(
     await screen.findByRole("link", {
@@ -596,7 +619,7 @@ test("selects All by default and clears each filter without clearing the other",
       false,
     );
     expect(new URLSearchParams(window.location.search).get("status")).toBe(
-      "open",
+      "Open",
     );
   });
   fireEvent.click(screen.getByRole("option", { name: "Ethereum" }));
@@ -915,7 +938,7 @@ test("clears orders on account changes and disconnect, and fetches again when an
 
   fireEvent.click(await screen.findByTitle(wallet));
   fireEvent.click(await screen.findByRole("button", { name: /Disconnect/ }));
-  await screen.findByText("Connect a wallet to view your stop-loss orders.");
+  await screen.findByRole("button", { name: "Connect wallet to view orders" });
   expect(
     screen.queryByRole("link", { name: /^View order/ }),
   ).not.toBeInTheDocument();
@@ -1042,7 +1065,12 @@ test("places an accessible back arrow beside the detail heading without a detail
 
   const heading = screen.getByRole("heading", { name: "Order details" });
   const back = screen.getByRole("link", { name: "Back to orders" });
+  const transaction = screen.getByRole("link", { name: "0xefef…efef" });
   expect(back).toHaveAttribute("href", "/");
+  expect(transaction).toHaveAttribute(
+    "href",
+    expect.stringContaining(`/tx/${parent.transaction.hash}`),
+  );
   expect(heading.parentElement).toContainElement(back);
   expect(back.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
   expect(
@@ -1145,10 +1173,9 @@ test.each(["0", "1000000000000000000"])(
     for (const [field, value] of [
       ["Created", "1970-01-01 00:00:00 UTC"],
       ["Valid until", "1970-01-01 00:00:00 UTC"],
-      ["Kind", "Buy"],
-      ["Partial fills", "Not allowed"],
-      ["Maximum sell amount", "1.234567890123456789 WETH"],
-      ["Buy amount", "0 USDC"],
+      ["Partial fills", "All or nothing"],
+      ["Sell amount", "1.234567890123456789 WETH"],
+      ["Minimum buy amount", "0 USDC"],
       ["Trigger price", "0 USDC per WETH"],
       ["Limit price", "0 USDC per WETH"],
       [
@@ -1164,7 +1191,7 @@ test.each(["0", "1000000000000000000"])(
       );
     }
     expect(
-      screen.getByRole("link", { name: "View creation transaction" }),
+      screen.getByRole("link", { name: "0xefef…efef" }),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("link", { name: "View CoW order" }),
@@ -1292,7 +1319,7 @@ test("shows owned order details, prices and partial execution without cancellati
   ).toHaveTextContent("2100-01-01 00:00:00 UTC");
   expect(
     screen.getByRole("definition", { name: "Maximum oracle age" }),
-  ).toHaveTextContent("3600 seconds");
+  ).toHaveTextContent("1 hour");
   expect(
     within(
       screen.getByRole("definition", { name: "Sell token oracle" }),
@@ -1343,8 +1370,13 @@ test("links shortened detail addresses using the page chain instead of the walle
   for (const [field, short, identifier, type] of [
     ["Owner", "0x3333…3333", owner, "address"],
     ["Receiver", "0x1111…1111", wallet, "address"],
-    ["Sell token", "0xC02a…6Cc2", parent.decodedParams.sellToken, "token"],
-    ["Buy token", "0xA0b8…eB48", parent.decodedParams.buyToken, "token"],
+    ["Sell amount", "0xC02a…6Cc2", parent.decodedParams.sellToken, "token"],
+    [
+      "Minimum buy amount",
+      "0xA0b8…eB48",
+      parent.decodedParams.buyToken,
+      "token",
+    ],
     [
       "Sell token oracle",
       "0x5f4e…8419",
@@ -1368,13 +1400,9 @@ test("links shortened detail addresses using the page chain instead of the walle
     expect(link).toHaveAttribute("target", "_blank");
   }
   expect(
-    within(screen.getByRole("definition", { name: "Order hash" })).queryByRole(
-      "link",
-    ),
-  ).not.toBeInTheDocument();
-  expect(
-    screen.getByRole("definition", { name: "Order hash" }),
-  ).toHaveTextContent(parent.hash);
+    screen.getByRole("button", { name: "Copy order hash" }),
+  ).toBeInTheDocument();
+  expect(screen.getByTitle(parent.hash)).toBeInTheDocument();
   expect(provider.chainId).toBe(1);
 });
 
@@ -1401,7 +1429,7 @@ test("links the creation transaction to the order's chain explorer", async () =>
   await connectBrowserWallet();
 
   expect(
-    await screen.findByRole("link", { name: "View creation transaction" }),
+    await screen.findByRole("link", { name: "0xefef…efef" }),
   ).toHaveAttribute("href", `https://arbiscan.io/tx/${hash}`);
 });
 
@@ -1652,7 +1680,9 @@ test("uses the Safe account returned by WalletConnect instead of a browser signe
     expect(screen.getByTitle(safe)).toBeInTheDocument();
     fireEvent.click(screen.getByTitle(safe));
     fireEvent.click(await screen.findByRole("button", { name: /Disconnect/ }));
-    await screen.findByText("Connect a wallet to view your stop-loss orders.");
+    await screen.findByRole("button", {
+      name: "Connect wallet to view orders",
+    });
   } finally {
     if (projectId === undefined)
       delete process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;

@@ -1,9 +1,11 @@
-import { Card, CardContent, CardTitle, Input } from "@bleu/ui";
+import { Input } from "@bleu/ui";
 import { useFormContext } from "react-hook-form";
 
 import { slippagePercentSchema } from "#/lib/calculateAmounts";
+import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
+import { InfoTooltip } from "./ui/tooltip";
 
 export function SlippageInputCard() {
   const {
@@ -19,14 +21,21 @@ export function SlippageInputCard() {
     : "";
 
   return (
-    <Card className="bg-background w-full p-2 rounded-lg">
-      <CardTitle className="font-normal text-xs">
-        <label htmlFor="slippage-percent">Slippage</label>
-      </CardTitle>
-      <CardContent className="px-0 pt-2 pb-0 flex items-center gap-1">
+    <div className="min-w-0">
+      <div className="flex items-center gap-1.5">
+        <label
+          htmlFor="slippage-percent"
+          className="text-[13px] font-medium text-muted-foreground"
+        >
+          Max slippage
+        </label>
+        <InfoTooltip text={TOOLTIP_DESCRIPTIONS.MAX_SLIPPAGE} />
+      </div>
+      <div className="mt-1.5 flex min-w-0 items-center gap-2">
         <ToggleGroup
           type="single"
           value={selectedPreset}
+          className="h-10 shrink-0"
           onValueChange={(value) => {
             if (value)
               setValue("slippagePercent", value, {
@@ -37,7 +46,11 @@ export function SlippageInputCard() {
           aria-label="Slippage presets"
         >
           {presets.map((value) => (
-            <ToggleGroupItem key={value} value={value}>
+            <ToggleGroupItem
+              key={value}
+              value={value}
+              className="px-2 text-[13px] sm:px-2.5"
+            >
               {value}%
             </ToggleGroupItem>
           ))}
@@ -47,15 +60,15 @@ export function SlippageInputCard() {
           id="slippage-percent"
           type="text"
           inputMode="decimal"
-          className="min-w-0 w-full h-9 bg-background"
+          className="h-11 min-w-0 w-20 rounded-xl bg-background text-center text-sm tabular-nums"
         />
-        <span>%</span>
-      </CardContent>
+        <span className="text-[15px] text-muted-foreground">%</span>
+      </div>
       {errors.slippagePercent?.message && (
         <p role="alert" className="text-xs text-destructive">
           {errors.slippagePercent.message}
         </p>
       )}
-    </Card>
+    </div>
   );
 }

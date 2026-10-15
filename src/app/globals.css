@@ -13,31 +13,79 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
+.app-scroll-area {
+  scrollbar-color: hsl(var(--border)) transparent;
+  scrollbar-width: thin;
+}
+
+.app-scroll-area::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.app-scroll-area::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background: hsl(var(--border));
+}
+
+.app-scroll-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 @layer base {
   :root {
-    --background: 238 53% 12%;
-    --foreground: 0 0% 100%;
-    --border: 238 53% 12%;
-    --input: 201 100% 67%;
-    --primary: 201 100% 67%;
-    --primary-foreground: 198 42% 6%;
-    --secondary: 266 83% 57%;
-    --secondary-foreground: 238 42% 16%;
+    color-scheme: dark;
+    --background: 222 22% 7%;
+    --foreground: 210 24% 97%;
+    --border: 220 16% 24%;
+    --input: 220 16% 21%;
+    --ring: 213 91% 65%;
+    --primary: 213 91% 65%;
+    --primary-foreground: 222 22% 7%;
+    --secondary: 8 86% 69%;
+    --secondary-foreground: 222 22% 7%;
     --destructive: 348 86% 61%;
     --destructive-foreground: 10 22% 11%;
-    --muted: 238 42% 16%;
-    --muted-foreground: 203 13% 88%;
-    --accent: 201 100% 67%;
-    --accent-foreground: 198 42% 6%;
-    --popover: 238 42% 16%;
+    --muted: 220 16% 14%;
+    --muted-foreground: 215 14% 69%;
+    --accent: 8 86% 69%;
+    --accent-foreground: 222 22% 7%;
+    --popover: 222 18% 11%;
     --popover-foreground: 0 0% 100%;
-    --card: 238 42% 16%;
+    --card: 222 18% 11%;
     --card-foreground: 0 0% 100%;
-    --radius: 20px;
-    --highlight: 42 100% 71%;
-    --info: 203 13% 88%;
-    --success: 162 99% 40%;
+    --radius: 22px;
+    --highlight: 8 86% 69%;
+    --info: 40 18% 83%;
+    --success: 162 74% 43%;
     --warning: 42 100% 71%;
+  }
+
+  .light {
+    color-scheme: light;
+    --background: 210 20% 98%;
+    --foreground: 222 22% 11%;
+    --border: 220 13% 82%;
+    --input: 220 13% 88%;
+    --ring: 213 80% 48%;
+    --primary: 213 80% 45%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 8 78% 56%;
+    --secondary-foreground: 0 0% 100%;
+    --destructive: 348 75% 48%;
+    --destructive-foreground: 0 0% 100%;
+    --muted: 220 14% 93%;
+    --muted-foreground: 215 12% 40%;
+    --accent: 8 78% 56%;
+    --accent-foreground: 0 0% 100%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 22% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 22% 11%;
+    --highlight: 8 78% 56%;
+    --info: 215 25% 38%;
+    --success: 162 74% 35%;
+    --warning: 42 100% 38%;
   }
 
   * {
@@ -46,7 +94,7 @@ input[type="number"] {
   body {
     font-synthesis-weight: none;
     text-rendering: optimizeLegibility;
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
   }
 }
 

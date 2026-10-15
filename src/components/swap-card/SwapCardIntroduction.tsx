@@ -4,16 +4,16 @@ import { GearIcon } from "@radix-ui/react-icons";
 import { useUIStore } from "#/hooks/useUIState";
 
 const INTRODUCTION_STEPS = [
-  "Choose a supported token to sell for USDC",
-  "Define the token amount to sell or buy",
-  "Set up a trigger and limit price to condition your order",
-  "Review the order and you are ready to go or...",
+  "Choose a supported token and enter the amount to sell",
+  "Set the trigger price and order expiry",
+  "Review the order details and required approvals",
+  "Confirm placement in your wallet",
 ];
 
 const ADVANCED_OPTIONS = [
-  "Change order to be partially fillable",
-  "Choose a different receiver",
-  "Set the maximum time since the last oracle update",
+  "Allow partial fills",
+  "Set a different receiver",
+  "Change the maximum oracle data age",
 ];
 
 const StepBulletPoint = ({
@@ -23,9 +23,13 @@ const StepBulletPoint = ({
   icon: React.ReactNode;
   description: string;
 }) => (
-  <div className="flex items-start gap-2">
-    <div className="w-[20px]">{icon}</div>
-    <span className="text-wrap text-xs w-full">{description}</span>
+  <div className="flex min-h-14 items-center gap-3 rounded-2xl border border-border/60 bg-background/40 p-3">
+    <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-sm font-semibold text-primary">
+      {icon}
+    </div>
+    <span className="w-full text-pretty text-sm leading-snug text-foreground/90">
+      {description}
+    </span>
   </div>
 );
 
@@ -36,7 +40,7 @@ const BulletPointList = ({
   items: string[];
   iconGenerator: (index: number) => React.ReactNode;
 }) => (
-  <div className="grid grid-cols-2 gap-4">
+  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
     {items.map((item, index) => (
       <StepBulletPoint
         key={index}
@@ -51,30 +55,38 @@ export function SwapCardIntroduction() {
   const setFirstAccess = useUIStore((state) => state.setFirstAccess);
 
   return (
-    <Card className="bg-muted w-full p-6 rounded-lg">
-      <CardTitle className="w-full flex flex-col items-center">
-        <span className="text-lg">Start creating</span>
-        <span className="text-4xl text-primary">Stop Loss orders</span>
+    <Card className="w-full rounded-[28px] border-white/10 bg-gradient-to-br from-card via-card to-secondary/10 p-5 shadow-xl sm:p-7">
+      <CardTitle className="flex w-full flex-col items-start">
+        <span className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+          Get started
+        </span>
+        <span className="mt-2 text-balance text-3xl font-semibold tracking-tight sm:text-4xl">
+          Build a stop-loss order
+        </span>
       </CardTitle>
-      <CardContent className="flex flex-col gap-4 pt-5 pb-0 px-0">
-        <span className="text-sm">
-          Execute effective investment strategies in a few steps:
+      <CardContent className="flex flex-col gap-5 px-0 pb-0 pt-4">
+        <span className="max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground sm:text-base">
+          Choose what to sell, set a trigger, then review the order and its
+          approvals before you place it.
         </span>
         <BulletPointList
           items={INTRODUCTION_STEPS}
           iconGenerator={(index: number) => (
-            <span className="text-lg text-success font-bold inline-block align-top">
-              {index + 1}.
-            </span>
+            <span className="font-semibold tabular-nums">{index + 1}.</span>
           )}
         />
-        <span className="text-sm mt-2">If you feel confident:</span>
-        <BulletPointList
-          items={ADVANCED_OPTIONS}
-          iconGenerator={() => <GearIcon className="size-4" />}
-        />
-        <Button className="mt-2" onClick={() => setFirstAccess(false)}>
-          Get started with Stop Loss orders
+        <div className="border-t border-border/60 pt-5">
+          <h3 className="mb-3 text-sm font-semibold">Advanced settings</h3>
+          <BulletPointList
+            items={ADVANCED_OPTIONS}
+            iconGenerator={() => <GearIcon className="size-4" />}
+          />
+        </div>
+        <Button
+          className="h-12 rounded-2xl font-semibold"
+          onClick={() => setFirstAccess(false)}
+        >
+          Create your first order
         </Button>
       </CardContent>
     </Card>

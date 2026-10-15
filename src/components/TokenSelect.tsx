@@ -48,9 +48,9 @@ export function TokenSelect({
           <Button
             type="button"
             className={cn(
-              "flex px-2 justify-between rounded-full space-x-1",
+              "h-11 w-full min-w-0 justify-between gap-2 rounded-2xl border border-primary/25 bg-primary/10 px-3 text-foreground shadow-sm transition-colors hover:border-primary/40 hover:bg-primary/15 hover:text-foreground",
               selectedToken
-                ? "bg-muted text-white hover:text-primary-foreground"
+                ? "bg-muted/70 text-foreground hover:text-foreground"
                 : "",
             )}
             disabled={disabled}
@@ -70,12 +70,15 @@ export function TokenSelect({
           )}
         </div>
       </PopoverTrigger>
-      <PopoverContent>
+      <PopoverContent className="w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-border bg-popover p-0 text-popover-foreground shadow-2xl">
         {/* @ts-ignore */}
-        <Command>
-          <CommandInput placeholder="Search supported tokens" />
+        <Command className="rounded-2xl bg-transparent text-popover-foreground">
+          <CommandInput
+            placeholder="Search supported tokens"
+            className="h-12 rounded-xl border-0 bg-transparent px-4"
+          />
           {/* @ts-ignore */}
-          <CommandList>
+          <CommandList className="max-h-72 p-1.5">
             {/* @ts-ignore */}
             <CommandEmpty>No results found</CommandEmpty>
             {sellTokens.map(({ token }) => (
@@ -85,7 +88,7 @@ export function TokenSelect({
                 value={token.symbol + token.address}
                 disabled={disabled}
                 onSelect={() => handleSelectToken(token)}
-                className="hover:bg-primary hover:text-primary-foreground"
+                className="rounded-xl py-2.5 hover:bg-primary/15 hover:text-foreground"
               >
                 <TokenInfo token={token} showExplorerLink={false} />
               </CommandItem>

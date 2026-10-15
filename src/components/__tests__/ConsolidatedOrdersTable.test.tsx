@@ -306,7 +306,7 @@ test("fills the empty orders viewport without putting filters or pagination in i
     "min-h-0",
     "flex-1",
     "max-h-none",
-    "overflow-y-auto",
+    "overflow-auto",
     "[&>div]:overflow-visible",
     "[&>div]:h-full",
   );
@@ -322,14 +322,13 @@ test("fills the empty orders viewport without putting filters or pagination in i
   expect(panel.firstElementChild).toContainElement(
     screen.getByRole("button", { name: "Refresh orders" }),
   );
-  expect(panel.lastElementChild).toHaveClass("shrink-0");
-  expect(panel.lastElementChild).toContainElement(
-    screen.getByRole("button", { name: "Go to next page" }),
-  );
-  expect(viewport).not.toContainElement(
-    screen.getByRole("button", { name: "Chain" }),
-  );
-  expect(viewport).not.toContainElement(screen.getByText("Rows per page"));
+  expect(panel.lastElementChild).toBe(viewport);
+  expect(
+    screen.queryByRole("button", { name: "Go to next page" }),
+  ).not.toBeInTheDocument();
+  const chainFilter = screen.queryByRole("button", { name: "Chain" });
+  if (chainFilter) expect(viewport).not.toContainElement(chainFilter);
+  expect(screen.queryByText("Rows per page")).not.toBeInTheDocument();
 });
 
 test("keeps the expanding table shell while the connected account's first orders are loading", async () => {
@@ -480,15 +479,27 @@ test("shortens API and local amounts without rounding up and retains the full am
   await connectWallet();
 
   const apiAmount = await screen.findByRole("cell", {
-    name: "~1.2345 WETH for ~4000.1234 USDC",
+    name: "1.2345 WETH for 4000.1234 USDC",
   });
+  expect(screen.getByRole("columnheader", { name: "Trigger" })).toBeVisible();
+  expect(
+    screen.getByRole("columnheader", { name: "From market" }),
+  ).toBeVisible();
+  expect(screen.getByRole("columnheader", { name: "Expires" })).toBeVisible();
+  const apiRow = apiAmount.closest("tr")!;
+  expect(within(apiRow).getByText("2,100 USDC")).toBeVisible();
+  expect(
+    within(apiRow).getByRole("link", {
+      name: "View order indexed-order on Ethereum",
+    }),
+  ).toBeVisible();
   expect(
     within(apiAmount).getByTitle(
       "1.234567890123456789 WETH for 4000.123456 USDC",
     ),
   ).toBeInTheDocument();
   const localAmount = screen.getByRole("cell", {
-    name: "~2.1001 WETH for ~4158.2444 USDC",
+    name: "2.1001 WETH for 4158.2444 USDC",
   });
   expect(
     within(localAmount).getByTitle(
@@ -520,7 +531,7 @@ test("distinguishes tiny positive amounts from zero and preserves exact integer 
     {
       sellAmount: "9007199254740993123400000000000000",
       buyAmount: "2100000001",
-      display: "9007199254740993.1234 WETH for ~2100 USDC",
+      display: "9007199254740993.1234 WETH for 2100 USDC",
       full: "9007199254740993.1234 WETH for 2100.000001 USDC",
     },
     {

@@ -8,7 +8,7 @@ export function Footer({
   discordLink: string;
 }) {
   return (
-    <footer className="flex w-full justify-between bg-background p-4 items-center">
+    <footer className="flex w-full shrink-0 items-center justify-between bg-background p-4">
       <span className="text-sm">
         developed by&nbsp;
         <a

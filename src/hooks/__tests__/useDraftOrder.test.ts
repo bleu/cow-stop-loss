@@ -100,7 +100,7 @@ describe("Supported stop loss draft creation", () => {
       isSellOrder: true,
       partiallyFillable: false,
       validTo: 1700086400,
-      maxHoursSinceOracleUpdates: 6,
+      maxHoursSinceOracleUpdates: 24,
     });
   });
 

@@ -62,6 +62,7 @@ interface UseDataTableProps<TData, TValue> {
    * @type ColumnDef<TData, TValue>[]
    */
   columns: ColumnDef<TData, TValue>[];
+  initialColumnVisibility?: VisibilityState;
 
   /**
    * The number of pages in the table.
@@ -131,13 +132,13 @@ interface UseDataTableProps<TData, TValue> {
 
 const schema = z.object({
   page: z.coerce.number().default(1),
-  per_page: z.coerce.number().optional(),
   sort: z.string().optional(),
 });
 
 export function useDataTable<TData, TValue>({
   data,
   columns,
+  initialColumnVisibility = {},
   defaultPerPage = 5,
   defaultSort,
   filterFields = [],
@@ -151,7 +152,7 @@ export function useDataTable<TData, TValue>({
   // Search params
   const search = schema.parse(Object.fromEntries(searchParams));
   const page = search.page;
-  const perPage = search.per_page ?? defaultPerPage;
+  const perPage = defaultPerPage;
   const sort = search.sort ?? defaultSort;
   const [column, order] = sort?.split(".") ?? [];
 
@@ -213,7 +214,7 @@ export function useDataTable<TData, TValue>({
   // Table states
   const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
+    React.useState<VisibilityState>(initialColumnVisibility);
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(initialColumnFilters);
 
@@ -244,7 +245,7 @@ export function useDataTable<TData, TValue>({
     router.push(
       `${pathname}?${createQueryString({
         page: pageIndex + 1,
-        per_page: pageSize,
+        per_page: null,
         sort: sorting[0]?.id
           ? `${sorting[0]?.id}.${sorting[0]?.desc ? "desc" : "asc"}`
           : null,
@@ -338,7 +339,7 @@ export function useDataTable<TData, TValue>({
       columnFilters,
     },
     enableRowSelection,
-    enableHiding: false,
+    enableHiding: true,
     getRowId: (row) => (row as { id: string }).id,
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,

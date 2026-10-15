@@ -1,9 +1,11 @@
 "use client";
 
 import { Button } from "@bleu/ui";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useCallback } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { parseUnits } from "viem";
+import { useAccount } from "wagmi";
 
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
@@ -15,6 +17,8 @@ export function SwapCardSubmitButton({
 }: {
   disabled?: boolean;
 }) {
+  const { address } = useAccount();
+  const { openConnectModal } = useConnectModal();
   const {
     formState: { isSubmitting, errors },
     control,
@@ -130,9 +134,21 @@ export function SwapCardSubmitButton({
 
   const { disabled, text } = getButtonState();
 
+  if (!address) {
+    return (
+      <Button
+        className="mt-2 h-auto min-h-12 w-full rounded-2xl bg-primary py-3 font-semibold tracking-tight text-primary-foreground shadow-[0_10px_30px_-16px_hsl(var(--primary)/0.55)] transition-colors hover:bg-primary/90 active:scale-[0.96]"
+        type="button"
+        onClick={openConnectModal}
+      >
+        Connect wallet to place order
+      </Button>
+    );
+  }
+
   return (
     <Button
-      className="rounded-lg text-wrap py-2 mt-2 h-auto"
+      className="mt-2 h-auto min-h-12 rounded-2xl py-3 font-semibold tracking-tight shadow-[0_10px_30px_-16px_hsl(var(--primary)/0.8)] transition-transform active:scale-[0.96]"
       type="submit"
       loading={isSubmitting}
       loadingText="Validating..."

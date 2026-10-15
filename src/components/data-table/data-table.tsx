@@ -29,6 +29,8 @@ interface DataTableProps<TData> extends React.HTMLAttributes<HTMLDivElement> {
   fillPanel?: boolean;
   emptyMessage?: React.ReactNode;
   notice?: React.ReactNode;
+  onRowClick?: (row: TData) => void;
+  getRowLabel?: (row: TData) => string | undefined;
 }
 
 export function DataTable<TData>({
@@ -37,6 +39,8 @@ export function DataTable<TData>({
   fillPanel = false,
   emptyMessage = "No results.",
   notice,
+  onRowClick,
+  getRowLabel,
   children,
   className,
   ...props
@@ -56,25 +60,37 @@ export function DataTable<TData>({
       {fillPanel ? <div className="shrink-0">{children}</div> : children}
       <div
         className={cn(
-          "rounded-md border overflow-y-auto scrollbar scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-primary scrollbar-track-background scrollbar-w-2",
+          "overflow-auto rounded-2xl border border-border/70 bg-background/35 shadow-inner scrollbar scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-primary/50 scrollbar-track-background scrollbar-w-2",
           fillPanel
             ? "min-h-0 flex-1 max-h-none [&>div]:overflow-visible"
             : "max-h-96",
           fillPanel && isEmpty && "[&>div]:h-full",
         )}
       >
-        <Table className={cn(fillPanel && isEmpty && "h-full")}>
+        <Table
+          className={cn(
+            fillPanel && "min-w-[420px] xl:min-w-[680px]",
+            fillPanel && isEmpty && "h-full",
+          )}
+        >
           <TableHeader
             className={cn(
               "sticky top-0",
-              fillPanel && "h-10 bg-background z-10",
+              fillPanel &&
+                "z-10 h-12 border-b border-border/70 bg-background backdrop-blur-sm",
             )}
           >
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="hover:bg-transparent">
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead
+                      key={header.id}
+                      className={cn(
+                        "h-12 whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.13em] text-muted-foreground",
+                        header.id === "distance" && "hidden xl:table-cell",
+                      )}
+                    >
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -100,9 +116,40 @@ export function DataTable<TData>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className={cn(
+                    "transition-colors",
+                    onRowClick &&
+                      getRowLabel?.(row.original) &&
+                      "cursor-pointer hover:bg-muted/55 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring",
+                  )}
+                  onClick={
+                    onRowClick && getRowLabel?.(row.original)
+                      ? () => onRowClick(row.original)
+                      : undefined
+                  }
+                  onKeyDown={
+                    onRowClick && getRowLabel?.(row.original)
+                      ? (event) => {
+                          if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            onRowClick(row.original);
+                          }
+                        }
+                      : undefined
+                  }
+                  tabIndex={
+                    onRowClick && getRowLabel?.(row.original) ? 0 : undefined
+                  }
+                  aria-label={getRowLabel?.(row.original)}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      className={cn(
+                        "py-2.5 align-middle",
+                        cell.column.id === "distance" && "hidden xl:table-cell",
+                      )}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
@@ -124,10 +171,13 @@ export function DataTable<TData>({
           </TableBody>
         </Table>
       </div>
-      <div className={cn("flex flex-col gap-2.5", fillPanel && "shrink-0")}>
-        <DataTablePagination table={table} fillPanel={fillPanel} />
-        {table.getFilteredSelectedRowModel().rows.length > 0 && floatingBar}
-      </div>
+      {(table.getPageCount() > 1 ||
+        table.getFilteredSelectedRowModel().rows.length > 0) && (
+        <div className={cn("flex flex-col gap-2.5", fillPanel && "shrink-0")}>
+          <DataTablePagination table={table} fillPanel={fillPanel} />
+          {table.getFilteredSelectedRowModel().rows.length > 0 && floatingBar}
+        </div>
+      )}
     </div>
   );
 }

@@ -20,12 +20,11 @@ import { getSupportedTokens } from "#/lib/supportedTokens";
 import { DraftOrder, SwapData } from "#/lib/types";
 
 import { AdvancedSettingsAlert } from "../AdvancedSettingsAlert";
-import { AdvancedSettingsDialog } from "../AdvancedSettingsDialog";
+import { AdvancedSettingsPanel } from "../AdvancedSettingsPanel";
 import { PriceInputCard } from "../PriceInputCard";
 import { TokenInputCard } from "../TokenInputCard";
 import { Form } from "../ui/form";
 import { SwapCardSubmitButton } from "./SwapCardSubmitButton";
-import { ValidToInput } from "./ValidToInput";
 
 export interface SwapFormProps {
   reviewDisabled?: boolean;
@@ -48,7 +47,7 @@ function WalletSwapForm({
   reviewDisabled = false,
 }: SwapFormProps) {
   const { chainId: accountChainId, address: walletAddress } = useAccount();
-  const chainId = accountChainId as ChainId;
+  const chainId = (accountChainId ?? 1) as ChainId;
 
   const [setCurrentDraftOrder, createDraftOrder] = useDraftOrder((state) => [
     state.setCurrentDraftOrder,
@@ -67,6 +66,15 @@ function WalletSwapForm({
       tokenBuy: getSupportedTokens(chainId).buyToken.token,
     },
   });
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
+  React.useEffect(() => {
+    if (!settingsOpen) return;
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setSettingsOpen(false);
+    };
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [settingsOpen]);
   const { reset, clearErrors, setValue, getValues } = form;
   const [tokenSell, tokenBuy, amountSell, strikePrice, slippagePercent] =
     useWatch({
@@ -179,34 +187,54 @@ function WalletSwapForm({
     >
       <fieldset
         disabled={form.formState.isSubmitting}
-        className="w-full min-w-0"
+        className="flex w-full min-w-0 flex-col"
       >
-        <Card className="bg-muted w-full p-4 rounded-lg">
-          <CardContent className="flex flex-col gap-2 p-0">
-            <div className="w-full flex justify-between pb-4">
-              <AdvancedSettingsDialog
-                slippagePercent={slippagePercent}
-                onApplySlippage={(value) =>
-                  setValue("slippagePercent", value, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  })
-                }
-              />
-            </div>
-            <TokenInputCard side="Sell" />
-            <div className="grid gap-2 sm:grid-cols-2">
+        <Card className="flex w-full min-w-0 flex-col rounded-none border-0 bg-transparent p-0 shadow-none">
+          <CardContent className="flex flex-col gap-3 p-0">
+            <AdvancedSettingsPanel
+              slippagePercent={slippagePercent}
+              open={settingsOpen}
+              onOpenChange={setSettingsOpen}
+              title={
+                <div className="min-w-0">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+                    Create
+                  </p>
+                  <h1
+                    id="place-order-title"
+                    className="mt-1 text-balance text-xl font-semibold tracking-tight sm:text-2xl"
+                  >
+                    Place a stop-loss order
+                  </h1>
+                  <p className="mt-1 max-w-md text-sm leading-5 text-muted-foreground">
+                    Sell tokens when the price falls below your trigger. Set the
+                    minimum amount to receive.
+                  </p>
+                </div>
+              }
+              onApplySlippage={(value) =>
+                setValue("slippagePercent", value, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                })
+              }
+            />
+            <div
+              hidden={settingsOpen}
+              aria-hidden={settingsOpen}
+              className={settingsOpen ? "hidden" : "flex flex-col gap-3"}
+            >
+              <TokenInputCard side="Sell" />
               <PriceInputCard />
-              <ValidToInput />
+              <TokenInputCard side="Buy" />
+              <AdvancedSettingsAlert slippagePercent={slippagePercent} />
+              {form.formState.errors.root?.message && (
+                <p role="alert" className="text-sm text-destructive">
+                  {form.formState.errors.root.message}
+                </p>
+              )}
+              <SwapCardSubmitButton disabled={reviewDisabled} />
             </div>
-            <TokenInputCard side="Buy" />
-            <AdvancedSettingsAlert />
-            {form.formState.errors.root?.message && (
-              <p role="alert" className="text-sm text-destructive">
-                {form.formState.errors.root.message}
-              </p>
-            )}
-            <SwapCardSubmitButton disabled={reviewDisabled} />
           </CardContent>
         </Card>
       </fieldset>
