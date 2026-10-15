@@ -350,6 +350,15 @@ test("reviews the remaining amounts when cancelling a partially filled order fro
   expect(within(dialog).getByText("0.6 WETH")).toBeInTheDocument();
   expect(within(dialog).getByText("Minimum buy")).toBeInTheDocument();
   expect(within(dialog).getByText("1200 USDC")).toBeInTheDocument();
+  expect(within(dialog).getByText("Trigger price")).toBeInTheDocument();
+  expect(within(dialog).getByText("2,100 USDC per WETH")).toBeInTheDocument();
+  expect(within(dialog).getByText("Expires")).toBeInTheDocument();
+  expect(dialog).toHaveTextContent(
+    new Date(4102444800 * 1000).toLocaleString(undefined, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }),
+  );
   expect(dialog).not.toHaveTextContent(
     /fund|schedule|approval|race|factory|hash/i,
   );

@@ -164,6 +164,15 @@ function CancellationReview({
   };
   const amount = (value: bigint, token: StopLossOrder["sellToken"]) =>
     `${token.decimals === null ? `${value} base units` : formatUnits(value, token.decimals)} ${token.symbol}`;
+  const triggerPrice = `${new Intl.NumberFormat(undefined, {
+    maximumSignificantDigits: 8,
+  }).format(
+    Number(formatUnits(order.strike, 18)),
+  )} ${order.buyToken.symbol} per ${order.sellToken.symbol}`;
+  const expires = new Date(order.validTo * 1000).toLocaleString(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
   return (
     <DialogContent
       className="w-[calc(100vw-2rem)] max-w-md rounded-3xl border border-border/70 bg-card p-5 text-foreground shadow-2xl sm:p-6"
@@ -174,7 +183,8 @@ function CancellationReview({
           Cancel this order?
         </DialogTitle>
         <DialogDescription className="mt-1 leading-relaxed">
-          Review the remaining amounts before confirming cancellation.
+          Review the remaining amounts and order terms before confirming
+          cancellation.
         </DialogDescription>
       </div>
       <div className="mb-5 grid grid-cols-2 gap-3">
@@ -203,6 +213,20 @@ function CancellationReview({
                 : BigInt(0),
               order.buyToken,
             )}
+          </p>
+        </div>
+        <div className="col-span-2 min-w-0 rounded-2xl border border-border/70 bg-background/70 p-3.5">
+          <p className="text-xs font-medium text-muted-foreground">
+            Trigger price
+          </p>
+          <p className="mt-1 break-words text-sm font-semibold tabular-nums">
+            {triggerPrice}
+          </p>
+        </div>
+        <div className="col-span-2 min-w-0 rounded-2xl border border-border/70 bg-background/70 p-3.5">
+          <p className="text-xs font-medium text-muted-foreground">Expires</p>
+          <p className="mt-1 break-words text-sm font-semibold tabular-nums">
+            {expires}
           </p>
         </div>
       </div>
