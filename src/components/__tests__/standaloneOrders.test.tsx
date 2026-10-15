@@ -178,7 +178,10 @@ test("reviews one sell order before asking the wallet to cancel", async () => {
   );
 
   const dialog = await screen.findByRole("dialog");
-  expect(within(dialog).getByText("1 WETH for 2000 USDC")).toBeInTheDocument();
+  expect(within(dialog).getByText("Remaining sell")).toBeInTheDocument();
+  expect(within(dialog).getByText("1 WETH")).toBeInTheDocument();
+  expect(within(dialog).getByText("Minimum buy")).toBeInTheDocument();
+  expect(within(dialog).getByText("2000 USDC")).toBeInTheDocument();
   expect(
     within(dialog).getByRole("button", { name: "Confirm cancellation" }),
   ).toBeInTheDocument();
@@ -221,9 +224,8 @@ test("keeps cancellation loading after a wallet proposal and confirms only mined
       }),
     ),
   );
-  expect(within(dialog).getByRole("status")).toHaveTextContent(
-    "Waiting for cancellation...",
-  );
+  expect(within(dialog).queryByRole("status")).not.toBeInTheDocument();
+  expect(dialog).not.toHaveTextContent("Waiting for cancellation confirmation");
   expect(
     within(dialog).queryByText("Order cancelled."),
   ).not.toBeInTheDocument();
@@ -438,8 +440,10 @@ test("requires a deliberate retry after wallet rejection and checks the order ag
     within(dialog).getByRole("button", { name: "Confirm cancellation" }),
   );
   expect(await within(dialog).findByRole("alert")).toHaveTextContent(
-    /rejected/i,
+    "You rejected the cancellation in your wallet. No transaction was sent.",
   );
+  expect(dialog).not.toHaveTextContent("User rejected the request.");
+  expect(dialog).not.toHaveTextContent("Waiting for cancellation confirmation");
   expect(
     within(dialog).queryByText("Order cancelled."),
   ).not.toBeInTheDocument();
@@ -448,7 +452,9 @@ test("requires a deliberate retry after wallet rejection and checks the order ag
   ).length;
   chain.active = false;
   provider.rejectSend = false;
-  fireEvent.click(within(dialog).getByRole("button", { name: "Retry" }));
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Retry cancellation" }),
+  );
   await waitFor(() =>
     expect(within(dialog).getByRole("alert")).toHaveTextContent(
       "This order is no longer active.",
@@ -500,7 +506,9 @@ test("retries only observation after an uncertain RPC failure", async () => {
     .mockRejectedValue(new Error("Receipt RPC unavailable"));
   expect(
     await within(dialog).findByRole("alert", {}, { timeout: 4000 }),
-  ).toHaveTextContent("Receipt RPC unavailable");
+  ).toHaveTextContent(
+    "An error happened while cancelling this order. Please try again.",
+  );
   chain.active = false;
   jest
     .spyOn(publicClientsFromIds[1], "getTransactionReceipt")
@@ -509,7 +517,9 @@ test("retries only observation after an uncertain RPC failure", async () => {
         name: "TransactionReceiptNotFoundError",
       }),
     );
-  fireEvent.click(within(dialog).getByRole("button", { name: "Retry" }));
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Retry cancellation" }),
+  );
   expect(
     await within(dialog).findByText("Order cancelled."),
   ).toBeInTheDocument();
@@ -559,11 +569,15 @@ test("allows a new deliberate submission after a reverted execution", async () =
     .mockResolvedValue({ status: "reverted" } as never);
   expect(
     await within(dialog).findByRole("alert", {}, { timeout: 4000 }),
-  ).toHaveTextContent("Cancellation transaction reverted.");
+  ).toHaveTextContent(
+    "The cancellation transaction failed. The order may still be active.",
+  );
   expect(
     within(dialog).queryByText("Order cancelled."),
   ).not.toBeInTheDocument();
-  fireEvent.click(within(dialog).getByRole("button", { name: "Retry" }));
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Retry cancellation" }),
+  );
   await waitFor(() =>
     expect(
       request.mock.calls.filter(
@@ -606,7 +620,9 @@ test("checks state instead of resending when the wallet response is lost", async
   ).length;
   chain.block = BigInt(101);
   chain.active = false;
-  fireEvent.click(within(dialog).getByRole("button", { name: "Retry" }));
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Retry cancellation" }),
+  );
   expect(
     await within(dialog).findByText("Order cancelled."),
   ).toBeInTheDocument();
@@ -814,7 +830,9 @@ test("keeps wrong-network retry ready without submitting or observing a transact
   expect(await within(dialog).findByRole("alert")).toHaveTextContent(
     "Switch the wallet to Ethereum before cancelling.",
   );
-  fireEvent.click(within(dialog).getByRole("button", { name: "Retry" }));
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Retry cancellation" }),
+  );
   expect(await within(dialog).findByRole("alert")).toHaveTextContent(
     "Switch the wallet to Ethereum before cancelling.",
   );
