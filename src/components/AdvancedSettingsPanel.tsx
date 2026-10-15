@@ -206,21 +206,6 @@ export function AdvancedSettingsPanel({
                 <legend className="mb-1 text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:col-span-2">
                   Order handling
                 </legend>
-                <Input
-                  name="receiver"
-                  label="Receiver"
-                  placeholder="0xabc...123"
-                  tooltipText={TOOLTIP_DESCRIPTIONS.RECEIVER}
-                  extraLabelElement={
-                    <BlockExplorerLink
-                      type="address"
-                      label={<ArrowTopRightIcon />}
-                      identifier={receiver}
-                      networkId={chainId}
-                    />
-                  }
-                  className="h-11 rounded-xl"
-                />
                 <div className="grid gap-1.5">
                   <div className="flex items-center gap-1.5">
                     <label
@@ -259,6 +244,21 @@ export function AdvancedSettingsPanel({
                     )}
                   />
                 </div>
+                <Input
+                  name="receiver"
+                  label="Receiver"
+                  placeholder="0xabc...123"
+                  tooltipText={TOOLTIP_DESCRIPTIONS.RECEIVER}
+                  extraLabelElement={
+                    <BlockExplorerLink
+                      type="address"
+                      label={<ArrowTopRightIcon />}
+                      identifier={receiver}
+                      networkId={chainId}
+                    />
+                  }
+                  className="h-11 rounded-xl"
+                />
               </fieldset>
               <div className="grid w-full gap-2">
                 <Button

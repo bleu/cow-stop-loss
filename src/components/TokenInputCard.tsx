@@ -10,6 +10,7 @@ import { useTokenPrice } from "#/hooks/useTokenPrice";
 import { ChainId } from "#/lib/publicClients";
 import { fetchFormattedBalanceOf } from "#/lib/tokenUtils";
 import { SwapData } from "#/lib/types";
+import { formatMarketPriceForInput } from "#/utils/priceFormatting";
 
 import { ValidToInput } from "./swap-card/ValidToInput";
 import { TokenInfo } from "./TokenInfo";
@@ -54,7 +55,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     )
       return;
     if (!getValues("strikePrice")) {
-      setValue("strikePrice", marketPrice.toFixed(18).replace(/\.?0+$/, ""), {
+      setValue("strikePrice", formatMarketPriceForInput(marketPrice), {
         shouldValidate: true,
         shouldDirty: true,
       });

@@ -5,6 +5,7 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { SwapData } from "#/lib/types";
+import { formatMarketPriceForInput } from "#/utils/priceFormatting";
 
 import { InfoTooltip } from "./ui/tooltip";
 
@@ -51,7 +52,7 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
                 onClick={() =>
                   setValue(
                     "strikePrice",
-                    marketPrice.toFixed(18).replace(/\.?0+$/, ""),
+                    formatMarketPriceForInput(marketPrice),
                     { shouldValidate: true, shouldDirty: true },
                   )
                 }
