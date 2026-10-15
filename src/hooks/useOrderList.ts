@@ -1,17 +1,145 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { type Address, isHex } from "viem";
 import { useAccount } from "wagmi";
 
-import { supportedChainIds } from "#/lib/publicClients";
-import { loadStopLossOrders } from "#/lib/stopLossOrders";
+import { composableCowAbi } from "#/lib/abis/composableCow";
+import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
+import { publicClientsFromIds, supportedChainIds } from "#/lib/publicClients";
+import { loadStopLossOrders, type StopLossOrder } from "#/lib/stopLossOrders";
 import { PlacementRow } from "#/lib/stopLossPlacement";
+import { OrderStatus } from "#/lib/types";
 
 import {
   getStopLossPlacement,
   useStopLossPlacement,
 } from "./useStopLossPlacement";
 
+const cancellationKey = ["confirmed-stop-loss-cancellations"];
+function cancellationFamily(account: string, order: StopLossOrder) {
+  return `${account.toLowerCase()}:${order.chainId}:${order.owner.toLowerCase()}:${order.hash.toLowerCase()}`;
+}
+function cancellationIdentity(account: string, order: StopLossOrder) {
+  return `${cancellationFamily(account, order)}:${order.parentId}`;
+}
+
+export function useCancellationOverlay() {
+  const client = useQueryClient();
+  type Execution = Pick<
+    StopLossOrder,
+    "executedSellAmount" | "executedBuyAmount" | "executedFee"
+  > & { unindexed: boolean };
+  const { data = {} } = useQuery<Record<string, Execution>>({
+    queryKey: cancellationKey,
+    initialData: {},
+    enabled: false,
+    gcTime: Infinity,
+  });
+  return useMemo(
+    () => ({
+      confirm(account: Address, order: StopLossOrder) {
+        client.setQueryData<Record<string, Execution>>(
+          cancellationKey,
+          (previous) => ({
+            ...previous,
+            [cancellationIdentity(account, order)]: {
+              executedSellAmount: order.executedSellAmount,
+              executedBuyAmount: order.executedBuyAmount,
+              executedFee: order.executedFee,
+              unindexed: "source" in order && order.source === "local",
+            },
+          }),
+        );
+      },
+      async reconcile(
+        account: Address,
+        orders: StopLossOrder[],
+        signal: AbortSignal,
+      ) {
+        for (const order of orders) {
+          const identity = cancellationIdentity(account, order);
+          const local = Object.entries(data).find(
+            ([key, entry]) =>
+              entry.unindexed &&
+              key !== identity &&
+              key.startsWith(`${cancellationFamily(account, order)}:`),
+          );
+          if (!local || !isHex(order.hash) || order.hash.length !== 66)
+            continue;
+          const [localKey, entry] = local;
+          try {
+            const rpc = publicClientsFromIds[order.chainId];
+            const blockNumber = await rpc.getBlockNumber({ cacheTime: 0 });
+            const active = await rpc.readContract({
+              address: COMPOSABLE_COW_ADDRESS,
+              abi: composableCowAbi,
+              functionName: "singleOrders",
+              args: [order.owner, order.hash],
+              blockNumber,
+            });
+            if (signal.aborted) return;
+            client.setQueryData<Record<string, Execution>>(
+              cancellationKey,
+              (previous) => {
+                if (previous?.[localKey] !== entry) return previous;
+                return {
+                  ...previous,
+                  [localKey]: { ...entry, unindexed: false },
+                  ...(!active
+                    ? { [identity]: { ...entry, unindexed: false } }
+                    : {}),
+                };
+              },
+            );
+          } catch {
+            // Keep the confirmed state until the API identity can be checked.
+          }
+        }
+      },
+      apply<T extends StopLossOrder>(account: string, order: T): T {
+        const confirmed =
+          data[cancellationIdentity(account, order)] ??
+          Object.entries(data).find(
+            ([key, entry]) =>
+              entry.unindexed &&
+              key.startsWith(`${cancellationFamily(account, order)}:`),
+          )?.[1];
+        if (!confirmed || order.status === OrderStatus.FULFILLED) return order;
+        const latest = (current: bigint | null, previous: bigint | null) =>
+          current === null
+            ? previous
+            : previous !== null && previous > current
+              ? previous
+              : current;
+        const executedSellAmount = latest(
+          order.executedSellAmount,
+          confirmed.executedSellAmount,
+        );
+        const executedBuyAmount = latest(
+          order.executedBuyAmount,
+          confirmed.executedBuyAmount,
+        );
+        const executedFee = latest(order.executedFee, confirmed.executedFee);
+        const partial =
+          (executedSellAmount ?? BigInt(0)) > BigInt(0) ||
+          (executedBuyAmount ?? BigInt(0)) > BigInt(0);
+        return {
+          ...order,
+          executedSellAmount,
+          executedBuyAmount,
+          executedFee,
+          status: partial
+            ? OrderStatus.PARTIALLY_FILLED_AND_CANCELLED
+            : OrderStatus.CANCELLED,
+        };
+      },
+    }),
+    [client, data],
+  );
+}
+
 export function useOrderList() {
+  const overlay = useCancellationOverlay();
   const { address } = useAccount();
   const { records, error: placementError } = useStopLossPlacement(address);
   const account = address?.toLowerCase();
@@ -27,6 +155,11 @@ export function useOrderList() {
     queryKey,
     queryFn: async ({ signal }) => {
       const result = await loadStopLossOrders({ account: address!, signal });
+      await overlay.reconcile(
+        address!,
+        result.chains.flatMap((chain) => chain.orders),
+        signal,
+      );
       const previous =
         queryClient.getQueryData<
           Awaited<ReturnType<typeof loadStopLossOrders>>
@@ -134,10 +267,22 @@ export function useOrderList() {
   }, [address, account, query.data, records, indexDeadline]);
 
   const orders = merged.account === account ? merged.rows : [];
+  const projectedOrders = useMemo(
+    () => orders.map((order) => overlay.apply(account!, order)),
+    [orders, account, overlay],
+  );
+  const chains = useMemo(
+    () =>
+      (query.data?.chains ?? []).map((chain) => ({
+        ...chain,
+        orders: chain.orders.map((order) => overlay.apply(account!, order)),
+      })),
+    [query.data, account, overlay],
+  );
 
   return {
-    orders,
-    chains: query.data?.chains ?? [],
+    orders: projectedOrders,
+    chains,
     isLoading: query.isFetching,
     error: query.error,
     trackingError:

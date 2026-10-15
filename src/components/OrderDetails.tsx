@@ -30,6 +30,8 @@ import {
   truncateAddress,
 } from "#/utils";
 
+import { ApprovalRepair } from "./ApprovalRepair";
+import { CancelOrderDialog } from "./CancelOrderDialog";
 import { BlockExplorerLink } from "./ExplorerLink";
 import { OracleTokenPrice } from "./OracleTokenPrice";
 
@@ -545,6 +547,8 @@ export function OrderDetails({
       <OrderDetailsHeading />
       <OrderStatusSummary status={order.status} />
       <OrderHealth order={order} />
+      <CancelOrderDialog order={order} />
+      <ApprovalRepair order={order} onRefresh={mutate} />
       {warning}
 
       <section className="mb-5 overflow-hidden rounded-[32px] border border-primary/20 bg-gradient-to-br from-card via-card to-secondary/10 p-4 shadow-[0_24px_80px_-45px_rgba(0,0,0,0.9)] sm:p-7">

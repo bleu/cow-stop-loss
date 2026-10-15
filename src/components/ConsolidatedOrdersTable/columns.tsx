@@ -1,5 +1,6 @@
 import { ColumnDef } from "@tanstack/react-table";
-import { formatUnits } from "viem";
+import Link from "next/link";
+import { Address, formatUnits } from "viem";
 
 import { NetworkLogo } from "#/components/NetworkLogo";
 import { TokenLogo } from "#/components/TokenLogo";
@@ -8,6 +9,7 @@ import { chainNames } from "#/lib/publicClients";
 import { PlacementRow } from "#/lib/stopLossPlacement";
 import { OrderStatus } from "#/lib/types";
 
+import { CancelOrderDialog } from "../CancelOrderDialog";
 import { StatusBadge } from "../StatusBadge";
 
 function shortAmount(value: string) {
@@ -80,7 +82,7 @@ function expiryLabel(validTo: number) {
   };
 }
 
-export function getColumns(): ColumnDef<PlacementRow>[] {
+export function getColumns(account: Address): ColumnDef<PlacementRow>[] {
   return [
     {
       id: "chainId",
@@ -235,6 +237,24 @@ export function getColumns(): ColumnDef<PlacementRow>[] {
         };
         return values.some((group) => groups[group]?.includes(status));
       },
+    },
+    {
+      id: "details",
+      header: "Details",
+      cell: ({ row: { original: order } }) => (
+        <div className="flex items-center gap-2">
+          {order.canLink && (
+            <Link
+              href={`/${order.chainId}/${account}/${encodeURIComponent(order.parentId)}`}
+              aria-label={`View order ${order.parentId} on ${chainNames[order.chainId]}`}
+              className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+            >
+              View details
+            </Link>
+          )}
+          <CancelOrderDialog order={order} />
+        </div>
+      ),
     },
   ];
 }
