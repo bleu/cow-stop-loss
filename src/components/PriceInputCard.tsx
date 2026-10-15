@@ -25,11 +25,20 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
       : undefined;
   return (
     <section className="w-full rounded-2xl border border-border/70 bg-card/55 p-3.5 sm:p-4">
-      <div className="flex items-center justify-between gap-1 text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+      <div className="flex flex-col items-start gap-1 text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
         <span className="flex min-w-0 items-center gap-2 whitespace-nowrap">
           <label htmlFor="trigger-price">Trigger price</label>
           <InfoTooltip text={TOOLTIP_DESCRIPTIONS.TRIGGER_PRICE} side="right" />
         </span>
+        {distance !== undefined && (
+          <span
+            className={`normal-case tracking-normal text-[12px] font-semibold tabular-nums ${distance < -0.005 ? "text-destructive" : "text-foreground"}`}
+          >
+            {Math.abs(distance) < 0.005
+              ? "At market"
+              : `${Math.abs(distance).toFixed(2)}% ${distance >= 0 ? "below" : "above"} market`}
+          </span>
+        )}
       </div>
       <div className="flex flex-col items-start gap-0">
         <Input
@@ -42,7 +51,7 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
           className="h-11 w-full rounded-xl border-none bg-transparent px-0 text-left text-3xl font-semibold tracking-tight tabular-nums shadow-none focus-visible:ring-transparent sm:text-4xl"
         />
         {tokenBuy && tokenSell && (
-          <div className="flex w-full flex-wrap items-center justify-between gap-x-3 gap-y-1 text-[13px] text-muted-foreground">
+          <div className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-muted-foreground">
             {marketPrice ? (
               <Button
                 type="button"
@@ -62,15 +71,6 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
               </Button>
             ) : (
               <span>Current market price is loading</span>
-            )}
-            {distance !== undefined && (
-              <span
-                className={`ml-auto whitespace-nowrap font-semibold tabular-nums ${distance < -0.005 ? "text-destructive" : "text-foreground"}`}
-              >
-                {Math.abs(distance) < 0.005
-                  ? "At market"
-                  : `${Math.abs(distance).toFixed(2)}% ${distance >= 0 ? "below" : "above"} market`}
-              </span>
             )}
           </div>
         )}
