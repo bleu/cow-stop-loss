@@ -25,7 +25,7 @@ export function Checkbox({
   const value = useWatch({ control, name });
 
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1.5">
       <CheckboxPrimitive
         checked={value}
         onClick={() => setValue(name, !value)}
@@ -33,7 +33,7 @@ export function Checkbox({
         id={id}
       />
       {label && (
-        <label htmlFor={id} className="font-semibold text-sm">
+        <label htmlFor={id} className="text-[13px] font-medium">
           {label}
         </label>
       )}

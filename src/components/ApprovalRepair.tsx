@@ -184,25 +184,37 @@ export function ApprovalRepair({
     `${formatUnits(value, prepared?.draft.tokenSell.decimals ?? order.sellToken.decimals!)} ${prepared?.draft.tokenSell.symbol ?? order.sellToken.symbol}`;
   return (
     <>
-      <Button
-        variant="outline"
-        onClick={() => {
-          setMode("limited");
-          setOpen(true);
-        }}
-      >
-        Update approval
-      </Button>
+      <div className="mb-5 flex justify-end">
+        <Button
+          variant="outline"
+          className="h-11 rounded-xl border-primary/30 bg-primary/10 px-5 text-primary shadow-sm hover:bg-primary/20 hover:text-primary"
+          onClick={() => {
+            setMode("limited");
+            setOpen(true);
+          }}
+        >
+          Update approval
+        </Button>
+      </div>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
-          <DialogTitle>Update approval</DialogTitle>
-          <p>
+        <DialogContent className="max-h-[85vh] w-[calc(100vw-2rem)] max-w-xl overflow-y-auto rounded-[28px] border border-border/70 bg-card p-5 text-foreground shadow-2xl sm:p-7">
+          <DialogTitle className="text-2xl font-semibold tracking-tight">
+            Update approval
+          </DialogTitle>
+          <p className="text-sm leading-relaxed text-muted-foreground">
             These permissions are shared by stop-loss orders. Unlimited approval
             does not reserve funds.
           </p>
-          {review.isFetching && <p role="status">Loading approval state...</p>}
+          {review.isFetching && (
+            <p role="status" className="text-sm text-muted-foreground">
+              Loading approval state...
+            </p>
+          )}
           {(checks?.status === "unknown" || review.error) && (
-            <p role="alert">
+            <p
+              role="alert"
+              className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive"
+            >
               {checks?.status === "unknown"
                 ? checks.error
                 : review.error?.message}
@@ -211,14 +223,22 @@ export function ApprovalRepair({
           {prepared && checks?.status === "known" && (
             <>
               {checks.approvalRequired && (
-                <section aria-label="Wallet approval">
-                  <h3>Wallet-to-Poller approval</h3>
-                  <p>Token: {prepared.draft.tokenSell.address}</p>
-                  <p>Spender: {prepared.poller}</p>
-                  <p>Current allowance: {units(checks.currentAllowance)}</p>
-                  <p>Required total: {units(checks.requiredAllowance)}</p>
-                  <fieldset aria-label="Approval amount">
-                    <label>
+                <section
+                  aria-label="Wallet approval"
+                  className="space-y-3 rounded-2xl border border-border/70 bg-background/45 p-4"
+                >
+                  <h3 className="font-semibold">Wallet-to-Poller approval</h3>
+                  <div className="space-y-1 break-all text-sm text-muted-foreground">
+                    <p>Token: {prepared.draft.tokenSell.address}</p>
+                    <p>Spender: {prepared.poller}</p>
+                    <p>Current allowance: {units(checks.currentAllowance)}</p>
+                    <p>Required total: {units(checks.requiredAllowance)}</p>
+                  </div>
+                  <fieldset
+                    aria-label="Approval amount"
+                    className="flex flex-wrap gap-4 rounded-xl border border-border/70 bg-card/70 p-3 text-sm"
+                  >
+                    <label className="inline-flex items-center gap-2">
                       <input
                         type="radio"
                         name="repair-approval-mode"
@@ -227,7 +247,7 @@ export function ApprovalRepair({
                       />
                       Limited
                     </label>
-                    <label>
+                    <label className="inline-flex items-center gap-2">
                       <input
                         type="radio"
                         name="repair-approval-mode"
@@ -237,14 +257,14 @@ export function ApprovalRepair({
                       Unlimited
                     </label>
                   </fieldset>
-                  <p>
+                  <p className="text-sm">
                     Target:{" "}
                     {mode === "limited"
                       ? units(checks.requiredAllowance)
                       : "Unlimited (max uint256)"}
                   </p>
                   {checks.combinedCommitmentsExceedBalance && (
-                    <p>
+                    <p className="text-sm text-warning">
                       The required total exceeds your wallet balance. Approval
                       does not reserve funds.
                     </p>
@@ -270,16 +290,22 @@ export function ApprovalRepair({
             </>
           )}
           {(error || trackingError || (!reconciled && record?.error)) && (
-            <p role="alert">{error ?? trackingError ?? record?.error}</p>
+            <p
+              role="alert"
+              className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive"
+            >
+              {error ?? trackingError ?? record?.error}
+            </p>
           )}
           {pending && (
-            <p role="status">
+            <p role="status" className="rounded-xl bg-primary/10 p-3 text-sm">
               Approval transaction pending. You can close this review. No new
               transaction will be sent.
             </p>
           )}
           {checks?.status === "known" && (
             <Button
+              className="h-11 rounded-xl"
               onClick={() => void submit()}
               disabled={
                 busy ||
@@ -304,6 +330,8 @@ export function ApprovalRepair({
             record?.status === "rejected") && (
             <Button
               onClick={() => void retry()}
+              variant="outline"
+              className="h-11 rounded-xl"
               disabled={busy || review.isFetching}
             >
               Retry

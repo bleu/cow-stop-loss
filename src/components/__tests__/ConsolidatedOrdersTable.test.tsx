@@ -321,10 +321,54 @@ test("reviews cancellation of a confirmed local order before API indexing", asyn
   ).not.toBeInTheDocument();
   fireEvent.click(await screen.findByRole("button", { name: /^Cancel order/ }));
   const dialog = await screen.findByRole("dialog");
-  expect(within(dialog).getByText("1 WETH for 1980 USDC")).toBeInTheDocument();
+  expect(within(dialog).getByText("Remaining sell")).toBeInTheDocument();
+  expect(within(dialog).getByText("1 WETH")).toBeInTheDocument();
+  expect(within(dialog).getByText("Minimum buy")).toBeInTheDocument();
+  expect(within(dialog).getByText("1980 USDC")).toBeInTheDocument();
   expect(
     within(dialog).getByRole("button", { name: "Confirm cancellation" }),
   ).toBeInTheDocument();
+});
+
+test("opens cancellation from an order row without navigating to its details", async () => {
+  jest
+    .spyOn(publicClientsFromIds[1], "getBlockNumber")
+    .mockResolvedValue(BigInt(100));
+  jest
+    .spyOn(publicClientsFromIds[1], "readContract")
+    .mockImplementation(async ({ functionName }) => {
+      if (
+        functionName === "COW_SHED_FACTORY" ||
+        functionName === "trustedExecutor"
+      )
+        return "0x3333333333333333333333333333333333333333";
+      if (functionName === "proxyOf") return owner;
+      if (functionName === "singleOrders") return true;
+      throw new Error(`Unexpected RPC read: ${functionName}`);
+    });
+  serveOrders([apiParent()]);
+  render(<TableView />);
+  await connectWallet();
+
+  const cancelButton = screen.getByRole("button", { name: /^Cancel order/ });
+  fireEvent.click(cancelButton);
+
+  expect(window.location.pathname).toBe("/");
+  expect(
+    await screen.findByRole("heading", { name: "Cancel this order?" }),
+  ).toBeVisible();
+  expect(
+    screen.queryByRole("heading", { name: "Order details" }),
+  ).not.toBeInTheDocument();
+  fireEvent.click(
+    within(await screen.findByRole("dialog")).getByRole("button", {
+      name: "Close",
+    }),
+  );
+  await waitFor(() =>
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+  );
+  expect(window.location.pathname).toBe("/");
 });
 
 test("keeps a cancelled local creation cancelled when its stale API row arrives", async () => {
@@ -377,7 +421,7 @@ test("keeps a cancelled local creation cancelled when its stale API row arrives"
   fireEvent.click(within(dialog).getAllByRole("button", { name: "Close" })[0]);
   indexed.push(apiParent(1, "indexed-local", local.paramsHash));
   fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
-  await screen.findByRole("link", {
+  await screen.findByRole("row", {
     name: "View order indexed-local on Ethereum",
   });
   expect(screen.getByRole("cell", { name: "Cancelled" })).toBeInTheDocument();
@@ -386,7 +430,7 @@ test("keeps a cancelled local creation cancelled when its stale API row arrives"
   block = BigInt(102);
   indexed[0] = apiParent(1, "recreated-local", local.paramsHash);
   fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
-  await screen.findByRole("link", {
+  await screen.findByRole("row", {
     name: "View order recreated-local on Ethereum",
   });
   expect(screen.getByRole("cell", { name: "Open" })).toBeInTheDocument();
@@ -406,7 +450,7 @@ test("fills the empty orders viewport without putting filters or pagination in i
     "min-h-0",
     "flex-1",
     "max-h-none",
-    "overflow-y-auto",
+    "overflow-auto",
     "[&>div]:overflow-visible",
     "[&>div]:h-full",
   );
@@ -422,14 +466,13 @@ test("fills the empty orders viewport without putting filters or pagination in i
   expect(panel.firstElementChild).toContainElement(
     screen.getByRole("button", { name: "Refresh orders" }),
   );
-  expect(panel.lastElementChild).toHaveClass("shrink-0");
-  expect(panel.lastElementChild).toContainElement(
-    screen.getByRole("button", { name: "Go to next page" }),
-  );
-  expect(viewport).not.toContainElement(
-    screen.getByRole("button", { name: "Chain" }),
-  );
-  expect(viewport).not.toContainElement(screen.getByText("Rows per page"));
+  expect(panel.lastElementChild).toBe(viewport);
+  expect(
+    screen.queryByRole("button", { name: "Go to next page" }),
+  ).not.toBeInTheDocument();
+  const chainFilter = screen.queryByRole("button", { name: "Chain" });
+  if (chainFilter) expect(viewport).not.toContainElement(chainFilter);
+  expect(screen.queryByText("Rows per page")).not.toBeInTheDocument();
 });
 
 test("keeps the expanding table shell while the connected account's first orders are loading", async () => {
@@ -501,10 +544,10 @@ test("keeps an expanding unavailable viewport and retries into the same table wi
   unavailable.delete(1);
   fireEvent.click(screen.getByRole("button", { name: "Retry Ethereum" }));
   expect(
-    await screen.findByRole("link", {
+    await screen.findByRole("row", {
       name: "View order indexed-order on Ethereum",
     }),
-  ).toHaveAttribute("href", `/1/${account}/indexed-order`);
+  ).toBeVisible();
   expect(screen.getByRole("table")).toBe(table);
   expect(screen.getAllByRole("alert")).toHaveLength(3);
   expect(
@@ -559,11 +602,13 @@ test("keeps indexed API orders visible with a tracking error when saved placemen
     "Placement tracking is unavailable. Unsupported placement storage version",
   );
   expect(
-    await screen.findByRole("link", {
+    await screen.findByRole("row", {
       name: "View order indexed-order on Ethereum",
     }),
-  ).toHaveAttribute("href", `/1/${account}/indexed-order`);
-  expect(screen.getAllByRole("link", { name: /^View order/ })).toHaveLength(1);
+  ).toBeVisible();
+  expect(
+    screen.queryByRole("columnheader", { name: "Details" }),
+  ).not.toBeInTheDocument();
 });
 
 test("shortens API and local amounts without rounding up and retains the full amounts on hover", async () => {
@@ -580,15 +625,25 @@ test("shortens API and local amounts without rounding up and retains the full am
   await connectWallet();
 
   const apiAmount = await screen.findByRole("cell", {
-    name: "~1.2345 WETH for ~4000.1234 USDC",
+    name: "1.2345 WETH for 4000.1234 USDC",
   });
+  expect(screen.getByRole("columnheader", { name: "Trigger" })).toBeVisible();
+  expect(
+    screen.queryByRole("columnheader", { name: "From market" }),
+  ).not.toBeInTheDocument();
+  expect(screen.getByRole("columnheader", { name: "Expires" })).toBeVisible();
+  const apiRow = apiAmount.closest("tr")!;
+  expect(within(apiRow).getByText("2,100 USDC")).toBeVisible();
+  expect(
+    within(apiRow).getByText(/(At market|% (below|above) market)/),
+  ).toBeVisible();
   expect(
     within(apiAmount).getByTitle(
       "1.234567890123456789 WETH for 4000.123456 USDC",
     ),
   ).toBeInTheDocument();
   const localAmount = screen.getByRole("cell", {
-    name: "~2.1001 WETH for ~4158.2444 USDC",
+    name: "2.1001 WETH for 4158.2444 USDC",
   });
   expect(
     within(localAmount).getByTitle(
@@ -620,7 +675,7 @@ test("distinguishes tiny positive amounts from zero and preserves exact integer 
     {
       sellAmount: "9007199254740993123400000000000000",
       buyAmount: "2100000001",
-      display: "9007199254740993.1234 WETH for ~2100 USDC",
+      display: "9007199254740993.1234 WETH for 2100 USDC",
       full: "9007199254740993.1234 WETH for 2100.000001 USDC",
     },
     {
@@ -766,7 +821,7 @@ test("refreshes every fifteen seconds until a canonical API replacement is shown
     await jest.advanceTimersByTimeAsync(1000);
   });
   expect(
-    await screen.findByRole("link", {
+    await screen.findByRole("row", {
       name: "View order indexed-replacement on Gnosis",
     }),
   ).toBeInTheDocument();
@@ -784,7 +839,7 @@ test("refreshes every fifteen seconds until a canonical API replacement is shown
   ).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
   expect(
-    await screen.findByRole("link", {
+    await screen.findByRole("row", {
       name: "View order later-order on Ethereum",
     }),
   ).toBeInTheDocument();
@@ -873,7 +928,7 @@ test("filters pending local placements separately from Open API orders", async (
   render(<TableView />);
   await connectWallet();
   await screen.findByRole("cell", { name: "1 WETH for 1980 USDC" });
-  await screen.findByRole("link", {
+  await screen.findByRole("row", {
     name: "View order indexed-order on Ethereum",
   });
   fireEvent.click(screen.getByRole("button", { name: "Status" }));
@@ -897,7 +952,7 @@ test("keeps last-good failed-chain orders beside a local Open row and clears its
   serveOrders(orders, unavailable);
   render(<TableView />);
   await connectWallet();
-  await screen.findByRole("link", {
+  await screen.findByRole("row", {
     name: "View order indexed-order on Ethereum",
   });
   unavailable.add(1);
@@ -911,7 +966,7 @@ test("keeps last-good failed-chain orders beside a local Open row and clears its
     ),
   ).toBeInTheDocument();
   expect(
-    screen.getByRole("link", { name: "View order indexed-order on Ethereum" }),
+    screen.getByRole("row", { name: "View order indexed-order on Ethereum" }),
   ).toBeInTheDocument();
   const row = screen
     .getByRole("cell", { name: "1 WETH for 1980 USDC" })
@@ -925,7 +980,7 @@ test("keeps last-good failed-chain orders beside a local Open row and clears its
   orders.push(apiParent(100, "late-indexed-order", `0x${"bb".repeat(32)}`));
   fireEvent.click(screen.getByRole("button", { name: "Retry Gnosis" }));
   expect(
-    await screen.findByRole("link", {
+    await screen.findByRole("row", {
       name: "View order late-indexed-order on Gnosis",
     }),
   ).toBeInTheDocument();
@@ -933,9 +988,11 @@ test("keeps last-good failed-chain orders beside a local Open row and clears its
     screen.queryByText("API error: confirmed order not found."),
   ).not.toBeInTheDocument();
   expect(
-    screen.getByRole("link", { name: "View order indexed-order on Ethereum" }),
+    screen.getByRole("row", { name: "View order indexed-order on Ethereum" }),
   ).toBeInTheDocument();
-  expect(screen.getAllByRole("link", { name: /^View order/ })).toHaveLength(2);
+  expect(
+    screen.queryByRole("columnheader", { name: "Details" }),
+  ).not.toBeInTheDocument();
 });
 
 test("clears local rows on account changes and ignores the old account's late API results", async () => {
@@ -1015,6 +1072,6 @@ test("shows confirmed local Open rows on all supported chains without detail lin
     expect(within(row).queryByRole("link")).not.toBeInTheDocument();
   }
   expect(
-    screen.getByRole("link", { name: "View order indexed-order on Ethereum" }),
+    screen.getByRole("row", { name: "View order indexed-order on Ethereum" }),
   ).toBeInTheDocument();
 });

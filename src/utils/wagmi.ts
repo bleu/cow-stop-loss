@@ -3,7 +3,7 @@ import {
   injectedWallet,
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
-import { createConfig } from "wagmi";
+import { cookieStorage, createConfig, createStorage } from "wagmi";
 import { arbitrum, gnosis, mainnet, sepolia } from "wagmi/chains";
 
 import { createRpcTransport } from "#/lib/publicClients";
@@ -57,6 +57,7 @@ export function createWagmiConfig() {
 
   return createConfig({
     ssr: true,
+    storage: createStorage({ storage: cookieStorage }),
     chains: [
       mainnet,
       { ...sepolia, name: "Sepolia (testnet)" },

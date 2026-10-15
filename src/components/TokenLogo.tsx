@@ -6,6 +6,7 @@ import { Address, getAddress } from "viem";
 import { arbitrum, gnosis, mainnet, sepolia } from "viem/chains";
 
 import { ChainId } from "#/lib/publicClients";
+import { getSupportedTokens } from "#/lib/supportedTokens";
 
 type ImageAttributes = React.DetailedHTMLProps<
   React.ImgHTMLAttributes<HTMLImageElement>,
@@ -36,6 +37,20 @@ export function trustTokenLogoUrl(address?: string, chainId?: ChainId): string {
 }
 
 const FALLBACK_SRC = "/assets/generic-token-logo.png";
+
+function supportedTokenAsset(tokenAddress?: string, chainId?: ChainId) {
+  if (!tokenAddress || !chainId) return FALLBACK_SRC;
+  const { sellTokens, buyToken } = getSupportedTokens(chainId);
+  const token = [...sellTokens.map(({ token }) => token), buyToken.token].find(
+    ({ address }) => address.toLowerCase() === tokenAddress.toLowerCase(),
+  );
+  if (!token) return FALLBACK_SRC;
+  if (token.symbol === "WETH") return "/assets/tokens/weth.svg";
+  if (token.symbol === "WBTC") return "/assets/tokens/wbtc.svg";
+  if (token.symbol.startsWith("USDC")) return "/assets/tokens/usdc.svg";
+  return FALLBACK_SRC;
+}
+
 export const TokenLogo = ({
   tokenAddress,
   chainId,
@@ -45,7 +60,8 @@ export const TokenLogo = ({
   className,
   quality,
 }: ImageFallbackProps) => {
-  const imagesSrc = [
+  const localAsset = supportedTokenAsset(tokenAddress, chainId);
+  const remoteAssets = [
     cowprotocolTokenLogoUrl(tokenAddress?.toLowerCase(), chainId),
     cowprotocolTokenLogoUrl(getAddress(tokenAddress as Address), chainId),
     cowprotocolTokenLogoUrl(tokenAddress?.toLowerCase(), 1),
@@ -55,8 +71,11 @@ export const TokenLogo = ({
     trustTokenLogoUrl(getAddress(tokenAddress as Address), chainId),
     trustTokenLogoUrl(tokenAddress?.toLowerCase(), 1),
     trustTokenLogoUrl(getAddress(tokenAddress as Address), 1),
-    FALLBACK_SRC,
   ];
+  const imagesSrc =
+    localAsset === FALLBACK_SRC
+      ? [...remoteAssets, FALLBACK_SRC]
+      : [localAsset];
   const [index, setIndex] = useState(0);
 
   return (

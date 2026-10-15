@@ -11,23 +11,25 @@ import { BlockExplorerLink } from "./ExplorerLink";
 
 export function TokenInfo({
   token,
+  chainId: tokenChainId,
   showBalance = false,
   showExplorerLink = true,
 }: {
   token: IToken | ITokenWithValue;
+  chainId?: ChainId;
   showBalance?: boolean;
   showExplorerLink?: boolean;
 }) {
   const { chainId: accountChainId } = useAccount();
-  const chainId = (accountChainId ?? 1) as ChainId;
+  const chainId = tokenChainId ?? ((accountChainId ?? 1) as ChainId);
   return (
-    <div className="flex items-center gap-x-1">
+    <div className="flex min-w-0 items-center gap-x-1.5">
       <div className="flex shrink-0 items-center justify-center">
         <div className="rounded-full">
           <TokenLogo
             tokenAddress={token.address}
-            chainId={chainId as ChainId}
-            className="rounded-full"
+            chainId={chainId}
+            className="rounded-full ring-1 ring-white/10"
             alt="Token Logo"
             height={22}
             width={22}
@@ -35,14 +37,14 @@ export function TokenInfo({
           />
         </div>
       </div>
-      <div className="flex items-center space-x-1">
-        <span>{token.symbol}</span>
+      <div className="flex min-w-0 items-center space-x-1">
+        <span className="truncate font-medium">{token.symbol}</span>
         {showExplorerLink && (
           <BlockExplorerLink
             type="token"
             label={<ArrowTopRightIcon />}
             identifier={token.address}
-            networkId={chainId as ChainId}
+            networkId={chainId}
           />
         )}
       </div>

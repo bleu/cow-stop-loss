@@ -1,23 +1,195 @@
 "use client";
 
-import { ArrowLeftIcon } from "@radix-ui/react-icons";
+import { formatNumber } from "@bleu/ui";
+import {
+  ArrowLeftIcon,
+  ArrowTopRightIcon,
+  CheckCircledIcon,
+  CheckIcon,
+  ClockIcon,
+  CopyIcon,
+  CrossCircledIcon,
+  InfoCircledIcon,
+} from "@radix-ui/react-icons";
 import Link from "next/link";
-import React, { useId } from "react";
-import { formatUnits } from "viem";
+import React, { useId, useState } from "react";
+import useSWR from "swr";
+import { erc20Abi, formatUnits } from "viem";
 
+import { NetworkLogo } from "#/components/NetworkLogo";
+import { TokenLogo } from "#/components/TokenLogo";
 import { useOrderList } from "#/hooks/useOrderList";
-import { ChainId, chainNames } from "#/lib/publicClients";
-import { OrderToken } from "#/lib/stopLossOrders";
+import { oracleMinimalAbi } from "#/lib/abis/oracleMinimalAbi";
+import { GPV2_VAULT_RELAYER_ADDRESS } from "#/lib/contracts";
+import { ChainId, chainNames, publicClientsFromIds } from "#/lib/publicClients";
+import { OrderToken, StopLossOrder } from "#/lib/stopLossOrders";
+import { OrderStatus } from "#/lib/types";
 import {
   buildBlockExplorerTxUrl,
   buildOrderCowExplorerUrl,
   truncateAddress,
 } from "#/utils";
 
-import { ApprovalRepair } from "./ApprovalRepair";
 import { CancelOrderDialog } from "./CancelOrderDialog";
 import { BlockExplorerLink } from "./ExplorerLink";
-import { StatusBadge } from "./StatusBadge";
+import { OracleTokenPrice } from "./OracleTokenPrice";
+
+type OrderHealthInput = {
+  chainId: ChainId;
+  sellAmount: bigint;
+  executedSellAmount: bigint | null;
+  owner: `0x${string}`;
+  sellToken: OrderToken;
+  sellTokenPriceOracle: `0x${string}`;
+  buyTokenPriceOracle: `0x${string}`;
+  maxTimeSinceLastOracleUpdate: number;
+  strike: bigint;
+};
+
+async function loadOrderHealth(order: OrderHealthInput) {
+  const client = publicClientsFromIds[order.chainId];
+  const remainingSell =
+    order.sellAmount > (order.executedSellAmount ?? BigInt(0))
+      ? order.sellAmount - (order.executedSellAmount ?? BigInt(0))
+      : BigInt(0);
+  const [
+    balance,
+    allowance,
+    sellRoundResult,
+    buyRoundResult,
+    sellDecimalsResult,
+    buyDecimalsResult,
+  ] = await Promise.all([
+    client.readContract({
+      address: order.sellToken.address,
+      abi: erc20Abi,
+      functionName: "balanceOf",
+      args: [order.owner],
+    }),
+    client.readContract({
+      address: order.sellToken.address,
+      abi: erc20Abi,
+      functionName: "allowance",
+      args: [order.owner, GPV2_VAULT_RELAYER_ADDRESS],
+    }),
+    client.readContract({
+      address: order.sellTokenPriceOracle,
+      abi: oracleMinimalAbi,
+      functionName: "latestRoundData",
+    }),
+    client.readContract({
+      address: order.buyTokenPriceOracle,
+      abi: oracleMinimalAbi,
+      functionName: "latestRoundData",
+    }),
+    client.readContract({
+      address: order.sellTokenPriceOracle,
+      abi: oracleMinimalAbi,
+      functionName: "decimals",
+    }),
+    client.readContract({
+      address: order.buyTokenPriceOracle,
+      abi: oracleMinimalAbi,
+      functionName: "decimals",
+    }),
+  ]);
+  const sellRound = sellRoundResult as readonly [
+    bigint,
+    bigint,
+    bigint,
+    bigint,
+    bigint,
+  ];
+  const buyRound = buyRoundResult as typeof sellRound;
+  const sellDecimals = sellDecimalsResult as number;
+  const buyDecimals = buyDecimalsResult as number;
+  const now = Math.floor(Date.now() / 1000);
+  const maxAge = order.maxTimeSinceLastOracleUpdate;
+  const sellUpdatedAt = Number(sellRound[3]);
+  const buyUpdatedAt = Number(buyRound[3]);
+  const validOracleData =
+    sellRound[1] > BigInt(0) &&
+    buyRound[1] > BigInt(0) &&
+    sellUpdatedAt > 0 &&
+    buyUpdatedAt > 0 &&
+    sellUpdatedAt <= now &&
+    buyUpdatedAt <= now;
+  const fresh =
+    validOracleData &&
+    now - sellUpdatedAt <= maxAge &&
+    now - buyUpdatedAt <= maxAge;
+  const sellPrice = Number(formatUnits(sellRound[1], sellDecimals));
+  const buyPrice = Number(formatUnits(buyRound[1], buyDecimals));
+  const currentPrice = buyPrice > 0 ? sellPrice / buyPrice : Number.NaN;
+  return {
+    insufficientBalance: balance < remainingSell,
+    insufficientApproval: allowance < remainingSell,
+    belowTrigger:
+      fresh &&
+      Number.isFinite(currentPrice) &&
+      currentPrice < Number(formatUnits(order.strike, 18)),
+    currentPrice,
+  };
+}
+
+function OrderHealth({ order }: { order: StopLossOrder }) {
+  const { data } = useSWR(
+    [
+      OrderStatus.OPEN,
+      OrderStatus.PARTIALLY_FILLED,
+      OrderStatus.CANCELLING,
+      OrderStatus.PARTIALLY_FILLED_AND_CANCELLING,
+    ].includes(order.status)
+      ? [
+          "orderHealth",
+          order.chainId,
+          order.owner,
+          order.hash,
+          order.executedSellAmount?.toString(),
+        ]
+      : null,
+    () => loadOrderHealth(order),
+    { refreshInterval: 30_000, revalidateOnFocus: false },
+  );
+  if (!data) return null;
+
+  const messages = [
+    data.insufficientBalance &&
+      "The Safe does not have enough sell tokens to fill this order.",
+    data.insufficientApproval &&
+      "The sell token allowance is too low. Approve the token for this order.",
+  ].filter((message): message is string => Boolean(message));
+  if (!messages.length) return null;
+
+  return (
+    <aside
+      role="alert"
+      className="mb-5 rounded-2xl border border-destructive/35 bg-destructive/8 p-4 text-sm"
+    >
+      <p className="font-semibold text-destructive">Order needs attention</p>
+      <ul className="mt-1 list-disc space-y-1 pl-5 text-muted-foreground">
+        {messages.map((message) => (
+          <li key={message}>{message}</li>
+        ))}
+        {data.belowTrigger && (
+          <li>
+            The oracle price is {formatNumber(data.currentPrice, 4)}{" "}
+            {order.buyToken.symbol} per {order.sellToken.symbol}, below the
+            trigger, but the order is still open. Please open a{" "}
+            <Link
+              href="https://github.com/bleu/cow-stop-loss/issues/new"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="text-primary underline underline-offset-4"
+            >
+              GitHub ticket.
+            </Link>
+          </li>
+        )}
+      </ul>
+    </aside>
+  );
+}
 
 function Field({
   label,
@@ -25,14 +197,110 @@ function Field({
 }: React.PropsWithChildren<{ label: string }>) {
   const id = useId();
   return (
-    <div className="grid gap-2 border-b py-3 sm:grid-cols-2">
-      <dt id={id} className="font-medium">
+    <div className="min-w-0 border-b border-border/50 pb-3 last:border-0 last:pb-0">
+      <dt
+        id={id}
+        className="text-xs font-medium uppercase tracking-widest text-muted-foreground"
+      >
         {label}
       </dt>
-      <dd aria-labelledby={id} className="break-all">
+      <dd
+        aria-labelledby={id}
+        className="mt-1.5 break-words text-[15px] font-medium leading-relaxed text-foreground sm:text-base"
+      >
         {children}
       </dd>
     </div>
+  );
+}
+
+function DetailSection({
+  title,
+  children,
+  description,
+}: React.PropsWithChildren<{ title: string; description: string }>) {
+  return (
+    <section className="rounded-2xl border border-border/70 bg-card/45 p-4 sm:p-5">
+      <header className="mb-4 border-b border-border/60 pb-3">
+        <h2 className="text-base font-semibold tracking-tight sm:text-lg">
+          {title}
+        </h2>
+        <p className="mt-1 text-[13px] text-muted-foreground">{description}</p>
+      </header>
+      <dl className="grid gap-x-6 gap-y-3 sm:grid-cols-2">{children}</dl>
+    </section>
+  );
+}
+
+function TokenAmount({
+  label,
+  value,
+  token,
+  chainId,
+}: {
+  label: string;
+  value: bigint;
+  token: OrderToken;
+  chainId: ChainId;
+}) {
+  return (
+    <dl className="min-w-0 rounded-2xl border border-border/70 bg-background/50 p-4 sm:p-5">
+      <dt className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
+        {label}
+      </dt>
+      <dd aria-label={label} className="mt-3 flex min-w-0 flex-col gap-2">
+        <div className="flex min-w-0 items-center gap-3">
+          <TokenLogo
+            tokenAddress={token.address}
+            chainId={chainId}
+            alt=""
+            aria-hidden="true"
+            className="size-9 shrink-0 rounded-full ring-1 ring-white/10"
+            height={36}
+            width={36}
+          />
+          <p className="min-w-0 break-words text-xl font-medium leading-tight tracking-tight tabular-nums sm:text-2xl">
+            {token.decimals === null
+              ? `${value} base units`
+              : formatUnits(value, token.decimals)}{" "}
+            <span className="text-base text-muted-foreground">
+              {token.symbol}
+            </span>
+          </p>
+        </div>
+        <BlockExplorerLink
+          type="token"
+          identifier={token.address}
+          networkId={chainId}
+          showExternalIcon
+          label={truncateAddress(token.address) ?? undefined}
+          className="text-xs"
+        />
+      </dd>
+    </dl>
+  );
+}
+
+function OrderDetailsHeading({ children }: React.PropsWithChildren) {
+  return (
+    <header className="mb-6 flex items-center justify-between gap-4">
+      <div className="relative pl-14">
+        <Link
+          href="/"
+          aria-label="Back to orders"
+          className="absolute left-0 top-1 inline-flex size-11 shrink-0 items-center justify-center rounded-2xl border border-border/70 bg-card/80 text-muted-foreground shadow-sm transition-colors hover:border-primary/40 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <ArrowLeftIcon className="size-5" aria-hidden="true" />
+        </Link>
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
+          CoW Stop Loss
+        </p>
+        <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">
+          Order details
+        </h1>
+      </div>
+      {children && <div className="shrink-0">{children}</div>}
+    </header>
   );
 }
 
@@ -47,18 +315,179 @@ function date(timestamp: number) {
     .replace(".000Z", " UTC");
 }
 
-function OrderDetailsHeading() {
+function formatDuration(seconds: number) {
+  if (seconds === 0) return "0 seconds";
+  if (seconds % 3600 === 0) {
+    const hours = seconds / 3600;
+    return `${hours} ${hours === 1 ? "hour" : "hours"}`;
+  }
+  if (seconds % 60 === 0) {
+    const minutes = seconds / 60;
+    return `${minutes} ${minutes === 1 ? "minute" : "minutes"}`;
+  }
+  return `${seconds} seconds`;
+}
+
+function getOrderStatusMessage(status: OrderStatus | string) {
+  switch (status) {
+    case OrderStatus.OPEN:
+      return {
+        title: "Waiting for a fill",
+        detail:
+          "The order remains active until it fills, is cancelled, or expires.",
+        tone: "info",
+      };
+    case OrderStatus.FULFILLED:
+      return {
+        title: "Fully executed",
+        detail: "The full sell amount was executed.",
+        tone: "success",
+      };
+    case OrderStatus.PARTIALLY_FILLED:
+      return {
+        title: "Partially executed",
+        detail:
+          "Some tokens were sold. The remaining amount can still execute.",
+        tone: "info",
+      };
+    case OrderStatus.CANCELLED:
+      return {
+        title: "Cancelled",
+        detail: "This order can no longer execute.",
+        tone: "muted",
+      };
+    case OrderStatus.EXPIRED:
+      return {
+        title: "Expired",
+        detail: "No fill was recorded before the order expired.",
+        tone: "muted",
+      };
+    case OrderStatus.PARTIALLY_FILLED_AND_CANCELLED:
+      return {
+        title: "Partially filled, then cancelled",
+        detail: "Some tokens were sold. The remaining amount will not execute.",
+        tone: "muted",
+      };
+    case OrderStatus.PARTIALLY_FILLED_AND_EXPIRED:
+      return {
+        title: "Partially filled, then expired",
+        detail: "Some tokens were sold. The remaining amount expired.",
+        tone: "muted",
+      };
+    case OrderStatus.CANCELLING:
+      return {
+        title: "Cancellation in progress",
+        detail: "The order may still execute until cancellation is confirmed.",
+        tone: "warning",
+      };
+    case OrderStatus.PARTIALLY_FILLED_AND_CANCELLING:
+      return {
+        title: "Partial fill; cancellation in progress",
+        detail:
+          "Some tokens were sold. The remaining amount may still execute until cancellation is confirmed.",
+        tone: "warning",
+      };
+    case OrderStatus.CREATING:
+    case OrderStatus.ON_QUEUE:
+    case OrderStatus.DRAFT:
+      return {
+        title: "Placement in progress",
+        detail: "The order is not active yet.",
+        tone: "info",
+      };
+    default:
+      return {
+        title: "Order status",
+        detail: `Current status: ${status}.`,
+        tone: "muted",
+      };
+  }
+}
+
+function OrderStatusSummary({
+  status,
+  children,
+}: React.PropsWithChildren<{ status: OrderStatus | string }>) {
+  const message = getOrderStatusMessage(status);
+  const Icon =
+    message.tone === "success"
+      ? CheckCircledIcon
+      : message.tone === "warning"
+        ? ClockIcon
+        : message.tone === "muted"
+          ? CrossCircledIcon
+          : InfoCircledIcon;
+  const color =
+    message.tone === "success"
+      ? "text-success"
+      : message.tone === "warning"
+        ? "text-warning"
+        : message.tone === "muted"
+          ? "text-muted-foreground"
+          : "text-primary";
+
   return (
-    <header className="mb-4 flex items-center gap-3">
-      <Link
-        href="/"
-        aria-label="Back to orders"
-        className="rounded p-2 text-primary"
+    <aside className="mb-5 flex flex-wrap items-center gap-3 rounded-2xl border border-border/70 bg-card/60 p-4">
+      <div className="flex min-w-0 flex-1 items-start gap-3">
+        <Icon
+          aria-hidden="true"
+          className={`mt-0.5 size-5 shrink-0 ${color}`}
+        />
+        <div>
+          <p className="font-semibold">{message.title}</p>
+          <p className="mt-0.5 text-[13px] leading-5 text-muted-foreground">
+            {message.detail}
+          </p>
+        </div>
+      </div>
+      {children && <div className="ml-auto shrink-0">{children}</div>}
+    </aside>
+  );
+}
+
+function shortIdentifier(value: string) {
+  if (value.length <= 26) return value;
+  return `${value.slice(0, 12)}…${value.slice(-8)}`;
+}
+
+function CopyableIdentifier({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+  const [copied, setCopied] = useState(false);
+
+  async function copyValue() {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1500);
+    } catch {
+      setCopied(false);
+    }
+  }
+
+  return (
+    <span className="inline-flex items-center gap-2">
+      <code title={value} className="font-mono text-xs text-muted-foreground">
+        {shortIdentifier(value)}
+      </code>
+      <button
+        type="button"
+        aria-label={copied ? `${label} copied` : `Copy ${label}`}
+        title={copied ? "Copied" : `Copy ${label}`}
+        onClick={() => void copyValue()}
+        className="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
-        <ArrowLeftIcon className="size-5" aria-hidden="true" />
-      </Link>
-      <h1 className="text-2xl font-semibold">Order details</h1>
-    </header>
+        {copied ? (
+          <CheckIcon aria-hidden="true" className="size-4 text-emerald-400" />
+        ) : (
+          <CopyIcon aria-hidden="true" className="size-4" />
+        )}
+      </button>
+    </span>
   );
 }
 
@@ -74,18 +503,23 @@ export function OrderDetails({
   const order = chain?.orders.find((order) => order.parentId === orderId);
 
   const warning = chain?.status === "error" && (
-    <div role="alert" className="my-4 rounded border border-destructive p-3">
-      <p>{chainNames[chainId]} order data is unavailable.</p>
-      <p>{chain.error}</p>
+    <div
+      role="alert"
+      className="mb-5 rounded-2xl border border-destructive/40 bg-destructive/10 p-4 text-sm"
+    >
+      <p className="font-semibold">
+        {chainNames[chainId]} order data is unavailable.
+      </p>
+      <p className="mt-1 text-muted-foreground">{chain.error}</p>
       {order && (
-        <p>
+        <p className="mt-1 text-muted-foreground">
           Previously loaded {chainNames[chainId]} orders may be out of date.
         </p>
       )}
       <button
         disabled={isLoading}
         onClick={() => mutate()}
-        className="text-primary underline"
+        className="mt-3 rounded-lg text-primary underline underline-offset-4 disabled:opacity-50"
       >
         Retry {chainNames[chainId]}
       </button>
@@ -94,155 +528,254 @@ export function OrderDetails({
 
   if (!order)
     return (
-      <main className="mx-auto max-w-4xl px-4 py-10">
+      <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
         <OrderDetailsHeading />
         {warning || (
-          <p role="status">
+          <div
+            role="status"
+            className="rounded-[28px] border border-border/70 bg-card/85 p-6 text-muted-foreground shadow-xl sm:p-8"
+          >
             {isLoading
               ? "Loading order..."
               : `Order not found for the connected account on ${chainNames[chainId]}. Return to the orders table and refresh.`}
-          </p>
+          </div>
         )}
       </main>
     );
 
   const price = (value: string) =>
     `${value} ${order.buyToken.symbol} per ${order.sellToken.symbol}`;
+  const hasExecution =
+    order.executedSellAmount !== null ||
+    order.executedBuyAmount !== null ||
+    order.executedFee !== null ||
+    order.executionPrice !== undefined ||
+    order.cowOrder !== undefined;
   return (
-    <main className="mx-auto max-w-4xl px-4 py-10">
+    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
       <OrderDetailsHeading />
-      <CancelOrderDialog order={order} />
+      <OrderStatusSummary status={order.status}>
+        <CancelOrderDialog order={order} />
+      </OrderStatusSummary>
+      <OrderHealth order={order} />
       {warning}
-      <ApprovalRepair order={order} onRefresh={mutate} />
-      <dl>
-        <Field label="Chain">{chainNames[chainId]}</Field>
-        <Field label="Order ID">{order.parentId}</Field>
-        <Field label="Order hash">{order.hash}</Field>
-        <Field label="Owner">
-          <BlockExplorerLink
-            type="address"
-            identifier={order.owner}
-            networkId={chainId}
-            label={truncateAddress(order.owner) ?? undefined}
+
+      <section className="mb-5 overflow-hidden rounded-[32px] border border-primary/20 bg-gradient-to-br from-card via-card to-secondary/10 p-4 shadow-[0_24px_80px_-45px_rgba(0,0,0,0.9)] sm:p-7">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+              Order summary
+            </p>
+            <h2 className="mt-1 text-xl font-semibold tracking-tight sm:text-2xl">
+              {order.sellToken.symbol} for {order.buyToken.symbol}
+            </h2>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/50 px-3 py-1.5 text-xs font-medium text-muted-foreground">
+              <NetworkLogo
+                chainId={chainId}
+                size={18}
+                className="rounded-full"
+              />
+              {chainNames[chainId]}
+            </span>
+          </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2">
+          <TokenAmount
+            label="Sell amount"
+            value={order.sellAmount}
+            token={order.sellToken}
+            chainId={chainId}
           />
-        </Field>
-        <Field label="Status">
-          <StatusBadge status={order.status} />
-        </Field>
-        <Field label="Kind">{order.isSellOrder ? "Sell" : "Buy"}</Field>
-        <Field label="Partial fills">
-          {order.partiallyFillable ? "Allowed" : "Not allowed"}
-        </Field>
-        {order.createdAt !== undefined && (
-          <Field label="Created">{date(order.createdAt)}</Field>
-        )}
-        {order.transactionHash !== undefined && (
-          <Field label="Creation transaction">
-            <Link
-              href={
-                buildBlockExplorerTxUrl({
-                  chainId,
-                  txHash: order.transactionHash,
-                })!
-              }
-              target="_blank"
-              rel="noreferrer noopener"
+          <TokenAmount
+            label="Minimum buy amount"
+            value={order.buyAmount}
+            token={order.buyToken}
+            chainId={chainId}
+          />
+        </div>
+
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <dl className="rounded-2xl border border-primary/20 bg-primary/10 p-4">
+            <dt className="text-xs font-medium uppercase tracking-[0.12em] text-primary">
+              Trigger price
+            </dt>
+            <dd
+              aria-label="Trigger price"
+              className="mt-2 text-lg font-semibold tabular-nums sm:text-xl"
             >
-              View creation transaction
-            </Link>
-          </Field>
-        )}
-        <Field label="Valid until">{date(order.validTo)}</Field>
-        <Field label="Receiver">
-          <BlockExplorerLink
-            type="address"
-            identifier={order.receiver}
-            networkId={chainId}
-            label={truncateAddress(order.receiver) ?? undefined}
-          />
-        </Field>
-        <Field label="Sell token">
-          <BlockExplorerLink
-            type="token"
-            identifier={order.sellToken.address}
-            networkId={chainId}
-            label={truncateAddress(order.sellToken.address) ?? undefined}
-          />
-        </Field>
-        <Field label="Buy token">
-          <BlockExplorerLink
-            type="token"
-            identifier={order.buyToken.address}
-            networkId={chainId}
-            label={truncateAddress(order.buyToken.address) ?? undefined}
-          />
-        </Field>
-        <Field
-          label={order.isSellOrder ? "Sell amount" : "Maximum sell amount"}
+              {price(formatUnits(order.strike, 18))}
+            </dd>
+          </dl>
+          {order.limitPrice !== undefined && (
+            <dl className="rounded-2xl border border-secondary/25 bg-secondary/10 p-4">
+              <dt className="text-xs font-medium uppercase tracking-[0.12em] text-secondary">
+                Limit price
+              </dt>
+              <dd
+                aria-label="Limit price"
+                className="mt-2 text-lg font-semibold tabular-nums sm:text-xl"
+              >
+                {price(order.limitPrice)}
+              </dd>
+            </dl>
+          )}
+        </div>
+      </section>
+
+      <div className="space-y-4">
+        <DetailSection
+          title="Order information"
+          description="Addresses, tokens, and identifiers for this order."
         >
-          {amount(order.sellAmount, order.sellToken)}
-        </Field>
-        <Field label={order.isSellOrder ? "Minimum buy amount" : "Buy amount"}>
-          {amount(order.buyAmount, order.buyToken)}
-        </Field>
-        <Field label="Trigger price">
-          {price(formatUnits(order.strike, 18))}
-        </Field>
-        {order.limitPrice !== undefined && (
-          <Field label="Limit price">{price(order.limitPrice)}</Field>
-        )}
-        {order.executedSellAmount !== null && (
-          <Field label="Executed sell amount">
-            {amount(order.executedSellAmount, order.sellToken)}
+          <Field label="Owner">
+            <BlockExplorerLink
+              type="address"
+              identifier={order.owner}
+              networkId={chainId}
+              showExternalIcon
+              label={truncateAddress(order.owner) ?? undefined}
+            />
           </Field>
-        )}
-        {order.executedBuyAmount !== null && (
-          <Field label="Executed buy amount">
-            {amount(order.executedBuyAmount, order.buyToken)}
+          <Field label="Receiver">
+            <BlockExplorerLink
+              type="address"
+              identifier={order.receiver}
+              networkId={chainId}
+              showExternalIcon
+              label={truncateAddress(order.receiver) ?? undefined}
+            />
           </Field>
-        )}
-        {order.executedFee !== null && (
-          <Field label="Executed fee">
-            {order.executedFee.toString()} base units (fee token not supplied)
+          <Field label="Partial fills">
+            {order.partiallyFillable ? "Allowed" : "All or nothing"}
           </Field>
-        )}
-        {order.executionPrice !== undefined && (
-          <Field label="Execution price">{price(order.executionPrice)}</Field>
-        )}
-        <Field label="Maximum oracle age">
-          {order.maxTimeSinceLastOracleUpdate} seconds
-        </Field>
-        <Field label="Sell token oracle">
-          <BlockExplorerLink
-            type="address"
-            identifier={order.sellTokenPriceOracle}
-            networkId={chainId}
-            label={truncateAddress(order.sellTokenPriceOracle) ?? undefined}
-          />
-        </Field>
-        <Field label="Buy token oracle">
-          <BlockExplorerLink
-            type="address"
-            identifier={order.buyTokenPriceOracle}
-            networkId={chainId}
-            label={truncateAddress(order.buyTokenPriceOracle) ?? undefined}
-          />
-        </Field>
-        {order.cowOrder !== undefined && (
-          <Field label="CoW order">
-            <Link
-              href={buildOrderCowExplorerUrl({
-                chainId,
-                orderId: order.cowOrder.uid as `0x${string}`,
-              })}
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              View CoW order
-            </Link>
+          {order.createdAt !== undefined && (
+            <Field label="Created">{date(order.createdAt)}</Field>
+          )}
+          <Field label="Valid until">{date(order.validTo)}</Field>
+          {order.transactionHash !== undefined && (
+            <Field label="Creation transaction">
+              <Link
+                href={
+                  buildBlockExplorerTxUrl({
+                    chainId,
+                    txHash: order.transactionHash,
+                  })!
+                }
+                target="_blank"
+                rel="noreferrer noopener"
+                title={order.transactionHash}
+                className="group inline-flex items-center text-primary transition-colors hover:text-secondary"
+              >
+                <span className="font-mono text-sm">
+                  {truncateAddress(order.transactionHash)}
+                </span>
+                <ArrowTopRightIcon
+                  aria-hidden="true"
+                  className="ml-1 size-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                />
+              </Link>
+            </Field>
+          )}
+          <Field label="Order ID">
+            <CopyableIdentifier label="order ID" value={order.parentId} />
           </Field>
+          <Field label="Order hash">
+            <CopyableIdentifier label="order hash" value={order.hash} />
+          </Field>
+        </DetailSection>
+
+        {hasExecution && (
+          <DetailSection
+            title="Execution"
+            description="Amounts and prices filled for this order."
+          >
+            {order.executedSellAmount !== null && (
+              <Field label="Executed sell amount">
+                {amount(order.executedSellAmount, order.sellToken)}
+              </Field>
+            )}
+            {order.executedBuyAmount !== null && (
+              <Field label="Executed buy amount">
+                {amount(order.executedBuyAmount, order.buyToken)}
+              </Field>
+            )}
+            {order.executedFee !== null && (
+              <Field label="Executed fee">
+                {order.executedFee.toString()} base units (fee token not
+                supplied)
+              </Field>
+            )}
+            {order.executionPrice !== undefined && (
+              <Field label="Execution price">
+                {price(order.executionPrice)}
+              </Field>
+            )}
+            {order.cowOrder !== undefined && (
+              <Field label="CoW order">
+                <Link
+                  href={buildOrderCowExplorerUrl({
+                    chainId,
+                    orderId: order.cowOrder.uid as `0x${string}`,
+                  })}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="group inline-flex items-center text-primary transition-colors hover:text-secondary"
+                >
+                  View CoW order
+                  <ArrowTopRightIcon
+                    aria-hidden="true"
+                    className="ml-1 size-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                  />
+                </Link>
+              </Field>
+            )}
+          </DetailSection>
         )}
-      </dl>
+
+        <DetailSection
+          title="Oracle settings"
+          description="Price sources and freshness limits used to activate the order."
+        >
+          <Field label="Maximum oracle age">
+            {formatDuration(order.maxTimeSinceLastOracleUpdate)}
+          </Field>
+          <Field label="Sell token oracle">
+            <div>
+              <BlockExplorerLink
+                type="address"
+                identifier={order.sellTokenPriceOracle}
+                networkId={chainId}
+                showExternalIcon
+                label={truncateAddress(order.sellTokenPriceOracle) ?? undefined}
+              />
+              <OracleTokenPrice
+                chainId={chainId}
+                oracle={order.sellTokenPriceOracle}
+                tokenSymbol={order.sellToken.symbol}
+              />
+            </div>
+          </Field>
+          <Field label="Buy token oracle">
+            <div>
+              <BlockExplorerLink
+                type="address"
+                identifier={order.buyTokenPriceOracle}
+                networkId={chainId}
+                showExternalIcon
+                label={truncateAddress(order.buyTokenPriceOracle) ?? undefined}
+              />
+              <OracleTokenPrice
+                chainId={chainId}
+                oracle={order.buyTokenPriceOracle}
+                tokenSymbol={order.buyToken.symbol}
+              />
+            </div>
+          </Field>
+        </DetailSection>
+      </div>
     </main>
   );
 }

@@ -52,10 +52,11 @@ it("keeps the exact trigger text in a fixed USDC-per-WETH quote", async () => {
   await user.type(input, "2000.123456789012345678");
 
   expect(input).toHaveValue("2000.123456789012345678");
-  expect(screen.getByText("USDC per WETH")).toBeInTheDocument();
   expect(
-    screen.queryByRole("button", { name: /USDC|WETH/ }),
-  ).not.toBeInTheDocument();
+    await screen.findByRole("button", {
+      name: /Set trigger to current market price.*USDC per WETH/,
+    }),
+  ).toBeInTheDocument();
 });
 
 it("sets the trigger to the market quote without a reciprocal conversion", async () => {
@@ -77,7 +78,9 @@ it("sets the trigger to the market quote without a reciprocal conversion", async
   );
 
   await user.click(
-    await screen.findByRole("button", { name: "Set to market" }),
+    await screen.findByRole("button", {
+      name: /Set trigger to current market price/,
+    }),
   );
 
   expect(screen.getByRole("textbox", { name: "Trigger price" })).toHaveValue(
@@ -103,9 +106,32 @@ it("shows the market quote without a reciprocal-price control", async () => {
   );
 
   expect(await screen.findByText("1 WETH")).toBeInTheDocument();
-  expect(screen.getByText(/2,?000(?:\.0+)? USDC/)).toBeInTheDocument();
   expect(
-    screen.queryByRole("button", { expanded: false }),
-  ).not.toBeInTheDocument();
+    await screen.findByRole("button", {
+      name: /Set trigger to current market price.*USDC per WETH/,
+    }),
+  ).toBeInTheDocument();
   expect(screen.queryByText("1 USDC")).not.toBeInTheDocument();
+});
+
+it("places the market-distance hint above the input and aligned with the title", async () => {
+  const { sellTokens } = getSupportedTokens(1);
+  global.fetch = jest.fn().mockImplementation(async (input) => ({
+    json: async () => ({
+      price: String(input)
+        .toLowerCase()
+        .includes(sellTokens[0].token.address.toLowerCase())
+        ? 2000
+        : 1e12,
+    }),
+  }));
+  render(
+    <SWRConfig value={{ provider: () => new Map() }}>
+      <PriceForm />
+    </SWRConfig>,
+  );
+
+  const title = screen.getByText("Trigger price");
+  const hint = await screen.findByText("At market");
+  expect(title.parentElement?.parentElement).toContainElement(hint);
 });

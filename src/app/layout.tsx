@@ -1,11 +1,12 @@
-"use client";
 import "@rainbow-me/rainbowkit/styles.css";
 import "./globals.css";
 
-import { cn } from "@bleu/ui";
 import localFont from "next/font/local";
+import { cookies, headers } from "next/headers";
+import type { ReactNode } from "react";
 
 import { RootLayout } from "#/components/RootLayout";
+import { getWagmiInitialState } from "#/utils/wagmiServer";
 
 const flechaS = localFont({
   src: [
@@ -39,21 +40,23 @@ const circularStd = localFont({
   variable: "--font-family-sans",
 });
 
-export default function Layout({
+export default async function Layout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
+  const initialState = getWagmiInitialState((await headers()).get("cookie"));
+  const initialTheme =
+    (await cookies()).get("theme")?.value === "light" ? "light" : "dark";
+
   return (
-    <html lang="en">
+    <html lang="en" className={initialTheme === "light" ? "light" : undefined}>
       <body
-        className={cn(
-          flechaS.variable,
-          circularStd.variable,
-          "flex h-full flex-col font-sans font-normal text-white bg-background border-border",
-        )}
+        className={`${flechaS.variable} ${circularStd.variable} flex h-full flex-col border-border bg-background font-sans font-normal`}
       >
-        <RootLayout>{children}</RootLayout>
+        <RootLayout initialState={initialState} initialTheme={initialTheme}>
+          {children}
+        </RootLayout>
       </body>
     </html>
   );

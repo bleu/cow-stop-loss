@@ -29,20 +29,20 @@ export function TxPendingDialog() {
         />
         <DialogContent
           className={cn(
-            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-lg focus:outline-none bg-muted  w-[90vw] max-w-[450px] p-[25px]",
+            "data-[state=open]:animate-contentShow fixed left-1/2 top-1/2 max-h-[85vh] w-[calc(100vw-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-[28px] border border-border/70 bg-card p-5 text-foreground shadow-2xl focus:outline-none sm:p-7",
           )}
         >
-          <div className="flex flex-col gap-2 w-full">
-            <DialogTitle className="text-2xl font-medium ">
+          <div className="flex w-full flex-col gap-3">
+            <DialogTitle className="text-2xl font-semibold tracking-tight">
               Transaction being processed
             </DialogTitle>
-            <span className="text-wrap">
+            <span className="text-pretty text-sm leading-relaxed text-muted-foreground">
               Almost there! Your transaction is being processed. You can check
               the status of your transaction in the Safe App or track the order
               dashboard.
             </span>
             <Button
-              className="w-full mt-3"
+              className="mt-2 h-11 w-full rounded-xl"
               onClick={() => {
                 setTxPendingDialogOpen(false);
               }}

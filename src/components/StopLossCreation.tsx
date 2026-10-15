@@ -23,7 +23,7 @@ import { ChainId } from "#/lib/publicClients";
 import { PlacementNotSubmittedError } from "#/lib/stopLossPlacement";
 import { DraftOrder } from "#/lib/types";
 
-import { ReviewOrdersDialog } from "./ReviewOrdersDialog";
+import { ReviewOrderPanel } from "./ReviewOrderPanel";
 import { SwapCard } from "./swap-card/SwapCard";
 
 type Review = {
@@ -422,14 +422,8 @@ export function StopLossCreation() {
           </button>
         </div>
       )}
-      <SwapCard
-        reviewDisabled={Boolean(active)}
-        onReviewOrder={(order, selectedChain, account) => {
-          void loadReview(order, selectedChain, account);
-        }}
-      />
-      {review && (
-        <ReviewOrdersDialog
+      {review && open ? (
+        <ReviewOrderPanel
           chainId={review.chainId}
           order={review.order}
           open={open}
@@ -459,7 +453,17 @@ export function StopLossCreation() {
             void retry();
           }}
         />
-      )}
+      ) : null}
+      <div
+        className={review && open ? "hidden" : "flex min-w-0 flex-col"}
+      >
+        <SwapCard
+          reviewDisabled={Boolean(active)}
+          onReviewOrder={(order, selectedChain, account) => {
+            void loadReview(order, selectedChain, account);
+          }}
+        />
+      </div>
     </>
   );
 }
