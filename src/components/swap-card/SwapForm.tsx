@@ -32,7 +32,7 @@ export interface SwapFormProps {
     draft: DraftOrder,
     chainId: ChainId,
     account: Address,
-  ) => void;
+  ) => void | Promise<void>;
 }
 
 export function SwapForm(props: SwapFormProps) {
@@ -171,7 +171,7 @@ function WalletSwapForm({
           const newOrder = await createDraftOrder(data, chainId, walletAddress);
           if (requestId !== submissionId.current) return;
           setCurrentDraftOrder(newOrder);
-          onReviewOrder(newOrder, chainId, walletAddress);
+          await onReviewOrder(newOrder, chainId, walletAddress);
         } catch (error) {
           if (requestId !== submissionId.current) return;
           form.setError("root", {

@@ -3,6 +3,7 @@
  * @jest-environment-options {"customExportConditions": ["node", "node-addons"]}
  */
 
+import { toast } from "@bleu/ui";
 import {
   act,
   fireEvent,
@@ -22,6 +23,7 @@ import React from "react";
 import { deserialize, serialize } from "v8";
 import { disconnect } from "wagmi/actions";
 
+import OrderPage from "#/app/[chainId]/[safeAddress]/[orderId]/page";
 import { ConsolidatedOrdersTable } from "#/components/ConsolidatedOrdersTable";
 import { RootLayout } from "#/components/RootLayout";
 import { getStopLossPlacement } from "#/hooks/useStopLossPlacement";
@@ -261,6 +263,7 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
+  toast({}).dismiss();
   localStorage.clear();
   writer = createStopLossPlacement({ locks, now: () => new Date().getTime() });
   stopWriter = writer.subscribe(() =>
@@ -295,6 +298,58 @@ afterAll(() => {
   else Reflect.deleteProperty(navigator, "locks");
   global.structuredClone = originalClone;
 });
+
+test.each([
+  { indexed: false, encoded: false },
+  { indexed: true, encoded: false },
+  { indexed: false, encoded: true },
+  { indexed: true, encoded: true },
+])(
+  "opens the success notification identity with indexed order: $indexed, encoded: $encoded",
+  async ({ indexed, encoded }) => {
+    const order = prepared(1);
+    if (indexed)
+      serveOrders([apiParent(1, "canonical-order", order.paramsHash)]);
+    else await confirm(order);
+    jest
+      .spyOn(publicClientsFromIds[1], "getBlockNumber")
+      .mockResolvedValue(BigInt(100));
+    jest.spyOn(publicClientsFromIds[1], "getBlock").mockResolvedValue({
+      number: BigInt(100),
+      timestamp: BigInt(Math.floor(Date.now() / 1000)),
+    } as never);
+    jest
+      .spyOn(publicClientsFromIds[1], "readContract")
+      .mockImplementation(async ({ functionName }) => {
+        if (functionName === "decimals") return 8;
+        if (functionName === "latestRoundData")
+          return [
+            BigInt(1),
+            BigInt(100000000),
+            BigInt(1),
+            BigInt(Math.floor(Date.now() / 1000)),
+            BigInt(1),
+          ];
+        return BigInt(0);
+      });
+    render(
+      <RootLayout config={config}>
+        <OrderPage
+          params={{
+            chainId: "1",
+            safeAddress: account,
+            orderId: encoded
+              ? encodeURIComponent(`${order.owner}:${order.paramsHash}`)
+              : `${order.owner}:${order.paramsHash}`,
+          }}
+        />
+      </RootLayout>,
+    );
+    await connectWallet();
+    expect(await screen.findByText("Order information")).toBeInTheDocument();
+    expect(screen.queryByText(/Order not found/)).not.toBeInTheDocument();
+  },
+);
 
 test("reviews cancellation of a confirmed local order before API indexing", async () => {
   jest
@@ -417,8 +472,10 @@ test("keeps a cancelled local creation cancelled when its stale API row arrives"
   );
   active = false;
   block = BigInt(101);
-  await within(dialog).findByText("Order cancelled.", {}, { timeout: 4000 });
-  fireEvent.click(within(dialog).getAllByRole("button", { name: "Close" })[0]);
+  await waitFor(
+    () => expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    { timeout: 4000 },
+  );
   indexed.push(apiParent(1, "indexed-local", local.paramsHash));
   fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
   await screen.findByRole("row", {
@@ -738,40 +795,38 @@ test("shows a pending setup stage and its RPC error on the unindexed row", async
   expect(within(row).queryByRole("link")).not.toBeInTheDocument();
 });
 
-test("shows each approval stage and the setup wallet prompt without offering an API link", async () => {
+test("keeps approvals and the setup wallet prompt out of the table until setup is signed", async () => {
   const order = prepared();
   const placement = writer;
   const send = async () => ({ id: "approval-reference" });
   await placement.submit(order, "approval-reset", { send });
   render(<TableView />);
   await connectWallet();
-  expect(await screen.findByText("Approval reset pending")).toBeInTheDocument();
+  const expectNoOrder = () => {
+    expect(
+      screen.queryByRole("cell", { name: "1 WETH for 1980 USDC" }),
+    ).not.toBeInTheDocument();
+  };
+  expectNoOrder();
 
   await act(async () => {
     await placement.resume(order, {
       readTransaction: async () => ({ status: "success" }),
       checkState: async () => true,
     });
-  });
-  expect(
-    await screen.findByText("Approval reset confirmed. Approval required."),
-  ).toBeInTheDocument();
-  await act(async () => {
     await placement.submit(order, "approval", {
       approvalAmount: BigInt(3),
       send,
     });
   });
-  expect(await screen.findByText("Approval pending")).toBeInTheDocument();
+  expectNoOrder();
   await act(async () => {
     await placement.resume(order, {
       readTransaction: async () => ({ status: "success" }),
       checkState: async () => true,
     });
   });
-  expect(
-    await screen.findByText("Approval confirmed. Ready to place."),
-  ).toBeInTheDocument();
+  expectNoOrder();
 
   let release!: (reference: { id: string }) => void;
   const walletResponse = new Promise<{ id: string }>((resolve) => {
@@ -784,20 +839,20 @@ test("shows each approval stage and the setup wallet prompt without offering an 
     });
   });
   try {
-    expect(
-      await screen.findByText("Waiting for wallet: setup"),
-    ).toBeInTheDocument();
-    const row = screen
-      .getByRole("cell", { name: "1 WETH for 1980 USDC" })
-      .closest("tr")!;
-    expect(within(row).getByText("Pending")).toBeInTheDocument();
-    expect(within(row).queryByRole("link")).not.toBeInTheDocument();
+    expectNoOrder();
   } finally {
     await act(async () => {
       release({ id: "setup-reference" });
       await submission;
     });
   }
+  const cell = await screen.findByRole("cell", {
+    name: "1 WETH for 1980 USDC",
+  });
+  const row = cell.closest("tr")!;
+  expect(within(row).getByText("Pending")).toBeInTheDocument();
+  expect(within(row).getByText("Setup pending")).toBeInTheDocument();
+  expect(within(row).queryByRole("link")).not.toBeInTheDocument();
 });
 
 test("refreshes every fifteen seconds until a canonical API replacement is shown, then returns to manual refresh", async () => {

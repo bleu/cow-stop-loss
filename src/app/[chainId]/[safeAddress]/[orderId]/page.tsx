@@ -40,5 +40,11 @@ export default function OrderPage({
       </main>
     );
   }
-  return <OrderDetails orderId={params.orderId} chainId={chainId} />;
+  let orderId = params.orderId;
+  try {
+    orderId = decodeURIComponent(orderId);
+  } catch {
+    // Keep malformed escape sequences so the page can show an unknown order.
+  }
+  return <OrderDetails orderId={orderId} chainId={chainId} />;
 }

@@ -3,6 +3,7 @@
  * @jest-environment-options {"customExportConditions": ["node", "node-addons"]}
  */
 
+import { toast } from "@bleu/ui";
 import {
   act,
   fireEvent,
@@ -212,7 +213,7 @@ test("keeps cancellation loading after a wallet proposal and confirms only mined
   );
   const dialog = await screen.findByRole("dialog");
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
   await waitFor(() =>
     expect({
@@ -231,12 +232,11 @@ test("keeps cancellation loading after a wallet proposal and confirms only mined
   ).not.toBeInTheDocument();
   chain.active = false;
   chain.block = BigInt(101);
-  expect(
-    await within(dialog).findByText("Order cancelled.", {}, { timeout: 4000 }),
-  ).toBeInTheDocument();
-  expect(
-    within(dialog).getAllByRole("button", { name: "Close" }).length,
-  ).toBeGreaterThan(0);
+  await waitFor(
+    () => expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    { timeout: 4000 },
+  );
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 });
 
 test("hides cancellation for an order outside the current factory CowShed", async () => {
@@ -284,7 +284,7 @@ test("keeps confirmed cancellation in the table after stale API refresh", async 
   );
   const dialog = await screen.findByRole("dialog");
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
   await within(dialog).findByRole("status");
   await waitFor(() =>
@@ -296,7 +296,10 @@ test("keeps confirmed cancellation in the table after stale API refresh", async 
   );
   chain.active = false;
   chain.block = BigInt(101);
-  await within(dialog).findByText("Order cancelled.", {}, { timeout: 4000 });
+  await waitFor(
+    () => expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    { timeout: 4000 },
+  );
   fireEvent.click(within(dialog).getAllByRole("button", { name: "Close" })[0]);
   expect(
     await screen.findByRole("cell", { name: "Cancelled" }),
@@ -437,11 +440,11 @@ test("requires a deliberate retry after wallet rejection and checks the order ag
   );
   const dialog = await screen.findByRole("dialog");
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
-  expect(await within(dialog).findByRole("alert")).toHaveTextContent(
-    "You rejected the cancellation in your wallet. No transaction was sent.",
-  );
+  expect(
+    await screen.findByText("Request cancelled in your wallet."),
+  ).toBeInTheDocument();
   expect(dialog).not.toHaveTextContent("User rejected the request.");
   expect(dialog).not.toHaveTextContent("Waiting for cancellation confirmation");
   expect(
@@ -453,12 +456,12 @@ test("requires a deliberate retry after wallet rejection and checks the order ag
   chain.active = false;
   provider.rejectSend = false;
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Retry cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
   await waitFor(() =>
-    expect(within(dialog).getByRole("alert")).toHaveTextContent(
-      "This order is no longer active.",
-    ),
+    expect(
+      screen.getByText("Could not cancel the order. Please try again."),
+    ).toBeInTheDocument(),
   );
   expect(
     request.mock.calls.filter(
@@ -491,7 +494,7 @@ test("retries only observation after an uncertain RPC failure", async () => {
   );
   const dialog = await screen.findByRole("dialog");
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
   await waitFor(() =>
     expect(
@@ -505,10 +508,13 @@ test("retries only observation after an uncertain RPC failure", async () => {
     .spyOn(publicClientsFromIds[1], "getTransactionReceipt")
     .mockRejectedValue(new Error("Receipt RPC unavailable"));
   expect(
-    await within(dialog).findByRole("alert", {}, { timeout: 4000 }),
-  ).toHaveTextContent(
-    "An error happened while cancelling this order. Please try again.",
-  );
+    await screen.findByText(
+      "Could not cancel the order. Please try again.",
+      {},
+      { timeout: 4000 },
+    ),
+  ).toBeInTheDocument();
+  await within(dialog).findByRole("button", { name: "Confirm cancellation" });
   chain.active = false;
   jest
     .spyOn(publicClientsFromIds[1], "getTransactionReceipt")
@@ -518,11 +524,12 @@ test("retries only observation after an uncertain RPC failure", async () => {
       }),
     );
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Retry cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
-  expect(
-    await within(dialog).findByText("Order cancelled."),
-  ).toBeInTheDocument();
+  await waitFor(
+    () => expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    { timeout: 4000 },
+  );
   expect(
     request.mock.calls.filter(
       ([args]) => args.method === "eth_sendTransaction",
@@ -554,7 +561,7 @@ test("allows a new deliberate submission after a reverted execution", async () =
   );
   const dialog = await screen.findByRole("dialog");
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
   await waitFor(() =>
     expect(
@@ -568,15 +575,17 @@ test("allows a new deliberate submission after a reverted execution", async () =
     .spyOn(publicClientsFromIds[1], "getTransactionReceipt")
     .mockResolvedValue({ status: "reverted" } as never);
   expect(
-    await within(dialog).findByRole("alert", {}, { timeout: 4000 }),
-  ).toHaveTextContent(
-    "The cancellation transaction failed. The order may still be active.",
-  );
+    await screen.findByText(
+      "Could not cancel the order. Please try again.",
+      {},
+      { timeout: 4000 },
+    ),
+  ).toBeInTheDocument();
   expect(
     within(dialog).queryByText("Order cancelled."),
   ).not.toBeInTheDocument();
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Retry cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
   await waitFor(() =>
     expect(
@@ -612,20 +621,21 @@ test("checks state instead of resending when the wallet response is lost", async
   );
   const dialog = await screen.findByRole("dialog");
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
-  await within(dialog).findByRole("alert");
+  await screen.findByText("Could not cancel the order. Please try again.");
   const sends = request.mock.calls.filter(
     ([args]) => args.method === "eth_sendTransaction",
   ).length;
   chain.block = BigInt(101);
   chain.active = false;
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Retry cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
-  expect(
-    await within(dialog).findByText("Order cancelled."),
-  ).toBeInTheDocument();
+  await waitFor(
+    () => expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    { timeout: 4000 },
+  );
   expect(
     request.mock.calls.filter(
       ([args]) => args.method === "eth_sendTransaction",
@@ -673,7 +683,7 @@ test("preserves confirmed partial execution in both order-list projections when 
   );
   const dialog = await screen.findByRole("dialog");
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
   await waitFor(() =>
     expect(
@@ -684,7 +694,10 @@ test("preserves confirmed partial execution in both order-list projections when 
   );
   chain.active = false;
   chain.block = BigInt(101);
-  await within(dialog).findByText("Order cancelled.", {}, { timeout: 4000 });
+  await waitFor(
+    () => expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    { timeout: 4000 },
+  );
   fireEvent.click(within(dialog).getAllByRole("button", { name: "Close" })[0]);
   orders[0] = parent;
   fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
@@ -741,7 +754,7 @@ test("can submit cancellation when React checks effect cleanup before review", a
   );
   const dialog = await screen.findByRole("dialog");
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
   await waitFor(() =>
     expect(
@@ -825,17 +838,17 @@ test("keeps wrong-network retry ready without submitting or observing a transact
   );
   const dialog = await screen.findByRole("dialog");
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
-  expect(await within(dialog).findByRole("alert")).toHaveTextContent(
-    "Switch the wallet to Ethereum before cancelling.",
-  );
+  expect(
+    await screen.findByText("Could not cancel the order. Please try again."),
+  ).toBeInTheDocument();
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Retry cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
-  expect(await within(dialog).findByRole("alert")).toHaveTextContent(
-    "Switch the wallet to Ethereum before cancelling.",
-  );
+  expect(
+    await screen.findByText("Could not cancel the order. Please try again."),
+  ).toBeInTheDocument();
   expect(
     request.mock.calls.some(([args]) => args.method === "eth_sendTransaction"),
   ).toBe(false);
@@ -865,7 +878,7 @@ test("stops observation on close and starts a fresh review without the abandoned
   );
   const dialog = await screen.findByRole("dialog");
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
   await waitFor(() =>
     expect(
@@ -900,9 +913,9 @@ test("stops observation on close and starts a fresh review without the abandoned
   fireEvent.click(
     within(fresh).getByRole("button", { name: "Confirm cancellation" }),
   );
-  expect(await within(fresh).findByRole("alert")).toHaveTextContent(
-    "This order is no longer active.",
-  );
+  expect(
+    await screen.findByText("Could not cancel the order. Please try again."),
+  ).toBeInTheDocument();
   expect(
     request.mock.calls.filter(
       ([args]) => args.method === "eth_sendTransaction",
@@ -949,6 +962,7 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
+  toast({}).dismiss();
   window.history.replaceState(null, "", "/");
   config = createWagmiConfig();
   for (const client of Object.values(publicClientsFromIds)) {

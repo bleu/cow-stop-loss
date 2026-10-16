@@ -79,7 +79,6 @@ function props() {
     setOpen: jest.fn(),
     onApprove: jest.fn(),
     onPlace: jest.fn(),
-    onRetry: jest.fn(),
   };
 }
 
@@ -97,6 +96,20 @@ it("shows a compact order summary with edit beside the heading", () => {
   expect(screen.getByText("Execution account")).toBeInTheDocument();
   expect(screen.queryByText("Connected wallet")).not.toBeInTheDocument();
   expect(screen.queryByText(/Owner/)).not.toBeInTheDocument();
+  expect(screen.queryByText("Wallet balance")).not.toBeInTheDocument();
+  expect(screen.queryByText("Allowance needed")).not.toBeInTheDocument();
+  expect(screen.queryByText("Settlement approval")).not.toBeInTheDocument();
+  for (const [label, address] of [
+    ["WETH oracle (2h max age)", order.tokenSellOracle],
+    ["USDC oracle (2h max age)", order.tokenBuyOracle],
+  ]) {
+    expect(
+      screen
+        .getByText(label)
+        .closest(".rescue-review-address")
+        ?.querySelector("a"),
+    ).toHaveAttribute("href", `https://etherscan.io/address/${address}`);
+  }
 });
 
 it("shows one approval action until approval is sufficient, then one placement action", () => {
@@ -124,28 +137,32 @@ it("shows one approval action until approval is sufficient, then one placement a
   expect(input.onPlace).toHaveBeenCalledTimes(1);
 });
 
-it("replaces placement with one retry action when settlement execution fails", () => {
+it("keeps the same card elements while signing and pending", () => {
   const input = props();
-  render(
-    <ReviewOrderPanel
-      {...input}
-      prepared={prepared}
-      checks={checks}
-      error="Settlement execution data is missing or inconsistent"
-    />,
+  const { rerender } = render(
+    <ReviewOrderPanel {...input} prepared={prepared} checks={checks} />,
   );
-  expect(screen.getByRole("alert")).toHaveTextContent(
-    "Settlement execution data is missing or inconsistent",
-  );
-  expect(screen.getByRole("button", { name: "Retry" })).toBeEnabled();
-  expect(
-    screen.queryByRole("button", { name: "Place order" }),
-  ).not.toBeInTheDocument();
-  expect(
-    screen.queryByRole("button", { name: "Approve WETH" }),
-  ).not.toBeInTheDocument();
-  fireEvent.click(screen.getByRole("button", { name: "Retry" }));
-  expect(input.onRetry).toHaveBeenCalledTimes(1);
+  const review = screen.getByRole("region", { name: "Review stop-loss order" });
+  const elements = review.querySelectorAll("*").length;
+  for (const state of [{ busy: true }, { pending: true }]) {
+    rerender(
+      <ReviewOrderPanel
+        {...input}
+        prepared={prepared}
+        checks={checks}
+        {...state}
+      />,
+    );
+    expect(review.querySelectorAll("*")).toHaveLength(elements);
+    expect(screen.getByRole("button", { name: "Approving…" })).toBeDisabled();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Retry" }),
+    ).not.toBeInTheDocument();
+  }
+  rerender(<ReviewOrderPanel {...input} prepared={prepared} checks={checks} />);
+  expect(screen.getByRole("button", { name: "Approve WETH" })).toBeEnabled();
 });
 
 it("shows one validating action while preparation is busy", () => {

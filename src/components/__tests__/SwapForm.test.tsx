@@ -16,6 +16,7 @@ import {
 } from "#/hooks/useAdvancedSettings";
 import { useDraftOrder } from "#/hooks/useDraftOrder";
 import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
+import { invalidatePlacementReads } from "#/lib/placementReads";
 import { publicClientsFromIds } from "#/lib/publicClients";
 import { createWagmiConfig } from "#/utils/wagmi";
 
@@ -48,6 +49,10 @@ beforeEach(() => {
     chainId: 1,
     safeAddress: "0x1111111111111111111111111111111111111111",
   };
+  invalidatePlacementReads({ account: safe.safeAddress, chainId: 1 });
+  jest
+    .spyOn(publicClientsFromIds[1], "getBlockNumber")
+    .mockResolvedValue(BigInt(1));
   useDraftOrder.getState().setCurrentDraftOrder(undefined);
   useAdvancedSettingsStore
     .getState()

@@ -980,6 +980,31 @@ test("confirmed funding snapshots stay isolated from other wallets and chains", 
   expect(placement.getRecords(otherChain)[0].status).toBe("pending");
 });
 
+test("unsigned setup requests stay out of the table until the wallet accepts them", async () => {
+  const placement = createStopLossPlacement(environment());
+  let sign!: (reference: { id: string }) => void;
+  const submission = placement.submit(prepared, "setup", {
+    send: async () =>
+      new Promise((resolve) => {
+        sign = resolve;
+      }),
+  });
+  while (!sign) await Promise.resolve();
+  expect(placement.getRecords(scope)[0].status).toBe("prompting");
+  expect(await placement.mergeRows(scope, [])).toEqual([]);
+  sign({ id: "signed-setup" });
+  await submission;
+  expect(await placement.mergeRows(scope, [])).toHaveLength(1);
+});
+
+test("token approval alone does not add an order to the table", async () => {
+  const placement = createStopLossPlacement(environment());
+  await placement.submit(prepared, "approval", {
+    send: async () => ({ id: "signed-approval" }),
+  });
+  expect(await placement.mergeRows(scope, [])).toEqual([]);
+});
+
 test("local rows are pending until verified, then Open without an API detail link", async () => {
   const placement = createStopLossPlacement(environment());
   await placement.submit(prepared, "setup", {

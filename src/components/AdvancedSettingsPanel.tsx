@@ -273,6 +273,7 @@ export function AdvancedSettingsPanel({
                     });
                     setAdvancedSettings(defaultAdvancedSettings);
                     onApplySlippage("0.1");
+                    onOpenChange(false);
                   }}
                 >
                   <ResetIcon className="mr-1.5 size-3.5" /> Reset to defaults

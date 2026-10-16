@@ -21,7 +21,10 @@ import {
   observeCancellation,
 } from "#/lib/stopLossCancellation";
 import type { StopLossOrder } from "#/lib/stopLossOrders";
+import { isDefiniteFailure, isRejected } from "#/lib/stopLossPlacement";
 import { OrderStatus } from "#/lib/types";
+
+import { showOrderError, showOrderSuccess } from "./orderNotifications";
 
 export function CancelOrderDialog({
   order,
@@ -79,45 +82,6 @@ function OrderCancellation({
   );
 }
 
-function isWalletRejection(error: unknown): boolean {
-  const seen = new Set<unknown>();
-  while (error && typeof error === "object" && !seen.has(error)) {
-    seen.add(error);
-    if (
-      ("code" in error && error.code === 4001) ||
-      ("name" in error && error.name === "UserRejectedRequestError")
-    )
-      return true;
-    error = "cause" in error ? error.cause : undefined;
-  }
-  return false;
-}
-
-function cancellationErrorMessage(error: unknown) {
-  if (isWalletRejection(error))
-    return "You rejected the cancellation in your wallet. No transaction was sent.";
-  if (error instanceof CancellationRevertedError)
-    return "The cancellation transaction failed. The order may still be active.";
-
-  if (error instanceof Error) {
-    const knownMessages = [
-      "Invalid conditional-order hash.",
-      "Only open exact-sell orders can be cancelled.",
-      "This wallet cannot cancel this order.",
-      "CowShed does not trust the Poller-pinned factory.",
-      "This order is no longer active.",
-    ];
-    if (
-      knownMessages.includes(error.message) ||
-      (error.message.startsWith("Switch the wallet to ") &&
-        error.message.endsWith(" before cancelling."))
-    )
-      return error.message;
-  }
-
-  return "An error happened while cancelling this order. Please try again.";
-}
-
 function CancellationReview({
   order: reviewedOrder,
   close,
@@ -130,11 +94,8 @@ function CancellationReview({
   const { sendTransactionAsync } = useSendTransaction();
   const config = useConfig();
   const overlay = useCancellationOverlay();
-  const [status, setStatus] = useState<
-    "review" | "loading" | "confirmed" | "failed"
-  >("review");
+  const [status, setStatus] = useState<"review" | "loading">("review");
   const [walletPrompt, setWalletPrompt] = useState(false);
-  const [error, setError] = useState<string>();
   const stopped = useRef(false);
   const timer = useRef<ReturnType<typeof setTimeout>>();
   const retryObservation = useRef<() => Promise<void>>();
@@ -147,7 +108,6 @@ function CancellationReview({
   }, []);
   const submit = async () => {
     if (!address || status === "loading") return;
-    setError(undefined);
     setStatus("loading");
     if (retryObservation.current) {
       await retryObservation.current();
@@ -173,14 +133,22 @@ function CancellationReview({
           if (stopped.current) return;
           if (confirmed) {
             overlay.confirm(prepared.account, prepared.order);
-            setStatus("confirmed");
+            showOrderSuccess(
+              "cancel",
+              {
+                account: prepared.account,
+                ...prepared.order,
+              },
+              `${order.parentId}:${reference ?? prepared.blockNumber}`,
+            );
+            close();
           } else timer.current = setTimeout(observe, 1000);
         } catch (cause) {
           if (cause instanceof CancellationRevertedError)
             retryObservation.current = undefined;
           if (!stopped.current) {
-            setError(cancellationErrorMessage(cause));
-            setStatus("failed");
+            showOrderError("cancel", cause);
+            setStatus("review");
           }
         }
       };
@@ -190,7 +158,8 @@ function CancellationReview({
         reference = await sendTransactionAsync(prepared.transaction);
       } catch (cause) {
         setWalletPrompt(false);
-        if (isWalletRejection(cause)) retryObservation.current = undefined;
+        if (isRejected(cause) || isDefiniteFailure(cause))
+          retryObservation.current = undefined;
         throw cause;
       }
       setWalletPrompt(false);
@@ -198,8 +167,8 @@ function CancellationReview({
       void observe();
     } catch (cause) {
       if (!stopped.current) {
-        setError(cancellationErrorMessage(cause));
-        setStatus("failed");
+        showOrderError("cancel", cause);
+        setStatus("review");
       }
     }
   };
@@ -274,39 +243,18 @@ function CancellationReview({
           </p>
         </div>
       </div>
-      {error && (
-        <p
-          role="alert"
-          className="mb-4 min-w-0 break-words rounded-xl border border-destructive/30 bg-destructive/5 px-3 py-2 text-sm text-destructive [overflow-wrap:anywhere]"
-        >
-          {error}
-        </p>
-      )}
-      {status === "confirmed" ? (
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-sm font-medium text-foreground">
-            Order cancelled.
-          </p>
-          <Button className="rounded-xl" onClick={close}>
-            Close
-          </Button>
-        </div>
-      ) : (
-        <Button
-          variant="destructive"
-          className="h-12 w-full rounded-2xl font-semibold"
-          disabled={status === "loading"}
-          onClick={() => void submit()}
-        >
-          {status === "loading"
-            ? walletPrompt
-              ? "Waiting for wallet…"
-              : "Cancelling…"
-            : status === "failed"
-              ? "Retry cancellation"
-              : "Confirm cancellation"}
-        </Button>
-      )}
+      <Button
+        variant="destructive"
+        className="h-12 w-full rounded-2xl font-semibold"
+        disabled={status === "loading"}
+        onClick={() => void submit()}
+      >
+        {status === "loading"
+          ? walletPrompt
+            ? "Waiting for wallet…"
+            : "Cancelling…"
+          : "Confirm cancellation"}
+      </Button>
     </DialogContent>
   );
 }

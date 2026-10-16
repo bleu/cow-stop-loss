@@ -1,6 +1,5 @@
 "use client";
 
-import { Toaster } from "@bleu/ui";
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { useEffect, useState } from "react";
@@ -11,6 +10,7 @@ import { wagmiConfig } from "#/utils/wagmi";
 
 import { Footer } from "./Footer";
 import { Header } from "./Header";
+import { OrderToaster } from "./orderNotifications";
 import { ColorTheme, createWalletTheme } from "./walletTheme";
 
 export const swrConfig: SWRConfiguration = {
@@ -71,7 +71,7 @@ export function RootLayout({
                 discordLink="https://discord.gg/cowprotocol"
               />
             </div>
-            <Toaster />
+            <OrderToaster />
           </SWRConfig>
         </RainbowKitProvider>
       </QueryClientProvider>
