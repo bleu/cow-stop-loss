@@ -29,10 +29,6 @@ export default function Page() {
             aria-label="Create stop-loss order"
             className="rescue-panel rescue-create-panel relative flex min-w-0 flex-col overflow-x-hidden overflow-y-auto rounded-[24px] border border-border bg-card p-4 sm:p-6 min-[860px]:max-h-full min-[860px]:self-stretch min-[860px]:p-4"
           >
-            <div
-              aria-hidden="true"
-              className="absolute inset-x-0 top-0 h-1 bg-secondary"
-            />
             <StopLossCreation />
           </section>
           <section

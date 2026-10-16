@@ -1,13 +1,9 @@
 "use client";
 
 import { Button } from "@bleu/ui";
-import {
-  ChevronDownIcon,
-  MoonIcon,
-  PersonIcon,
-  SunIcon,
-} from "@radix-ui/react-icons";
+import { ChevronDownIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { WalletIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -115,7 +111,11 @@ export function Header({
                   aria-label={`Wallet account ${account.displayName}`}
                   className="h-10 gap-2 rounded-xl border-primary/30 bg-primary/10 px-3 text-sm font-medium text-primary shadow-sm hover:bg-primary/15 hover:text-primary"
                 >
-                  <PersonIcon aria-hidden="true" className="size-4" />
+                  <WalletIcon
+                    aria-hidden="true"
+                    className="size-4"
+                    strokeWidth={1.5}
+                  />
                   {account.displayName}
                   <ChevronDownIcon
                     aria-hidden="true"
@@ -142,7 +142,11 @@ export function Header({
                 aria-label="Connect wallet"
                 className="h-10 gap-2 rounded-xl bg-primary px-3 text-primary-foreground hover:bg-primary/90 sm:px-4"
               >
-                <PersonIcon aria-hidden="true" className="size-4" />
+                <WalletIcon
+                  aria-hidden="true"
+                  className="size-4"
+                  strokeWidth={1.5}
+                />
                 <span className="sm:hidden">Connect</span>
                 <span className="hidden sm:inline">Connect wallet</span>
               </Button>

@@ -177,14 +177,18 @@ input[type="number"] {
     );
   }
 
+  .rescue-create-panel::before,
   .rescue-portfolio-panel::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: hsl(var(--primary));
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(hsl(var(--primary)) 4px, transparent 4px);
+  }
+
+  .rescue-create-panel::before {
+    background: linear-gradient(hsl(var(--secondary)) 4px, transparent 4px);
   }
 }
 
@@ -363,14 +367,6 @@ input[type="number"] {
 
   .rescue-inset {
     box-shadow: inset 0 1px 3px hsl(var(--foreground) / 0.025);
-  }
-}
-
-@layer utilities {
-  .rescue-create-panel > div[aria-hidden="true"] {
-    left: 16px;
-    right: 16px;
-    border-radius: 999px;
   }
 }
 
