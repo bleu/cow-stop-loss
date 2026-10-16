@@ -241,7 +241,7 @@ test("encodes the reviewed receiver, amounts and advanced settings with the uplo
   ]);
 });
 
-test("encodes a new default draft's oracle limit as 21600 seconds", async () => {
+test("encodes a new default draft's oracle limit as 86400 seconds", async () => {
   const prepared = await preparePlacement({
     draft: { ...draft, ...defaultAdvancedSettings, receiver: account },
     account,
@@ -255,7 +255,7 @@ test("encodes a new default draft's oracle limit as 21600 seconds", async () => 
     prepared.staticInput,
   );
 
-  expect(staticInput[12]).toBe(21600);
+  expect(staticInput[12]).toBe(86400);
 });
 
 test("keeps schedule, conditional-order and CoW digest identities distinct", async () => {

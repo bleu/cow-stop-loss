@@ -372,7 +372,7 @@ test("reviews cancellation of a confirmed local order before API indexing", asyn
   await connectWallet();
   await screen.findByText("Waiting for API indexing");
   expect(
-    screen.queryByRole("link", { name: /^View order/ }),
+    screen.queryByRole("row", { name: /^View order/ }),
   ).not.toBeInTheDocument();
   fireEvent.click(await screen.findByRole("button", { name: /^Cancel order/ }));
   const dialog = await screen.findByRole("dialog");
@@ -595,8 +595,8 @@ test("keeps an expanding unavailable viewport and retries into the same table wi
   );
   expect(screen.getByRole("button", { name: "Refresh orders" })).toBeEnabled();
   expect(
-    screen.getByRole("button", { name: "Go to next page" }),
-  ).toBeDisabled();
+    screen.queryByRole("button", { name: "Go to next page" }),
+  ).not.toBeInTheDocument();
 
   unavailable.delete(1);
   fireEvent.click(screen.getByRole("button", { name: "Retry Ethereum" }));
@@ -635,7 +635,7 @@ test("keeps chain and placement warnings inside the scroll area so pagination re
     screen.getByRole("button", { name: "Refresh orders" }),
   );
   expect(viewport).not.toContainElement(
-    screen.getByRole("button", { name: "Go to next page" }),
+    screen.getByRole("button", { name: "Chain" }),
   );
   expect(screen.getByRole("button", { name: "Retry Ethereum" })).toBeEnabled();
   expect(screen.queryByText("No results.")).not.toBeInTheDocument();
@@ -870,7 +870,7 @@ test("refreshes every fifteen seconds until a canonical API replacement is shown
     await jest.advanceTimersByTimeAsync(14000);
   });
   expect(
-    screen.queryByRole("link", { name: /indexed-replacement/ }),
+    screen.queryByRole("row", { name: /indexed-replacement/ }),
   ).not.toBeInTheDocument();
   await act(async () => {
     await jest.advanceTimersByTimeAsync(1000);
@@ -883,14 +883,14 @@ test("refreshes every fifteen seconds until a canonical API replacement is shown
   expect(
     screen.queryByRole("cell", { name: "1 WETH for 1980 USDC" }),
   ).not.toBeInTheDocument();
-  expect(screen.getAllByRole("link", { name: /^View order/ })).toHaveLength(1);
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(1);
 
   orders.push(apiParent(1, "later-order"));
   await act(async () => {
     await jest.advanceTimersByTimeAsync(60000);
   });
   expect(
-    screen.queryByRole("link", { name: /later-order/ }),
+    screen.queryByRole("row", { name: /later-order/ }),
   ).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
   expect(
@@ -975,7 +975,7 @@ test("restores an old confirmed Open row and its API error before the first API 
   }
 });
 
-test("filters pending local placements separately from Open API orders", async () => {
+test("groups pending placements and active API orders under the Open filter", async () => {
   await writer.submit(prepared(), "setup", {
     send: async () => ({ id: "pending-reference" }),
   });
@@ -987,16 +987,22 @@ test("filters pending local placements separately from Open API orders", async (
     name: "View order indexed-order on Ethereum",
   });
   fireEvent.click(screen.getByRole("button", { name: "Status" }));
-  fireEvent.click(await screen.findByRole("option", { name: "Pending" }));
-
+  fireEvent.click(await screen.findByRole("option", { name: "Open" }));
+  fireEvent.keyDown(screen.getByPlaceholderText("Status"), { key: "Escape" });
   await waitFor(() =>
     expect(
-      screen.queryByRole("link", { name: /^View order/ }),
+      screen.queryByRole("option", { name: "Open" }),
     ).not.toBeInTheDocument(),
   );
   expect(
     screen.getByRole("cell", { name: "1 WETH for 1980 USDC" }),
   ).toBeInTheDocument();
+  expect(
+    screen.getByRole("row", { name: "View order indexed-order on Ethereum" }),
+  ).toBeInTheDocument();
+  expect(new URLSearchParams(window.location.search).get("status")).toBe(
+    "Open",
+  );
 });
 
 test("keeps last-good failed-chain orders beside a local Open row and clears its timeout after indexing", async () => {
@@ -1086,7 +1092,7 @@ test("clears local rows on account changes and ignores the old account's late AP
       name: "3 WETH for 5940 USDC",
     });
     expect(
-      within(amount.closest("tr")!).getByRole("cell", { name: "Arbitrum" }),
+      within(amount.closest("tr")!).getByText("Arbitrum"),
     ).toBeInTheDocument();
     await act(async () => {
       release();
@@ -1120,10 +1126,8 @@ test("shows confirmed local Open rows on all supported chains without detail lin
   for (const chain of ["Ethereum", "Gnosis", "Arbitrum", "Sepolia (testnet)"]) {
     const row = amounts
       .map((amount) => amount.closest("tr")!)
-      .find((candidate) =>
-        within(candidate).queryByRole("cell", { name: chain }),
-      )!;
-    expect(within(row).getByRole("cell", { name: "Open" })).toBeInTheDocument();
+      .find((candidate) => within(candidate).queryByText(chain))!;
+    expect(within(row).getByText("Open")).toBeInTheDocument();
     expect(within(row).queryByRole("link")).not.toBeInTheDocument();
   }
   expect(
