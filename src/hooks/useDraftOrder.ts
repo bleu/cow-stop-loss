@@ -9,7 +9,6 @@ import {
   generateSwapSchema,
   VALID_TO_VALUES_MAP,
 } from "#/lib/schema";
-import { fetchPairUsdPrice } from "#/lib/tokenUtils";
 import { DraftOrder, OrderStatus, SwapData } from "#/lib/types";
 import { generateRandomHex } from "#/utils";
 
@@ -68,12 +67,6 @@ export const useDraftOrder = create<DraftOrderState>()((set) => ({
       throw new Error("Required price feeds are unavailable or invalid.");
     }
 
-    const fallbackMarketPrice = await fetchPairUsdPrice({
-      sellToken: swapData.tokenSell,
-      buyToken: swapData.tokenBuy,
-      chainId: chainId as ChainId,
-    });
-
     const timestamp = Date.now();
     const timestampHex = timestamp.toString(16);
     const randomPart = generateRandomHex(64 - timestampHex.length);
@@ -91,7 +84,6 @@ export const useDraftOrder = create<DraftOrderState>()((set) => ({
       tokenSellOracle,
       id: crypto.randomUUID(),
       oraclePrice,
-      fallbackMarketPrice,
       salt,
       validTo,
       status: OrderStatus.DRAFT,

@@ -191,17 +191,6 @@ describe("Supported stop loss draft creation", () => {
             : BigInt("100000000");
         return [BigInt(1), answer, BigInt(1), BigInt(1), BigInt(1)];
       });
-    global.fetch = jest.fn().mockImplementation(async (input) => {
-      const address = String(input)
-        .split("/token/")[1]
-        ?.split("/")[0]
-        .toLowerCase();
-      const prices: Record<string, number> = {
-        "0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1": 1,
-        "0x2a22f9c3b484c3629090feed35f17ff8f88f76f0": 500000000,
-      };
-      return { json: async () => ({ price: prices[address || ""] }) };
-    });
 
     await expect(
       useDraftOrder.getState().createDraftOrder(
@@ -213,6 +202,9 @@ describe("Supported stop loss draft creation", () => {
         100,
         safeAddress,
       ),
-    ).resolves.toMatchObject({ fallbackMarketPrice: expect.closeTo(2000, 8) });
+    ).resolves.toMatchObject({
+      tokenBuyOracle: gnosisTokens.buyToken.priceFeed,
+      oraclePrice: 2000,
+    });
   });
 });
