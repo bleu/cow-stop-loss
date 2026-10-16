@@ -3,6 +3,7 @@
  * @jest-environment-options {"customExportConditions": ["node", "node-addons"]}
  */
 
+import { toast } from "@bleu/ui";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -14,7 +15,10 @@ import {
   defaultAdvancedSettings,
   useAdvancedSettingsStore,
 } from "#/hooks/useAdvancedSettings";
-import { getStopLossPlacement } from "#/hooks/useStopLossPlacement";
+import {
+  getStopLossPlacement,
+  resumeStopLossPlacement,
+} from "#/hooks/useStopLossPlacement";
 import { STOP_LOSS_ADDRESS } from "#/lib/contracts";
 import type { PreparedPlacement } from "#/lib/pollerStopLoss";
 import { publicClientsFromIds } from "#/lib/publicClients";
@@ -29,6 +33,10 @@ let connectedAccount: `0x${string}` = account;
 let chainTime: bigint;
 const originalFetch = global.fetch;
 const sendTransactionAsync = jest.fn();
+jest.mock("@bleu/ui", () => ({
+  ...jest.requireActual("@bleu/ui"),
+  toast: jest.fn(),
+}));
 jest.mock("wagmi", () => ({
   ...jest.requireActual("wagmi"),
   useAccount: () => ({
@@ -51,6 +59,7 @@ beforeEach(() => {
     },
   });
   sendTransactionAsync.mockReset();
+  jest.mocked(toast).mockClear();
   useAdvancedSettingsStore
     .getState()
     .setAdvancedSettings(defaultAdvancedSettings);
@@ -169,6 +178,69 @@ it("does not fill the trigger price when a sell token is selected", async () => 
     "",
   );
 });
+
+it.each([true, false])(
+  "opens the first review render with approval required: %s",
+  async (approvalRequired) => {
+    const user = userEvent.setup();
+    if (!approvalRequired) {
+      const rpc = jest.mocked(publicClientsFromIds[1].readContract);
+      const read = rpc.getMockImplementation()!;
+      rpc.mockImplementation(async (args) =>
+        args.functionName === "allowance"
+          ? BigInt("5000000000000000000")
+          : read(args),
+      );
+    }
+    let releaseUpload!: () => void;
+    let uploadStarted = false;
+    const upload = new Promise<void>((resolve) => {
+      releaseUpload = resolve;
+    });
+    const fetch = global.fetch;
+    global.fetch = jest.fn(async (input, init) => {
+      if (String(input).includes("/app_data/")) {
+        uploadStarted = true;
+        await upload;
+      }
+      return fetch(input, init);
+    });
+    showCreation();
+    await user.click(screen.getByRole("button", { name: "Select token" }));
+    await user.click(await screen.findByRole("option", { name: /WETH/ }));
+    await user.type(
+      screen.getByRole("textbox", { name: "Trigger price" }),
+      "2000",
+    );
+    await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+    await user.click(
+      await screen.findByRole("button", { name: "Review Stop Loss order" }),
+    );
+    try {
+      await waitFor(() => expect(uploadStarted).toBe(true));
+      expect(
+        screen.queryByRole("region", { name: "Review stop-loss order" }),
+      ).not.toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /Validating/ })).toBeDisabled();
+    } finally {
+      await act(async () => {
+        releaseUpload();
+      });
+    }
+    const review = await screen.findByRole("region", {
+      name: "Review stop-loss order",
+    });
+    expect(
+      within(review).getByRole("button", {
+        name: approvalRequired ? "Approve WETH" : "Place order",
+      }),
+    ).toBeEnabled();
+    expect(
+      Boolean(within(review).queryByRole("radio", { name: "Limited" })),
+    ).toBe(approvalRequired);
+    expect(sendTransactionAsync).not.toHaveBeenCalled();
+  },
+);
 
 it("confirms approval before enabling Place and does not send setup automatically", async () => {
   const user = userEvent.setup();
@@ -311,8 +383,7 @@ it("includes orders confirmed during preparation in the next review funding tota
   const readContract = jest.mocked(publicClientsFromIds[1].readContract);
   const read = readContract.getMockImplementation()!;
   readContract.mockImplementation(async (args) => {
-    if (args.functionName === "allowance")
-      return BigInt("100000000000000000000");
+    if (args.functionName === "allowance") return BigInt("1500000000000000000");
     if (args.functionName === "singleOrders") return created;
     if (args.functionName === "funded") return false;
     if (args.functionName === "schedules")
@@ -359,8 +430,10 @@ it("includes orders confirmed during preparation in the next review funding tota
   showCreation();
   await reviewOneOrder(user, false);
   await user.click(screen.getByRole("button", { name: "Place order" }));
-  expect(await screen.findByRole("alert")).toHaveTextContent(
-    "User rejected the request",
+  await waitFor(() =>
+    expect(toast).toHaveBeenCalledWith(
+      expect.objectContaining({ title: "Request cancelled in your wallet." }),
+    ),
   );
   await user.click(screen.getByRole("button", { name: "Edit order" }));
   confirmDuringPreparation = true;
@@ -371,7 +444,9 @@ it("includes orders confirmed during preparation in the next review funding tota
     name: "Review stop-loss order",
   });
   await waitFor(() =>
-    expect(dialog).toHaveTextContent("Allowance needed2 WETH"),
+    expect(
+      within(dialog).getByRole("radio", { name: "Limited" }).closest("label"),
+    ).toHaveTextContent("2 WETH"),
   );
   expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
 });
@@ -462,8 +537,12 @@ it("abandons an expired approval-only placement and permits a fresh review", asy
     .mocked(publicClientsFromIds[1].getBlock)
     .mockImplementation(async () => ({ timestamp: chainTime }) as never);
   await user.click(screen.getByRole("button", { name: "Continue placement" }));
-  expect(await screen.findByRole("alert")).toHaveTextContent(
-    "Reviewed order has expired",
+  await waitFor(() =>
+    expect(toast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Could not check the transaction. Please try again.",
+      }),
+    ),
   );
   await user.click(screen.getByRole("button", { name: "Abandon placement" }));
   await waitFor(() =>
@@ -471,9 +550,11 @@ it("abandons an expired approval-only placement and permits a fresh review", asy
       screen.queryByRole("region", { name: "Review stop-loss order" }),
     ).not.toBeInTheDocument(),
   );
-  expect(
-    screen.queryByRole("button", { name: "Continue placement" }),
-  ).not.toBeInTheDocument();
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("button", { name: "Continue placement" }),
+    ).not.toBeInTheDocument(),
+  );
   expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
   expect(allowance).toBe(BigInt("1000000000000000000"));
   chainTime = BigInt(Math.floor(Date.now() / 1000));
@@ -490,37 +571,28 @@ it("abandons an expired approval-only placement and permits a fresh review", asy
   ).toBeInTheDocument();
 });
 
-it("keeps an unknown approval pending even when allowance becomes sufficient", async () => {
+it("keeps unknown approval pending without changing the card or sending again", async () => {
   const user = userEvent.setup();
-  let allowance = BigInt(0);
-  const readContract = jest.mocked(publicClientsFromIds[1].readContract);
-  const read = readContract.getMockImplementation()!;
-  readContract.mockImplementation(async (args) =>
-    args.functionName === "allowance" ? allowance : read(args),
-  );
   sendTransactionAsync.mockResolvedValue("opaque-wallet-reference");
   showCreation();
   await reviewOneOrder(user);
+  const review = screen.getByRole("region", { name: "Review stop-loss order" });
+  const elements = review.querySelectorAll("*").length;
   await user.click(screen.getByRole("button", { name: "Approve WETH" }));
   await waitFor(() =>
-    expect(screen.getByRole("button", { name: "Retry" })).toBeEnabled(),
+    expect(screen.getByRole("button", { name: "Approving…" })).toBeDisabled(),
   );
+  await act(async () => {
+    await resumeStopLossPlacement(account, 1);
+  });
+  expect(review.querySelectorAll("*")).toHaveLength(elements);
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   expect(
-    screen.queryByRole("button", { name: "Place order" }),
-  ).not.toBeInTheDocument();
-  allowance = BigInt("1000000000000000000");
-
-  await user.click(screen.getByRole("button", { name: "Retry" }));
-
-  await waitFor(() =>
-    expect(screen.getByRole("button", { name: "Retry" })).toBeEnabled(),
-  );
-  expect(
-    screen.queryByRole("button", { name: "Place order" }),
+    screen.queryByRole("button", { name: "Retry" }),
   ).not.toBeInTheDocument();
   expect(
-    screen.getByRole("button", { name: "Abandon placement" }),
-  ).toBeDisabled();
+    screen.queryByRole("button", { name: "Abandon placement" }),
+  ).not.toBeInTheDocument();
   expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
 });
 
@@ -538,20 +610,24 @@ it("shows a reverted approval, keeps the failure after closing, and permits an e
   await reviewOneOrder(user);
   await user.click(screen.getByRole("button", { name: "Approve WETH" }));
 
-  expect(await screen.findByRole("alert")).toHaveTextContent(
-    "Transaction reverted",
+  await waitFor(() =>
+    expect(toast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Could not approve the token. Please try again.",
+      }),
+    ),
   );
   expect(
     screen.queryByRole("button", { name: "Place order" }),
   ).not.toBeInTheDocument();
-  await user.click(screen.getByRole("button", { name: "Retry" }));
+  await user.click(screen.getByRole("button", { name: "Approve WETH" }));
   await waitFor(() =>
     expect(screen.getByRole("button", { name: "Approve WETH" })).toBeEnabled(),
   );
-  expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
+  expect(sendTransactionAsync).toHaveBeenCalledTimes(2);
   await user.click(screen.getByRole("button", { name: "Edit order" }));
-  expect(screen.getByRole("alert")).toHaveTextContent("Transaction reverted");
-  expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(sendTransactionAsync).toHaveBeenCalledTimes(2);
 });
 
 it("shows a reverted setup as an error and does not show confirmation", async () => {
@@ -583,12 +659,55 @@ it("shows a reverted setup as an error and does not show confirmation", async ()
   await reviewOneOrder(user, false);
   await user.click(screen.getByRole("button", { name: "Place order" }));
 
-  expect(await screen.findByRole("alert")).toHaveTextContent(
-    "Transaction reverted",
+  await waitFor(() =>
+    expect(toast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Could not place the order. Please try again.",
+      }),
+    ),
   );
   expect(
     screen.getByRole("region", { name: "Review stop-loss order" }),
   ).toBeInTheDocument();
+  expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
+});
+
+it("checks an uncertain approval again without sending a second transaction", async () => {
+  const user = userEvent.setup();
+  let allowance = BigInt(0);
+  const rpc = jest.mocked(publicClientsFromIds[1].readContract);
+  const read = rpc.getMockImplementation()!;
+  rpc.mockImplementation(async (args) =>
+    args.functionName === "allowance" ? allowance : read(args),
+  );
+  sendTransactionAsync.mockResolvedValue(`0x${"ab".repeat(32)}`);
+  const receipt = jest
+    .spyOn(publicClientsFromIds[1], "waitForTransactionReceipt")
+    .mockRejectedValue(new Error("Unexpected RPC internals"));
+  showCreation();
+  await reviewOneOrder(user);
+  await user.click(screen.getByRole("button", { name: "Approve WETH" }));
+  await waitFor(() =>
+    expect(toast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Could not approve the token. Please try again.",
+      }),
+    ),
+  );
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Retry" }),
+  ).not.toBeInTheDocument();
+  allowance = BigInt("1000000000000000000");
+  receipt.mockResolvedValue({
+    status: "success",
+    transactionHash: `0x${"ab".repeat(32)}`,
+    blockNumber: BigInt(101),
+  } as never);
+  await user.click(screen.getByRole("button", { name: "Approve WETH" }));
+  await waitFor(() =>
+    expect(screen.getByRole("button", { name: "Place order" })).toBeEnabled(),
+  );
   expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
 });
 
@@ -601,17 +720,19 @@ it("keeps a rejected wallet request out of the next step", async () => {
   await reviewOneOrder(user);
   await user.click(screen.getByRole("button", { name: "Approve WETH" }));
 
-  expect(await screen.findByRole("alert")).toHaveTextContent(
-    "User rejected the request",
+  await waitFor(() =>
+    expect(toast).toHaveBeenCalledWith(
+      expect.objectContaining({ title: "Request cancelled in your wallet." }),
+    ),
   );
   expect(
     screen.queryByRole("button", { name: "Place order" }),
   ).not.toBeInTheDocument();
-  await user.click(screen.getByRole("button", { name: "Retry" }));
+  await user.click(screen.getByRole("button", { name: "Approve WETH" }));
   await waitFor(() =>
     expect(screen.getByRole("button", { name: "Approve WETH" })).toBeEnabled(),
   );
-  expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
+  expect(sendTransactionAsync).toHaveBeenCalledTimes(2);
 });
 
 it("submits unlimited approval directly from a nonzero insufficient allowance", async () => {
@@ -675,8 +796,12 @@ it("retains a cancelled approval for explicit retry or abandonment", async () =>
   await reviewOneOrder(user);
   await user.click(screen.getByRole("button", { name: "Approve WETH" }));
 
-  expect(await screen.findByRole("alert")).toHaveTextContent(
-    "Transaction cancelled",
+  await waitFor(() =>
+    expect(toast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Could not approve the token. Please try again.",
+      }),
+    ),
   );
   await user.click(screen.getByRole("button", { name: "Edit order" }));
   expect(
@@ -693,8 +818,12 @@ it("shows a saved-storage error without crashing or sending a wallet request", a
 
   showCreation();
 
-  expect(await screen.findByRole("alert")).toHaveTextContent(
-    "Unsupported placement storage version",
+  await waitFor(() =>
+    expect(toast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Could not check the transaction. Please try again.",
+      }),
+    ),
   );
   expect(
     screen.getByRole("textbox", { name: "Sell amount" }),
@@ -711,12 +840,9 @@ it("shows a saved-storage error without crashing or sending a wallet request", a
     await screen.findByRole("button", { name: "Review Stop Loss order" }),
   );
   expect(
-    await screen.findByRole("region", { name: "Review stop-loss order" }),
-  ).toHaveTextContent("Unsupported placement storage version");
-  expect(screen.getByRole("link", { name: "0x1111…1111" })).toHaveAttribute(
-    "href",
-    `https://etherscan.io/address/${account}`,
-  );
+    screen.queryByRole("region", { name: "Review stop-loss order" }),
+  ).not.toBeInTheDocument();
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   expect(sendTransactionAsync).not.toHaveBeenCalled();
 });
 
@@ -807,12 +933,14 @@ it("blocks an open review when saved storage becomes unreadable in another tab",
     );
   });
 
-  expect(await screen.findByRole("alert")).toHaveTextContent(
-    "Unsupported placement storage version",
+  await waitFor(() =>
+    expect(toast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Could not check the transaction. Please try again.",
+      }),
+    ),
   );
-  expect(
-    screen.queryByRole("button", { name: "Approve WETH" }),
-  ).not.toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "Approve WETH" })).toBeDisabled();
   expect(
     screen.queryByRole("button", { name: "Place order" }),
   ).not.toBeInTheDocument();
@@ -905,34 +1033,19 @@ it("does not close a new review when the earlier wallet response arrives late", 
   }
 });
 
-it("keeps the review closed when pending Retry reads finish late", async () => {
+it("keeps a pending placement closed after returning to the page", async () => {
   const user = userEvent.setup();
   sendTransactionAsync.mockResolvedValue("opaque-wallet-reference");
   showCreation();
   await reviewOneOrder(user);
   await user.click(screen.getByRole("button", { name: "Approve WETH" }));
   await waitFor(() =>
-    expect(screen.getByRole("button", { name: "Retry" })).toBeEnabled(),
+    expect(screen.getByRole("button", { name: "Approving…" })).toBeDisabled(),
   );
-  const readContract = jest.mocked(publicClientsFromIds[1].readContract);
-  const read = readContract.getMockImplementation()!;
-  let finish!: (allowance: bigint) => void;
-  const delayed = new Promise<bigint>((resolve) => {
-    finish = resolve;
-  });
-  readContract.mockImplementation(async (args) =>
-    args.functionName === "allowance" ? delayed : read(args),
-  );
-
-  await user.click(screen.getByRole("button", { name: "Retry" }));
   await user.click(screen.getByRole("button", { name: "Edit order" }));
-  expect(
-    screen.queryByRole("region", { name: "Review stop-loss order" }),
-  ).not.toBeInTheDocument();
   await act(async () => {
-    finish(BigInt(0));
+    await resumeStopLossPlacement(account, 1);
   });
-
   expect(
     screen.queryByRole("region", { name: "Review stop-loss order" }),
   ).not.toBeInTheDocument();

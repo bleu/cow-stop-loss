@@ -185,12 +185,18 @@ export function getColumns(): ColumnDef<PlacementRow>[] {
       header: "Status",
       cell: ({ row: { original: order } }) => {
         const progress = placementLabel(order);
-        return progress ? (
-          <div className="min-w-32">
-            <span className="text-sm font-semibold">Pending</span>
-            <p className="mt-0.5 max-w-48 text-xs text-muted-foreground">
-              {progress}
-            </p>
+        return (
+          <div className={progress ? "min-w-32" : undefined}>
+            {progress ? (
+              <span className="text-sm font-semibold">Pending</span>
+            ) : (
+              <StatusBadge status={order.status} />
+            )}
+            {(progress || order.source === "local") && (
+              <p className="mt-0.5 max-w-48 text-xs text-muted-foreground">
+                {progress ?? "Waiting for API indexing"}
+              </p>
+            )}
             {order.source === "local" && order.error && (
               <p
                 role="alert"
@@ -200,8 +206,6 @@ export function getColumns(): ColumnDef<PlacementRow>[] {
               </p>
             )}
           </div>
-        ) : (
-          <StatusBadge status={order.status} />
         );
       },
       filterFn: (row, id, values: string[]) => {

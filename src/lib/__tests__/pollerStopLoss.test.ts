@@ -9,15 +9,19 @@ import {
 } from "viem";
 
 import { defaultAdvancedSettings } from "#/hooks/useAdvancedSettings";
+import { invalidatePlacementReads } from "#/lib/placementReads";
 import {
   buildApprovalRepair,
   buildPlacementApproval,
   buildPlacementSetup,
+  prefetchPlacementChecks,
   preparePlacement,
   refreshApprovalRepair,
   refreshPlacementChecks,
   verifyPlacementConfirmation,
 } from "#/lib/pollerStopLoss";
+import { publicClientsFromIds } from "#/lib/publicClients";
+import { fetchFormattedBalanceOf } from "#/lib/tokenUtils";
 import { DraftOrder, OrderStatus } from "#/lib/types";
 
 const account = "0x1111111111111111111111111111111111111111";
@@ -58,7 +62,59 @@ beforeEach(() => {
       async (url) => new Response(JSON.stringify(String(url).split("/").pop())),
     );
 });
-afterEach(() => jest.restoreAllMocks());
+afterEach(() => {
+  invalidatePlacementReads({ account, chainId: 1 });
+  jest.restoreAllMocks();
+});
+
+test("reuses prefetched balances, allowances, contracts and oracles in order review", async () => {
+  const source = publicClientsFromIds[1];
+  const client = checkingClient();
+  jest
+    .spyOn(source, "getBlockNumber")
+    .mockImplementation(client.getBlockNumber);
+  jest
+    .spyOn(source, "getBlock")
+    .mockImplementation(client.getBlock as typeof source.getBlock);
+  jest.spyOn(source, "getBytecode").mockImplementation(client.getBytecode);
+  const read = jest
+    .spyOn(source, "readContract")
+    .mockImplementation(client.readContract);
+  emptyFundingApi();
+  const fetchOrders = jest.mocked(global.fetch).getMockImplementation()!;
+  jest
+    .mocked(global.fetch)
+    .mockImplementation(async (url, init) =>
+      String(url).includes("/app_data/")
+        ? new Response(JSON.stringify(String(url).split("/").pop()))
+        : fetchOrders(url, init),
+    );
+  await prefetchPlacementChecks({ account, chainId: 1 });
+  const callsBeforeReview = read.mock.calls.length;
+  const requestsBeforeReview = jest.mocked(global.fetch).mock.calls.length;
+  await expect(
+    fetchFormattedBalanceOf({
+      token: draft.tokenSell,
+      address: account,
+      chainId: 1,
+    }),
+  ).resolves.toBe("5");
+  expect(
+    read.mock.calls.filter(([args]) => args.functionName === "balanceOf"),
+  ).toHaveLength(3);
+  expect(
+    read.mock.calls.filter(([args]) => args.functionName === "allowance"),
+  ).toHaveLength(6);
+  const prepared = await preparePlacement({ draft, account, chainId: 1 });
+  await expect(refreshPlacementChecks(prepared)).resolves.toMatchObject({
+    status: "known",
+  });
+  expect(read).toHaveBeenCalledTimes(callsBeforeReview);
+  expect(source.getBlockNumber).toHaveBeenCalledTimes(1);
+  expect(source.getBlock).toHaveBeenCalledTimes(1);
+  expect(source.getBytecode).toHaveBeenCalledTimes(5);
+  expect(global.fetch).toHaveBeenCalledTimes(requestsBeforeReview + 1);
+});
 
 test("uploads a funding pre-hook for the reviewed order's schedule", async () => {
   const client = {
@@ -185,7 +241,7 @@ test("encodes the reviewed receiver, amounts and advanced settings with the uplo
   ]);
 });
 
-test("encodes a new default draft's oracle limit as 21600 seconds", async () => {
+test("encodes a new default draft's oracle limit as 86400 seconds", async () => {
   const prepared = await preparePlacement({
     draft: { ...draft, ...defaultAdvancedSettings, receiver: account },
     account,
@@ -199,7 +255,7 @@ test("encodes a new default draft's oracle limit as 21600 seconds", async () => 
     prepared.staticInput,
   );
 
-  expect(staticInput[12]).toBe(21600);
+  expect(staticInput[12]).toBe(86400);
 });
 
 test("keeps schedule, conditional-order and CoW digest identities distinct", async () => {
@@ -1698,13 +1754,15 @@ test.each(["3960000000", null])(
 
     const checks = await refreshPlacementChecks(prepared, { client });
     if (executedBuyAmount === null) {
-      expect(checks).toEqual({
-        status: "unknown",
-        error: "Settlement execution data is missing or inconsistent",
+      expect(checks).toMatchObject({
+        status: "known",
+        requiredAllowance: BigInt("1000000000000000000"),
+        requiredSettlementAllowance: BigInt("3000000000000000000"),
+        settlementApprovalRequired: true,
       });
       await expect(
         buildPlacementSetup(prepared, { client, checks }),
-      ).rejects.toThrow("Settlement execution data is missing or inconsistent");
+      ).resolves.toMatchObject({ to: prepared.factory });
       return;
     }
     expect(checks).toMatchObject({
@@ -2040,6 +2098,82 @@ test("blocks repair when the displayed selected order is no longer authorized", 
     error: "Selected order is no longer authorized",
   });
 });
+
+test.each([
+  "missing amount",
+  "missing child",
+  "missing parent",
+  "wrong UID",
+  "negative amount",
+  "excess amount",
+])(
+  "places a new order with incomplete funded execution: %s",
+  async (scenario) => {
+    const client = checkingClient({ singleOrders: true, funded: true });
+    const existing = await preparePlacement({
+      draft: { ...draft, amountSell: "2", amountBuy: "3960" },
+      account,
+      chainId: 1,
+      client,
+    });
+    const prepared = await preparePlacement({
+      draft: { ...draft, salt: `0x${"cd".repeat(32)}` },
+      account,
+      chainId: 1,
+      client,
+    });
+    const read = client.readContract;
+    client.readContract = jest.fn(async (args) => {
+      if (args.functionName === "singleOrders")
+        return Array.isArray(args.args) && args.args[1] === existing.paramsHash;
+      if (args.functionName === "schedules")
+        return [
+          "0x412c36e5011cd2517016d243a2dfb37f73a242e7",
+          BigInt(0),
+          account,
+          existing.owner,
+          existing.draft.salt,
+          existing.staticInput,
+        ];
+      return read(args);
+    }) as PublicClient["readContract"];
+    executionApi(
+      existing,
+      scenario === "negative amount"
+        ? "-1"
+        : scenario === "excess amount"
+          ? "3000000000000000000"
+          : scenario === "wrong UID"
+            ? "500000000000000000"
+            : null,
+      scenario === "wrong UID" ? `0x${"00".repeat(56)}` : undefined,
+    );
+    const fetchExecution = jest.mocked(global.fetch).getMockImplementation()!;
+    jest.mocked(global.fetch).mockImplementation(async (url, init) => {
+      const response = await fetchExecution(url, init);
+      const body = await response.json();
+      if (
+        JSON.parse(String(init?.body)).query.includes("query StopLossOrders")
+      ) {
+        const parents = body.data.conditionalOrderGenerators.items;
+        if (scenario === "missing parent") parents.length = 0;
+        if (scenario === "missing child") parents[0].discreteOrders.items = [];
+      }
+      return new Response(JSON.stringify(body));
+    });
+    const checks = await refreshPlacementChecks(prepared, { client });
+    expect(checks).toMatchObject({
+      status: "known",
+      requiredAllowance: BigInt("1000000000000000000"),
+      requiredSettlementAllowance: BigInt("3000000000000000000"),
+    });
+    await expect(
+      buildPlacementSetup(prepared, { client, checks }),
+    ).resolves.toMatchObject({
+      to: prepared.factory,
+    });
+  },
+);
 
 test("blocks repair instead of treating missing funded execution as zero", async () => {
   const client = checkingClient({ singleOrders: true, funded: true });

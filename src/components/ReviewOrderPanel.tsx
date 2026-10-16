@@ -1,8 +1,19 @@
 "use client";
 
-import { Button, Popover, PopoverContent, PopoverTrigger } from "@bleu/ui";
-import { ArrowLeftIcon, ArrowRightIcon } from "@radix-ui/react-icons";
-import { type ReactNode, useEffect, useState } from "react";
+import {
+  Button,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+  Tooltip,
+  TooltipTrigger,
+} from "@bleu/ui";
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  InfoCircledIcon,
+} from "@radix-ui/react-icons";
+import { useEffect, useState } from "react";
 import { formatUnits } from "viem";
 
 import { NetworkLogo } from "#/components/NetworkLogo";
@@ -26,12 +37,10 @@ export interface ReviewOrderPanelProps {
   prepared?: PreparedPlacement;
   checks?: FundingSnapshot;
   busy?: boolean;
-  error?: string;
   pending?: boolean;
+  blocked?: boolean;
   onApprove: (mode: ApprovalMode) => void;
   onPlace: () => void;
-  onRetry: () => void;
-  onAbandon?: () => void;
 }
 
 export function ReviewOrderPanel({
@@ -43,26 +52,21 @@ export function ReviewOrderPanel({
   checks,
   busy = false,
   pending = false,
-  error,
+  blocked = false,
   onApprove,
   onPlace,
-  onRetry,
-  onAbandon,
 }: ReviewOrderPanelProps) {
   const [mode, setMode] = useState<ApprovalMode>("limited");
   useEffect(() => setMode("limited"), [order.id, chainId]);
   const funding = checks?.status === "known" ? checks : undefined;
-  const reviewError =
-    error || (checks?.status === "unknown" ? checks.error : undefined);
-  const actionsBlocked =
-    !prepared || !funding || Boolean(reviewError) || busy || pending;
+  const actionsBlocked = !prepared || !funding || busy || pending || blocked;
   if (!open) return null;
   const needsApproval = funding?.approvalRequired === true;
 
   return (
     <section
       aria-label="Review stop-loss order"
-      className={`rescue-review ${reviewError || pending || funding?.combinedCommitmentsExceedBalance ? "rescue-review-with-notice" : ""}`}
+      className={`rescue-review ${funding?.combinedCommitmentsExceedBalance ? "rescue-review-with-notice" : ""}`}
     >
       <header className="rescue-review-heading">
         <div>
@@ -123,6 +127,10 @@ export function ReviewOrderPanel({
               </span>
             </dd>
           </div>
+          <div>
+            <dt>Partial fills</dt>
+            <dd>{order.partiallyFillable ? "Allowed" : "Off"}</dd>
+          </div>
           <div className="rescue-review-expiry">
             <dt>Expires</dt>
             <dd>
@@ -133,15 +141,6 @@ export function ReviewOrderPanel({
               })}
             </dd>
           </div>
-        </dl>
-        <dl className="rescue-review-conditions">
-          <InlineTerm label="Slippage">{order.slippagePercent}%</InlineTerm>
-          <InlineTerm label="Partial fills">
-            {order.partiallyFillable ? "Allowed" : "Off"}
-          </InlineTerm>
-          <InlineTerm label="Oracle age">
-            {order.maxHoursSinceOracleUpdates}h max
-          </InlineTerm>
         </dl>
       </section>
 
@@ -168,39 +167,20 @@ export function ReviewOrderPanel({
         )}
       </section>
 
-      {funding && (
-        <section aria-label="Wallet check" className="rescue-review-funding">
-          <dl>
-            <div>
-              <dt>Wallet balance</dt>
-              <dd>
-                <PreciseAmount
-                  value={formatUnits(funding.balance, order.tokenSell.decimals)}
-                  symbol={order.tokenSell.symbol}
-                />
-              </dd>
-            </div>
-            <div>
-              <dt>Allowance needed</dt>
-              <dd>
-                <PreciseAmount
-                  value={formatUnits(
-                    funding.requiredAllowance,
-                    order.tokenSell.decimals,
-                  )}
-                  symbol={order.tokenSell.symbol}
-                />
-              </dd>
-            </div>
-            <div>
-              <dt>Settlement approval</dt>
-              <dd>
-                {funding.settlementApprovalRequired ? "During setup" : "Ready"}
-              </dd>
-            </div>
-          </dl>
-        </section>
-      )}
+      <section aria-label="Price oracles" className="rescue-review-oracles">
+        <AddressLine
+          label={`${order.tokenSell.symbol} oracle (${order.maxHoursSinceOracleUpdates}h max age)`}
+          tooltip={`${order.tokenSell.symbol} price feed used to check the trigger price. The order cannot execute if the price update is more than ${order.maxHoursSinceOracleUpdates}h old.`}
+          address={order.tokenSellOracle}
+          chainId={chainId}
+        />
+        <AddressLine
+          label={`${order.tokenBuy.symbol} oracle (${order.maxHoursSinceOracleUpdates}h max age)`}
+          tooltip={`${order.tokenBuy.symbol} price feed used to check the trigger price. The order cannot execute if the price update is more than ${order.maxHoursSinceOracleUpdates}h old.`}
+          address={order.tokenBuyOracle}
+          chainId={chainId}
+        />
+      </section>
 
       {funding?.combinedCommitmentsExceedBalance && (
         <p role="alert" className="rescue-review-notice text-warning">
@@ -218,8 +198,8 @@ export function ReviewOrderPanel({
             <ApprovalChoice
               checked={mode === "limited"}
               onChange={() => setMode("limited")}
-              label="This order only"
-              description="Amount shown above"
+              label="Limited"
+              description={`${compactAmount(formatUnits(funding!.requiredAllowance, order.tokenSell.decimals))} ${order.tokenSell.symbol}`}
             />
             <ApprovalChoice
               checked={mode === "unlimited"}
@@ -240,67 +220,25 @@ export function ReviewOrderPanel({
           </span>
         </div>
       )}
-      {pending && (
-        <p role="status" className="rescue-review-notice text-muted-foreground">
-          Transaction pending. Order tracking continues.
-        </p>
-      )}
-      {reviewError && (
-        <p role="alert" className="rescue-review-notice text-destructive">
-          {reviewError}
-        </p>
-      )}
       <div className="rescue-review-actions">
-        {onAbandon && (
-          <Button
-            type="button"
-            variant="outline"
-            className="h-10 min-h-10 flex-1 rounded-xl text-sm"
-            disabled={busy || pending}
-            onClick={onAbandon}
-          >
-            Abandon placement
-          </Button>
-        )}
         <Button
           type="button"
           className="rescue-primary-button h-10 min-h-10 flex-1 rounded-xl text-sm"
-          disabled={busy || (!reviewError && !pending && actionsBlocked)}
-          onClick={() =>
-            reviewError || pending
-              ? onRetry()
-              : needsApproval
-                ? onApprove(mode)
-                : onPlace()
-          }
+          disabled={actionsBlocked}
+          onClick={() => (needsApproval ? onApprove(mode) : onPlace())}
         >
-          {busy
+          {busy || pending
             ? needsApproval
               ? "Approving…"
-              : "Validating…"
-            : reviewError || pending
-              ? "Retry"
-              : needsApproval
-                ? `Approve ${order.tokenSell.symbol}`
-                : "Place order"}
+              : prepared
+                ? "Placing…"
+                : "Validating…"
+            : needsApproval
+              ? `Approve ${order.tokenSell.symbol}`
+              : "Place order"}
         </Button>
       </div>
     </section>
-  );
-}
-
-function InlineTerm({
-  label,
-  children,
-}: {
-  label: string;
-  children: ReactNode;
-}) {
-  return (
-    <div>
-      <dt>{label}</dt>
-      <dd>{children}</dd>
-    </div>
   );
 }
 
@@ -357,13 +295,6 @@ function AmountSummary({
     <div className="rescue-review-amount">
       <div className="rescue-review-amount-label">
         <span>{label}</span>
-        <BlockExplorerLink
-          type="token"
-          identifier={token.address}
-          networkId={chainId}
-          showExternalIcon
-          label={<span className="sr-only">{token.symbol} token contract</span>}
-        />
       </div>
       <div className="rescue-review-amount-value">
         <TokenLogo
@@ -376,6 +307,14 @@ function AmountSummary({
           className="size-6 shrink-0 rounded-full"
         />
         <PreciseAmount value={amount} symbol={token.symbol} />
+        <BlockExplorerLink
+          type="token"
+          identifier={token.address}
+          networkId={chainId}
+          showExternalIcon
+          label={<span className="sr-only">{token.symbol} token contract</span>}
+          className="shrink-0 gap-0"
+        />
       </div>
     </div>
   );
@@ -385,14 +324,31 @@ function AddressLine({
   label,
   address,
   chainId,
+  tooltip,
 }: {
   label: string;
   address: string;
   chainId: ChainId;
+  tooltip?: string;
 }) {
   return (
     <div className="rescue-review-address">
-      <span>{label}</span>
+      <span className="inline-flex flex-wrap items-center gap-1">
+        {label}
+        {tooltip && (
+          <Tooltip content={tooltip}>
+            <TooltipTrigger asChild>
+              <button
+                type="button"
+                aria-label={`About ${label}`}
+                className="inline-flex shrink-0 rounded-sm text-muted-foreground hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                <InfoCircledIcon aria-hidden="true" className="size-3.5" />
+              </button>
+            </TooltipTrigger>
+          </Tooltip>
+        )}
+      </span>
       <BlockExplorerLink
         type="address"
         identifier={address}

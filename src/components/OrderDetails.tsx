@@ -498,9 +498,14 @@ export function OrderDetails({
   orderId: string;
   chainId: ChainId;
 }) {
-  const { chains, isLoading, mutate } = useOrderList();
+  const { orders, chains, isLoading, mutate } = useOrderList();
   const chain = chains.find((chain) => chain.chainId === chainId);
-  const order = chain?.orders.find((order) => order.parentId === orderId);
+  const matches = (order: StopLossOrder) =>
+    order.chainId === chainId &&
+    (order.parentId === orderId ||
+      `${order.owner.toLowerCase()}:${order.hash.toLowerCase()}` ===
+        orderId.toLowerCase());
+  const order = orders.find(matches) ?? chain?.orders.find(matches);
 
   const warning = chain?.status === "error" && (
     <div

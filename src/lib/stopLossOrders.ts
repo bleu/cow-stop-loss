@@ -302,13 +302,15 @@ function priceForAmounts(
 export async function loadStopLossOrders({
   account,
   signal,
+  chainIds = supportedChainIds,
 }: {
   account: Address;
   signal?: AbortSignal;
+  chainIds?: readonly ChainId[];
 }) {
   throwIfAborted(signal);
   const chains = await Promise.all(
-    supportedChainIds.map(async (chainId): Promise<ChainOrders> => {
+    chainIds.map(async (chainId): Promise<ChainOrders> => {
       try {
         const mappings = await fetchPages<{
           address: Address;

@@ -3,6 +3,7 @@
  * @jest-environment-options {"customExportConditions": ["node", "node-addons"]}
  */
 
+import { invalidatePlacementReads } from "#/lib/placementReads";
 import { publicClientsFromIds } from "#/lib/publicClients";
 import { VALID_TO_OPTIONS } from "#/lib/schema";
 import { getSupportedTokens } from "#/lib/supportedTokens";
@@ -29,6 +30,12 @@ const orderInput: SwapData = {
 
 describe("Supported stop loss draft creation", () => {
   beforeEach(() => {
+    for (const chainId of [1, 100] as const) {
+      invalidatePlacementReads({ account: safeAddress, chainId });
+      jest
+        .spyOn(publicClientsFromIds[chainId], "getBlockNumber")
+        .mockResolvedValue(BigInt(100));
+    }
     useAdvancedSettingsStore
       .getState()
       .setAdvancedSettings(defaultAdvancedSettings);

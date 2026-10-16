@@ -385,6 +385,8 @@ export function createStopLossPlacement({
           );
           transactionSucceeded = receipt.status === "success";
           reference = receipt.reference ?? reference;
+          if (receipt.status === "pending" && receipt.error)
+            throw new Error(receipt.error);
           if (receipt.status === "failed" && record.stage === "setup")
             created = await adapter.checkState(record);
           if (receipt.status === "failed" && !created) {
@@ -564,6 +566,8 @@ export function createStopLossPlacement({
         (record) =>
           record.status !== "failed" &&
           record.status !== "rejected" &&
+          (record.status === "confirmed" ||
+            Boolean(record.transactions.setup)) &&
           !indexedKeys.has(
             key(
               record.prepared.chainId,

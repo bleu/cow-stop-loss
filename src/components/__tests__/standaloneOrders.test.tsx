@@ -3,6 +3,7 @@
  * @jest-environment-options {"customExportConditions": ["node", "node-addons"]}
  */
 
+import { toast } from "@bleu/ui";
 import {
   act,
   fireEvent,
@@ -106,6 +107,11 @@ function serveOrders(
       }),
     } as Response;
   });
+}
+
+function expectOrderDestination(row: HTMLElement, destination: string) {
+  fireEvent.click(row);
+  expect(window.location.pathname).toBe(destination);
 }
 
 function Router({ children }: React.PropsWithChildren) {
@@ -212,7 +218,7 @@ test("keeps cancellation loading after a wallet proposal and confirms only mined
   );
   const dialog = await screen.findByRole("dialog");
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
   await waitFor(() =>
     expect({
@@ -231,22 +237,23 @@ test("keeps cancellation loading after a wallet proposal and confirms only mined
   ).not.toBeInTheDocument();
   chain.active = false;
   chain.block = BigInt(101);
-  expect(
-    await within(dialog).findByText("Order cancelled.", {}, { timeout: 4000 }),
-  ).toBeInTheDocument();
-  expect(
-    within(dialog).getAllByRole("button", { name: "Close" }).length,
-  ).toBeGreaterThan(0);
+  await waitFor(
+    () => expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    { timeout: 4000 },
+  );
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 });
 
-test("hides cancellation for an order outside the current factory CowShed", async () => {
+test("rejects cancellation before signing for an order outside the current factory CowShed", async () => {
   serveOrders([
     { ...parent, owner: "0x4444444444444444444444444444444444444444" },
   ]);
   cancellationRpc();
+  const provider = new BrowserWallet();
+  const request = jest.spyOn(provider, "request");
   Object.defineProperty(window, "ethereum", {
     configurable: true,
-    value: new BrowserWallet(),
+    value: provider,
   });
   render(
     <RootLayout>
@@ -254,12 +261,21 @@ test("hides cancellation for an order outside the current factory CowShed", asyn
     </RootLayout>,
   );
   await connectBrowserWallet();
-  await screen.findByRole("link", {
+  await screen.findByRole("row", {
     name: "View order stop-loss-1 on Ethereum",
   });
+  fireEvent.click(screen.getByRole("button", { name: /Cancel order/ }));
+  fireEvent.click(
+    within(await screen.findByRole("dialog")).getByRole("button", {
+      name: "Confirm cancellation",
+    }),
+  );
   expect(
-    screen.queryByRole("button", { name: /Cancel order/ }),
-  ).not.toBeInTheDocument();
+    await screen.findByText("Could not cancel the order. Please try again."),
+  ).toBeVisible();
+  expect(request).not.toHaveBeenCalledWith(
+    expect.objectContaining({ method: "eth_sendTransaction" }),
+  );
 });
 
 test("keeps confirmed cancellation in the table after stale API refresh", async () => {
@@ -284,9 +300,8 @@ test("keeps confirmed cancellation in the table after stale API refresh", async 
   );
   const dialog = await screen.findByRole("dialog");
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
-  await within(dialog).findByRole("status");
   await waitFor(() =>
     expect(
       request.mock.calls.some(
@@ -296,8 +311,10 @@ test("keeps confirmed cancellation in the table after stale API refresh", async 
   );
   chain.active = false;
   chain.block = BigInt(101);
-  await within(dialog).findByText("Order cancelled.", {}, { timeout: 4000 });
-  fireEvent.click(within(dialog).getAllByRole("button", { name: "Close" })[0]);
+  await waitFor(
+    () => expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    { timeout: 4000 },
+  );
   expect(
     await screen.findByRole("cell", { name: "Cancelled" }),
   ).toBeInTheDocument();
@@ -308,7 +325,7 @@ test("keeps confirmed cancellation in the table after stale API refresh", async 
     ).toBeEnabled(),
   );
   expect(screen.getByRole("cell", { name: "Cancelled" })).toBeInTheDocument();
-  expect(screen.getAllByRole("link", { name: /^View order/ })).toHaveLength(1);
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(1);
 });
 
 test("reviews the remaining amounts when cancelling a partially filled order from details", async () => {
@@ -437,11 +454,11 @@ test("requires a deliberate retry after wallet rejection and checks the order ag
   );
   const dialog = await screen.findByRole("dialog");
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
-  expect(await within(dialog).findByRole("alert")).toHaveTextContent(
-    "You rejected the cancellation in your wallet. No transaction was sent.",
-  );
+  expect(
+    await screen.findByText("Request cancelled in your wallet."),
+  ).toBeInTheDocument();
   expect(dialog).not.toHaveTextContent("User rejected the request.");
   expect(dialog).not.toHaveTextContent("Waiting for cancellation confirmation");
   expect(
@@ -453,12 +470,12 @@ test("requires a deliberate retry after wallet rejection and checks the order ag
   chain.active = false;
   provider.rejectSend = false;
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Retry cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
   await waitFor(() =>
-    expect(within(dialog).getByRole("alert")).toHaveTextContent(
-      "This order is no longer active.",
-    ),
+    expect(
+      screen.getByText("Could not cancel the order. Please try again."),
+    ).toBeInTheDocument(),
   );
   expect(
     request.mock.calls.filter(
@@ -491,7 +508,7 @@ test("retries only observation after an uncertain RPC failure", async () => {
   );
   const dialog = await screen.findByRole("dialog");
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
   await waitFor(() =>
     expect(
@@ -505,10 +522,13 @@ test("retries only observation after an uncertain RPC failure", async () => {
     .spyOn(publicClientsFromIds[1], "getTransactionReceipt")
     .mockRejectedValue(new Error("Receipt RPC unavailable"));
   expect(
-    await within(dialog).findByRole("alert", {}, { timeout: 4000 }),
-  ).toHaveTextContent(
-    "An error happened while cancelling this order. Please try again.",
-  );
+    await screen.findByText(
+      "Could not cancel the order. Please try again.",
+      {},
+      { timeout: 4000 },
+    ),
+  ).toBeInTheDocument();
+  await within(dialog).findByRole("button", { name: "Confirm cancellation" });
   chain.active = false;
   jest
     .spyOn(publicClientsFromIds[1], "getTransactionReceipt")
@@ -518,11 +538,12 @@ test("retries only observation after an uncertain RPC failure", async () => {
       }),
     );
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Retry cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
-  expect(
-    await within(dialog).findByText("Order cancelled."),
-  ).toBeInTheDocument();
+  await waitFor(
+    () => expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    { timeout: 4000 },
+  );
   expect(
     request.mock.calls.filter(
       ([args]) => args.method === "eth_sendTransaction",
@@ -554,7 +575,7 @@ test("allows a new deliberate submission after a reverted execution", async () =
   );
   const dialog = await screen.findByRole("dialog");
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
   await waitFor(() =>
     expect(
@@ -568,15 +589,17 @@ test("allows a new deliberate submission after a reverted execution", async () =
     .spyOn(publicClientsFromIds[1], "getTransactionReceipt")
     .mockResolvedValue({ status: "reverted" } as never);
   expect(
-    await within(dialog).findByRole("alert", {}, { timeout: 4000 }),
-  ).toHaveTextContent(
-    "The cancellation transaction failed. The order may still be active.",
-  );
+    await screen.findByText(
+      "Could not cancel the order. Please try again.",
+      {},
+      { timeout: 4000 },
+    ),
+  ).toBeInTheDocument();
   expect(
     within(dialog).queryByText("Order cancelled."),
   ).not.toBeInTheDocument();
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Retry cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
   await waitFor(() =>
     expect(
@@ -612,20 +635,21 @@ test("checks state instead of resending when the wallet response is lost", async
   );
   const dialog = await screen.findByRole("dialog");
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
-  await within(dialog).findByRole("alert");
+  await screen.findByText("Could not cancel the order. Please try again.");
   const sends = request.mock.calls.filter(
     ([args]) => args.method === "eth_sendTransaction",
   ).length;
   chain.block = BigInt(101);
   chain.active = false;
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Retry cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
-  expect(
-    await within(dialog).findByText("Order cancelled."),
-  ).toBeInTheDocument();
+  await waitFor(
+    () => expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    { timeout: 4000 },
+  );
   expect(
     request.mock.calls.filter(
       ([args]) => args.method === "eth_sendTransaction",
@@ -673,7 +697,7 @@ test("preserves confirmed partial execution in both order-list projections when 
   );
   const dialog = await screen.findByRole("dialog");
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
   await waitFor(() =>
     expect(
@@ -684,7 +708,10 @@ test("preserves confirmed partial execution in both order-list projections when 
   );
   chain.active = false;
   chain.block = BigInt(101);
-  await within(dialog).findByText("Order cancelled.", {}, { timeout: 4000 });
+  await waitFor(
+    () => expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    { timeout: 4000 },
+  );
   fireEvent.click(within(dialog).getAllByRole("button", { name: "Close" })[0]);
   orders[0] = parent;
   fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
@@ -741,7 +768,7 @@ test("can submit cancellation when React checks effect cleanup before review", a
   );
   const dialog = await screen.findByRole("dialog");
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
   await waitFor(() =>
     expect(
@@ -825,17 +852,17 @@ test("keeps wrong-network retry ready without submitting or observing a transact
   );
   const dialog = await screen.findByRole("dialog");
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
-  expect(await within(dialog).findByRole("alert")).toHaveTextContent(
-    "Switch the wallet to Ethereum before cancelling.",
-  );
+  expect(
+    await screen.findByText("Could not cancel the order. Please try again."),
+  ).toBeInTheDocument();
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Retry cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
-  expect(await within(dialog).findByRole("alert")).toHaveTextContent(
-    "Switch the wallet to Ethereum before cancelling.",
-  );
+  expect(
+    await screen.findByText("Could not cancel the order. Please try again."),
+  ).toBeInTheDocument();
   expect(
     request.mock.calls.some(([args]) => args.method === "eth_sendTransaction"),
   ).toBe(false);
@@ -865,7 +892,7 @@ test("stops observation on close and starts a fresh review without the abandoned
   );
   const dialog = await screen.findByRole("dialog");
   fireEvent.click(
-    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
   );
   await waitFor(() =>
     expect(
@@ -887,9 +914,7 @@ test("stops observation on close and starts a fresh review without the abandoned
     (publicClientsFromIds[1].getBlockNumber as jest.Mock).mock.calls,
   ).toHaveLength(reads);
   jest.useRealTimers();
-  expect(screen.getByRole("definition", { name: "Status" })).toHaveTextContent(
-    "Open",
-  );
+  expect(screen.getByText("Waiting for a fill")).toBeInTheDocument();
   fireEvent.click(
     screen.getByRole("button", {
       name: "Cancel order stop-loss-1 on Ethereum",
@@ -900,9 +925,9 @@ test("stops observation on close and starts a fresh review without the abandoned
   fireEvent.click(
     within(fresh).getByRole("button", { name: "Confirm cancellation" }),
   );
-  expect(await within(fresh).findByRole("alert")).toHaveTextContent(
-    "This order is no longer active.",
-  );
+  expect(
+    await screen.findByText("Could not cancel the order. Please try again."),
+  ).toBeInTheDocument();
   expect(
     request.mock.calls.filter(
       ([args]) => args.method === "eth_sendTransaction",
@@ -949,6 +974,7 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
+  toast({}).dismiss();
   window.history.replaceState(null, "", "/");
   config = createWagmiConfig();
   for (const client of Object.values(publicClientsFromIds)) {
@@ -1102,7 +1128,7 @@ test("shows the order builder and connect actions before a wallet is connected",
   ).toBeInTheDocument();
 });
 
-test("lets the creation form size the desktop row and keeps the read-only orders panel in normal flow on mobile", async () => {
+test("keeps the order builder and orders panel in normal flow on mobile", async () => {
   serveOrders([parent]);
   Object.defineProperty(window, "ethereum", {
     configurable: true,
@@ -1139,10 +1165,8 @@ test("lets the creation form size the desktop row and keeps the read-only orders
     expect(panel).not.toHaveClass("lg:h-[48rem]");
     expect(panel).not.toHaveClass("lg:overflow-y-auto");
   }
-  expect(ordersPanel).toHaveClass("relative", "min-h-0");
-  const ordersContent = screen.getByRole("heading", {
-    name: "Your stop-loss orders",
-  }).parentElement?.parentElement;
+  expect(ordersPanel).toHaveClass("relative", "min-[860px]:min-h-0");
+  const ordersContent = ordersPanel.firstElementChild;
   expect(ordersContent).toHaveClass(
     "flex",
     "min-h-0",
@@ -1153,21 +1177,21 @@ test("lets the creation form size the desktop row and keeps the read-only orders
   for (const className of ["absolute", "h-full", "overflow-y-auto"]) {
     expect(ordersContent).not.toHaveClass(className);
   }
-  expect(
-    screen.getByRole("heading", { name: "Your stop-loss orders" })
-      .parentElement,
-  ).toHaveClass("shrink-0");
-  expect(
-    await screen.findByRole("link", {
+  expect(ordersContent?.firstElementChild).toHaveClass("shrink-0");
+  expectOrderDestination(
+    await screen.findByRole("row", {
       name: "View order stop-loss-1 on Ethereum",
     }),
-  ).toHaveAttribute("href", `/1/${wallet}/stop-loss-1`);
+    `/1/${wallet}/stop-loss-1`,
+  );
   expect(
-    screen.queryByRole("button", { name: /Cancel|Add.*order/i }),
-  ).not.toBeInTheDocument();
+    screen.getByRole("button", {
+      name: "Cancel order stop-loss-1 on Ethereum",
+    }),
+  ).toBeEnabled();
 });
 
-test("shows a connected wallet's untriggered order with a read-only detail link", async () => {
+test("opens a connected wallet's untriggered order from its row", async () => {
   serveOrders([parent]);
   Object.defineProperty(window, "ethereum", {
     configurable: true,
@@ -1181,17 +1205,21 @@ test("shows a connected wallet's untriggered order with a read-only detail link"
 
   await connectBrowserWallet();
 
-  expect(
-    await screen.findByRole("link", {
+  expectOrderDestination(
+    await screen.findByRole("row", {
       name: "View order stop-loss-1 on Ethereum",
     }),
-  ).toHaveAttribute("href", `/1/${wallet}/stop-loss-1`);
+    `/1/${wallet}/stop-loss-1`,
+  );
   expect(
-    screen.queryByRole("button", { name: /Create|Review|Cancel/ }),
-  ).not.toBeInTheDocument();
+    screen.getByRole("button", {
+      name: "Cancel order stop-loss-1 on Ethereum",
+    }),
+  ).toBeEnabled();
+  expect(screen.getByRole("textbox", { name: "Sell amount" })).toBeEnabled();
 });
 
-test("keeps the legacy list route read-only and scoped to the connected account", async () => {
+test("keeps the legacy list route scoped to the connected account", async () => {
   serveOrders([parent]);
   Object.defineProperty(window, "ethereum", {
     configurable: true,
@@ -1209,17 +1237,21 @@ test("keeps the legacy list route read-only and scoped to the connected account"
   );
   await connectBrowserWallet();
 
-  expect(
-    await screen.findByRole("link", {
+  expectOrderDestination(
+    await screen.findByRole("row", {
       name: "View order stop-loss-1 on Ethereum",
     }),
-  ).toHaveAttribute("href", `/1/${wallet}/stop-loss-1`);
+    `/1/${wallet}/stop-loss-1`,
+  );
   expect(
     screen.getByRole("heading", { name: "Your stop-loss orders" }),
   ).toBeInTheDocument();
   expect(
-    screen.queryByRole("button", { name: /Create|Review|Cancel/ }),
-  ).not.toBeInTheDocument();
+    screen.getByRole("button", {
+      name: "Cancel order stop-loss-1 on Ethereum",
+    }),
+  ).toBeEnabled();
+  expect(screen.getByRole("textbox", { name: "Sell amount" })).toBeEnabled();
   expect(screen.queryByText("Pending transactions")).not.toBeInTheDocument();
 });
 
@@ -1242,7 +1274,7 @@ test("combines all four chains and filters Sepolia as a testnet without switchin
   await connectBrowserWallet();
 
   expect(
-    await screen.findAllByRole("link", { name: /^View order/ }),
+    await screen.findAllByRole("row", { name: /^View order/ }),
   ).toHaveLength(4);
   fireEvent.click(screen.getByRole("button", { name: "Chain" }));
   fireEvent.click(
@@ -1250,15 +1282,14 @@ test("combines all four chains and filters Sepolia as a testnet without switchin
   );
 
   await waitFor(() =>
-    expect(screen.getAllByRole("link", { name: /^View order/ })).toHaveLength(
-      1,
-    ),
+    expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(1),
   );
-  expect(
-    screen.getByRole("link", {
+  expectOrderDestination(
+    screen.getByRole("row", {
       name: "View order stop-loss-1 on Sepolia (testnet)",
     }),
-  ).toHaveAttribute("href", `/11155111/${wallet}/stop-loss-1`);
+    `/11155111/${wallet}/stop-loss-1`,
+  );
   expect(provider.chainId).toBe(137);
   expect(request).not.toHaveBeenCalledWith(
     expect.objectContaining({ method: "wallet_switchEthereumChain" }),
@@ -1283,9 +1314,7 @@ test("switches the wallet network only through the header and keeps all chains v
   await connectBrowserWallet();
   await screen.findByTitle(wallet);
   await waitFor(() =>
-    expect(screen.getAllByRole("link", { name: /^View order/ })).toHaveLength(
-      4,
-    ),
+    expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(4),
   );
   expect(request).not.toHaveBeenCalledWith(
     expect.objectContaining({ method: "wallet_switchEthereumChain" }),
@@ -1294,12 +1323,19 @@ test("switches the wallet network only through the header and keeps all chains v
   fireEvent.click(
     screen.getByRole("button", { name: "Switch wallet network" }),
   );
+  const networkDialog = await screen.findByRole("dialog");
   expect(
-    await screen.findByRole("button", { name: /Ethereum/ }),
+    within(networkDialog).getByRole("button", { name: /Ethereum/ }),
   ).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: /Gnosis/ })).toBeInTheDocument();
-  expect(screen.getByRole("button", { name: /Arbitrum/ })).toBeInTheDocument();
-  fireEvent.click(screen.getByRole("button", { name: /Sepolia \(testnet\)/ }));
+  expect(
+    within(networkDialog).getByRole("button", { name: /Gnosis/ }),
+  ).toBeInTheDocument();
+  expect(
+    within(networkDialog).getByRole("button", { name: /Arbitrum/ }),
+  ).toBeInTheDocument();
+  fireEvent.click(
+    within(networkDialog).getByRole("button", { name: /Sepolia \(testnet\)/ }),
+  );
 
   await waitFor(() =>
     expect(
@@ -1313,7 +1349,7 @@ test("switches the wallet network only through the header and keeps all chains v
       params: [{ chainId: "0xaa36a7" }],
     }),
   );
-  expect(screen.getAllByRole("link", { name: /^View order/ })).toHaveLength(4);
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(4);
 });
 
 test("keeps account access and orders when a wallet network switch is rejected", async () => {
@@ -1330,7 +1366,7 @@ test("keeps account access and orders when a wallet network switch is rejected",
     </RootLayout>,
   );
   await connectBrowserWallet();
-  await screen.findByRole("link", {
+  await screen.findByRole("row", {
     name: "View order stop-loss-1 on Ethereum",
   });
   fireEvent.click(
@@ -1346,7 +1382,7 @@ test("keeps account access and orders when a wallet network switch is rejected",
   ).toHaveTextContent("Ethereum");
   expect(screen.getByTitle(wallet)).toBeInTheDocument();
   expect(
-    screen.getByRole("link", { name: "View order stop-loss-1 on Ethereum" }),
+    screen.getByRole("row", { name: "View order stop-loss-1 on Ethereum" }),
   ).toBeInTheDocument();
   expect(provider.chainId).toBe(1);
 });
@@ -1372,7 +1408,7 @@ test("selects All by default and clears each filter without clearing the other",
     </RootLayout>,
   );
   await connectBrowserWallet();
-  await screen.findByRole("link", { name: "View order stop-loss-1 on Gnosis" });
+  await screen.findByRole("row", { name: "View order stop-loss-1 on Gnosis" });
 
   fireEvent.click(screen.getByRole("button", { name: /^Status/ }));
   expect(await screen.findByRole("option", { name: "All" })).toHaveAttribute(
@@ -1402,9 +1438,7 @@ test("selects All by default and clears each filter without clearing the other",
     "false",
   );
   await waitFor(() =>
-    expect(screen.getAllByRole("link", { name: /^View order/ })).toHaveLength(
-      1,
-    ),
+    expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(1),
   );
   fireEvent.click(screen.getByRole("option", { name: "All" }));
   expect(screen.getByRole("option", { name: "All" })).toHaveAttribute(
@@ -1412,9 +1446,7 @@ test("selects All by default and clears each filter without clearing the other",
     "true",
   );
   await waitFor(() => {
-    expect(screen.getAllByRole("link", { name: /^View order/ })).toHaveLength(
-      2,
-    );
+    expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(2);
     expect(new URLSearchParams(window.location.search).has("chainId")).toBe(
       false,
     );
@@ -1437,9 +1469,7 @@ test("selects All by default and clears each filter without clearing the other",
     "true",
   );
   await waitFor(() => {
-    expect(screen.getAllByRole("link", { name: /^View order/ })).toHaveLength(
-      2,
-    );
+    expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(2);
     expect(new URLSearchParams(window.location.search).has("status")).toBe(
       false,
     );
@@ -1490,19 +1520,17 @@ test("shows distinct partial terminal states and filters them separately", async
   expect(
     screen.getByRole("cell", { name: "Partially filled, expired" }),
   ).toBeInTheDocument();
-  expect(screen.getAllByRole("link", { name: /^View order/ })).toHaveLength(3);
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(3);
   fireEvent.click(screen.getByRole("button", { name: "Status" }));
   fireEvent.click(
     await screen.findByRole("option", { name: "Partially filled, expired" }),
   );
 
   await waitFor(() =>
-    expect(screen.getAllByRole("link", { name: /^View order/ })).toHaveLength(
-      1,
-    ),
+    expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(1),
   );
   expect(
-    screen.getByRole("link", {
+    screen.getByRole("row", {
       name: "View order partial-expired on Ethereum",
     }),
   ).toBeInTheDocument();
@@ -1523,7 +1551,7 @@ test("keeps successful chains visible and retries a failed chain", async () => {
   await connectBrowserWallet();
 
   expect(
-    await screen.findByRole("link", {
+    await screen.findByRole("row", {
       name: "View order stop-loss-1 on Ethereum",
     }),
   ).toBeInTheDocument();
@@ -1533,11 +1561,11 @@ test("keeps successful chains visible and retries a failed chain", async () => {
   unavailable.delete(100);
   fireEvent.click(screen.getByRole("button", { name: "Retry Gnosis" }));
   expect(
-    screen.getByRole("link", { name: "View order stop-loss-1 on Ethereum" }),
+    screen.getByRole("row", { name: "View order stop-loss-1 on Ethereum" }),
   ).toBeInTheDocument();
 
   expect(
-    await screen.findByRole("link", {
+    await screen.findByRole("row", {
       name: "View order stop-loss-1 on Gnosis",
     }),
   ).toBeInTheDocument();
@@ -1577,7 +1605,7 @@ test("updates orders only after manual refresh, not on focus, reconnect or time"
     </RootLayout>,
   );
   await connectBrowserWallet();
-  await screen.findByRole("link", {
+  await screen.findByRole("row", {
     name: "View order stop-loss-1 on Ethereum",
   });
 
@@ -1594,7 +1622,7 @@ test("updates orders only after manual refresh, not on focus, reconnect or time"
       await jest.advanceTimersByTimeAsync(60000);
     });
     expect(
-      screen.queryByRole("link", {
+      screen.queryByRole("row", {
         name: "View order later-order on Ethereum",
       }),
     ).not.toBeInTheDocument();
@@ -1604,7 +1632,7 @@ test("updates orders only after manual refresh, not on focus, reconnect or time"
 
   fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
   expect(
-    await screen.findByRole("link", {
+    await screen.findByRole("row", {
       name: "View order later-order on Ethereum",
     }),
   ).toBeInTheDocument();
@@ -1622,7 +1650,7 @@ test("uses an icon-only reload control and disables it while orders refresh", as
     </RootLayout>,
   );
   await connectBrowserWallet();
-  await screen.findByRole("link", {
+  await screen.findByRole("row", {
     name: "View order stop-loss-1 on Ethereum",
   });
 
@@ -1660,7 +1688,7 @@ test("keeps this account's last loaded orders with a warning when refresh fails"
     </RootLayout>,
   );
   await connectBrowserWallet();
-  await screen.findByRole("link", {
+  await screen.findByRole("row", {
     name: "View order stop-loss-1 on Ethereum",
   });
 
@@ -1673,7 +1701,7 @@ test("keeps this account's last loaded orders with a warning when refresh fails"
     ),
   ).toBeInTheDocument();
   expect(
-    screen.getByRole("link", { name: "View order stop-loss-1 on Ethereum" }),
+    screen.getByRole("row", { name: "View order stop-loss-1 on Ethereum" }),
   ).toBeInTheDocument();
   expect(screen.queryByText("No results.")).not.toBeInTheDocument();
 });
@@ -1701,7 +1729,7 @@ test("clears orders on account changes and disconnect, and fetches again when an
     </RootLayout>,
   );
   await connectBrowserWallet();
-  await screen.findByRole("link", {
+  await screen.findByRole("row", {
     name: "View order stop-loss-1 on Ethereum",
   });
 
@@ -1711,9 +1739,9 @@ test("clears orders on account changes and disconnect, and fetches again when an
   });
   await screen.findByTitle(second);
   expect(
-    screen.queryByRole("link", { name: "View order stop-loss-1 on Ethereum" }),
+    screen.queryByRole("row", { name: "View order stop-loss-1 on Ethereum" }),
   ).not.toBeInTheDocument();
-  await screen.findByRole("link", {
+  await screen.findByRole("row", {
     name: "View order other-wallet on Ethereum",
   });
 
@@ -1728,10 +1756,10 @@ test("clears orders on account changes and disconnect, and fetches again when an
   });
   await screen.findByTitle(wallet);
   expect(
-    screen.queryByRole("link", { name: "View order other-wallet on Ethereum" }),
+    screen.queryByRole("row", { name: "View order other-wallet on Ethereum" }),
   ).not.toBeInTheDocument();
   expect(
-    await screen.findByRole("link", {
+    await screen.findByRole("row", {
       name: "View order after-return on Ethereum",
     }),
   ).toBeInTheDocument();
@@ -1740,7 +1768,7 @@ test("clears orders on account changes and disconnect, and fetches again when an
   fireEvent.click(await screen.findByRole("button", { name: /Disconnect/ }));
   await screen.findByRole("button", { name: "Connect wallet to view orders" });
   expect(
-    screen.queryByRole("link", { name: /^View order/ }),
+    screen.queryByRole("row", { name: /^View order/ }),
   ).not.toBeInTheDocument();
 });
 
@@ -1803,20 +1831,21 @@ test("ignores late responses from the previous account", async () => {
     provider.accounts = [second];
     provider.emit("accountsChanged", [second]);
   });
-  await screen.findByRole("link", {
+  await screen.findByRole("row", {
     name: "View order current-account on Ethereum",
   });
   await act(async () => {
     pending.forEach((resolve) => resolve());
   });
 
-  expect(
-    screen.getByRole("link", {
+  expectOrderDestination(
+    screen.getByRole("row", {
       name: "View order current-account on Ethereum",
     }),
-  ).toHaveAttribute("href", `/1/${second}/current-account`);
+    `/1/${second}/current-account`,
+  );
   expect(
-    screen.queryByRole("link", {
+    screen.queryByRole("row", {
       name: "View order late-old-account on Ethereum",
     }),
   ).not.toBeInTheDocument();
@@ -2054,7 +2083,7 @@ test("keeps the shared detail heading while order data is loading", async () => 
   }
 });
 
-test("shows owned order details, prices and partial execution without cancellation", async () => {
+test("shows owned order details, prices and partial execution and allows cancellation of the remaining amount", async () => {
   serveOrders([
     {
       ...parent,
@@ -2141,8 +2170,10 @@ test("shows owned order details, prices and partial execution without cancellati
     expect.stringContaining("/orders/0xcd"),
   );
   expect(
-    screen.queryByRole("button", { name: /Cancel/ }),
-  ).not.toBeInTheDocument();
+    screen.getByRole("button", {
+      name: "Cancel order stop-loss-1 on Ethereum",
+    }),
+  ).toBeEnabled();
 });
 
 test("links shortened detail addresses using the page chain instead of the wallet chain", async () => {
@@ -2307,7 +2338,7 @@ test("directs a missing order back to the table for refresh before reopening its
   fireEvent.click(
     await screen.findByRole("button", { name: "Refresh orders" }),
   );
-  const detailLink = await screen.findByRole("link", {
+  const detailLink = await screen.findByRole("row", {
     name: "View order stop-loss-1 on Ethereum",
   });
   fireEvent.click(detailLink);
@@ -2467,13 +2498,14 @@ test("uses the Safe account returned by WalletConnect instead of a browser signe
       await screen.findByRole("button", { name: "WalletConnect" }),
     );
 
-    expect(
-      await screen.findByRole("link", {
+    expectOrderDestination(
+      await screen.findByRole("row", {
         name: "View order safe-order on Ethereum",
       }),
-    ).toHaveAttribute("href", `/1/${safe}/safe-order`);
+      `/1/${safe}/safe-order`,
+    );
     expect(
-      screen.queryByRole("link", {
+      screen.queryByRole("row", {
         name: "View order stop-loss-1 on Ethereum",
       }),
     ).not.toBeInTheDocument();

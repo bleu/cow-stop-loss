@@ -18,6 +18,7 @@ import {
 import { composableCowAbi } from "./abis/composableCow";
 import { composableCowPollerAbi } from "./abis/composableCowPoller";
 import { cowShedAbi, cowShedFactoryAbi } from "./abis/cowShedFactory";
+import { oracleMinimalAbi } from "./abis/oracleMinimalAbi";
 import { getOrderAmounts } from "./calculateAmounts";
 import {
   COMPOSABLE_COW_ADDRESS,
@@ -27,6 +28,7 @@ import {
 } from "./contracts";
 import { uploadAppData } from "./cowApi/uploadAppData";
 import { readOraclePrice } from "./oracleRouter";
+import { getPlacementReads, type PlacementReads } from "./placementReads";
 import { ChainId, publicClientsFromIds } from "./publicClients";
 import { decodeStopLossStaticInput } from "./staticInputDecoder";
 import { encodeStopLossStaticInput } from "./staticInputEncoder";
@@ -42,7 +44,7 @@ export async function preparePlacement({
   draft,
   account,
   chainId,
-  client = publicClientsFromIds[chainId],
+  client = getPlacementReads({ account, chainId }).client,
 }: {
   draft: DraftOrder;
   account: Address;
@@ -191,6 +193,136 @@ export type FundingSnapshot =
     }
   | { status: "unknown"; error: string };
 
+export async function prefetchPlacementChecks({
+  account,
+  chainId,
+}: {
+  account: Address;
+  chainId: ChainId;
+}) {
+  const reads = getPlacementReads({ account, chainId });
+  const { client } = reads;
+  const poller = POLLER_ADDRESS_BY_CHAIN_ID[chainId];
+  const { sellTokens, buyToken } = getSupportedTokens(chainId);
+  const context = async () => {
+    const factory = await client.readContract({
+      address: poller,
+      abi: composableCowPollerAbi,
+      functionName: "COW_SHED_FACTORY",
+    });
+    const owner = await client.readContract({
+      address: factory,
+      abi: cowShedFactoryAbi,
+      functionName: "proxyOf",
+      args: [account],
+    });
+    await Promise.allSettled([
+      client.getBytecode({ address: factory }),
+      client.getBytecode({ address: owner }),
+      client.readContract({
+        address: owner,
+        abi: cowShedAbi,
+        functionName: "trustedExecutor",
+      }),
+      ...[...sellTokens, buyToken].map(({ token }) =>
+        client.readContract({
+          address: token.address,
+          abi: erc20Abi,
+          functionName: "allowance",
+          args: [owner, GPV2_VAULT_RELAYER_ADDRESS],
+        }),
+      ),
+      (async () => {
+        const [parents, domainSeparator] = await Promise.all([
+          reads.fundingParents(owner),
+          client.readContract({
+            address: COMPOSABLE_COW_ADDRESS,
+            abi: composableCowAbi,
+            functionName: "domainSeparator",
+          }),
+        ]);
+        await Promise.allSettled(
+          parents.map(async (parent) => {
+            const id = keccak256(
+              encodeAbiParameters(
+                parseAbiParameters("address, address, address, bytes32"),
+                [account, parent.handler, parent.owner, parent.salt],
+              ),
+            );
+            await Promise.allSettled([
+              client.readContract({
+                address: poller,
+                abi: composableCowPollerAbi,
+                functionName: "schedules",
+                args: [id],
+              }),
+              client.readContract({
+                address: COMPOSABLE_COW_ADDRESS,
+                abi: composableCowAbi,
+                functionName: "singleOrders",
+                args: [parent.owner, parent.hash],
+              }),
+              (async () => {
+                const funded = await client.readContract({
+                  address: poller,
+                  abi: composableCowPollerAbi,
+                  functionName: "funded",
+                  args: [
+                    id,
+                    cowOrderDigest(parent.staticInput, domainSeparator),
+                  ],
+                });
+                if (funded) await reads.orders();
+              })(),
+            ]);
+          }),
+        );
+      })(),
+    ]);
+  };
+  await Promise.allSettled([
+    context(),
+    client.getBlock(),
+    ...[poller, COMPOSABLE_COW_ADDRESS, STOP_LOSS_ADDRESS].map((address) =>
+      client.getBytecode({ address }),
+    ),
+    client.readContract({
+      address: poller,
+      abi: composableCowPollerAbi,
+      functionName: "COMPOSABLE_COW",
+    }),
+    client.readContract({
+      address: COMPOSABLE_COW_ADDRESS,
+      abi: composableCowAbi,
+      functionName: "domainSeparator",
+    }),
+    ...[...sellTokens, buyToken].flatMap(({ token, priceFeed }) => [
+      client.readContract({
+        address: token.address,
+        abi: erc20Abi,
+        functionName: "balanceOf",
+        args: [account],
+      }),
+      client.readContract({
+        address: token.address,
+        abi: erc20Abi,
+        functionName: "allowance",
+        args: [account, poller],
+      }),
+      client.readContract({
+        address: priceFeed,
+        abi: oracleMinimalAbi,
+        functionName: "latestRoundData",
+      }),
+      client.readContract({
+        address: priceFeed,
+        abi: oracleMinimalAbi,
+        functionName: "decimals",
+      }),
+    ]),
+  ]);
+}
+
 export async function refreshPlacementChecks(
   prepared: PreparedPlacement,
   options: {
@@ -198,19 +330,24 @@ export async function refreshPlacementChecks(
     localOrders?: readonly PreparedPlacement[];
   } = {},
 ): Promise<FundingSnapshot> {
-  return refreshFundingChecks(prepared, options);
+  return refreshFundingChecks(prepared, {
+    ...options,
+    reads: getPlacementReads({ ...prepared, client: options.client }),
+  });
 }
 
 async function refreshFundingChecks(
   prepared: PreparedPlacement | PreparedApprovalRepair,
   {
-    client = publicClientsFromIds[prepared.chainId],
+    reads,
+    client = reads?.client ?? publicClientsFromIds[prepared.chainId],
     localOrders = [],
     parents: reviewedParents,
   }: {
     client?: PublicClient;
     localOrders?: readonly PreparedPlacement[];
     parents?: FundingParent[];
+    reads?: PlacementReads;
   } = {},
 ): Promise<FundingSnapshot> {
   try {
@@ -222,11 +359,12 @@ async function refreshFundingChecks(
     const repair = "kind" in prepared && prepared.kind === "repair";
     const parents =
       reviewedParents ??
-      (await loadStopLossFundingParents({
-        account: prepared.account,
-        chainId: prepared.chainId,
-        cowShed: prepared.owner,
-      }));
+      (await (reads?.fundingParents(prepared.owner) ??
+        loadStopLossFundingParents({
+          account: prepared.account,
+          chainId: prepared.chainId,
+          cowShed: prepared.owner,
+        })));
     const blockNumber = await client.getBlockNumber();
     const block = await client.getBlock({ blockNumber });
     const codes = await Promise.all(
@@ -377,7 +515,8 @@ async function refreshFundingChecks(
         funded &&
         parent.owner.toLowerCase() === prepared.owner.toLowerCase()
       ) {
-        displayed ??= await loadStopLossOrders({ account: prepared.account });
+        displayed ??= await (reads?.orders() ??
+          loadStopLossOrders({ account: prepared.account }));
         const chain = displayed.chains.find(
           ({ chainId }) => chainId === prepared.chainId,
         );
@@ -411,10 +550,16 @@ async function refreshFundingChecks(
           (!order.isSellOrder &&
             (execution.executedBuyAmount === null ||
               execution.executedBuyAmount < BigInt(0)))
-        )
+        ) {
+          if (!repair) {
+            // Keep the full settlement obligation until indexed fills can be verified.
+            outstandingSettlementAmount += order.sellAmount;
+            continue;
+          }
           throw new Error(
             "Settlement execution data is missing or inconsistent",
           );
+        }
         if (
           !order.isSellOrder &&
           execution.executedBuyAmount !== null &&
