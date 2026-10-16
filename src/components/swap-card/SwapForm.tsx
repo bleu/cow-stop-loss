@@ -183,33 +183,29 @@ function WalletSwapForm({
           });
         }
       }}
-      className="w-full"
+      className="rescue-swap-form w-full"
     >
       <fieldset
         disabled={form.formState.isSubmitting}
         className="flex w-full min-w-0 flex-col"
       >
         <Card className="flex w-full min-w-0 flex-col rounded-none border-0 bg-transparent p-0 shadow-none">
-          <CardContent className="flex flex-col gap-3 p-0">
+          <CardContent className="rescue-swap-content flex flex-col gap-3 p-0 min-[860px]:gap-1">
             <AdvancedSettingsPanel
               slippagePercent={slippagePercent}
               open={settingsOpen}
               onOpenChange={setSettingsOpen}
               title={
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-                    Create
+                  <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-secondary">
+                    Create · Your flight plan
                   </p>
                   <h1
                     id="place-order-title"
-                    className="mt-1 text-balance text-xl font-semibold tracking-tight sm:text-2xl"
+                    className="mt-2 min-[860px]:mt-1 text-balance font-serif text-[28px] leading-tight tracking-tight sm:text-[32px] min-[860px]:text-[28px]"
                   >
                     Place a stop-loss order
                   </h1>
-                  <p className="mt-1 max-w-md text-sm leading-5 text-muted-foreground">
-                    Sell tokens when the price falls below your trigger. Set the
-                    minimum amount to receive.
-                  </p>
                 </div>
               }
               onApplySlippage={(value) =>
@@ -222,7 +218,11 @@ function WalletSwapForm({
             <div
               hidden={settingsOpen}
               aria-hidden={settingsOpen}
-              className={settingsOpen ? "hidden" : "flex flex-col gap-3"}
+              className={
+                settingsOpen
+                  ? "hidden"
+                  : "flex flex-col gap-3 min-[860px]:gap-1"
+              }
             >
               <TokenInputCard side="Sell" />
               <PriceInputCard />

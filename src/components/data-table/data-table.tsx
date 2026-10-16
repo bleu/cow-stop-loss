@@ -27,6 +27,7 @@ interface DataTableProps<TData> extends React.HTMLAttributes<HTMLDivElement> {
    */
   floatingBar?: React.ReactNode | null;
   fillPanel?: boolean;
+  tableClassName?: string;
   emptyMessage?: React.ReactNode;
   notice?: React.ReactNode;
   onRowClick?: (row: TData) => void;
@@ -37,6 +38,7 @@ export function DataTable<TData>({
   table,
   floatingBar = null,
   fillPanel = false,
+  tableClassName,
   emptyMessage = "No results.",
   notice,
   onRowClick,
@@ -71,6 +73,7 @@ export function DataTable<TData>({
           className={cn(
             fillPanel && "min-w-[420px] xl:min-w-[680px]",
             fillPanel && isEmpty && "h-full",
+            tableClassName,
           )}
         >
           <TableHeader
@@ -86,6 +89,7 @@ export function DataTable<TData>({
                   return (
                     <TableHead
                       key={header.id}
+                      data-column={header.column.id}
                       className={cn(
                         "h-12 whitespace-nowrap text-[11px] font-semibold uppercase tracking-[0.13em] text-muted-foreground",
                       )}
@@ -144,6 +148,12 @@ export function DataTable<TData>({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       key={cell.id}
+                      data-column={cell.column.id}
+                      data-label={
+                        typeof cell.column.columnDef.header === "string"
+                          ? cell.column.columnDef.header
+                          : cell.column.id
+                      }
                       className="py-2.5 align-middle"
                     >
                       {flexRender(

@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="1100" viewBox="0 0 480 1100" fill="none"><defs><path id="cloud" d="M0 32C-15 15 7-5 24 7C28-16 62-16 72 6C94-2 110 15 100 32Z"/><linearGradient id="comet"><stop stop-color="#bad5ff" stop-opacity="0"/><stop offset="1" stop-color="#bad5ff"/></linearGradient></defs><g fill="#6085b4" opacity=".32"><use href="#cloud" transform="translate(150 5) scale(.65)"/><use href="#cloud" transform="translate(350 105) scale(.8)"/><use href="#cloud" transform="translate(50 740) scale(.9)"/></g><g stroke="#8daacb" stroke-width="1" stroke-linecap="round" opacity=".65"><path d="M245 23q4-4 8 0q4-4 8 0M295 123q3-3 6 0q3-3 6 0M85 128q3-3 6 0q3-3 6 0"/></g><g fill="#d5e8ff" opacity=".65"><circle cx="170" cy="14" r="1"/><circle cx="265" cy="38" r="1"/><circle cx="420" cy="80" r="1.2"/><path d="M220 30l18-8" stroke="#b7d2ff" stroke-linecap="round"/></g><svg x="320" y="0" width="46" height="56" viewBox="0 0 280 340"><g fill="none" transform="rotate(-9 140 170) translate(20 20)"><g stroke="#a6ceff" stroke-width="3" stroke-linejoin="round">
+          <path
+            d="M20 99C20 0 220 0 220 99L180 87L140 100L100 88L60 101Z"
+            fill="#658fff"
+          />
+          <path d="M60 101Q57 25 120 25Q176 29 180 87M100 88Q91 33 120 25Q145 37 140 100" />
+          <path d="M20 99L92 205M60 101L105 205M180 87L148 205M220 99L157 205" />
+        </g>
+
+      <g
+        stroke="#173b55"
+        stroke-width="4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path
+          d="M75 238L68 268L86 272L100 243M148 242L155 272L174 268L171 233"
+          fill="#fff9df"
+        />
+        <path d="M69 267L87 270M156 270L174 267" stroke-width="10" />
+        <path d="M173 214Q210 193 203 223" />
+        <ellipse cx="120" cy="224" rx="61" ry="35" fill="#fff9df" />
+        <path
+          d="M116 192Q92 219 115 232Q146 241 151 202"
+          fill="#173b55"
+          stroke="none"
+        />
+        <path
+          d="M71 189L52 167L47 190M102 183L113 159L115 188"
+          fill="#ffce79"
+        />
+        <path
+          d="M60 192Q25 178 35 201L59 209M103 191Q136 176 128 201L110 208"
+          fill="#fff9df"
+        />
+        <path
+          d="M58 185Q83 175 107 189L112 222Q83 242 54 221Z"
+          fill="#fff9df"
+        />
+        <path d="M59 185Q83 183 78 205L56 210" fill="#173b55" stroke="none" />
+        <ellipse cx="82" cy="222" rx="31" ry="17" fill="#ffb6a7" />
+        <path d="M70 220V223M93 220V223M96 199V202" />
+      </g>
+    </g></svg><svg x="85" y="3" width="24" height="30" viewBox="0 0 280 340"><g fill="none" transform="rotate(-9 140 170) translate(20 20)"><g stroke="#a6ceff" stroke-width="3" stroke-linejoin="round">
+          <path
+            d="M20 99C20 0 220 0 220 99L180 87L140 100L100 88L60 101Z"
+            fill="#658fff"
+          />
+          <path d="M60 101Q57 25 120 25Q176 29 180 87M100 88Q91 33 120 25Q145 37 140 100" />
+          <path d="M20 99L92 205M60 101L105 205M180 87L148 205M220 99L157 205" />
+        </g>
+
+      <g
+        stroke="#173b55"
+        stroke-width="4"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path
+          d="M75 238L68 268L86 272L100 243M148 242L155 272L174 268L171 233"
+          fill="#fff9df"
+        />
+        <path d="M69 267L87 270M156 270L174 267" stroke-width="10" />
+        <path d="M173 214Q210 193 203 223" />
+        <ellipse cx="120" cy="224" rx="61" ry="35" fill="#fff9df" />
+        <path
+          d="M116 192Q92 219 115 232Q146 241 151 202"
+          fill="#173b55"
+          stroke="none"
+        />
+        <path
+          d="M71 189L52 167L47 190M102 183L113 159L115 188"
+          fill="#ffce79"
+        />
+        <path
+          d="M60 192Q25 178 35 201L59 209M103 191Q136 176 128 201L110 208"
+          fill="#fff9df"
+        />
+        <path
+          d="M58 185Q83 175 107 189L112 222Q83 242 54 221Z"
+          fill="#fff9df"
+        />
+        <path d="M59 185Q83 183 78 205L56 210" fill="#173b55" stroke="none" />
+        <ellipse cx="82" cy="222" rx="31" ry="17" fill="#ffb6a7" />
+        <path d="M70 220V223M93 220V223M96 199V202" />
+      </g>
+    </g></svg><path d="M215 12l25-8M385 96l22-9" stroke="url(#comet)" stroke-width="1.3" stroke-linecap="round"/><g fill="#d7e7ff"><circle cx="240" cy="4" r="1"/><circle cx="407" cy="87" r="1"/></g></svg>

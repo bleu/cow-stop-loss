@@ -1,22 +1,41 @@
-import { ChainId } from "#/lib/publicClients";
-import { IToken } from "#/lib/types";
+import type { Address } from "viem";
 
+import type { ChainId } from "#/lib/publicClients";
+import type { IToken } from "#/lib/types";
+
+import { useAdvancedSettingsStore } from "./useAdvancedSettings";
 import { useTokenPrice } from "./useTokenPrice";
 
 export const useTokenPairPrice = (
   tokenSell?: IToken,
   tokenBuy?: IToken,
   chainId?: ChainId,
+  savedOracles?: {
+    tokenSellOracle: Address;
+    tokenBuyOracle: Address;
+    maxAge: number;
+  },
 ) => {
-  const { data: sellPrice, error: sellError } = useTokenPrice(
+  const maxHours = useAdvancedSettingsStore(
+    (state) => state.advancedSettings.maxHoursSinceOracleUpdates,
+  );
+  const maxAge = savedOracles?.maxAge ?? maxHours * 60 * 60;
+  const sell = useTokenPrice(
     tokenSell,
     chainId,
+    savedOracles?.tokenSellOracle,
+    maxAge,
   );
-  const { data: buyPrice, error: buyError } = useTokenPrice(tokenBuy, chainId);
-
+  const buy = useTokenPrice(
+    tokenBuy,
+    chainId,
+    savedOracles?.tokenBuyOracle,
+    maxAge,
+  );
+  const price = sell.data && buy.data ? sell.data / buy.data : undefined;
   return {
-    data: sellPrice && buyPrice ? sellPrice / buyPrice : undefined,
-    error: sellError || buyError,
-    isLoading: (!sellPrice && !sellError) || (!buyPrice && !buyError),
+    data: price && Number.isFinite(price) && price > 0 ? price : undefined,
+    error: sell.error || buy.error,
+    isLoading: sell.isLoading || buy.isLoading,
   };
 };

@@ -4,6 +4,7 @@
  */
 
 import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import type { FundingSnapshot, PreparedPlacement } from "#/lib/pollerStopLoss";
 import { DraftOrder, OrderStatus } from "#/lib/types";
@@ -87,13 +88,13 @@ it("shows a compact order summary with edit beside the heading", () => {
   const heading = screen.getByRole("heading", { name: "Confirm your order" });
   const edit = screen.getByRole("button", { name: "Edit order" });
   expect(edit.parentElement).toBe(heading.parentElement?.parentElement);
-  const sellAmount = screen.getByText(/0\.123456789012345678/);
-  const buyAmount = screen.getByText(/246\.666665/);
-  expect(sellAmount).toHaveClass("text-sm");
-  expect(sellAmount).toHaveTextContent("0.123456789012345678 WETH");
-  expect(buyAmount).toHaveClass("text-sm");
-  expect(buyAmount).toHaveTextContent("246.666665 USDC");
-  expect(screen.getByText(/Smart account used to execute/)).toBeInTheDocument();
+  expect(
+    screen.getByLabelText("Show exact amount: 0.123456789012345678 WETH"),
+  ).toHaveAttribute("title", "0.123456789012345678 WETH");
+  expect(
+    screen.getByLabelText("Show exact amount: 246.666665 USDC"),
+  ).toBeInTheDocument();
+  expect(screen.getByText("Execution account")).toBeInTheDocument();
   expect(screen.queryByText("Connected wallet")).not.toBeInTheDocument();
   expect(screen.queryByText(/Owner/)).not.toBeInTheDocument();
 });
@@ -163,7 +164,7 @@ it("does not show a second preparation message while validating", () => {
   expect(screen.queryByRole("status")).not.toBeInTheDocument();
 });
 
-it("does not render when closed and puts the edit arrow before the review title", () => {
+it("does not render when closed and keeps the edit button next to the review title", () => {
   const input = props();
   const { rerender } = render(<ReviewOrderPanel {...input} open={false} />);
   expect(
@@ -172,5 +173,39 @@ it("does not render when closed and puts the edit arrow before the review title"
   rerender(<ReviewOrderPanel {...input} />);
   const header = screen.getByRole("heading", { name: "Confirm your order" })
     .parentElement?.parentElement;
-  expect(header?.firstElementChild).toHaveAccessibleName("Edit order");
+  expect(header?.lastElementChild).toHaveAccessibleName("Edit order");
+});
+
+it("keeps small nonzero amounts visible and reveals the full amount by touch", async () => {
+  const user = userEvent.setup();
+  render(
+    <ReviewOrderPanel
+      {...props()}
+      order={{ ...order, amountSell: "0.000000000123456789" }}
+    />,
+  );
+  const amount = screen.getByRole("button", {
+    name: "Show exact amount: 0.000000000123456789 WETH",
+  });
+  expect(amount).toHaveTextContent("0.00000000012345678…");
+  await user.click(amount);
+  expect(
+    screen.getByRole("dialog", { name: "Exact token amount" }),
+  ).toHaveTextContent("0.000000000123456789 WETH");
+});
+
+it("reveals high-precision amounts with the keyboard and restores focus on close", async () => {
+  const user = userEvent.setup();
+  render(<ReviewOrderPanel {...props()} />);
+  const amount = screen.getByRole("button", {
+    name: "Show exact amount: 0.123456789012345678 WETH",
+  });
+  amount.focus();
+  await user.keyboard("{Enter}");
+  expect(
+    screen.getByRole("dialog", { name: "Exact token amount" }),
+  ).toHaveTextContent("0.123456789012345678 WETH");
+  await user.keyboard("{Escape}");
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  expect(amount).toHaveFocus();
 });

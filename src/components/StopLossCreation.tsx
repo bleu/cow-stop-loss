@@ -396,7 +396,7 @@ export function StopLossCreation() {
   return (
     <>
       {!open && (trackingError || latest?.error) && (
-        <p role="alert" className="mb-4 text-sm text-red-400">
+        <p role="alert" className="mb-4 text-sm text-destructive">
           {trackingError || latest?.error}
         </p>
       )}
@@ -455,7 +455,9 @@ export function StopLossCreation() {
         />
       ) : null}
       <div
-        className={review && open ? "hidden" : "flex min-w-0 flex-col"}
+        className={
+          review && open ? "hidden" : "rescue-order-form flex min-w-0 flex-col"
+        }
       >
         <SwapCard
           reviewDisabled={Boolean(active)}

@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="180" viewBox="0 0 1800 180" fill="none"><defs><pattern id="grass-texture" width="68" height="36" patternUnits="userSpaceOnUse"><path d="M10 25l-2-5m2 5l3-4M48 15l-2-4m2 4l3-3" stroke="#86a67a" stroke-width="1" stroke-linecap="round" opacity=".22"/><path d="M28 10q4-2 8 0M45 31q5-2 10-1" stroke="#86a67a" stroke-width=".8" stroke-linecap="round" opacity=".16"/></pattern></defs><path d="M0 67Q260 20 550 57T1110 55T1800 38V180H0Z" fill="#214b47"/><path d="M0 97Q350 57 650 89T1270 83T1800 92V180H0Z" fill="#2d594c"/><path d="M0 97Q350 57 650 89T1270 83T1800 92V180H0Z" fill="url(#grass-texture)"/><g transform="translate(620 42) scale(0.7)"><g stroke="#254755" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M42 43L40 62L46 62L49 45M76 44L78 62L84 62L84 40" fill="#fff9df"/>
+<path d="M39 62H47M77 62H85" stroke-width="4"/>
+<path d="M91 29Q104 24 104 37" fill="none"/>
+<path d="M32 29C32 14 91 13 94 29L92 42Q76 57 39 46Z" fill="#fff9df"/>
+<path d="M64 18Q51 31 63 36Q76 43 80 20" fill="#254755" stroke="none"/>
+<path d="M26 24L23 16L31 21M39 22L45 15L44 26" fill="#e9c582"/>
+<path d="M26 27Q10 18 16 30L25 32M42 27Q54 20 50 30L43 33" fill="#fff9df"/>
+<path d="M25 22Q35 18 44 25L46 40L24 43Z" fill="#fff9df"/>
+<path d="M26 24Q37 20 34 32L25 35" fill="#254755" stroke="none"/>
+<path d="M40 29V31"/>
+<ellipse cx="33" cy="41" rx="15" ry="9" fill="#edb2a0"/>
+<path d="M27 40V42M38 39V41" stroke-width="2"/>
+</g></g><g transform="translate(1194.4 51) scale(-0.62 0.62)"><g stroke="#254755" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M42 43L40 62L46 62L49 45M76 44L78 62L84 62L84 40" fill="#fff9df"/>
+<path d="M39 62H47M77 62H85" stroke-width="4"/>
+<path d="M91 29Q104 24 104 37" fill="none"/>
+<path d="M32 29C32 14 91 13 94 29L92 42Q76 57 39 46Z" fill="#fff9df"/>
+<path d="M64 18Q51 31 63 36Q76 43 80 20" fill="#254755" stroke="none"/>
+<path d="M26 24L23 16L31 21M39 22L45 15L44 26" fill="#e9c582"/>
+<path d="M26 27Q10 18 16 30L25 32M42 27Q54 20 50 30L43 33" fill="#fff9df"/>
+<path d="M25 22Q35 18 44 25L46 40L24 43Z" fill="#fff9df"/>
+<path d="M26 24Q37 20 34 32L25 35" fill="#254755" stroke="none"/>
+<path d="M40 29V31"/>
+<ellipse cx="33" cy="41" rx="15" ry="9" fill="#edb2a0"/>
+<path d="M27 40V42M38 39V41" stroke-width="2"/>
+</g></g><path d="M470 117l-3-6m3 6l4-4" stroke="#688d73" stroke-width="1.3" stroke-linecap="round" opacity=".6"/><path d="M800 110l-3-6m3 6l4-4" stroke="#688d73" stroke-width="1.3" stroke-linecap="round" opacity=".6"/><path d="M1020 130l-3-6m3 6l4-4" stroke="#688d73" stroke-width="1.3" stroke-linecap="round" opacity=".6"/><path d="M1310 118l-3-6m3 6l4-4" stroke="#688d73" stroke-width="1.3" stroke-linecap="round" opacity=".6"/><g transform="translate(1450 55) scale(0.95)"><ellipse cx="27" cy="59" rx="31" ry="24" fill="#ffc570" opacity=".07"/><g stroke="#293d46" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M59 26V4H72V29" fill="#705b50"/>
+<path d="M8 31H80V89H8Z" fill="#705b50"/>
+<path d="M8 43H80M8 54H80M8 65H80M8 76H80" stroke="#293d46" stroke-width="1.4" opacity=".55"/>
+<path d="M0 34L43 1L88 34L81 40L43 12L7 40Z" fill="#514f58"/>
+<path d="M45 89V56H65V89" fill="#293d46"/>
+<path d="M17 49H36V67H17Z" fill="#ffce82"/>
+<path d="M26 49V67M17 58H36" stroke-width="1.5"/>
+<path d="M58 73V75" stroke="#e8c48e"/>
+<path d="M5 90H83" stroke-width="3"/>
+</g><path d="M65 1C75-4 60-7 67-16M69-3C80-8 66-11 73-19" stroke="#a1b4ca" stroke-width="3" stroke-linecap="round" fill="none" opacity=".25"/>
+<path d="M20 65Q18 61 22 58Q22 63 25 59Q29 65 26 66Z" fill="#f29c52" opacity=".8"/></g><g transform="translate(730 76)" stroke="#6b7970" stroke-linecap="round"><path d="M0 0V25M29 0V25M58 0V25M87 0V25M116 0V25M145 0V25" stroke-width="4"/><path d="M0 7H145M0 18H145" stroke-width="3"/></g><g transform="translate(1290 84)" stroke="#6b7970" stroke-linecap="round"><path d="M0 0V25M29 0V25M58 0V25M87 0V25M116 0V25" stroke-width="4"/><path d="M0 7H116M0 18H116" stroke-width="3"/></g></svg>

@@ -14,7 +14,6 @@ export function AdvancedSettingsAlert({
   );
 
   const warnings = [
-    advancedSettings.partiallyFillable && "Partial execution is enabled.",
     advancedSettings.maxHoursSinceOracleUpdates > 24 &&
       "The order accepts oracle prices older than 24 hours.",
     Number(slippagePercent) > 1 && "Price slippage is above 1%.",

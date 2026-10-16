@@ -1,13 +1,9 @@
 "use client";
 
 import { Toaster } from "@bleu/ui";
-import {
-  darkTheme,
-  lightTheme,
-  RainbowKitProvider,
-} from "@rainbow-me/rainbowkit";
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SWRConfig, SWRConfiguration } from "swr";
 import { type State, WagmiProvider } from "wagmi";
 
@@ -15,24 +11,7 @@ import { wagmiConfig } from "#/utils/wagmi";
 
 import { Footer } from "./Footer";
 import { Header } from "./Header";
-
-type ColorTheme = "dark" | "light";
-
-function createWalletTheme(theme: ColorTheme) {
-  const walletTheme = (theme === "light" ? lightTheme : darkTheme)({
-    accentColor: "hsl(var(--primary))",
-    accentColorForeground: "hsl(var(--primary-foreground))",
-    borderRadius: "medium",
-    overlayBlur: "small",
-  });
-  walletTheme.colors.modalBackground = "hsl(var(--popover))";
-  walletTheme.colors.modalBorder = "hsl(var(--border))";
-  walletTheme.colors.actionButtonBorder = "hsl(var(--border))";
-  walletTheme.colors.actionButtonSecondaryBackground = "hsl(var(--background))";
-  walletTheme.colors.generalBorder = "hsl(var(--border))";
-  walletTheme.fonts.body = "var(--font-family-sans), sans-serif";
-  return walletTheme;
-}
+import { ColorTheme, createWalletTheme } from "./walletTheme";
 
 export const swrConfig: SWRConfiguration = {
   revalidateOnFocus: false,
@@ -56,6 +35,11 @@ export function RootLayout({
   const [queryClient] = useState(() => new QueryClient());
   const [theme, setTheme] = useState<ColorTheme>(initialTheme);
 
+  useEffect(() => {
+    const icon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+    if (icon) icon.href = `/assets/air-rescue/favicon-${theme}.svg`;
+  }, [theme]);
+
   function toggleTheme() {
     const nextTheme = theme === "dark" ? "light" : "dark";
     setTheme(nextTheme);
@@ -72,14 +56,14 @@ export function RootLayout({
           appInfo={{ appName: "CoW Stop Loss" }}
         >
           <SWRConfig value={swrConfig}>
-            <div className="flex h-dvh min-h-0 flex-col">
+            <div className="rescue-shell flex h-dvh min-h-0 flex-col">
               <Header
                 linkUrl="/"
-                imageSrc="/assets/stoploss.svg"
+                imageSrc={`/assets/air-rescue/face-${theme}.svg`}
                 theme={theme}
                 onToggleTheme={toggleTheme}
               />
-              <div className="app-scroll-area min-h-0 flex-1 overflow-y-auto bg-background">
+              <div className="app-scroll-area min-h-0 flex-1 overflow-y-auto bg-transparent">
                 {children}
               </div>
               <Footer

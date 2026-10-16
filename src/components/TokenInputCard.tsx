@@ -103,17 +103,19 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     <>
       <section
         className={
-          "w-full rounded-2xl border border-border/70 bg-card/55 p-3.5 sm:p-4"
+          "w-full rounded-2xl border border-border/80 bg-muted/55 p-3.5 transition-colors focus-within:border-primary/70 sm:p-4 min-[860px]:p-2"
         }
       >
+        <div className="mb-1 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+          <label
+            htmlFor={`amount-${side.toLowerCase()}`}
+            className={`font-semibold uppercase text-muted-foreground ${side === "Buy" ? "whitespace-nowrap text-[12px] tracking-[0.08em] sm:text-[13px] sm:tracking-[0.12em]" : "text-[13px] tracking-[0.12em]"}`}
+          >
+            {getCardTitle(side)}
+          </label>
+        </div>
         <div className="flex min-w-0 items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <label
-              htmlFor={`amount-${side.toLowerCase()}`}
-              className={`font-semibold uppercase text-muted-foreground ${side === "Buy" ? "whitespace-nowrap text-[12px] tracking-[0.08em] sm:text-[13px] sm:tracking-[0.12em]" : "text-[13px] tracking-[0.12em]"}`}
-            >
-              {getCardTitle(side)}
-            </label>
             <div className="mt-0.5 flex min-w-0 items-center gap-2">
               <Input
                 id={`amount-${side.toLowerCase()}`}
@@ -122,10 +124,10 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                 inputMode="decimal"
                 aria-label={getCardTitle(side)}
                 placeholder="0.0"
-                className="h-10 min-w-0 flex-1 rounded-xl border-none bg-transparent px-0 text-left text-xl font-medium tracking-tight tabular-nums shadow-none placeholder:text-muted-foreground/50 focus-visible:ring-transparent sm:text-2xl"
+                className="h-10 min-w-0 flex-1 rounded-xl border-none bg-transparent px-0 text-left text-xl font-medium tracking-tight tabular-nums shadow-none placeholder:text-muted-foreground/80 focus-visible:ring-transparent sm:text-2xl min-[860px]:h-8"
                 disabled={isAmountDisabled}
               />
-              {amount && Number(amount) > 0 && (
+              {amount && Number(amount) > 0 && usdPrice && (
                 <span className="shrink-0 text-[13px] text-muted-foreground tabular-nums sm:text-sm">
                   ≈{" "}
                   {formatNumber(
@@ -165,40 +167,44 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
             )}
           </div>
         </div>
-        {side === "Sell" && token && (
-          <div className="mt-1 flex min-h-7 items-center gap-2 text-[13px] text-muted-foreground">
-            <span className="whitespace-nowrap">
-              {!walletAddress
-                ? "Connect wallet to view balance"
-                : balanceError
-                  ? "Balance unavailable"
-                  : `Balance: ${tokenBalance === undefined ? "Loading…" : formatNumber(tokenBalance, 4, "decimal", "standard", 0.0001)}`}
-            </span>
-            {balanceError && (
-              <Button
-                type="button"
-                variant="ghost"
-                aria-label={`Retry ${token.symbol} balance`}
-                className="h-fit px-1 py-0 text-[13px] text-primary"
-                onClick={() => retryBalance((attempt) => attempt + 1)}
-              >
-                Retry
-              </Button>
-            )}
-            {tokenBalance && tokenBalance !== "0" && (
-              <Button
-                type="button"
-                variant="ghost"
-                className="h-fit px-1 py-0 text-[13px] text-primary"
-                onClick={() => {
-                  setValue(amountFieldName, tokenBalance, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  });
-                }}
-              >
-                Max
-              </Button>
+        {side === "Sell" && (
+          <div className="mt-1 flex h-5 items-center gap-2 text-xs text-muted-foreground">
+            {token && (
+              <>
+                <span className="whitespace-nowrap">
+                  {!walletAddress
+                    ? "Connect wallet to view balance"
+                    : balanceError
+                      ? "Balance unavailable"
+                      : `Balance: ${tokenBalance === undefined ? "Loading…" : formatNumber(tokenBalance, 4, "decimal", "standard", 0.0001)}`}
+                </span>
+                {balanceError && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    aria-label={`Retry ${token.symbol} balance`}
+                    className="h-fit px-1 py-0 text-[13px] text-primary"
+                    onClick={() => retryBalance((attempt) => attempt + 1)}
+                  >
+                    Retry
+                  </Button>
+                )}
+                {tokenBalance && tokenBalance !== "0" && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="h-fit px-1 py-0 text-[13px] text-primary"
+                    onClick={() => {
+                      setValue(amountFieldName, tokenBalance, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                    }}
+                  >
+                    Max
+                  </Button>
+                )}
+              </>
             )}
           </div>
         )}

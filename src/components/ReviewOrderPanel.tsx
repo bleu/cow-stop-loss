@@ -1,11 +1,7 @@
 "use client";
 
-import { Button } from "@bleu/ui";
-import {
-  ArrowDownIcon,
-  ArrowLeftIcon,
-  ArrowRightIcon,
-} from "@radix-ui/react-icons";
+import { Button, Popover, PopoverContent, PopoverTrigger } from "@bleu/ui";
+import { ArrowLeftIcon, ArrowRightIcon } from "@radix-ui/react-icons";
 import { type ReactNode, useEffect, useState } from "react";
 import { formatUnits } from "viem";
 
@@ -65,62 +61,49 @@ export function ReviewOrderPanel({
 
   return (
     <section
-      aria-labelledby="review-order-title"
       aria-label="Review stop-loss order"
-      className="flex min-h-0 w-full flex-col gap-3 sm:gap-4"
+      className={`rescue-review ${reviewError || pending || funding?.combinedCommitmentsExceedBalance ? "rescue-review-with-notice" : ""}`}
     >
-      <header className="flex items-start gap-2">
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          aria-label="Edit order"
-          title="Edit order"
-          className="size-8 shrink-0 rounded-lg text-muted-foreground"
-          onClick={() => setOpen(false)}
-        >
-          <ArrowLeftIcon aria-hidden="true" className="size-4" />
-        </Button>
-        <div className="min-w-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-              Review order
-            </p>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-background/60 px-2 py-1 text-xs font-medium text-muted-foreground">
+      <header className="rescue-review-heading">
+        <div>
+          <div className="rescue-review-kicker">
+            <p className="rescue-review-eyebrow">Review · Pre-flight check</p>
+            <span className="rescue-review-network">
               <NetworkLogo
                 chainId={chainId}
-                size={14}
+                size={12}
                 className="rounded-full"
               />
               {chainNames[chainId]}
             </span>
           </div>
-          <h2
-            id="review-order-title"
-            className="text-lg font-semibold tracking-tight"
-          >
-            Confirm your order
-          </h2>
-          <p className="text-[13px] leading-5 text-muted-foreground">
-            Check the amounts, trigger, and destination before continuing.
-          </p>
+          <h2 id="review-order-title">Confirm your order</h2>
         </div>
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          aria-label="Edit order"
+          title="Edit order"
+          className="size-9 shrink-0 rounded-xl border-border bg-card text-muted-foreground hover:text-primary"
+          onClick={() => setOpen(false)}
+        >
+          <ArrowLeftIcon aria-hidden="true" className="size-4" />
+        </Button>
       </header>
-      <div className="grid items-center gap-2 xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
+
+      <div
+        role="group"
+        aria-label="Order amounts"
+        className="rescue-review-trade"
+      >
         <AmountSummary
           label="Sell"
           amount={order.amountSell}
           token={order.tokenSell}
           chainId={chainId}
         />
-        <ArrowRightIcon
-          aria-hidden="true"
-          className="mx-auto hidden size-4 text-muted-foreground xl:block"
-        />
-        <ArrowDownIcon
-          aria-hidden="true"
-          className="mx-auto size-4 text-muted-foreground xl:hidden"
-        />
+        <ArrowRightIcon aria-hidden="true" className="size-4 text-primary" />
         <AmountSummary
           label="Receive at least"
           amount={order.amountBuy}
@@ -128,166 +111,234 @@ export function ReviewOrderPanel({
           chainId={chainId}
         />
       </div>
-      <div className="grid grid-cols-2 gap-2">
-        <InfoCard label="Trigger price" className="col-span-2 xl:col-span-1">
-          {order.strikePrice} {order.tokenBuy.symbol} / {order.tokenSell.symbol}
-        </InfoCard>
-        <InfoCard label="Expires">
-          {new Date(order.validTo * 1000).toLocaleDateString(undefined, {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-          })}
-        </InfoCard>
-        <InfoCard label="Partial fills">
-          {order.partiallyFillable ? "Allowed" : "All or nothing"}
-        </InfoCard>
-        <InfoCard label="Max slippage">{order.slippagePercent}%</InfoCard>
-        <InfoCard label="Oracle price age">
-          {order.maxHoursSinceOracleUpdates} hours max
-        </InfoCard>
-      </div>
-      <section className="rounded-xl border border-border/70 bg-background/35 p-3">
-        <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-          Order destination
-        </h3>
+
+      <section aria-label="Order terms" className="rescue-review-terms">
+        <dl className="rescue-review-price-row">
+          <div>
+            <dt>Trigger price</dt>
+            <dd className="rescue-review-strike">
+              {order.strikePrice}{" "}
+              <span>
+                {order.tokenBuy.symbol} / {order.tokenSell.symbol}
+              </span>
+            </dd>
+          </div>
+          <div className="rescue-review-expiry">
+            <dt>Expires</dt>
+            <dd>
+              {new Date(order.validTo * 1000).toLocaleDateString(undefined, {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })}
+            </dd>
+          </div>
+        </dl>
+        <dl className="rescue-review-conditions">
+          <InlineTerm label="Slippage">{order.slippagePercent}%</InlineTerm>
+          <InlineTerm label="Partial fills">
+            {order.partiallyFillable ? "Allowed" : "Off"}
+          </InlineTerm>
+          <InlineTerm label="Oracle age">
+            {order.maxHoursSinceOracleUpdates}h max
+          </InlineTerm>
+        </dl>
+      </section>
+
+      <section
+        aria-label="Order destination"
+        className="rescue-review-destination"
+      >
         <AddressLine
-          label="Receive address"
+          label={
+            prepared &&
+            order.receiver.toLowerCase() !== prepared.account.toLowerCase()
+              ? "Custom recipient"
+              : "Receive address"
+          }
           address={order.receiver}
           chainId={chainId}
         />
         {prepared && (
           <AddressLine
-            label="Smart account used to execute"
+            label="Execution account"
             address={prepared.owner}
             chainId={chainId}
           />
         )}
       </section>
+
       {funding && (
-        <section className="rounded-xl border border-border/70 bg-background/35 p-3">
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-              Wallet check
-            </h3>
-            <span
-              className={`rounded-full px-2 py-1 text-xs font-medium ${needsApproval || funding.settlementApprovalRequired ? "bg-amber-400/10 text-amber-300" : "bg-emerald-400/10 text-emerald-300"}`}
-            >
-              {needsApproval
-                ? "Approval needed"
-                : funding.settlementApprovalRequired
-                  ? "Setup needed"
-                  : "Ready"}
-            </span>
-          </div>
-          <dl className="mt-2 grid grid-cols-2 gap-2 text-[13px]">
-            <Info label="Balance">
-              {formatUnits(funding.balance, order.tokenSell.decimals)}{" "}
-              {order.tokenSell.symbol}
-            </Info>
-            <Info label="Allowance needed">
-              {formatUnits(funding.requiredAllowance, order.tokenSell.decimals)}{" "}
-              {order.tokenSell.symbol}
-            </Info>
-            <Info label="Settlement approval">
-              {funding.settlementApprovalRequired
-                ? "Will approve during setup"
-                : "Ready"}
-            </Info>
+        <section aria-label="Wallet check" className="rescue-review-funding">
+          <dl>
+            <div>
+              <dt>Wallet balance</dt>
+              <dd>
+                <PreciseAmount
+                  value={formatUnits(funding.balance, order.tokenSell.decimals)}
+                  symbol={order.tokenSell.symbol}
+                />
+              </dd>
+            </div>
+            <div>
+              <dt>Allowance needed</dt>
+              <dd>
+                <PreciseAmount
+                  value={formatUnits(
+                    funding.requiredAllowance,
+                    order.tokenSell.decimals,
+                  )}
+                  symbol={order.tokenSell.symbol}
+                />
+              </dd>
+            </div>
+            <div>
+              <dt>Settlement approval</dt>
+              <dd>
+                {funding.settlementApprovalRequired ? "During setup" : "Ready"}
+              </dd>
+            </div>
           </dl>
         </section>
       )}
+
       {funding?.combinedCommitmentsExceedBalance && (
-        <p
-          role="alert"
-          className="rounded-xl border border-amber-400/30 bg-amber-400/10 p-3 text-[13px] text-amber-200"
-        >
-          Your other open orders may use some of this balance. Check them before
-          you continue.
+        <p role="alert" className="rescue-review-notice text-warning">
+          Your other open orders may use this balance. Check them before
+          continuing.
         </p>
       )}
       {needsApproval && (
-        <fieldset
-          disabled={actionsBlocked}
-          className="rounded-xl border border-border/70 p-3"
-        >
-          <legend className="px-1 text-[13px] font-semibold">
-            Token approval
+        <fieldset disabled={actionsBlocked} className="rescue-review-approvals">
+          <legend>
+            Token approval{" "}
+            <span className="rescue-review-badge">Approval needed</span>
           </legend>
-          <p className="mb-2 text-[13px] leading-5 text-muted-foreground">
-            Choose how much {order.tokenSell.symbol} the order can use.
-          </p>
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="rescue-review-choices">
             <ApprovalChoice
               checked={mode === "limited"}
               onChange={() => setMode("limited")}
               label="This order only"
-              description="Approve the amount shown above."
+              description="Amount shown above"
             />
             <ApprovalChoice
               checked={mode === "unlimited"}
               onChange={() => setMode("unlimited")}
               label="Unlimited"
-              description="Keep this approval for later orders."
+              description="For later orders too"
             />
           </div>
         </fieldset>
       )}
-      {pending ? (
-        <p role="status" className="text-[13px] text-muted-foreground">
+      {!needsApproval && funding && (
+        <div className="rescue-review-ready">
+          <span className="text-muted-foreground">Wallet check</span>
+          <span className="text-success">
+            {funding.settlementApprovalRequired
+              ? "Ready for setup"
+              : "Ready to place"}
+          </span>
+        </div>
+      )}
+      {pending && (
+        <p role="status" className="rescue-review-notice text-muted-foreground">
           Transaction pending. Order tracking continues.
         </p>
-      ) : null}
+      )}
       {reviewError && (
-        <p role="alert" className="text-[13px] text-red-400">
+        <p role="alert" className="rescue-review-notice text-destructive">
           {reviewError}
         </p>
       )}
-      {onAbandon && (
+      <div className="rescue-review-actions">
+        {onAbandon && (
+          <Button
+            type="button"
+            variant="outline"
+            className="h-10 min-h-10 flex-1 rounded-xl text-sm"
+            disabled={busy || pending}
+            onClick={onAbandon}
+          >
+            Abandon placement
+          </Button>
+        )}
         <Button
           type="button"
-          variant="outline"
-          className="h-9 rounded-lg"
-          disabled={busy || pending}
-          onClick={onAbandon}
+          className="rescue-primary-button h-10 min-h-10 flex-1 rounded-xl text-sm"
+          disabled={busy || (!reviewError && !pending && actionsBlocked)}
+          onClick={() =>
+            reviewError || pending
+              ? onRetry()
+              : needsApproval
+                ? onApprove(mode)
+                : onPlace()
+          }
         >
-          Abandon placement
+          {busy
+            ? needsApproval
+              ? "Approving…"
+              : "Validating…"
+            : reviewError || pending
+              ? "Retry"
+              : needsApproval
+                ? `Approve ${order.tokenSell.symbol}`
+                : "Place order"}
         </Button>
-      )}
-      <Button
-        type="button"
-        className="h-10 w-full rounded-xl"
-        disabled={busy || (!reviewError && !pending && actionsBlocked)}
-        onClick={() =>
-          reviewError || pending
-            ? onRetry()
-            : needsApproval
-              ? onApprove(mode)
-              : onPlace()
-        }
-      >
-        {busy
-          ? needsApproval
-            ? "Approving…"
-            : "Validating…"
-          : reviewError || pending
-            ? "Retry"
-            : needsApproval
-              ? `Approve ${order.tokenSell.symbol}`
-              : "Place order"}
-      </Button>
+      </div>
     </section>
   );
 }
 
-function Info({ label, children }: { label: string; children: ReactNode }) {
+function InlineTerm({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) {
   return (
-    <>
-      <dt className="text-xs text-muted-foreground">{label}</dt>
-      <dd className="mt-0.5 break-words font-medium tabular-nums">
-        {children}
-      </dd>
-    </>
+    <div>
+      <dt>{label}</dt>
+      <dd>{children}</dd>
+    </div>
+  );
+}
+
+function compactAmount(value: string) {
+  const [whole, fraction = ""] = value.split(".");
+  const leadingZeros = fraction.search(/[1-9]/);
+  const decimalPlaces =
+    whole === "0"
+      ? Math.max(8, leadingZeros + 8)
+      : Math.max(0, 8 - whole.length);
+  if (fraction.length <= decimalPlaces) return value;
+  return `${whole}${decimalPlaces ? `.${fraction.slice(0, decimalPlaces)}` : ""}…`;
+}
+
+function PreciseAmount({ value, symbol }: { value: string; symbol: string }) {
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          title={`${value} ${symbol}`}
+          aria-label={`Show exact amount: ${value} ${symbol}`}
+          className="rescue-review-number max-w-full rounded-sm text-left underline decoration-dotted decoration-muted-foreground/50 underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <span>{compactAmount(value)}</span>{" "}
+          <span className="rescue-review-symbol">{symbol}</span>
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        aria-label="Exact token amount"
+        className="rescue-popover w-fit max-w-[calc(100vw-2rem)] rounded-2xl border border-border bg-popover p-4 text-popover-foreground"
+      >
+        <p className="mb-1 text-xs text-muted-foreground">Exact amount</p>
+        <p className="break-all text-sm font-medium tabular-nums">
+          {value} {symbol}
+        </p>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -303,52 +354,29 @@ function AmountSummary({
   chainId: ChainId;
 }) {
   return (
-    <div className="min-w-0 rounded-xl border border-border/70 bg-background/45 p-3">
-      <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-        {label}
-      </p>
-      <div className="mt-2 flex min-w-0 items-center gap-2">
+    <div className="rescue-review-amount">
+      <div className="rescue-review-amount-label">
+        <span>{label}</span>
+        <BlockExplorerLink
+          type="token"
+          identifier={token.address}
+          networkId={chainId}
+          showExternalIcon
+          label={<span className="sr-only">{token.symbol} token contract</span>}
+        />
+      </div>
+      <div className="rescue-review-amount-value">
         <TokenLogo
           tokenAddress={token.address}
           chainId={chainId}
           alt=""
           aria-hidden="true"
-          width={28}
-          height={28}
-          className="size-7 shrink-0 rounded-full"
+          width={24}
+          height={24}
+          className="size-6 shrink-0 rounded-full"
         />
-        <p className="min-w-0 break-words text-sm font-semibold tabular-nums">
-          {amount} <span className="text-muted-foreground">{token.symbol}</span>
-        </p>
+        <PreciseAmount value={amount} symbol={token.symbol} />
       </div>
-      <BlockExplorerLink
-        type="token"
-        identifier={token.address}
-        networkId={chainId}
-        showExternalIcon
-        label="Token contract"
-        className="mt-2 text-xs"
-      />
-    </div>
-  );
-}
-
-function InfoCard({
-  label,
-  children,
-  className,
-}: {
-  label: string;
-  children: ReactNode;
-  className?: string;
-}) {
-  return (
-    <div
-      className={`min-w-0 rounded-xl border border-border/70 bg-background/35 p-3 ${className ?? ""}`}
-    >
-      <dl>
-        <Info label={label}>{children}</Info>
-      </dl>
     </div>
   );
 }
@@ -363,8 +391,8 @@ function AddressLine({
   chainId: ChainId;
 }) {
   return (
-    <div className="mt-2 flex min-w-0 items-center justify-between gap-2 text-[13px]">
-      <span className="shrink-0 text-muted-foreground">{label}</span>
+    <div className="rescue-review-address">
+      <span>{label}</span>
       <BlockExplorerLink
         type="address"
         identifier={address}
@@ -389,20 +417,18 @@ function ApprovalChoice({
 }) {
   return (
     <label
-      className={`flex cursor-pointer items-start gap-2 rounded-lg border p-2.5 transition-colors ${checked ? "border-primary/50 bg-primary/10" : "border-border/70 bg-background/35"}`}
+      className={`rescue-review-choice ${checked ? "rescue-review-choice-selected" : ""}`}
     >
       <input
         type="radio"
         name="approval-limit"
+        aria-label={label}
         checked={checked}
         onChange={onChange}
-        className="mt-0.5 accent-primary"
       />
       <span>
-        <span className="block text-[13px] font-medium">{label}</span>
-        <span className="mt-0.5 block text-xs leading-4 text-muted-foreground">
-          {description}
-        </span>
+        <span className="rescue-review-choice-title">{label}</span>
+        <span className="rescue-review-choice-description">{description}</span>
       </span>
     </label>
   );

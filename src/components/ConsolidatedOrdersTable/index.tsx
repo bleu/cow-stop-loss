@@ -16,10 +16,9 @@ import { useAccount } from "wagmi";
 
 import { DataTable } from "#/components/data-table/data-table";
 import { DataTableToolbar } from "#/components/data-table/data-table-toolbar";
-import { NetworkLogo } from "#/components/NetworkLogo";
 import { DataTableFilterField, useDataTable } from "#/hooks/useDataTable";
 import { useOrderList } from "#/hooks/useOrderList";
-import { chainNames, supportedChainIds } from "#/lib/publicClients";
+import { chainNames } from "#/lib/publicClients";
 import { PlacementRow } from "#/lib/stopLossPlacement";
 
 import { getColumns } from "./columns";
@@ -58,31 +57,27 @@ export function ConsolidatedOrdersTable() {
 function WalletRequiredOrders() {
   const { openConnectModal } = useConnectModal();
   return (
-    <div className="my-auto flex w-full flex-col rounded-2xl border border-dashed border-border bg-background/55 p-5 sm:p-7 lg:max-w-2xl lg:self-center">
-      <div className="mb-5 flex -space-x-2">
-        {supportedChainIds.map((chainId) => (
-          <NetworkLogo
-            key={chainId}
-            chainId={chainId}
-            size={34}
-            className="rounded-full border-2 border-card"
-          />
-        ))}
+    <div className="my-auto flex w-full flex-1 items-center justify-center gap-5 px-1 py-5 text-left sm:px-3">
+      <div
+        aria-hidden="true"
+        className="rescue-landing-art hidden size-32 shrink-0 sm:block"
+      />
+      <div className="max-w-sm">
+        <h3 className="font-serif text-2xl leading-tight tracking-tight">
+          Your herd, all in one place
+        </h3>
+        <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
+          Connect your wallet to see stop-loss orders across Ethereum, Gnosis,
+          Arbitrum, and Sepolia.
+        </p>
+        <Button
+          type="button"
+          className="mt-4 h-11 w-fit rounded-xl border border-primary/35 bg-primary/10 px-4 text-[13px] font-medium text-primary hover:bg-primary/15 hover:text-primary"
+          onClick={openConnectModal}
+        >
+          Connect wallet to view orders
+        </Button>
       </div>
-      <h3 className="text-xl font-semibold tracking-tight">
-        Your orders, all in one place
-      </h3>
-      <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
-        Connect your wallet to see stop-loss orders across Ethereum, Gnosis,
-        Arbitrum, and Sepolia.
-      </p>
-      <Button
-        type="button"
-        className="mt-5 h-11 w-fit rounded-xl bg-secondary px-4 font-semibold text-secondary-foreground hover:bg-secondary/90"
-        onClick={openConnectModal}
-      >
-        Connect wallet to view orders
-      </Button>
     </div>
   );
 }
@@ -150,6 +145,8 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
       <DataTable
         table={table}
         fillPanel
+        className="rescue-orders-table"
+        tableClassName="min-w-0 table-fixed xl:min-w-0"
         onRowClick={(row: PlacementRow) => {
           if (row.canLink)
             router.push(

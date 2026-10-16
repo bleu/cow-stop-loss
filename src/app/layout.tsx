@@ -1,5 +1,6 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import "./globals.css";
+import "../styles/order-review.css";
 
 import localFont from "next/font/local";
 import { cookies, headers } from "next/headers";
@@ -39,6 +40,19 @@ const circularStd = localFont({
   ],
   variable: "--font-family-sans",
 });
+
+export async function generateMetadata() {
+  const theme =
+    (await cookies()).get("theme")?.value === "light" ? "light" : "dark";
+  return {
+    icons: {
+      icon: {
+        url: `/assets/air-rescue/favicon-${theme}.svg`,
+        type: "image/svg+xml",
+      },
+    },
+  };
+}
 
 export default async function Layout({
   children,

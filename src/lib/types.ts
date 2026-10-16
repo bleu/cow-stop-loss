@@ -44,7 +44,6 @@ export type DraftOrder = Omit<SwapData, "validTo"> &
     readonly limitPrice: string;
     status: OrderStatus.DRAFT;
     oraclePrice: number;
-    fallbackMarketPrice?: number;
     salt: `0x${string}`;
     validTo: number;
   };

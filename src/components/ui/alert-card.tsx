@@ -12,19 +12,19 @@ export function AlertCard({
 }) {
   return (
     <div
-      className="flex w-full justify-center rounded-lg bg-background/70 px-4 py-2 space-x-4"
+      className="flex w-full items-start gap-3 rounded-2xl border border-border bg-muted/45 px-4 py-3"
       role="alert"
     >
-      <div className="my-auto">
+      <div className="mt-0.5 shrink-0">
         <ExclamationTriangleIcon
           className={cn(
-            "w-6 h-6",
-            style === "error" ? "text-destructive" : "text-highlight",
+            "size-5",
+            style === "error" ? "text-destructive" : "text-warning",
           )}
         />
       </div>
       <div>
-        <div className="font-bold text-sand12 text-base">{title}</div>
+        <div className="font-semibold text-foreground text-sm">{title}</div>
         <div className="w-full text-xs">{children}</div>
       </div>
     </div>

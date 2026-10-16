@@ -55,19 +55,23 @@ function MarketDistance({ order }: { order: PlacementRow }) {
     sellToken,
     buyToken,
     order.chainId,
+    {
+      tokenSellOracle: order.sellTokenPriceOracle,
+      tokenBuyOracle: order.buyTokenPriceOracle,
+      maxAge: order.maxTimeSinceLastOracleUpdate,
+    },
   );
-  if (!marketPrice)
-    return <span className="text-muted-foreground">Market unavailable</span>;
+  if (!marketPrice) return null;
 
   const triggerPrice = Number(formatUnits(order.strike, 18));
   const distance = ((marketPrice - triggerPrice) / marketPrice) * 100;
-  if (Math.abs(distance) < 0.005) return <span>At market</span>;
 
   return (
-    <span className="tabular-nums">
-      {Math.abs(distance).toFixed(2)}% {distance >= 0 ? "below" : "above"}{" "}
-      market
-    </span>
+    <p className="mt-0.5 text-xs text-muted-foreground tabular-nums">
+      {Math.abs(distance) < 0.005
+        ? "At market"
+        : `${Math.abs(distance).toFixed(2)}% ${distance >= 0 ? "below" : "above"} market`}
+    </p>
   );
 }
 
@@ -130,7 +134,7 @@ export function getColumns(): ColumnDef<PlacementRow>[] {
               />
             </div>
             <div className="min-w-0">
-              <p className="whitespace-nowrap text-xs font-semibold tracking-tight tabular-nums xl:text-sm">
+              <p className="whitespace-nowrap text-xs font-semibold tracking-tight tabular-nums">
                 {shortAmount(sell)} {order.sellToken.symbol} for{" "}
                 {shortAmount(buy)} {order.buyToken.symbol}
               </p>
@@ -151,14 +155,12 @@ export function getColumns(): ColumnDef<PlacementRow>[] {
       id: "trigger",
       header: "Trigger",
       cell: ({ row: { original: order } }) => (
-        <div className="min-w-32">
-          <p className="whitespace-nowrap text-sm font-semibold tabular-nums">
+        <div className="min-w-0">
+          <p className="text-xs font-semibold tabular-nums">
             {formatPrice(Number(formatUnits(order.strike, 18)))}{" "}
             {order.buyToken.symbol}
           </p>
-          <p className="mt-0.5 whitespace-nowrap text-xs text-muted-foreground">
-            <MarketDistance order={order} />
-          </p>
+          <MarketDistance order={order} />
         </div>
       ),
     },
@@ -171,7 +173,7 @@ export function getColumns(): ColumnDef<PlacementRow>[] {
           <time
             dateTime={new Date(order.validTo * 1000).toISOString()}
             title={expiry.full}
-            className="whitespace-nowrap text-sm text-muted-foreground tabular-nums"
+            className="text-xs text-muted-foreground tabular-nums"
           >
             {expiry.label}
           </time>
@@ -241,10 +243,10 @@ export function getColumns(): ColumnDef<PlacementRow>[] {
     },
     {
       id: "actions",
-      header: () => <span className="block text-center">Actions</span>,
+      header: () => <span className="sr-only">Cancel order</span>,
       cell: ({ row: { original: order } }) => (
         <div className="flex items-center justify-center">
-          <CancelOrderDialog order={order} />
+          <CancelOrderDialog order={order} compact />
         </div>
       ),
     },

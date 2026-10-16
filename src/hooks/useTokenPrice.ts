@@ -1,39 +1,22 @@
-import useSWR from "swr";
+import type { Address } from "viem";
 import { useAccount } from "wagmi";
 
-import { ChainId } from "#/lib/publicClients";
-import { fetchTokenUsdPrice } from "#/lib/tokenUtils";
-import { IToken } from "#/lib/types";
+import { configuredTokenOracle } from "#/lib/oraclePrice";
+import type { ChainId } from "#/lib/publicClients";
+import type { IToken } from "#/lib/types";
 
-export function useTokenPrice(token?: IToken, tokenChainId?: ChainId) {
+import { useOraclePrice } from "./useOraclePrice";
+
+export function useTokenPrice(
+  token?: IToken,
+  tokenChainId?: ChainId,
+  savedOracle?: Address,
+  maxAge?: number,
+) {
   const { chainId: accountChainId } = useAccount();
   const chainId = tokenChainId ?? ((accountChainId ?? 1) as ChainId);
-
-  const { data, error } = useSWR(
-    token ? ["tokenPrice", token.address, chainId] : null,
-    () =>
-      token
-        ? fetchTokenUsdPrice({
-            tokenAddress: token.address,
-            tokenDecimals: token.decimals,
-            chainId,
-          })
-        : null,
-    {
-      keepPreviousData: false,
-      revalidateOnFocus: false,
-      refreshInterval: 10_000,
-    },
-  );
-
-  const price =
-    typeof data === "number" && Number.isFinite(data) && data > 0
-      ? data
-      : undefined;
-
-  return {
-    data: price,
-    isLoading: !error && !data,
-    error,
-  };
+  const oracle =
+    savedOracle ??
+    (token ? configuredTokenOracle(token.address, chainId) : undefined);
+  return useOraclePrice(chainId, oracle, maxAge);
 }
