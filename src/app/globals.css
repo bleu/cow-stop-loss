@@ -35,57 +35,57 @@ input[type="number"] {
 @layer base {
   :root {
     color-scheme: dark;
-    --background: 222 22% 7%;
-    --foreground: 210 24% 97%;
-    --border: 220 16% 24%;
-    --input: 220 16% 21%;
-    --ring: 213 91% 65%;
-    --primary: 213 91% 65%;
-    --primary-foreground: 222 22% 7%;
-    --secondary: 8 86% 69%;
-    --secondary-foreground: 222 22% 7%;
-    --destructive: 348 86% 61%;
-    --destructive-foreground: 10 22% 11%;
-    --muted: 220 16% 14%;
-    --muted-foreground: 215 14% 69%;
-    --accent: 8 86% 69%;
-    --accent-foreground: 222 22% 7%;
-    --popover: 222 18% 11%;
-    --popover-foreground: 0 0% 100%;
-    --card: 222 18% 11%;
-    --card-foreground: 0 0% 100%;
+    --background: 217.5 71.8% 15.3%;
+    --foreground: 214.6 100% 94.9%;
+    --border: 212.3 38.5% 33.1%;
+    --input: 212.3 38.5% 33.1%;
+    --ring: 222.7 100% 75.5%;
+    --primary: 222.7 100% 75.5%;
+    --primary-foreground: 217.5 71.8% 15.3%;
+    --secondary: 12 100% 79.4%;
+    --secondary-foreground: 217.5 71.8% 15.3%;
+    --destructive: 346.1 100% 78%;
+    --destructive-foreground: 217.5 71.8% 15.3%;
+    --muted: 213.6 56.9% 22.7%;
+    --muted-foreground: 212.5 41.4% 77.3%;
+    --accent: 213.4 49.7% 31.2%;
+    --accent-foreground: 214.6 100% 94.9%;
+    --popover: 215.6 66.7% 18.8%;
+    --popover-foreground: 214.6 100% 94.9%;
+    --card: 215.6 66.7% 18.8%;
+    --card-foreground: 214.6 100% 94.9%;
     --radius: 22px;
-    --highlight: 8 86% 69%;
-    --info: 40 18% 83%;
-    --success: 162 74% 43%;
-    --warning: 42 100% 71%;
+    --highlight: 12 100% 79.4%;
+    --info: 212.5 41.4% 77.3%;
+    --success: 162.4 57.1% 54.3%;
+    --warning: 37.9 100% 75.5%;
   }
 
   .light {
     color-scheme: light;
-    --background: 210 20% 98%;
-    --foreground: 222 22% 11%;
-    --border: 220 13% 82%;
-    --input: 220 13% 88%;
-    --ring: 213 80% 48%;
-    --primary: 213 80% 45%;
+    --background: 213.3 100% 96.5%;
+    --foreground: 205.2 57.4% 21.2%;
+    --border: 210.9 35.5% 81.8%;
+    --input: 212.6 36.1% 81%;
+    --ring: 224.9 84.9% 53.3%;
+    --primary: 224.9 84.9% 53.3%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 8 78% 56%;
+    --secondary: 10.7 55.4% 45.7%;
     --secondary-foreground: 0 0% 100%;
-    --destructive: 348 75% 48%;
+    --destructive: 344.8 57.3% 45.9%;
     --destructive-foreground: 0 0% 100%;
-    --muted: 220 14% 93%;
-    --muted-foreground: 215 12% 40%;
-    --accent: 8 78% 56%;
-    --accent-foreground: 0 0% 100%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 22% 11%;
-    --card: 0 0% 100%;
-    --card-foreground: 222 22% 11%;
-    --highlight: 8 78% 56%;
-    --info: 215 25% 38%;
-    --success: 162 74% 35%;
-    --warning: 42 100% 38%;
+    --muted: 212.7 44% 95.1%;
+    --muted-foreground: 209.4 23% 41.8%;
+    --accent: 214 75% 92.2%;
+    --accent-foreground: 205.2 57.4% 21.2%;
+    --popover: 45 100% 98.4%;
+    --popover-foreground: 205.2 57.4% 21.2%;
+    --card: 45 100% 98.4%;
+    --card-foreground: 205.2 57.4% 21.2%;
+    --highlight: 10.2 100% 82.7%;
+    --info: 209.4 23% 41.8%;
+    --success: 156.7 70% 27.5%;
+    --warning: 41.1 100% 28%;
   }
 
   * {
@@ -101,5 +101,384 @@ input[type="number"] {
 @media (max-width: 640px) {
   .container {
     @apply px-4;
+  }
+}
+
+@layer utilities {
+  .rescue-shell {
+    background-image: url("/assets/air-rescue/ground-dark.svg");
+    background-position: center bottom;
+    background-size: max(100%, 1440px) 150px;
+    background-repeat: no-repeat;
+  }
+
+  .light .rescue-shell {
+    background-image: url("/assets/air-rescue/ground-light.svg");
+  }
+
+  .air-rescue-page,
+  .rescue-detail-page {
+    background-image: url("/assets/air-rescue/sky-dark.svg");
+    background-position: center top;
+    background-size: max(100%, 1440px) auto;
+    background-repeat: no-repeat;
+  }
+
+  .light .air-rescue-page,
+  .light .rescue-detail-page {
+    background-image: url("/assets/air-rescue/sky-light.svg");
+  }
+
+  .rescue-panel {
+    box-shadow:
+      0 2px 4px hsl(var(--foreground) / 0.03),
+      0 14px 40px -20px hsl(222 80% 3% / 0.45);
+  }
+
+  .light .rescue-panel {
+    box-shadow:
+      0 2px 3px hsl(213 45% 25% / 0.03),
+      0 16px 40px -24px hsl(213 45% 25% / 0.2);
+  }
+
+  .rescue-hero-cow {
+    background: url("/assets/air-rescue/passenger-dark.svg") center / contain
+      no-repeat;
+  }
+
+  .light .rescue-hero-cow {
+    background-image: url("/assets/air-rescue/passenger-light.svg");
+  }
+
+  .rescue-landing-art {
+    background: url("/assets/air-rescue/landing-dark.svg") center / contain
+      no-repeat;
+  }
+
+  .light .rescue-landing-art {
+    background-image: url("/assets/air-rescue/landing-light.svg");
+  }
+}
+
+@layer utilities {
+  .rescue-create-panel {
+    background-image: linear-gradient(
+      145deg,
+      hsl(var(--secondary) / 0.08),
+      transparent 45%
+    );
+  }
+
+  .rescue-portfolio-panel {
+    background-image: linear-gradient(
+      155deg,
+      hsl(var(--primary) / 0.08),
+      transparent 55%
+    );
+  }
+
+  .rescue-portfolio-panel::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: hsl(var(--primary));
+  }
+}
+
+@layer utilities {
+  @media (max-width: 640px) {
+    .rescue-shell {
+      background-image: url("/assets/air-rescue/ground-mobile-dark.svg");
+      background-size: 480px 180px;
+    }
+
+    .light .rescue-shell {
+      background-image: url("/assets/air-rescue/ground-mobile-light.svg");
+    }
+  }
+}
+
+@layer utilities {
+  .rescue-orders-table {
+    container-type: inline-size;
+  }
+
+  .rescue-orders-table th,
+  .rescue-orders-table td {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .rescue-orders-table [data-column="order"] {
+    width: 46%;
+  }
+  .rescue-orders-table [data-column="trigger"] {
+    width: 20%;
+  }
+  .rescue-orders-table [data-column="expiry"] {
+    width: 15%;
+  }
+  .rescue-orders-table [data-column="status"] {
+    width: 11%;
+  }
+  .rescue-orders-table [data-column="actions"] {
+    width: 8%;
+  }
+
+  @container (max-width: 580px) {
+    .rescue-orders-table table,
+    .rescue-orders-table tbody {
+      display: block;
+      width: 100%;
+    }
+
+    .rescue-orders-table thead {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+    }
+
+    .rescue-orders-table tbody tr {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto;
+      grid-template-areas: "order status actions" "trigger expiry expiry";
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .rescue-orders-table tbody td[data-column],
+    .rescue-orders-table tbody td[colspan] {
+      display: block;
+      width: auto;
+      padding: 0;
+    }
+
+    .rescue-orders-table tbody td[data-column="order"] {
+      grid-area: order;
+    }
+    .rescue-orders-table tbody td[data-column="trigger"] {
+      grid-area: trigger;
+    }
+    .rescue-orders-table tbody td[data-column="expiry"] {
+      grid-area: expiry;
+      justify-self: end;
+      text-align: right;
+    }
+    .rescue-orders-table tbody td[data-column="status"] {
+      grid-area: status;
+      align-self: center;
+      justify-self: end;
+    }
+    .rescue-orders-table tbody td[data-column="actions"] {
+      grid-area: actions;
+      align-self: center;
+      justify-self: end;
+    }
+    .rescue-orders-table tbody td[colspan] {
+      grid-column: 1 / -1;
+    }
+    .rescue-orders-table td[data-column="order"] p:first-child {
+      white-space: normal;
+    }
+    .rescue-orders-table td[data-column="status"] > * {
+      padding: 3px 7px;
+      font-size: 10px;
+    }
+
+    .rescue-orders-table td[data-column="trigger"]::before,
+    .rescue-orders-table td[data-column="expiry"]::before {
+      content: attr(data-label);
+      display: block;
+      margin-bottom: 3px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: hsl(var(--muted-foreground));
+    }
+
+    .rescue-orders-table td[data-column="actions"] > div {
+      justify-content: flex-end;
+    }
+  }
+}
+
+@layer utilities {
+  @media (max-width: 640px) {
+    .air-rescue-page,
+    .rescue-detail-page {
+      background-image: url("/assets/air-rescue/sky-mobile-dark.svg");
+      background-size: 480px auto;
+    }
+    .light .air-rescue-page,
+    .light .rescue-detail-page {
+      background-image: url("/assets/air-rescue/sky-mobile-light.svg");
+    }
+  }
+}
+
+@layer utilities {
+  @media (min-width: 860px) {
+    .rescue-shell:has(.air-rescue-page) {
+      position: relative;
+    }
+
+    .rescue-shell:has(.air-rescue-page) > footer {
+      position: absolute;
+      inset-inline: 0;
+      bottom: 0;
+    }
+  }
+}
+
+@layer utilities {
+  .rescue-detail-page > * {
+    max-width: 1120px;
+    margin-inline: auto;
+  }
+
+  .rescue-dialog,
+  .rescue-popover {
+    background-image: linear-gradient(
+      145deg,
+      hsl(var(--primary) / 0.08),
+      transparent 45%
+    );
+    border-top: 4px solid hsl(var(--primary));
+    box-shadow: 0 24px 80px -24px hsl(217 72% 6% / 0.4);
+  }
+
+  .rescue-dialog {
+    gap: 16px;
+  }
+
+  .rescue-primary-button {
+    box-shadow: 0 6px 16px -8px hsl(var(--primary) / 0.5);
+    font-weight: 600;
+  }
+
+  .rescue-inset {
+    box-shadow: inset 0 1px 3px hsl(var(--foreground) / 0.025);
+  }
+}
+
+@layer utilities {
+  .rescue-create-panel > div[aria-hidden="true"] {
+    left: 16px;
+    right: 16px;
+    border-radius: 999px;
+  }
+}
+
+@layer utilities {
+  .rescue-dialog {
+    border-radius: 24px;
+  }
+
+  @media (min-width: 860px) {
+    .rescue-home-cards .rescue-create-panel {
+      overflow-y: visible;
+    }
+
+    .rescue-settings-prices > legend,
+    .rescue-settings-handling > legend {
+      padding-inline: 4px;
+    }
+
+    .rescue-settings-prices label,
+    .rescue-settings-handling label {
+      font-size: 12px;
+    }
+  }
+}
+
+@layer utilities {
+  @media (max-width: 859px) {
+    .rescue-home-heading,
+    .rescue-home-cards > .rescue-create-panel {
+      width: 100%;
+      max-width: 480px;
+      margin-inline: auto;
+    }
+    .rescue-home-cards > .rescue-portfolio-panel {
+      width: 100%;
+      max-width: 720px;
+      margin-inline: auto;
+    }
+  }
+}
+
+@layer utilities {
+  @media (min-width: 860px) {
+    .rescue-order-form,
+    .rescue-swap-form,
+    .rescue-swap-form > fieldset,
+    .rescue-swap-form > fieldset > div,
+    .rescue-swap-content {
+      height: 100%;
+      min-height: 0;
+    }
+
+    .rescue-swap-content:has(#order-settings-panel) > .rescue-settings {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .rescue-settings #order-settings-panel,
+    .rescue-settings #order-settings-panel > [role="group"] {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .rescue-settings-actions {
+      margin-top: auto;
+    }
+  }
+}
+
+@layer utilities {
+  [data-rk][role="dialog"] h1 {
+    font-family: var(--font-family-serif), serif;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.025em;
+  }
+
+  [data-rk][role="dialog"] [role="document"] > div > div {
+    border-top: 4px solid hsl(var(--primary));
+    background-image: linear-gradient(
+      145deg,
+      hsl(var(--primary) / 0.08),
+      transparent 45%
+    );
+  }
+
+  [data-rk][role="dialog"] button {
+    transition:
+      background-color 0.15s,
+      border-color 0.15s;
+  }
+
+  [data-rk][role="dialog"] button:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  @media (min-width: 860px) {
+    .rescue-settings-prices,
+    .rescue-settings-handling {
+      padding: 16px;
+    }
   }
 }

@@ -293,7 +293,9 @@ it("places only on request, closes after on-chain checks, and keeps the form val
 
   await waitFor(() => expect(sendTransactionAsync).toHaveBeenCalledTimes(2));
   await waitFor(() =>
-    expect(screen.queryByRole("region", { name: "Review stop-loss order" })).not.toBeInTheDocument(),
+    expect(
+      screen.queryByRole("region", { name: "Review stop-loss order" }),
+    ).not.toBeInTheDocument(),
   );
   expect(screen.getByRole("textbox", { name: "Sell amount" })).toHaveValue("1");
   expect(screen.getByRole("textbox", { name: "Trigger price" })).toHaveValue(
@@ -369,7 +371,7 @@ it("includes orders confirmed during preparation in the next review funding tota
     name: "Review stop-loss order",
   });
   await waitFor(() =>
-    expect(dialog).toHaveTextContent("Required allowance2 WETH"),
+    expect(dialog).toHaveTextContent("Allowance needed2 WETH"),
   );
   expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
 });
@@ -391,10 +393,14 @@ it("reopens saved pending approval after reload without another wallet request",
   await user.click(
     await screen.findByRole("button", { name: "Continue placement" }),
   );
-  expect(await screen.findByRole("region", { name: "Review stop-loss order" })).toHaveTextContent(
-    "Sell exactly1 WETH",
-  );
-  expect(screen.getByRole("button", { name: "Place order" })).toBeDisabled();
+  expect(
+    within(
+      await screen.findByRole("group", { name: "Order amounts" }),
+    ).getByRole("button", { name: "Show exact amount: 1 WETH" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Place order" }),
+  ).not.toBeInTheDocument();
   expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
 });
 
@@ -415,9 +421,11 @@ it("blocks a new review while an unfinished placement is saved", async () => {
     screen.getByRole("button", { name: "Review Stop Loss order" }),
   ).toBeDisabled();
   await user.click(screen.getByRole("button", { name: "Continue placement" }));
-  expect(await screen.findByRole("region", { name: "Review stop-loss order" })).toHaveTextContent(
-    "Sell exactly1 WETH",
-  );
+  expect(
+    within(
+      await screen.findByRole("group", { name: "Order amounts" }),
+    ).getByRole("button", { name: "Show exact amount: 1 WETH" }),
+  ).toBeInTheDocument();
   expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
 });
 
@@ -459,7 +467,9 @@ it("abandons an expired approval-only placement and permits a fresh review", asy
   );
   await user.click(screen.getByRole("button", { name: "Abandon placement" }));
   await waitFor(() =>
-    expect(screen.queryByRole("region", { name: "Review stop-loss order" })).not.toBeInTheDocument(),
+    expect(
+      screen.queryByRole("region", { name: "Review stop-loss order" }),
+    ).not.toBeInTheDocument(),
   );
   expect(
     screen.queryByRole("button", { name: "Continue placement" }),
@@ -473,9 +483,11 @@ it("abandons an expired approval-only placement and permits a fresh review", asy
   await user.click(
     screen.getByRole("button", { name: "Review Stop Loss order" }),
   );
-  expect(await screen.findByRole("region", { name: "Review stop-loss order" })).toHaveTextContent(
-    "Sell exactly2 WETH",
-  );
+  expect(
+    within(
+      await screen.findByRole("group", { name: "Order amounts" }),
+    ).getByRole("button", { name: "Show exact amount: 2 WETH" }),
+  ).toBeInTheDocument();
 });
 
 it("keeps an unknown approval pending even when allowance becomes sufficient", async () => {
@@ -493,7 +505,9 @@ it("keeps an unknown approval pending even when allowance becomes sufficient", a
   await waitFor(() =>
     expect(screen.getByRole("button", { name: "Retry" })).toBeEnabled(),
   );
-  expect(screen.getByRole("button", { name: "Place order" })).toBeDisabled();
+  expect(
+    screen.queryByRole("button", { name: "Place order" }),
+  ).not.toBeInTheDocument();
   allowance = BigInt("1000000000000000000");
 
   await user.click(screen.getByRole("button", { name: "Retry" }));
@@ -501,7 +515,9 @@ it("keeps an unknown approval pending even when allowance becomes sufficient", a
   await waitFor(() =>
     expect(screen.getByRole("button", { name: "Retry" })).toBeEnabled(),
   );
-  expect(screen.getByRole("button", { name: "Place order" })).toBeDisabled();
+  expect(
+    screen.queryByRole("button", { name: "Place order" }),
+  ).not.toBeInTheDocument();
   expect(
     screen.getByRole("button", { name: "Abandon placement" }),
   ).toBeDisabled();
@@ -525,7 +541,9 @@ it("shows a reverted approval, keeps the failure after closing, and permits an e
   expect(await screen.findByRole("alert")).toHaveTextContent(
     "Transaction reverted",
   );
-  expect(screen.getByRole("button", { name: "Place order" })).toBeDisabled();
+  expect(
+    screen.queryByRole("button", { name: "Place order" }),
+  ).not.toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "Retry" }));
   await waitFor(() =>
     expect(screen.getByRole("button", { name: "Approve WETH" })).toBeEnabled(),
@@ -568,7 +586,9 @@ it("shows a reverted setup as an error and does not show confirmation", async ()
   expect(await screen.findByRole("alert")).toHaveTextContent(
     "Transaction reverted",
   );
-  expect(screen.getByRole("region", { name: "Review stop-loss order" })).toBeInTheDocument();
+  expect(
+    screen.getByRole("region", { name: "Review stop-loss order" }),
+  ).toBeInTheDocument();
   expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
 });
 
@@ -584,7 +604,9 @@ it("keeps a rejected wallet request out of the next step", async () => {
   expect(await screen.findByRole("alert")).toHaveTextContent(
     "User rejected the request",
   );
-  expect(screen.getByRole("button", { name: "Place order" })).toBeDisabled();
+  expect(
+    screen.queryByRole("button", { name: "Place order" }),
+  ).not.toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "Retry" }));
   await waitFor(() =>
     expect(screen.getByRole("button", { name: "Approve WETH" })).toBeEnabled(),
@@ -688,9 +710,9 @@ it("shows a saved-storage error without crashing or sending a wallet request", a
   await user.click(
     await screen.findByRole("button", { name: "Review Stop Loss order" }),
   );
-  expect(await screen.findByRole("region", { name: "Review stop-loss order" })).toHaveTextContent(
-    "Unsupported placement storage version",
-  );
+  expect(
+    await screen.findByRole("region", { name: "Review stop-loss order" }),
+  ).toHaveTextContent("Unsupported placement storage version");
   expect(screen.getByRole("link", { name: "0x1111…1111" })).toHaveAttribute(
     "href",
     `https://etherscan.io/address/${account}`,
@@ -717,7 +739,9 @@ it("keeps a late wallet response in its original account scope", async () => {
   await act(async () => {
     finish("opaque-wallet-reference");
   });
-  expect(screen.queryByRole("region", { name: "Review stop-loss order" })).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("region", { name: "Review stop-loss order" }),
+  ).not.toBeInTheDocument();
   expect(
     screen.queryByRole("button", { name: "Continue placement" }),
   ).not.toBeInTheDocument();
@@ -759,7 +783,9 @@ it("does not open the old wallet request after waiting for a cross-tab lock", as
   connectedAccount = account;
   view.refreshWallet();
 
-  expect(screen.queryByRole("region", { name: "Review stop-loss order" })).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("region", { name: "Review stop-loss order" }),
+  ).not.toBeInTheDocument();
   expect(sendTransactionAsync).not.toHaveBeenCalled();
   expect(
     screen.queryByRole("button", { name: "Continue placement" }),
@@ -784,7 +810,12 @@ it("blocks an open review when saved storage becomes unreadable in another tab",
   expect(await screen.findByRole("alert")).toHaveTextContent(
     "Unsupported placement storage version",
   );
-  expect(screen.getByRole("button", { name: "Approve WETH" })).toBeDisabled();
+  expect(
+    screen.queryByRole("button", { name: "Approve WETH" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Place order" }),
+  ).not.toBeInTheDocument();
   expect(sendTransactionAsync).not.toHaveBeenCalled();
 });
 
@@ -850,7 +881,9 @@ it("does not close a new review when the earlier wallet response arrives late", 
     await act(async () => {
       await jest.advanceTimersByTimeAsync(10000);
     });
-    expect(screen.queryByRole("region", { name: "Review stop-loss order" })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("region", { name: "Review stop-loss order" }),
+    ).not.toBeInTheDocument();
 
     await user.click(
       screen.getByRole("button", { name: "Review Stop Loss order" }),
@@ -862,7 +895,9 @@ it("does not close a new review when the earlier wallet response arrives late", 
       finish(`0x${"ab".repeat(32)}`);
     });
 
-    expect(screen.getByRole("region", { name: "Review stop-loss order" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("region", { name: "Review stop-loss order" }),
+    ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Place order" })).toBeEnabled();
     expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
   } finally {
@@ -891,12 +926,16 @@ it("keeps the review closed when pending Retry reads finish late", async () => {
 
   await user.click(screen.getByRole("button", { name: "Retry" }));
   await user.click(screen.getByRole("button", { name: "Edit order" }));
-  expect(screen.queryByRole("region", { name: "Review stop-loss order" })).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("region", { name: "Review stop-loss order" }),
+  ).not.toBeInTheDocument();
   await act(async () => {
     finish(BigInt(0));
   });
 
-  expect(screen.queryByRole("region", { name: "Review stop-loss order" })).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("region", { name: "Review stop-loss order" }),
+  ).not.toBeInTheDocument();
   expect(
     screen.getByRole("button", { name: "Continue placement" }),
   ).toBeInTheDocument();
@@ -953,7 +992,9 @@ it("opens a wallet-scoped review with checked permissions and separate approval 
   await waitFor(() =>
     expect(screen.getByRole("button", { name: "Approve WETH" })).toBeEnabled(),
   );
-  expect(screen.getByRole("button", { name: "Place order" })).toBeDisabled();
-  expect(screen.getByText("Limit price")).toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Place order" }),
+  ).not.toBeInTheDocument();
+  expect(within(dialog).getByText("Trigger price")).toBeInTheDocument();
   expect(sendTransactionAsync).not.toHaveBeenCalled();
 });

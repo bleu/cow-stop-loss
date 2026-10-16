@@ -8,9 +8,17 @@ import { SWRConfig } from "swr";
 import { getSupportedTokens } from "#/lib/supportedTokens";
 import type { SwapData } from "#/lib/types";
 
-import { CurrentMarketPrice } from "../CurrentMarketPrice";
 import { PriceInputCard } from "../PriceInputCard";
 import { Form } from "../ui/form";
+
+let marketPrice: number | undefined = 2000;
+beforeEach(() => {
+  marketPrice = 2000;
+});
+
+jest.mock("#/hooks/useTokenPairPrice", () => ({
+  useTokenPairPrice: () => ({ data: marketPrice }),
+}));
 
 jest.mock("wagmi", () => ({
   useAccount: () => ({
@@ -31,15 +39,11 @@ function PriceForm() {
   return (
     <Form {...form} onSubmit={() => {}}>
       <PriceInputCard />
-      <CurrentMarketPrice />
     </Form>
   );
 }
 
 it("keeps the exact trigger text in a fixed USDC-per-WETH quote", async () => {
-  global.fetch = jest
-    .fn()
-    .mockResolvedValue({ json: async () => ({ price: 1 }) });
   const user = userEvent.setup();
   render(
     <SWRConfig value={{ provider: () => new Map() }}>
@@ -60,16 +64,6 @@ it("keeps the exact trigger text in a fixed USDC-per-WETH quote", async () => {
 });
 
 it("sets the trigger to the market quote without a reciprocal conversion", async () => {
-  const { sellTokens } = getSupportedTokens(1);
-  global.fetch = jest.fn().mockImplementation(async (input) => ({
-    json: async () => ({
-      price: String(input)
-        .toLowerCase()
-        .includes(sellTokens[0].token.address.toLowerCase())
-        ? 2000
-        : 1e12,
-    }),
-  }));
   const user = userEvent.setup();
   render(
     <SWRConfig value={{ provider: () => new Map() }}>
@@ -89,23 +83,15 @@ it("sets the trigger to the market quote without a reciprocal conversion", async
 });
 
 it("shows the market quote without a reciprocal-price control", async () => {
-  const { sellTokens } = getSupportedTokens(1);
-  global.fetch = jest.fn().mockImplementation(async (input) => ({
-    json: async () => ({
-      price: String(input)
-        .toLowerCase()
-        .includes(sellTokens[0].token.address.toLowerCase())
-        ? 2000
-        : 1e12,
-    }),
-  }));
   render(
     <SWRConfig value={{ provider: () => new Map() }}>
       <PriceForm />
     </SWRConfig>,
   );
 
-  expect(await screen.findByText("1 WETH")).toBeInTheDocument();
+  expect(
+    await screen.findByText("Market: 2,000 USDC per WETH"),
+  ).toBeInTheDocument();
   expect(
     await screen.findByRole("button", {
       name: /Set trigger to current market price.*USDC per WETH/,
@@ -115,16 +101,6 @@ it("shows the market quote without a reciprocal-price control", async () => {
 });
 
 it("places the market-distance hint above the input and aligned with the title", async () => {
-  const { sellTokens } = getSupportedTokens(1);
-  global.fetch = jest.fn().mockImplementation(async (input) => ({
-    json: async () => ({
-      price: String(input)
-        .toLowerCase()
-        .includes(sellTokens[0].token.address.toLowerCase())
-        ? 2000
-        : 1e12,
-    }),
-  }));
   render(
     <SWRConfig value={{ provider: () => new Map() }}>
       <PriceForm />
@@ -134,4 +110,20 @@ it("places the market-distance hint above the input and aligned with the title",
   const title = screen.getByText("Trigger price");
   const hint = await screen.findByText("At market");
   expect(title.parentElement?.parentElement).toContainElement(hint);
+});
+
+it("reserves the market quote row while no oracle price is available", () => {
+  marketPrice = undefined;
+  const { rerender } = render(<PriceForm />);
+  const input = screen.getByRole("textbox", { name: "Trigger price" });
+  const quoteRow = input.nextElementSibling;
+  expect(quoteRow).toHaveClass("h-5");
+  expect(quoteRow).toBeEmptyDOMElement();
+  expect(screen.queryByText(/loading|unavailable/i)).not.toBeInTheDocument();
+  marketPrice = 2000;
+  rerender(<PriceForm />);
+  expect(input.nextElementSibling).toBe(quoteRow);
+  expect(quoteRow).toContainElement(
+    screen.getByRole("button", { name: /Set trigger to current market price/ }),
+  );
 });

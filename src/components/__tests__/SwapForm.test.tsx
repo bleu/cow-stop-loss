@@ -17,7 +17,6 @@ import {
 import { useDraftOrder } from "#/hooks/useDraftOrder";
 import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 import { publicClientsFromIds } from "#/lib/publicClients";
-import { getSupportedTokens } from "#/lib/supportedTokens";
 import { createWagmiConfig } from "#/utils/wagmi";
 
 import { SwapForm } from "../swap-card/SwapForm";
@@ -53,16 +52,10 @@ beforeEach(() => {
   useAdvancedSettingsStore
     .getState()
     .setAdvancedSettings(defaultAdvancedSettings);
-  const { sellTokens } = getSupportedTokens(1);
-  global.fetch = jest.fn().mockImplementation(async (input) => ({
-    json: async () => ({
-      price: String(input)
-        .toLowerCase()
-        .includes(sellTokens[0].token.address.toLowerCase())
-        ? 2000
-        : 1e12,
-    }),
-  }));
+  jest.spyOn(publicClientsFromIds[1], "getBlock").mockResolvedValue({
+    number: BigInt(1),
+    timestamp: BigInt(1),
+  } as Awaited<ReturnType<(typeof publicClientsFromIds)[1]["getBlock"]>>);
   jest
     .spyOn(publicClientsFromIds[1], "readContract")
     .mockImplementation(async ({ functionName, address }) => {
@@ -135,7 +128,7 @@ it("keeps applied form settings in memory without saving browser data", async ()
     screen.getByPlaceholderText("0xabc...123"),
     "0x2222222222222222222222222222222222222222",
   );
-  await user.click(screen.getByRole("button", { name: "Save Settings" }));
+  await user.click(screen.getByRole("button", { name: "Return to order" }));
   await waitFor(() =>
     expect(
       screen.queryByRole("group", { name: "Advanced order settings" }),
@@ -152,7 +145,11 @@ it("omits the market amount summary but keeps Market and minimum received", asyn
   renderForm();
   await selectWeth(user);
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
-  await user.click(await screen.findByRole("button", { name: "Market" }));
+  await user.click(
+    await screen.findByRole("button", {
+      name: /Set trigger to current market price/,
+    }),
+  );
 
   expect(screen.getByRole("textbox", { name: "Trigger price" })).toHaveValue(
     "2000",
@@ -191,6 +188,10 @@ it("applies staged slippage only on Save and passes the recalculated minimum buy
   renderForm(onReviewOrder);
   await selectWeth(user);
   await user.clear(screen.getByRole("textbox", { name: "Trigger price" }));
+  await user.type(
+    screen.getByRole("textbox", { name: "Trigger price" }),
+    "2000",
+  );
   await waitFor(() =>
     expect(screen.getByRole("textbox", { name: "Trigger price" })).toHaveValue(
       "2000",
@@ -204,9 +205,10 @@ it("applies staged slippage only on Save and passes the recalculated minimum buy
   const minimumBuy = screen.getByRole("textbox", { name: "Receive at least" });
   await waitFor(() => expect(minimumBuy).toHaveValue("246.666665"));
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  await user.click(screen.getByRole("radio", { name: "0.5%" }));
+  await user.clear(screen.getByRole("textbox", { name: "Slippage" }));
+  await user.type(screen.getByRole("textbox", { name: "Slippage" }), "0.5");
   expect(minimumBuy).toHaveValue("246.666665");
-  await user.click(screen.getByRole("button", { name: "Save Settings" }));
+  await user.click(screen.getByRole("button", { name: "Return to order" }));
   await waitFor(() =>
     expect(
       screen.queryByRole("group", { name: "Advanced order settings" }),
@@ -249,7 +251,7 @@ it("blocks Save for invalid slippage without changing the committed amount", asy
   const slippage = screen.getByRole("textbox", { name: "Slippage" });
   await user.clear(slippage);
   await user.type(slippage, "0.001");
-  await user.click(screen.getByRole("button", { name: "Save Settings" }));
+  await user.click(screen.getByRole("button", { name: "Return to order" }));
 
   expect(slippage).toHaveValue("0.001");
   expect(await screen.findByRole("alert")).toHaveTextContent(
@@ -285,12 +287,13 @@ it("Close discards temporary slippage and receiver edits and reopens the saved v
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
   const minimumBuy = screen.getByRole("textbox", { name: "Receive at least" });
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  await user.click(screen.getByRole("radio", { name: "0.5%" }));
+  await user.clear(screen.getByRole("textbox", { name: "Slippage" }));
+  await user.type(screen.getByRole("textbox", { name: "Slippage" }), "0.5");
   await user.type(
     screen.getByPlaceholderText("0xabc...123"),
     "0x2222222222222222222222222222222222222222",
   );
-  await user.click(screen.getByRole("button", { name: "Save Settings" }));
+  await user.click(screen.getByRole("button", { name: "Return to order" }));
   await waitFor(() =>
     expect(
       screen.queryByRole("group", { name: "Advanced order settings" }),
@@ -299,7 +302,8 @@ it("Close discards temporary slippage and receiver edits and reopens the saved v
   await waitFor(() => expect(minimumBuy).toHaveValue("1990"));
 
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  await user.click(screen.getByRole("radio", { name: "1%" }));
+  await user.clear(screen.getByRole("textbox", { name: "Slippage" }));
+  await user.type(screen.getByRole("textbox", { name: "Slippage" }), "1");
   await user.clear(screen.getByPlaceholderText("0xabc...123"));
   await user.type(
     screen.getByPlaceholderText("0xabc...123"),
@@ -342,7 +346,8 @@ it("Reset immediately restores default slippage and the 24-hour oracle limit wit
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
   const minimumBuy = screen.getByRole("textbox", { name: "Receive at least" });
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  await user.click(screen.getByRole("radio", { name: "1%" }));
+  await user.clear(screen.getByRole("textbox", { name: "Slippage" }));
+  await user.type(screen.getByRole("textbox", { name: "Slippage" }), "1");
   await user.type(
     screen.getByPlaceholderText("0xabc...123"),
     "0x2222222222222222222222222222222222222222",
@@ -353,7 +358,7 @@ it("Reset immediately restores default slippage and the 24-hour oracle limit wit
   await user.click(
     screen.getByRole("checkbox", { name: "Allow partial execution" }),
   );
-  await user.click(screen.getByRole("button", { name: "Save Settings" }));
+  await user.click(screen.getByRole("button", { name: "Return to order" }));
   await waitFor(() =>
     expect(
       screen.queryByRole("group", { name: "Advanced order settings" }),
@@ -431,7 +436,7 @@ it.each([1, 2.5])(
       screen.getByRole("spinbutton"),
       String(maxHoursSinceOracleUpdates),
     );
-    await user.click(screen.getByRole("button", { name: "Save Settings" }));
+    await user.click(screen.getByRole("button", { name: "Return to order" }));
     await waitFor(() =>
       expect(
         screen.queryByRole("group", { name: "Advanced order settings" }),
@@ -471,11 +476,12 @@ it("marks saved slippage changes on the gear and offers Reset for slippage alone
   expect(settingsTrigger).not.toHaveClass("text-primary");
   await user.click(settingsTrigger);
   expect(
-    screen.queryByRole("button", { name: "Reset to default settings" }),
-  ).not.toBeInTheDocument();
-  await user.click(screen.getByRole("radio", { name: "1%" }));
+    screen.getByRole("button", { name: "Reset to default settings" }),
+  ).toBeInTheDocument();
+  await user.clear(screen.getByRole("textbox", { name: "Slippage" }));
+  await user.type(screen.getByRole("textbox", { name: "Slippage" }), "1");
   expect(settingsTrigger).not.toHaveClass("text-primary");
-  await user.click(screen.getByRole("button", { name: "Save Settings" }));
+  await user.click(screen.getByRole("button", { name: "Return to order" }));
   await waitFor(() =>
     expect(
       screen.queryByRole("group", { name: "Advanced order settings" }),
@@ -489,8 +495,8 @@ it("marks saved slippage changes on the gear and offers Reset for slippage alone
   );
   expect(screen.getByRole("textbox", { name: "Slippage" })).toHaveValue("0.1");
   expect(
-    screen.queryByRole("button", { name: "Reset to default settings" }),
-  ).not.toBeInTheDocument();
+    screen.getByRole("button", { name: "Reset to default settings" }),
+  ).toBeInTheDocument();
   await user.keyboard("{Escape}");
   expect(settingsTrigger).not.toHaveClass("text-primary");
 });
@@ -591,16 +597,9 @@ it("hands one wallet-scoped exact-sell draft to review and keeps form values for
 });
 
 it("blocks review when the market price is not positive and available", async () => {
-  const { sellTokens } = getSupportedTokens(1);
-  global.fetch = jest.fn().mockImplementation(async (input) => ({
-    json: async () => ({
-      price: String(input)
-        .toLowerCase()
-        .includes(sellTokens[0].token.address.toLowerCase())
-        ? -2000
-        : 1e12,
-    }),
-  }));
+  jest
+    .mocked(publicClientsFromIds[1].getBlock)
+    .mockRejectedValue(new Error("RPC unavailable"));
   const user = userEvent.setup();
   renderForm();
   await selectWeth(user);
@@ -678,12 +677,11 @@ it("does not prepare a draft from a non-positive required oracle price", async (
     "2000",
   );
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
   expect(
-    await screen.findByText("Required price feeds are unavailable or invalid."),
-  ).toHaveAttribute("role", "alert");
+    await screen.findByRole("button", {
+      name: "Market price unavailable. Try again.",
+    }),
+  ).toBeDisabled();
   expect(onReviewOrder).not.toHaveBeenCalled();
 });
 
@@ -725,8 +723,9 @@ it("resets committed slippage and exact-sell inputs when the chain changes", asy
   );
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  await user.click(screen.getByRole("radio", { name: "1%" }));
-  await user.click(screen.getByRole("button", { name: "Save Settings" }));
+  await user.clear(screen.getByRole("textbox", { name: "Slippage" }));
+  await user.type(screen.getByRole("textbox", { name: "Slippage" }), "1");
+  await user.click(screen.getByRole("button", { name: "Return to order" }));
   await waitFor(() =>
     expect(
       screen.queryByRole("group", { name: "Advanced order settings" }),
@@ -762,7 +761,7 @@ it("resets committed slippage and exact-sell inputs when the chain changes", asy
   expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue("");
   expect(screen.getByRole("spinbutton")).toHaveValue(24);
   expect(
-    screen.getByRole("checkbox", { name: "Enable partially fillable orders" }),
+    screen.getByRole("checkbox", { name: "Allow partial fills" }),
   ).not.toBeChecked();
 });
 
@@ -774,7 +773,8 @@ it("closes unapplied settings and resets expiry when the wallet changes", async 
   await user.keyboard("[Space]");
   await user.click(await screen.findByRole("option", { name: "30 minutes" }));
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  await user.click(screen.getByRole("radio", { name: "1%" }));
+  await user.clear(screen.getByRole("textbox", { name: "Slippage" }));
+  await user.type(screen.getByRole("textbox", { name: "Slippage" }), "1");
   await user.type(
     screen.getByPlaceholderText("0xabc...123"),
     "0x3333333333333333333333333333333333333333",
@@ -807,8 +807,9 @@ it("ignores settings validation that finishes after a wallet change", async () =
     .mockImplementation(async () => delayed);
   await user.click(screen.getByRole("button", { name: "Order settings" }));
   await user.type(screen.getByPlaceholderText("0xabc...123"), "receiver.eth");
-  await user.click(screen.getByRole("radio", { name: "1%" }));
-  await user.click(screen.getByRole("button", { name: "Save Settings" }));
+  await user.clear(screen.getByRole("textbox", { name: "Slippage" }));
+  await user.type(screen.getByRole("textbox", { name: "Slippage" }), "1");
+  await user.click(screen.getByRole("button", { name: "Return to order" }));
   await waitFor(() => expect(ens).toHaveBeenCalled());
   safe = { ...safe, safeAddress: "0x2222222222222222222222222222222222222222" };
   rerender(
@@ -830,7 +831,8 @@ it("resets the exact-sell form when the wallet changes", async () => {
   const { rerender } = renderForm(onReviewOrder);
   await selectWeth(user);
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  await user.click(screen.getByRole("radio", { name: "1%" }));
+  await user.clear(screen.getByRole("textbox", { name: "Slippage" }));
+  await user.type(screen.getByRole("textbox", { name: "Slippage" }), "1");
   await user.type(
     screen.getByPlaceholderText("0xabc...123"),
     "0x3333333333333333333333333333333333333333",
@@ -838,9 +840,9 @@ it("resets the exact-sell form when the wallet changes", async () => {
   await user.clear(screen.getByRole("spinbutton"));
   await user.type(screen.getByRole("spinbutton"), "2");
   await user.click(
-    screen.getByRole("checkbox", { name: "Enable partially fillable orders" }),
+    screen.getByRole("checkbox", { name: "Allow partial fills" }),
   );
-  await user.click(screen.getByRole("button", { name: "Save Settings" }));
+  await user.click(screen.getByRole("button", { name: "Return to order" }));
   await waitFor(() =>
     expect(
       screen.queryByRole("group", { name: "Advanced order settings" }),
@@ -863,6 +865,6 @@ it("resets the exact-sell form when the wallet changes", async () => {
   expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue("");
   expect(screen.getByRole("spinbutton")).toHaveValue(24);
   expect(
-    screen.getByRole("checkbox", { name: "Enable partially fillable orders" }),
+    screen.getByRole("checkbox", { name: "Allow partial fills" }),
   ).not.toBeChecked();
 });

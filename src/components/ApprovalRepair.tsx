@@ -197,8 +197,11 @@ export function ApprovalRepair({
         </Button>
       </div>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="max-h-[85vh] w-[calc(100vw-2rem)] max-w-xl overflow-y-auto rounded-[28px] border border-border/70 bg-card p-5 text-foreground shadow-2xl sm:p-7">
-          <DialogTitle className="text-2xl font-semibold tracking-tight">
+        <DialogContent className="rescue-dialog max-h-[85dvh] w-[calc(100vw-2rem)] max-w-xl overflow-y-auto rounded-[28px] border border-border/70 bg-card p-5 text-foreground shadow-2xl sm:p-7">
+          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-secondary">
+            Air rescue · Token clearance
+          </p>
+          <DialogTitle className="font-serif text-[28px] leading-tight tracking-tight">
             Update approval
           </DialogTitle>
           <p className="text-sm leading-relaxed text-muted-foreground">
@@ -272,7 +275,10 @@ export function ApprovalRepair({
                 </section>
               )}
               {checks.settlementApprovalRequired && (
-                <section aria-label="Settlement approval">
+                <section
+                  aria-label="Settlement approval"
+                  className="space-y-2 break-all rounded-2xl border border-primary/25 bg-primary/5 p-4 text-sm"
+                >
                   <h3>CowShed settlement approval</h3>
                   <p>Token: {prepared.draft.tokenSell.address}</p>
                   <p>Spender: {GPV2_VAULT_RELAYER_ADDRESS}</p>
@@ -305,7 +311,7 @@ export function ApprovalRepair({
           )}
           {checks?.status === "known" && (
             <Button
-              className="h-11 rounded-xl"
+              className="h-12 rounded-2xl"
               onClick={() => void submit()}
               disabled={
                 busy ||
@@ -331,7 +337,7 @@ export function ApprovalRepair({
             <Button
               onClick={() => void retry()}
               variant="outline"
-              className="h-11 rounded-xl"
+              className="h-12 rounded-2xl"
               disabled={busy || review.isFetching}
             >
               Retry

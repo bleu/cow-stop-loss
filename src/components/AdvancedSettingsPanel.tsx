@@ -114,17 +114,17 @@ export function AdvancedSettingsPanel({
   }, [form, onApplySlippage, open, setAdvancedSettings]);
 
   return (
-    <div className="w-full">
+    <div className="rescue-settings w-full">
       <div className="flex items-start justify-between gap-3">
         {open ? (
           <div className="min-w-0">
-            <p className="text-[13px] font-semibold uppercase tracking-[0.18em] text-primary">
-              Settings
+            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-secondary">
+              Flight controls
             </p>
-            <h1 className="mt-1 text-xl font-semibold tracking-tight sm:text-2xl">
+            <h1 className="mt-2 font-serif text-[28px] leading-tight tracking-tight sm:text-[32px]">
               Order settings
             </h1>
-            <p className="mt-1 max-w-md text-[15px] leading-5 text-muted-foreground">
+            <p className="mt-2 max-w-md text-[13px] leading-5 text-muted-foreground">
               Set price limits and where you receive tokens.
             </p>
           </div>
@@ -141,7 +141,7 @@ export function AdvancedSettingsPanel({
               onOpenChange(true);
             }
           }}
-          className={`relative inline-flex size-9 shrink-0 items-center justify-center rounded-xl border border-border/70 bg-muted/35 transition-colors hover:border-primary/40 hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${areSavedSettingsDifferentFromDefault ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+          className={`relative inline-flex size-11 shrink-0 sm:size-10 items-center justify-center rounded-xl border border-border/70 bg-muted/35 transition-colors hover:border-primary/40 hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${areSavedSettingsDifferentFromDefault ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
           aria-label="Order settings"
           aria-expanded={open}
           aria-controls="order-settings-panel"
@@ -164,7 +164,7 @@ export function AdvancedSettingsPanel({
         <section
           id="order-settings-panel"
           aria-label="Order settings"
-          className="mt-5"
+          className="mt-4"
           onKeyDown={(event) => {
             if (event.key === "Escape") onOpenChange(false);
           }}
@@ -173,7 +173,7 @@ export function AdvancedSettingsPanel({
             <div
               role="group"
               aria-label="Advanced order settings"
-              className="grid w-full gap-5"
+              className="grid w-full gap-4"
               onKeyDown={(event) => {
                 if (
                   event.key === "Enter" &&
@@ -184,8 +184,8 @@ export function AdvancedSettingsPanel({
                 }
               }}
             >
-              <fieldset className="grid gap-4 border-b border-border/60 pb-5 sm:grid-cols-2">
-                <legend className="mb-1 text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:col-span-2">
+              <fieldset className="rescue-settings-prices rescue-inset grid gap-3 rounded-2xl border border-border/70 bg-muted/45 p-3 min-[860px]:grid-cols-2">
+                <legend className="mb-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground sm:col-span-2">
                   Price protection
                 </legend>
                 <SlippageInputCard />
@@ -199,11 +199,11 @@ export function AdvancedSettingsPanel({
                   }
                   min={0}
                   max={24 * 365}
-                  className="h-11 rounded-xl"
+                  className="h-10 w-24 rounded-xl border-border bg-card"
                 />
               </fieldset>
-              <fieldset className="grid gap-3">
-                <legend className="mb-1 text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground sm:col-span-2">
+              <fieldset className="rescue-settings-handling rescue-inset grid gap-3 rounded-2xl border border-border/70 bg-muted/45 p-3 min-[860px]:grid-cols-2">
+                <legend className="mb-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground sm:col-span-2">
                   Order handling
                 </legend>
                 <div className="grid gap-1.5">
@@ -228,7 +228,7 @@ export function AdvancedSettingsPanel({
                       >
                         <SelectTrigger
                           id="execution-mode"
-                          className="h-11 rounded-xl"
+                          className="h-11 rounded-xl border-border bg-card"
                         >
                           <SelectValue />
                         </SelectTrigger>
@@ -257,10 +257,10 @@ export function AdvancedSettingsPanel({
                       networkId={chainId}
                     />
                   }
-                  className="h-11 rounded-xl"
+                  className="h-11 rounded-xl border-border bg-card"
                 />
               </fieldset>
-              <div className="grid w-full gap-2">
+              <div className="rescue-settings-actions grid w-full gap-2 min-[860px]:grid-cols-[1fr_1.5fr] min-[860px]:items-center">
                 <Button
                   variant="ghost"
                   type="button"
@@ -278,7 +278,7 @@ export function AdvancedSettingsPanel({
                   <ResetIcon className="mr-1.5 size-3.5" /> Reset to defaults
                 </Button>
                 <Button
-                  className="h-11 w-full rounded-xl text-sm"
+                  className="rescue-primary-button h-12 w-full rounded-2xl text-sm"
                   type="button"
                   aria-label="Return to order"
                   loading={isSubmitting}

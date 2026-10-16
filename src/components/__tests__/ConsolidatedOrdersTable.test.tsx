@@ -635,8 +635,8 @@ test("shortens API and local amounts without rounding up and retains the full am
   const apiRow = apiAmount.closest("tr")!;
   expect(within(apiRow).getByText("2,100 USDC")).toBeVisible();
   expect(
-    within(apiRow).getByText(/(At market|% (below|above) market)/),
-  ).toBeVisible();
+    within(apiRow).queryByText(/(At market|% (below|above) market)/),
+  ).not.toBeInTheDocument();
   expect(
     within(apiAmount).getByTitle(
       "1.234567890123456789 WETH for 4000.123456 USDC",

@@ -220,9 +220,9 @@ function DetailSection({
   description,
 }: React.PropsWithChildren<{ title: string; description: string }>) {
   return (
-    <section className="rounded-2xl border border-border/70 bg-card/45 p-4 sm:p-5">
+    <section className="rescue-panel rounded-[24px] border border-border/70 bg-card p-4 sm:p-5">
       <header className="mb-4 border-b border-border/60 pb-3">
-        <h2 className="text-base font-semibold tracking-tight sm:text-lg">
+        <h2 className="font-serif text-2xl leading-tight tracking-tight">
           {title}
         </h2>
         <p className="mt-1 text-[13px] text-muted-foreground">{description}</p>
@@ -293,9 +293,9 @@ function OrderDetailsHeading({ children }: React.PropsWithChildren) {
           <ArrowLeftIcon className="size-5" aria-hidden="true" />
         </Link>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
-          CoW Stop Loss
+          Air rescue · Flight log
         </p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">
+        <h1 className="mt-2 font-serif text-[32px] leading-tight tracking-tight sm:text-[40px]">
           Order details
         </h1>
       </div>
@@ -427,7 +427,7 @@ function OrderStatusSummary({
           : "text-primary";
 
   return (
-    <aside className="mb-5 flex flex-wrap items-center gap-3 rounded-2xl border border-border/70 bg-card/60 p-4">
+    <aside className="mb-5 flex flex-wrap items-center gap-3 rounded-2xl border border-border/70 bg-primary/5 p-4">
       <div className="flex min-w-0 flex-1 items-start gap-3">
         <Icon
           aria-hidden="true"
@@ -482,7 +482,7 @@ function CopyableIdentifier({
         className="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         {copied ? (
-          <CheckIcon aria-hidden="true" className="size-4 text-emerald-400" />
+          <CheckIcon aria-hidden="true" className="size-4 text-success" />
         ) : (
           <CopyIcon aria-hidden="true" className="size-4" />
         )}
@@ -528,7 +528,7 @@ export function OrderDetails({
 
   if (!order)
     return (
-      <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+      <main className="rescue-detail-page mx-auto min-h-full w-full px-4 py-8 sm:px-6 sm:py-10">
         <OrderDetailsHeading />
         {warning || (
           <div
@@ -552,7 +552,7 @@ export function OrderDetails({
     order.executionPrice !== undefined ||
     order.cowOrder !== undefined;
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 sm:py-10">
+    <main className="rescue-detail-page mx-auto min-h-full w-full px-4 py-8 sm:px-6 sm:py-10">
       <OrderDetailsHeading />
       <OrderStatusSummary status={order.status}>
         <CancelOrderDialog order={order} />
@@ -560,13 +560,13 @@ export function OrderDetails({
       <OrderHealth order={order} />
       {warning}
 
-      <section className="mb-5 overflow-hidden rounded-[32px] border border-primary/20 bg-gradient-to-br from-card via-card to-secondary/10 p-4 shadow-[0_24px_80px_-45px_rgba(0,0,0,0.9)] sm:p-7">
+      <section className="rescue-panel rescue-portfolio-panel relative mb-5 overflow-hidden rounded-[24px] border border-border bg-card p-4 sm:p-7">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
               Order summary
             </p>
-            <h2 className="mt-1 text-xl font-semibold tracking-tight sm:text-2xl">
+            <h2 className="mt-2 font-serif text-[28px] leading-tight tracking-tight sm:text-[32px]">
               {order.sellToken.symbol} for {order.buyToken.symbol}
             </h2>
           </div>

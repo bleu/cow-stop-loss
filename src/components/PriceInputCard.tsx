@@ -24,15 +24,15 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
       ? ((marketPrice - Number(triggerPrice)) / marketPrice) * 100
       : undefined;
   return (
-    <section className="w-full rounded-2xl border border-border/70 bg-card/55 p-3.5 sm:p-4">
-      <div className="flex flex-col items-start gap-1 text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-        <span className="flex min-w-0 items-center gap-2 whitespace-nowrap">
+    <section className="w-full rounded-2xl border border-border/80 bg-muted/55 p-3.5 transition-colors focus-within:border-primary/70 sm:p-4 min-[860px]:p-2">
+      <div className="flex h-5 items-center justify-between gap-x-3 text-[13px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+        <span className="flex shrink-0 items-center gap-2 whitespace-nowrap">
           <label htmlFor="trigger-price">Trigger price</label>
           <InfoTooltip text={TOOLTIP_DESCRIPTIONS.TRIGGER_PRICE} side="right" />
         </span>
         {distance !== undefined && (
           <span
-            className={`normal-case tracking-normal text-[12px] font-semibold tabular-nums ${distance < -0.005 ? "text-destructive" : "text-foreground"}`}
+            className={`min-w-0 truncate normal-case tracking-normal text-[12px] font-semibold tabular-nums ${distance < -0.005 ? "text-destructive" : "text-foreground"}`}
           >
             {Math.abs(distance) < 0.005
               ? "At market"
@@ -48,32 +48,30 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
           inputMode="decimal"
           disabled={disabled}
           placeholder="0.0"
-          className="h-11 w-full rounded-xl border-none bg-transparent px-0 text-left text-3xl font-semibold tracking-tight tabular-nums shadow-none focus-visible:ring-transparent sm:text-4xl"
+          className="h-11 w-full rounded-xl border-none bg-transparent px-0 text-left text-3xl font-semibold tracking-tight tabular-nums shadow-none focus-visible:ring-transparent sm:text-4xl min-[860px]:h-8 min-[860px]:text-3xl"
         />
-        {tokenBuy && tokenSell && (
-          <div className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-muted-foreground">
-            {marketPrice ? (
-              <Button
-                type="button"
-                variant="link"
-                className="h-auto min-w-0 justify-start p-0 text-left text-[13px] font-medium text-primary underline-offset-4 hover:underline"
-                aria-label={`Set trigger to current market price ${formatMarketPrice(marketPrice)} ${tokenBuy.symbol} per ${tokenSell.symbol}`}
-                onClick={() =>
-                  setValue(
-                    "strikePrice",
-                    formatMarketPriceForInput(marketPrice),
-                    { shouldValidate: true, shouldDirty: true },
-                  )
-                }
-              >
-                Current market price is {formatMarketPrice(marketPrice)}{" "}
-                {tokenBuy.symbol} per {tokenSell.symbol}
-              </Button>
-            ) : (
-              <span>Current market price is loading</span>
-            )}
-          </div>
-        )}
+        <div className="flex h-5 w-full min-w-0 items-center text-[13px] text-muted-foreground">
+          {tokenBuy && tokenSell && marketPrice && (
+            <Button
+              type="button"
+              variant="link"
+              className="h-5 min-w-0 max-w-full justify-start p-0 text-left text-[13px] font-medium text-primary underline-offset-4 hover:underline"
+              aria-label={`Set trigger to current market price ${formatMarketPrice(marketPrice)} ${tokenBuy.symbol} per ${tokenSell.symbol}`}
+              onClick={() =>
+                setValue(
+                  "strikePrice",
+                  formatMarketPriceForInput(marketPrice),
+                  { shouldValidate: true, shouldDirty: true },
+                )
+              }
+            >
+              <span className="truncate">
+                Market: {formatMarketPrice(marketPrice)} {tokenBuy.symbol} per{" "}
+                {tokenSell.symbol}
+              </span>
+            </Button>
+          )}
+        </div>
       </div>
     </section>
   );

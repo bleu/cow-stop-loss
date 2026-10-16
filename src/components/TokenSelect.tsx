@@ -70,7 +70,10 @@ export function TokenSelect({
           )}
         </div>
       </PopoverTrigger>
-      <PopoverContent className="w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-border bg-popover p-0 text-popover-foreground shadow-2xl">
+      <PopoverContent className="rescue-popover w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-border bg-popover p-0 text-popover-foreground shadow-2xl">
+        <p className="border-b border-border/60 px-4 py-3 font-mono text-[10px] uppercase tracking-[0.16em] text-secondary">
+          Choose your passenger
+        </p>
         {/* @ts-ignore */}
         <Command className="rounded-2xl bg-transparent text-popover-foreground">
           <CommandInput

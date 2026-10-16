@@ -1119,7 +1119,7 @@ test("lets the creation form size the desktop row and keeps the read-only orders
   await connectBrowserWallet();
 
   const formPanel = await screen.findByRole("region", {
-    name: "Place a stop-loss order",
+    name: "Create stop-loss order",
   });
   const ordersPanel = screen.getByRole("region", {
     name: "Your stop-loss orders",
@@ -1133,7 +1133,7 @@ test("lets the creation form size the desktop row and keeps the read-only orders
   ).toBeTruthy();
   expect(formPanel.parentElement).toHaveClass(
     "grid-cols-1",
-    "lg:grid-cols-[minmax(24rem,0.82fr)_minmax(0,1.38fr)]",
+    "min-[860px]:grid-cols-[minmax(0,min(480px,52%))_minmax(0,1fr)]",
   );
   for (const panel of [formPanel, ordersPanel]) {
     expect(panel).not.toHaveClass("lg:h-[48rem]");
@@ -1147,8 +1147,8 @@ test("lets the creation form size the desktop row and keeps the read-only orders
     "flex",
     "min-h-0",
     "flex-col",
-    "lg:absolute",
-    "lg:inset-0",
+    "min-[860px]:absolute",
+    "min-[860px]:inset-0",
   );
   for (const className of ["absolute", "h-full", "overflow-y-auto"]) {
     expect(ordersContent).not.toHaveClass(className);
