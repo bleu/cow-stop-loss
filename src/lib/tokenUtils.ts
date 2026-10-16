@@ -1,5 +1,6 @@
 import { Address, erc20Abi, formatUnits } from "viem";
 
+import { getPlacementReads } from "./placementReads";
 import { ChainId, publicClientsFromIds } from "./publicClients";
 import { IToken } from "./types";
 
@@ -12,13 +13,12 @@ export async function fetchFormattedBalanceOf({
   address: Address;
   chainId: ChainId;
 }): Promise<string> {
-  const publicClient = publicClientsFromIds[chainId];
+  const publicClient = getPlacementReads({ account: address, chainId }).client;
   const bigIntBalance = await publicClient.readContract({
     abi: erc20Abi,
     address: token.address as Address,
     functionName: "balanceOf",
     args: [address],
-    blockTag: "latest",
   });
   return formatUnits(bigIntBalance, token.decimals);
 }

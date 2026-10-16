@@ -66,6 +66,7 @@ export interface IOracleRouterArgs {
   chainId: ChainId;
   tokenSell: IToken;
   tokenBuy: IToken;
+  client?: PublicClient;
 }
 
 export abstract class OracleRouter {
@@ -74,9 +75,9 @@ export abstract class OracleRouter {
   tokenSell: IToken;
   tokenBuy: IToken;
 
-  constructor({ chainId, tokenSell, tokenBuy }: IOracleRouterArgs) {
+  constructor({ chainId, tokenSell, tokenBuy, client }: IOracleRouterArgs) {
     this.chainId = chainId;
-    this.publicClient = publicClientsFromIds[chainId];
+    this.publicClient = client ?? publicClientsFromIds[chainId];
     this.tokenSell = tokenSell;
     this.tokenBuy = tokenBuy;
   }

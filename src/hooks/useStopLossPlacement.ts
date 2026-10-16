@@ -10,6 +10,7 @@ import {
   WaitForTransactionReceiptTimeoutError,
 } from "viem";
 
+import { invalidatePlacementReads } from "#/lib/placementReads";
 import { verifyPlacementConfirmation } from "#/lib/pollerStopLoss";
 import {
   ChainId,
@@ -55,13 +56,20 @@ export function useStopLossPlacement(account?: Address, chainId?: ChainId) {
     try {
       const placement = getStopLossPlacement();
       const chains = chainId ? [chainId] : supportedChainIds;
+      let previousRevision: string | undefined;
       const update = () => {
         try {
-          setRecords(
-            chains.flatMap((selectedChain) =>
-              placement.getRecords({ account, chainId: selectedChain }),
-            ),
+          const records = chains.flatMap((selectedChain) =>
+            placement.getRecords({ account, chainId: selectedChain }),
           );
+          const revision = JSON.stringify(
+            records.map(({ id, revision }) => [id, revision]),
+          );
+          if (previousRevision !== undefined && revision !== previousRevision)
+            for (const chainId of chains)
+              invalidatePlacementReads({ account, chainId });
+          previousRevision = revision;
+          setRecords(records);
           setError(undefined);
         } catch (cause) {
           fail(cause);
@@ -114,10 +122,16 @@ export function resumeStopLossPlacement(account: Address, chainId: ChainId) {
 }
 
 async function readSavedPlacement(account: Address, chainId: ChainId) {
-  return getStopLossPlacement().resume(
-    { account, chainId },
-    placementReader(chainId),
-  );
+  const placement = getStopLossPlacement();
+  const scope = { account, chainId };
+  const pending = placement
+    .getRecords(scope)
+    .some(
+      (record) => record.status === "pending" || record.status === "prompting",
+    );
+  const records = await placement.resume(scope, placementReader(chainId));
+  if (pending) invalidatePlacementReads(scope);
+  return records;
 }
 
 export async function abandonStopLossPlacement(

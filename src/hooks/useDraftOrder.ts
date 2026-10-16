@@ -3,6 +3,7 @@ import { create } from "zustand";
 
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
+import { getPlacementReads } from "#/lib/placementReads";
 import { ChainId } from "#/lib/publicClients";
 import {
   generateAdvancedSettingsSchema,
@@ -54,6 +55,7 @@ export const useDraftOrder = create<DraftOrderState>()((set) => ({
       chainId,
       tokenBuy: swapData.tokenBuy,
       tokenSell: swapData.tokenSell,
+      client: getPlacementReads({ account: walletAddress, chainId }).client,
     });
 
     const { tokenBuyOracle, tokenSellOracle } = await oracleRouter.findRoute();
