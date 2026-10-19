@@ -27,7 +27,7 @@ import {
   STOP_LOSS_ADDRESS,
 } from "./contracts";
 import { uploadAppData } from "./cowApi/uploadAppData";
-import { readOraclePrice } from "./oracleRouter";
+import { configuredTokenRoute, readOraclePrice } from "./oracleRouter";
 import { getPlacementReads, type PlacementReads } from "./placementReads";
 import { ChainId, publicClientsFromIds } from "./publicClients";
 import { decodeStopLossStaticInput } from "./staticInputDecoder";
@@ -37,8 +37,41 @@ import {
   loadStopLossFundingParents,
   loadStopLossOrders,
 } from "./stopLossOrders";
-import { getSupportedTokens } from "./supportedTokens";
-import { DraftOrder } from "./types";
+import { findKnownToken, getSupportedTokens } from "./supportedTokens";
+import { DraftOrder, IToken } from "./types";
+
+export function assertPlacementRoute(
+  draft: Pick<
+    DraftOrder,
+    "tokenSell" | "tokenBuy" | "tokenSellOracle" | "tokenBuyOracle"
+  >,
+  chainId: ChainId,
+  staticInput?: Hex,
+) {
+  const route = configuredTokenRoute({
+    chainId,
+    tokenSell: draft.tokenSell,
+    tokenBuy: draft.tokenBuy,
+  });
+  if (
+    route.tokenSellOracle.toLowerCase() !==
+      draft.tokenSellOracle.toLowerCase() ||
+    route.tokenBuyOracle.toLowerCase() !== draft.tokenBuyOracle.toLowerCase()
+  )
+    throw new Error("Unsupported token or price-feed route");
+  if (staticInput) {
+    const order = decodeStopLossStaticInput(staticInput);
+    if (
+      order.sellToken.toLowerCase() !== draft.tokenSell.address.toLowerCase() ||
+      order.buyToken.toLowerCase() !== draft.tokenBuy.address.toLowerCase() ||
+      order.sellTokenPriceOracle.toLowerCase() !==
+        route.tokenSellOracle.toLowerCase() ||
+      order.buyTokenPriceOracle.toLowerCase() !==
+        route.tokenBuyOracle.toLowerCase()
+    )
+      throw new Error("Unsupported token or price-feed route");
+  }
+}
 
 export async function preparePlacement({
   draft,
@@ -58,22 +91,7 @@ export async function preparePlacement({
     throw new Error("Receiver cannot be the zero address");
   }
   getOrderAmounts(draft);
-  const supported = getSupportedTokens(chainId);
-  const sell = supported.sellTokens.find(
-    ({ token }) =>
-      token.address.toLowerCase() === draft.tokenSell.address.toLowerCase(),
-  );
-  if (
-    !sell ||
-    sell.token.decimals !== draft.tokenSell.decimals ||
-    supported.buyToken.token.address.toLowerCase() !==
-      draft.tokenBuy.address.toLowerCase() ||
-    supported.buyToken.token.decimals !== draft.tokenBuy.decimals ||
-    sell.priceFeed.toLowerCase() !== draft.tokenSellOracle.toLowerCase() ||
-    supported.buyToken.priceFeed.toLowerCase() !==
-      draft.tokenBuyOracle.toLowerCase()
-  )
-    throw new Error("Unsupported token or price-feed route");
+  assertPlacementRoute(draft, chainId);
   const reviewed = {
     ...draft,
     tokenSell: { ...draft.tokenSell },
@@ -196,14 +214,21 @@ export type FundingSnapshot =
 export async function prefetchPlacementChecks({
   account,
   chainId,
+  tokenSell,
 }: {
   account: Address;
   chainId: ChainId;
+  tokenSell?: IToken;
 }) {
   const reads = getPlacementReads({ account, chainId });
   const { client } = reads;
   const poller = POLLER_ADDRESS_BY_CHAIN_ID[chainId];
-  const { sellTokens, buyToken } = getSupportedTokens(chainId);
+  const { buyToken } = getSupportedTokens(chainId);
+  const route = tokenSell
+    ? configuredTokenRoute({ chainId, tokenSell, tokenBuy: buyToken.token })
+    : undefined;
+  const tokens = tokenSell ? [tokenSell, buyToken.token] : [];
+  const oracles = route ? [...new Set(Object.values(route))] : [];
   const context = async () => {
     const factory = await client.readContract({
       address: poller,
@@ -224,7 +249,7 @@ export async function prefetchPlacementChecks({
         abi: cowShedAbi,
         functionName: "trustedExecutor",
       }),
-      ...[...sellTokens, buyToken].map(({ token }) =>
+      ...tokens.map((token) =>
         client.readContract({
           address: token.address,
           abi: erc20Abi,
@@ -296,7 +321,7 @@ export async function prefetchPlacementChecks({
       abi: composableCowAbi,
       functionName: "domainSeparator",
     }),
-    ...[...sellTokens, buyToken].flatMap(({ token, priceFeed }) => [
+    ...tokens.flatMap((token) => [
       client.readContract({
         address: token.address,
         abi: erc20Abi,
@@ -309,13 +334,15 @@ export async function prefetchPlacementChecks({
         functionName: "allowance",
         args: [account, poller],
       }),
+    ]),
+    ...oracles.flatMap((oracle) => [
       client.readContract({
-        address: priceFeed,
+        address: oracle,
         abi: oracleMinimalAbi,
         functionName: "latestRoundData",
       }),
       client.readContract({
-        address: priceFeed,
+        address: oracle,
         abi: oracleMinimalAbi,
         functionName: "decimals",
       }),
@@ -330,6 +357,21 @@ export async function refreshPlacementChecks(
     localOrders?: readonly PreparedPlacement[];
   } = {},
 ): Promise<FundingSnapshot> {
+  try {
+    assertPlacementRoute(
+      prepared.draft,
+      prepared.chainId,
+      prepared.staticInput,
+    );
+  } catch (error) {
+    return {
+      status: "unknown",
+      error:
+        error instanceof Error
+          ? error.message
+          : "Unsupported token or price-feed route",
+    };
+  }
   return refreshFundingChecks(prepared, {
     ...options,
     reads: getPlacementReads({ ...prepared, client: options.client }),
@@ -669,10 +711,7 @@ export async function refreshApprovalRepair(
         "Selected order funding identity is unavailable or inconsistent",
       );
     const order = decodeStopLossStaticInput(parent.staticInput);
-    const tokenSell = getSupportedTokens(selection.chainId).sellTokens.find(
-      ({ token }) =>
-        token.address.toLowerCase() === order.sellToken.toLowerCase(),
-    )?.token;
+    const tokenSell = findKnownToken(selection.chainId, order.sellToken);
     if (!order.isSellOrder || !tokenSell)
       throw new Error("Only supported exact-sell orders can update approval");
     const domainSeparator = await client.readContract({
@@ -807,6 +846,12 @@ export async function buildPlacementApproval(
     !decodeStopLossStaticInput(prepared.staticInput).isSellOrder
   )
     throw new Error("Only exact-sell orders are supported.");
+  if (!("kind" in prepared))
+    assertPlacementRoute(
+      prepared.draft,
+      prepared.chainId,
+      prepared.staticInput,
+    );
   if (checks.status === "unknown") throw new Error(checks.error);
   if (!checks.approvalRequired) return { kind: "none", transaction: null };
   return {
@@ -840,6 +885,7 @@ export async function buildPlacementSetup(
     !decodeStopLossStaticInput(prepared.staticInput).isSellOrder
   )
     throw new Error("Only exact-sell orders are supported.");
+  assertPlacementRoute(prepared.draft, prepared.chainId, prepared.staticInput);
   if (checks.status === "unknown") throw new Error(checks.error);
   if (checks.approvalRequired) {
     throw new Error("Approve the funding amount before placing this order");

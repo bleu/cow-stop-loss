@@ -60,10 +60,10 @@ export const useDraftOrder = create<DraftOrderState>()((set) => ({
 
     const { tokenBuyOracle, tokenSellOracle } = await oracleRouter.findRoute();
 
-    const oraclePrice = await oracleRouter.calculatePrice({
-      tokenBuyOracle,
-      tokenSellOracle,
-    });
+    const oraclePrice = await oracleRouter.calculatePrice(
+      { tokenBuyOracle, tokenSellOracle },
+      advancedSettings.maxHoursSinceOracleUpdates * 3600,
+    );
 
     if (!Number.isFinite(oraclePrice) || oraclePrice <= 0) {
       throw new Error("Required price feeds are unavailable or invalid.");

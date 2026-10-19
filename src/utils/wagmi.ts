@@ -4,9 +4,8 @@ import {
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { cookieStorage, createConfig, createStorage } from "wagmi";
-import { arbitrum, gnosis, mainnet, sepolia } from "wagmi/chains";
 
-import { createRpcTransport } from "#/lib/publicClients";
+import { createRpcTransports, supportedChains } from "#/lib/publicClients";
 
 export function createWagmiConfig() {
   const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
@@ -58,19 +57,9 @@ export function createWagmiConfig() {
   return createConfig({
     ssr: true,
     storage: createStorage({ storage: cookieStorage }),
-    chains: [
-      mainnet,
-      { ...sepolia, name: "Sepolia (testnet)" },
-      gnosis,
-      { ...arbitrum, name: "Arbitrum" },
-    ],
+    chains: supportedChains,
     connectors,
-    transports: {
-      [mainnet.id]: createRpcTransport(mainnet),
-      [sepolia.id]: createRpcTransport(sepolia),
-      [gnosis.id]: createRpcTransport(gnosis),
-      [arbitrum.id]: createRpcTransport(arbitrum),
-    },
+    transports: createRpcTransports(),
   });
 }
 

@@ -83,8 +83,7 @@ function WalletRequiredOrders() {
             Your herd, all in one place
           </h3>
           <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
-            Connect your wallet to see stop-loss orders across Ethereum, Gnosis,
-            Arbitrum, and Sepolia.
+            Connect your wallet to see stop-loss orders across supported networks.
           </p>
           <Button
             type="button"

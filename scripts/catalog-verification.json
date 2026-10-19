@@ -1,0 +1,4304 @@
+{
+  "checkedAt": "2026-10-16T22:02:52.111341+00:00",
+  "chains": {
+    "59144": {
+      "tokens": {
+        "0x4af15ec2a0bd43db75dd04e62faa3b8ef36b00d5": {
+          "decimals": 18,
+          "symbol": "DAI"
+        },
+        "0x1789e0043623282d5dcc7f213d703c6d8bafbb04": {
+          "decimals": 18,
+          "symbol": "LINEA"
+        },
+        "0xa18152629128738a5c081eb226335fed4b9c95e9": {
+          "decimals": 18,
+          "symbol": "LINK"
+        },
+        "0xaca92e438df0b2401ff60da7e4337b687a2435da": {
+          "decimals": 6,
+          "symbol": "mUSD"
+        },
+        "0x176211869ca2b568f2a7d4ee941e073a821ee1ff": {
+          "decimals": 6,
+          "symbol": "USDC"
+        },
+        "0xa219439258ca9da29e9cc4ce5596924745e12b93": {
+          "decimals": 6,
+          "symbol": "USDT"
+        },
+        "0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f": {
+          "decimals": 18,
+          "symbol": "WETH"
+        },
+        "0xb5bedd42000b71fdde22d3ee8a79bd49a568fc8f": {
+          "decimals": 18,
+          "symbol": "wstETH"
+        }
+      },
+      "feeds": {
+        "0x5133d67c38afbdd02997c14abd8d83676b4e309a": {
+          "description": "DAI / USD",
+          "decimals": 8,
+          "answer": "99991535",
+          "updatedAt": 1792165288,
+          "heartbeat": 86400,
+          "observedAt": 1792188168,
+          "ageSeconds": 22880
+        },
+        "0x452b408b3e2805c109d52c80bd54deda239716d1": {
+          "description": "LINEA / USD",
+          "decimals": 8,
+          "answer": "283648",
+          "updatedAt": 1792187396,
+          "heartbeat": 86400,
+          "observedAt": 1792188168,
+          "ageSeconds": 772
+        },
+        "0xc4194f19e3a0836f6b998394445c6535c50604ce": {
+          "description": "LINK / ETH",
+          "decimals": 18,
+          "answer": "5086789404918169",
+          "updatedAt": 1792176297,
+          "heartbeat": 86400,
+          "observedAt": 1792188168,
+          "ageSeconds": 11871
+        },
+        "0x8df01c2efed1404872b54a69f40a57fec1545998": {
+          "description": "LINK / USD",
+          "decimals": 8,
+          "answer": "1227434647",
+          "updatedAt": 1792178110,
+          "heartbeat": 86400,
+          "observedAt": 1792188168,
+          "ageSeconds": 10058
+        },
+        "0xc834a55fb78dea866e9cd86047df0f584b9da339": {
+          "description": "MUSD / USD",
+          "decimals": 8,
+          "answer": "99994761",
+          "updatedAt": 1792183372,
+          "heartbeat": 86400,
+          "observedAt": 1792188168,
+          "ageSeconds": 4796
+        },
+        "0xaadaa473c1bdf7317ec07c915680af29debfdcb5": {
+          "description": "USDC / USD",
+          "decimals": 8,
+          "answer": "99980289",
+          "updatedAt": 1792168496,
+          "heartbeat": 86400,
+          "observedAt": 1792188168,
+          "ageSeconds": 19672
+        },
+        "0xefca2bbe0edd0e22b2e0d2f8248e99f4bef4a7db": {
+          "description": "USDT / USD",
+          "decimals": 8,
+          "answer": "99883082",
+          "updatedAt": 1792168089,
+          "heartbeat": 86400,
+          "observedAt": 1792188168,
+          "ageSeconds": 20079
+        },
+        "0x3c6cd9cc7c7a4c2cf5a82734cd249d7d593354da": {
+          "description": "ETH / USD",
+          "decimals": 8,
+          "answer": "241697596310",
+          "updatedAt": 1792185952,
+          "heartbeat": 86400,
+          "observedAt": 1792188168,
+          "ageSeconds": 2216
+        },
+        "0x8ece1aba32716fdde8d6482bfd88e9a0ee01f565": {
+          "description": "WSTETH / USD",
+          "decimals": 8,
+          "answer": "300935247066",
+          "updatedAt": 1792182910,
+          "heartbeat": 86400,
+          "observedAt": 1792188168,
+          "ageSeconds": 5258
+        }
+      },
+      "issues": []
+    },
+    "100": {
+      "tokens": {
+        "0xdf613af6b44a31299e48131e9347f034347e2f00": {
+          "decimals": 18,
+          "symbol": "AAVE"
+        },
+        "0xdf6ff92bfdc1e8be45177dc1f4845d391d3ad8fd": {
+          "decimals": 18,
+          "symbol": "COMP"
+        },
+        "0x712b3d230f3c1c19db860d80619288b1f0bdd0bd": {
+          "decimals": 18,
+          "symbol": "CRV"
+        },
+        "0x44fa8e6f47987339850636f88629646662444217": {
+          "decimals": 18,
+          "symbol": "DAI"
+        },
+        "0xfc421ad3c883bf9e7c4f42de845c4e4405799e73": {
+          "decimals": 18,
+          "symbol": "GHO"
+        },
+        "0x9c58bacc331c9aa871afd802db6379a98e80cedb": {
+          "decimals": 18,
+          "symbol": "GNO"
+        },
+        "0xfadc59d012ba3c110b08a15b7755a5cb7cbe77d7": {
+          "decimals": 18,
+          "symbol": "GRT"
+        },
+        "0xe2e73a1c69ecf83f464efce6a5be353a37ca09b2": {
+          "decimals": 18,
+          "symbol": "LINK"
+        },
+        "0x3a00e08544d589e19a8e7d97d0294331341cdbf6": {
+          "decimals": 18,
+          "symbol": "SNX"
+        },
+        "0x3c037849a8ffcf19886e2f5b04f293b7847d0377": {
+          "decimals": 18,
+          "symbol": "stETH"
+        },
+        "0x2995d1317dcd4f0ab89f4ae60f3f020a4f17c7ce": {
+          "decimals": 18,
+          "symbol": "SUSHI"
+        },
+        "0x4537e328bf7e4efa29d05caea260d7fe26af9d74": {
+          "decimals": 18,
+          "symbol": "UNI"
+        },
+        "0xddafbb505ad214d7b80b1f830fccc89b60fb7a83": {
+          "decimals": 6,
+          "symbol": "USDC"
+        },
+        "0x4ecaba5870353805a9f068101a40e0f32ed605c6": {
+          "decimals": 6,
+          "symbol": "USDT"
+        },
+        "0x8e5bbbb09ed1ebde8674cda39a0c169401db4252": {
+          "decimals": 8,
+          "symbol": "WBTC"
+        },
+        "0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1": {
+          "decimals": 18,
+          "symbol": "WETH"
+        },
+        "0xbf65bfcb5da067446cee6a706ba3fe2fb1a9fdfd": {
+          "decimals": 18,
+          "symbol": "YFI"
+        }
+      },
+      "feeds": {
+        "0x2b481dc923aa050e009113dca8dcb0dab4b68cdf": {
+          "description": "AAVE / USD",
+          "decimals": 8,
+          "answer": "15405066000",
+          "updatedAt": 1792187565,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 604
+        },
+        "0xba95bc8418ebcdf8a690924e1d4ad5292139f2ea": {
+          "description": "COMP / USD",
+          "decimals": 8,
+          "answer": "2204427948",
+          "updatedAt": 1792182500,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 5669
+        },
+        "0xc77b83ac3dd2a761073bd0f281f7b880b2ddde18": {
+          "description": "CRV / USD",
+          "decimals": 8,
+          "answer": "34655000",
+          "updatedAt": 1792185890,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 2279
+        },
+        "0x678df3415fc31947da4324ec63212874be5a82f8": {
+          "description": "DAI / USD",
+          "decimals": 8,
+          "answer": "99994542",
+          "updatedAt": 1792174555,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 13614
+        },
+        "0x855193775ef2abb12cf95de3086229a14ab8e0e3": {
+          "description": "GHO / USD",
+          "decimals": 8,
+          "answer": "99871744",
+          "updatedAt": 1792174790,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 13379
+        },
+        "0x22441d81416430a54336ab28765abd31a792ad37": {
+          "description": "GNO / USD",
+          "decimals": 8,
+          "answer": "11471129973",
+          "updatedAt": 1792185610,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 2559
+        },
+        "0xebbd67a84e33791f1bcfde74cdc22a71e332e2f1": {
+          "description": "GRT / USD",
+          "decimals": 8,
+          "answer": "2471103",
+          "updatedAt": 1792185460,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 2709
+        },
+        "0xed322a5ac55bae091190dff9066760b86751947b": {
+          "description": "LINK / USD",
+          "decimals": 8,
+          "answer": "1227843982",
+          "updatedAt": 1792178160,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 10009
+        },
+        "0x3b84d6e6976d5826500572600eb44f9f1753827b": {
+          "description": "SNX / USD",
+          "decimals": 8,
+          "answer": "22389000",
+          "updatedAt": 1792185705,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 2464
+        },
+        "0x229e486ee0d35b7a9f668d10a1e6029eee6b77e0": {
+          "description": "STETH / USD",
+          "decimals": 8,
+          "answer": "241216582577",
+          "updatedAt": 1792178775,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 9394
+        },
+        "0xc0a6bf8d5d408b091d022c3c0653d4056d4b9c01": {
+          "description": "SUSHI / USD",
+          "decimals": 8,
+          "answer": "22483429",
+          "updatedAt": 1792187375,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 794
+        },
+        "0xd98735d78266c62277bb4dbf3e3bcdd3694782f4": {
+          "description": "UNI / USD",
+          "decimals": 8,
+          "answer": "722559200",
+          "updatedAt": 1792183590,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 4579
+        },
+        "0x26c31ac71010af62e6b486d1132e266d6298857d": {
+          "description": "USDC / USD",
+          "decimals": 8,
+          "answer": "99985641",
+          "updatedAt": 1792174630,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 13539
+        },
+        "0x68811d7df835b1c33e6eeae8e7c141ef48d48cc7": {
+          "description": "USDT / USD",
+          "decimals": 8,
+          "answer": "99857230",
+          "updatedAt": 1792174785,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 13384
+        },
+        "0x00288135be38b83249f380e9b6b9a04c90ec39ee": {
+          "description": "WBTC / USD",
+          "decimals": 8,
+          "answer": "8146495029693",
+          "updatedAt": 1792184015,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 4154
+        },
+        "0xa767f745331d267c7751297d982b050c93985627": {
+          "description": "ETH / USD",
+          "decimals": 8,
+          "answer": "241365580000",
+          "updatedAt": 1792182805,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 5364
+        },
+        "0x14030d5a0c9e63d9606c6f2c8771fc95b34b07e0": {
+          "description": "YFI / USD",
+          "decimals": 8,
+          "answer": "228916357000",
+          "updatedAt": 1792180650,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 7519
+        }
+      },
+      "issues": []
+    },
+    "43114": {
+      "tokens": {
+        "0x63a72806098bd3d9520cc43356dd78afe5d386d9": {
+          "decimals": 18,
+          "symbol": "AAVE.e"
+        },
+        "0x00000000efe302beaa2b3e6e1b18d08d69a9012a": {
+          "decimals": 6,
+          "symbol": "AUSD"
+        },
+        "0x98443b96ea4b0858fdf3219cd13e98c7a4690588": {
+          "decimals": 18,
+          "symbol": "BAT.e"
+        },
+        "0xc3048e19e76cb9a3aa9d77d8c03c29fc906e2437": {
+          "decimals": 18,
+          "symbol": "COMP.e"
+        },
+        "0xd586e7f844cea2f87f50152665bcbc2c279d8d70": {
+          "decimals": 18,
+          "symbol": "DAI.e"
+        },
+        "0xc891eb4cbdeff6e073e859e987815ed1505c2acd": {
+          "decimals": 6,
+          "symbol": "EURC"
+        },
+        "0xd24c2ad096400b6fbcd2ad8b24e7acbc21a1da64": {
+          "decimals": 18,
+          "symbol": "FRAX"
+        },
+        "0xfc421ad3c883bf9e7c4f42de845c4e4405799e73": {
+          "decimals": 18,
+          "symbol": "GHO"
+        },
+        "0x62edc0692bd897d2295872a9ffcac5425011c661": {
+          "decimals": 18,
+          "symbol": "GMX"
+        },
+        "0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd": {
+          "decimals": 18,
+          "symbol": "JOE"
+        },
+        "0x5947bb275c521040051d82396192181b413227a3": {
+          "decimals": 18,
+          "symbol": "LINK.e"
+        },
+        "0x130966628846bfd36ff31a822705796e8cb8c18d": {
+          "decimals": 18,
+          "symbol": "MIM"
+        },
+        "0x8729438eb15e2c8b576fcc6aecda6a148776c0f5": {
+          "decimals": 18,
+          "symbol": "QI"
+        },
+        "0x2b2c81e08f1af8835a78bb2a90ae924ace0ea4be": {
+          "decimals": 18,
+          "symbol": "sAVAX"
+        },
+        "0xbec243c995409e6520d7c41e404da5deba4b209b": {
+          "decimals": 18,
+          "symbol": "SNX.e"
+        },
+        "0x211cc4dd073734da055fbf44a2b4667d5e5fe5d2": {
+          "decimals": 18,
+          "symbol": "sUSDe"
+        },
+        "0x37b608519f91f70f2eeb0e5ed9af4061722e4f76": {
+          "decimals": 18,
+          "symbol": "SUSHI.e"
+        },
+        "0x1c20e891bab6b1727d14da358fae2984ed9b59eb": {
+          "decimals": 18,
+          "symbol": "TUSD"
+        },
+        "0x8ebaf22b6f053dffeaf46f4dd9efa95d89ba8580": {
+          "decimals": 18,
+          "symbol": "UNI.e"
+        },
+        "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e": {
+          "decimals": 6,
+          "symbol": "USDC"
+        },
+        "0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664": {
+          "decimals": 6,
+          "symbol": "USDC.e"
+        },
+        "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7": {
+          "decimals": 6,
+          "symbol": "USDt"
+        },
+        "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7": {
+          "decimals": 18,
+          "symbol": "WAVAX"
+        },
+        "0x0555e30da8f98308edb960aa94c0db47230d2b9c": {
+          "decimals": 8,
+          "symbol": "WBTC"
+        },
+        "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab": {
+          "decimals": 18,
+          "symbol": "WETH.e"
+        },
+        "0x2bbbdf97295f73175b12cc087cf446765931e1c3": {
+          "decimals": 18,
+          "symbol": "wstETH"
+        },
+        "0xd1c3f94de7e5b45fa4edbba472491a9f4b166fc4": {
+          "decimals": 18,
+          "symbol": "XAVA"
+        },
+        "0x9eaac1b23d935365bd7b542fe22ceee2922f52dc": {
+          "decimals": 18,
+          "symbol": "YFI.e"
+        }
+      },
+      "feeds": {
+        "0x3ca13391e9fb38a75330fb28f8cc2eb3d9ceceed": {
+          "description": "AAVE / USD",
+          "decimals": 8,
+          "answer": "15404999000",
+          "updatedAt": 1792187566,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 603
+        },
+        "0x5c2d58627fbe746f5ea24ef6d618f09f8e3f0122": {
+          "description": "AUSD / USD",
+          "decimals": 8,
+          "answer": "99985642",
+          "updatedAt": 1792181931,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 6238
+        },
+        "0xe89b3ce86d25599d1e615c0f6a353b4572ff868d": {
+          "description": "BAT / USD",
+          "decimals": 8,
+          "answer": "19982959",
+          "updatedAt": 1792187764,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 405
+        },
+        "0x9d6aa0ac8c4818433bea7a74f49c73b57bcec4ec": {
+          "description": "COMP / USD",
+          "decimals": 8,
+          "answer": "2205941196",
+          "updatedAt": 1792182617,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 5552
+        },
+        "0x51d7180eda2260cc4f6e4eebb82fef5c3c2b8300": {
+          "description": "DAI / USD",
+          "decimals": 8,
+          "answer": "99974649",
+          "updatedAt": 1792129956,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 58213
+        },
+        "0x3368310bc4aee5d96486a73bae8e6b49fcde62d3": {
+          "description": "EURC / USD",
+          "decimals": 8,
+          "answer": "112267277",
+          "updatedAt": 1792167170,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 20999
+        },
+        "0xbba56ef1565354217a3353a466edb82e8f25b08e": {
+          "description": "FRAX / USD",
+          "decimals": 8,
+          "answer": "99144225",
+          "updatedAt": 1792181803,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 6366
+        },
+        "0x076de3812bdbdae1330064fc01adf7f4eaa123f3": {
+          "description": "GHO / USD",
+          "decimals": 8,
+          "answer": "99873615",
+          "updatedAt": 1792182133,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 6036
+        },
+        "0x3f968a21647d7ca81fb8a5b69c0a452701d5dce8": {
+          "description": "GMX / USD",
+          "decimals": 8,
+          "answer": "868761210",
+          "updatedAt": 1792188095,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 74
+        },
+        "0x02d35d3a8ac3e1626d3ee09a78dd87286f5e8e3a": {
+          "description": "JOE / USD",
+          "decimals": 8,
+          "answer": "3351328",
+          "updatedAt": 1792187709,
+          "heartbeat": 1800,
+          "observedAt": 1792188169,
+          "ageSeconds": 460
+        },
+        "0x49ccd9ca821efeab2b98c60dc60f518e765ede9a": {
+          "description": "LINK / USD",
+          "decimals": 8,
+          "answer": "1228057000",
+          "updatedAt": 1792180574,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 7595
+        },
+        "0x54edab30a7134a16a54218ae64c73e1daf48a8fb": {
+          "description": "MIM / USD",
+          "decimals": 8,
+          "answer": "4498000",
+          "updatedAt": 1792178536,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 9633
+        },
+        "0x36e039e6391a5e7a7267650979fdf613f659be5d": {
+          "description": "QI / USD",
+          "decimals": 8,
+          "answer": "259950",
+          "updatedAt": 1792187688,
+          "heartbeat": 1800,
+          "observedAt": 1792188169,
+          "ageSeconds": 481
+        },
+        "0x2854ca10a54800e15a2a25cfa52567166434ff0a": {
+          "description": "Calculated SAVAX / USD",
+          "decimals": 18,
+          "answer": "12839412334874905861",
+          "updatedAt": 1792188154,
+          "heartbeat": 120,
+          "observedAt": 1792188169,
+          "ageSeconds": 15
+        },
+        "0x01752eaab988ecb0ceba2c8fc97c4f1d38bf246d": {
+          "description": "SNX / USD",
+          "decimals": 8,
+          "answer": "22366000",
+          "updatedAt": 1792185454,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 2715
+        },
+        "0x14488868fc8b1ffb381d6f49907ee75b3f0c2a0f": {
+          "description": "SUSDE / USD",
+          "decimals": 8,
+          "answer": "125264275",
+          "updatedAt": 1792182221,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 5948
+        },
+        "0x449a373a090d8a1e5f74c63ef831ceff39e94563": {
+          "description": "SUSHI / USD",
+          "decimals": 8,
+          "answer": "22483518",
+          "updatedAt": 1792187360,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 809
+        },
+        "0x9cf3ef104a973b351b2c032aa6793c3a6f76b448": {
+          "description": "TUSD / USD",
+          "decimals": 8,
+          "answer": "99838000",
+          "updatedAt": 1792166883,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 21286
+        },
+        "0x9a1372f9b1b71b3a5a72e092ae67e172dbd7daaa": {
+          "description": "UNI / USD",
+          "decimals": 8,
+          "answer": "723942387",
+          "updatedAt": 1792188065,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 104
+        },
+        "0xf096872672f44d6eba71458d74fe67f9a77a23b9": {
+          "description": "USDC / USD",
+          "decimals": 8,
+          "answer": "99988358",
+          "updatedAt": 1792160633,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 27536
+        },
+        "0xebe676ee90fe1112671f19b6b7459bc678b67e8a": {
+          "description": "USDT / USD",
+          "decimals": 8,
+          "answer": "99877642",
+          "updatedAt": 1792160792,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 27377
+        },
+        "0x0a77230d17318075983913bc2145db16c7366156": {
+          "description": "AVAX / USD",
+          "decimals": 8,
+          "answer": "995099072",
+          "updatedAt": 1792188111,
+          "heartbeat": 120,
+          "observedAt": 1792188169,
+          "ageSeconds": 58
+        },
+        "0x86442e3a98558357d46e6182f4b262f76c4fa26f": {
+          "description": "WBTC / USD",
+          "decimals": 8,
+          "answer": "8141005082209",
+          "updatedAt": 1792182915,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 5254
+        },
+        "0x976b3d034e162d8bd72d6b9c989d545b839003b0": {
+          "description": "ETH / USD",
+          "decimals": 8,
+          "answer": "241492000448",
+          "updatedAt": 1792186561,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 1608
+        },
+        "0xcf60b4e089ea1aba29c01b017b38c2f7d69eb36b": {
+          "description": "WSTETH / ETH",
+          "decimals": 18,
+          "answer": "1246322172761088300",
+          "updatedAt": 1792181858,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 6311
+        },
+        "0xb5f607a2bb2c950053f4da1f535180e5902ead16": {
+          "description": "WSTETH / USD",
+          "decimals": 8,
+          "answer": "300989510320",
+          "updatedAt": 1792185363,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 2806
+        },
+        "0x4cf57dc9028187b9daaf773c8eca941036989238": {
+          "description": "XAVA / USD",
+          "decimals": 8,
+          "answer": "14321961",
+          "updatedAt": 1792132699,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 55470
+        },
+        "0x28043b1ebd41860b93ec1f1ec19560760b6db556": {
+          "description": "YFI / USD",
+          "decimals": 8,
+          "answer": "229031455660",
+          "updatedAt": 1792182514,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 5655
+        }
+      },
+      "issues": []
+    },
+    "137": {
+      "tokens": {
+        "0x9c2c5fd7b07e95ee044ddeba0e97a665f142394f": {
+          "decimals": 18,
+          "symbol": "1INCH"
+        },
+        "0xd6df932a45c0f255f85145f286ea0b292b21c90b": {
+          "decimals": 18,
+          "symbol": "AAVE"
+        },
+        "0xb7b31a6bc18e48888545ce79e83e06003be70930": {
+          "decimals": 18,
+          "symbol": "APE"
+        },
+        "0x61bdd9c7d4df4bf47a4508c0c8245505f2af5b7b": {
+          "decimals": 18,
+          "symbol": "AXS"
+        },
+        "0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3": {
+          "decimals": 18,
+          "symbol": "BAL"
+        },
+        "0x3cef98bb43d732e2f285ee605a8158cde967d219": {
+          "decimals": 18,
+          "symbol": "BAT"
+        },
+        "0x8505b9d2254a7ae468c0e9dd10ccea3a837aef5c": {
+          "decimals": 18,
+          "symbol": "COMP"
+        },
+        "0x172370d5cd63279efa6d502dab29171933a610af": {
+          "decimals": 18,
+          "symbol": "CRV"
+        },
+        "0x8f3cf7ad23cd3cadbd9735aff958023239c6a063": {
+          "decimals": 18,
+          "symbol": "DAI"
+        },
+        "0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7": {
+          "decimals": 18,
+          "symbol": "GHST"
+        },
+        "0x5fe2b58c013d7601147dcdd68c143a77499f5531": {
+          "decimals": 18,
+          "symbol": "GRT"
+        },
+        "0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39": {
+          "decimals": 18,
+          "symbol": "LINK"
+        },
+        "0xa1c57f48f0deb89f569dfbe6e2b7f46d33606fd4": {
+          "decimals": 18,
+          "symbol": "MANA"
+        },
+        "0xfa68fb4628dff1028cfec22b4162fccd0d45efb6": {
+          "decimals": 18,
+          "symbol": "MaticX"
+        },
+        "0xa3fa99a148fa48d14ed51d610c367c61876997f1": {
+          "decimals": 18,
+          "symbol": "miMATIC"
+        },
+        "0xbbba073c31bf03b8acf7c28ef0738decf3695683": {
+          "decimals": 18,
+          "symbol": "SAND"
+        },
+        "0x50b728d8d964fd00c2d0aad81718b71311fef68a": {
+          "decimals": 18,
+          "symbol": "SNX"
+        },
+        "0x0b3f868e0be5597d5db7feb59e1cadbb0fdda50a": {
+          "decimals": 18,
+          "symbol": "SUSHI"
+        },
+        "0xb33eaad8d922b1083446dc23f610c2567fb5180f": {
+          "decimals": 18,
+          "symbol": "UNI"
+        },
+        "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359": {
+          "decimals": 6,
+          "symbol": "USDC"
+        },
+        "0x2791bca1f2de4661ed88a30c99a7a9449aa84174": {
+          "decimals": 6,
+          "symbol": "USDC"
+        },
+        "0xc2132d05d31c914a87c6611c10748aeb04b58e8f": {
+          "decimals": 6,
+          "symbol": "USDT0"
+        },
+        "0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6": {
+          "decimals": 8,
+          "symbol": "WBTC"
+        },
+        "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619": {
+          "decimals": 18,
+          "symbol": "WETH"
+        },
+        "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270": {
+          "decimals": 18,
+          "symbol": "WPOL"
+        }
+      },
+      "feeds": {
+        "0x443c5116cdf663eb387e72c688d276e702135c87": {
+          "description": "1INCH / USD",
+          "decimals": 8,
+          "answer": "9318183",
+          "updatedAt": 1792188155,
+          "heartbeat": 27,
+          "observedAt": 1792188169,
+          "ageSeconds": 14
+        },
+        "0xbe23a3aa13038cfc28afd0ece4fde379fe7fbfc4": {
+          "description": "AAVE / ETH",
+          "decimals": 18,
+          "answer": "64217263006064410",
+          "updatedAt": 1792169557,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 18612
+        },
+        "0x72484b12719e23115761d5da1646945632979bb6": {
+          "description": "AAVE / USD",
+          "decimals": 8,
+          "answer": "15418385319",
+          "updatedAt": 1792188150,
+          "heartbeat": 27,
+          "observedAt": 1792188169,
+          "ageSeconds": 19
+        },
+        "0x2ac3f3bfac8fc9094bc3f0f9041a51375235b992": {
+          "description": "APE / USD",
+          "decimals": 8,
+          "answer": "14850000",
+          "updatedAt": 1792187711,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 458
+        },
+        "0x9c371ae34509590e10ab98205d2df5936a1ad875": {
+          "description": "AXS / USD",
+          "decimals": 8,
+          "answer": "104899000",
+          "updatedAt": 1792188102,
+          "heartbeat": 300,
+          "observedAt": 1792188169,
+          "ageSeconds": 67
+        },
+        "0x03cd157746c61f44597dd54c6f6702105258c722": {
+          "description": "BAL / ETH",
+          "decimals": 18,
+          "answer": "49695773994064",
+          "updatedAt": 1792184213,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 3956
+        },
+        "0xd106b538f2a868c28ca1ec7e298c3325e0251d66": {
+          "description": "BAL / USD",
+          "decimals": 8,
+          "answer": "11983839",
+          "updatedAt": 1792184060,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 4109
+        },
+        "0x2346ce62bd732c62618944e51cbfa09d985d86d2": {
+          "description": "BAT / USD",
+          "decimals": 8,
+          "answer": "20091155",
+          "updatedAt": 1792188165,
+          "heartbeat": 27,
+          "observedAt": 1792188169,
+          "ageSeconds": 4
+        },
+        "0x2a8758b7257102461bc958279054e372c2b1bde6": {
+          "description": "COMP / USD",
+          "decimals": 8,
+          "answer": "2208896000",
+          "updatedAt": 1792188149,
+          "heartbeat": 27,
+          "observedAt": 1792188169,
+          "ageSeconds": 20
+        },
+        "0x1cf68c76803c9a415be301f50e82e44c64b7f1d4": {
+          "description": "CRV / ETH",
+          "decimals": 18,
+          "answer": "143248131624501",
+          "updatedAt": 1792185776,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 2393
+        },
+        "0x336584c8e6dc19637a5b36206b1c79923111b405": {
+          "description": "CRV / USD",
+          "decimals": 8,
+          "answer": "34681385",
+          "updatedAt": 1792188152,
+          "heartbeat": 300,
+          "observedAt": 1792188169,
+          "ageSeconds": 17
+        },
+        "0xfc539a559e170f848323e19dfd66007520510085": {
+          "description": "DAI / ETH",
+          "decimals": 18,
+          "answer": "414369848754858",
+          "updatedAt": 1792170790,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 17379
+        },
+        "0x4746dec9e833a82ec7c2c1356372ccf2cfcd2f3d": {
+          "description": "DAI / USD",
+          "decimals": 8,
+          "answer": "100018297",
+          "updatedAt": 1792188168,
+          "heartbeat": 27,
+          "observedAt": 1792188169,
+          "ageSeconds": 1
+        },
+        "0xe638249af9642cda55a92245525268482ee4c67b": {
+          "description": "GHST / ETH",
+          "decimals": 18,
+          "answer": "25476199000000",
+          "updatedAt": 1792177937,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 10232
+        },
+        "0xdd229ce42f11d8ee7fff29bdb71c7b81352e11be": {
+          "description": "GHST / USD",
+          "decimals": 8,
+          "answer": "6151522",
+          "updatedAt": 1792170838,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 17331
+        },
+        "0x3fabbfb300b1e2d7c9b84512fe9d30aedf24c410": {
+          "description": "GRT / USD",
+          "decimals": 8,
+          "answer": "2465527",
+          "updatedAt": 1792188159,
+          "heartbeat": 27,
+          "observedAt": 1792188169,
+          "ageSeconds": 10
+        },
+        "0xb77fa460604b9c6435a235d057f7d319ac83cb53": {
+          "description": "LINK / ETH",
+          "decimals": 18,
+          "answer": "5086789404918169",
+          "updatedAt": 1792176311,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 11858
+        },
+        "0xd9ffdb71ebe7496cc440152d43986aae0ab76665": {
+          "description": "LINK / USD",
+          "decimals": 8,
+          "answer": "1230073727",
+          "updatedAt": 1792188153,
+          "heartbeat": 27,
+          "observedAt": 1792188169,
+          "ageSeconds": 16
+        },
+        "0xa1cbf3fe43bc3501e3fc4b573e822c70e76a7512": {
+          "description": "MANA / USD",
+          "decimals": 8,
+          "answer": "8802424",
+          "updatedAt": 1792188144,
+          "heartbeat": 27,
+          "observedAt": 1792188169,
+          "ageSeconds": 25
+        },
+        "0x5d37e4b374e6907de8fc7fb33ee3b0af403c7403": {
+          "description": "Calculated MaticX / USD",
+          "decimals": 8,
+          "answer": "11273992",
+          "updatedAt": 1792187817,
+          "heartbeat": 3600,
+          "observedAt": 1792188169,
+          "ageSeconds": 352
+        },
+        "0xd8d483d813547cfb624b8dc33a00f2fcbcd2d428": {
+          "description": "MIMATIC / USD",
+          "decimals": 8,
+          "answer": "99616700",
+          "updatedAt": 1792103866,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 84303
+        },
+        "0x3d49406edd4d52fb7ffd25485f32e073b529c924": {
+          "description": "SAND / USD",
+          "decimals": 8,
+          "answer": "5405065",
+          "updatedAt": 1792187364,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 805
+        },
+        "0xbf90a5d9b6ee9019028dbfc2a9e50056d5252894": {
+          "description": "SNX / USD",
+          "decimals": 8,
+          "answer": "22400066",
+          "updatedAt": 1792188143,
+          "heartbeat": 27,
+          "observedAt": 1792188169,
+          "ageSeconds": 26
+        },
+        "0x17414eb5159a082e8d41d243c1601c2944401431": {
+          "description": "SUSHI / ETH",
+          "decimals": 18,
+          "answer": "93440575040237",
+          "updatedAt": 1792179097,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 9072
+        },
+        "0x49b0c695039243bbfeb8ecd054eb70061fd54aa0": {
+          "description": "SUSHI / USD",
+          "decimals": 8,
+          "answer": "22492043",
+          "updatedAt": 1792187312,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 857
+        },
+        "0x162d8c5bf15eb6bee003a1ffc4049c92114bc931": {
+          "description": "UNI / ETH",
+          "decimals": 18,
+          "answer": "3002540920185756",
+          "updatedAt": 1792183088,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 5081
+        },
+        "0xdf0fb4e4f928d2dcb76f438575fdd8682386e13c": {
+          "description": "UNI / USD",
+          "decimals": 8,
+          "answer": "724204691",
+          "updatedAt": 1792188147,
+          "heartbeat": 27,
+          "observedAt": 1792188169,
+          "ageSeconds": 22
+        },
+        "0xefb7e6be8356ccc6827799b6a7348ee674a80eae": {
+          "description": "USDC / ETH",
+          "decimals": 18,
+          "answer": "414479990000000",
+          "updatedAt": 1792170799,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 17370
+        },
+        "0xfe4a8cc5b5b2366c1b58bea3858e81843581b2f7": {
+          "description": "USDC / USD",
+          "decimals": 8,
+          "answer": "99985618",
+          "updatedAt": 1792188162,
+          "heartbeat": 27,
+          "observedAt": 1792188169,
+          "ageSeconds": 7
+        },
+        "0xf9d5aac6e5572aefa6bd64108ff86a222f69b64d": {
+          "description": "USDT / ETH",
+          "decimals": 18,
+          "answer": "413635228428062",
+          "updatedAt": 1792185342,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 2827
+        },
+        "0x0a6513e40db6eb1b165753ad52e80663aea50545": {
+          "description": "USDT / USD",
+          "decimals": 8,
+          "answer": "99860474",
+          "updatedAt": 1792188162,
+          "heartbeat": 27,
+          "observedAt": 1792188169,
+          "ageSeconds": 7
+        },
+        "0xa338e0492b2f944e9f8c0653d3ad1484f2657a37": {
+          "description": "WBTC / ETH",
+          "decimals": 18,
+          "answer": "33618673443085555000",
+          "updatedAt": 1792171013,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 17156
+        },
+        "0xde31f8bfbd8c84b5360cfacca3539b938dd78ae6": {
+          "description": "WBTC / USD",
+          "decimals": 8,
+          "answer": "8141200808948",
+          "updatedAt": 1792187955,
+          "heartbeat": 300,
+          "observedAt": 1792188169,
+          "ageSeconds": 214
+        },
+        "0xf9680d99d6c9589e2a93a78a04a279e509205945": {
+          "description": "ETH / USD",
+          "decimals": 8,
+          "answer": "241596641123",
+          "updatedAt": 1792188149,
+          "heartbeat": 27,
+          "observedAt": 1792188169,
+          "ageSeconds": 20
+        },
+        "0xab594600376ec9fd91f8e885dadf0ce036862de0": {
+          "description": "MATIC / USD",
+          "decimals": 8,
+          "answer": "9402757",
+          "updatedAt": 1792188168,
+          "heartbeat": 27,
+          "observedAt": 1792188169,
+          "ageSeconds": 1
+        }
+      },
+      "issues": []
+    },
+    "42161": {
+      "tokens": {
+        "0x6314c31a7a1652ce482cffe247e9cb7c3f4bb9af": {
+          "decimals": 18,
+          "symbol": "1INCH"
+        },
+        "0xba5ddd1f9d7f570dc94a51479a000e3bce967196": {
+          "decimals": 18,
+          "symbol": "AAVE"
+        },
+        "0x7f9fbf9bdd3f4105c478b996b648fe6e828a1e98": {
+          "decimals": 18,
+          "symbol": "APE"
+        },
+        "0x912ce59144191c1204e64559fe8253a0e49e6548": {
+          "decimals": 18,
+          "symbol": "ARB"
+        },
+        "0xc87b37a581ec3257b734886d9d3a581f5a9d056c": {
+          "decimals": 18,
+          "symbol": "ATH"
+        },
+        "0x23ee2343b892b1bb63503a4fabc840e0e2c6810f": {
+          "decimals": 6,
+          "symbol": "AXL"
+        },
+        "0x1b896893dfc86bb67cf57767298b9073d2c1ba2c": {
+          "decimals": 18,
+          "symbol": "Cake"
+        },
+        "0x354a6da3fcde098f8389cad84b0182725c6c91de": {
+          "decimals": 18,
+          "symbol": "COMP"
+        },
+        "0x11cdb42b0eb46d95f990bedd4695a6e3fa034978": {
+          "decimals": 18,
+          "symbol": "CRV"
+        },
+        "0x498bf2b1e120fed3ad3d42ea2165e9b73f99c1e5": {
+          "decimals": 18,
+          "symbol": "crvUSD"
+        },
+        "0xda10009cbd5d07dd0cecc66161fc93d7c9000da1": {
+          "decimals": 18,
+          "symbol": "DAI"
+        },
+        "0x58538e6a46e07434d7e7375bc268d3cb839c0133": {
+          "decimals": 18,
+          "symbol": "ENA"
+        },
+        "0x17fc002b466eec40dae837fc4be5c67993ddbd6f": {
+          "decimals": 18,
+          "symbol": "FRAX"
+        },
+        "0x7dff72693f6a4149b17e7c6314655f6a9f7c8b33": {
+          "decimals": 18,
+          "symbol": "GHO"
+        },
+        "0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a": {
+          "decimals": 18,
+          "symbol": "GMX"
+        },
+        "0x18c11fd286c5ec11c3b683caa813b77f5163a122": {
+          "decimals": 18,
+          "symbol": "GNS"
+        },
+        "0x9623063377ad1b27544c965ccd7342f7ea7e88c7": {
+          "decimals": 18,
+          "symbol": "GRT"
+        },
+        "0x13ad51ed4f1b7e9dc168d8a00cb3f4ddd85efa60": {
+          "decimals": 18,
+          "symbol": "LDO"
+        },
+        "0xf97f4df75117a78c1a5a0dbb814af92458539fb4": {
+          "decimals": 18,
+          "symbol": "LINK"
+        },
+        "0x93b346b6bc2548da6a1e7d98e9a421b42541425b": {
+          "decimals": 18,
+          "symbol": "LUSD"
+        },
+        "0x539bde0d7dbd336b79148aa742883198bbf60342": {
+          "decimals": 18,
+          "symbol": "MAGIC"
+        },
+        "0x40bd670a58238e6e230c430bbb5ce6ec0d40df48": {
+          "decimals": 18,
+          "symbol": "MORPHO"
+        },
+        "0x0c880f6761f1af8d9aa9c466984b80dab9a8c9e8": {
+          "decimals": 18,
+          "symbol": "PENDLE"
+        },
+        "0x25d887ce7a35172c62febfd67a1856f20faebb00": {
+          "decimals": 18,
+          "symbol": "PEPE"
+        },
+        "0x46850ad61c2b7d64d08c9c754f45254596696984": {
+          "decimals": 6,
+          "symbol": "PYUSD"
+        },
+        "0x3082cc23568ea640225c2467653db90e9250aaa0": {
+          "decimals": 18,
+          "symbol": "RDNT"
+        },
+        "0xca5ca9083702c56b481d1eec86f1776fdbd2e594": {
+          "decimals": 18,
+          "symbol": "RSR"
+        },
+        "0x3e6648c5a70a150a88bce65f4ad4d506fe15d2af": {
+          "decimals": 18,
+          "symbol": "SPELL"
+        },
+        "0x211cc4dd073734da055fbf44a2b4667d5e5fe5d2": {
+          "decimals": 18,
+          "symbol": "sUSDe"
+        },
+        "0xd4d42f0b6def4ce0383636770ef773390d85c61a": {
+          "decimals": 18,
+          "symbol": "SUSHI"
+        },
+        "0x6c84a8f1c29108f47a79964b5fe888d4f4d0de40": {
+          "decimals": 18,
+          "symbol": "tBTC"
+        },
+        "0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0": {
+          "decimals": 18,
+          "symbol": "UNI"
+        },
+        "0x0a1a1a107e45b7ced86833863f482bc5f4ed82ef": {
+          "decimals": 18,
+          "symbol": "USDai"
+        },
+        "0xaf88d065e77c8cc2239327c5edb3a432268e5831": {
+          "decimals": 6,
+          "symbol": "USDC"
+        },
+        "0xff970a61a04b1ca14834a43f5de4533ebddb5cc8": {
+          "decimals": 6,
+          "symbol": "USDC"
+        },
+        "0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34": {
+          "decimals": 18,
+          "symbol": "USDe"
+        },
+        "0x004b506865409877c9fa29bfb1eba929984b9bbc": {
+          "decimals": 6,
+          "symbol": "USDG"
+        },
+        "0x6491c05a82219b8d1479057361ff1654749b876b": {
+          "decimals": 18,
+          "symbol": "USDS"
+        },
+        "0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9": {
+          "decimals": 6,
+          "symbol": "USD₮0"
+        },
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f": {
+          "decimals": 8,
+          "symbol": "WBTC"
+        },
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+          "decimals": 18,
+          "symbol": "WETH"
+        },
+        "0xcafcd85d8ca7ad1e1c6f82f651fa15e33aefd07b": {
+          "decimals": 18,
+          "symbol": "WOO"
+        },
+        "0x82e3a8f066a6989666b031d916c43672085b1582": {
+          "decimals": 18,
+          "symbol": "YFI"
+        },
+        "0x6985884c4392d348587b19cb9eaaf157f13271cd": {
+          "decimals": 18,
+          "symbol": "ZRO"
+        }
+      },
+      "feeds": {
+        "0x4bc735ef24bf286983024cad5d03f0738865aaef": {
+          "description": "1INCH / USD",
+          "decimals": 8,
+          "answer": "9310000",
+          "updatedAt": 1792182526,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 5643
+        },
+        "0xad1d5344aade45f43e596773bcc4c423eabdd034": {
+          "description": "AAVE / USD",
+          "decimals": 8,
+          "answer": "15410935549",
+          "updatedAt": 1792187541,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 628
+        },
+        "0x221912ce795669f628c51c69b7d0873eda9c03bb": {
+          "description": "APE / USD",
+          "decimals": 8,
+          "answer": "14850000",
+          "updatedAt": 1792187705,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 464
+        },
+        "0xb2a824043730fe05f3da2efafa1cbbe83fa548d6": {
+          "description": "ARB / USD",
+          "decimals": 8,
+          "answer": "19152647",
+          "updatedAt": 1792188152,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 17
+        },
+        "0x920e09a98f83b82701207ba7e433a5b53ecb888a": {
+          "description": "ATH / USD",
+          "decimals": 8,
+          "answer": "571300",
+          "updatedAt": 1792185452,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 2717
+        },
+        "0x84e8237cc1418ea1b4a1e0c3e7f48c3a5fbc81af": {
+          "description": "AXL / USD",
+          "decimals": 8,
+          "answer": "5478642",
+          "updatedAt": 1792186463,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 1706
+        },
+        "0x256654437f1ada8057684b18d742efd14034c400": {
+          "description": "CAKE / USD",
+          "decimals": 8,
+          "answer": "217463836",
+          "updatedAt": 1792188097,
+          "heartbeat": 255,
+          "observedAt": 1792188169,
+          "ageSeconds": 72
+        },
+        "0xe7c53ffd03eb6cef7d208bc4c13446c76d1e5884": {
+          "description": "COMP / USD",
+          "decimals": 8,
+          "answer": "2214165246",
+          "updatedAt": 1792186468,
+          "heartbeat": 3600,
+          "observedAt": 1792188169,
+          "ageSeconds": 1701
+        },
+        "0xaebda2c976cfd1ee1977eac079b4382acb849325": {
+          "description": "CRV / USD",
+          "decimals": 8,
+          "answer": "34617471",
+          "updatedAt": 1792185700,
+          "heartbeat": 3600,
+          "observedAt": 1792188169,
+          "ageSeconds": 2469
+        },
+        "0x0a32255dd4bb6177c994baac73e0606fdd568f66": {
+          "description": "CRVUSD / USD",
+          "decimals": 8,
+          "answer": "99874013",
+          "updatedAt": 1792184301,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 3868
+        },
+        "0xc5c8e77b397e531b8ec06bfb0048328b30e9ecfb": {
+          "description": "DAI / USD",
+          "decimals": 8,
+          "answer": "100008898",
+          "updatedAt": 1792184461,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 3708
+        },
+        "0x9ee96caa9972c801058caa8e23419fc6516fbf7e": {
+          "description": "ENA / USD",
+          "decimals": 8,
+          "answer": "19695739",
+          "updatedAt": 1792187772,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 397
+        },
+        "0x0809e3d38d1b4214958faf06d8b1b1a2b73f2ab8": {
+          "description": "FRAX / USD",
+          "decimals": 8,
+          "answer": "99144033",
+          "updatedAt": 1792179153,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 9016
+        },
+        "0x3c786e934f23375ca345c9b8d5ad54838796e8e7": {
+          "description": "GHO / USD",
+          "decimals": 8,
+          "answer": "99876192",
+          "updatedAt": 1792184184,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 3985
+        },
+        "0xdb98056fecfff59d032ab628337a4887110df3db": {
+          "description": "GMX / USD",
+          "decimals": 8,
+          "answer": "865787986",
+          "updatedAt": 1792182589,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 5580
+        },
+        "0xe89e98ce4e19071e59ed4780e0598b541ce76486": {
+          "description": "GNS / USD",
+          "decimals": 8,
+          "answer": "44839000",
+          "updatedAt": 1792187230,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 939
+        },
+        "0x0f38d86fcef4955b705f35c9e41d1a16e0637c73": {
+          "description": "GRT / USD",
+          "decimals": 8,
+          "answer": "2467979",
+          "updatedAt": 1792187208,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 961
+        },
+        "0xa43a34030088e6510feccfb77e88ee5e7ed0fe64": {
+          "description": "LDO / USD",
+          "decimals": 8,
+          "answer": "39803735",
+          "updatedAt": 1792187284,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 885
+        },
+        "0xb7c8fb1db45007f98a68da0588e1aa524c317f27": {
+          "description": "LINK / ETH",
+          "decimals": 18,
+          "answer": "5095972658328218",
+          "updatedAt": 1792171664,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 16505
+        },
+        "0x86e53cf1b870786351da77a57575e79cb55812cb": {
+          "description": "LINK / USD",
+          "decimals": 8,
+          "answer": "1230635571",
+          "updatedAt": 1792186781,
+          "heartbeat": 1755,
+          "observedAt": 1792188169,
+          "ageSeconds": 1388
+        },
+        "0x0411d28c94d85a36bc72cb0f875dfa8371d8ffff": {
+          "description": "LUSD / USD",
+          "decimals": 8,
+          "answer": "100338432",
+          "updatedAt": 1792177068,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 11101
+        },
+        "0x47e55ccec6582838e173f252d08afd8116c2202d": {
+          "description": "MAGIC / USD",
+          "decimals": 8,
+          "answer": "11082000",
+          "updatedAt": 1792188043,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 126
+        },
+        "0x1e48733eeee02468b674b69958b046eb6a0a7d94": {
+          "description": "MORPHO / USD",
+          "decimals": 8,
+          "answer": "236432032",
+          "updatedAt": 1792185978,
+          "heartbeat": 3600,
+          "observedAt": 1792188169,
+          "ageSeconds": 2191
+        },
+        "0x66853e19d73c0f9301fe099c324a1e9726953433": {
+          "description": "PENDLE / USD",
+          "decimals": 8,
+          "answer": "208469608",
+          "updatedAt": 1792185483,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 2686
+        },
+        "0x02ded5a7edda750e3eb240b54437a54d57b74dbe": {
+          "description": "PEPE / USD",
+          "decimals": 18,
+          "answer": "4008546073822",
+          "updatedAt": 1792185733,
+          "heartbeat": 3600,
+          "observedAt": 1792188169,
+          "ageSeconds": 2436
+        },
+        "0x3d50d699a812a0f66f36876df47b2ae68e781736": {
+          "description": "PYUSD / USD",
+          "decimals": 18,
+          "answer": "999872485672500100",
+          "updatedAt": 1792117260,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 70909
+        },
+        "0x20d0fcab0ecfd078b036b6caf1fac69a6453b352": {
+          "description": "RDNT / USD",
+          "decimals": 8,
+          "answer": "55184",
+          "updatedAt": 1792187165,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 1004
+        },
+        "0xcff9349ec6d027f20fc9360117fef4a1ad38b488": {
+          "description": "RSR / USD",
+          "decimals": 8,
+          "answer": "192100",
+          "updatedAt": 1792187191,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 978
+        },
+        "0x383b3624478124697bef675f07ca37570b73992f": {
+          "description": "SPELL / USD",
+          "decimals": 8,
+          "answer": "8698",
+          "updatedAt": 1792185376,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 2793
+        },
+        "0xf2215b9c35b1697b5f47e407c917a40d055e68d7": {
+          "description": "sUSDe / USD",
+          "decimals": 8,
+          "answer": "125262395",
+          "updatedAt": 1792151736,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 36433
+        },
+        "0xb2a8ba74cbca38508ba1632761b56c897060147c": {
+          "description": "SUSHI / USD",
+          "decimals": 8,
+          "answer": "22492043",
+          "updatedAt": 1792187311,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 858
+        },
+        "0xe808488e8627f6531ba79a13a9e0271b39abeb1c": {
+          "description": "TBTC / USD",
+          "decimals": 8,
+          "answer": "8134501413793",
+          "updatedAt": 1792178661,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 9508
+        },
+        "0x9c917083fdb403ab5adbec26ee294f6ecada2720": {
+          "description": "UNI / USD",
+          "decimals": 8,
+          "answer": "723955225",
+          "updatedAt": 1792188070,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 99
+        },
+        "0xf3d6b05e69918d71807ab005791daccec5de8c78": {
+          "description": "USDAI / USD",
+          "decimals": 8,
+          "answer": "100004884",
+          "updatedAt": 1792183468,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 4701
+        },
+        "0x50834f3163758fcc1df9973b6e91f0f0f0434ad3": {
+          "description": "USDC / USD",
+          "decimals": 8,
+          "answer": "99987804",
+          "updatedAt": 1792188069,
+          "heartbeat": 255,
+          "observedAt": 1792188169,
+          "ageSeconds": 100
+        },
+        "0x88ac7bca36567525a866138f03a6f6844868e0bc": {
+          "description": "USDe / USD",
+          "decimals": 8,
+          "answer": "99960930",
+          "updatedAt": 1792184767,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 3402
+        },
+        "0xe9bd4ca2cdacb56cd06c9c4c5231e69c33340b3c": {
+          "description": "USDG / USD",
+          "decimals": 8,
+          "answer": "99993000",
+          "updatedAt": 1792168603,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 19566
+        },
+        "0x37833e5b3fbbed4d613a3e0c354ef91a42b81eeb": {
+          "description": "USDS / USD",
+          "decimals": 8,
+          "answer": "99983401",
+          "updatedAt": 1792184254,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 3915
+        },
+        "0x3f3f5df88dc9f13eac63df89ec16ef6e7e25dde7": {
+          "description": "USDT / USD",
+          "decimals": 8,
+          "answer": "99858300",
+          "updatedAt": 1792187954,
+          "heartbeat": 255,
+          "observedAt": 1792188169,
+          "ageSeconds": 215
+        },
+        "0xd0c7101eacbb49f3decccc166d238410d6d46d57": {
+          "description": "WBTC / USD",
+          "decimals": 8,
+          "answer": "8143768449708",
+          "updatedAt": 1792186664,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 1505
+        },
+        "0x639fe6ab55c921f74e7fac1ee960c0b6293ba612": {
+          "description": "ETH / USD",
+          "decimals": 8,
+          "answer": "241551000000",
+          "updatedAt": 1792188129,
+          "heartbeat": 1755,
+          "observedAt": 1792188169,
+          "ageSeconds": 40
+        },
+        "0x5e2b5c5c07cca3437c4d724225bb42c7e55d1597": {
+          "description": "WOO / USD",
+          "decimals": 8,
+          "answer": "1133884",
+          "updatedAt": 1792182811,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 5358
+        },
+        "0x745ab5b69e01e2be1104ca84937bb71f96f5fb21": {
+          "description": "YFI / USD",
+          "decimals": 8,
+          "answer": "229557264293",
+          "updatedAt": 1792182859,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 5310
+        },
+        "0x1940fed49cdbc397941f2d336eb4994d599e568b": {
+          "description": "ZRO / USD",
+          "decimals": 8,
+          "answer": "204627266",
+          "updatedAt": 1792186847,
+          "heartbeat": 86400,
+          "observedAt": 1792188169,
+          "ageSeconds": 1322
+        }
+      },
+      "issues": []
+    },
+    "56": {
+      "tokens": {
+        "0x111111111117dc0aa78b770fa6a738034120c302": {
+          "decimals": 18,
+          "symbol": "1INCH"
+        },
+        "0xfb6115445bff7b52feb98650c87f44907e58f802": {
+          "decimals": 18,
+          "symbol": "AAVE"
+        },
+        "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47": {
+          "decimals": 18,
+          "symbol": "ADA"
+        },
+        "0x000ae314e2a2172a039b26378814c252734f556a": {
+          "decimals": 18,
+          "symbol": "ASTER"
+        },
+        "0x0eb3a705fc54725037cc9e008bdede697f62f335": {
+          "decimals": 18,
+          "symbol": "ATOM"
+        },
+        "0x1ce0c2827e2ef14d5c4f29a091d735a204794041": {
+          "decimals": 18,
+          "symbol": "AVAX"
+        },
+        "0x715d400f88c167884bbcc41c5fea407ed4d2f8a0": {
+          "decimals": 18,
+          "symbol": "AXS"
+        },
+        "0x8ff795a6f4d97e7887c79bea79aba5cc76444adf": {
+          "decimals": 18,
+          "symbol": "BCH"
+        },
+        "0x250632378e573c6be1ac2f97fcdf00515d0aa91b": {
+          "decimals": 18,
+          "symbol": "BETH"
+        },
+        "0xe9e7cea3dedca5984780bafc599bd69add087d56": {
+          "decimals": 18,
+          "symbol": "BUSD"
+        },
+        "0xaec945e04baf28b135fa7c640f624f8d90f1c3a6": {
+          "decimals": 18,
+          "symbol": "C98"
+        },
+        "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82": {
+          "decimals": 18,
+          "symbol": "Cake"
+        },
+        "0x52ce071bd9b1c4b00a0b92d298c512478cad67e8": {
+          "decimals": 18,
+          "symbol": "COMP"
+        },
+        "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3": {
+          "decimals": 18,
+          "symbol": "DAI"
+        },
+        "0xba2ae424d960c26247dd6c32edc70b295c744c43": {
+          "decimals": 8,
+          "symbol": "DOGE"
+        },
+        "0x7083609fce4d1d8dc0c979aab8c869ea2c873402": {
+          "decimals": 18,
+          "symbol": "DOT"
+        },
+        "0x2170ed0880ac9a755fd29b2688956bd959f933f8": {
+          "decimals": 18,
+          "symbol": "ETH"
+        },
+        "0xc5f0f7b66764f6ec8c8dff7ba683102295e16409": {
+          "decimals": 18,
+          "symbol": "FDUSD"
+        },
+        "0x031b41e504677879370e9dbcf937283a8691fa7f": {
+          "decimals": 18,
+          "symbol": "FET"
+        },
+        "0x0d8ce2a99bb6e3b7db580ed848240e4a0f9ae153": {
+          "decimals": 18,
+          "symbol": "FIL"
+        },
+        "0xa2b726b1145a4773f68593cf171187d8ebe4d495": {
+          "decimals": 18,
+          "symbol": "INJ"
+        },
+        "0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd": {
+          "decimals": 18,
+          "symbol": "LINK"
+        },
+        "0xfceb31a79f71ac9cbdcf853519c1b12d379edc46": {
+          "decimals": 18,
+          "symbol": "LISTA"
+        },
+        "0x0782b6d8c4551b9760e74c0545a9bcd90bdc41e5": {
+          "decimals": 18,
+          "symbol": "lisUSD"
+        },
+        "0x4338665cbb7b2485a8855a139b75d5e34ab0db94": {
+          "decimals": 18,
+          "symbol": "LTC"
+        },
+        "0x2ed9a5c8c13b93955103b9a7c167b67ef4d568a3": {
+          "decimals": 18,
+          "symbol": "MASK"
+        },
+        "0x1fa4a73a3f0133f0025378af00236f3abdee5d63": {
+          "decimals": 18,
+          "symbol": "NEAR"
+        },
+        "0xfd7b3a77848f1c2d67e05e54d78d174a0c850335": {
+          "decimals": 18,
+          "symbol": "ONT"
+        },
+        "0xf7de7e8a6bd59ed41a4b5fe50278b3b7f31384df": {
+          "decimals": 18,
+          "symbol": "RDNT"
+        },
+        "0x2859e4544c4bb03966803b044a93563bd2d0dd4d": {
+          "decimals": 18,
+          "symbol": "SHIB"
+        },
+        "0x570a5d26f7765ecb712c0924e4de545b89fd43df": {
+          "decimals": 18,
+          "symbol": "SOL"
+        },
+        "0x947950bcc74888a40ffa2593c5798f11fc9124c4": {
+          "decimals": 18,
+          "symbol": "SUSHI"
+        },
+        "0x77146784315ba81904d654466968e3a7c196d1f3": {
+          "decimals": 18,
+          "symbol": "TREE"
+        },
+        "0xce7de646e7208a4ef112cb6ed5038fa6cc6b12e3": {
+          "decimals": 6,
+          "symbol": "TRX"
+        },
+        "0x40af3827f39d0eacbf4a168f8d4ee67c121d11c9": {
+          "decimals": 18,
+          "symbol": "TUSD"
+        },
+        "0xce24439f2d9c6a2289f741120fe202248b666666": {
+          "decimals": 18,
+          "symbol": "U"
+        },
+        "0xbf5140a22578168fd562dccf235e5d43a02ce9b1": {
+          "decimals": 18,
+          "symbol": "UNI"
+        },
+        "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d": {
+          "decimals": 18,
+          "symbol": "USD1"
+        },
+        "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d": {
+          "decimals": 18,
+          "symbol": "USDC"
+        },
+        "0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34": {
+          "decimals": 18,
+          "symbol": "USDe"
+        },
+        "0x55d398326f99059ff775485246999027b3197955": {
+          "decimals": 18,
+          "symbol": "USDT"
+        },
+        "0x4bd17003473389a42daf6a0a729f6fdb328bbbd7": {
+          "decimals": 18,
+          "symbol": "VAI"
+        },
+        "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c": {
+          "decimals": 18,
+          "symbol": "WBNB"
+        },
+        "0x47474747477b199288bf72a1d702f7fe0fb1deea": {
+          "decimals": 18,
+          "symbol": "WLFI"
+        },
+        "0x26c5e01524d2e6280a48f2c50ff6de7e52e9611c": {
+          "decimals": 18,
+          "symbol": "wstETH"
+        },
+        "0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe": {
+          "decimals": 18,
+          "symbol": "XRP"
+        },
+        "0x16939ef78684453bfdfb47825f8a5f714f12623a": {
+          "decimals": 18,
+          "symbol": "XTZ"
+        },
+        "0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63": {
+          "decimals": 18,
+          "symbol": "XVS"
+        }
+      },
+      "feeds": {
+        "0x9a177bb9f5b6083e962f9e62bd21d4b5660aeb03": {
+          "description": "1INCH / USD",
+          "decimals": 8,
+          "answer": "9316600",
+          "updatedAt": 1792187500,
+          "heartbeat": 900,
+          "observedAt": 1792188170,
+          "ageSeconds": 670
+        },
+        "0xa8357bf572460fc40f4b0acacbb2a6a61c89f475": {
+          "description": "AAVE / USD",
+          "decimals": 8,
+          "answer": "15416826000",
+          "updatedAt": 1792188149,
+          "heartbeat": 600,
+          "observedAt": 1792188170,
+          "ageSeconds": 21
+        },
+        "0xa767f745331d267c7751297d982b050c93985627": {
+          "description": "ADA / USD",
+          "decimals": 8,
+          "answer": "22533524",
+          "updatedAt": 1792188165,
+          "heartbeat": 600,
+          "observedAt": 1792188170,
+          "ageSeconds": 5
+        },
+        "0x3ae518be05e3f7fabf7e3ace22af795d7a09c2e5": {
+          "description": "ASTER / USD",
+          "decimals": 8,
+          "answer": "70636937",
+          "updatedAt": 1792180580,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 7590
+        },
+        "0xb056b7c804297279a9a673289264c17e6dc6055d": {
+          "description": "ATOM / USD",
+          "decimals": 8,
+          "answer": "175594000",
+          "updatedAt": 1792186618,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 1552
+        },
+        "0x5974855ce31ee8e1fff2e76591cbf83d7110f151": {
+          "description": "AVAX / USD",
+          "decimals": 8,
+          "answer": "992190000",
+          "updatedAt": 1792187308,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 862
+        },
+        "0x7b49524ee5740c99435f52d731dfc94082fe61ab": {
+          "description": "AXS / USD",
+          "decimals": 8,
+          "answer": "104997818",
+          "updatedAt": 1792182868,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 5302
+        },
+        "0x43d80f616daf0b0b42a928eed32147dc59027d41": {
+          "description": "BCH / USD",
+          "decimals": 8,
+          "answer": "27424669320",
+          "updatedAt": 1792187786,
+          "heartbeat": 900,
+          "observedAt": 1792188170,
+          "ageSeconds": 384
+        },
+        "0x2a3796273d47c4ed363b361d3aefb7f7e2a13782": {
+          "description": "BETH / USD",
+          "decimals": 8,
+          "answer": "241372469360",
+          "updatedAt": 1792187585,
+          "heartbeat": 900,
+          "observedAt": 1792188170,
+          "ageSeconds": 585
+        },
+        "0xcbb98864ef56e9042e7d2efef76141f15731b82f": {
+          "description": "BUSD / USD",
+          "decimals": 8,
+          "answer": "99972357",
+          "updatedAt": 1792187874,
+          "heartbeat": 900,
+          "observedAt": 1792188170,
+          "ageSeconds": 296
+        },
+        "0x889158e39628c0397dc54b84f6b1cbe0aaeb7ffc": {
+          "description": "C98 / USD",
+          "decimals": 8,
+          "answer": "1568600",
+          "updatedAt": 1792183854,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 4316
+        },
+        "0xb6064ed41d4f67e353768aa239ca86f4f73665a1": {
+          "description": "CAKE / USD",
+          "decimals": 8,
+          "answer": "217457202",
+          "updatedAt": 1792188167,
+          "heartbeat": 60,
+          "observedAt": 1792188170,
+          "ageSeconds": 3
+        },
+        "0x0db8945f9aef5651fa5bd52314c5aae78dfde540": {
+          "description": "COMP / USD",
+          "decimals": 8,
+          "answer": "2204427948",
+          "updatedAt": 1792182516,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 5654
+        },
+        "0x132d3c0b1d2cea0bc552588063bdbb210fdeecfa": {
+          "description": "DAI / USD",
+          "decimals": 8,
+          "answer": "100012994",
+          "updatedAt": 1792188159,
+          "heartbeat": 900,
+          "observedAt": 1792188170,
+          "ageSeconds": 11
+        },
+        "0x3ab0a0d137d4f946fbb19eecc6e92e64660231c8": {
+          "description": "DOGE / USD",
+          "decimals": 8,
+          "answer": "8048635",
+          "updatedAt": 1792188118,
+          "heartbeat": 47,
+          "observedAt": 1792188170,
+          "ageSeconds": 52
+        },
+        "0xc333eb0086309a16aa7c8308dfd32c8bba0a2592": {
+          "description": "DOT / USD",
+          "decimals": 8,
+          "answer": "115082491",
+          "updatedAt": 1792188151,
+          "heartbeat": 600,
+          "observedAt": 1792188170,
+          "ageSeconds": 19
+        },
+        "0x9ef1b8c0e4f7dc8bf5719ea496883dc6401d5b2e": {
+          "description": "ETH / USD",
+          "decimals": 8,
+          "answer": "241605470916",
+          "updatedAt": 1792188148,
+          "heartbeat": 60,
+          "observedAt": 1792188170,
+          "ageSeconds": 22
+        },
+        "0x390180e80058a8499930f0c13963ad3e0d86bfc9": {
+          "description": "FDUSD / USD",
+          "decimals": 8,
+          "answer": "99726901",
+          "updatedAt": 1792183997,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 4173
+        },
+        "0x657e700c66c48c135c4a29c4292908dbda7aa280": {
+          "description": "FET / USD",
+          "decimals": 8,
+          "answer": "19916807",
+          "updatedAt": 1792187741,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 429
+        },
+        "0xe5dbfd9003bff9df5feb2f4f445ca00fb121fb83": {
+          "description": "FIL / USD",
+          "decimals": 8,
+          "answer": "112525760",
+          "updatedAt": 1792188159,
+          "heartbeat": 900,
+          "observedAt": 1792188170,
+          "ageSeconds": 11
+        },
+        "0x63a9133cd7c611d6049761038c16f238fdda71d7": {
+          "description": "INJ / USD",
+          "decimals": 8,
+          "answer": "859260467",
+          "updatedAt": 1792185699,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 2471
+        },
+        "0xca236e327f629f9fc2c30a4e95775ebf0b89fac8": {
+          "description": "LINK / USD",
+          "decimals": 8,
+          "answer": "1230780500",
+          "updatedAt": 1792188162,
+          "heartbeat": 600,
+          "observedAt": 1792188170,
+          "ageSeconds": 8
+        },
+        "0x801a72542e6f2c1a022ec6865600d6872b191308": {
+          "description": "LISTA / USD",
+          "decimals": 8,
+          "answer": "7804113",
+          "updatedAt": 1792182856,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 5314
+        },
+        "0x3f5fc2cb37da3b351f7ef968d72be2ec3e1da08e": {
+          "description": "LISUSD / USD",
+          "decimals": 8,
+          "answer": "99602306",
+          "updatedAt": 1792184249,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 3921
+        },
+        "0x74e72f37a8c415c8f1a98ed42e78ff997435791d": {
+          "description": "LTC / USD",
+          "decimals": 8,
+          "answer": "5919674000",
+          "updatedAt": 1792188100,
+          "heartbeat": 900,
+          "observedAt": 1792188170,
+          "ageSeconds": 70
+        },
+        "0x4978c0abe6899178c1a74838ee0062280888e2cf": {
+          "description": "MASK / USD",
+          "decimals": 8,
+          "answer": "42188123",
+          "updatedAt": 1792188162,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 8
+        },
+        "0x0fe4d87883005fcafaf56b81d09473d9a29dcdc3": {
+          "description": "NEAR / USD",
+          "decimals": 8,
+          "answer": "501398204",
+          "updatedAt": 1792186111,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 2059
+        },
+        "0x887f177cbed2cf555a64e7bf125e1825eb69db82": {
+          "description": "ONT / USD",
+          "decimals": 8,
+          "answer": "5240398",
+          "updatedAt": 1792182862,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 5308
+        },
+        "0x20123c6ebd45c6496102beea86e1a6616ca547c6": {
+          "description": "RDNT / USD",
+          "decimals": 8,
+          "answer": "55246",
+          "updatedAt": 1792186240,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 1930
+        },
+        "0xa615be6cb0f3f36a641858db6f30b9242d0abed8": {
+          "description": "SHIB / USD",
+          "decimals": 8,
+          "answer": "507",
+          "updatedAt": 1792180636,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 7534
+        },
+        "0x0e8a53dd9c13589df6382f13da6b3ec8f919b323": {
+          "description": "SOL / USD",
+          "decimals": 8,
+          "answer": "10405320400",
+          "updatedAt": 1792187779,
+          "heartbeat": 600,
+          "observedAt": 1792188170,
+          "ageSeconds": 391
+        },
+        "0xa679c72a97b654cfff58ab704de3ba15cde89b07": {
+          "description": "SUSHI / USD",
+          "decimals": 8,
+          "answer": "22582248",
+          "updatedAt": 1792185726,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 2444
+        },
+        "0x8fcc2d2973e3740c40af00d030725a429cd24b57": {
+          "description": "TREE / USD",
+          "decimals": 8,
+          "answer": "3839410",
+          "updatedAt": 1792185369,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 2801
+        },
+        "0xf4c5e535756d11994fcbb12ba8add0192d9b88be": {
+          "description": "TRX / USD",
+          "decimals": 8,
+          "answer": "33450323",
+          "updatedAt": 1792187921,
+          "heartbeat": 600,
+          "observedAt": 1792188170,
+          "ageSeconds": 249
+        },
+        "0xa3334a9762090e827413a7495afece76f41dfc06": {
+          "description": "TUSD / USD",
+          "decimals": 8,
+          "answer": "99826676",
+          "updatedAt": 1792187716,
+          "heartbeat": 900,
+          "observedAt": 1792188170,
+          "ageSeconds": 454
+        },
+        "0x2ab73dc1c8a23bcddb4850ff811850e0d2a0c72f": {
+          "description": "U / USD",
+          "decimals": 18,
+          "answer": "999194620000000000",
+          "updatedAt": 1792185082,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 3088
+        },
+        "0xb57f259e7c24e56a1da00f66b55a5640d9f9e7e4": {
+          "description": "UNI / USD",
+          "decimals": 8,
+          "answer": "723958795",
+          "updatedAt": 1792188064,
+          "heartbeat": 600,
+          "observedAt": 1792188170,
+          "ageSeconds": 106
+        },
+        "0xad8b4e59a7f25b68945faf0f3a3eaf027832ffb0": {
+          "description": "USD1 / USD",
+          "decimals": 8,
+          "answer": "99901809",
+          "updatedAt": 1792183532,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 4638
+        },
+        "0x51597f405303c4377e36123cbc172b13269ea163": {
+          "description": "USDC / USD",
+          "decimals": 8,
+          "answer": "99985228",
+          "updatedAt": 1792187960,
+          "heartbeat": 900,
+          "observedAt": 1792188170,
+          "ageSeconds": 210
+        },
+        "0x10402b01cd2e6a9ed6dbe683cbc68f78ff02f8fc": {
+          "description": "USDE / USD",
+          "decimals": 8,
+          "answer": "99956545",
+          "updatedAt": 1792184291,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 3879
+        },
+        "0xb97ad0e74fa7d920791e90258a6e2085088b4320": {
+          "description": "USDT / USD",
+          "decimals": 8,
+          "answer": "99857000",
+          "updatedAt": 1792188146,
+          "heartbeat": 900,
+          "observedAt": 1792188170,
+          "ageSeconds": 24
+        },
+        "0x058316f8bb13acd442ee7a216c7b60cfb4ea1b53": {
+          "description": "VAI / USD",
+          "decimals": 8,
+          "answer": "99767339",
+          "updatedAt": 1792167485,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 20685
+        },
+        "0x0567f2323251f0aab15c8dfb1967e4e8a7d42aee": {
+          "description": "BNB / USD",
+          "decimals": 8,
+          "answer": "72136547137",
+          "updatedAt": 1792188162,
+          "heartbeat": 27,
+          "observedAt": 1792188170,
+          "ageSeconds": 8
+        },
+        "0xd3f669ef5c364c14d353f46b1d1a048a846e00f1": {
+          "description": "WLFI / USD",
+          "decimals": 8,
+          "answer": "5715411",
+          "updatedAt": 1792183847,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 4323
+        },
+        "0xd97ab9e5bd461ebcd55009791c410294f7b42cdb": {
+          "description": "WSTETH / USD",
+          "decimals": 8,
+          "answer": "300989510320",
+          "updatedAt": 1792185362,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 2808
+        },
+        "0x93a67d414896a280bf8ffb3b389fe3686e014fda": {
+          "description": "XRP / USD",
+          "decimals": 8,
+          "answer": "130587760",
+          "updatedAt": 1792188080,
+          "heartbeat": 600,
+          "observedAt": 1792188170,
+          "ageSeconds": 90
+        },
+        "0x9a18137adcf7b05f033ad26968ed5a9cf0bf8e6b": {
+          "description": "XTZ / USD",
+          "decimals": 8,
+          "answer": "31137688",
+          "updatedAt": 1792187403,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 767
+        },
+        "0xbf63f430a79d4036a5900c19818aff1fa710f206": {
+          "description": "XVS / USD",
+          "decimals": 8,
+          "answer": "302501010",
+          "updatedAt": 1792187280,
+          "heartbeat": 900,
+          "observedAt": 1792188170,
+          "ageSeconds": 890
+        }
+      },
+      "issues": []
+    },
+    "8453": {
+      "tokens": {
+        "0x63706e401c06ac8513145b7687a14804d17f814b": {
+          "decimals": 18,
+          "symbol": "AAVE"
+        },
+        "0x940181a94a35a4569e4529a3cdfb74e38fd98631": {
+          "decimals": 18,
+          "symbol": "AERO"
+        },
+        "0x696f9436b67233384889472cd7cd58a6fb5df4f1": {
+          "decimals": 18,
+          "symbol": "AVNT"
+        },
+        "0x23ee2343b892b1bb63503a4fabc840e0e2c6810f": {
+          "decimals": 6,
+          "symbol": "AXL"
+        },
+        "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf": {
+          "decimals": 8,
+          "symbol": "cbBTC"
+        },
+        "0xcbd06e5a2b0c65597161de254aa074e489deb510": {
+          "decimals": 8,
+          "symbol": "cbDOGE"
+        },
+        "0x2ae3f1ec7f1f5012cfeab0185bfc7aa3cf0dec22": {
+          "decimals": 18,
+          "symbol": "cbETH"
+        },
+        "0xcb585250f852c6c6bf90434ab21a00f02833a4af": {
+          "decimals": 6,
+          "symbol": "cbXRP"
+        },
+        "0x9e1028f5f1d5ede59748ffcee5532509976840e0": {
+          "decimals": 18,
+          "symbol": "COMP"
+        },
+        "0x50c5725949a6f0c72e6c4a641f24049a917db0cb": {
+          "decimals": 18,
+          "symbol": "DAI"
+        },
+        "0x4ed4e862860bed51a9570b96d89af5e1b0efefed": {
+          "decimals": 18,
+          "symbol": "DEGEN"
+        },
+        "0x60a3e35cc302bfa44cb288bc5a4f316fdb1adb42": {
+          "decimals": 6,
+          "symbol": "EURC"
+        },
+        "0x6bb7a212910682dcfdbd5bcbb3e28fb4e8da10ee": {
+          "decimals": 18,
+          "symbol": "GHO"
+        },
+        "0x4bfaa776991e85e5f8b1255461cbbd216cfc714f": {
+          "decimals": 18,
+          "symbol": "HOME"
+        },
+        "0x97be14dd8f994a5364573bc035d85309e7cb34de": {
+          "decimals": 9,
+          "symbol": "JitoSOL"
+        },
+        "0xecac9c5f704e954931349da37f60e39f515c11c1": {
+          "decimals": 8,
+          "symbol": "LBTC"
+        },
+        "0x88fb150bdc53a65fe94dea0c9ba0a6daf8c6e196": {
+          "decimals": 18,
+          "symbol": "LINK"
+        },
+        "0x7300b37dfdfab110d83290a29dfb31b1740219fe": {
+          "decimals": 18,
+          "symbol": "MAMO"
+        },
+        "0x2da56acb9ea78330f947bd57c54119debda7af71": {
+          "decimals": 18,
+          "symbol": "Mog"
+        },
+        "0xbaa5cc21fd487b8fcc2f632f3f4e8d37262a0842": {
+          "decimals": 18,
+          "symbol": "MORPHO"
+        },
+        "0xb2000000000000000000002feb517dfec7415344": {
+          "decimals": 6,
+          "symbol": "OUSD"
+        },
+        "0xab36452dbac151be02b16ca17d8919826072f64a": {
+          "decimals": 18,
+          "symbol": "RSR"
+        },
+        "0x22e6966b799c4d5b13be962e1d117b56327fda66": {
+          "decimals": 18,
+          "symbol": "SNX"
+        },
+        "0xe3b53af74a4bf62ae5511055290838050bf764df": {
+          "decimals": 18,
+          "symbol": "STG"
+        },
+        "0x211cc4dd073734da055fbf44a2b4667d5e5fe5d2": {
+          "decimals": 18,
+          "symbol": "sUSDe"
+        },
+        "0x236aa50979d5f3de3bd1eeb40e81137f22ab794b": {
+          "decimals": 18,
+          "symbol": "tBTC"
+        },
+        "0x0a1a1a107e45b7ced86833863f482bc5f4ed82ef": {
+          "decimals": 18,
+          "symbol": "USDai"
+        },
+        "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913": {
+          "decimals": 6,
+          "symbol": "USDC"
+        },
+        "0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34": {
+          "decimals": 18,
+          "symbol": "USDe"
+        },
+        "0x820c137fa70c8691f0e44dc420a5e53c168921dc": {
+          "decimals": 18,
+          "symbol": "USDS"
+        },
+        "0xfde4c96c8593536e31f229ea8f37b2ada2699bb2": {
+          "decimals": 6,
+          "symbol": "USDT"
+        },
+        "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b": {
+          "decimals": 18,
+          "symbol": "VIRTUAL"
+        },
+        "0xacfe6019ed1a7dc6f7b508c02d1b04ec88cc21bf": {
+          "decimals": 18,
+          "symbol": "VVV"
+        },
+        "0x0555e30da8f98308edb960aa94c0db47230d2b9c": {
+          "decimals": 8,
+          "symbol": "WBTC"
+        },
+        "0xa88594d404727625a9437c3f886c7643872296ae": {
+          "decimals": 18,
+          "symbol": "WELL"
+        },
+        "0x4200000000000000000000000000000000000006": {
+          "decimals": 18,
+          "symbol": "WETH"
+        },
+        "0x9eaf8c1e34f05a589eda6bafdf391cf6ad3cb239": {
+          "decimals": 18,
+          "symbol": "YFI"
+        },
+        "0x6985884c4392d348587b19cb9eaaf157f13271cd": {
+          "decimals": 18,
+          "symbol": "ZRO"
+        }
+      },
+      "feeds": {
+        "0x3d6774ef702a10b20fca8ed40fc022f7e4938e07": {
+          "description": "AAVE / USD",
+          "decimals": 8,
+          "answer": "15405920000",
+          "updatedAt": 1792187565,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 605
+        },
+        "0x4ec5970fc728c5f65ba413992cd5ff6fd70fcff0": {
+          "description": "AERO / USD",
+          "decimals": 8,
+          "answer": "88216896",
+          "updatedAt": 1792187025,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 1145
+        },
+        "0x50997b806b574501cc34a2a6d845e4dc1bd9aa8c": {
+          "description": "AVNT / USD",
+          "decimals": 8,
+          "answer": "11619236",
+          "updatedAt": 1792185971,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 2199
+        },
+        "0x676c4c6c31d97a5581d3204c04a8125b350e2f9d": {
+          "description": "AXL / USD",
+          "decimals": 8,
+          "answer": "5476658",
+          "updatedAt": 1792187933,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 237
+        },
+        "0x07da0e54543a844a80abe69c8a12f22b3aa59f9d": {
+          "description": "cbBTC / USD",
+          "decimals": 8,
+          "answer": "8157791566456",
+          "updatedAt": 1792187953,
+          "heartbeat": 1200,
+          "observedAt": 1792188170,
+          "ageSeconds": 217
+        },
+        "0x95051de9db5cac61682f64505006f2991deab3c2": {
+          "description": "CBDOGE / USD",
+          "decimals": 8,
+          "answer": "8013720",
+          "updatedAt": 1792178707,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 9463
+        },
+        "0x806b4ac04501c29769051e42783cf04dce41440b": {
+          "description": "CBETH / ETH",
+          "decimals": 18,
+          "answer": "1141960000000000000",
+          "updatedAt": 1792160769,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 27401
+        },
+        "0xd7818272b9e248357d13057aab0b417af31e817d": {
+          "description": "CBETH / USD",
+          "decimals": 8,
+          "answer": "275673411500",
+          "updatedAt": 1792187191,
+          "heartbeat": 1200,
+          "observedAt": 1792188170,
+          "ageSeconds": 979
+        },
+        "0xeee1a9d5a0c36d99972c057cb959267e88ab9160": {
+          "description": "CBXRP / USD",
+          "decimals": 8,
+          "answer": "130665316",
+          "updatedAt": 1792185949,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 2221
+        },
+        "0x9dda783de64a9d1a60c49ca761ebe528c35ba428": {
+          "description": "COMP / USD",
+          "decimals": 8,
+          "answer": "2204427948",
+          "updatedAt": 1792182499,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 5671
+        },
+        "0x591e79239a7d679378ec8c847e5038150364c78f": {
+          "description": "DAI / USD",
+          "decimals": 8,
+          "answer": "99989802",
+          "updatedAt": 1792160835,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 27335
+        },
+        "0xe62bce5d7cb9d16ab8b4d622538bc0a50a5799c2": {
+          "description": "DEGEN / USD",
+          "decimals": 8,
+          "answer": "94196",
+          "updatedAt": 1792182301,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 5869
+        },
+        "0xdae398520e2b67cd3f27aef9cf14d93d927f8250": {
+          "description": "EURC / USD",
+          "decimals": 8,
+          "answer": "112486226",
+          "updatedAt": 1792141841,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 46329
+        },
+        "0x42868efcee13c0e71af89c04ff7d96f5bec479b0": {
+          "description": "GHO / USD",
+          "decimals": 8,
+          "answer": "99879610",
+          "updatedAt": 1792162023,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 26147
+        },
+        "0x121934c415937863d64ef93436169444633ee0d8": {
+          "description": "HOME / USD",
+          "decimals": 18,
+          "answer": "5113570481883670",
+          "updatedAt": 1792186161,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 2009
+        },
+        "0x0ca181015d21a5ed19bafc17f2138883c2b16d54": {
+          "description": "JITOSOL / USD",
+          "decimals": 18,
+          "answer": "135610908750386245000",
+          "updatedAt": 1792182895,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 5275
+        },
+        "0x9e07546c9fe8868855cd04b26051a26d1599e270": {
+          "description": "LBTC / USD",
+          "decimals": 8,
+          "answer": "8172889076903",
+          "updatedAt": 1792183995,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 4175
+        },
+        "0xc5e65227fe3385b88468f9a01600017cdc9f3a12": {
+          "description": "LINK / ETH",
+          "decimals": 18,
+          "answer": "5094666600000000",
+          "updatedAt": 1792171483,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 16687
+        },
+        "0x17cab8fe31e32f08326e5e27412894e49b0f9d65": {
+          "description": "LINK / USD",
+          "decimals": 8,
+          "answer": "1227411275",
+          "updatedAt": 1792178113,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 10057
+        },
+        "0xef7541b388a77c1709a3d44bfbfc5c1ed3f0ac94": {
+          "description": "MAMO / USD",
+          "decimals": 8,
+          "answer": "722186",
+          "updatedAt": 1792171051,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 17119
+        },
+        "0x4aeb6d15769ead32d0c5be2940f40c7cff53801d": {
+          "description": "MOG / USD",
+          "decimals": 18,
+          "answer": "101856044166",
+          "updatedAt": 1792185465,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 2705
+        },
+        "0xe95e258bb6615d47515fc849f8542da651f12bf6": {
+          "description": "MORPHO / USD",
+          "decimals": 8,
+          "answer": "236695704",
+          "updatedAt": 1792186429,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 1741
+        },
+        "0xa718561c4592217b9fa301addd183fe4f347e096": {
+          "description": "OUSD / USD",
+          "decimals": 8,
+          "answer": "99983490",
+          "updatedAt": 1792162949,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 25221
+        },
+        "0xaa98ae504658766dfe11f31c5d95a0bdcabde0b1": {
+          "description": "RSR / USD",
+          "decimals": 8,
+          "answer": "193308",
+          "updatedAt": 1792185211,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 2959
+        },
+        "0xe3971ed6f1a5903321479ef3148b5950c0612075": {
+          "description": "SNX / USD",
+          "decimals": 8,
+          "answer": "22365654",
+          "updatedAt": 1792185445,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 2725
+        },
+        "0x63af8341b62e683b87bb540896bf283d96b4d385": {
+          "description": "STG / USD",
+          "decimals": 8,
+          "answer": "17889440",
+          "updatedAt": 1792186381,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 1789
+        },
+        "0x79cf4a31b29d69191f0b6e97916eb93feb81e533": {
+          "description": "sUSDe / USD",
+          "decimals": 8,
+          "answer": "125269300",
+          "updatedAt": 1792162969,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 25201
+        },
+        "0x6d75bfb5a5885f841b132198c9f0be8c872057bf": {
+          "description": "TBTC / USD",
+          "decimals": 8,
+          "answer": "8161963159629",
+          "updatedAt": 1792184007,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 4163
+        },
+        "0xfcb2c36ac8a91ce9d3c94590ed239e1f683467fe": {
+          "description": "USDAI / USD",
+          "decimals": 8,
+          "answer": "99976077",
+          "updatedAt": 1792162533,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 25637
+        },
+        "0x7e860098f58bbfc8648a4311b374b1d669a2bc6b": {
+          "description": "USDC / USD",
+          "decimals": 8,
+          "answer": "99980000",
+          "updatedAt": 1792155055,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 33115
+        },
+        "0x790181e93e9f4eedb5b864860c12e4d2cfffe73b": {
+          "description": "USDe / USD",
+          "decimals": 8,
+          "answer": "99960705",
+          "updatedAt": 1792160383,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 27787
+        },
+        "0x2330aae3bca5f05169d5f4597964d44522f62930": {
+          "description": "USDS / USD",
+          "decimals": 8,
+          "answer": "99976412",
+          "updatedAt": 1792160905,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 27265
+        },
+        "0xf19d560eb8d2adf07bd6d13ed03e1d11215721f9": {
+          "description": "USDT / USD",
+          "decimals": 8,
+          "answer": "99867890",
+          "updatedAt": 1792155101,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 33069
+        },
+        "0xeaf310161c9ef7c813a14f8fef6fb271434019f7": {
+          "description": "VIRTUAL / USD",
+          "decimals": 8,
+          "answer": "66717035",
+          "updatedAt": 1792180575,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 7595
+        },
+        "0xaabc55ca55d70b034e4daa2551a224239890282f": {
+          "description": "VVV / USD",
+          "decimals": 18,
+          "answer": "22819870896599420000",
+          "updatedAt": 1792188045,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 125
+        },
+        "0xccadc697c55bbb68dc5bcdf8d3cbe83cdd4e071e": {
+          "description": "WBTC / USD",
+          "decimals": 8,
+          "answer": "8140473883895",
+          "updatedAt": 1792187831,
+          "heartbeat": 1200,
+          "observedAt": 1792188170,
+          "ageSeconds": 339
+        },
+        "0xc15d9944daefe2db03e53bef8dda25a56832c5fe": {
+          "description": "WELL / USD",
+          "decimals": 8,
+          "answer": "212800",
+          "updatedAt": 1792187889,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 281
+        },
+        "0x5731ae06077c79a3b292498940211e0ae7130bd3": {
+          "description": "ETH / USD",
+          "decimals": 18,
+          "answer": "2413433480277010000000",
+          "updatedAt": 1792187823,
+          "heartbeat": 1200,
+          "observedAt": 1792188170,
+          "ageSeconds": 347
+        },
+        "0xd40e758b5ec80820b68dfc302fc5ce1239083548": {
+          "description": "YFI / USD",
+          "decimals": 8,
+          "answer": "229030040872",
+          "updatedAt": 1792182517,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 5653
+        },
+        "0xdc31a4ccfca039bec6222e20be7770e12581bfeb": {
+          "description": "ZRO / USD",
+          "decimals": 8,
+          "answer": "204647440",
+          "updatedAt": 1792186855,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 1315
+        }
+      },
+      "issues": []
+    },
+    "9745": {
+      "tokens": {
+        "0xb77e872a68c62cfc0dfb02c067ecc3da23b4bbf3": {
+          "decimals": 18,
+          "symbol": "GHO"
+        },
+        "0x76a443768a5e3b8d1aed0105fc250877841deb40": {
+          "decimals": 18,
+          "symbol": "LINK"
+        },
+        "0x211cc4dd073734da055fbf44a2b4667d5e5fe5d2": {
+          "decimals": 18,
+          "symbol": "sUSDe"
+        },
+        "0x0a1a1a107e45b7ced86833863f482bc5f4ed82ef": {
+          "decimals": 18,
+          "symbol": "USDai"
+        },
+        "0x2d661c89d812261039af9764eceaaee884f5f67f": {
+          "decimals": 6,
+          "symbol": "USDC"
+        },
+        "0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34": {
+          "decimals": 18,
+          "symbol": "USDe"
+        },
+        "0xb8ce59fc3717ada4c02eadf9682a9e934f625ebb": {
+          "decimals": 6,
+          "symbol": "USDT0"
+        },
+        "0xa3d68b74bf0528fdd07263c60d6488749044914b": {
+          "decimals": 18,
+          "symbol": "weETH"
+        },
+        "0x9895d81bb462a195b4922ed7de0e3acd007c32cb": {
+          "decimals": 18,
+          "symbol": "WETH"
+        },
+        "0x6100e367285b01f48d07953803a2d8dca5d19873": {
+          "decimals": 18,
+          "symbol": "WXPL"
+        }
+      },
+      "feeds": {
+        "0x26b2d944e1e9db3fc9d38760bde97cd0adc68c75": {
+          "description": "GHO / USD",
+          "decimals": 8,
+          "answer": "99878941",
+          "updatedAt": 1792172555,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 15615
+        },
+        "0xe37f74cb2237c5274ddbbf841c3284bd2e23e65b": {
+          "description": "LINK / USD",
+          "decimals": 8,
+          "answer": "1227539300",
+          "updatedAt": 1792178119,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 10051
+        },
+        "0x0ca32ed285addf84e8491f5edb835e10635945a2": {
+          "description": "SUSDE / USD",
+          "decimals": 8,
+          "answer": "125255384",
+          "updatedAt": 1792172993,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 15177
+        },
+        "0x157b02531ad702346b43686b9186b5271ea2bdad": {
+          "description": "USDAI / USD",
+          "decimals": 8,
+          "answer": "100021496",
+          "updatedAt": 1792140740,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 47430
+        },
+        "0xe3d6f313aeebc2d4ff780c2850f5ca95c85fafa4": {
+          "description": "USDC / USD",
+          "decimals": 8,
+          "answer": "99984536",
+          "updatedAt": 1792165125,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 23045
+        },
+        "0x0dfdcf9af39be41e40a52a80fa86e23a69a69c3b": {
+          "description": "USDE / USD",
+          "decimals": 8,
+          "answer": "99962122",
+          "updatedAt": 1792172897,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 15273
+        },
+        "0x3205b49b3c8c5d593589e1e70567993f72c5f845": {
+          "description": "USDT0 / USD",
+          "decimals": 8,
+          "answer": "99872279",
+          "updatedAt": 1792173315,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 14855
+        },
+        "0xbfed4ef33b8ec58bc15fcbb4a0f934a812d5d7b5": {
+          "description": "WEETH / USD",
+          "decimals": 8,
+          "answer": "266880790229",
+          "updatedAt": 1792182878,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 5292
+        },
+        "0x43a7dd2125266c5c4c26eb86cd61241132426fe7": {
+          "description": "ETH / USD",
+          "decimals": 8,
+          "answer": "241405954686",
+          "updatedAt": 1792182892,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 5278
+        },
+        "0xf932477c37715ae6657ab884414bd9876fe3f750": {
+          "description": "XPL / USD",
+          "decimals": 8,
+          "answer": "8277257",
+          "updatedAt": 1792188009,
+          "heartbeat": 86400,
+          "observedAt": 1792188170,
+          "ageSeconds": 161
+        }
+      },
+      "issues": []
+    },
+    "1": {
+      "tokens": {
+        "0x111111111117dc0aa78b770fa6a738034120c302": {
+          "decimals": 18,
+          "symbol": "1INCH"
+        },
+        "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9": {
+          "decimals": 18,
+          "symbol": "AAVE"
+        },
+        "0xd46ba6d942050d489dbd938a2c909a5d5039a161": {
+          "decimals": 9,
+          "symbol": "AMPL"
+        },
+        "0x4d224452801aced8b2f0aebe155379bb5d594381": {
+          "decimals": 18,
+          "symbol": "APE"
+        },
+        "0xb50721bcf8d664c30412cfbc6cf7a15145234ad1": {
+          "decimals": 18,
+          "symbol": "ARB"
+        },
+        "0x00000000efe302beaa2b3e6e1b18d08d69a9012a": {
+          "decimals": 6,
+          "symbol": "AUSD"
+        },
+        "0xba100000625a3754423978a60c9317c58a424e3d": {
+          "decimals": 18,
+          "symbol": "BAL"
+        },
+        "0x0d8775f648430679a709e98d2b0cb6250d2887ef": {
+          "decimals": 18,
+          "symbol": "BAT"
+        },
+        "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf": {
+          "decimals": 8,
+          "symbol": "cbBTC"
+        },
+        "0xbe9895146f7af43049ca1c1ae358b0541ea49704": {
+          "decimals": 18,
+          "symbol": "cbETH"
+        },
+        "0xc00e94cb662c3520282e6f5717214004a7f26888": {
+          "decimals": 18,
+          "symbol": "COMP"
+        },
+        "0xd533a949740bb3306d119cc777fa900ba034cd52": {
+          "decimals": 18,
+          "symbol": "CRV"
+        },
+        "0xf939e0a03fb07f59a73314e73794be0e57ac1b4e": {
+          "decimals": 18,
+          "symbol": "crvUSD"
+        },
+        "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b": {
+          "decimals": 18,
+          "symbol": "CVX"
+        },
+        "0x6b175474e89094c44da98b954eedeac495271d0f": {
+          "decimals": 18,
+          "symbol": "DAI"
+        },
+        "0x865377367054516e17014ccded1e7d814edc9ce4": {
+          "decimals": 18,
+          "symbol": "DOLA"
+        },
+        "0xf629cbd94d3791c9250152bd8dfbdf380e2a3b9c": {
+          "decimals": 18,
+          "symbol": "ENJ"
+        },
+        "0xc18360217d8f7ab5e7c516566761ea12ce7f9d72": {
+          "decimals": 18,
+          "symbol": "ENS"
+        },
+        "0xe72b141df173b999ae7c1adcbf60cc9833ce56a8": {
+          "decimals": 18,
+          "symbol": "ETH+"
+        },
+        "0xa35b1b31ce002fbf2058d22f30f95d405200a15b": {
+          "decimals": 18,
+          "symbol": "ETHx"
+        },
+        "0x1abaea1f7c830bd89acc67ec4af516284b1bc33c": {
+          "decimals": 6,
+          "symbol": "EURC"
+        },
+        "0xbf5495efe5db9ce00f80364c8b423567e58d2110": {
+          "decimals": 18,
+          "symbol": "ezETH"
+        },
+        "0xc5f0f7b66764f6ec8c8dff7ba683102295e16409": {
+          "decimals": 18,
+          "symbol": "FDUSD"
+        },
+        "0x853d955acef822db058eb8505911ed77f175b99e": {
+          "decimals": 18,
+          "symbol": "FRAX"
+        },
+        "0xcacd6fd266af91b8aed52accc382b4e165586e29": {
+          "decimals": 18,
+          "symbol": "frxUSD"
+        },
+        "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0": {
+          "decimals": 18,
+          "symbol": "FXS"
+        },
+        "0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f": {
+          "decimals": 18,
+          "symbol": "GHO"
+        },
+        "0xc944e90c64b2c07662a292be6244bdf05cda44a7": {
+          "decimals": 18,
+          "symbol": "GRT"
+        },
+        "0xf57e7e7c23978c3caec3c3548e3d615c346e79ff": {
+          "decimals": 18,
+          "symbol": "IMX"
+        },
+        "0xdefa4e8a7bcba345f687a2f1456f5edd9ce97202": {
+          "decimals": 18,
+          "symbol": "KNC"
+        },
+        "0x5a98fcbea516cf06857215779fd812ca3bef1b32": {
+          "decimals": 18,
+          "symbol": "LDO"
+        },
+        "0x514910771af9ca656af840dff83e8264ecf986ca": {
+          "decimals": 18,
+          "symbol": "LINK"
+        },
+        "0x5f98805a4e8be255a32880fdec7f6728c6568ba0": {
+          "decimals": 18,
+          "symbol": "LUSD"
+        },
+        "0x0f5d2fb29fb7d3cfee444a200298f468908cc942": {
+          "decimals": 18,
+          "symbol": "MANA"
+        },
+        "0xd5f7838f5c461feff7fe49ea5ebaf7728bb0adfa": {
+          "decimals": 18,
+          "symbol": "mETH"
+        },
+        "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2": {
+          "decimals": 18,
+          "symbol": "MKR"
+        },
+        "0xec67005c4e498ec7f55e092bd1d35cbc47c91892": {
+          "decimals": 18,
+          "symbol": "MLN"
+        },
+        "0xaca92e438df0b2401ff60da7e4337b687a2435da": {
+          "decimals": 6,
+          "symbol": "mUSD"
+        },
+        "0x856c4efb76c1d1ae02e20ceb03a2a6a08b0b8dc3": {
+          "decimals": 18,
+          "symbol": "OETH"
+        },
+        "0x9f6f3991d525015a6f8caf062c83b62fd3ac4436": {
+          "decimals": 6,
+          "symbol": "OUSD"
+        },
+        "0x45804880de22913dafe09f4980848ece6ecbaf78": {
+          "decimals": 18,
+          "symbol": "PAXG"
+        },
+        "0x6c3ea9036406852006290770bedfcaba0e23a0e8": {
+          "decimals": 6,
+          "symbol": "PYUSD"
+        },
+        "0x03ab458634910aad20ef5f1c8ee96f1d6ac54919": {
+          "decimals": 18,
+          "symbol": "RAI"
+        },
+        "0x137ddb47ee24eaa998a535ab00378d6bfa84f893": {
+          "decimals": 18,
+          "symbol": "RDNT"
+        },
+        "0x408e41876cccdc0f92210600ef50372656052a38": {
+          "decimals": 18,
+          "symbol": "REN"
+        },
+        "0xae78736cd615f374d3085123a210448e74fc6393": {
+          "decimals": 18,
+          "symbol": "rETH"
+        },
+        "0x8292bb45bf1ee4d140127049757c2e0ff06317ed": {
+          "decimals": 18,
+          "symbol": "RLUSD"
+        },
+        "0xd33526068d116ce69f19a9ee46f0bd304f21a51f": {
+          "decimals": 18,
+          "symbol": "RPL"
+        },
+        "0x320623b8e4ff03373931769a31fc52a4e78b5d70": {
+          "decimals": 18,
+          "symbol": "RSR"
+        },
+        "0x3845badade8e6dff049820680d1f14bd3903a5d0": {
+          "decimals": 18,
+          "symbol": "SAND"
+        },
+        "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce": {
+          "decimals": 18,
+          "symbol": "SHIB"
+        },
+        "0x56072c95faa701256059aa122697b133aded9279": {
+          "decimals": 18,
+          "symbol": "SKY"
+        },
+        "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f": {
+          "decimals": 18,
+          "symbol": "SNX"
+        },
+        "0x090185f2135308bad17527004364ebcc2d37e5f6": {
+          "decimals": 18,
+          "symbol": "SPELL"
+        },
+        "0xae7ab96520de3a18e5e111b5eaab095312d7fe84": {
+          "decimals": 18,
+          "symbol": "stETH"
+        },
+        "0xaf5191b0de278c7286d6c7cc6ab6bb8a73ba2cd6": {
+          "decimals": 18,
+          "symbol": "STG"
+        },
+        "0x0b2b2b2076d95dda7817e785989fe353fe955ef9": {
+          "decimals": 18,
+          "symbol": "sUSDai"
+        },
+        "0x9d39a5de30e57443bff2a8307a4256c8797a3497": {
+          "decimals": 18,
+          "symbol": "sUSDe"
+        },
+        "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2": {
+          "decimals": 18,
+          "symbol": "SUSHI"
+        },
+        "0x0a6e7ba5042b38349e437ec6db6214aec7b35676": {
+          "decimals": 18,
+          "symbol": "SWELL"
+        },
+        "0xe6bfd33f52d82ccb5b37e16d3dd81f9ffdabb195": {
+          "decimals": 18,
+          "symbol": "SXT"
+        },
+        "0x18084fba666a33d37592fa2633fd49a74dd93a88": {
+          "decimals": 18,
+          "symbol": "tBTC"
+        },
+        "0x6a547b25534234bb79ce6961a23db13de154b6f4": {
+          "decimals": 18,
+          "symbol": "tGLD"
+        },
+        "0x0000000000085d4780b73119b644ae5ecd22b376": {
+          "decimals": 18,
+          "symbol": "TUSD"
+        },
+        "0xce24439f2d9c6a2289f741120fe202248b666666": {
+          "decimals": 18,
+          "symbol": "U"
+        },
+        "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
+          "decimals": 18,
+          "symbol": "UNI"
+        },
+        "0x73a15fed60bf67631dc6cd7bc5b6e8da8190acf5": {
+          "decimals": 18,
+          "symbol": "USD0"
+        },
+        "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d": {
+          "decimals": 18,
+          "symbol": "USD1"
+        },
+        "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+          "decimals": 6,
+          "symbol": "USDC"
+        },
+        "0x4c9edd5852cd905f086c759e8383e09bff1e68b3": {
+          "decimals": 18,
+          "symbol": "USDe"
+        },
+        "0xfa2b947eec368f42195f24f36d2af29f7c24cec2": {
+          "decimals": 18,
+          "symbol": "USDf"
+        },
+        "0xe343167631d89b6ffc58b88d6b7fb0228795491d": {
+          "decimals": 6,
+          "symbol": "USDG"
+        },
+        "0x8e870d67f660d95d5be530380d0ec0bd388289e1": {
+          "decimals": 18,
+          "symbol": "USDP"
+        },
+        "0xdc035d45d973e3ec169d2276ddab16f1e407384f": {
+          "decimals": 18,
+          "symbol": "USDS"
+        },
+        "0xdac17f958d2ee523a2206206994597c13d831ec7": {
+          "decimals": 6,
+          "symbol": "USDT"
+        },
+        "0xc139190f447e929f090edeb554d95abb8b18ac1c": {
+          "decimals": 18,
+          "symbol": "USDtb"
+        },
+        "0xa47c8bf37f92abed4a126bda807a7b7498661acd": {
+          "decimals": 18,
+          "symbol": "UST"
+        },
+        "0xcd5fe23c85820f7b72d0926fc9b05b43e359b7ee": {
+          "decimals": 18,
+          "symbol": "weETH"
+        },
+        "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
+          "decimals": 18,
+          "symbol": "WETH"
+        },
+        "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6": {
+          "decimals": 18,
+          "symbol": "WLFI"
+        },
+        "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0": {
+          "decimals": 18,
+          "symbol": "wstETH"
+        },
+        "0xa2cd3d43c775978a96bdbf12d733d5a1ed94fb18": {
+          "decimals": 18,
+          "symbol": "XCN"
+        },
+        "0x8798249c2e607446efb7ad49ec89dd1865ff4272": {
+          "decimals": 18,
+          "symbol": "xSUSHI"
+        },
+        "0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e": {
+          "decimals": 18,
+          "symbol": "YFI"
+        },
+        "0xe41d2489571d322189246dafa5ebde1f4699f498": {
+          "decimals": 18,
+          "symbol": "ZRX"
+        }
+      },
+      "feeds": {
+        "0x72afaecf99c9d9c8215ff44c77b94b99c28741e8": {
+          "description": "1INCH / ETH",
+          "decimals": 18,
+          "answer": "38672968942337",
+          "updatedAt": 1792131503,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 56669
+        },
+        "0xc929ad75b72593967de83e7f7cda0493458261d9": {
+          "description": "1INCH / USD",
+          "decimals": 8,
+          "answer": "9269380",
+          "updatedAt": 1792170959,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 17213
+        },
+        "0x6df09e975c830ecae5bd4ed9d90f3a95a4f88012": {
+          "description": "AAVE / ETH",
+          "decimals": 18,
+          "answer": "64167897247974700",
+          "updatedAt": 1792169627,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 18545
+        },
+        "0x547a514d5e3769680ce22b2361c10ea13619e8a9": {
+          "description": "AAVE / USD",
+          "decimals": 8,
+          "answer": "15496057500",
+          "updatedAt": 1792186583,
+          "heartbeat": 3600,
+          "observedAt": 1792188172,
+          "ageSeconds": 1589
+        },
+        "0x492575fdd11a0fcf2c6c719867890a7648d526eb": {
+          "description": "AMPL / ETH",
+          "decimals": 18,
+          "answer": "461220374016344",
+          "updatedAt": 1792116647,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 71525
+        },
+        "0xc7de7f4d4c9c991ff62a07d18b3e31e349833a18": {
+          "description": "APE / ETH",
+          "decimals": 18,
+          "answer": "61735304000000",
+          "updatedAt": 1792161455,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 26717
+        },
+        "0xd10abbc76679a20055e167bb80a24ac851b37056": {
+          "description": "APE / USD",
+          "decimals": 8,
+          "answer": "14938706",
+          "updatedAt": 1792170995,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 17177
+        },
+        "0x31697852a68433dbcc2ff612c516d69e3d9bd08f": {
+          "description": "ARB / USD",
+          "decimals": 8,
+          "answer": "19116000",
+          "updatedAt": 1792174835,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 13337
+        },
+        "0xb00341502dfea6ced8a5786b4059d29da5e4d1fd": {
+          "description": "AUSD / USD",
+          "decimals": 18,
+          "answer": "999826844794004150",
+          "updatedAt": 1792126991,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 61181
+        },
+        "0xc1438aa3823a6ba0c159cfa8d98df5a994ba120b": {
+          "description": "BAL / ETH",
+          "decimals": 18,
+          "answer": "50511968653118",
+          "updatedAt": 1792183139,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 5033
+        },
+        "0xdf2917806e30300537aeb49a7663062f4d1f2b5f": {
+          "description": "BAL / USD",
+          "decimals": 8,
+          "answer": "11996000",
+          "updatedAt": 1792183679,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 4493
+        },
+        "0x0d16d4528239e9ee52fa531af613acdb23d88c94": {
+          "description": "BAT / ETH",
+          "decimals": 18,
+          "answer": "82955618655676",
+          "updatedAt": 1792186415,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 1757
+        },
+        "0x2665701293fcbeb223d11a08d826563edcce423a": {
+          "description": "cbBTC / USD",
+          "decimals": 8,
+          "answer": "8192079702245",
+          "updatedAt": 1792162667,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 25505
+        },
+        "0xf017fcb346a1885194689ba23eff2fe6fa5c483b": {
+          "description": "CBETH / ETH",
+          "decimals": 18,
+          "answer": "1141835009512219800",
+          "updatedAt": 1792180883,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 7289
+        },
+        "0x1b39ee86ec5979ba5c322b826b3ecb8c79991699": {
+          "description": "COMP / ETH",
+          "decimals": 18,
+          "answer": "9009004000000000",
+          "updatedAt": 1792163303,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 24869
+        },
+        "0xdbd020caef83efd542f4de03e3cf0c28a4428bd5": {
+          "description": "COMP / USD",
+          "decimals": 8,
+          "answer": "2206193100",
+          "updatedAt": 1792187639,
+          "heartbeat": 3600,
+          "observedAt": 1792188172,
+          "ageSeconds": 533
+        },
+        "0x8a12be339b0cd1829b91adc01977caa5e9ac121e": {
+          "description": "CRV / ETH",
+          "decimals": 18,
+          "answer": "142493447239149",
+          "updatedAt": 1792135619,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 52553
+        },
+        "0xcd627aa160a6fa45eb793d19ef54f5062f20f33f": {
+          "description": "CRV / USD",
+          "decimals": 8,
+          "answer": "34452918",
+          "updatedAt": 1792181111,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 7061
+        },
+        "0xeef0c605546958c1f899b6fb336c20671f9cd49f": {
+          "description": "CRVUSD / USD",
+          "decimals": 8,
+          "answer": "99871883",
+          "updatedAt": 1792173047,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 15125
+        },
+        "0xc9cbf687f43176b302f03f5e58470b77d07c61c6": {
+          "description": "CVX / ETH",
+          "decimals": 18,
+          "answer": "810712359912919",
+          "updatedAt": 1792160039,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 28133
+        },
+        "0xd962fc30a72a84ce50161031391756bf2876af5d": {
+          "description": "CVX / USD",
+          "decimals": 8,
+          "answer": "192153000",
+          "updatedAt": 1792171115,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 17057
+        },
+        "0x773616e4d11a78f511299002da57a0a94577f1f4": {
+          "description": "DAI / ETH",
+          "decimals": 18,
+          "answer": "414318622608977",
+          "updatedAt": 1792170791,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 17381
+        },
+        "0xaed0c38402a5d19df6e4c03f4e2dced6e29c1ee9": {
+          "description": "DAI / USD",
+          "decimals": 8,
+          "answer": "100017557",
+          "updatedAt": 1792185095,
+          "heartbeat": 3600,
+          "observedAt": 1792188172,
+          "ageSeconds": 3077
+        },
+        "0xe33592594f72cc7ec8a05788be8e8455746c3a32": {
+          "description": "DOLA / USD",
+          "decimals": 8,
+          "answer": "99674519",
+          "updatedAt": 1792125911,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 62261
+        },
+        "0x24d9ab51950f3d62e9144fdc2f3135daa6ce8d1b": {
+          "description": "ENJ / ETH",
+          "decimals": 18,
+          "answer": "12241137486174",
+          "updatedAt": 1792125275,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 62897
+        },
+        "0x5c00128d4d1c2f4f652c267d7bcdd7ac99c16e16": {
+          "description": "ENS / USD",
+          "decimals": 8,
+          "answer": "568267012",
+          "updatedAt": 1792166471,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 21701
+        },
+        "0x66ab900341c98de949ec31d11b3c4180743844f1": {
+          "description": "Calculated ETH+/USD",
+          "decimals": 18,
+          "answer": "2650206367291002878376",
+          "updatedAt": 1792170887,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 17285
+        },
+        "0xc5f8c4ab091be1a899214c0c3636ca33dca0c547": {
+          "description": "ETHx / ETH",
+          "decimals": 18,
+          "answer": "1098348642001323000",
+          "updatedAt": 1792126475,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 61697
+        },
+        "0x04f84020fdf10d9ee64d1dcc2986edf2f556da11": {
+          "description": "EURC / USD",
+          "decimals": 8,
+          "answer": "112486572",
+          "updatedAt": 1792141847,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 46325
+        },
+        "0x636a000262f6aa9e1f094abf0ad8f645c44f641c": {
+          "description": "ezETH / ETH",
+          "decimals": 18,
+          "answer": "1084397227615290600",
+          "updatedAt": 1792125479,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 62693
+        },
+        "0xfaa9147190c2c2cc5b8387b4f49016bdb3380572": {
+          "description": "FDUSD / USD",
+          "decimals": 8,
+          "answer": "99831599",
+          "updatedAt": 1792109579,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 78593
+        },
+        "0xb9e1e3a9feff48998e45fa90847ed4d467e8bcfd": {
+          "description": "FRAX / USD",
+          "decimals": 8,
+          "answer": "99143482",
+          "updatedAt": 1792186295,
+          "heartbeat": 3600,
+          "observedAt": 1792188172,
+          "ageSeconds": 1877
+        },
+        "0x9b4a96210bc8d9d55b1908b465d8b0de68b7ff83": {
+          "description": "frxUSD / USD",
+          "decimals": 8,
+          "answer": "99980532",
+          "updatedAt": 1792163891,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 24281
+        },
+        "0x6ebc52c8c1089be9eb3945c4350b68b8e4c2233f": {
+          "description": "FXS / USD",
+          "decimals": 8,
+          "answer": "29627770",
+          "updatedAt": 1792185383,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 2789
+        },
+        "0x3f12643d3f6f874d39c2a4c9f2cd6f2dbac877fc": {
+          "description": "GHO / USD",
+          "decimals": 8,
+          "answer": "99875310",
+          "updatedAt": 1792185107,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 3065
+        },
+        "0x17d054ecac33d91f7340645341efb5de9009f1c1": {
+          "description": "GRT / ETH",
+          "decimals": 18,
+          "answer": "10249564577509",
+          "updatedAt": 1792169555,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 18617
+        },
+        "0x86cf33a451de9dc61a2862fd94ff4ad4bd65a5d2": {
+          "description": "GRT / USD",
+          "decimals": 8,
+          "answer": "2454000",
+          "updatedAt": 1792170995,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 17177
+        },
+        "0xbaebefc1d023c0feccc047bff42e75f15ff213e6": {
+          "description": "IMX / USD",
+          "decimals": 8,
+          "answer": "16281951",
+          "updatedAt": 1792164191,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 23981
+        },
+        "0x656c0544ef4c98a6a98491833a89204abb045d6b": {
+          "description": "KNC / ETH",
+          "decimals": 18,
+          "answer": "52004920137414",
+          "updatedAt": 1792120283,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 67889
+        },
+        "0xf8ff43e991a81e6ec886a3d281a2c6cc19ae70fc": {
+          "description": "KNC / USD",
+          "decimals": 8,
+          "answer": "12392000",
+          "updatedAt": 1792176311,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 11861
+        },
+        "0x4e844125952d32acdf339be976c98e22f6f318db": {
+          "description": "LDO / ETH",
+          "decimals": 18,
+          "answer": "165140548187456",
+          "updatedAt": 1792159895,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 28277
+        },
+        "0xdc530d9457755926550b59e8eccdae7624181557": {
+          "description": "LINK / ETH",
+          "decimals": 18,
+          "answer": "5100123178187616",
+          "updatedAt": 1792183619,
+          "heartbeat": 21600,
+          "observedAt": 1792188172,
+          "ageSeconds": 4553
+        },
+        "0x2c1d072e956affc0d435cb7ac38ef18d24d9127c": {
+          "description": "LINK / USD",
+          "decimals": 8,
+          "answer": "1231737190",
+          "updatedAt": 1792185479,
+          "heartbeat": 3600,
+          "observedAt": 1792188172,
+          "ageSeconds": 2693
+        },
+        "0x3d7ae7e594f2f2091ad8798313450130d0aba3a0": {
+          "description": "LUSD / USD",
+          "decimals": 8,
+          "answer": "100332836",
+          "updatedAt": 1792125695,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 62477
+        },
+        "0x82a44d92d6c329826dc557c5e1be6ebec5d5feb9": {
+          "description": "MANA / ETH",
+          "decimals": 18,
+          "answer": "36660393730089",
+          "updatedAt": 1792148243,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 39929
+        },
+        "0x5b563107c8666d2142c216114228443b94152362": {
+          "description": "mETH / ETH",
+          "decimals": 18,
+          "answer": "1102055541217351500",
+          "updatedAt": 1792172231,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 15941
+        },
+        "0x24551a8fb2a7211a25a17b1481f043a8a8adc7f2": {
+          "description": "MKR / ETH",
+          "decimals": 18,
+          "answer": "670125779234393000",
+          "updatedAt": 1792163195,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 24977
+        },
+        "0xec1d1b3b0443256cc3860e24a46f108e699484aa": {
+          "description": "MKR / USD",
+          "decimals": 8,
+          "answer": "161281493015",
+          "updatedAt": 1792184951,
+          "heartbeat": 3600,
+          "observedAt": 1792188172,
+          "ageSeconds": 3221
+        },
+        "0xdaea8386611a157b08829ed4997a8a62b557014c": {
+          "description": "MLN / ETH",
+          "decimals": 18,
+          "answer": "593273488304040",
+          "updatedAt": 1792121579,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 66593
+        },
+        "0xc90e3460424fb8ea79775089e9053113fee34ed0": {
+          "description": "MUSD / USD",
+          "decimals": 8,
+          "answer": "99986281",
+          "updatedAt": 1792163783,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 24389
+        },
+        "0x703118c4cbcccbf2ab31913e0f8075fbbb15f563": {
+          "description": "OETH / ETH",
+          "decimals": 18,
+          "answer": "999770000000000000",
+          "updatedAt": 1792183103,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 5069
+        },
+        "0xaf0311ccc42d22d2624fec8024119cb71bbc7418": {
+          "description": "OUSD / USD",
+          "decimals": 8,
+          "answer": "99979005",
+          "updatedAt": 1792162271,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 25901
+        },
+        "0x9944d86ceb9160af5c5feb251fd671923323f8c3": {
+          "description": "PAXG / USD",
+          "decimals": 8,
+          "answer": "415848574808",
+          "updatedAt": 1792166579,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 21593
+        },
+        "0x8f1df6d7f2db73eece86a18b4381f4707b918fb1": {
+          "description": "PYUSD / USD",
+          "decimals": 8,
+          "answer": "99993192",
+          "updatedAt": 1792180535,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 7637
+        },
+        "0x4ad7b025127e89263242ab68f0f9c4e5c033b489": {
+          "description": "RAI / ETH",
+          "decimals": 18,
+          "answer": "1246760023508210",
+          "updatedAt": 1792117583,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 70589
+        },
+        "0x393cc05bad439c9b36489384f11487d9c8410471": {
+          "description": "RDNT / USD",
+          "decimals": 8,
+          "answer": "55947",
+          "updatedAt": 1792184411,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 3761
+        },
+        "0x3147d7203354dc06d9fd350c7a2437bca92387a4": {
+          "description": "REN / ETH",
+          "decimals": 18,
+          "answer": "1120647000000",
+          "updatedAt": 1792174439,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 13733
+        },
+        "0x536218f9e9eb48863970252233c8f271f554c2d0": {
+          "description": "RETH / ETH",
+          "decimals": 18,
+          "answer": "1169763888316679000",
+          "updatedAt": 1792180271,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 7901
+        },
+        "0x26c46b7ad0012ca71f2298ada567dc9af14e7f2a": {
+          "description": "RLUSD / USD",
+          "decimals": 8,
+          "answer": "99999014",
+          "updatedAt": 1792126307,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 61865
+        },
+        "0x4e155ed98afe9034b7a5962f6c84c86d869daa9d": {
+          "description": "RPL / USD",
+          "decimals": 8,
+          "answer": "162667310",
+          "updatedAt": 1792164191,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 23981
+        },
+        "0x759bbc1be8f90ee6457c44abc7d443842a976d02": {
+          "description": "RSR / USD",
+          "decimals": 8,
+          "answer": "193062",
+          "updatedAt": 1792185203,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 2969
+        },
+        "0x35e3f7e558c04ce7eee1629258ecbba03b36ec56": {
+          "description": "SAND / USD",
+          "decimals": 8,
+          "answer": "5440427",
+          "updatedAt": 1792156139,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 32033
+        },
+        "0x8dd1cd88f43af196ae478e91b9f5e4ac69a97c61": {
+          "description": "SHIB / ETH",
+          "decimals": 18,
+          "answer": "2107460851",
+          "updatedAt": 1792131095,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 57077
+        },
+        "0xee10fe5e7aa92dd7b136597449c3d5813cfc5f18": {
+          "description": "SKY / USD",
+          "decimals": 8,
+          "answer": "7089581",
+          "updatedAt": 1792163195,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 24977
+        },
+        "0x79291a9d692df95334b1a0b3b4ae6bc606782f8c": {
+          "description": "SNX / ETH",
+          "decimals": 18,
+          "answer": "92138967217858",
+          "updatedAt": 1792162187,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 25985
+        },
+        "0xdc3ea94cd0ac27d9a86c180091e7f78c683d3699": {
+          "description": "SNX / USD",
+          "decimals": 8,
+          "answer": "22380865",
+          "updatedAt": 1792182911,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 5261
+        },
+        "0x8c110b94c5f1d347facf5e1e938ab2db60e3c9a8": {
+          "description": "SPELL / USD",
+          "decimals": 8,
+          "answer": "8646",
+          "updatedAt": 1792177295,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 10877
+        },
+        "0x86392dc19c0b719886221c78ab11eb8cf5c52812": {
+          "description": "STETH / ETH",
+          "decimals": 18,
+          "answer": "999627978695910500",
+          "updatedAt": 1792126799,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 61373
+        },
+        "0xcfe54b5cd566ab89272946f602d76ea879cab4a8": {
+          "description": "STETH / USD",
+          "decimals": 8,
+          "answer": "241311186113",
+          "updatedAt": 1792185323,
+          "heartbeat": 3600,
+          "observedAt": 1792188172,
+          "ageSeconds": 2849
+        },
+        "0x7a9f34a0aa917d438e9b6e630067062b7f8f6f3d": {
+          "description": "STG / USD",
+          "decimals": 8,
+          "answer": "18123962",
+          "updatedAt": 1792172219,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 15953
+        },
+        "0xf7e906179255ef13270604197610b79bffe546ca": {
+          "description": "SUSDAI / USD",
+          "decimals": 8,
+          "answer": "111604818",
+          "updatedAt": 1792161935,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 26237
+        },
+        "0xff3bc18ccbd5999ce63e788a1c250a88626ad099": {
+          "description": "sUSDe / USD",
+          "decimals": 8,
+          "answer": "125265080",
+          "updatedAt": 1792183931,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 4241
+        },
+        "0xe572cef69f43c2e488b33924af04bdace19079cf": {
+          "description": "SUSHI / ETH",
+          "decimals": 18,
+          "answer": "92968870555071",
+          "updatedAt": 1792163423,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 24749
+        },
+        "0xcc70f09a6cc17553b2e31954cd36e4a2d89501f7": {
+          "description": "SUSHI / USD",
+          "decimals": 8,
+          "answer": "22415081",
+          "updatedAt": 1792173635,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 14537
+        },
+        "0x2a638b1203a3b62ff003598b7165fc5cd5b13b00": {
+          "description": "SWELL / ETH",
+          "decimals": 18,
+          "answer": "306354340550",
+          "updatedAt": 1792179983,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 8189
+        },
+        "0x2d27d9e1b74936d8e83c4ba118f09a4c4a897f62": {
+          "description": "SXT / USD",
+          "decimals": 8,
+          "answer": "848380",
+          "updatedAt": 1792182779,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 5393
+        },
+        "0x8350b7de6a6a2c1368e7d4bd968190e13e354297": {
+          "description": "TBTC / USD",
+          "decimals": 8,
+          "answer": "8154813092518",
+          "updatedAt": 1792163243,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 24929
+        },
+        "0x369c67e8b026cc4ef98350f332d7dd52b85b7674": {
+          "description": "tGLD/USD - 24/7 Blended Price",
+          "decimals": 18,
+          "answer": "4173105000000000000000",
+          "updatedAt": 1792165523,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 22649
+        },
+        "0xec746ecf986e2927abd291a2a1716c940100f8ba": {
+          "description": "TUSD / USD",
+          "decimals": 8,
+          "answer": "99838000",
+          "updatedAt": 1792166927,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 21245
+        },
+        "0xf6351b2dcf0110e76c71c1d319af2f410454b6f3": {
+          "description": "U / USD",
+          "decimals": 18,
+          "answer": "999134174476068300",
+          "updatedAt": 1792125815,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 62357
+        },
+        "0xd6aa3d25116d8da79ea0246c4826eb951872e02e": {
+          "description": "UNI / ETH",
+          "decimals": 18,
+          "answer": "3002236599258599",
+          "updatedAt": 1792149503,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 38669
+        },
+        "0x553303d460ee0afb37edff9be42922d8ff63220e": {
+          "description": "UNI / USD",
+          "decimals": 8,
+          "answer": "722510660",
+          "updatedAt": 1792185323,
+          "heartbeat": 3600,
+          "observedAt": 1792188172,
+          "ageSeconds": 2849
+        },
+        "0x7e891debd8fa0a4cf6be58ddff5a8ca174febdcb": {
+          "description": "USD0 / USD",
+          "decimals": 8,
+          "answer": "99862300",
+          "updatedAt": 1792181351,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 6821
+        },
+        "0xf0d9bb015cd7bfab877b7156146dc09bf461370d": {
+          "description": "USD1 / USD",
+          "decimals": 8,
+          "answer": "99869093",
+          "updatedAt": 1792163543,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 24629
+        },
+        "0x986b5e1e1755e3c2440e960477f25201b0a8bbd4": {
+          "description": "USDC / ETH",
+          "decimals": 18,
+          "answer": "416328170696000",
+          "updatedAt": 1792176251,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 11921
+        },
+        "0x8fffffd4afb6115b954bd326cbe7b4ba576818f6": {
+          "description": "USDC / USD",
+          "decimals": 8,
+          "answer": "99987322",
+          "updatedAt": 1792136507,
+          "heartbeat": 82800,
+          "observedAt": 1792188172,
+          "ageSeconds": 51665
+        },
+        "0xa569d910839ae8865da8f8e70fffb0cba869f961": {
+          "description": "USDe / USD",
+          "decimals": 8,
+          "answer": "99957755",
+          "updatedAt": 1792184483,
+          "heartbeat": 82800,
+          "observedAt": 1792188172,
+          "ageSeconds": 3689
+        },
+        "0xb177857a1799aa5f7feb5799fdf12cbe8fdf78b1": {
+          "description": "USDF / USD",
+          "decimals": 8,
+          "answer": "99564349",
+          "updatedAt": 1792163771,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 24401
+        },
+        "0x14f0737d6b705259e521ea6e9e3506ac78dbd311": {
+          "description": "USDG / USD",
+          "decimals": 8,
+          "answer": "100001430",
+          "updatedAt": 1792181075,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 7097
+        },
+        "0x09023c0da49aaf8fc3fa3adf34c6a7016d38d5e3": {
+          "description": "USDP / USD",
+          "decimals": 8,
+          "answer": "99882891",
+          "updatedAt": 1792151687,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 36485
+        },
+        "0xff30586cd0f29ed462364c7e81375fc0c71219b1": {
+          "description": "USDS / USD",
+          "decimals": 8,
+          "answer": "99983561",
+          "updatedAt": 1792143947,
+          "heartbeat": 82800,
+          "observedAt": 1792188172,
+          "ageSeconds": 44225
+        },
+        "0xee9f2375b4bdf6387aa8265dd4fb8f16512a1d46": {
+          "description": "USDT / ETH",
+          "decimals": 18,
+          "answer": "414008287552649",
+          "updatedAt": 1792170791,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 17381
+        },
+        "0x3e7d1eab13ad0104d2750b8863b489d65364e32d": {
+          "description": "USDT / USD",
+          "decimals": 8,
+          "answer": "99872000",
+          "updatedAt": 1792161659,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 26513
+        },
+        "0x66704dad467a7ca508b3be15865d9b9f3e186c90": {
+          "description": "USDtb / USD",
+          "decimals": 8,
+          "answer": "99987999",
+          "updatedAt": 1792181927,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 6245
+        },
+        "0xa20623070413d42a5c01db2c8111640dd7a5a03a": {
+          "description": "USTC / ETH",
+          "decimals": 18,
+          "answer": "2076648300000",
+          "updatedAt": 1792166051,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 22121
+        },
+        "0x5c9c449bbc9a6075a2c061df312a35fd1e05ff22": {
+          "description": "weETH / ETH",
+          "decimals": 18,
+          "answer": "1105647596520314600",
+          "updatedAt": 1792125395,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 62777
+        },
+        "0x5f4ec3df9cbd43714fe2740f5e3616155c5b8419": {
+          "description": "ETH / USD",
+          "decimals": 8,
+          "answer": "241693040000",
+          "updatedAt": 1792185947,
+          "heartbeat": 3600,
+          "observedAt": 1792188172,
+          "ageSeconds": 2225
+        },
+        "0x14e5fc91ddb3f97c33013cc9fa74f54062ad1aa1": {
+          "description": "WLFI / USD",
+          "decimals": 8,
+          "answer": "5728009",
+          "updatedAt": 1792159679,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 28493
+        },
+        "0x164b276057258d81941e97b0a900d4c7b358bce0": {
+          "description": "wstETH / USD Calculated",
+          "decimals": 8,
+          "answer": "300195675136",
+          "updatedAt": 1792170875,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 17297
+        },
+        "0xeb988b77b94c186053282bfcd8b7ed55142d3cab": {
+          "description": "XCN / USD",
+          "decimals": 8,
+          "answer": "415574",
+          "updatedAt": 1792171643,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 16529
+        },
+        "0xf05d9b6c08757eacb1fbec18e36a1b7566a13deb": {
+          "description": "Calculated XSUSHI / ETH",
+          "decimals": 18,
+          "answer": "146585268735097",
+          "updatedAt": 1792163435,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 24737
+        },
+        "0x7c5d4f8345e66f68099581db340cd65b078c41f4": {
+          "description": "YFI / ETH",
+          "decimals": 18,
+          "answer": "948867742526515100",
+          "updatedAt": 1792145927,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 42245
+        },
+        "0xa027702dbb89fbd58938e4324ac03b58d812b0e1": {
+          "description": "YFI / USD",
+          "decimals": 8,
+          "answer": "228060000000",
+          "updatedAt": 1792170251,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 17921
+        },
+        "0x2da4983a622a8498bb1a21fae9d8f6c664939962": {
+          "description": "ZRX / ETH",
+          "decimals": 18,
+          "answer": "46536911088242",
+          "updatedAt": 1792136663,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 51509
+        },
+        "0x2885d15b8af22648b98b122b22fdf4d2a56c6023": {
+          "description": "ZRX / USD",
+          "decimals": 8,
+          "answer": "11194306",
+          "updatedAt": 1792186487,
+          "heartbeat": 86400,
+          "observedAt": 1792188172,
+          "ageSeconds": 1685
+        }
+      },
+      "issues": []
+    }
+  }
+}

@@ -19,6 +19,7 @@ import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 import { invalidatePlacementReads } from "#/lib/placementReads";
 import { publicClientsFromIds } from "#/lib/publicClients";
 import { VALID_TO_OPTIONS, VALID_TO_VALUES_MAP } from "#/lib/schema";
+import { getSupportedTokens } from "#/lib/supportedTokens";
 import { createWagmiConfig } from "#/utils/wagmi";
 
 import { SwapForm } from "../swap-card/SwapForm";
@@ -73,7 +74,10 @@ beforeEach(() => {
         BigInt(1),
         address?.toLowerCase() === "0x5f4ec3df9cbd43714fe2740f5e3616155c5b8419"
           ? BigInt("200000000000")
-          : BigInt("100000000"),
+          : address?.toLowerCase() ===
+              "0x2665701293fcbeb223d11a08d826563edcce423a"
+            ? BigInt("6000000000000")
+            : BigInt("100000000"),
         BigInt(1),
         BigInt(1),
         BigInt(1),
@@ -675,6 +679,61 @@ it("marks saved slippage changes on the gear and offers Reset for slippage alone
   expect(settingsTrigger).not.toHaveClass("text-primary");
 });
 
+it("filters the expanded sell catalog by address and resets prices when selection changes", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  await selectWeth(user);
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  await setTriggerPrice(user);
+  await waitFor(() =>
+    expect(
+      screen.getByRole("textbox", { name: "Receive at least" }),
+    ).toHaveValue("1998"),
+  );
+
+  await user.click(screen.getByRole("button", { name: "Token Logo WETH" }));
+  const { sellTokens, buyToken } = getSupportedTokens(1);
+  expect(sellTokens.length).toBeGreaterThan(2);
+  expect(screen.getAllByRole("option")).toHaveLength(sellTokens.length);
+  expect(
+    screen.queryByRole("option", { name: `Token Logo ${buyToken.token.symbol}` }),
+  ).not.toBeInTheDocument();
+  const cbBtc = sellTokens.find(({ token }) => token.symbol === "cbBTC")!;
+  await user.type(
+    screen.getByPlaceholderText("Search supported tokens"),
+    cbBtc.token.address,
+  );
+  expect(screen.getAllByRole("option")).toHaveLength(1);
+  await user.click(screen.getByRole("option", { name: /cbBTC/ }));
+
+  expect(screen.getByRole("textbox", { name: "Trigger price" })).toHaveValue(
+    "",
+  );
+  expect(screen.getByRole("textbox", { name: "Receive at least" })).toHaveValue(
+    "",
+  );
+  expect(screen.getByRole("textbox", { name: "Sell amount" })).toHaveValue("1");
+  expect(
+    screen.getByText("USDC").closest('[aria-disabled="true"]'),
+  ).toBeInTheDocument();
+  await user.click(
+    await screen.findByRole("button", {
+      name: /Set trigger to current market price/,
+    }),
+  );
+  expect(screen.getByRole("textbox", { name: "Trigger price" })).toHaveValue(
+    "60000",
+  );
+  await waitFor(() =>
+    expect(
+      screen.getByRole("textbox", { name: "Receive at least" }),
+    ).toHaveValue("59940"),
+  );
+  expect(
+    screen.getByRole("textbox", { name: "Receive at least" }),
+  ).toBeDisabled();
+});
+
 it("offers one exact-sell order without buy mode or draft-basket actions", () => {
   renderForm();
   expect(screen.getByRole("textbox", { name: "Sell amount" })).toBeEnabled();
@@ -925,6 +984,16 @@ it("resets committed slippage, expiry and exact-sell inputs when the chain chang
   expect(screen.getByRole("textbox", { name: "Receive at least" })).toHaveValue(
     "",
   );
+  expect(
+    screen.getByText("USDT").closest('[aria-disabled="true"]'),
+  ).toBeInTheDocument();
+  expect(screen.queryByText("USDC")).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", {
+      name: /Set trigger to current market price/,
+    }),
+  ).not.toBeInTheDocument();
+  expect(onReviewOrder).not.toHaveBeenCalled();
   expect(
     screen.getByRole("button", { name: "Select token" }),
   ).toBeInTheDocument();

@@ -4,7 +4,7 @@ import { getSupportedTokens } from "../supportedTokens";
 
 const client = publicClientsFromIds[1];
 const { sellTokens } = getSupportedTokens(1);
-const oracle = sellTokens[0].priceFeed;
+const oracle = sellTokens[0].oracles.USD!;
 const timestamp = BigInt(100_000);
 
 beforeEach(() => {
@@ -97,6 +97,40 @@ it("does not return a price when the RPC fails", async () => {
 
 it("does not select a feed on an unsupported wallet chain", () => {
   expect(
-    configuredTokenOracle(sellTokens[0].token.address, 137 as ChainId),
+    configuredTokenOracle(sellTokens[0].token.address, 999 as ChainId),
   ).toBeUndefined();
+});
+
+it("does not treat an ETH-only feed as a USD estimate", () => {
+  const ethOnly = sellTokens.find(
+    ({ oracles }) => oracles.ETH && !oracles.USD,
+  )!;
+  expect(ethOnly).toBeDefined();
+  expect(ethOnly.priceFeed).toBeUndefined();
+  expect(configuredTokenOracle(ethOnly.token.address, 1)).toBeUndefined();
+});
+
+it("selects the direct USD feed even when the pair route prefers ETH", () => {
+  const dual = sellTokens.find(({ oracles }) => oracles.ETH && oracles.USD)!;
+  expect(configuredTokenOracle(dual.token.address, 1)).toBe(dual.oracles.USD);
+  expect(configuredTokenOracle(dual.token.address, 1)).not.toBe(
+    dual.oracles.ETH,
+  );
+});
+
+it("does not assign creation USD feeds to historical token metadata", () => {
+  expect(
+    configuredTokenOracle("0x2a22f9c3b484c3629090feed35f17ff8f88f76f0", 100),
+  ).toBeUndefined();
+});
+
+it("rejects ETH-quoted feeds passed to the USD price reader", async () => {
+  const ethOnly = sellTokens.find(
+    ({ oracles }) => oracles.ETH && !oracles.USD,
+  )!;
+  await expect(
+    fetchOracleUsdPrice({ chainId: 1, oracle: ethOnly.oracles.ETH! }),
+  ).rejects.toThrow("No configured USD price feed");
+  expect(client.getBlock).not.toHaveBeenCalled();
+  expect(client.readContract).not.toHaveBeenCalled();
 });

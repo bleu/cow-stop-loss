@@ -12,6 +12,7 @@
     "build:next": "next build",
     "start:next": "next start",
     "check:next": "prettier --check \"**/*.{md,html,mjml,json,yml,css,scss}\"",
+    "check:catalog": "python3 scripts/catalog.py --check",
     "format": "prettier --write \"**/*.{md,html,mjml,json,yml,css,scss,ts,tsx,js,jsx}\"",
     "lint": "eslint '**/*.{ts,tsx}'",
     "lint:fix": "eslint '**/*.{ts,tsx}' --fix",

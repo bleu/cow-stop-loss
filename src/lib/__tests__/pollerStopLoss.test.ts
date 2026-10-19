@@ -2,6 +2,7 @@ import {
   decodeAbiParameters,
   decodeFunctionData,
   encodeAbiParameters,
+  getAddress,
   parseAbi,
   parseAbiParameters,
   PublicClient,
@@ -9,6 +10,7 @@ import {
 } from "viem";
 
 import { defaultAdvancedSettings } from "#/hooks/useAdvancedSettings";
+import { configuredTokenRoute } from "#/lib/oracleRouter";
 import { invalidatePlacementReads } from "#/lib/placementReads";
 import {
   buildApprovalRepair,
@@ -21,23 +23,28 @@ import {
   verifyPlacementConfirmation,
 } from "#/lib/pollerStopLoss";
 import { publicClientsFromIds } from "#/lib/publicClients";
+import { encodeStopLossStaticInput } from "#/lib/staticInputEncoder";
+import { getSupportedTokens } from "#/lib/supportedTokens";
 import { fetchFormattedBalanceOf } from "#/lib/tokenUtils";
 import { DraftOrder, OrderStatus } from "#/lib/types";
 
 const account = "0x1111111111111111111111111111111111111111";
 const domainSeparator = `0x${"ef".repeat(32)}` as const;
+const tokenSell = {
+  address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+  decimals: 18,
+  symbol: "WETH",
+} as const;
+const tokenBuy = {
+  address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+  decimals: 6,
+  symbol: "USDC",
+} as const;
+const route = configuredTokenRoute({ chainId: 1, tokenSell, tokenBuy });
 const draft: DraftOrder = {
   id: "reviewed-order",
-  tokenSell: {
-    address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-    decimals: 18,
-    symbol: "WETH",
-  },
-  tokenBuy: {
-    address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-    decimals: 6,
-    symbol: "USDC",
-  },
+  tokenSell,
+  tokenBuy,
   amountSell: "1",
   amountBuy: "1980",
   strikePrice: "2000",
@@ -49,8 +56,7 @@ const draft: DraftOrder = {
   maxHoursSinceOracleUpdates: 1,
   validTo: 1800003600,
   salt: `0x${"ab".repeat(32)}`,
-  tokenSellOracle: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
-  tokenBuyOracle: "0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6",
+  ...route,
   oraclePrice: 2000,
   status: OrderStatus.DRAFT,
 };
@@ -89,7 +95,7 @@ test("reuses prefetched balances, allowances, contracts and oracles in order rev
         ? new Response(JSON.stringify(String(url).split("/").pop()))
         : fetchOrders(url, init),
     );
-  await prefetchPlacementChecks({ account, chainId: 1 });
+  await prefetchPlacementChecks({ account, chainId: 1, tokenSell });
   const callsBeforeReview = read.mock.calls.length;
   const requestsBeforeReview = jest.mocked(global.fetch).mock.calls.length;
   await expect(
@@ -101,10 +107,20 @@ test("reuses prefetched balances, allowances, contracts and oracles in order rev
   ).resolves.toBe("5");
   expect(
     read.mock.calls.filter(([args]) => args.functionName === "balanceOf"),
-  ).toHaveLength(3);
+  ).toHaveLength(2);
   expect(
     read.mock.calls.filter(([args]) => args.functionName === "allowance"),
-  ).toHaveLength(6);
+  ).toHaveLength(4);
+  const oracleReads = read.mock.calls.filter(
+    ([args]) => args.functionName === "latestRoundData",
+  );
+  expect(
+    oracleReads.map(([args]) => args.address?.toLowerCase()).sort(),
+  ).toEqual(
+    [
+      ...new Set(Object.values(route).map((address) => address.toLowerCase())),
+    ].sort(),
+  );
   const prepared = await preparePlacement({ draft, account, chainId: 1 });
   await expect(refreshPlacementChecks(prepared)).resolves.toMatchObject({
     status: "known",
@@ -114,6 +130,40 @@ test("reuses prefetched balances, allowances, contracts and oracles in order rev
   expect(source.getBlock).toHaveBeenCalledTimes(1);
   expect(source.getBytecode).toHaveBeenCalledTimes(5);
   expect(global.fetch).toHaveBeenCalledTimes(requestsBeforeReview + 1);
+});
+
+test("warms shared placement context without reading the token catalog", async () => {
+  const source = publicClientsFromIds[1];
+  const client = checkingClient();
+  jest
+    .spyOn(source, "getBlockNumber")
+    .mockImplementation(client.getBlockNumber);
+  jest
+    .spyOn(source, "getBlock")
+    .mockImplementation(client.getBlock as typeof source.getBlock);
+  jest.spyOn(source, "getBytecode").mockImplementation(client.getBytecode);
+  const read = jest
+    .spyOn(source, "readContract")
+    .mockImplementation(client.readContract);
+  emptyFundingApi();
+
+  await prefetchPlacementChecks({ account, chainId: 1 });
+
+  expect(read.mock.calls.map(([args]) => args.functionName)).toEqual(
+    expect.arrayContaining([
+      "COW_SHED_FACTORY",
+      "COMPOSABLE_COW",
+      "proxyOf",
+      "domainSeparator",
+    ]),
+  );
+  expect(
+    read.mock.calls.filter(([args]) =>
+      ["balanceOf", "allowance", "latestRoundData", "decimals"].includes(
+        args.functionName,
+      ),
+    ),
+  ).toHaveLength(0);
 });
 
 test("uploads a funding pre-hook for the reviewed order's schedule", async () => {
@@ -234,8 +284,8 @@ test("encodes the reviewed receiver, amounts and advanced settings with the uplo
     true,
     false,
     1800003600,
-    "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
-    "0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6",
+    getAddress(route.tokenSellOracle),
+    getAddress(route.tokenBuyOracle),
     BigInt("2000000000000000000000"),
     1800,
   ]);
@@ -831,6 +881,173 @@ test("rejects an unsupported token or price-feed route before uploading", async 
   ).rejects.toThrow("Unsupported token or price-feed route");
   expect(global.fetch).not.toHaveBeenCalled();
 });
+
+test("rejects saved Gnosis USDC.e placement without changing its identity or blocking historical repair", async () => {
+  const { sellTokens, buyToken } = getSupportedTokens(100);
+  const tokenSell = sellTokens.find(
+    ({ token }) => token.symbol === "WETH",
+  )!.token;
+  const client = checkingClient({
+    allowance: BigInt(0),
+    schedules: [
+      zeroAddress,
+      BigInt(0),
+      zeroAddress,
+      zeroAddress,
+      draft.salt,
+      "0x",
+    ],
+  });
+  const prepared = await preparePlacement({
+    draft: {
+      ...draft,
+      tokenSell,
+      tokenBuy: buyToken.token,
+      ...configuredTokenRoute({
+        chainId: 100,
+        tokenSell,
+        tokenBuy: buyToken.token,
+      }),
+    },
+    account,
+    chainId: 100,
+    client,
+  });
+  emptyFundingApi();
+  const checks = await refreshPlacementChecks(prepared, { client });
+  expect(checks.status).toBe("known");
+  if (checks.status === "unknown") throw new Error(checks.error);
+  await expect(
+    buildPlacementApproval(prepared, { checks }),
+  ).resolves.toMatchObject({
+    kind: "approval",
+  });
+  await expect(
+    buildPlacementSetup(prepared, {
+      client,
+      checks: { ...checks, approvalRequired: false },
+    }),
+  ).resolves.toMatchObject({ to: prepared.factory });
+
+  const legacy = {
+    ...prepared,
+    draft: {
+      ...prepared.draft,
+      tokenBuy: {
+        address: "0x2a22f9c3b484c3629090feed35f17ff8f88f76f0" as const,
+        symbol: "USDC.e",
+        decimals: 6,
+      },
+      tokenBuyOracle: "0x26C31ac71010aF62E6B486D1132E266D6298857D" as const,
+    },
+  };
+  legacy.staticInput = encodeStopLossStaticInput(
+    legacy.draft,
+    legacy.appDataHash,
+  );
+  const saved = structuredClone(legacy);
+  jest.mocked(client.readContract).mockClear();
+  jest.mocked(global.fetch).mockClear();
+
+  await expect(refreshPlacementChecks(legacy, { client })).resolves.toEqual({
+    status: "unknown",
+    error: "Unsupported buy token",
+  });
+  await expect(buildPlacementApproval(legacy, { checks })).rejects.toThrow(
+    "Unsupported buy token",
+  );
+  await expect(
+    buildPlacementSetup(legacy, {
+      client,
+      checks: { ...checks, approvalRequired: false },
+    }),
+  ).rejects.toThrow("Unsupported buy token");
+  expect(client.readContract).not.toHaveBeenCalled();
+  expect(global.fetch).not.toHaveBeenCalled();
+  expect(legacy).toEqual(saved);
+  await expect(
+    buildApprovalRepair({ ...legacy, kind: "repair" }, { checks }),
+  ).resolves.toEqual([
+    expect.objectContaining({ stage: "wallet" }),
+    expect.objectContaining({ stage: "settlement" }),
+  ]);
+});
+
+test.each([
+  "sell decimals",
+  "sell symbol",
+  "buy decimals",
+  "buy symbol",
+  "sell feed",
+  "buy feed",
+  "encoded sell token",
+  "encoded buy token",
+  "encoded sell feed",
+  "encoded buy feed",
+])(
+  "rejects saved placement with forged %s before building wallet transactions",
+  async (field) => {
+    const client = checkingClient({ allowance: BigInt(0) });
+    const prepared = await preparePlacement({
+      draft,
+      account,
+      chainId: 1,
+      client,
+    });
+    emptyFundingApi();
+    const checks = await refreshPlacementChecks(prepared, { client });
+    expect(checks.status).toBe("known");
+    if (checks.status === "unknown") throw new Error(checks.error);
+    const forgedAddress = "0x5555555555555555555555555555555555555555";
+    if (field === "sell decimals") prepared.draft.tokenSell.decimals = 6;
+    if (field === "sell symbol") prepared.draft.tokenSell.symbol = "FORGED";
+    if (field === "buy decimals") prepared.draft.tokenBuy.decimals = 18;
+    if (field === "buy symbol") prepared.draft.tokenBuy.symbol = "FORGED";
+    if (field === "sell feed") prepared.draft.tokenSellOracle = forgedAddress;
+    if (field === "buy feed") prepared.draft.tokenBuyOracle = forgedAddress;
+    if (field.startsWith("encoded")) {
+      const encoded = {
+        ...prepared.draft,
+        tokenSell: { ...prepared.draft.tokenSell },
+        tokenBuy: { ...prepared.draft.tokenBuy },
+      };
+      if (field === "encoded sell token")
+        encoded.tokenSell.address = forgedAddress;
+      if (field === "encoded buy token")
+        encoded.tokenBuy.address = forgedAddress;
+      if (field === "encoded sell feed")
+        encoded.tokenSellOracle = forgedAddress;
+      if (field === "encoded buy feed") encoded.tokenBuyOracle = forgedAddress;
+      prepared.staticInput = encodeStopLossStaticInput(
+        encoded,
+        prepared.appDataHash,
+      );
+    }
+    jest.mocked(client.readContract).mockClear();
+    jest.mocked(global.fetch).mockClear();
+    const error =
+      field.startsWith("sell ") && !field.endsWith("feed")
+        ? "Unsupported sell token"
+        : field.startsWith("buy ") && !field.endsWith("feed")
+          ? "Unsupported buy token"
+          : "Unsupported token or price-feed route";
+
+    await expect(refreshPlacementChecks(prepared, { client })).resolves.toEqual(
+      { status: "unknown", error },
+    );
+    await expect(buildPlacementApproval(prepared, { checks })).rejects.toThrow(
+      error,
+    );
+    await expect(
+      buildPlacementSetup(prepared, {
+        client,
+        checks: { ...checks, approvalRequired: false },
+      }),
+    ).rejects.toThrow(error);
+    expect(client.readContract).not.toHaveBeenCalled();
+    expect(global.fetch).not.toHaveBeenCalled();
+  },
+);
 
 test("excludes funded orders even before the API reports a fill", async () => {
   const client = checkingClient();

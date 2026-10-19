@@ -2,11 +2,10 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { Address, getAddress } from "viem";
-import { arbitrum, gnosis, mainnet, sepolia } from "viem/chains";
+import { getAddress, isAddress } from "viem";
 
 import { ChainId } from "#/lib/publicClients";
-import { getSupportedTokens } from "#/lib/supportedTokens";
+import { TOKEN_CATALOG } from "#/lib/tokenCatalog";
 
 type ImageAttributes = React.DetailedHTMLProps<
   React.ImgHTMLAttributes<HTMLImageElement>,
@@ -26,10 +25,16 @@ export const cowprotocolTokenLogoUrl = (address?: string, chainId?: ChainId) =>
   `${tokenUrlRoot}/${chainId}/${address}/logo.png`;
 
 const chainIdToName: Record<ChainId, string> = {
-  [mainnet.id]: "ethereum",
-  [gnosis.id]: "xdai",
-  [sepolia.id]: "ethereum",
-  [arbitrum.id]: "arbitrum",
+  1: "ethereum",
+  100: "xdai",
+  11155111: "ethereum",
+  42161: "arbitrum",
+  8453: "base",
+  137: "polygon",
+  43114: "avalanchec",
+  56: "smartchain",
+  59144: "linea",
+  9745: "plasma",
 };
 
 export function trustTokenLogoUrl(address?: string, chainId?: ChainId): string {
@@ -38,44 +43,57 @@ export function trustTokenLogoUrl(address?: string, chainId?: ChainId): string {
 
 const FALLBACK_SRC = "/assets/generic-token-logo.png";
 
-function supportedTokenAsset(tokenAddress?: string, chainId?: ChainId) {
-  if (!tokenAddress || !chainId) return FALLBACK_SRC;
-  const { sellTokens, buyToken } = getSupportedTokens(chainId);
-  const token = [...sellTokens.map(({ token }) => token), buyToken.token].find(
-    ({ address }) => address.toLowerCase() === tokenAddress.toLowerCase(),
-  );
-  if (!token) return FALLBACK_SRC;
-  if (token.symbol === "WETH") return "/assets/tokens/weth.svg";
-  if (token.symbol === "WBTC") return "/assets/tokens/wbtc.svg";
-  if (token.symbol.startsWith("USDC")) return "/assets/tokens/usdc.svg";
-  return FALLBACK_SRC;
+function catalogTokenAsset(tokenAddress?: string, chainId?: ChainId) {
+  return TOKEN_CATALOG.find(
+    (token) =>
+      token.chainId === chainId &&
+      token.address.toLowerCase() === tokenAddress?.toLowerCase(),
+  )?.logoURI;
 }
 
-export const TokenLogo = ({
-  tokenAddress,
-  chainId,
-  alt,
+export const TokenLogo = (props: ImageFallbackProps) => {
+  const { tokenAddress, chainId } = props;
+  const localAsset = catalogTokenAsset(tokenAddress, chainId);
+  const address = tokenAddress?.toLowerCase();
+  const checksumAddress =
+    address && isAddress(address) ? getAddress(address) : undefined;
+  const remoteAssets = checksumAddress
+    ? [
+        cowprotocolTokenLogoUrl(address, chainId),
+        cowprotocolTokenLogoUrl(checksumAddress, chainId),
+        cowprotocolTokenLogoUrl(address, 1),
+        cowprotocolTokenLogoUrl(checksumAddress, 1),
+        trustTokenLogoUrl(tokenAddress, chainId),
+        trustTokenLogoUrl(address, chainId),
+        trustTokenLogoUrl(checksumAddress, chainId),
+        trustTokenLogoUrl(address, 1),
+        trustTokenLogoUrl(checksumAddress, 1),
+      ]
+    : [];
+  const imagesSrc = [
+    ...new Set([
+      ...(localAsset ? [localAsset] : []),
+      ...remoteAssets,
+      FALLBACK_SRC,
+    ]),
+  ];
+  return (
+    <TokenImage
+      key={`${chainId}:${address}`}
+      {...props}
+      imagesSrc={imagesSrc}
+    />
+  );
+};
+
+function TokenImage({
+  imagesSrc,
+  className,
   width,
   height,
-  className,
   quality,
-}: ImageFallbackProps) => {
-  const localAsset = supportedTokenAsset(tokenAddress, chainId);
-  const remoteAssets = [
-    cowprotocolTokenLogoUrl(tokenAddress?.toLowerCase(), chainId),
-    cowprotocolTokenLogoUrl(getAddress(tokenAddress as Address), chainId),
-    cowprotocolTokenLogoUrl(tokenAddress?.toLowerCase(), 1),
-    cowprotocolTokenLogoUrl(getAddress(tokenAddress as Address), 1),
-    trustTokenLogoUrl(tokenAddress, chainId),
-    trustTokenLogoUrl(tokenAddress?.toLowerCase(), chainId),
-    trustTokenLogoUrl(getAddress(tokenAddress as Address), chainId),
-    trustTokenLogoUrl(tokenAddress?.toLowerCase(), 1),
-    trustTokenLogoUrl(getAddress(tokenAddress as Address), 1),
-  ];
-  const imagesSrc =
-    localAsset === FALLBACK_SRC
-      ? [...remoteAssets, FALLBACK_SRC]
-      : [localAsset];
+  alt,
+}: ImageFallbackProps & { imagesSrc: string[] }) {
   const [index, setIndex] = useState(0);
 
   return (
@@ -88,10 +106,10 @@ export const TokenLogo = ({
       src={imagesSrc[index] || FALLBACK_SRC}
       onError={() => {
         if (index < imagesSrc.length - 1) {
-          setIndex(index + 1);
+          setIndex((current) => current + 1);
         }
       }}
       unoptimized // Disabling to avoid 404 error log on the console
     />
   );
-};
+}

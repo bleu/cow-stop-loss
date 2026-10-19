@@ -281,12 +281,12 @@ test("retains prices, token units and oracle settings before the order triggers"
     result.chains.find((chain) => chain.chainId === 1)?.orders[0],
   ).toMatchObject({
     sellToken: {
-      address: parent.decodedParams.sellToken,
+      address: parent.decodedParams.sellToken.toLowerCase(),
       symbol: "WETH",
       decimals: 18,
     },
     buyToken: {
-      address: parent.decodedParams.buyToken,
+      address: parent.decodedParams.buyToken.toLowerCase(),
       symbol: "USDC",
       decimals: 6,
     },
@@ -298,6 +298,57 @@ test("retains prices, token units and oracle settings before the order triggers"
     sellTokenPriceOracle: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
     buyTokenPriceOracle: "0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6",
     maxTimeSinceLastOracleUpdate: 3600,
+  });
+});
+
+test.each([
+  {
+    chainId: 1 as const,
+    sellToken: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+    buyToken: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+    sellSymbol: "WBTC",
+    buySymbol: "USDC",
+    sellDecimals: 8,
+  },
+  {
+    chainId: 100 as const,
+    sellToken: "0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1",
+    buyToken: "0x2a22f9c3b484c3629090feed35f17ff8f88f76f0",
+    sellSymbol: "WETH",
+    buySymbol: "USDC.e",
+    sellDecimals: 18,
+  },
+])("retains historical token metadata on chain $chainId", async (fixture) => {
+  jest.spyOn(global, "fetch").mockImplementation(async (_url, init) => {
+    const { query } = JSON.parse(String(init?.body));
+    const data = query.includes("ownerMappings")
+      ? { ownerMappings: page([]) }
+      : {
+          conditionalOrderGenerators: page([
+            {
+              ...parent,
+              chainId: fixture.chainId,
+              decodedParams: {
+                ...parent.decodedParams,
+                sellToken: fixture.sellToken,
+                buyToken: fixture.buyToken,
+              },
+            },
+          ]),
+        };
+    return new Response(JSON.stringify({ data }));
+  });
+
+  const result = await loadStopLossOrders({
+    account: wallet,
+    chainIds: [fixture.chainId],
+  });
+
+  expect(result.chains[0].orders[0]).toMatchObject({
+    sellToken: { symbol: fixture.sellSymbol, decimals: fixture.sellDecimals },
+    buyToken: { symbol: fixture.buySymbol, decimals: 6 },
+    sellTokenPriceOracle: parent.decodedParams.sellTokenPriceOracle,
+    buyTokenPriceOracle: parent.decodedParams.buyTokenPriceOracle,
   });
 });
 

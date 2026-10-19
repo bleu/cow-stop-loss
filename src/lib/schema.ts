@@ -124,7 +124,7 @@ export const generateSwapSchema = (chainId: ChainId) => {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["tokenBuy"],
-        message: "Use the fixed USDC buy token for this chain",
+        message: "Use the fixed USD buy token for this chain",
       });
     }
   });

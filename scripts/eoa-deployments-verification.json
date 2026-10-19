@@ -1,0 +1,146 @@
+[
+  {
+    "chainId": 1,
+    "rpc": "https://ethereum-rpc.publicnode.com",
+    "checkedAt": "2026-10-19T14:34:07.936Z",
+    "rpcChainId": 1,
+    "codeBytes": {
+      "poller": 10693,
+      "composableCow": 8478,
+      "handler": 4259,
+      "settlement": 16165,
+      "relayer": 4590,
+      "factory": 3785
+    },
+    "factory": "0x221c28Ec177CF7da6f837DfD0052Ba8F265Fb4CA",
+    "composableCow": "0xfdaFc9d1902f4e0b84f65F49f244b32b31013b74"
+  },
+  {
+    "chainId": 56,
+    "rpc": "https://bsc-dataseed1.bnbchain.org",
+    "checkedAt": "2026-10-19T14:34:09.731Z",
+    "rpcChainId": 56,
+    "codeBytes": {
+      "poller": 10693,
+      "composableCow": 8478,
+      "handler": 4259,
+      "settlement": 16165,
+      "relayer": 4590,
+      "factory": 3785
+    },
+    "factory": "0x221c28Ec177CF7da6f837DfD0052Ba8F265Fb4CA",
+    "composableCow": "0xfdaFc9d1902f4e0b84f65F49f244b32b31013b74"
+  },
+  {
+    "chainId": 100,
+    "rpc": "https://gnosis-rpc.publicnode.com",
+    "checkedAt": "2026-10-19T14:34:11.975Z",
+    "rpcChainId": 100,
+    "codeBytes": {
+      "poller": 10693,
+      "composableCow": 8478,
+      "handler": 4259,
+      "settlement": 16165,
+      "relayer": 4590,
+      "factory": 3785
+    },
+    "factory": "0x221c28Ec177CF7da6f837DfD0052Ba8F265Fb4CA",
+    "composableCow": "0xfdaFc9d1902f4e0b84f65F49f244b32b31013b74"
+  },
+  {
+    "chainId": 137,
+    "rpc": "https://polygon-bor-rpc.publicnode.com",
+    "checkedAt": "2026-10-19T14:34:14.274Z",
+    "rpcChainId": 137,
+    "codeBytes": {
+      "poller": 10693,
+      "composableCow": 8478,
+      "handler": 4259,
+      "settlement": 16165,
+      "relayer": 4590,
+      "factory": 3785
+    },
+    "factory": "0x221c28Ec177CF7da6f837DfD0052Ba8F265Fb4CA",
+    "composableCow": "0xfdaFc9d1902f4e0b84f65F49f244b32b31013b74"
+  },
+  {
+    "chainId": 8453,
+    "rpc": "https://base-rpc.publicnode.com",
+    "checkedAt": "2026-10-19T14:34:16.363Z",
+    "rpcChainId": 8453,
+    "codeBytes": {
+      "poller": 10693,
+      "composableCow": 8478,
+      "handler": 4259,
+      "settlement": 16165,
+      "relayer": 4590,
+      "factory": 3785
+    },
+    "factory": "0x221c28Ec177CF7da6f837DfD0052Ba8F265Fb4CA",
+    "composableCow": "0xfdaFc9d1902f4e0b84f65F49f244b32b31013b74"
+  },
+  {
+    "chainId": 9745,
+    "rpc": "https://rpc.plasma.to",
+    "checkedAt": "2026-10-19T14:34:18.529Z",
+    "rpcChainId": 9745,
+    "codeBytes": {
+      "poller": 10693,
+      "composableCow": 8478,
+      "handler": 4259,
+      "settlement": 16165,
+      "relayer": 4590,
+      "factory": 3785
+    },
+    "factory": "0x221c28Ec177CF7da6f837DfD0052Ba8F265Fb4CA",
+    "composableCow": "0xfdaFc9d1902f4e0b84f65F49f244b32b31013b74"
+  },
+  {
+    "chainId": 42161,
+    "rpc": "https://arbitrum-one-rpc.publicnode.com",
+    "checkedAt": "2026-10-19T14:34:20.734Z",
+    "rpcChainId": 42161,
+    "codeBytes": {
+      "poller": 10693,
+      "composableCow": 8478,
+      "handler": 4259,
+      "settlement": 16165,
+      "relayer": 4590,
+      "factory": 3785
+    },
+    "factory": "0x221c28Ec177CF7da6f837DfD0052Ba8F265Fb4CA",
+    "composableCow": "0xfdaFc9d1902f4e0b84f65F49f244b32b31013b74"
+  },
+  {
+    "chainId": 43114,
+    "rpc": "https://avalanche-c-chain-rpc.publicnode.com",
+    "checkedAt": "2026-10-19T14:34:22.815Z",
+    "rpcChainId": 43114,
+    "codeBytes": {
+      "poller": 10693,
+      "composableCow": 8478,
+      "handler": 4259,
+      "settlement": 16165,
+      "relayer": 4590,
+      "factory": 3785
+    },
+    "factory": "0x221c28Ec177CF7da6f837DfD0052Ba8F265Fb4CA",
+    "composableCow": "0xfdaFc9d1902f4e0b84f65F49f244b32b31013b74"
+  },
+  {
+    "chainId": 59144,
+    "rpc": "https://rpc.linea.build",
+    "checkedAt": "2026-10-19T14:34:24.862Z",
+    "rpcChainId": 59144,
+    "codeBytes": {
+      "poller": 10693,
+      "composableCow": 8478,
+      "handler": 4259,
+      "settlement": 16165,
+      "relayer": 4590,
+      "factory": 3785
+    },
+    "factory": "0x221c28Ec177CF7da6f837DfD0052Ba8F265Fb4CA",
+    "composableCow": "0xfdaFc9d1902f4e0b84f65F49f244b32b31013b74"
+  }
+]
