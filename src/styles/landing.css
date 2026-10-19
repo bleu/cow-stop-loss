@@ -145,11 +145,47 @@
   padding: 28px;
 }
 
+.landing-step-scene {
+  position: relative;
+  height: 140px;
+  margin-bottom: 24px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  image-rendering: pixelated;
+}
+
+.landing-step-scene-plan {
+  background-image: url("/assets/air-rescue/step-plan-dark.svg");
+}
+
+.landing-step-scene-review {
+  background-image: url("/assets/air-rescue/step-review-dark.svg");
+}
+
+.landing-step-scene-execution {
+  background-image: url("/assets/air-rescue/step-execution-dark.svg");
+}
+
+.light .landing-step-scene-plan {
+  background-image: url("/assets/air-rescue/step-plan-light.svg");
+}
+
+.light .landing-step-scene-review {
+  background-image: url("/assets/air-rescue/step-review-light.svg");
+}
+
+.light .landing-step-scene-execution {
+  background-image: url("/assets/air-rescue/step-execution-light.svg");
+}
+
 .landing-step-number {
-  display: block;
-  margin-bottom: 32px;
+  position: absolute;
+  top: 0;
+  left: 0;
   font-family: var(--font-family-pixel-display), monospace;
-  font-size: 32px;
+  font-size: 24px;
+  line-height: 1;
   color: hsl(var(--primary));
 }
 
@@ -174,6 +210,54 @@
 
 .landing-technical .landing-text-link {
   margin-top: 20px;
+}
+
+.landing-rig {
+  position: relative;
+  height: 120px;
+  max-width: 360px;
+  margin-top: 28px;
+}
+
+.landing-rig-passenger {
+  position: absolute;
+  inset: 0;
+  background: url("/assets/air-rescue/passenger-dark.svg#still") center / 100px
+    120px no-repeat;
+  image-rendering: pixelated;
+}
+
+.light .landing-rig-passenger {
+  background-image: url("/assets/air-rescue/passenger-light.svg#still");
+}
+
+.landing-rig-line {
+  position: absolute;
+  top: 56px;
+  width: calc(50% - 64px);
+  border-top: 2px dashed hsl(var(--primary) / 0.3);
+}
+
+.landing-rig-line-left {
+  left: 8px;
+}
+
+.landing-rig-line-right {
+  right: 8px;
+}
+
+.landing-rig-line::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  width: 8px;
+  height: 8px;
+  border: 2px solid hsl(var(--primary) / 0.5);
+  background: hsl(var(--card));
+}
+
+.landing-rig-line-right::after {
+  right: 0;
 }
 
 .landing-dependencies > div + div {
@@ -304,8 +388,9 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .landing-step-number {
-    margin-bottom: 16px;
+  .landing-step-scene {
+    height: 128px;
+    margin-bottom: 20px;
   }
 
   .landing-technical {

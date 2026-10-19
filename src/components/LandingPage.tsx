@@ -10,23 +10,28 @@ import {
 } from "#/components/ui/accordion";
 import { PixelIcon } from "#/components/ui/pixel-icon";
 
+type StepScene = "plan" | "review" | "execution";
+
 const steps = [
   {
+    scene: "plan",
     title: "Set your plan",
     description:
       "Connect your wallet, choose a supported token and amount, and set your stop-loss trigger. Check the minimum buy amount and expiry.",
   },
   {
+    scene: "review",
     title: "Check before signing",
     description:
       "Verify both oracle feeds and your order terms. Approve token spending if needed, then confirm the setup transaction in your wallet.",
   },
   {
+    scene: "execution",
     title: "Execution through CoW",
     description:
       "The oracle condition determines when the order can become executable. CoW Protocol handles execution if the order can be filled within its terms.",
   },
-];
+] satisfies { scene: StepScene; title: string; description: string }[];
 
 const questions = [
   {
@@ -84,6 +89,23 @@ const questions = [
       "No. Oracle faults or delays, sharp price changes, a token depeg, low liquidity, network failures, and smart-contract faults can cause unexpected triggers, failed execution, or losses. This interface and CoW Protocol are separate parts of the process. Assess whether the order and its dependencies are suitable for you.",
   },
 ];
+
+function LandingStepScene({
+  scene,
+  number,
+}: {
+  scene: StepScene;
+  number: number;
+}) {
+  return (
+    <div
+      className={`landing-step-scene landing-step-scene-${scene}`}
+      aria-hidden="true"
+    >
+      <span className="landing-step-number">0{number}</span>
+    </div>
+  );
+}
 
 function OpenAppLink() {
   return (
@@ -146,9 +168,7 @@ export function LandingPage() {
           <ol className="landing-steps">
             {steps.map((step, index) => (
               <li className="rescue-panel landing-step" key={step.title}>
-                <span className="landing-step-number" aria-hidden="true">
-                  0{index + 1}
-                </span>
+                <LandingStepScene scene={step.scene} number={index + 1} />
                 <h3>{step.title}</h3>
                 <p>{step.description}</p>
               </li>
@@ -176,6 +196,11 @@ export function LandingPage() {
               Read the Composable CoW docs
               <PixelIcon name="external-link" className="size-4" />
             </a>
+            <div className="landing-rig" aria-hidden="true">
+              <span className="landing-rig-line landing-rig-line-left" />
+              <span className="landing-rig-passenger" />
+              <span className="landing-rig-line landing-rig-line-right" />
+            </div>
           </div>
           <dl className="landing-dependencies">
             <div>

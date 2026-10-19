@@ -24,6 +24,39 @@ it("shows the landing page and links to the trading app without a wallet", () =>
   expect(screen.queryByRole("button", { name: /connect wallet/i })).toBeNull();
 });
 
+it("illustrates each step without adding spoken content or controls", () => {
+  const { container } = render(<LandingPageRoute />);
+  const section = screen.getByRole("region", { name: "How it works" });
+  const cards = within(section).getAllByRole("listitem");
+  const titles = [
+    "Set your plan",
+    "Check before signing",
+    "Execution through CoW",
+  ];
+  const scenes = ["plan", "review", "execution"];
+
+  expect(cards).toHaveLength(3);
+  cards.forEach((card, index) => {
+    expect(
+      within(card).getByRole("heading", { level: 3, name: titles[index] }),
+    ).toBeVisible();
+    const scene = card.querySelector(`.landing-step-scene-${scenes[index]}`);
+    expect(scene).toHaveAttribute("aria-hidden", "true");
+    expect(scene).toHaveTextContent(`0${index + 1}`);
+    expect(scene?.querySelector("a, button, input, [tabindex]")).toBeNull();
+  });
+  expect(container.querySelector(".landing-rig")).toHaveAttribute(
+    "aria-hidden",
+    "true",
+  );
+  expect(
+    screen.getByText(/Execution and price are not guaranteed/),
+  ).toBeVisible();
+  expect(
+    within(cards[2]).getByText(/if the order can be filled within its terms/),
+  ).toBeVisible();
+});
+
 it("provides an addressable FAQ with expandable technical answers", () => {
   render(<LandingPageRoute />);
 
