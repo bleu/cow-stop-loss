@@ -23,8 +23,11 @@ jobs:
         with:
           npm_token: ${{ secrets.NPM_TOKEN }}
 
-      - name: Prepare catalog metadata
+      - name: Prepare catalog metadata and token images
         run: pnpm prepare:catalog
+
+      - name: Check token image hashes
+        run: pnpm check:assets
 
       - name: Check generated catalog
         run: pnpm check:catalog

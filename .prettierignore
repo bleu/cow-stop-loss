@@ -2,3 +2,7 @@
 src/lib/tokenCatalogData.json
 scripts/catalog-audit.json
 scripts/catalog-metadata-report.json
+/.cache/token-catalog/
+
+# Preserve the dated execution evidence snapshot.
+scripts/oracle-execution-verification.json

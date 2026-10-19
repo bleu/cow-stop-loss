@@ -70,6 +70,10 @@ class LiveApprovalTests(unittest.TestCase):
         with patch.object(LIVE, "rpc") as rpc:
             with self.assertRaisesRegex(ValueError, "exact known token"):
                 LIVE.candidate_tokens({"approvals": [{**approval, "proxyAddress": self.address}]}, [token], inventory)
+            for missing in ({}, {"1": []}, {"100": inventory["1"]}):
+                with self.subTest(inventory=missing):
+                    with self.assertRaisesRegex(ValueError, "exact known token"):
+                        LIVE.candidate_tokens({"approvals": [approval]}, [token], missing)
             rpc.assert_not_called()
 
     def test_candidate_quote_and_duplicates_fail_before_reads(self):

@@ -162,5 +162,34 @@
     "https://docs.lido.fi/deployed-contracts/",
     "https://research.lido.fi/t/wsteth-on-avalanche-and-bnb-and-ownership-acceptance-by-lido-dao/5749",
     "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/assets/0x2170Ed0880ac9A755fd29B2688956BD959F933F8/info.json"
-  ]
+  ],
+  "historicalSnapshots": {
+    "feedInventory": {
+      "retrievedAt": "2026-10-16",
+      "rowCount": 2102,
+      "sha256": "f93472574d6a018fd73c8d6c7dab222d19e47bb9ec9fd68c0d800660424c51b8",
+      "retention": "summary-only",
+      "limitations": "Full directory rows are no longer retained. Mutable source endpoints cannot reproduce this snapshot reliably; these rows were not route approvals."
+    },
+    "feedAudit": {
+      "rowCount": 2102,
+      "reasonCounts": {
+        "non-crypto-price-or-data": 284,
+        "not-low-risk-category": 563,
+        "hidden-or-deprecating": 345,
+        "awaiting-approval": 249,
+        "not-cex-reference-price": 45,
+        "bounded-price-methodology-not-approved": 32,
+        "no-onchain-proxy": 584
+      },
+      "sha256": "0c6ad7bbb623c9cb6ea343fb248cf3d5874cab503933b795ee978597907c1876",
+      "limitations": "Historical counts only, not a current or reproducible exhaustive audit."
+    },
+    "tokenAndFeedObservations": {
+      "checkedAt": "2026-10-16T22:02:52.111341+00:00",
+      "sha256": "24f0cb6ebaa837d47b3febadd42916d96cb92e02ec713b1aad3e23f864b7e1b8",
+      "retention": "summary-only",
+      "limitations": "The old checks accepted nonempty token symbols and quote-only feed descriptions. Detailed observations are no longer retained and were not approvals under the current policy."
+    }
+  }
 }

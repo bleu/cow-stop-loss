@@ -6,14 +6,16 @@
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/20414d41c3758c4c035b.svg",
       "logoIdentity": "Canonical 1inch Network asset; reuse Ethereum 1INCH artwork",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/1inch.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/1inch.svg",
+      "logoSha256": "20414d41c3758c4c035bc63fc44c2b1fa837e8eaed6a42217cb3a35af1504f26"
     },
     {
       "chainId": 1,
       "address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/5b1b8adc120ffdfbd91e.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/aave.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/aave.svg",
+      "logoSha256": "5b1b8adc120ffdfbd91e9c774299c615910fdea1c90015fc649755f4c5267546"
     },
     {
       "chainId": 1,
@@ -21,42 +23,48 @@
       "assetClass": "other-stable",
       "classificationReason": "Ampleforth rebases supply around an inflation-adjusted dollar target; it does not target a fixed USD peg.",
       "localLogo": "/assets/tokens/6a6ad344737084ecaeb5.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/ampl.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/ampl.svg",
+      "logoSha256": "6a6ad344737084ecaeb5f7e83bd0f377049a7a599f011c9ee01f15b07a4d668b"
     },
     {
       "chainId": 1,
       "address": "0x4d224452801aced8b2f0aebe155379bb5d594381",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/a6e71a5fec992353dc75.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/24383/thumb/APECOIN.png?1756551529"
+      "logoSource": "https://assets.coingecko.com/coins/images/24383/thumb/APECOIN.png?1756551529",
+      "logoSha256": "a6e71a5fec992353dc75e69e8e584b2b72bc165725dcc603f2b994033379a8b3"
     },
     {
       "chainId": 1,
       "address": "0xb50721bcf8d664c30412cfbc6cf7a15145234ad1",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/ff7b4e5e76fdc55617ad.png",
-      "logoSource": "https://files.cow.fi/token-lists/images/1/0xb50721bcf8d664c30412cfbc6cf7a15145234ad1/logo.png"
+      "logoSource": "https://files.cow.fi/token-lists/images/1/0xb50721bcf8d664c30412cfbc6cf7a15145234ad1/logo.png",
+      "logoSha256": "ff7b4e5e76fdc55617ad7b1275be1250c980eac07ee20a574ae2639bbc22c1d7"
     },
     {
       "chainId": 1,
       "address": "0x00000000efe302beaa2b3e6e1b18d08d69a9012a",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/4975bdef0d94963d359c.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/39284/thumb/AUSD_1024px.png?1764684132"
+      "logoSource": "https://assets.coingecko.com/coins/images/39284/thumb/AUSD_1024px.png?1764684132",
+      "logoSha256": "4975bdef0d94963d359c2e51107a28caf0055f8227e446235aca37b4ece73795"
     },
     {
       "chainId": 1,
       "address": "0xba100000625a3754423978a60c9317c58a424e3d",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/29e4b9a70d290df8f2b1.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/bal.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/bal.svg",
+      "logoSha256": "29e4b9a70d290df8f2b16048ff5418f08d1ecf57d38758d0873c5e08a4939af0"
     },
     {
       "chainId": 1,
       "address": "0x0d8775f648430679a709e98d2b0cb6250d2887ef",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/cd6726eb75190a1390a8.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/bat.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/bat.svg",
+      "logoSha256": "cd6726eb75190a1390a80dd1b30ba5c21b7f78e7d90aeb1133265c31798aa9ac"
     },
     {
       "chainId": 1,
@@ -64,7 +72,8 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "localLogo": "/assets/tokens/42cd15fe2b9391da51d5.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/cbbtc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/cbbtc.svg",
+      "logoSha256": "42cd15fe2b9391da51d557eca463bc0a807fd7875113efacdcf9564f63722765"
     },
     {
       "chainId": 1,
@@ -72,70 +81,80 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "localLogo": "/assets/tokens/d05a5e47f488b96b4541.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/cbeth.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/cbeth.svg",
+      "logoSha256": "d05a5e47f488b96b454198462e053f83cdb5207002429cac855df72bebfdb5ad"
     },
     {
       "chainId": 1,
       "address": "0xc00e94cb662c3520282e6f5717214004a7f26888",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/0f1a61d5a7a2dfb668ed.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/10775/thumb/COMP.png?1696510737"
+      "logoSource": "https://assets.coingecko.com/coins/images/10775/thumb/COMP.png?1696510737",
+      "logoSha256": "0f1a61d5a7a2dfb668edd9a1c116164f3d958bd39e57a8c302c3a6cbda99ef17"
     },
     {
       "chainId": 1,
       "address": "0xd533a949740bb3306d119cc777fa900ba034cd52",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/a420966c59b95b7a516c.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/crv.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/crv.svg",
+      "logoSha256": "a420966c59b95b7a516cb5bd03013808684e3a07753b0a363f4cce0c8c47d5ec"
     },
     {
       "chainId": 1,
       "address": "0xf939e0a03fb07f59a73314e73794be0e57ac1b4e",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/7c2d39c56b6f565b737b.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/crvusd.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/crvusd.svg",
+      "logoSha256": "7c2d39c56b6f565b737b4b33bf6bf671e157a1136d740bcf16672d38d0ba88e1"
     },
     {
       "chainId": 1,
       "address": "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/a295a877115db8495046.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/cvx.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/cvx.svg",
+      "logoSha256": "a295a877115db8495046a10fe2152118c606c4718733ad4ee0a9a0adf2194bfd"
     },
     {
       "chainId": 1,
       "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/91ad32e1db7073978ec7.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/dai.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/dai.svg",
+      "logoSha256": "91ad32e1db7073978ec74140a6c00c684815200a691b1afe44567cee3685bf0c"
     },
     {
       "chainId": 1,
       "address": "0x865377367054516e17014ccded1e7d814edc9ce4",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/63cddd2fadb21e7bcde7.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/14287/thumb/dola.png?1696513984"
+      "logoSource": "https://assets.coingecko.com/coins/images/14287/thumb/dola.png?1696513984",
+      "logoSha256": "63cddd2fadb21e7bcde7fae089d74d2108ed1eac92d91736afecae65b2ac584c"
     },
     {
       "chainId": 1,
       "address": "0xf629cbd94d3791c9250152bd8dfbdf380e2a3b9c",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/a590835d2ac98c9a2e0b.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/enj.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/enj.svg",
+      "logoSha256": "a590835d2ac98c9a2e0baa96e0431bbe0cc6150ffdc76454b17451e5464fd86d"
     },
     {
       "chainId": 1,
       "address": "0xc18360217d8f7ab5e7c516566761ea12ce7f9d72",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/611b9578e0601f6e590e.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/ens.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/ens.svg",
+      "logoSha256": "611b9578e0601f6e590e58f207e865d0f58c3efd947e846172697edb3e6af173"
     },
     {
       "chainId": 1,
       "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/c0b567bd541bf5033207.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weth.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weth.svg",
+      "logoSha256": "c0b567bd541bf50332072c13c19211ffd025062127c75818df52a588414a9655"
     },
     {
       "chainId": 1,
@@ -143,7 +162,8 @@
       "assetClass": "volatile",
       "classificationReason": "ETHPlus holds an ETH-denominated staking basket; its USD value changes with ETH.",
       "localLogo": "/assets/tokens/fdd6839a8957dccddc33.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/38061/thumb/ETH__Logo.png?1716440789"
+      "logoSource": "https://assets.coingecko.com/coins/images/38061/thumb/ETH__Logo.png?1716440789",
+      "logoSha256": "fdd6839a8957dccddc3345eefae4650b3f3f916d167dc9217201504b5c9799fb"
     },
     {
       "chainId": 1,
@@ -151,7 +171,8 @@
       "assetClass": "volatile",
       "classificationReason": "Staked or yield-bearing crypto exposure; the underlying asset has no fixed USD value.",
       "localLogo": "/assets/tokens/64ec8b57a99e494d1550.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/ethx.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/ethx.svg",
+      "logoSha256": "64ec8b57a99e494d1550705a986b98985a22c6e4f9b802d4aee6b93a8d2d5088"
     },
     {
       "chainId": 1,
@@ -159,21 +180,24 @@
       "assetClass": "other-stable",
       "classificationReason": "Circle EURC targets one euro, not one US dollar.",
       "localLogo": "/assets/tokens/f748e0bd227d54e32b1e.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/eurc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/eurc.svg",
+      "logoSha256": "f748e0bd227d54e32b1ee83af6352981ef64544a7ddf9f361924cd86f9e43ecf"
     },
     {
       "chainId": 1,
       "address": "0xbf5495efe5db9ce00f80364c8b423567e58d2110",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/2a49abcd5df4f45a34f3.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/ezeth.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/ezeth.svg",
+      "logoSha256": "2a49abcd5df4f45a34f32227969c4f74d471c2dea51412d2084b4953a8068140"
     },
     {
       "chainId": 1,
       "address": "0xc5f0f7b66764f6ec8c8dff7ba683102295e16409",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/48d73eb5aadb2ba77197.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/31079/thumb/FDUSD_icon_black.png?1731097953"
+      "logoSource": "https://assets.coingecko.com/coins/images/31079/thumb/FDUSD_icon_black.png?1731097953",
+      "logoSha256": "48d73eb5aadb2ba771973fe659f5f0b202a69adc55396ddee2a14b1a362e60a7"
     },
     {
       "chainId": 1,
@@ -181,70 +205,80 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Legacy FRAX dollar exposure; separate from the FXS governance contract and FRAX governance feed identity.",
       "localLogo": "/assets/tokens/73a18837b56ffca2fb27.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/frax.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/frax.svg",
+      "logoSha256": "73a18837b56ffca2fb270938b7f47ac9887b45aa727e9d6a16f505470950aa71"
     },
     {
       "chainId": 1,
       "address": "0xcacd6fd266af91b8aed52accc382b4e165586e29",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/7944457c88add3e3385b.png",
-      "logoSource": "https://files.cow.fi/token-lists/images/1/0xcacd6fd266af91b8aed52accc382b4e165586e29/logo.png"
+      "logoSource": "https://files.cow.fi/token-lists/images/1/0xcacd6fd266af91b8aed52accc382b4e165586e29/logo.png",
+      "logoSha256": "7944457c88add3e3385bbe99fcebd2f9a629d8b8d5bb3de69b2c0e5f377aa4a6"
     },
     {
       "chainId": 1,
       "address": "0x40d16fc0246ad3160ccc09b8d0d3a2cd28ae6c2f",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/4f5c435d1092cfa5cc74.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/gho.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/gho.svg",
+      "logoSha256": "4f5c435d1092cfa5cc74968cea43b3a109b6d733c664fedcc292c0e804304fec"
     },
     {
       "chainId": 1,
       "address": "0xc944e90c64b2c07662a292be6244bdf05cda44a7",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/5a7c71c4e8dba34b20d3.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/13397/thumb/Graph_Token.png?1696513159"
+      "logoSource": "https://assets.coingecko.com/coins/images/13397/thumb/Graph_Token.png?1696513159",
+      "logoSha256": "5a7c71c4e8dba34b20d3a9987e2f20227a5c7b3115f0a8a947ef8ffde85b430e"
     },
     {
       "chainId": 1,
       "address": "0xf57e7e7c23978c3caec3c3548e3d615c346e79ff",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/e1b19f6cf49df733e5c7.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/17233/thumb/immutableX-symbol-BLK-RGB.png?1696516787"
+      "logoSource": "https://assets.coingecko.com/coins/images/17233/thumb/immutableX-symbol-BLK-RGB.png?1696516787",
+      "logoSha256": "e1b19f6cf49df733e5c72fcdbf4f21cea021e5575aa1308890dc6f8e9084e0a6"
     },
     {
       "chainId": 1,
       "address": "0xdefa4e8a7bcba345f687a2f1456f5edd9ce97202",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/26d603391679656c9eb7.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/knc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/knc.svg",
+      "logoSha256": "26d603391679656c9eb76a8967b21aae105d0bc6252687d5c95aa204481a1f33"
     },
     {
       "chainId": 1,
       "address": "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/5af908444abfe052ca06.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/ldo.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/ldo.svg",
+      "logoSha256": "5af908444abfe052ca06224c1b4292b5f2311708ec7919b16968077362e3731f"
     },
     {
       "chainId": 1,
       "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/408cb6cf3c7ab80fe7b3.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/link.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/link.svg",
+      "logoSha256": "408cb6cf3c7ab80fe7b343a76ec9415fc0d55d2ddb4fbd22e8c2f653652faad2"
     },
     {
       "chainId": 1,
       "address": "0x5f98805a4e8be255a32880fdec7f6728c6568ba0",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/795d6873a5c43a17e9ab.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/lusd.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/lusd.svg",
+      "logoSha256": "795d6873a5c43a17e9ab15a19abd9064a28ddcd026e20bb081ff9320240d7967"
     },
     {
       "chainId": 1,
       "address": "0x0f5d2fb29fb7d3cfee444a200298f468908cc942",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/b63f4f966d199e06bea2.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/mana.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/mana.svg",
+      "logoSha256": "b63f4f966d199e06bea23afc36dad529c9c98a32d2c953bd0da5011eda45c6c5"
     },
     {
       "chainId": 1,
@@ -252,7 +286,8 @@
       "assetClass": "volatile",
       "classificationReason": "Staked or yield-bearing crypto exposure; the underlying asset has no fixed USD value.",
       "localLogo": "/assets/tokens/86cfbf40fa7273ebb8d5.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/33345/thumb/symbol_transparent_bg.png?1701697066"
+      "logoSource": "https://assets.coingecko.com/coins/images/33345/thumb/symbol_transparent_bg.png?1701697066",
+      "logoSha256": "86cfbf40fa7273ebb8d5d9196c8a5a17256d959291d00fbbb6fd14d045dee13d"
     },
     {
       "chainId": 1,
@@ -260,21 +295,24 @@
       "assetClass": "volatile",
       "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "localLogo": "/assets/tokens/ffe7fb0ffdd5cad896e4.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/mkr.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/mkr.svg",
+      "logoSha256": "ffe7fb0ffdd5cad896e43cf5ede6e57e37cef382cefa5847e7f0bbe5c2ab3473"
     },
     {
       "chainId": 1,
       "address": "0xec67005c4e498ec7f55e092bd1d35cbc47c91892",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/2dd1dbcb2220876403c5.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/605/thumb/Enzyme_LinkedIn_Profile_Picture.png?1747249623"
+      "logoSource": "https://assets.coingecko.com/coins/images/605/thumb/Enzyme_LinkedIn_Profile_Picture.png?1747249623",
+      "logoSha256": "2dd1dbcb2220876403c548916963675227a2d16b3f69c9b63ffc2835faa6d9a7"
     },
     {
       "chainId": 1,
       "address": "0xaca92e438df0b2401ff60da7e4337b687a2435da",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/9d2e3cd7888db7176e28.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/musd.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/musd.svg",
+      "logoSha256": "9d2e3cd7888db7176e28a3f3ba0e125511a1df291565b63eca0ccc538167b1f0"
     },
     {
       "chainId": 1,
@@ -282,7 +320,8 @@
       "assetClass": "volatile",
       "classificationReason": "Staked or yield-bearing crypto exposure; the underlying asset has no fixed USD value.",
       "localLogo": "/assets/tokens/24eb05f5d40a3bbec46f.png",
-      "logoSource": "https://files.cow.fi/token-lists/images/1/0x856c4efb76c1d1ae02e20ceb03a2a6a08b0b8dc3/logo.png"
+      "logoSource": "https://files.cow.fi/token-lists/images/1/0x856c4efb76c1d1ae02e20ceb03a2a6a08b0b8dc3/logo.png",
+      "logoSha256": "24eb05f5d40a3bbec46ffac5f93c201e5efb0eb5094cd82cca8ae8982656f165"
     },
     {
       "chainId": 1,
@@ -290,7 +329,8 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Open Standard OUSD, not Origin Dollar; issuer lists this contract with 1:1 USD minting and redemption: https://joinopenstandard.com/blog/ousd-is-live",
       "localLogo": "/assets/tokens/d2d2f0d9196da47744e3.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/102174264/thumb/open_standard.png?1782864430"
+      "logoSource": "https://assets.coingecko.com/coins/images/102174264/thumb/open_standard.png?1782864430",
+      "logoSha256": "d2d2f0d9196da47744e3ba5651d03ba0cf0fdf35a342be9941feace074b71442"
     },
     {
       "chainId": 1,
@@ -298,14 +338,16 @@
       "assetClass": "volatile",
       "classificationReason": "PAX Gold tracks gold, whose USD price changes; it is not a fiat stablecoin.",
       "localLogo": "/assets/tokens/f29091d061c58a3ff726.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/9519/thumb/asset-paxg.png?1785284785"
+      "logoSource": "https://assets.coingecko.com/coins/images/9519/thumb/asset-paxg.png?1785284785",
+      "logoSha256": "f29091d061c58a3ff7262447c574e4ce9b23b5fbcb5f5036dbcaa23398646c7a"
     },
     {
       "chainId": 1,
       "address": "0x6c3ea9036406852006290770bedfcaba0e23a0e8",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/1529111317480f36627d.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/pyusd.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/pyusd.svg",
+      "logoSha256": "1529111317480f36627db0195577ae117e1e186c8a8f56ce823c602e4e23eeca"
     },
     {
       "chainId": 1,
@@ -313,21 +355,24 @@
       "assetClass": "other-stable",
       "classificationReason": "RAI uses a floating redemption target rather than a fixed USD peg.",
       "localLogo": "/assets/tokens/99721bbde6733392a678.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/rai.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/rai.svg",
+      "logoSha256": "99721bbde6733392a6787f66f710802b8ae40006031b6b92c0d72e136f4049bb"
     },
     {
       "chainId": 1,
       "address": "0x137ddb47ee24eaa998a535ab00378d6bfa84f893",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/b154d30b94f350545a71.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/26536/thumb/Radiant-Logo-200x200.png?1696525610"
+      "logoSource": "https://assets.coingecko.com/coins/images/26536/thumb/Radiant-Logo-200x200.png?1696525610",
+      "logoSha256": "b154d30b94f350545a71bc54b4c38634e221c39c72c2642138c7e70683a4c883"
     },
     {
       "chainId": 1,
       "address": "0x408e41876cccdc0f92210600ef50372656052a38",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/7f0bb9a2fb021204e6f3.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/ren.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/ren.svg",
+      "logoSha256": "7f0bb9a2fb021204e6f3ed0ed7ec9018053662c0ca2824752e3ce7326b0f5c77"
     },
     {
       "chainId": 1,
@@ -335,21 +380,24 @@
       "assetClass": "volatile",
       "classificationReason": "Staked or yield-bearing crypto exposure; the underlying asset has no fixed USD value.",
       "localLogo": "/assets/tokens/b640f9143237c9663570.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/reth.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/reth.svg",
+      "logoSha256": "b640f9143237c96635703815ca6c1f1e767c112ffedbcc56884ede02f3991b24"
     },
     {
       "chainId": 1,
       "address": "0x8292bb45bf1ee4d140127049757c2e0ff06317ed",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/37a873dfc2569bea10a0.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/rlusd.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/rlusd.svg",
+      "logoSha256": "37a873dfc2569bea10a0d793f4932370f51319a36161f152523e7b59b39dc69f"
     },
     {
       "chainId": 1,
       "address": "0xd33526068d116ce69f19a9ee46f0bd304f21a51f",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/e051c95ebb176763ec56.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/rpl.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/rpl.svg",
+      "logoSha256": "e051c95ebb176763ec56d9010146337b260b028d0bcda2f85b3d3195f00d9ab4"
     },
     {
       "chainId": 1,
@@ -357,21 +405,24 @@
       "assetClass": "volatile",
       "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "localLogo": "/assets/tokens/07f8444a8aaf62befa66.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/8365/thumb/RSR_Blue_Circle_1000.png?1721777856"
+      "logoSource": "https://assets.coingecko.com/coins/images/8365/thumb/RSR_Blue_Circle_1000.png?1721777856",
+      "logoSha256": "07f8444a8aaf62befa66e8170c13ef37aa74417fb6d62238ab82b2f15b18db82"
     },
     {
       "chainId": 1,
       "address": "0x3845badade8e6dff049820680d1f14bd3903a5d0",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/4a02bead2332e45c38a1.png",
-      "logoSource": "https://files.cow.fi/token-lists/images/1/0x3845badade8e6dff049820680d1f14bd3903a5d0/logo.png"
+      "logoSource": "https://files.cow.fi/token-lists/images/1/0x3845badade8e6dff049820680d1f14bd3903a5d0/logo.png",
+      "logoSha256": "4a02bead2332e45c38a13e37a96e9f1f3bf719a9f7cf32f86e3194e09912f320"
     },
     {
       "chainId": 1,
       "address": "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/8670d8e22280be2bc827.png",
-      "logoSource": "https://files.cow.fi/token-lists/images/1/0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce/logo.png"
+      "logoSource": "https://files.cow.fi/token-lists/images/1/0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce/logo.png",
+      "logoSha256": "8670d8e22280be2bc827cc65309a0b8ac2addb1f8315c1f2cee5b363dea4cd28"
     },
     {
       "chainId": 1,
@@ -379,7 +430,8 @@
       "assetClass": "volatile",
       "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "localLogo": "/assets/tokens/dc65498031030f9747a5.png",
-      "logoSource": "https://files.cow.fi/token-lists/images/1/0x56072c95faa701256059aa122697b133aded9279/logo.png"
+      "logoSource": "https://files.cow.fi/token-lists/images/1/0x56072c95faa701256059aa122697b133aded9279/logo.png",
+      "logoSha256": "dc65498031030f9747a58bc456d4444f2a30bf52ecc476bad2dc39720d3deb59"
     },
     {
       "chainId": 1,
@@ -387,7 +439,8 @@
       "assetClass": "volatile",
       "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "localLogo": "/assets/tokens/edce5749a293cdcfa108.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/snx.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/snx.svg",
+      "logoSha256": "edce5749a293cdcfa108769a512c823bb25b3edda77144138937847228497f98"
     },
     {
       "chainId": 1,
@@ -395,7 +448,8 @@
       "assetClass": "volatile",
       "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "localLogo": "/assets/tokens/7c0ed34418a3738baf99.png",
-      "logoSource": "https://files.cow.fi/token-lists/images/1/0x090185f2135308bad17527004364ebcc2d37e5f6/logo.png"
+      "logoSource": "https://files.cow.fi/token-lists/images/1/0x090185f2135308bad17527004364ebcc2d37e5f6/logo.png",
+      "logoSha256": "7c0ed34418a3738baf99db09123623a27aa0e63d416a9c6d277695991762d6ed"
     },
     {
       "chainId": 1,
@@ -403,14 +457,16 @@
       "assetClass": "volatile",
       "classificationReason": "Staked or yield-bearing crypto exposure; the underlying asset has no fixed USD value.",
       "localLogo": "/assets/tokens/1b49b18dcadb30e7b74d.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/steth.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/steth.svg",
+      "logoSha256": "1b49b18dcadb30e7b74d2657ebccae28c67b1d116b17200f7b1655903099b93a"
     },
     {
       "chainId": 1,
       "address": "0xaf5191b0de278c7286d6c7cc6ab6bb8a73ba2cd6",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/4eeeb82fa2fdb559b9d5.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/stg.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/stg.svg",
+      "logoSha256": "4eeeb82fa2fdb559b9d5652e15c1b68c2a4bcd62fd2e99c1aff1584e46eceba2"
     },
     {
       "chainId": 1,
@@ -418,7 +474,8 @@
       "assetClass": "usd-linked",
       "classificationReason": "Yield-bearing staked USDai share; its value can grow against the dollar stablecoin.",
       "localLogo": "/assets/tokens/12cf249a445573b0c849.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/55861/thumb/sUSDai_Token_Full_Glyph.png?1755229072"
+      "logoSource": "https://assets.coingecko.com/coins/images/55861/thumb/sUSDai_Token_Full_Glyph.png?1755229072",
+      "logoSha256": "12cf249a445573b0c8492f7d7a942e2a13f8e1ccb7d873043440fe452cc7c6b6"
     },
     {
       "chainId": 1,
@@ -426,63 +483,72 @@
       "assetClass": "usd-linked",
       "classificationReason": "Yield-bearing staked USDe share; its exchange rate is not fixed at one USD.",
       "localLogo": "/assets/tokens/0d2e0f6e6e9be5af4f1b.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/susde.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/susde.svg",
+      "logoSha256": "0d2e0f6e6e9be5af4f1baaed73d0912badf8f8d60d7f3b43e733d76599fdefa9"
     },
     {
       "chainId": 1,
       "address": "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/c6bae7e2f38919eadefa.png",
-      "logoSource": "https://files.cow.fi/token-lists/images/1/0x6b3595068778dd592e39a122f4f5a5cf09c90fe2/logo.png"
+      "logoSource": "https://files.cow.fi/token-lists/images/1/0x6b3595068778dd592e39a122f4f5a5cf09c90fe2/logo.png",
+      "logoSha256": "c6bae7e2f38919eadefabb08da033b28e7e750d6f43bf0d86f53a8d7c49837ca"
     },
     {
       "chainId": 1,
       "address": "0x0a6e7ba5042b38349e437ec6db6214aec7b35676",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/01548ea149d9ee3fa006.webp",
-      "logoSource": "https://assets.coingecko.com/coins/images/28777/thumb/swell1.png?1727899715"
+      "logoSource": "https://assets.coingecko.com/coins/images/28777/thumb/swell1.png?1727899715",
+      "logoSha256": "01548ea149d9ee3fa0069f6fb78863e8ff578b91c8ab8c3351d5a2962efd12de"
     },
     {
       "chainId": 1,
       "address": "0xe6bfd33f52d82ccb5b37e16d3dd81f9ffdabb195",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/28e835cdfc3600f49809.jpg",
-      "logoSource": "https://assets.coingecko.com/coins/images/55424/thumb/sxt-token_circle.jpg?1745935919"
+      "logoSource": "https://assets.coingecko.com/coins/images/55424/thumb/sxt-token_circle.jpg?1745935919",
+      "logoSha256": "28e835cdfc3600f498091c57b0043d1b9ea63008f53418ce9611c311b72dc305"
     },
     {
       "chainId": 1,
       "address": "0x0000000000085d4780b73119b644ae5ecd22b376",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/b729a135a65a1aeead4b.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/tusd.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/tusd.svg",
+      "logoSha256": "b729a135a65a1aeead4b282f26c6bac9b75fa62c7d55f16c7a3bd9d4869d73f5"
     },
     {
       "chainId": 1,
       "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/a759241f778d34f294a4.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/uni.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/uni.svg",
+      "logoSha256": "a759241f778d34f294a454697a9fccdae158d36de5dc83876ab713f3545de901"
     },
     {
       "chainId": 1,
       "address": "0x73a15fed60bf67631dc6cd7bc5b6e8da8190acf5",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/38e2b54b262b20c2cffc.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/38272/thumb/USD0LOGO.png?1716962811"
+      "logoSource": "https://assets.coingecko.com/coins/images/38272/thumb/USD0LOGO.png?1716962811",
+      "logoSha256": "38e2b54b262b20c2cffc56036958883241568f80ea1693745a2346f4fa2c3bb8"
     },
     {
       "chainId": 1,
       "address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/3f7e7a7ae10f296bb141.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/54977/thumb/USD1_1000x1000_transparent.png?1749297002"
+      "logoSource": "https://assets.coingecko.com/coins/images/54977/thumb/USD1_1000x1000_transparent.png?1749297002",
+      "logoSha256": "3f7e7a7ae10f296bb1419a904c0f1febe277e4c774aff0f6ad4bcba35381ebfc"
     },
     {
       "chainId": 1,
       "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/2782d3d47a9833601e60.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg",
+      "logoSha256": "2782d3d47a9833601e60817a446c127c60831796f5a8d9c323d91cc07834471d"
     },
     {
       "chainId": 1,
@@ -490,35 +556,40 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Ethena USDe targets one USD through synthetic dollar backing; this does not classify its backing as risk-free.",
       "localLogo": "/assets/tokens/1171f7df5d6b6c139a1e.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usde.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usde.svg",
+      "logoSha256": "1171f7df5d6b6c139a1ee60dcc576428d0abf1049ab965dbb066bfb53d936350"
     },
     {
       "chainId": 1,
       "address": "0xe343167631d89b6ffc58b88d6b7fb0228795491d",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/3f81ec220ae417b1bb9e.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/51281/thumb/GDN_USDG_Token_200x200.png?1730484111"
+      "logoSource": "https://assets.coingecko.com/coins/images/51281/thumb/GDN_USDG_Token_200x200.png?1730484111",
+      "logoSha256": "3f81ec220ae417b1bb9e81748f305e3303a194dcc573793f8561c55ac02dec7c"
     },
     {
       "chainId": 1,
       "address": "0x8e870d67f660d95d5be530380d0ec0bd388289e1",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/47eae5d62d1455aff3ef.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdp.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdp.svg",
+      "logoSha256": "47eae5d62d1455aff3ef21fbb10c05b41d32dbb29c32fc919b518a3e369a14f9"
     },
     {
       "chainId": 1,
       "address": "0xdc035d45d973e3ec169d2276ddab16f1e407384f",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/8f7545e74d04d2aa3a25.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usds.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usds.svg",
+      "logoSha256": "8f7545e74d04d2aa3a25bf2ade6b80a6e960d767fdf283e2eda5c34280fa592b"
     },
     {
       "chainId": 1,
       "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/cbc193c35371ea70ff52.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdt.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdt.svg",
+      "logoSha256": "cbc193c35371ea70ff5241e8d9c571441e64ee88531ee4366a9ae94cb16c2990"
     },
     {
       "chainId": 1,
@@ -526,14 +597,16 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Falcon USDf targets one USD; separate from a staked or yield-bearing USDf share.",
       "localLogo": "/assets/tokens/42163cd434bec170ad52.png",
-      "logoSource": "https://files.cow.fi/token-lists/images/1/0xfa2b947eec368f42195f24f36d2af29f7c24cec2/logo.png"
+      "logoSource": "https://files.cow.fi/token-lists/images/1/0xfa2b947eec368f42195f24f36d2af29f7c24cec2/logo.png",
+      "logoSha256": "42163cd434bec170ad52a3c31b6f2d2486ad29968750beb833718d39b6f4f1eb"
     },
     {
       "chainId": 1,
       "address": "0xc139190f447e929f090edeb554d95abb8b18ac1c",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/3047375fab94b6fc5466.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdtb.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdtb.svg",
+      "logoSha256": "3047375fab94b6fc5466277719e9769c18ef9c791bfb98f24aba465e18f11132"
     },
     {
       "chainId": 1,
@@ -541,7 +614,8 @@
       "assetClass": "usd-linked",
       "classificationReason": "Wrapped TerraClassicUSD retains legacy dollar exposure after its peg failed; exclude conservatively as USD-linked, not a working USD peg.",
       "localLogo": "/assets/tokens/db33601ea5ac5cf4c30b.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/15462/thumb/ust.png?1696515108"
+      "logoSource": "https://assets.coingecko.com/coins/images/15462/thumb/ust.png?1696515108",
+      "logoSha256": "db33601ea5ac5cf4c30bf4546573d3d32cf0cb33c3f29bfd8ca4952c34a7d9d1"
     },
     {
       "chainId": 1,
@@ -549,7 +623,8 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "localLogo": "/assets/tokens/fe888a0aba0005d9f4ca.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weeth.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weeth.svg",
+      "logoSha256": "fe888a0aba0005d9f4ca04c9a3b5c3bc629e8a7f392c9dab3fc13222be6273b1"
     },
     {
       "chainId": 1,
@@ -557,7 +632,8 @@
       "assetClass": "volatile",
       "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "localLogo": "/assets/tokens/3e3509465d1f024a2c19.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/50767/thumb/wlfi.png?1756438915"
+      "logoSource": "https://assets.coingecko.com/coins/images/50767/thumb/wlfi.png?1756438915",
+      "logoSha256": "3e3509465d1f024a2c19aba95ec4db3f65efd09ed24ac9a90aacd4ba6f68042e"
     },
     {
       "chainId": 1,
@@ -565,35 +641,40 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "localLogo": "/assets/tokens/a44eb9b6b4d97a7a9671.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wsteth.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wsteth.svg",
+      "logoSha256": "a44eb9b6b4d97a7a967171679356c12d620494da8eeb65293d1149ea55f12419"
     },
     {
       "chainId": 1,
       "address": "0xa2cd3d43c775978a96bdbf12d733d5a1ed94fb18",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/dc14996765980c510b0e.jpg",
-      "logoSource": "https://assets.coingecko.com/coins/images/24210/thumb/onyxlogo.jpg?1696523397"
+      "logoSource": "https://assets.coingecko.com/coins/images/24210/thumb/onyxlogo.jpg?1696523397",
+      "logoSha256": "dc14996765980c510b0e681266cae41c56361e0325a8bf4779df0b64bcabbe50"
     },
     {
       "chainId": 1,
       "address": "0x8798249c2e607446efb7ad49ec89dd1865ff4272",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/75e38b0b6fa7f874dfc2.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/xsushi.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/xsushi.svg",
+      "logoSha256": "75e38b0b6fa7f874dfc222f8496ee1c5de87098b5985b2afe6fa119800a9b99f"
     },
     {
       "chainId": 1,
       "address": "0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/32226b0a1e9a8f2ec136.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/yfi.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/yfi.svg",
+      "logoSha256": "32226b0a1e9a8f2ec136968014e2d693738a9d0172569bbc0fd09d6bba6739c2"
     },
     {
       "chainId": 1,
       "address": "0xe41d2489571d322189246dafa5ebde1f4699f498",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/3216add0c2105ff42aa6.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/zrx.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/zrx.svg",
+      "logoSha256": "3216add0c2105ff42aa63fe59ce1eb272c48cbcd8f15624e743617f42661cf07"
     },
     {
       "chainId": 1,
@@ -601,7 +682,8 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "localLogo": "/assets/tokens/ec189f6774e528f5a60c.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/tbtc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/tbtc.svg",
+      "logoSha256": "ec189f6774e528f5a60cc74bc1be80249e432c784d3c7232754be2ea4aa58037"
     },
     {
       "chainId": 1,
@@ -609,28 +691,32 @@
       "assetClass": "volatile",
       "classificationReason": "Tenbin Gold gives gold-price exposure through futures; it does not target a fixed USD value.",
       "localLogo": "/assets/tokens/8ff17c7474eccd23942f.png",
-      "logoSource": "https://files.cow.fi/token-lists/images/1/0x6a547b25534234bb79ce6961a23db13de154b6f4/logo.png"
+      "logoSource": "https://files.cow.fi/token-lists/images/1/0x6a547b25534234bb79ce6961a23db13de154b6f4/logo.png",
+      "logoSha256": "8ff17c7474eccd23942fddb2a84f05d17c564fe8f532f2c201c93abfbe4cab86"
     },
     {
       "chainId": 100,
       "address": "0xdf613af6b44a31299e48131e9347f034347e2f00",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/22f5b3efbdb6032c7645.png",
-      "logoSource": "https://raw.githubusercontent.com/1Hive/default-token-list/master/src/assets/gnosis/0xdf613af6b44a31299e48131e9347f034347e2f00/logo.png"
+      "logoSource": "https://raw.githubusercontent.com/1Hive/default-token-list/master/src/assets/gnosis/0xdf613af6b44a31299e48131e9347f034347e2f00/logo.png",
+      "logoSha256": "22f5b3efbdb6032c76456b77e294183cadc69c53672d9517cb78a6b79c662c11"
     },
     {
       "chainId": 100,
       "address": "0xdf6ff92bfdc1e8be45177dc1f4845d391d3ad8fd",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/f69a1f18629ccfffbc35.png",
-      "logoSource": "https://raw.githubusercontent.com/1Hive/default-token-list/master/src/assets/gnosis/0xdf6ff92bfdc1e8be45177dc1f4845d391d3ad8fd/logo.png"
+      "logoSource": "https://raw.githubusercontent.com/1Hive/default-token-list/master/src/assets/gnosis/0xdf6ff92bfdc1e8be45177dc1f4845d391d3ad8fd/logo.png",
+      "logoSha256": "f69a1f18629ccfffbc35fa5db02273d96cfce301c5912ae7a5248c6a5c961e9b"
     },
     {
       "chainId": 100,
       "address": "0x712b3d230f3c1c19db860d80619288b1f0bdd0bd",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/8fc8782e9c8b6a814213.png",
-      "logoSource": "https://raw.githubusercontent.com/1Hive/default-token-list/master/src/assets/gnosis/0x712b3d230f3c1c19db860d80619288b1f0bdd0bd/logo.png"
+      "logoSource": "https://raw.githubusercontent.com/1Hive/default-token-list/master/src/assets/gnosis/0x712b3d230f3c1c19db860d80619288b1f0bdd0bd/logo.png",
+      "logoSha256": "8fc8782e9c8b6a814213dce8176c9c5fddb080bdf8288f824f9e579051890fb1"
     },
     {
       "chainId": 100,
@@ -638,49 +724,56 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/1891aa6964b441a4a84a.png",
-      "logoSource": "https://raw.githubusercontent.com/centfinance/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png"
+      "logoSource": "https://raw.githubusercontent.com/centfinance/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png",
+      "logoSha256": "1891aa6964b441a4a84a63c97550aba96fd06ac9a455cf3943203518e4495354"
     },
     {
       "chainId": 100,
       "address": "0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/c0b567bd541bf5033207.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weth.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weth.svg",
+      "logoSha256": "c0b567bd541bf50332072c13c19211ffd025062127c75818df52a588414a9655"
     },
     {
       "chainId": 100,
       "address": "0xfc421ad3c883bf9e7c4f42de845c4e4405799e73",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/4f5c435d1092cfa5cc74.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/gho.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/gho.svg",
+      "logoSha256": "4f5c435d1092cfa5cc74968cea43b3a109b6d733c664fedcc292c0e804304fec"
     },
     {
       "chainId": 100,
       "address": "0x9c58bacc331c9aa871afd802db6379a98e80cedb",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/1740d577e26d7300a6a4.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/gno.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/gno.svg",
+      "logoSha256": "1740d577e26d7300a6a41b2811fa85acad1f3e7a10d8ce02204ee137a3799a8f"
     },
     {
       "chainId": 100,
       "address": "0xfadc59d012ba3c110b08a15b7755a5cb7cbe77d7",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/f8d36a72b2f5ed286a64.png",
-      "logoSource": "https://raw.githubusercontent.com/1Hive/default-token-list/master/src/assets/gnosis/0xfadc59d012ba3c110b08a15b7755a5cb7cbe77d7/logo.png"
+      "logoSource": "https://raw.githubusercontent.com/1Hive/default-token-list/master/src/assets/gnosis/0xfadc59d012ba3c110b08a15b7755a5cb7cbe77d7/logo.png",
+      "logoSha256": "f8d36a72b2f5ed286a641364c0a576b61e392b2ace737ab68c9d1e3079cd173b"
     },
     {
       "chainId": 100,
       "address": "0xe2e73a1c69ecf83f464efce6a5be353a37ca09b2",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/a833f5d349cfa227f5d2.png",
-      "logoSource": "https://raw.githubusercontent.com/centfinance/assets/master/blockchains/ethereum/assets/0x514910771AF9Ca656af840dff83E8264EcF986CA/logo.png"
+      "logoSource": "https://raw.githubusercontent.com/centfinance/assets/master/blockchains/ethereum/assets/0x514910771AF9Ca656af840dff83E8264EcF986CA/logo.png",
+      "logoSha256": "a833f5d349cfa227f5d21d190479be443295c49f99ec1fa5e16b7f9bab3b956e"
     },
     {
       "chainId": 100,
       "address": "0x3a00e08544d589e19a8e7d97d0294331341cdbf6",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/4d05f1b6788e2c830757.png",
-      "logoSource": "https://raw.githubusercontent.com/1Hive/default-token-list/master/src/assets/gnosis/0x3a00e08544d589e19a8e7d97d0294331341cdbf6/logo.png"
+      "logoSource": "https://raw.githubusercontent.com/1Hive/default-token-list/master/src/assets/gnosis/0x3a00e08544d589e19a8e7d97d0294331341cdbf6/logo.png",
+      "logoSha256": "4d05f1b6788e2c830757cc28be839fcf0e9b6136bd179257659b45d1bedac9c7"
     },
     {
       "chainId": 100,
@@ -688,21 +781,24 @@
       "assetClass": "volatile",
       "classificationReason": "Staked or yield-bearing crypto exposure; the underlying asset has no fixed USD value.",
       "localLogo": "/assets/tokens/22728bea7127e38c148c.png",
-      "logoSource": "https://raw.githubusercontent.com/1Hive/default-token-list/master/src/assets/gnosis/0x3c037849a8ffcf19886e2f5b04f293b7847d0377/logo.png"
+      "logoSource": "https://raw.githubusercontent.com/1Hive/default-token-list/master/src/assets/gnosis/0x3c037849a8ffcf19886e2f5b04f293b7847d0377/logo.png",
+      "logoSha256": "22728bea7127e38c148c07c688ac81f1333aa0c9e20aa65ac8bcfb89d329ee4b"
     },
     {
       "chainId": 100,
       "address": "0x2995d1317dcd4f0ab89f4ae60f3f020a4f17c7ce",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/412f11a2b03b7a456510.jpg",
-      "logoSource": "https://raw.githubusercontent.com/sushiswap/list/master/logos/token-logos/network/gnosis/0x2995D1317DcD4f0aB89f4AE60F3f020A4F17C7CE.jpg"
+      "logoSource": "https://raw.githubusercontent.com/sushiswap/list/master/logos/token-logos/network/gnosis/0x2995D1317DcD4f0aB89f4AE60F3f020A4F17C7CE.jpg",
+      "logoSha256": "412f11a2b03b7a45651020edfaecf06cf3c824dd2ba201f97208f0cae6d4234c"
     },
     {
       "chainId": 100,
       "address": "0x4537e328bf7e4efa29d05caea260d7fe26af9d74",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/baee5b3bf59bc7321e8a.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/12504/thumb/uniswap-logo.png?1720676669"
+      "logoSource": "https://assets.coingecko.com/coins/images/12504/thumb/uniswap-logo.png?1720676669",
+      "logoSha256": "baee5b3bf59bc7321e8a547b61ffa414a0bb8be3dadccc1bc37e36c9f5f493ed"
     },
     {
       "chainId": 100,
@@ -710,7 +806,8 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/2782d3d47a9833601e60.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg",
+      "logoSha256": "2782d3d47a9833601e60817a446c127c60831796f5a8d9c323d91cc07834471d"
     },
     {
       "chainId": 100,
@@ -718,7 +815,8 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/b9a8244ef438462cd6d6.png",
-      "logoSource": "https://files.cow.fi/token-lists/images/100/0x4ecaba5870353805a9f068101a40e0f32ed605c6/logo.png"
+      "logoSource": "https://files.cow.fi/token-lists/images/100/0x4ecaba5870353805a9f068101a40e0f32ed605c6/logo.png",
+      "logoSha256": "b9a8244ef438462cd6d609aa2d59886b152fafd648f4d3aaea098022d356c568"
     },
     {
       "chainId": 100,
@@ -726,14 +824,16 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "localLogo": "/assets/tokens/6926608f6f9b06d0fc0d.png",
-      "logoSource": "https://raw.githubusercontent.com/centfinance/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png"
+      "logoSource": "https://raw.githubusercontent.com/centfinance/assets/master/blockchains/ethereum/assets/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599/logo.png",
+      "logoSha256": "6926608f6f9b06d0fc0df226e7b70937a0b684897d0a32111f228ea8f6bd6c28"
     },
     {
       "chainId": 100,
       "address": "0xbf65bfcb5da067446cee6a706ba3fe2fb1a9fdfd",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/ab8b8ddd24828478103e.jpg",
-      "logoSource": "https://assets.coingecko.com/coins/images/11849/thumb/yearn.jpg?1696511720"
+      "logoSource": "https://assets.coingecko.com/coins/images/11849/thumb/yearn.jpg?1696511720",
+      "logoSha256": "ab8b8ddd24828478103e27f8ce53d141714777bcabe5c3e0a6369dc2708aeaba"
     },
     {
       "chainId": 42161,
@@ -741,63 +841,72 @@
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/20414d41c3758c4c035b.svg",
       "logoIdentity": "Canonical 1inch Network asset; reuse Ethereum 1INCH artwork",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/1inch.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/1inch.svg",
+      "logoSha256": "20414d41c3758c4c035bc63fc44c2b1fa837e8eaed6a42217cb3a35af1504f26"
     },
     {
       "chainId": 42161,
       "address": "0xba5ddd1f9d7f570dc94a51479a000e3bce967196",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/5b1b8adc120ffdfbd91e.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/aave.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/aave.svg",
+      "logoSha256": "5b1b8adc120ffdfbd91e9c774299c615910fdea1c90015fc649755f4c5267546"
     },
     {
       "chainId": 42161,
       "address": "0x7f9fbf9bdd3f4105c478b996b648fe6e828a1e98",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/a6e71a5fec992353dc75.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/24383/thumb/APECOIN.png?1756551529"
+      "logoSource": "https://assets.coingecko.com/coins/images/24383/thumb/APECOIN.png?1756551529",
+      "logoSha256": "a6e71a5fec992353dc75e69e8e584b2b72bc165725dcc603f2b994033379a8b3"
     },
     {
       "chainId": 42161,
       "address": "0x912ce59144191c1204e64559fe8253a0e49e6548",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/f4916dbd8714b92b928c.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/arb.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/arb.svg",
+      "logoSha256": "f4916dbd8714b92b928ce8729593a61a1d242ed8dbd180ca6aaeb8bb8189c1f5"
     },
     {
       "chainId": 42161,
       "address": "0xc87b37a581ec3257b734886d9d3a581f5a9d056c",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/1934b0cccb651db2c7fb.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/36179/thumb/logogram_circle_dark_green_vb_green_%281%29.png?1718232706"
+      "logoSource": "https://assets.coingecko.com/coins/images/36179/thumb/logogram_circle_dark_green_vb_green_%281%29.png?1718232706",
+      "logoSha256": "1934b0cccb651db2c7fb6cfb5030cf9762c49f44b09407c86553134369b2d101"
     },
     {
       "chainId": 42161,
       "address": "0x23ee2343b892b1bb63503a4fabc840e0e2c6810f",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/f360e5d7231f3d9f9868.jpg",
-      "logoSource": "https://assets.coingecko.com/coins/images/27277/thumb/V-65_xQ1_400x400.jpeg?1696526329"
+      "logoSource": "https://assets.coingecko.com/coins/images/27277/thumb/V-65_xQ1_400x400.jpeg?1696526329",
+      "logoSha256": "f360e5d7231f3d9f986806c6258b06c55a483469d57de4629c4b495b1135401f"
     },
     {
       "chainId": 42161,
       "address": "0x1b896893dfc86bb67cf57767298b9073d2c1ba2c",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/ee1c588bc40fe92324b9.png",
-      "logoSource": "https://files.cow.fi/token-lists/images/42161/0x1b896893dfc86bb67cf57767298b9073d2c1ba2c/logo.png"
+      "logoSource": "https://files.cow.fi/token-lists/images/42161/0x1b896893dfc86bb67cf57767298b9073d2c1ba2c/logo.png",
+      "logoSha256": "ee1c588bc40fe92324b9287a4f3c7a1a55600f683f99e10bfdae7f56004903ec"
     },
     {
       "chainId": 42161,
       "address": "0x354a6da3fcde098f8389cad84b0182725c6c91de",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/0f1a61d5a7a2dfb668ed.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/10775/thumb/COMP.png?1696510737"
+      "logoSource": "https://assets.coingecko.com/coins/images/10775/thumb/COMP.png?1696510737",
+      "logoSha256": "0f1a61d5a7a2dfb668edd9a1c116164f3d958bd39e57a8c302c3a6cbda99ef17"
     },
     {
       "chainId": 42161,
       "address": "0x11cdb42b0eb46d95f990bedd4695a6e3fa034978",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/1a4b2b6e4ddb91b33af3.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/12124/thumb/Curve.png?1696511967"
+      "logoSource": "https://assets.coingecko.com/coins/images/12124/thumb/Curve.png?1696511967",
+      "logoSha256": "1a4b2b6e4ddb91b33af3cc3c32a71fe48e88fdf5cafd6b5cf5c9bdbc1ab4ff71"
     },
     {
       "chainId": 42161,
@@ -805,7 +914,8 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/eaf990b6bc3491aa4ecf.png",
-      "logoSource": "https://files.cow.fi/token-lists/images/42161/0x498bf2b1e120fed3ad3d42ea2165e9b73f99c1e5/logo.png"
+      "logoSource": "https://files.cow.fi/token-lists/images/42161/0x498bf2b1e120fed3ad3d42ea2165e9b73f99c1e5/logo.png",
+      "logoSha256": "eaf990b6bc3491aa4ecfbf4a74b6393e078f4898582e9598a349645e601580a0"
     },
     {
       "chainId": 42161,
@@ -813,7 +923,8 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/91ad32e1db7073978ec7.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/dai.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/dai.svg",
+      "logoSha256": "91ad32e1db7073978ec74140a6c00c684815200a691b1afe44567cee3685bf0c"
     },
     {
       "chainId": 42161,
@@ -821,14 +932,16 @@
       "assetClass": "volatile",
       "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "localLogo": "/assets/tokens/99b4be1dea09e0dbfa33.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/36530/thumb/ethena.png?1711701436"
+      "logoSource": "https://assets.coingecko.com/coins/images/36530/thumb/ethena.png?1711701436",
+      "logoSha256": "99b4be1dea09e0dbfa337779ffcadc3d0e1b95485e2ecb5ef83852699ebf510c"
     },
     {
       "chainId": 42161,
       "address": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/c0b567bd541bf5033207.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weth.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weth.svg",
+      "logoSha256": "c0b567bd541bf50332072c13c19211ffd025062127c75818df52a588414a9655"
     },
     {
       "chainId": 42161,
@@ -836,49 +949,56 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Legacy FRAX dollar exposure; separate from the FXS governance contract and FRAX governance feed identity.",
       "localLogo": "/assets/tokens/73a18837b56ffca2fb27.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/frax.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/frax.svg",
+      "logoSha256": "73a18837b56ffca2fb270938b7f47ac9887b45aa727e9d6a16f505470950aa71"
     },
     {
       "chainId": 42161,
       "address": "0x7dff72693f6a4149b17e7c6314655f6a9f7c8b33",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/4f5c435d1092cfa5cc74.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/gho.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/gho.svg",
+      "logoSha256": "4f5c435d1092cfa5cc74968cea43b3a109b6d733c664fedcc292c0e804304fec"
     },
     {
       "chainId": 42161,
       "address": "0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/7e40f5a60d7ce701d1fe.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/18323/thumb/arbit.png?1696517814"
+      "logoSource": "https://assets.coingecko.com/coins/images/18323/thumb/arbit.png?1696517814",
+      "logoSha256": "7e40f5a60d7ce701d1fe401c1c010ea25d799574b364da58e62b8cd649d05ccb"
     },
     {
       "chainId": 42161,
       "address": "0x18c11fd286c5ec11c3b683caa813b77f5163a122",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/032dff496763a5f3ec6d.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/19737/thumb/logo.png?1696519161"
+      "logoSource": "https://assets.coingecko.com/coins/images/19737/thumb/logo.png?1696519161",
+      "logoSha256": "032dff496763a5f3ec6d108f8d928604a829521344145a8de5070b8f2b6c1ac0"
     },
     {
       "chainId": 42161,
       "address": "0x9623063377ad1b27544c965ccd7342f7ea7e88c7",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/5a7c71c4e8dba34b20d3.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/13397/thumb/Graph_Token.png?1696513159"
+      "logoSource": "https://assets.coingecko.com/coins/images/13397/thumb/Graph_Token.png?1696513159",
+      "logoSha256": "5a7c71c4e8dba34b20d3a9987e2f20227a5c7b3115f0a8a947ef8ffde85b430e"
     },
     {
       "chainId": 42161,
       "address": "0x13ad51ed4f1b7e9dc168d8a00cb3f4ddd85efa60",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/f051465fd4e08612625d.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/13573/thumb/Lido_DAO.png?1696513326"
+      "logoSource": "https://assets.coingecko.com/coins/images/13573/thumb/Lido_DAO.png?1696513326",
+      "logoSha256": "f051465fd4e08612625d13adab9e6dab4167db700a7c82ea77b1db9d938afd79"
     },
     {
       "chainId": 42161,
       "address": "0xf97f4df75117a78c1a5a0dbb814af92458539fb4",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/408cb6cf3c7ab80fe7b3.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/link.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/link.svg",
+      "logoSha256": "408cb6cf3c7ab80fe7b343a76ec9415fc0d55d2ddb4fbd22e8c2f653652faad2"
     },
     {
       "chainId": 42161,
@@ -886,35 +1006,40 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/795d6873a5c43a17e9ab.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/lusd.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/lusd.svg",
+      "logoSha256": "795d6873a5c43a17e9ab15a19abd9064a28ddcd026e20bb081ff9320240d7967"
     },
     {
       "chainId": 42161,
       "address": "0x539bde0d7dbd336b79148aa742883198bbf60342",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/b83f4e733b46382270bc.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/18623/thumb/magic.png?1696518095"
+      "logoSource": "https://assets.coingecko.com/coins/images/18623/thumb/magic.png?1696518095",
+      "logoSha256": "b83f4e733b46382270bc4cf991872f49c5f30717214c28a35438c582e1623834"
     },
     {
       "chainId": 42161,
       "address": "0x40bd670a58238e6e230c430bbb5ce6ec0d40df48",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/b69957117412d29680c9.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/29837/thumb/Morpho-token-icon.png?1726771230"
+      "logoSource": "https://assets.coingecko.com/coins/images/29837/thumb/Morpho-token-icon.png?1726771230",
+      "logoSha256": "b69957117412d29680c9433eb3f7e1c95b44a8db5259bc81c1e393bf4f51f393"
     },
     {
       "chainId": 42161,
       "address": "0x0c880f6761f1af8d9aa9c466984b80dab9a8c9e8",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/6a473a6e72ac146b8e6b.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/15069/thumb/Pendle_Logo_Normal-03.png?1696514728"
+      "logoSource": "https://assets.coingecko.com/coins/images/15069/thumb/Pendle_Logo_Normal-03.png?1696514728",
+      "logoSha256": "6a473a6e72ac146b8e6b192b8143f07356f9bffd8a67bd19244f26e4f7e03280"
     },
     {
       "chainId": 42161,
       "address": "0x25d887ce7a35172c62febfd67a1856f20faebb00",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/da8086fe130a6267119f.jpg",
-      "logoSource": "https://assets.coingecko.com/coins/images/29850/thumb/pepe-token.jpeg?1696528776"
+      "logoSource": "https://assets.coingecko.com/coins/images/29850/thumb/pepe-token.jpeg?1696528776",
+      "logoSha256": "da8086fe130a6267119f051bf6d565622c9c3be7e520adebc11a2a98031cc2dc"
     },
     {
       "chainId": 42161,
@@ -922,14 +1047,16 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/9d7ce0b577dfd5c69862.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/31212/thumb/PYUSD_Token_Logo_2x.png?1765987788"
+      "logoSource": "https://assets.coingecko.com/coins/images/31212/thumb/PYUSD_Token_Logo_2x.png?1765987788",
+      "logoSha256": "9d7ce0b577dfd5c6986237b707e9c5ac94bb64501450289e49d3e06189b56ca8"
     },
     {
       "chainId": 42161,
       "address": "0x3082cc23568ea640225c2467653db90e9250aaa0",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/b154d30b94f350545a71.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/26536/thumb/Radiant-Logo-200x200.png?1696525610"
+      "logoSource": "https://assets.coingecko.com/coins/images/26536/thumb/Radiant-Logo-200x200.png?1696525610",
+      "logoSha256": "b154d30b94f350545a71bc54b4c38634e221c39c72c2642138c7e70683a4c883"
     },
     {
       "chainId": 42161,
@@ -937,7 +1064,8 @@
       "assetClass": "volatile",
       "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "localLogo": "/assets/tokens/07f8444a8aaf62befa66.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/8365/thumb/RSR_Blue_Circle_1000.png?1721777856"
+      "logoSource": "https://assets.coingecko.com/coins/images/8365/thumb/RSR_Blue_Circle_1000.png?1721777856",
+      "logoSha256": "07f8444a8aaf62befa66e8170c13ef37aa74417fb6d62238ab82b2f15b18db82"
     },
     {
       "chainId": 42161,
@@ -945,7 +1073,8 @@
       "assetClass": "volatile",
       "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "localLogo": "/assets/tokens/c3e9be2f80712238629a.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/15861/thumb/abracadabra-3.png?1696515477"
+      "logoSource": "https://assets.coingecko.com/coins/images/15861/thumb/abracadabra-3.png?1696515477",
+      "logoSha256": "c3e9be2f80712238629a796c622166e30479af7d96dc0f6e26ba8d8a49ead530"
     },
     {
       "chainId": 42161,
@@ -953,14 +1082,16 @@
       "assetClass": "usd-linked",
       "classificationReason": "Yield-bearing staked USDe share; its exchange rate is not fixed at one USD.",
       "localLogo": "/assets/tokens/dad33d3f7f73b9a9ca28.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/33669/thumb/sUSDe-Symbol-Color.png?1716307680"
+      "logoSource": "https://assets.coingecko.com/coins/images/33669/thumb/sUSDe-Symbol-Color.png?1716307680",
+      "logoSha256": "dad33d3f7f73b9a9ca28147ca2552a86067042f0ce2986aae86947fa55c36dc7"
     },
     {
       "chainId": 42161,
       "address": "0xd4d42f0b6def4ce0383636770ef773390d85c61a",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/34c01e13ce9c918a272d.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/12271/thumb/512x512_Logo_no_chop.png?1696512101"
+      "logoSource": "https://assets.coingecko.com/coins/images/12271/thumb/512x512_Logo_no_chop.png?1696512101",
+      "logoSha256": "34c01e13ce9c918a272d719c8eb5e01a3135e09f1df15344915fce2ea152846b"
     },
     {
       "chainId": 42161,
@@ -968,14 +1099,16 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "localLogo": "/assets/tokens/ec189f6774e528f5a60c.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/tbtc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/tbtc.svg",
+      "logoSha256": "ec189f6774e528f5a60cc74bc1be80249e432c784d3c7232754be2ea4aa58037"
     },
     {
       "chainId": 42161,
       "address": "0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/baee5b3bf59bc7321e8a.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/12504/thumb/uniswap-logo.png?1720676669"
+      "logoSource": "https://assets.coingecko.com/coins/images/12504/thumb/uniswap-logo.png?1720676669",
+      "logoSha256": "baee5b3bf59bc7321e8a547b61ffa414a0bb8be3dadccc1bc37e36c9f5f493ed"
     },
     {
       "chainId": 42161,
@@ -983,14 +1116,16 @@
       "assetClass": "usd-pegged",
       "classificationReason": "USDai is the dollar stablecoin; separate from the yield-bearing sUSDai share.",
       "localLogo": "/assets/tokens/3b4a9cc3514a1fce4db9.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/55857/thumb/USDai_Token_Full_Glyph.png?1755229050"
+      "logoSource": "https://assets.coingecko.com/coins/images/55857/thumb/USDai_Token_Full_Glyph.png?1755229050",
+      "logoSha256": "3b4a9cc3514a1fce4db9399d8b5da91fadb07ec2ae94a3a185beb5579aa25bd1"
     },
     {
       "chainId": 42161,
       "address": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/2782d3d47a9833601e60.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg",
+      "logoSha256": "2782d3d47a9833601e60817a446c127c60831796f5a8d9c323d91cc07834471d"
     },
     {
       "chainId": 42161,
@@ -998,14 +1133,16 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Ethena USDe targets one USD through synthetic dollar backing; this does not classify its backing as risk-free.",
       "localLogo": "/assets/tokens/3a31948644f9212a0552.png",
-      "logoSource": "https://files.cow.fi/token-lists/images/42161/0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34/logo.png"
+      "logoSource": "https://files.cow.fi/token-lists/images/42161/0x5d3a1ff2b6bab83b63cd9ad0787074081a52ef34/logo.png",
+      "logoSha256": "3a31948644f9212a0552d54efa4b11ea2f8a4949baf596aba41e1400ffd9dd62"
     },
     {
       "chainId": 42161,
       "address": "0x004b506865409877c9fa29bfb1eba929984b9bbc",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/3f81ec220ae417b1bb9e.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/51281/thumb/GDN_USDG_Token_200x200.png?1730484111"
+      "logoSource": "https://assets.coingecko.com/coins/images/51281/thumb/GDN_USDG_Token_200x200.png?1730484111",
+      "logoSha256": "3f81ec220ae417b1bb9e81748f305e3303a194dcc573793f8561c55ac02dec7c"
     },
     {
       "chainId": 42161,
@@ -1013,7 +1150,8 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/447ad4b135e82e3a5f23.webp",
-      "logoSource": "https://assets.coingecko.com/coins/images/39926/thumb/usds.webp?1726666683"
+      "logoSource": "https://assets.coingecko.com/coins/images/39926/thumb/usds.webp?1726666683",
+      "logoSha256": "447ad4b135e82e3a5f2305d1fbf40b0cdf0fd972aff39837a533ca9ed470a037"
     },
     {
       "chainId": 42161,
@@ -1021,49 +1159,56 @@
       "assetClass": "usd-pegged",
       "classificationReason": "USDT0 represents Tether dollar exposure; the cross-chain wrapper does not change its USD target.",
       "localLogo": "/assets/tokens/1d29a434146b992fdd66.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdt0.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdt0.svg",
+      "logoSha256": "1d29a434146b992fdd66538a7e4d0cc0332f281b5cf07530a659c2abed6143c9"
     },
     {
       "chainId": 42161,
       "address": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/54bfdd97b72719969a99.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wbtc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wbtc.svg",
+      "logoSha256": "54bfdd97b72719969a99239a14d7250376177c43c02656a8bf02750d44944614"
     },
     {
       "chainId": 42161,
       "address": "0xcafcd85d8ca7ad1e1c6f82f651fa15e33aefd07b",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/505c596f89c01a4a0bbf.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/12921/thumb/WOO_Logos_2023_Profile_Pic_WOO.png?1696512709"
+      "logoSource": "https://assets.coingecko.com/coins/images/12921/thumb/WOO_Logos_2023_Profile_Pic_WOO.png?1696512709",
+      "logoSha256": "505c596f89c01a4a0bbf58e86e66f17a4f1b33c8bf543a2006a55603c5516022"
     },
     {
       "chainId": 42161,
       "address": "0x82e3a8f066a6989666b031d916c43672085b1582",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/ab8b8ddd24828478103e.jpg",
-      "logoSource": "https://assets.coingecko.com/coins/images/11849/thumb/yearn.jpg?1696511720"
+      "logoSource": "https://assets.coingecko.com/coins/images/11849/thumb/yearn.jpg?1696511720",
+      "logoSha256": "ab8b8ddd24828478103e27f8ce53d141714777bcabe5c3e0a6369dc2708aeaba"
     },
     {
       "chainId": 42161,
       "address": "0x6985884c4392d348587b19cb9eaaf157f13271cd",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/f09647b2e891397d4148.jpg",
-      "logoSource": "https://assets.coingecko.com/coins/images/28206/thumb/ftxG9_TJ_400x400.jpeg?1696527208"
+      "logoSource": "https://assets.coingecko.com/coins/images/28206/thumb/ftxG9_TJ_400x400.jpeg?1696527208",
+      "logoSha256": "f09647b2e891397d4148fc7aec9c48af24383b60ecb5d716f3a09589fe67463b"
     },
     {
       "chainId": 8453,
       "address": "0x63706e401c06ac8513145b7687a14804d17f814b",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/5b1b8adc120ffdfbd91e.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/aave.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/aave.svg",
+      "logoSha256": "5b1b8adc120ffdfbd91e9c774299c615910fdea1c90015fc649755f4c5267546"
     },
     {
       "chainId": 8453,
       "address": "0x940181a94a35a4569e4529a3cdfb74e38fd98631",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/54bc44ed9a78cd4ec558.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/31745/thumb/token.png?1696530564"
+      "logoSource": "https://assets.coingecko.com/coins/images/31745/thumb/token.png?1696530564",
+      "logoSha256": "54bc44ed9a78cd4ec558e9654dff52275a6af7e3b62647a9acee16b663c2b2bc"
     },
     {
       "chainId": 8453,
@@ -1071,14 +1216,16 @@
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/5faf321f723b5916d4ea.png",
       "identitySource": "https://docs.avantisfi.com/avnt-token",
-      "logoSource": "https://assets.coingecko.com/coins/images/68972/thumb/Verantalogo.png?1789472597"
+      "logoSource": "https://assets.coingecko.com/coins/images/68972/thumb/Verantalogo.png?1789472597",
+      "logoSha256": "5faf321f723b5916d4ead08514faa3916730c441b65ed660556fc8d3b050d575"
     },
     {
       "chainId": 8453,
       "address": "0x23ee2343b892b1bb63503a4fabc840e0e2c6810f",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/f360e5d7231f3d9f9868.jpg",
-      "logoSource": "https://assets.coingecko.com/coins/images/27277/thumb/V-65_xQ1_400x400.jpeg?1696526329"
+      "logoSource": "https://assets.coingecko.com/coins/images/27277/thumb/V-65_xQ1_400x400.jpeg?1696526329",
+      "logoSha256": "f360e5d7231f3d9f986806c6258b06c55a483469d57de4629c4b495b1135401f"
     },
     {
       "chainId": 8453,
@@ -1086,7 +1233,8 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "localLogo": "/assets/tokens/42cd15fe2b9391da51d5.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/cbbtc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/cbbtc.svg",
+      "logoSha256": "42cd15fe2b9391da51d557eca463bc0a807fd7875113efacdcf9564f63722765"
     },
     {
       "chainId": 8453,
@@ -1094,7 +1242,8 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "localLogo": "/assets/tokens/68395d0e54b67f667a63.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/66268/thumb/Coinbase_Wrapped_Doge_%28cbDOGE%29.png?1749023465"
+      "logoSource": "https://assets.coingecko.com/coins/images/66268/thumb/Coinbase_Wrapped_Doge_%28cbDOGE%29.png?1749023465",
+      "logoSha256": "68395d0e54b67f667a63909a0419ee2034b14952f0d5efa5b692d098e7d24e10"
     },
     {
       "chainId": 8453,
@@ -1102,7 +1251,8 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "localLogo": "/assets/tokens/d05a5e47f488b96b4541.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/cbeth.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/cbeth.svg",
+      "logoSha256": "d05a5e47f488b96b454198462e053f83cdb5207002429cac855df72bebfdb5ad"
     },
     {
       "chainId": 8453,
@@ -1110,14 +1260,16 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "localLogo": "/assets/tokens/515fd37843b78a5cf7ac.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/66267/thumb/Coinbase_Wrapped_XPR_%28cbXRP%29.png?1749023398"
+      "logoSource": "https://assets.coingecko.com/coins/images/66267/thumb/Coinbase_Wrapped_XPR_%28cbXRP%29.png?1749023398",
+      "logoSha256": "515fd37843b78a5cf7ac51c6967b6a13d4063d42eb59b82fa88f65353a58e5ff"
     },
     {
       "chainId": 8453,
       "address": "0x9e1028f5f1d5ede59748ffcee5532509976840e0",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/0f1a61d5a7a2dfb668ed.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/10775/thumb/COMP.png?1696510737"
+      "logoSource": "https://assets.coingecko.com/coins/images/10775/thumb/COMP.png?1696510737",
+      "logoSha256": "0f1a61d5a7a2dfb668edd9a1c116164f3d958bd39e57a8c302c3a6cbda99ef17"
     },
     {
       "chainId": 8453,
@@ -1125,21 +1277,24 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/c3ddc7ea30c09d33e9b3.png",
-      "logoSource": "https://files.cow.fi/token-lists/images/8453/0x50c5725949a6f0c72e6c4a641f24049a917db0cb/logo.png"
+      "logoSource": "https://files.cow.fi/token-lists/images/8453/0x50c5725949a6f0c72e6c4a641f24049a917db0cb/logo.png",
+      "logoSha256": "c3ddc7ea30c09d33e9b3e7e6c02780ca349f32ed41af484dc00a4d044efc769a"
     },
     {
       "chainId": 8453,
       "address": "0x4ed4e862860bed51a9570b96d89af5e1b0efefed",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/c2d6fe032a1c20bc294f.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/34515/thumb/android-chrome-512x512.png?1706198225"
+      "logoSource": "https://assets.coingecko.com/coins/images/34515/thumb/android-chrome-512x512.png?1706198225",
+      "logoSha256": "c2d6fe032a1c20bc294f0d97d118a60ac00a06a7d099fb2b46c2bdafa82bafd5"
     },
     {
       "chainId": 8453,
       "address": "0x4200000000000000000000000000000000000006",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/c0b567bd541bf5033207.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weth.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weth.svg",
+      "logoSha256": "c0b567bd541bf50332072c13c19211ffd025062127c75818df52a588414a9655"
     },
     {
       "chainId": 8453,
@@ -1147,14 +1302,16 @@
       "assetClass": "other-stable",
       "classificationReason": "Circle EURC targets one euro, not one US dollar.",
       "localLogo": "/assets/tokens/f748e0bd227d54e32b1e.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/eurc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/eurc.svg",
+      "logoSha256": "f748e0bd227d54e32b1ee83af6352981ef64544a7ddf9f361924cd86f9e43ecf"
     },
     {
       "chainId": 8453,
       "address": "0x6bb7a212910682dcfdbd5bcbb3e28fb4e8da10ee",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/4f5c435d1092cfa5cc74.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/gho.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/gho.svg",
+      "logoSha256": "4f5c435d1092cfa5cc74968cea43b3a109b6d733c664fedcc292c0e804304fec"
     },
     {
       "chainId": 8453,
@@ -1162,7 +1319,8 @@
       "assetClass": "volatile",
       "classificationReason": "HOME is the Defi App protocol token, not a real-estate or stable-value claim.",
       "localLogo": "/assets/tokens/15dfca319dab7fdf4baf.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/54873/thumb/defi-app.png?1742235743"
+      "logoSource": "https://assets.coingecko.com/coins/images/54873/thumb/defi-app.png?1742235743",
+      "logoSha256": "15dfca319dab7fdf4baf3fa8a00ef347485dba5bd54d8543a67dca52f822c45b"
     },
     {
       "chainId": 8453,
@@ -1170,7 +1328,8 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "localLogo": "/assets/tokens/cb9cedd5271145bc6bd6.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/28046/thumb/JitoSOL_Token_Logo_Green.png?1779807693"
+      "logoSource": "https://assets.coingecko.com/coins/images/28046/thumb/JitoSOL_Token_Logo_Green.png?1779807693",
+      "logoSha256": "cb9cedd5271145bc6bd66116fcd7d9597a4f287e23237ceb79e78fc501f33a94"
     },
     {
       "chainId": 8453,
@@ -1178,14 +1337,16 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "localLogo": "/assets/tokens/891e9887e7f68227e34b.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/lbtc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/lbtc.svg",
+      "logoSha256": "891e9887e7f68227e34b809fefc4c896d4157177fd2a50303db8c9b0fedd5b67"
     },
     {
       "chainId": 8453,
       "address": "0x88fb150bdc53a65fe94dea0c9ba0a6daf8c6e196",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/db40b31615a449abb1b8.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/877/thumb/Chainlink_Logo_500.png?1760023405"
+      "logoSource": "https://assets.coingecko.com/coins/images/877/thumb/Chainlink_Logo_500.png?1760023405",
+      "logoSha256": "db40b31615a449abb1b8b9b1c01069836a3b35deee828a0578ca2d66b14b87d7"
     },
     {
       "chainId": 8453,
@@ -1193,21 +1354,24 @@
       "assetClass": "volatile",
       "classificationReason": "MAMO is the Mamo protocol token, not a dollar vault share.",
       "localLogo": "/assets/tokens/28db54b1b5e74f9dc1ac.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/55958/thumb/Mamo_Circle_200x200_TransBG.png?1748974093"
+      "logoSource": "https://assets.coingecko.com/coins/images/55958/thumb/Mamo_Circle_200x200_TransBG.png?1748974093",
+      "logoSha256": "28db54b1b5e74f9dc1ac2399696132219ad8969cc0603ee67f1bb617b5fbd540"
     },
     {
       "chainId": 8453,
       "address": "0x2da56acb9ea78330f947bd57c54119debda7af71",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/25c240d6d552ebbb3025.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/31059/thumb/MOG_LOGO_200x200.png?1696529893"
+      "logoSource": "https://assets.coingecko.com/coins/images/31059/thumb/MOG_LOGO_200x200.png?1696529893",
+      "logoSha256": "25c240d6d552ebbb3025f512fe317f206c61e1f0f9ec03bc90b74a6c9d4a748a"
     },
     {
       "chainId": 8453,
       "address": "0xbaa5cc21fd487b8fcc2f632f3f4e8d37262a0842",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/a22b42f1dd00c20eca96.png",
-      "logoSource": "https://files.cow.fi/token-lists/images/8453/0xbaa5cc21fd487b8fcc2f632f3f4e8d37262a0842/logo.png"
+      "logoSource": "https://files.cow.fi/token-lists/images/8453/0xbaa5cc21fd487b8fcc2f632f3f4e8d37262a0842/logo.png",
+      "logoSha256": "a22b42f1dd00c20eca96da5627cdf48f3a740915ac9815b6188531b3a39bd02a"
     },
     {
       "chainId": 8453,
@@ -1215,7 +1379,8 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Open Standard OUSD, not Origin Dollar; issuer lists this contract with 1:1 USD minting and redemption: https://joinopenstandard.com/blog/ousd-is-live",
       "localLogo": "/assets/tokens/d2d2f0d9196da47744e3.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/102174264/thumb/open_standard.png?1782864430"
+      "logoSource": "https://assets.coingecko.com/coins/images/102174264/thumb/open_standard.png?1782864430",
+      "logoSha256": "d2d2f0d9196da47744e3ba5651d03ba0cf0fdf35a342be9941feace074b71442"
     },
     {
       "chainId": 8453,
@@ -1223,7 +1388,8 @@
       "assetClass": "volatile",
       "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "localLogo": "/assets/tokens/07f8444a8aaf62befa66.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/8365/thumb/RSR_Blue_Circle_1000.png?1721777856"
+      "logoSource": "https://assets.coingecko.com/coins/images/8365/thumb/RSR_Blue_Circle_1000.png?1721777856",
+      "logoSha256": "07f8444a8aaf62befa66e8170c13ef37aa74417fb6d62238ab82b2f15b18db82"
     },
     {
       "chainId": 8453,
@@ -1231,14 +1397,16 @@
       "assetClass": "volatile",
       "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "localLogo": "/assets/tokens/0243014e93eaf6c8d254.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/3406/thumb/SNX.png?1696504103"
+      "logoSource": "https://assets.coingecko.com/coins/images/3406/thumb/SNX.png?1696504103",
+      "logoSha256": "0243014e93eaf6c8d254dcd532ca4048c5c5ec068dae60be69ea52938612ed02"
     },
     {
       "chainId": 8453,
       "address": "0xe3b53af74a4bf62ae5511055290838050bf764df",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/5d50429ed8a17b3ceba8.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/24413/thumb/STG_LOGO.png?1696523595"
+      "logoSource": "https://assets.coingecko.com/coins/images/24413/thumb/STG_LOGO.png?1696523595",
+      "logoSha256": "5d50429ed8a17b3ceba891f4851c9668713b1b9daf7e5decc93452f26dcbe493"
     },
     {
       "chainId": 8453,
@@ -1246,7 +1414,8 @@
       "assetClass": "usd-linked",
       "classificationReason": "Yield-bearing staked USDe share; its exchange rate is not fixed at one USD.",
       "localLogo": "/assets/tokens/dad33d3f7f73b9a9ca28.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/33669/thumb/sUSDe-Symbol-Color.png?1716307680"
+      "logoSource": "https://assets.coingecko.com/coins/images/33669/thumb/sUSDe-Symbol-Color.png?1716307680",
+      "logoSha256": "dad33d3f7f73b9a9ca28147ca2552a86067042f0ce2986aae86947fa55c36dc7"
     },
     {
       "chainId": 8453,
@@ -1254,14 +1423,16 @@
       "assetClass": "usd-pegged",
       "classificationReason": "USDai is the dollar stablecoin; separate from the yield-bearing sUSDai share.",
       "localLogo": "/assets/tokens/3b4a9cc3514a1fce4db9.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/55857/thumb/USDai_Token_Full_Glyph.png?1755229050"
+      "logoSource": "https://assets.coingecko.com/coins/images/55857/thumb/USDai_Token_Full_Glyph.png?1755229050",
+      "logoSha256": "3b4a9cc3514a1fce4db9399d8b5da91fadb07ec2ae94a3a185beb5579aa25bd1"
     },
     {
       "chainId": 8453,
       "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/2782d3d47a9833601e60.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg",
+      "logoSha256": "2782d3d47a9833601e60817a446c127c60831796f5a8d9c323d91cc07834471d"
     },
     {
       "chainId": 8453,
@@ -1269,7 +1440,8 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Ethena USDe targets one USD through synthetic dollar backing; this does not classify its backing as risk-free.",
       "localLogo": "/assets/tokens/211018048bc8a8fd89b7.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/33613/thumb/usde.png?1733810059"
+      "logoSource": "https://assets.coingecko.com/coins/images/33613/thumb/usde.png?1733810059",
+      "logoSha256": "211018048bc8a8fd89b733ee6df9cdcf9b584d2566c0db5eda1178fcfb1a0934"
     },
     {
       "chainId": 8453,
@@ -1277,7 +1449,8 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/447ad4b135e82e3a5f23.webp",
-      "logoSource": "https://assets.coingecko.com/coins/images/39926/thumb/usds.webp?1726666683"
+      "logoSource": "https://assets.coingecko.com/coins/images/39926/thumb/usds.webp?1726666683",
+      "logoSha256": "447ad4b135e82e3a5f2305d1fbf40b0cdf0fd972aff39837a533ca9ed470a037"
     },
     {
       "chainId": 8453,
@@ -1285,21 +1458,24 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/9a77e286cbd3a2e08126.png",
-      "logoSource": "https://files.cow.fi/token-lists/images/8453/0xfde4c96c8593536e31f229ea8f37b2ada2699bb2/logo.png"
+      "logoSource": "https://files.cow.fi/token-lists/images/8453/0xfde4c96c8593536e31f229ea8f37b2ada2699bb2/logo.png",
+      "logoSha256": "9a77e286cbd3a2e081260ab1b8319ce923873dd399b887c83cf0d90c24708314"
     },
     {
       "chainId": 8453,
       "address": "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/73b9b42a4c101aa4b449.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/34057/thumb/LOGOMARK.png?1708356054"
+      "logoSource": "https://assets.coingecko.com/coins/images/34057/thumb/LOGOMARK.png?1708356054",
+      "logoSha256": "73b9b42a4c101aa4b449a6992d8e54a0fae3a05487e3f99e03a5aaf5af40c1c3"
     },
     {
       "chainId": 8453,
       "address": "0xacfe6019ed1a7dc6f7b508c02d1b04ec88cc21bf",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/2ee9c757783277d6c28c.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/54023/thumb/VVV_Token_Transparent.png?1741856877"
+      "logoSource": "https://assets.coingecko.com/coins/images/54023/thumb/VVV_Token_Transparent.png?1741856877",
+      "logoSha256": "2ee9c757783277d6c28cafdea0ffe5c8db5d8708bfdc384c7b23708c1425f376"
     },
     {
       "chainId": 8453,
@@ -1307,28 +1483,32 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "localLogo": "/assets/tokens/c96ab2e608fe218d0dfc.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/7598/thumb/WBTCLOGO.png?1764496367"
+      "logoSource": "https://assets.coingecko.com/coins/images/7598/thumb/WBTCLOGO.png?1764496367",
+      "logoSha256": "c96ab2e608fe218d0dfc78754ba5165b9ef7bd0fc9a4ec76fd42104ad1abad26"
     },
     {
       "chainId": 8453,
       "address": "0xa88594d404727625a9437c3f886c7643872296ae",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/e725e6cf86682282d274.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/26133/thumb/WELL.png?1696525221"
+      "logoSource": "https://assets.coingecko.com/coins/images/26133/thumb/WELL.png?1696525221",
+      "logoSha256": "e725e6cf86682282d274813f483e76acdacf83e63289cc0352bc1b1e63971934"
     },
     {
       "chainId": 8453,
       "address": "0x9eaf8c1e34f05a589eda6bafdf391cf6ad3cb239",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/ab8b8ddd24828478103e.jpg",
-      "logoSource": "https://assets.coingecko.com/coins/images/11849/thumb/yearn.jpg?1696511720"
+      "logoSource": "https://assets.coingecko.com/coins/images/11849/thumb/yearn.jpg?1696511720",
+      "logoSha256": "ab8b8ddd24828478103e27f8ce53d141714777bcabe5c3e0a6369dc2708aeaba"
     },
     {
       "chainId": 8453,
       "address": "0x6985884c4392d348587b19cb9eaaf157f13271cd",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/f09647b2e891397d4148.jpg",
-      "logoSource": "https://assets.coingecko.com/coins/images/28206/thumb/ftxG9_TJ_400x400.jpeg?1696527208"
+      "logoSource": "https://assets.coingecko.com/coins/images/28206/thumb/ftxG9_TJ_400x400.jpeg?1696527208",
+      "logoSha256": "f09647b2e891397d4148fc7aec9c48af24383b60ecb5d716f3a09589fe67463b"
     },
     {
       "chainId": 8453,
@@ -1336,7 +1516,8 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "localLogo": "/assets/tokens/ec189f6774e528f5a60c.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/tbtc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/tbtc.svg",
+      "logoSha256": "ec189f6774e528f5a60cc74bc1be80249e432c784d3c7232754be2ea4aa58037"
     },
     {
       "chainId": 137,
@@ -1344,56 +1525,64 @@
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/20414d41c3758c4c035b.svg",
       "logoIdentity": "Canonical 1inch Network asset; reuse Ethereum 1INCH artwork",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/1inch.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/1inch.svg",
+      "logoSha256": "20414d41c3758c4c035bc63fc44c2b1fa837e8eaed6a42217cb3a35af1504f26"
     },
     {
       "chainId": 137,
       "address": "0xd6df932a45c0f255f85145f286ea0b292b21c90b",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/5b1b8adc120ffdfbd91e.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/aave.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/aave.svg",
+      "logoSha256": "5b1b8adc120ffdfbd91e9c774299c615910fdea1c90015fc649755f4c5267546"
     },
     {
       "chainId": 137,
       "address": "0xb7b31a6bc18e48888545ce79e83e06003be70930",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/a6e71a5fec992353dc75.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/24383/thumb/APECOIN.png?1756551529"
+      "logoSource": "https://assets.coingecko.com/coins/images/24383/thumb/APECOIN.png?1756551529",
+      "logoSha256": "a6e71a5fec992353dc75e69e8e584b2b72bc165725dcc603f2b994033379a8b3"
     },
     {
       "chainId": 137,
       "address": "0x61bdd9c7d4df4bf47a4508c0c8245505f2af5b7b",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/c481d1986620456bebd8.png",
-      "logoSource": "https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/polygon/assets/0x61BDD9C7d4dF4Bf47A4508c0c8245505F2Af5b7b/logo.png"
+      "logoSource": "https://raw.githubusercontent.com/sushiswap/assets/master/blockchains/polygon/assets/0x61BDD9C7d4dF4Bf47A4508c0c8245505F2Af5b7b/logo.png",
+      "logoSha256": "c481d1986620456bebd80394097046b1c9286f5b6da2f8e06b9720780baf6b9c"
     },
     {
       "chainId": 137,
       "address": "0x9a71012b13ca4d3d0cdc72a177df3ef03b0e76a3",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/29e4b9a70d290df8f2b1.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/bal.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/bal.svg",
+      "logoSha256": "29e4b9a70d290df8f2b16048ff5418f08d1ecf57d38758d0873c5e08a4939af0"
     },
     {
       "chainId": 137,
       "address": "0x3cef98bb43d732e2f285ee605a8158cde967d219",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/4c54670a4be16fd2535a.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/677/thumb/basic-attention-token.png?1696501867"
+      "logoSource": "https://assets.coingecko.com/coins/images/677/thumb/basic-attention-token.png?1696501867",
+      "logoSha256": "4c54670a4be16fd2535abfc27c1ed887af92d4b1ef107314c6927f28d665cc77"
     },
     {
       "chainId": 137,
       "address": "0x8505b9d2254a7ae468c0e9dd10ccea3a837aef5c",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/0f1a61d5a7a2dfb668ed.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/10775/thumb/COMP.png?1696510737"
+      "logoSource": "https://assets.coingecko.com/coins/images/10775/thumb/COMP.png?1696510737",
+      "logoSha256": "0f1a61d5a7a2dfb668edd9a1c116164f3d958bd39e57a8c302c3a6cbda99ef17"
     },
     {
       "chainId": 137,
       "address": "0x172370d5cd63279efa6d502dab29171933a610af",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/a420966c59b95b7a516c.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/crv.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/crv.svg",
+      "logoSha256": "a420966c59b95b7a516cb5bd03013808684e3a07753b0a363f4cce0c8c47d5ec"
     },
     {
       "chainId": 137,
@@ -1401,42 +1590,48 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/91ad32e1db7073978ec7.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/dai.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/dai.svg",
+      "logoSha256": "91ad32e1db7073978ec74140a6c00c684815200a691b1afe44567cee3685bf0c"
     },
     {
       "chainId": 137,
       "address": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/c0b567bd541bf5033207.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weth.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weth.svg",
+      "logoSha256": "c0b567bd541bf50332072c13c19211ffd025062127c75818df52a588414a9655"
     },
     {
       "chainId": 137,
       "address": "0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/d0d86a3bcd99dba9a4e7.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/ghst.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/ghst.svg",
+      "logoSha256": "d0d86a3bcd99dba9a4e79d3308b190f445d156f08074ce16ff6626f571917cc1"
     },
     {
       "chainId": 137,
       "address": "0x5fe2b58c013d7601147dcdd68c143a77499f5531",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/5a7c71c4e8dba34b20d3.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/13397/thumb/Graph_Token.png?1696513159"
+      "logoSource": "https://assets.coingecko.com/coins/images/13397/thumb/Graph_Token.png?1696513159",
+      "logoSha256": "5a7c71c4e8dba34b20d3a9987e2f20227a5c7b3115f0a8a947ef8ffde85b430e"
     },
     {
       "chainId": 137,
       "address": "0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/408cb6cf3c7ab80fe7b3.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/link.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/link.svg",
+      "logoSha256": "408cb6cf3c7ab80fe7b343a76ec9415fc0d55d2ddb4fbd22e8c2f653652faad2"
     },
     {
       "chainId": 137,
       "address": "0xa1c57f48f0deb89f569dfbe6e2b7f46d33606fd4",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/408b28604b35641c7cee.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/878/thumb/decentraland-mana.png?1696502010"
+      "logoSource": "https://assets.coingecko.com/coins/images/878/thumb/decentraland-mana.png?1696502010",
+      "logoSha256": "408b28604b35641c7cee50edc5819e7748b6ff05bbca27c4fea31d06da796d1f"
     },
     {
       "chainId": 137,
@@ -1444,7 +1639,8 @@
       "assetClass": "volatile",
       "classificationReason": "Staked or yield-bearing crypto exposure; the underlying asset has no fixed USD value.",
       "localLogo": "/assets/tokens/190810ef1bc01b54e805.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/maticx.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/maticx.svg",
+      "logoSha256": "190810ef1bc01b54e805324b359ab183b791e4ed594abda374a648ba0bb49ab1"
     },
     {
       "chainId": 137,
@@ -1452,21 +1648,24 @@
       "assetClass": "usd-pegged",
       "classificationReason": "miMATIC is the MAI dollar stablecoin, not exposure to the MATIC or POL token.",
       "localLogo": "/assets/tokens/64da2c68a8a50c1c9f05.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/mai.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/mai.svg",
+      "logoSha256": "64da2c68a8a50c1c9f05d9a98c6c1fa8c9b8a72b9ea318467ba8fa33412787df"
     },
     {
       "chainId": 137,
       "address": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/30e2fe33e7f2b3dd3f05.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wmatic.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wmatic.svg",
+      "logoSha256": "30e2fe33e7f2b3dd3f05b7ae9dee8a676d625ad30a7704eeef9affdbbecd8f0b"
     },
     {
       "chainId": 137,
       "address": "0xbbba073c31bf03b8acf7c28ef0738decf3695683",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/b0f0da75814127619cdf.jpg",
-      "logoSource": "https://assets.coingecko.com/coins/images/12129/thumb/sandbox_logo.jpg?1696511971"
+      "logoSource": "https://assets.coingecko.com/coins/images/12129/thumb/sandbox_logo.jpg?1696511971",
+      "logoSha256": "b0f0da75814127619cdf27dff785d902d131a567483e0ca0617d6d12be69ad31"
     },
     {
       "chainId": 137,
@@ -1474,28 +1673,32 @@
       "assetClass": "volatile",
       "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "localLogo": "/assets/tokens/0243014e93eaf6c8d254.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/3406/thumb/SNX.png?1696504103"
+      "logoSource": "https://assets.coingecko.com/coins/images/3406/thumb/SNX.png?1696504103",
+      "logoSha256": "0243014e93eaf6c8d254dcd532ca4048c5c5ec068dae60be69ea52938612ed02"
     },
     {
       "chainId": 137,
       "address": "0x0b3f868e0be5597d5db7feb59e1cadbb0fdda50a",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/1719ce80d15c07300be1.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/sushi.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/sushi.svg",
+      "logoSha256": "1719ce80d15c07300be1d9cb3cd5fc5fdcd988e31c2338b0f8d4ffef37a3a3dd"
     },
     {
       "chainId": 137,
       "address": "0xb33eaad8d922b1083446dc23f610c2567fb5180f",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/baee5b3bf59bc7321e8a.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/12504/thumb/uniswap-logo.png?1720676669"
+      "logoSource": "https://assets.coingecko.com/coins/images/12504/thumb/uniswap-logo.png?1720676669",
+      "logoSha256": "baee5b3bf59bc7321e8a547b61ffa414a0bb8be3dadccc1bc37e36c9f5f493ed"
     },
     {
       "chainId": 137,
       "address": "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/2782d3d47a9833601e60.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg",
+      "logoSha256": "2782d3d47a9833601e60817a446c127c60831796f5a8d9c323d91cc07834471d"
     },
     {
       "chainId": 137,
@@ -1503,7 +1706,8 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/1d29a434146b992fdd66.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdt0.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdt0.svg",
+      "logoSha256": "1d29a434146b992fdd66538a7e4d0cc0332f281b5cf07530a659c2abed6143c9"
     },
     {
       "chainId": 137,
@@ -1511,42 +1715,48 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "localLogo": "/assets/tokens/54bfdd97b72719969a99.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wbtc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wbtc.svg",
+      "logoSha256": "54bfdd97b72719969a99239a14d7250376177c43c02656a8bf02750d44944614"
     },
     {
       "chainId": 43114,
       "address": "0x63a72806098bd3d9520cc43356dd78afe5d386d9",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/5b1b8adc120ffdfbd91e.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/aave.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/aave.svg",
+      "logoSha256": "5b1b8adc120ffdfbd91e9c774299c615910fdea1c90015fc649755f4c5267546"
     },
     {
       "chainId": 43114,
       "address": "0x00000000efe302beaa2b3e6e1b18d08d69a9012a",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/7336b5bc7028359734d5.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/ausd.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/ausd.svg",
+      "logoSha256": "7336b5bc7028359734d562f5111c1c92ddff03f3d89c9dd6f2c95864bcc430e8"
     },
     {
       "chainId": 43114,
       "address": "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/9f25dbf573e0f7470691.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wavax.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wavax.svg",
+      "logoSha256": "9f25dbf573e0f74706912b6d61e2eebf50a0a34ffc1961412753df559db7a004"
     },
     {
       "chainId": 43114,
       "address": "0x98443b96ea4b0858fdf3219cd13e98c7a4690588",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/4c54670a4be16fd2535a.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/677/thumb/basic-attention-token.png?1696501867"
+      "logoSource": "https://assets.coingecko.com/coins/images/677/thumb/basic-attention-token.png?1696501867",
+      "logoSha256": "4c54670a4be16fd2535abfc27c1ed887af92d4b1ef107314c6927f28d665cc77"
     },
     {
       "chainId": 43114,
       "address": "0xc3048e19e76cb9a3aa9d77d8c03c29fc906e2437",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/0f1a61d5a7a2dfb668ed.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/10775/thumb/COMP.png?1696510737"
+      "logoSource": "https://assets.coingecko.com/coins/images/10775/thumb/COMP.png?1696510737",
+      "logoSha256": "0f1a61d5a7a2dfb668edd9a1c116164f3d958bd39e57a8c302c3a6cbda99ef17"
     },
     {
       "chainId": 43114,
@@ -1554,14 +1764,16 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/91ad32e1db7073978ec7.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/dai.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/dai.svg",
+      "logoSha256": "91ad32e1db7073978ec74140a6c00c684815200a691b1afe44567cee3685bf0c"
     },
     {
       "chainId": 43114,
       "address": "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/c0b567bd541bf5033207.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weth.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weth.svg",
+      "logoSha256": "c0b567bd541bf50332072c13c19211ffd025062127c75818df52a588414a9655"
     },
     {
       "chainId": 43114,
@@ -1569,7 +1781,8 @@
       "assetClass": "other-stable",
       "classificationReason": "Circle EURC targets one euro, not one US dollar.",
       "localLogo": "/assets/tokens/f748e0bd227d54e32b1e.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/eurc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/eurc.svg",
+      "logoSha256": "f748e0bd227d54e32b1ee83af6352981ef64544a7ddf9f361924cd86f9e43ecf"
     },
     {
       "chainId": 43114,
@@ -1577,49 +1790,56 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Legacy FRAX dollar exposure; separate from the FXS governance contract and FRAX governance feed identity.",
       "localLogo": "/assets/tokens/73a18837b56ffca2fb27.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/frax.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/frax.svg",
+      "logoSha256": "73a18837b56ffca2fb270938b7f47ac9887b45aa727e9d6a16f505470950aa71"
     },
     {
       "chainId": 43114,
       "address": "0xfc421ad3c883bf9e7c4f42de845c4e4405799e73",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/4f5c435d1092cfa5cc74.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/gho.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/gho.svg",
+      "logoSha256": "4f5c435d1092cfa5cc74968cea43b3a109b6d733c664fedcc292c0e804304fec"
     },
     {
       "chainId": 43114,
       "address": "0x62edc0692bd897d2295872a9ffcac5425011c661",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/7e40f5a60d7ce701d1fe.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/18323/thumb/arbit.png?1696517814"
+      "logoSource": "https://assets.coingecko.com/coins/images/18323/thumb/arbit.png?1696517814",
+      "logoSha256": "7e40f5a60d7ce701d1fe401c1c010ea25d799574b364da58e62b8cd649d05ccb"
     },
     {
       "chainId": 43114,
       "address": "0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/abfaffeb6f1ad9f73b18.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/17569/thumb/LFJ_JOE_Logo.png?1727200941"
+      "logoSource": "https://assets.coingecko.com/coins/images/17569/thumb/LFJ_JOE_Logo.png?1727200941",
+      "logoSha256": "abfaffeb6f1ad9f73b1818b3d845828f28e921a1d2b326baa14f1f1732a84a03"
     },
     {
       "chainId": 43114,
       "address": "0x5947bb275c521040051d82396192181b413227a3",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/408cb6cf3c7ab80fe7b3.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/link.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/link.svg",
+      "logoSha256": "408cb6cf3c7ab80fe7b343a76ec9415fc0d55d2ddb4fbd22e8c2f653652faad2"
     },
     {
       "chainId": 43114,
       "address": "0x130966628846bfd36ff31a822705796e8cb8c18d",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/188ed6844f2887015448.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/37658/thumb/mim.png?1715164970"
+      "logoSource": "https://assets.coingecko.com/coins/images/37658/thumb/mim.png?1715164970",
+      "logoSha256": "188ed6844f2887015448db2b1947570afe1c2cf44f2746775865b35e99f85b16"
     },
     {
       "chainId": 43114,
       "address": "0x8729438eb15e2c8b576fcc6aecda6a148776c0f5",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/4f445c82f44d917cc641.jpg",
-      "logoSource": "https://assets.coingecko.com/coins/images/16362/thumb/GergDDN3_400x400.jpg?1696515961"
+      "logoSource": "https://assets.coingecko.com/coins/images/16362/thumb/GergDDN3_400x400.jpg?1696515961",
+      "logoSha256": "4f445c82f44d917cc64166c0601d928642ea9fd42ff94a1e984e7ef96e31f9b4"
     },
     {
       "chainId": 43114,
@@ -1627,7 +1847,8 @@
       "assetClass": "volatile",
       "classificationReason": "Staked or yield-bearing crypto exposure; the underlying asset has no fixed USD value.",
       "localLogo": "/assets/tokens/cf6ba62672e8ba997cde.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/savax.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/savax.svg",
+      "logoSha256": "cf6ba62672e8ba997cdecb50ca02a18c21436b5cfacb88949dc598d9a39e41e4"
     },
     {
       "chainId": 43114,
@@ -1635,7 +1856,8 @@
       "assetClass": "volatile",
       "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "localLogo": "/assets/tokens/0243014e93eaf6c8d254.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/3406/thumb/SNX.png?1696504103"
+      "logoSource": "https://assets.coingecko.com/coins/images/3406/thumb/SNX.png?1696504103",
+      "logoSha256": "0243014e93eaf6c8d254dcd532ca4048c5c5ec068dae60be69ea52938612ed02"
     },
     {
       "chainId": 43114,
@@ -1643,14 +1865,16 @@
       "assetClass": "usd-linked",
       "classificationReason": "Yield-bearing staked USDe share; its exchange rate is not fixed at one USD.",
       "localLogo": "/assets/tokens/0d2e0f6e6e9be5af4f1b.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/susde.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/susde.svg",
+      "logoSha256": "0d2e0f6e6e9be5af4f1baaed73d0912badf8f8d60d7f3b43e733d76599fdefa9"
     },
     {
       "chainId": 43114,
       "address": "0x37b608519f91f70f2eeb0e5ed9af4061722e4f76",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/34c01e13ce9c918a272d.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/12271/thumb/512x512_Logo_no_chop.png?1696512101"
+      "logoSource": "https://assets.coingecko.com/coins/images/12271/thumb/512x512_Logo_no_chop.png?1696512101",
+      "logoSha256": "34c01e13ce9c918a272d719c8eb5e01a3135e09f1df15344915fce2ea152846b"
     },
     {
       "chainId": 43114,
@@ -1658,28 +1882,32 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/bdba9d3f664a1101de76.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/3449/thumb/tusd.png?1696504140"
+      "logoSource": "https://assets.coingecko.com/coins/images/3449/thumb/tusd.png?1696504140",
+      "logoSha256": "bdba9d3f664a1101de766da3eab2ae3cd16484cb64baeff57a5a451d8f2fd380"
     },
     {
       "chainId": 43114,
       "address": "0x8ebaf22b6f053dffeaf46f4dd9efa95d89ba8580",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/baee5b3bf59bc7321e8a.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/12504/thumb/uniswap-logo.png?1720676669"
+      "logoSource": "https://assets.coingecko.com/coins/images/12504/thumb/uniswap-logo.png?1720676669",
+      "logoSha256": "baee5b3bf59bc7321e8a547b61ffa414a0bb8be3dadccc1bc37e36c9f5f493ed"
     },
     {
       "chainId": 43114,
       "address": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/2782d3d47a9833601e60.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg",
+      "logoSha256": "2782d3d47a9833601e60817a446c127c60831796f5a8d9c323d91cc07834471d"
     },
     {
       "chainId": 43114,
       "address": "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/cbc193c35371ea70ff52.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdt.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdt.svg",
+      "logoSha256": "cbc193c35371ea70ff5241e8d9c571441e64ee88531ee4366a9ae94cb16c2990"
     },
     {
       "chainId": 43114,
@@ -1687,21 +1915,24 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "localLogo": "/assets/tokens/c96ab2e608fe218d0dfc.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/7598/thumb/WBTCLOGO.png?1764496367"
+      "logoSource": "https://assets.coingecko.com/coins/images/7598/thumb/WBTCLOGO.png?1764496367",
+      "logoSha256": "c96ab2e608fe218d0dfc78754ba5165b9ef7bd0fc9a4ec76fd42104ad1abad26"
     },
     {
       "chainId": 43114,
       "address": "0xd1c3f94de7e5b45fa4edbba472491a9f4b166fc4",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/d4b9eae1b1000bb8e388.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/15466/thumb/avalaunch.png?1696515112"
+      "logoSource": "https://assets.coingecko.com/coins/images/15466/thumb/avalaunch.png?1696515112",
+      "logoSha256": "d4b9eae1b1000bb8e388462d528ac27fb1df85bc414ff053aa510605212ba65f"
     },
     {
       "chainId": 43114,
       "address": "0x9eaac1b23d935365bd7b542fe22ceee2922f52dc",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/ab8b8ddd24828478103e.jpg",
-      "logoSource": "https://assets.coingecko.com/coins/images/11849/thumb/yearn.jpg?1696511720"
+      "logoSource": "https://assets.coingecko.com/coins/images/11849/thumb/yearn.jpg?1696511720",
+      "logoSha256": "ab8b8ddd24828478103e27f8ce53d141714777bcabe5c3e0a6369dc2708aeaba"
     },
     {
       "chainId": 56,
@@ -1709,56 +1940,64 @@
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/20414d41c3758c4c035b.svg",
       "logoIdentity": "Canonical 1inch Network asset; reuse Ethereum 1INCH artwork",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/1inch.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/1inch.svg",
+      "logoSha256": "20414d41c3758c4c035bc63fc44c2b1fa837e8eaed6a42217cb3a35af1504f26"
     },
     {
       "chainId": 56,
       "address": "0xfb6115445bff7b52feb98650c87f44907e58f802",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/903f2b81be1916d89b34.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/12645/thumb/aave-token-round.png?1720472354"
+      "logoSource": "https://assets.coingecko.com/coins/images/12645/thumb/aave-token-round.png?1720472354",
+      "logoSha256": "903f2b81be1916d89b342f89a5f2267bc307fbfdd95b921d1c92906167caaa1b"
     },
     {
       "chainId": 56,
       "address": "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/0f421e5680e8067e23de.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0x3EE2200Efb3400fAbB9AacF31297cBdD1d435D47.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0x3EE2200Efb3400fAbB9AacF31297cBdD1d435D47.png",
+      "logoSha256": "0f421e5680e8067e23dee28bcbe798b208af5e1ce4f70103cb1139efd06fa236"
     },
     {
       "chainId": 56,
       "address": "0x000ae314e2a2172a039b26378814c252734f556a",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/33ccb10ab656514654b2.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/69040/thumb/_ASTER.png?1757326782"
+      "logoSource": "https://assets.coingecko.com/coins/images/69040/thumb/_ASTER.png?1757326782",
+      "logoSha256": "33ccb10ab656514654b287abc00a631bfcd96e6436f052ea2b58058e2a828766"
     },
     {
       "chainId": 56,
       "address": "0x0eb3a705fc54725037cc9e008bdede697f62f335",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/5c851916c4e397b5b00f.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0x0Eb3a705fc54725037CC9e008bDede697f62F335.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0x0Eb3a705fc54725037CC9e008bDede697f62F335.png",
+      "logoSha256": "5c851916c4e397b5b00f36aa8aac2e1a09e87d5b9cffeeca8aea17f6dacf09ad"
     },
     {
       "chainId": 56,
       "address": "0x1ce0c2827e2ef14d5c4f29a091d735a204794041",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/290b145641a5001d47b8.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/18674/thumb/avax_logo_1.png?1696518143"
+      "logoSource": "https://assets.coingecko.com/coins/images/18674/thumb/avax_logo_1.png?1696518143",
+      "logoSha256": "290b145641a5001d47b8e6fcafa77106faba93e2731a1d2fc963bcc8dcdbd40b"
     },
     {
       "chainId": 56,
       "address": "0x715d400f88c167884bbcc41c5fea407ed4d2f8a0",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/739d2de9ec6ee38bc57d.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0x715D400F88C167884bbCc41C5FeA407ed4D2f8A0.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0x715D400F88C167884bbCc41C5FeA407ed4D2f8A0.png",
+      "logoSha256": "739d2de9ec6ee38bc57d548b23c9c0ec3f24f3d0dd9c85c0a5e76cda5b568ae9"
     },
     {
       "chainId": 56,
       "address": "0x8ff795a6f4d97e7887c79bea79aba5cc76444adf",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/0dccc0835054b9846287.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0x8fF795a6F4D97E7887C79beA79aba5cc76444aDf.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0x8fF795a6F4D97E7887C79beA79aba5cc76444aDf.png",
+      "logoSha256": "0dccc0835054b9846287c476d333b0d76ccfebef05a929ab870f16f8a262f25e"
     },
     {
       "chainId": 56,
@@ -1766,14 +2005,16 @@
       "assetClass": "volatile",
       "classificationReason": "Staked or yield-bearing crypto exposure; the underlying asset has no fixed USD value.",
       "localLogo": "/assets/tokens/85d9f8f276ef0c398b0b.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0x250632378E573c6Be1AC2f97Fcdf00515d0Aa91B.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0x250632378E573c6Be1AC2f97Fcdf00515d0Aa91B.png",
+      "logoSha256": "85d9f8f276ef0c398b0b555ed7100291f95243b4a248ef32dc71b26bf7693029"
     },
     {
       "chainId": 56,
       "address": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/ed7452f1b284f5cbac05.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wbnb.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wbnb.svg",
+      "logoSha256": "ed7452f1b284f5cbac0578edec0f5e78ccc3b35271a1b85aa1bb6fbcd032c980"
     },
     {
       "chainId": 56,
@@ -1781,28 +2022,32 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Binance-Peg BUSD represents a dollar stablecoin; this class does not confirm current redemption or peg health.",
       "localLogo": "/assets/tokens/f8d25a164ee25fd0cb53.png",
-      "logoSource": "https://files.cow.fi/token-lists/images/56/0xe9e7cea3dedca5984780bafc599bd69add087d56/logo.png"
+      "logoSource": "https://files.cow.fi/token-lists/images/56/0xe9e7cea3dedca5984780bafc599bd69add087d56/logo.png",
+      "logoSha256": "f8d25a164ee25fd0cb5322e5455ff70a1dec2371844b462ae10ddbfcb781b6e2"
     },
     {
       "chainId": 56,
       "address": "0xaec945e04baf28b135fa7c640f624f8d90f1c3a6",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/450fcf12f7d24e5a519a.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0xaEC945e04baF28b135Fa7c640f624f8D90F1C3a6.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0xaEC945e04baF28b135Fa7c640f624f8D90F1C3a6.png",
+      "logoSha256": "450fcf12f7d24e5a519a6bb8f2c7f67edb55f7a312bbb3194cccf9a576a54058"
     },
     {
       "chainId": 56,
       "address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/1c2089167f79caaa3622.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/cake.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/cake.svg",
+      "logoSha256": "1c2089167f79caaa3622362f5035c2145e10ec4a38df97745d17df249d4bc4c9"
     },
     {
       "chainId": 56,
       "address": "0x52ce071bd9b1c4b00a0b92d298c512478cad67e8",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/a71acba69abf78de80ef.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0x52CE071Bd9b1C4B00A0b92D298c512478CaD67e8.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0x52CE071Bd9b1C4B00A0b92D298c512478CaD67e8.png",
+      "logoSha256": "a71acba69abf78de80ef31e0adbfdc40f887515d398824ac235567d7d4068b8c"
     },
     {
       "chainId": 56,
@@ -1810,21 +2055,24 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/c3ddc7ea30c09d33e9b3.png",
-      "logoSource": "https://files.cow.fi/token-lists/images/56/0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3/logo.png"
+      "logoSource": "https://files.cow.fi/token-lists/images/56/0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3/logo.png",
+      "logoSha256": "c3ddc7ea30c09d33e9b3e7e6c02780ca349f32ed41af484dc00a4d044efc769a"
     },
     {
       "chainId": 56,
       "address": "0xba2ae424d960c26247dd6c32edc70b295c744c43",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/d68612fcc588aeb75535.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0xbA2aE424d960c26247Dd6c32edC70B295c744C43.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0xbA2aE424d960c26247Dd6c32edC70B295c744C43.png",
+      "logoSha256": "d68612fcc588aeb75535b33368b6ed69b3a2f2bc9811e317ed6ac7d32d899681"
     },
     {
       "chainId": 56,
       "address": "0x7083609fce4d1d8dc0c979aab8c869ea2c873402",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/ef8d18ede67304c7535b.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0x7083609fCE4d1d8Dc0C979AAb8c869Ea2C873402.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0x7083609fCE4d1d8Dc0C979AAb8c869Ea2C873402.png",
+      "logoSha256": "ef8d18ede67304c7535b893dd7dbcc42e62442bb3ea3189f342d735a135f521f"
     },
     {
       "chainId": 56,
@@ -1832,42 +2080,48 @@
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/4acd86bb46b4884ccbd8.svg",
       "identitySource": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/assets/0x2170Ed0880ac9A755fd29B2688956BD959F933F8/info.json",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/eth.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/eth.svg",
+      "logoSha256": "4acd86bb46b4884ccbd815138c1b9c312ef3ed0354d6c25a7b3031aa70cf2930"
     },
     {
       "chainId": 56,
       "address": "0xc5f0f7b66764f6ec8c8dff7ba683102295e16409",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/937d603bd15f64a2d020.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/fdusd.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/fdusd.svg",
+      "logoSha256": "937d603bd15f64a2d0201df3e6fbd42551960dd756a1daab640b83b217dd8b7f"
     },
     {
       "chainId": 56,
       "address": "0x031b41e504677879370e9dbcf937283a8691fa7f",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/2ebdafc1b917926af9e5.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0x031b41e504677879370e9DBcF937283A8691Fa7f.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0x031b41e504677879370e9DBcF937283A8691Fa7f.png",
+      "logoSha256": "2ebdafc1b917926af9e55f7e9a230cb164c1df4c8d68edfc890d4647ac4971b5"
     },
     {
       "chainId": 56,
       "address": "0x0d8ce2a99bb6e3b7db580ed848240e4a0f9ae153",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/e4c1b9aaf257947e85a5.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0x0D8Ce2A99Bb6e3B7Db580eD848240e4a0F9aE153.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0x0D8Ce2A99Bb6e3B7Db580eD848240e4a0F9aE153.png",
+      "logoSha256": "e4c1b9aaf257947e85a5fd4333b1c641030f4180a85fdeddd60ce4034fa4d0cf"
     },
     {
       "chainId": 56,
       "address": "0xa2b726b1145a4773f68593cf171187d8ebe4d495",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/3caca809e784b9b6da93.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0xa2B726B1145A4773F68593CF171187d8EBe4d495.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0xa2B726B1145A4773F68593CF171187d8EBe4d495.png",
+      "logoSha256": "3caca809e784b9b6da93628daa3aec231122a26f881112fd0da6eb13278cfbab"
     },
     {
       "chainId": 56,
       "address": "0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/62de5caebaa097ac8b37.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0xF8A0BF9cF54Bb92F17374d9e9A321E6a111a51bD.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0xF8A0BF9cF54Bb92F17374d9e9A321E6a111a51bD.png",
+      "logoSha256": "62de5caebaa097ac8b37f044081eea0d983d19ec10d506e6c48057b365695283"
     },
     {
       "chainId": 56,
@@ -1875,7 +2129,8 @@
       "assetClass": "volatile",
       "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "localLogo": "/assets/tokens/4a74b374dc3f4eeab67d.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0xFceB31A79F71AC9CBDCF853519c1b12D379EdC46.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0xFceB31A79F71AC9CBDCF853519c1b12D379EdC46.png",
+      "logoSha256": "4a74b374dc3f4eeab67d45ea738c4033c3c1e1fe2df41cb6b0c6ef3a32e7314f"
     },
     {
       "chainId": 56,
@@ -1883,63 +2138,72 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Lista lisUSD is the dollar stablecoin, separate from the LISTA governance token.",
       "localLogo": "/assets/tokens/c93f69f1013c23dec390.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0x0782b6d8c4551B9760e74c0545a9bCD90bdc41E5.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0x0782b6d8c4551B9760e74c0545a9bCD90bdc41E5.png",
+      "logoSha256": "c93f69f1013c23dec390a23b4ad46aab0ce3c0004065d9ebe17e4702191c7b23"
     },
     {
       "chainId": 56,
       "address": "0x4338665cbb7b2485a8855a139b75d5e34ab0db94",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/c76112d1266e62d58298.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0x4338665CBB7B2485A8855A139b75D5e34AB0DB94.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0x4338665CBB7B2485A8855A139b75D5e34AB0DB94.png",
+      "logoSha256": "c76112d1266e62d58298f0457019134be070b190ac187a944873681fed8d1a83"
     },
     {
       "chainId": 56,
       "address": "0x2ed9a5c8c13b93955103b9a7c167b67ef4d568a3",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/f81c5aa79e77c90a1640.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0x2eD9a5C8C13b93955103B9a7C167B67Ef4d568a3.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0x2eD9a5C8C13b93955103B9a7C167B67Ef4d568a3.png",
+      "logoSha256": "f81c5aa79e77c90a1640c9f2cb71fd84d56b6acc0126b4e4e9fd5ee98cf0819f"
     },
     {
       "chainId": 56,
       "address": "0x1fa4a73a3f0133f0025378af00236f3abdee5d63",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/4eff5b88d50f74e8d0c5.webp",
-      "logoSource": "https://assets.coingecko.com/coins/images/51252/thumb/NEAR.JPG?1730470269"
+      "logoSource": "https://assets.coingecko.com/coins/images/51252/thumb/NEAR.JPG?1730470269",
+      "logoSha256": "4eff5b88d50f74e8d0c5d8748571553b9ae261f1a5a1ee3b3f521d15c6d5ecf9"
     },
     {
       "chainId": 56,
       "address": "0xfd7b3a77848f1c2d67e05e54d78d174a0c850335",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/553aa4ea47bc14331275.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0xFd7B3A77848f1C2D67E05E54d78d174a0C850335.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0xFd7B3A77848f1C2D67E05E54d78d174a0C850335.png",
+      "logoSha256": "553aa4ea47bc14331275ca864fc8b25d078bd8ae0c41d4b69d23d527a519b203"
     },
     {
       "chainId": 56,
       "address": "0xf7de7e8a6bd59ed41a4b5fe50278b3b7f31384df",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/093dd4a701c5fded7ece.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0xf7DE7E8A6bd59ED41a4b5fe50278b3B7f31384dF.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0xf7DE7E8A6bd59ED41a4b5fe50278b3B7f31384dF.png",
+      "logoSha256": "093dd4a701c5fded7ece15479896de60587193c87894cc00444d3a2307e40394"
     },
     {
       "chainId": 56,
       "address": "0x2859e4544c4bb03966803b044a93563bd2d0dd4d",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/bb01778b0de5d2831336.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/50193/thumb/shib.png?1726214772"
+      "logoSource": "https://assets.coingecko.com/coins/images/50193/thumb/shib.png?1726214772",
+      "logoSha256": "bb01778b0de5d2831336586928ebfbf281e6d9f116843fc70671536304aebabc"
     },
     {
       "chainId": 56,
       "address": "0x570a5d26f7765ecb712c0924e4de545b89fd43df",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/60bae40dc5a736fd80e6.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0x570A5D26f7765Ecb712C0924E4De545B89fD43dF.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0x570A5D26f7765Ecb712C0924E4De545B89fD43dF.png",
+      "logoSha256": "60bae40dc5a736fd80e6bc604ddb036c9db249cf598470a7e1c31bd05f58892e"
     },
     {
       "chainId": 56,
       "address": "0x947950bcc74888a40ffa2593c5798f11fc9124c4",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/5f2a350a407927aac3ed.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0x947950BcC74888a40Ffa2593C5798F11Fc9124C4.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0x947950BcC74888a40Ffa2593C5798F11Fc9124C4.png",
+      "logoSha256": "5f2a350a407927aac3ed1c796035dcecd1d7df587a1bf4e2a1885eb1c9b691f6"
     },
     {
       "chainId": 56,
@@ -1947,21 +2211,24 @@
       "assetClass": "volatile",
       "classificationReason": "TREE is the Treehouse governance token, not a fixed-income or stable-value vault share.",
       "localLogo": "/assets/tokens/296afa2fbcbc8acd9a3b.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/67664/thumb/TREE_logo.png?1753601041"
+      "logoSource": "https://assets.coingecko.com/coins/images/67664/thumb/TREE_logo.png?1753601041",
+      "logoSha256": "296afa2fbcbc8acd9a3be49ef564585f3cfb469365191e9d45d8c92971225ec0"
     },
     {
       "chainId": 56,
       "address": "0xce7de646e7208a4ef112cb6ed5038fa6cc6b12e3",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/e5c6ce7a2b89423adb5d.webp",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0xCE7de646e7208a4Ef112cb6ed5038FA6cC6b12e3.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0xCE7de646e7208a4Ef112cb6ed5038FA6cC6b12e3.png",
+      "logoSha256": "e5c6ce7a2b89423adb5d4ac3aacdc18b48601b4940def2d5ff5c87c4d045a92e"
     },
     {
       "chainId": 56,
       "address": "0x40af3827f39d0eacbf4a168f8d4ee67c121d11c9",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/17e160c5cec991e27c09.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0x40af3827F39D0EAcBF4A168f8D4ee67c121D11c9.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0x40af3827F39D0EAcBF4A168f8D4ee67c121D11c9.png",
+      "logoSha256": "17e160c5cec991e27c09a5f06550a0118fcd0cff1e47f03dc233508f58cdb62e"
     },
     {
       "chainId": 56,
@@ -1969,21 +2236,24 @@
       "assetClass": "usd-pegged",
       "classificationReason": "United Stables U targets one USD; issuer lists this exact contract on Ethereum and BNB Chain: https://u.tech/ecosystem/multichain/",
       "localLogo": "/assets/tokens/f3fb9646bcd462636261.jpg",
-      "logoSource": "https://assets.coingecko.com/coins/images/71157/thumb/united-stables-logo.jpg?1766061640"
+      "logoSource": "https://assets.coingecko.com/coins/images/71157/thumb/united-stables-logo.jpg?1766061640",
+      "logoSha256": "f3fb9646bcd46263626148e83096e642c2f3cc763767e7f07234112c976b35f8"
     },
     {
       "chainId": 56,
       "address": "0xbf5140a22578168fd562dccf235e5d43a02ce9b1",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/21b27ec860616b9c8365.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0xBf5140A22578168FD562DCcF235E5D43A02ce9B1.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0xBf5140A22578168FD562DCcF235E5D43A02ce9B1.png",
+      "logoSha256": "21b27ec860616b9c8365fd023bae3a23508932872807502fd92cb0b35065154d"
     },
     {
       "chainId": 56,
       "address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/3f7e7a7ae10f296bb141.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/54977/thumb/USD1_1000x1000_transparent.png?1749297002"
+      "logoSource": "https://assets.coingecko.com/coins/images/54977/thumb/USD1_1000x1000_transparent.png?1749297002",
+      "logoSha256": "3f7e7a7ae10f296bb1419a904c0f1febe277e4c774aff0f6ad4bcba35381ebfc"
     },
     {
       "chainId": 56,
@@ -1991,7 +2261,8 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/2782d3d47a9833601e60.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg",
+      "logoSha256": "2782d3d47a9833601e60817a446c127c60831796f5a8d9c323d91cc07834471d"
     },
     {
       "chainId": 56,
@@ -1999,7 +2270,8 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Ethena USDe targets one USD through synthetic dollar backing; this does not classify its backing as risk-free.",
       "localLogo": "/assets/tokens/211018048bc8a8fd89b7.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/33613/thumb/usde.png?1733810059"
+      "logoSource": "https://assets.coingecko.com/coins/images/33613/thumb/usde.png?1733810059",
+      "logoSha256": "211018048bc8a8fd89b733ee6df9cdcf9b584d2566c0db5eda1178fcfb1a0934"
     },
     {
       "chainId": 56,
@@ -2007,7 +2279,8 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/cbc193c35371ea70ff52.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdt.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdt.svg",
+      "logoSha256": "cbc193c35371ea70ff5241e8d9c571441e64ee88531ee4366a9ae94cb16c2990"
     },
     {
       "chainId": 56,
@@ -2015,7 +2288,8 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Venus VAI targets one USD; separate from the XVS governance token.",
       "localLogo": "/assets/tokens/84137553e921711cab4f.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0x4BD17003473389A42DAF6a0a729f6Fdb328BbBd7.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0x4BD17003473389A42DAF6a0a729f6Fdb328BbBd7.png",
+      "logoSha256": "84137553e921711cab4faadbc01de524ae9ed6413b09051e96b80e007de7760d"
     },
     {
       "chainId": 56,
@@ -2023,7 +2297,8 @@
       "assetClass": "volatile",
       "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "localLogo": "/assets/tokens/3e3509465d1f024a2c19.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/50767/thumb/wlfi.png?1756438915"
+      "logoSource": "https://assets.coingecko.com/coins/images/50767/thumb/wlfi.png?1756438915",
+      "logoSha256": "3e3509465d1f024a2c19aba95ec4db3f65efd09ed24ac9a90aacd4ba6f68042e"
     },
     {
       "chainId": 56,
@@ -2031,28 +2306,32 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "localLogo": "/assets/tokens/a44eb9b6b4d97a7a9671.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wsteth.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wsteth.svg",
+      "logoSha256": "a44eb9b6b4d97a7a967171679356c12d620494da8eeb65293d1149ea55f12419"
     },
     {
       "chainId": 56,
       "address": "0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/dffc89c6c9e0531eba70.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0x1D2F0da169ceB9fC7B3144628dB156f3F6c60dBE.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0x1D2F0da169ceB9fC7B3144628dB156f3F6c60dBE.png",
+      "logoSha256": "dffc89c6c9e0531eba709dc5c202f90dbfeda7ed4455524187ed8aa87c350089"
     },
     {
       "chainId": 56,
       "address": "0x16939ef78684453bfdfb47825f8a5f714f12623a",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/fcd7a890ab2c80c1aefc.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0x16939ef78684453bfDFb47825F8a5F714f12623a.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0x16939ef78684453bfDFb47825F8a5F714f12623a.png",
+      "logoSha256": "fcd7a890ab2c80c1aefca0067e6f9b35b68891a6d0f063fcb5666db4c93d02fb"
     },
     {
       "chainId": 56,
       "address": "0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/d01e65e11bcfaeaa1fef.png",
-      "logoSource": "https://tokens.pancakeswap.finance/images/0xcF6BB5389c92Bdda8a3747Ddb454cB7a64626C63.png"
+      "logoSource": "https://tokens.pancakeswap.finance/images/0xcF6BB5389c92Bdda8a3747Ddb454cB7a64626C63.png",
+      "logoSha256": "d01e65e11bcfaeaa1fefd7be9b4af0b4e9cadaaeacb907fc7a09ff087c4ccb69"
     },
     {
       "chainId": 59144,
@@ -2060,42 +2339,48 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/ce5266e664757c3ffbeb.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/31272/thumb/dai-stablecoin.png?1696530095"
+      "logoSource": "https://assets.coingecko.com/coins/images/31272/thumb/dai-stablecoin.png?1696530095",
+      "logoSha256": "ce5266e664757c3ffbeb88c70c9b2732fb7f14a40ea5acaf31b8b04fa0e8d0eb"
     },
     {
       "chainId": 59144,
       "address": "0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/c0b567bd541bf5033207.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weth.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weth.svg",
+      "logoSha256": "c0b567bd541bf50332072c13c19211ffd025062127c75818df52a588414a9655"
     },
     {
       "chainId": 59144,
       "address": "0x1789e0043623282d5dcc7f213d703c6d8bafbb04",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/0879a2b69b8c4c76accf.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/68507/thumb/linea-logo.jpeg?1756025484"
+      "logoSource": "https://assets.coingecko.com/coins/images/68507/thumb/linea-logo.jpeg?1756025484",
+      "logoSha256": "0879a2b69b8c4c76accf4a315f83ffc86824de14c1c3defd9dc9578aa4e8d5cd"
     },
     {
       "chainId": 59144,
       "address": "0xa18152629128738a5c081eb226335fed4b9c95e9",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/db40b31615a449abb1b8.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/877/thumb/Chainlink_Logo_500.png?1760023405"
+      "logoSource": "https://assets.coingecko.com/coins/images/877/thumb/Chainlink_Logo_500.png?1760023405",
+      "logoSha256": "db40b31615a449abb1b8b9b1c01069836a3b35deee828a0578ca2d66b14b87d7"
     },
     {
       "chainId": 59144,
       "address": "0xaca92e438df0b2401ff60da7e4337b687a2435da",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/9d2e3cd7888db7176e28.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/musd.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/musd.svg",
+      "logoSha256": "9d2e3cd7888db7176e28a3f3ba0e125511a1df291565b63eca0ccc538167b1f0"
     },
     {
       "chainId": 59144,
       "address": "0x176211869ca2b568f2a7d4ee941e073a821ee1ff",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/2782d3d47a9833601e60.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg",
+      "logoSha256": "2782d3d47a9833601e60817a446c127c60831796f5a8d9c323d91cc07834471d"
     },
     {
       "chainId": 59144,
@@ -2103,7 +2388,8 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/cbc193c35371ea70ff52.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdt.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdt.svg",
+      "logoSha256": "cbc193c35371ea70ff5241e8d9c571441e64ee88531ee4366a9ae94cb16c2990"
     },
     {
       "chainId": 59144,
@@ -2111,28 +2397,32 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "localLogo": "/assets/tokens/a44eb9b6b4d97a7a9671.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wsteth.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wsteth.svg",
+      "logoSha256": "a44eb9b6b4d97a7a967171679356c12d620494da8eeb65293d1149ea55f12419"
     },
     {
       "chainId": 9745,
       "address": "0x9895d81bb462a195b4922ed7de0e3acd007c32cb",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/c0b567bd541bf5033207.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weth.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weth.svg",
+      "logoSha256": "c0b567bd541bf50332072c13c19211ffd025062127c75818df52a588414a9655"
     },
     {
       "chainId": 9745,
       "address": "0xb77e872a68c62cfc0dfb02c067ecc3da23b4bbf3",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/4f5c435d1092cfa5cc74.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/gho.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/gho.svg",
+      "logoSha256": "4f5c435d1092cfa5cc74968cea43b3a109b6d733c664fedcc292c0e804304fec"
     },
     {
       "chainId": 9745,
       "address": "0x76a443768a5e3b8d1aed0105fc250877841deb40",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/db40b31615a449abb1b8.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/877/thumb/Chainlink_Logo_500.png?1760023405"
+      "logoSource": "https://assets.coingecko.com/coins/images/877/thumb/Chainlink_Logo_500.png?1760023405",
+      "logoSha256": "db40b31615a449abb1b8b9b1c01069836a3b35deee828a0578ca2d66b14b87d7"
     },
     {
       "chainId": 9745,
@@ -2140,7 +2430,8 @@
       "assetClass": "usd-linked",
       "classificationReason": "Yield-bearing staked USDe share; its exchange rate is not fixed at one USD.",
       "localLogo": "/assets/tokens/0d2e0f6e6e9be5af4f1b.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/susde.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/susde.svg",
+      "logoSha256": "0d2e0f6e6e9be5af4f1baaed73d0912badf8f8d60d7f3b43e733d76599fdefa9"
     },
     {
       "chainId": 9745,
@@ -2148,14 +2439,16 @@
       "assetClass": "usd-pegged",
       "classificationReason": "USDai is the dollar stablecoin; separate from the yield-bearing sUSDai share.",
       "localLogo": "/assets/tokens/3b4a9cc3514a1fce4db9.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/55857/thumb/USDai_Token_Full_Glyph.png?1755229050"
+      "logoSource": "https://assets.coingecko.com/coins/images/55857/thumb/USDai_Token_Full_Glyph.png?1755229050",
+      "logoSha256": "3b4a9cc3514a1fce4db9399d8b5da91fadb07ec2ae94a3a185beb5579aa25bd1"
     },
     {
       "chainId": 9745,
       "address": "0x2d661c89d812261039af9764eceaaee884f5f67f",
       "assetClass": "usd-pegged",
       "localLogo": "/assets/tokens/c41385816101232f0f20.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/6319/thumb/USDC.png?1769615602"
+      "logoSource": "https://assets.coingecko.com/coins/images/6319/thumb/USDC.png?1769615602",
+      "logoSha256": "c41385816101232f0f2089bcc9fad3d920537bd5db84e2eed47e2e1521c35bb1"
     },
     {
       "chainId": 9745,
@@ -2163,7 +2456,8 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Ethena USDe targets one USD through synthetic dollar backing; this does not classify its backing as risk-free.",
       "localLogo": "/assets/tokens/1171f7df5d6b6c139a1e.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usde.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usde.svg",
+      "logoSha256": "1171f7df5d6b6c139a1ee60dcc576428d0abf1049ab965dbb066bfb53d936350"
     },
     {
       "chainId": 9745,
@@ -2171,14 +2465,16 @@
       "assetClass": "usd-pegged",
       "classificationReason": "USDT0 represents Tether dollar exposure; the cross-chain wrapper does not change its USD target.",
       "localLogo": "/assets/tokens/1d29a434146b992fdd66.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdt0.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdt0.svg",
+      "logoSha256": "1d29a434146b992fdd66538a7e4d0cc0332f281b5cf07530a659c2abed6143c9"
     },
     {
       "chainId": 9745,
       "address": "0x6100e367285b01f48d07953803a2d8dca5d19873",
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/c7617a3781f2029e0017.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/xpl.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/xpl.svg",
+      "logoSha256": "c7617a3781f2029e0017801bef631e62f2862ed8174b6fdbbe9881295a1c25a5"
     },
     {
       "chainId": 9745,
@@ -2186,7 +2482,8 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "localLogo": "/assets/tokens/fe888a0aba0005d9f4ca.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weeth.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weeth.svg",
+      "logoSha256": "fe888a0aba0005d9f4ca04c9a3b5c3bc629e8a7f392c9dab3fc13222be6273b1"
     },
     {
       "chainId": 11155111,
@@ -2194,7 +2491,8 @@
       "assetClass": "volatile",
       "classificationReason": "Sepolia WETH is the test wrapped-ETH asset; classified by ETH exposure, not by test-market value.",
       "localLogo": "/assets/tokens/da3e918513b3765ba8d5.png",
-      "logoSource": "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2/logo.png"
+      "logoSource": "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2/logo.png",
+      "logoSha256": "da3e918513b3765ba8d528031c17d91ee78947ff5bd0d09b41c65b82bdfbbf42"
     },
     {
       "chainId": 11155111,
@@ -2202,7 +2500,8 @@
       "assetClass": "volatile",
       "classificationReason": "Historical Sepolia UNI test token models the volatile Uniswap governance asset.",
       "localLogo": "/assets/tokens/8eaddfb8ec20f7792036.png",
-      "logoSource": "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984/logo.png"
+      "logoSource": "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/images/1/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984/logo.png",
+      "logoSha256": "8eaddfb8ec20f7792036f88e88ebf216d5b8eb5e09c4dbfd3c5790ce6f7dc001"
     },
     {
       "chainId": 11155111,
@@ -2210,7 +2509,8 @@
       "assetClass": "usd-pegged",
       "classificationReason": "Historical Sepolia test USD buy token; models USD exposure without a claim of production backing or redemption.",
       "localLogo": "/assets/tokens/6d14601d0b1109046e36.png",
-      "logoSource": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png"
+      "logoSource": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48/logo.png",
+      "logoSha256": "6d14601d0b1109046e366592b8c0f256ffb075f69180b65dddd97ae665d49f9e"
     },
     {
       "chainId": 42161,
@@ -2219,7 +2519,8 @@
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/2782d3d47a9833601e60.svg",
       "logoIdentity": "Canonical Circle USDC bridge representation; reuse Circle USDC artwork",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg",
+      "logoSha256": "2782d3d47a9833601e60817a446c127c60831796f5a8d9c323d91cc07834471d"
     },
     {
       "chainId": 137,
@@ -2228,7 +2529,8 @@
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/2782d3d47a9833601e60.svg",
       "logoIdentity": "Canonical Circle USDC bridge representation; reuse Circle USDC artwork",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg",
+      "logoSha256": "2782d3d47a9833601e60817a446c127c60831796f5a8d9c323d91cc07834471d"
     },
     {
       "chainId": 43114,
@@ -2237,7 +2539,8 @@
       "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "localLogo": "/assets/tokens/2782d3d47a9833601e60.svg",
       "logoIdentity": "Canonical Circle USDC bridge representation; reuse Circle USDC artwork",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/usdc.svg",
+      "logoSha256": "2782d3d47a9833601e60817a446c127c60831796f5a8d9c323d91cc07834471d"
     },
     {
       "chainId": 1,
@@ -2245,7 +2548,8 @@
       "assetClass": "usd-pegged",
       "classificationReason": "United Stables U targets one USD; issuer lists this exact contract on Ethereum and BNB Chain: https://u.tech/ecosystem/multichain/",
       "localLogo": "/assets/tokens/f3fb9646bcd462636261.jpg",
-      "logoSource": "https://assets.coingecko.com/coins/images/71157/thumb/united-stables-logo.jpg?1766061640"
+      "logoSource": "https://assets.coingecko.com/coins/images/71157/thumb/united-stables-logo.jpg?1766061640",
+      "logoSha256": "f3fb9646bcd46263626148e83096e642c2f3cc763767e7f07234112c976b35f8"
     },
     {
       "chainId": 1,
@@ -2253,7 +2557,8 @@
       "assetClass": "volatile",
       "classificationReason": "Frax Share governance token, now associated with FRAX governance; this contract is not the legacy FRAX dollar.",
       "localLogo": "/assets/tokens/d35a1537f35a5ea3661c.svg",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/fxs.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/fxs.svg",
+      "logoSha256": "d35a1537f35a5ea3661c98717ffb4a28cd93378106bcc8c5424b4110031273ab"
     },
     {
       "chainId": 43114,
@@ -2263,7 +2568,8 @@
       "localLogo": "/assets/tokens/a44eb9b6b4d97a7a9671.svg",
       "logoIdentity": "Lido wstETH deployed by LayerZero; reuse official wstETH artwork",
       "identitySource": "https://research.lido.fi/t/wsteth-on-avalanche-and-bnb-and-ownership-acceptance-by-lido-dao/5749",
-      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wsteth.svg"
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wsteth.svg",
+      "logoSha256": "a44eb9b6b4d97a7a967171679356c12d620494da8eeb65293d1149ea55f12419"
     }
   ],
   "usdTokens": {

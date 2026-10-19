@@ -1,6 +1,9 @@
 """Offline approval-policy tests. Run with python3 -m unittest discover -s scripts -p 'test_*.py'."""
 import copy
+import hashlib
 import importlib.util
+import io
+import json
 import pathlib
 import tempfile
 import unittest
@@ -51,6 +54,7 @@ class CatalogPolicyTests(unittest.TestCase):
             "chainId": chain, "address": address(number), "symbol": symbol,
             "name": symbol + " token", "decimals": 18, "localLogo": "/token.svg",
             "logoURI": "https://example.test/token.svg", "assetClass": asset_class,
+            "logoSha256": hashlib.sha256(b"x" * 101).hexdigest(),
             "classificationReason": "Fixture classification", "baseAssets": [symbol],
             "logoSources": ["https://example.test/token.svg"],
         }
@@ -139,6 +143,11 @@ class CatalogPolicyTests(unittest.TestCase):
                 policy["approvals"][1][field] = value
                 with self.assertRaises(ValueError):
                     catalog.build(self.identities, self.inventories, policy, self.verification)
+
+    def test_approval_requires_its_reviewed_source_row(self):
+        self.inventories["1"].remove(self.sell_feed)
+        with self.assertRaisesRegex(ValueError, "exactly one source path/proxy"):
+            self.build()
 
     def test_proxy_change_invalidates_approval(self):
         self.sell_feed["proxyAddress"] = address(79999)
@@ -360,19 +369,150 @@ class CatalogPolicyTests(unittest.TestCase):
         test_token = next(token for token in result["tokens"] if token["chainId"] == 11155111)
         self.assertEqual(test_token["oracles"], {})
 
-    def test_initial_policy_audits_all_2102_source_rows_without_approval(self):
+    def test_logo_digest_is_required_and_must_match_file(self):
+        for digest in [None, "", "invalid", "0" * 64]:
+            with self.subTest(digest=digest):
+                identity = copy.deepcopy(self.identities)
+                if digest is None:
+                    del identity["tokens"][0]["logoSha256"]
+                else:
+                    identity["tokens"][0]["logoSha256"] = digest
+                with self.assertRaisesRegex(ValueError, "logoSha256|Logo digest differs"):
+                    catalog.build(identity, self.inventories, self.policy, self.verification)
+        (catalog.ROOT / "public/token.svg").write_text("y" * 101)
+        with self.assertRaisesRegex(ValueError, "Logo digest differs"):
+            self.build()
+
+    def test_audit_accounts_for_each_fixture_source_row(self):
+        capped = self.feed(1, 80004, "capped-usd", "CAPPED")
+        capped["docs"]["stablecoinCapped"] = True
+        hidden = self.feed(100, 80005, "hidden-usd", "HIDDEN")
+        hidden["docs"]["hidden"] = True
+        _, audit = self.build()
+        self.assertEqual(len(audit), sum(map(len, self.inventories.values())))
+        self.assertCountEqual(
+            [(row["chainId"], row["path"], row["proxyAddress"]) for row in audit],
+            [(int(chain), feed["path"], feed["proxyAddress"]) for chain, feeds in self.inventories.items() for feed in feeds],
+        )
+        self.assertEqual(
+            {row["path"]: (row["status"], row["reason"]) for row in audit},
+            {
+                "buy-usd": ("included", "approved"),
+                "sell-usd": ("included", "approved"),
+                "other-usd": ("unresolved", "awaiting-approval"),
+                "capped-usd": ("excluded", "bounded-price-methodology-not-approved"),
+                "hidden-usd": ("excluded", "hidden-or-deprecating"),
+            },
+        )
+
+    def test_repository_reviewed_inputs_are_empty_and_expose_no_production_routes(self):
         root = pathlib.Path(__file__).resolve().parents[1]
-        import json
         inventories = json.loads((root / "scripts/catalog-feeds.json").read_text())
         policy = json.loads((root / "scripts/catalog-policy.json").read_text())
-        result, audit = catalog.build(self.identities, inventories, policy, self.verification)
-        self.assertEqual(len(audit), 2102)
-        self.assertEqual(len(audit), sum(map(len, inventories.values())))
-        self.assertTrue(all(not token["oracles"] for token in result["tokens"]))
-        self.assertTrue(all(row["status"] != "included" for row in audit))
-        self.assertTrue(any(row["reason"] == "awaiting-approval" for row in audit))
-        self.assertTrue(any(row["reason"] == "bounded-price-methodology-not-approved" for row in audit))
-        self.assertTrue(all(result["chains"][str(chain)]["status"] == "unavailable" for chain in catalog.PRODUCTION_CHAINS))
+        verification = json.loads((root / policy["verificationFile"]).read_text())
+        self.assertEqual(inventories, {})
+        self.assertEqual(policy["approvals"], [])
+        self.assertEqual(verification["chains"], {})
+        result, audit = catalog.build(self.identities, inventories, policy, verification)
+        self.assertEqual(audit, [])
+        self.assertEqual(len(result["tokens"]), len(self.identities["tokens"]))
+        self.assertTrue(all(not token["oracles"] and not token["oracleApprovals"] for token in result["tokens"]))
+        for chain in catalog.PRODUCTION_CHAINS:
+            with self.subTest(chain=chain):
+                self.assertEqual(result["chains"][str(chain)], policy["chains"][str(chain)])
+                self.assertEqual(result["chains"][str(chain)]["status"], "unavailable")
+        self.assertEqual(result["chains"]["11155111"]["status"], "test-only")
+
+
+class CatalogCliTests(unittest.TestCase):
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        self.root = pathlib.Path(self.directory.name)
+        (self.root / "scripts").mkdir()
+        (self.root / "src/lib").mkdir(parents=True)
+        self.manifest = self.root / "scripts/catalog-metadata-sources.json"
+        self.manifest.write_text("{}\n")
+        self.snapshot = self.root / "src/lib/tokenCatalogData.json"
+        self.result = {"tokens": [{"chainId": 1}], "usdTokens": {}, "chains": {}}
+        self.audit = [{"reason": "awaiting-approval"}]
+        self.identities = {"tokens": []}
+        self.metadata = {"summary": {"tokens": 1}}
+        for target, kwargs in [
+            ("ROOT", {"new": self.root}),
+            ("load_metadata", {"return_value": (self.identities, self.metadata)}),
+            ("build", {"return_value": (self.result, self.audit)}),
+        ]:
+            mock = patch.object(catalog, target, **kwargs)
+            setattr(self, target, mock.start())
+            self.addCleanup(mock.stop)
+
+    def run_cli(self, *args):
+        with patch("sys.argv", ["catalog.py", *map(str, args)]), patch("sys.stdout", new_callable=io.StringIO):
+            catalog.main()
+
+    def files(self):
+        return {path.relative_to(self.root) for path in self.root.rglob("*") if path.is_file()}
+
+    def test_default_writes_only_runtime_snapshot(self):
+        self.run_cli()
+        self.load_metadata.assert_called_once_with(self.root, None)
+        self.build.assert_called_once_with(identities=self.identities)
+        self.assertEqual(self.snapshot.read_text(), json.dumps(self.result, indent=2) + "\n")
+        self.assertEqual(self.files(), {self.manifest.relative_to(self.root), self.snapshot.relative_to(self.root)})
+
+    def test_reports_are_optional_and_written_to_requested_directory(self):
+        reports = self.root / "reports/nested"
+        cache = self.root / "cache"
+        self.run_cli("--reports", reports, "--cache-dir", cache)
+        self.load_metadata.assert_called_once_with(self.root, cache)
+        self.assertEqual(json.loads(self.snapshot.read_text()), self.result)
+        self.assertEqual(json.loads((reports / "catalog-audit.json").read_text()), self.audit)
+        self.assertEqual(json.loads((reports / "catalog-metadata-report.json").read_text()), {
+            "schemaVersion": 1,
+            "sourceManifest": "scripts/catalog-metadata-sources.json",
+            "sourceManifestSha256": hashlib.sha256(self.manifest.read_bytes()).hexdigest(),
+            **self.metadata,
+        })
+        self.assertEqual(self.files(), {
+            self.manifest.relative_to(self.root), self.snapshot.relative_to(self.root),
+            pathlib.Path("reports/nested/catalog-audit.json"),
+            pathlib.Path("reports/nested/catalog-metadata-report.json"),
+        })
+
+    def test_check_needs_only_runtime_snapshot_and_writes_no_reports(self):
+        content = json.dumps(self.result, indent=2) + "\n"
+        self.snapshot.write_text(content)
+        with patch.object(pathlib.Path, "write_text") as write:
+            self.run_cli("--check")
+        write.assert_not_called()
+        self.assertEqual(self.snapshot.read_text(), content)
+        self.assertEqual(self.files(), {self.manifest.relative_to(self.root), self.snapshot.relative_to(self.root)})
+
+    def test_check_rejects_missing_or_stale_snapshot_without_writing(self):
+        for content in [None, "{}\n"]:
+            with self.subTest(content=content):
+                if content is not None:
+                    self.snapshot.write_text(content)
+                with patch.object(pathlib.Path, "write_text") as write:
+                    with self.assertRaisesRegex(ValueError, "tokenCatalogData.json differs"):
+                        self.run_cli("--check")
+                write.assert_not_called()
+                if content is None:
+                    self.assertFalse(self.snapshot.exists())
+                else:
+                    self.assertEqual(self.snapshot.read_text(), content)
+
+    def test_check_and_reports_are_mutually_exclusive(self):
+        reports = self.root / "reports"
+        for args in [("--check", "--reports", reports), ("--reports", reports, "--check")]:
+            with self.subTest(args=args), patch("sys.stderr", new_callable=io.StringIO):
+                with self.assertRaises(SystemExit) as error:
+                    self.run_cli(*args)
+                self.assertEqual(error.exception.code, 2)
+        self.load_metadata.assert_not_called()
+        self.build.assert_not_called()
+        self.assertEqual(self.files(), {self.manifest.relative_to(self.root)})
 
 
 if __name__ == "__main__":

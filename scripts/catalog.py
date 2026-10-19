@@ -204,12 +204,14 @@ def build(identities=None, inventories=None, policy=None, verification=None):
     require(len(keys) == len(set(keys)), "Duplicate token contract")
     require(set(identities["usdTokens"]) == {str(chain) for chain in PRODUCTION_CHAINS | TEST_CHAINS}, "Invalid buy-token chain map")
     token_map = dict(zip(keys, tokens))
-    for token in tokens:
+    for identity, token in zip(identities["tokens"], tokens):
         require(ADDRESS.fullmatch(token["address"]), "Invalid token contract")
         require(integer(token["decimals"], 0, 36), "Invalid token decimals")
         require(nonempty(token["symbol"]) and nonempty(token["name"]), "Missing token metadata")
         image = ROOT / "public" / token["logoURI"].lstrip("/")
-        require(image.is_file() and image.stat().st_size > 100, f"Missing logo: {image}")
+        require(image.is_file() and 100 < image.stat().st_size <= 4 * 1024 * 1024, f"Missing or oversized logo: {image}")
+        require(re.fullmatch(r"[0-9a-f]{64}", identity.get("logoSha256", "")), "Missing logoSha256")
+        require(hashlib.sha256(image.read_bytes()).hexdigest() == identity["logoSha256"], f"Logo digest differs: {image}")
     for chain, address in identities["usdTokens"].items():
         require((int(chain), address.lower()) in token_map, f"Missing buy-token metadata: {chain}")
     approvals = approved_feeds(identities, inventories, policy, verification)
@@ -254,7 +256,9 @@ def build(identities=None, inventories=None, policy=None, verification=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--check", action="store_true", help="Check generated files without changing them")
+    output_mode = parser.add_mutually_exclusive_group()
+    output_mode.add_argument("--check", action="store_true", help="Check the runtime snapshot without changing files")
+    output_mode.add_argument("--reports", type=pathlib.Path, help="Also write optional audit and metadata reports to this directory")
     parser.add_argument("--cache-dir", type=pathlib.Path, help="Read pinned source bytes from this cache")
     args = parser.parse_args()
     identities, metadata = load_metadata(ROOT, args.cache_dir)
@@ -266,11 +270,14 @@ def main():
         **metadata,
     }
     catalog, audit = build(identities=identities)
-    for filename, value in [("src/lib/tokenCatalogData.json", catalog), ("scripts/catalog-audit.json", audit), ("scripts/catalog-metadata-report.json", metadata)]:
+    outputs = [(ROOT / "src/lib/tokenCatalogData.json", catalog)]
+    if args.reports is not None:
+        args.reports.mkdir(parents=True, exist_ok=True)
+        outputs.extend([(args.reports / "catalog-audit.json", audit), (args.reports / "catalog-metadata-report.json", metadata)])
+    for path, value in outputs:
         content = json.dumps(value, indent=2, ensure_ascii=False) + "\n"
-        path = ROOT / filename
         if args.check:
-            require(path.read_text() == content, f"Run python3 scripts/catalog.py: {filename} differs")
+            require(path.is_file() and path.read_text() == content, f"Run python3 scripts/catalog.py: {path.relative_to(ROOT)} differs")
         else:
             path.write_text(content)
     print("Metadata:", metadata["summary"])

@@ -19,7 +19,7 @@ corepack pnpm@9 dev:next
 
 Open http://localhost:3000. Run `corepack pnpm@9 dev` to start the app and documentation together.
 
-`dev:next` and `build:next` first prepare pinned token-list bytes, then check the generated catalog offline. A cold cache needs network access; exact, hash-verified bytes in `.cache/token-catalog` can be reused offline. A hash mismatch or corrupt data stops the command, as does a network failure without verified cached bytes; there is no latest-list or stale-data fallback. These commands do not regenerate changed catalog files. After an intentional catalog change, run `corepack pnpm@9 generate:catalog`, review the diff, and repeat the check. See [Token catalog](docs/token-catalog.md) for sources and maintenance.
+`dev:next` and `build:next` first prepare pinned token-list bytes and local token images, then check image hashes and the generated catalog offline. A clean checkout needs network access for missing files. Verified metadata in `.cache/token-catalog` and verified images in `public/assets/tokens` can be reused offline. Images keep their current local URLs and exact bytes; baseline assets and any image that cannot be restored remain committed. Changed bytes or corrupt data stop the command, as does a network failure without verified local files. There is no latest-list or replacement-artwork fallback. These commands do not regenerate the runtime catalog. After an intentional catalog change, run `corepack pnpm@9 generate:catalog`, review the diff, and repeat the checks. See [Token catalog](docs/token-catalog.md) for sources and maintenance.
 
 ## WalletConnect setup
 
@@ -50,6 +50,7 @@ A detail link for a different account asks you to connect that account and does 
 
 ```bash
 corepack pnpm@9 prepare:catalog
+corepack pnpm@9 check:assets
 corepack pnpm@9 check:catalog
 python3 -m unittest discover -s scripts -p 'test_catalog*.py'
 corepack pnpm@9 test:jest --runInBand
@@ -59,6 +60,8 @@ corepack pnpm@9 build:next
 corepack pnpm@9 build
 ```
 
-The app and ordinary Jest tests use the checked-in runtime catalog without fetching token lists. The browser does not fetch list metadata or depend on list-server CORS settings. CI prepares the pinned bytes, checks generated files, and runs the Python catalog tests before Jest. Tests replace external HTTP, wallet providers, and time. Policy tests use the real disabled production catalog. Some order-math and EOA-flow suites opt into synthetic approved routes; those fixtures are not production approval evidence. A real WalletConnect session also needs a configured project and an external wallet.
+The app uses the checked-in runtime catalog and local images. Ordinary Jest tests do not fetch token lists or images; they check the reviewed image manifest. CI prepares metadata and images, checks image hashes and the runtime snapshot, then runs the Python catalog tests and Jest. The browser loads local images and does not depend on list-server CORS settings. Detailed reports are optional ignored outputs: `python3 scripts/catalog.py --reports .cache/token-catalog/reports` regenerates the runtime snapshot and writes `catalog-audit.json` and `catalog-metadata-report.json` there. Normal generation and checks do not require these reports.
+
+Tests replace external HTTP, wallet providers, and time. Policy tests use the real disabled production catalog. Some order-math and EOA-flow suites opt into synthetic approved routes; those fixtures are not production approval evidence. A real WalletConnect session also needs a configured project and an external wallet.
 
 The read-only browser check in `scripts/verify-oracle-policy.cjs` opens the actual network menu, checks loaded images and unavailable production routes, and reviews a Sepolia test order. Start the app first, provide an installed Playwright module with `PLAYWRIGHT_PATH`, and set `CHROME_PATH` if Chrome is not at the default macOS path. The fixture mocks external reads, intercepts app-data publication, and blocks signing and transactions. It does not prove live execution.
