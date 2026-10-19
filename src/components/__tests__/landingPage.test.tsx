@@ -24,6 +24,16 @@ it("shows the landing page and links to the trading app without a wallet", () =>
   expect(screen.queryByRole("button", { name: /connect wallet/i })).toBeNull();
 });
 
+it("keeps one decorative cow beside the hero copy", () => {
+  render(<LandingPageRoute />);
+
+  const hero = screen.getByRole("region", { name: /a plan for the way down/i });
+  const scene = hero.querySelector(".landing-scene");
+  expect(scene).toHaveAttribute("aria-hidden", "true");
+  expect(scene?.querySelectorAll(".landing-passenger")).toHaveLength(1);
+  expect(scene?.querySelector(".rescue-landing-art")).toBeNull();
+});
+
 it("illustrates each step without adding spoken content or controls", () => {
   const { container } = render(<LandingPageRoute />);
   const section = screen.getByRole("region", { name: "How it works" });

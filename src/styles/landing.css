@@ -84,17 +84,10 @@
 }
 
 .landing-scene .landing-passenger {
-  top: 4%;
+  top: calc(50% - 102px);
   right: 26%;
   width: 170px;
   height: 204px;
-}
-
-.landing-ground {
-  position: absolute;
-  inset: auto 0 16px;
-  width: 100%;
-  height: 240px;
 }
 
 .landing-scene-label {
@@ -319,7 +312,7 @@
   }
 
   .landing-scene .landing-passenger {
-    top: 12%;
+    top: calc(50% - 72px);
     right: 20%;
     width: 120px;
     height: 144px;
@@ -369,14 +362,10 @@
   }
 
   .landing-scene .landing-passenger {
-    top: 0;
+    top: calc(50% - 60px);
     right: 28%;
     width: 100px;
     height: 120px;
-  }
-
-  .landing-ground {
-    height: 200px;
   }
 
   .landing-section {

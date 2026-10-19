@@ -148,7 +148,6 @@ export function LandingPage() {
           </div>
           <div className="landing-scene" aria-hidden="true">
             <div className="rescue-hero-cow landing-passenger" />
-            <div className="rescue-landing-art landing-ground" />
             <span className="landing-scene-label">
               A little planning. More peace of mind.
             </span>
