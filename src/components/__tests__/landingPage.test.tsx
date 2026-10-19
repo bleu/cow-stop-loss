@@ -38,10 +38,25 @@ it("provides an addressable FAQ with expandable technical answers", () => {
   expect(oracleQuestion).toHaveAttribute("aria-expanded", "false");
   fireEvent.click(oracleQuestion);
   expect(oracleQuestion).toHaveAttribute("aria-expanded", "true");
-  expect(within(faq).getByText(/There is no custom-feed picker/)).toBeVisible();
-  expect(within(faq).getByText(/assumes WBTC tracks BTC 1:1/)).toBeVisible();
+  expect(
+    within(faq).getByText(/configured ETH or USD price-feed route/),
+  ).toBeVisible();
+  expect(
+    within(faq).getByText(/ETH feeds when both configured tokens have them/),
+  ).toBeVisible();
   fireEvent.click(oracleQuestion);
   expect(oracleQuestion).toHaveAttribute("aria-expanded", "false");
+
+  const networkQuestion = within(faq).getByRole("button", {
+    name: "Which tokens and networks can I use?",
+  });
+  fireEvent.click(networkQuestion);
+  expect(
+    within(faq).getByText(/BNB Chain, Linea, Plasma, and Sepolia/),
+  ).toBeVisible();
+  expect(
+    within(faq).getByText(/approved oracle routes depend on the network/),
+  ).toBeVisible();
 });
 
 it("keeps execution details without a separate disclosures section", () => {

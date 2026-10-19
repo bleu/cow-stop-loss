@@ -51,13 +51,13 @@ const questions = [
     id: "oracles",
     question: "Which oracles are used, and what should I check?",
     answer:
-      "The app uses configured USD price feeds for the sell and buy tokens and divides the sell price by the buy price. Production networks use Chainlink feeds; Sepolia uses fixed test feeds. Review both feed contract addresses, the network, underlying assets, quote currency, price direction, decimals, and maximum data age before signing. There is no custom-feed picker. The WBTC configuration uses BTC/USD and assumes WBTC tracks BTC 1:1; a depeg can make that reference unsuitable. Freshness checks do not prove a feed is correct or will remain accurate.",
+      "The app uses a configured ETH or USD price-feed route and divides the sell price by the buy price. It uses ETH feeds when both configured tokens have them; otherwise it uses USD feeds. Sepolia uses fixed USD test feeds. Review both feed contract addresses, the network, underlying assets, quote currency, price direction, decimals, and maximum data age before signing. There is no custom-feed picker. Freshness checks do not prove a feed is correct or will remain accurate.",
   },
   {
     id: "networks",
     question: "Which tokens and networks can I use?",
     answer:
-      "On Ethereum and Arbitrum, the app supports selling WETH or WBTC for USDC. On Gnosis, it supports selling WETH or WBTC for USDC.e. Sepolia is a test network with WETH and test USDC. The creation form follows your connected wallet's network. Always check token contract addresses and the network in your order review.",
+      "The app supports Ethereum, Gnosis, Arbitrum, Base, Polygon, Avalanche, BNB Chain, Linea, Plasma, and Sepolia. The supported sell tokens, fixed buy token, and approved oracle routes depend on the network and current catalog. Sepolia uses WETH and test USDC. New-order availability can be limited while a network has no approved route. The creation form follows your connected wallet's network. Always check token contract addresses and the network in your order review.",
   },
   {
     id: "approvals",
