@@ -11,6 +11,11 @@ import { PlacementRow } from "#/lib/stopLossPlacement";
 import { OrderStatus } from "#/lib/types";
 
 import {
+  getSafeStopLossPlacement,
+  useSafeStopLossPlacement,
+} from "./useSafeStopLossPlacement";
+import { useSafeOrderControls } from "./useStopLossApprovalRepair";
+import {
   getStopLossPlacement,
   useStopLossPlacement,
 } from "./useStopLossPlacement";
@@ -46,7 +51,9 @@ export function useCancellationOverlay() {
               executedSellAmount: order.executedSellAmount,
               executedBuyAmount: order.executedBuyAmount,
               executedFee: order.executedFee,
-              unindexed: "source" in order && order.source === "local",
+              unindexed:
+                "source" in order &&
+                (order.source === "local" || order.source === "safe"),
             },
           }),
         );
@@ -142,6 +149,11 @@ export function useOrderList() {
   const overlay = useCancellationOverlay();
   const { address } = useAccount();
   const { records, error: placementError } = useStopLossPlacement(address);
+  const { records: safeRecords, error: safePlacementError } =
+    useSafeStopLossPlacement(address);
+  const { records: safeControls, error: safeControlsError } =
+    useSafeOrderControls(address);
+  const [restoredControls] = useState(() => new Set<string>());
   const account = address?.toLowerCase();
   const [merged, setMerged] = useState<{
     account?: string;
@@ -184,10 +196,16 @@ export function useOrderList() {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchInterval: (current) =>
-      records.some(
+      [
+        ...records,
+        ...safeRecords.filter(
+          (record) =>
+            record.prepared.draft.validTo > Math.floor(Date.now() / 1000),
+        ),
+      ].some(
         (record) =>
           record.prepared.account.toLowerCase() === account &&
-          record.status === "confirmed" &&
+          (record.status === "confirmed" || record.status === "paused") &&
           !current.state.data?.chains.some(
             (chain) =>
               chain.chainId === record.prepared.chainId &&
@@ -206,23 +224,49 @@ export function useOrderList() {
   });
 
   useEffect(() => {
-    const now = Date.now();
-    const deadlines = records
-      .filter(
-        (record) =>
-          record.prepared.account.toLowerCase() === account &&
-          record.status === "confirmed" &&
-          record.confirmedAt !== undefined,
+    if (!address) return;
+    for (const record of safeControls) {
+      if (
+        record.account.toLowerCase() !== account ||
+        record.action !== "cancel" ||
+        record.status !== "confirmed" ||
+        restoredControls.has(record.id)
       )
-      .map((record) => record.confirmedAt! + 300000)
-      .filter((deadline) => deadline > now);
+        continue;
+      restoredControls.add(record.id);
+      overlay.confirm(address, record.order);
+    }
+    const controller = new AbortController();
+    void overlay.reconcile(
+      address,
+      query.data?.chains.flatMap((chain) => chain.orders) ?? [],
+      controller.signal,
+    );
+    return () => controller.abort();
+  }, [address, account, safeControls, restoredControls, overlay, query.data]);
+
+  useEffect(() => {
+    const now = Date.now();
+    const deadlines = [
+      ...records
+        .filter(
+          (record) =>
+            record.prepared.account.toLowerCase() === account &&
+            record.status === "confirmed" &&
+            record.confirmedAt !== undefined,
+        )
+        .map((record) => record.confirmedAt! + 300000),
+      ...safeRecords
+        .filter((record) => record.prepared.account.toLowerCase() === account)
+        .map((record) => record.prepared.draft.validTo * 1000),
+    ].filter((deadline) => deadline > now);
     if (!deadlines.length) return;
     const timer = setTimeout(
       () => setIndexDeadline((tick) => tick + 1),
-      Math.min(...deadlines) - now,
+      Math.min(Math.min(...deadlines) - now, 2147483647),
     );
     return () => clearTimeout(timer);
-  }, [account, records, indexDeadline]);
+  }, [account, records, safeRecords, indexDeadline]);
 
   useEffect(() => {
     if (!address) return;
@@ -231,13 +275,20 @@ export function useOrderList() {
       try {
         const placement = getStopLossPlacement();
         const rows = await Promise.all(
-          supportedChainIds.map((chainId) =>
-            placement.mergeRows(
-              { account: address, chainId },
-              query.data?.chains.find((chain) => chain.chainId === chainId)
-                ?.orders ?? [],
-            ),
-          ),
+          supportedChainIds.map(async (chainId) => {
+            const scope = { account: address, chainId };
+            const chain = query.data?.chains.find(
+              (chain) => chain.chainId === chainId,
+            );
+            const safePlacement = getSafeStopLossPlacement();
+            if (chain?.status === "success")
+              await safePlacement.reconcile(scope, chain.orders);
+            const indexed = await placement.mergeRows(
+              scope,
+              chain?.orders ?? [],
+            );
+            return safePlacement.mergeRows(scope, indexed);
+          }),
         );
         if (!stopped) setMerged({ account, rows: rows.flat() });
       } catch (cause) {
@@ -264,7 +315,7 @@ export function useOrderList() {
     return () => {
       stopped = true;
     };
-  }, [address, account, query.data, records, indexDeadline]);
+  }, [address, account, query.data, records, safeRecords, indexDeadline]);
 
   const orders = merged.account === account ? merged.rows : [];
   const projectedOrders = useMemo(
@@ -286,7 +337,10 @@ export function useOrderList() {
     isLoading: query.isFetching,
     error: query.error,
     trackingError:
-      placementError ?? (merged.account === account ? merged.error : undefined),
+      placementError ??
+      safePlacementError ??
+      safeControlsError ??
+      (merged.account === account ? merged.error : undefined),
     mutate: query.refetch,
   };
 }

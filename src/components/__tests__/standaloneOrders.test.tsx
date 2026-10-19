@@ -979,6 +979,7 @@ beforeEach(() => {
   window.history.replaceState(null, "", "/");
   config = createWagmiConfig();
   for (const client of Object.values(publicClientsFromIds)) {
+    jest.spyOn(client, "getBytecode").mockResolvedValue(undefined);
     jest
       .spyOn(client, "getBlockNumber")
       .mockRejectedValue(new Error("RPC unavailable"));

@@ -1,16 +1,109 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Address, erc20Abi } from "viem";
 
 import { GPV2_VAULT_RELAYER_ADDRESS } from "#/lib/contracts";
-import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
+import {
+  ChainId,
+  publicClientsFromIds,
+  supportedChainIds,
+} from "#/lib/publicClients";
+import {
+  createSafeOrderControls,
+  type SafeControlRecord,
+} from "#/lib/safeOrderControls";
 import {
   ApprovalRepairRecord,
   createStopLossApprovalRepair,
 } from "#/lib/stopLossApprovalRepair";
 
 import { readStopLossTransaction } from "./useStopLossPlacement";
+
+let safeController: ReturnType<typeof createSafeOrderControls> | undefined;
+export function getSafeOrderControls() {
+  safeController ??= createSafeOrderControls();
+  return safeController;
+}
+
+export function useSafeOrderControls(account?: Address, chainId?: ChainId) {
+  const [records, setRecords] = useState<SafeControlRecord[]>([]);
+  const [error, setError] = useState<string>();
+  useEffect(() => {
+    if (!account) {
+      setRecords([]);
+      setError(undefined);
+      return;
+    }
+    let stopped = false;
+    let timer: ReturnType<typeof setTimeout>;
+    const controls = getSafeOrderControls();
+    const chains = chainId ? [chainId] : supportedChainIds;
+    let previous: string | undefined;
+    const update = () => {
+      if (stopped) return;
+      try {
+        const next = chains.flatMap((chainId) =>
+          controls.getRecords({ account, chainId }),
+        );
+        const revision = JSON.stringify(next, (_key, value) =>
+          typeof value === "bigint" ? value.toString() : value,
+        );
+        if (revision !== previous) {
+          previous = revision;
+          setRecords(next);
+        }
+        setError(undefined);
+      } catch (cause) {
+        setError(
+          cause instanceof Error
+            ? cause.message
+            : "Safe control tracking is unavailable.",
+        );
+      }
+    };
+    update();
+    const unsubscribe = controls.subscribe(update);
+    const poll = async () => {
+      try {
+        for (const chainId of chains) {
+          if (
+            controls
+              .getRecords({ account, chainId })
+              .some((record) => record.status === "pending")
+          )
+            await controls.refresh({ account, chainId });
+        }
+        update();
+      } catch (cause) {
+        if (!stopped)
+          setError(
+            cause instanceof Error
+              ? cause.message
+              : "Safe control tracking is unavailable.",
+          );
+      } finally {
+        if (!stopped) timer = setTimeout(poll, 10000);
+      }
+    };
+    void poll();
+    return () => {
+      stopped = true;
+      clearTimeout(timer);
+      unsubscribe();
+    };
+  }, [account, chainId]);
+  const scopedRecords = useMemo(
+    () =>
+      records.filter(
+        (record) =>
+          record.account.toLowerCase() === account?.toLowerCase() &&
+          (!chainId || record.order.chainId === chainId),
+      ),
+    [records, account, chainId],
+  );
+  return { records: scopedRecords, error };
+}
 
 let controller: ReturnType<typeof createStopLossApprovalRepair> | undefined;
 export function getStopLossApprovalRepair() {

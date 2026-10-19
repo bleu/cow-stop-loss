@@ -80,6 +80,7 @@ const order: StopLossOrder = {
 beforeEach(() => {
   jest.clearAllMocks();
   jest.mocked(buildCancellation).mockResolvedValue({
+    execution: "eoa",
     account,
     order,
     hash: order.hash,

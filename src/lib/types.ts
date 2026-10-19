@@ -16,6 +16,7 @@ export enum OrderStatus {
   DRAFT = "draft",
   ON_QUEUE = "queue",
   CREATING = "creating",
+  FAILED = "failed",
   OPEN = "open",
   FULFILLED = "fulfilled",
   CANCELLED = "cancelled",

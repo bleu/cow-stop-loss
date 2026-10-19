@@ -184,6 +184,39 @@ export function getColumns(): ColumnDef<PlacementRow>[] {
       accessorKey: "status",
       header: "Status",
       cell: ({ row: { original: order } }) => {
+        if (order.source === "safe" && order.status === OrderStatus.EXPIRED)
+          return <StatusBadge status={OrderStatus.EXPIRED} />;
+        if (order.source === "safe" && order.status === OrderStatus.CANCELLED)
+          return <span className="text-sm font-semibold">Canceled</span>;
+        if (
+          order.source === "safe" &&
+          order.safePlacement.status === "confirmed"
+        )
+          return <StatusBadge status={order.status} />;
+        if (order.source === "safe")
+          return (
+            <div>
+              <span className="text-sm font-semibold">
+                {order.safePlacement.status === "paused"
+                  ? "Paused"
+                  : order.safePlacement.status === "cancelled"
+                    ? "Canceled"
+                    : order.safePlacement.status === "failed"
+                      ? "Failed"
+                      : order.safePlacement.status === "ready"
+                        ? "Continue placement"
+                        : "Awaiting signatures"}
+              </span>
+              {order.error && (
+                <p
+                  role="alert"
+                  className="mt-1 max-w-48 text-xs text-destructive"
+                >
+                  {order.error}
+                </p>
+              )}
+            </div>
+          );
         const progress = placementLabel(order);
         return (
           <div className={progress ? "min-w-32" : undefined}>
@@ -250,7 +283,10 @@ export function getColumns(): ColumnDef<PlacementRow>[] {
       header: () => <span className="sr-only">Cancel order</span>,
       cell: ({ row: { original: order } }) => (
         <div className="flex items-center justify-center">
-          <CancelOrderDialog order={order} compact />
+          {(order.source !== "safe" ||
+            order.safePlacement.status === "confirmed") && (
+            <CancelOrderDialog order={order} compact />
+          )}
         </div>
       ),
     },

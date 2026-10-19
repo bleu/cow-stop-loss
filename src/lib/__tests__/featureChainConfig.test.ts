@@ -44,11 +44,12 @@ describe("standalone chain configuration", () => {
     }
   });
 
-  it("keeps the browser connector available without WalletConnect", () => {
+  it("keeps Safe and browser connectors available without WalletConnect", () => {
     const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
     delete process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
     try {
       expect(createWagmiConfig().connectors.map(({ type }) => type)).toEqual([
+        "safe",
         "injected",
       ]);
     } finally {

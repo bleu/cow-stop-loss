@@ -26,12 +26,21 @@ import { disconnect } from "wagmi/actions";
 import OrderPage from "#/app/[chainId]/[safeAddress]/[orderId]/page";
 import { ConsolidatedOrdersTable } from "#/components/ConsolidatedOrdersTable";
 import { RootLayout } from "#/components/RootLayout";
+import { getSafeStopLossPlacement } from "#/hooks/useSafeStopLossPlacement";
 import { getStopLossPlacement } from "#/hooks/useStopLossPlacement";
+import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 import type { PreparedPlacement } from "#/lib/pollerStopLoss";
 import { publicClientsFromIds, supportedChainIds } from "#/lib/publicClients";
+import { createSafeOrderControls } from "#/lib/safeOrderControls";
+import { createSafeStopLossPlacement } from "#/lib/safeStopLossPlacement";
 import { encodeStopLossStaticInput } from "#/lib/staticInputEncoder";
 import { createStopLossPlacement } from "#/lib/stopLossPlacement";
 import { OrderStatus } from "#/lib/types";
+import {
+  safeCreateCall,
+  safePrepared,
+  safeProposalId,
+} from "#/test/fixtures/safePlacement";
 import { createWagmiConfig } from "#/utils/wagmi";
 
 const account = "0x1111111111111111111111111111111111111111";
@@ -260,6 +269,12 @@ beforeAll(() => {
   Element.prototype.scrollIntoView = () => {};
   Reflect.deleteProperty(navigator, "locks");
   getStopLossPlacement();
+  Object.defineProperty(navigator, "locks", {
+    configurable: true,
+    value: locks,
+  });
+  getSafeStopLossPlacement();
+  Reflect.deleteProperty(navigator, "locks");
 });
 
 beforeEach(() => {
@@ -831,6 +846,400 @@ test("distinguishes tiny positive amounts from zero and preserves exact integer 
     const cell = await screen.findByRole("cell", { name: example.display });
     expect(within(cell).getByTitle(example.full)).toBeInTheDocument();
   }
+});
+
+test("shows an accepted Safe proposal as awaiting signatures without local actions", async () => {
+  const placement = createSafeStopLossPlacement({ locks });
+  await placement.submit(safePrepared, {
+    calls: [safeCreateCall],
+    send: async () => ({ id: safeProposalId, kind: "proposal" }),
+  });
+  render(<TableView />);
+  await connectWallet();
+
+  const row = (
+    await screen.findByRole("cell", { name: "1 WETH for 1980 USDC" })
+  ).closest("tr")!;
+  expect(within(row).getByText("Awaiting signatures")).toBeInTheDocument();
+  expect(within(row).queryByRole("button")).not.toBeInTheDocument();
+  expect(within(row).queryByRole("link")).not.toBeInTheDocument();
+});
+
+test("shows Continue placement after a Safe setup step executes", async () => {
+  const placement = createSafeStopLossPlacement({ locks });
+  await placement.submit(safePrepared, {
+    calls: [{ ...safeCreateCall, stage: "approval" }],
+    send: async () => ({ id: safeProposalId, kind: "proposal" }),
+  });
+  await placement.refresh(safePrepared, {
+    readTransaction: async () => ({ status: "success" }),
+    isCreated: async () => false,
+  });
+  render(<TableView />);
+  await connectWallet();
+
+  const row = (
+    await screen.findByRole("cell", { name: "1 WETH for 1980 USDC" })
+  ).closest("tr")!;
+  expect(within(row).getByText("Continue placement")).toBeInTheDocument();
+  expect(
+    within(row).queryByText("Awaiting signatures"),
+  ).not.toBeInTheDocument();
+  expect(within(row).queryByRole("button")).not.toBeInTheDocument();
+});
+
+test("keeps a failed Safe proposal visible with its failure message", async () => {
+  const placement = createSafeStopLossPlacement({ locks });
+  await placement.submit(safePrepared, {
+    calls: [safeCreateCall],
+    send: async () => ({ id: safeProposalId, kind: "proposal" }),
+  });
+  await placement.refresh(safePrepared, {
+    readTransaction: async () => ({
+      status: "failed",
+      error: "Safe execution failed",
+    }),
+    isCreated: async () => false,
+  });
+  render(<TableView />);
+  await connectWallet();
+
+  const row = (
+    await screen.findByRole("cell", { name: "1 WETH for 1980 USDC" })
+  ).closest("tr")!;
+  expect(within(row).getByText("Failed")).toBeInTheDocument();
+  expect(within(row).getByRole("alert")).toHaveTextContent(
+    "Safe execution failed",
+  );
+  expect(within(row).queryByRole("button")).not.toBeInTheDocument();
+});
+
+test("keeps an executed Safe cancellation visible as Canceled", async () => {
+  const placement = createSafeStopLossPlacement({ locks });
+  await placement.submit(safePrepared, {
+    calls: [safeCreateCall],
+    send: async () => ({ id: safeProposalId, kind: "proposal" }),
+  });
+  await placement.refresh(safePrepared, {
+    readTransaction: async () => ({ status: "cancelled" }),
+    isCreated: async () => false,
+  });
+  render(<TableView />);
+  await connectWallet();
+
+  const row = (
+    await screen.findByRole("cell", { name: "1 WETH for 1980 USDC" })
+  ).closest("tr")!;
+  expect(within(row).getByText("Canceled")).toBeInTheDocument();
+  expect(
+    within(row).queryByText("Awaiting signatures"),
+  ).not.toBeInTheDocument();
+  expect(within(row).queryByRole("button")).not.toBeInTheDocument();
+});
+
+test("shows only Expired for a Safe row after its fixed expiry", async () => {
+  const draft = { ...safePrepared.draft, validTo: 1700000001 };
+  const order = {
+    ...safePrepared,
+    draft,
+    staticInput: encodeStopLossStaticInput(draft, safePrepared.appDataHash),
+  };
+  const placement = createSafeStopLossPlacement({
+    locks,
+    now: () => 1700000000000,
+  });
+  await placement.submit(order, {
+    calls: [safeCreateCall],
+    send: async () => ({ id: safeProposalId, kind: "proposal" }),
+  });
+  await placement.refresh(order, {
+    readTransaction: async () => ({
+      status: "failed",
+      error: "Signature collection failed",
+    }),
+    isCreated: async () => false,
+  });
+  render(<TableView />);
+  await connectWallet();
+
+  const row = (
+    await screen.findByRole("cell", { name: "1 WETH for 1980 USDC" })
+  ).closest("tr")!;
+  expect(within(row).getByText("Expired")).toBeInTheDocument();
+  expect(
+    within(row).queryByText("Awaiting signatures"),
+  ).not.toBeInTheDocument();
+  expect(within(row).queryByRole("alert")).not.toBeInTheDocument();
+  expect(within(row).queryByRole("button")).not.toBeInTheDocument();
+});
+
+test("shows a paused Safe placement error without offering to continue", async () => {
+  const placement = createSafeStopLossPlacement({ locks });
+  await placement.submit(safePrepared, {
+    calls: [{ ...safeCreateCall, stage: "approval" }],
+    send: async () => ({ id: safeProposalId, kind: "proposal" }),
+  });
+  await placement.refresh(safePrepared, {
+    readTransaction: async () => ({ status: "success" }),
+    isCreated: async () => false,
+  });
+  await expect(
+    placement.submit(safePrepared, {
+      calls: [safeCreateCall],
+      send: async () => {
+        throw new Error("Wallet response lost");
+      },
+    }),
+  ).rejects.toThrow("Wallet response lost");
+  render(<TableView />);
+  await connectWallet();
+
+  const row = (
+    await screen.findByRole("cell", { name: "1 WETH for 1980 USDC" })
+  ).closest("tr")!;
+  expect(within(row).getByText("Paused")).toBeInTheDocument();
+  expect(within(row).getByRole("alert")).toHaveTextContent(
+    "Wallet response lost",
+  );
+  expect(within(row).queryByText("Continue placement")).not.toBeInTheDocument();
+  expect(within(row).queryByRole("button")).not.toBeInTheDocument();
+});
+
+test("shows a confirmed Safe order as Open before indexing", async () => {
+  const placement = createSafeStopLossPlacement({ locks });
+  await placement.submit(safePrepared, {
+    calls: [safeCreateCall],
+    send: async () => ({ id: safeProposalId, kind: "proposal" }),
+  });
+  await placement.refresh(safePrepared, {
+    readTransaction: async () => ({ status: "success" }),
+    isCreated: async () => true,
+  });
+  render(<TableView />);
+  await connectWallet();
+
+  const row = (
+    await screen.findByRole("cell", { name: "1 WETH for 1980 USDC" })
+  ).closest("tr")!;
+  expect(within(row).getByText("Open")).toBeInTheDocument();
+  expect(
+    within(row).getByRole("button", { name: /^Cancel order/ }),
+  ).toBeInTheDocument();
+  expect(
+    within(row).queryByText("Awaiting signatures"),
+  ).not.toBeInTheDocument();
+});
+
+test("refreshes a confirmed Safe order until one indexed replacement is shown", async () => {
+  jest.useFakeTimers({ doNotFake: ["queueMicrotask"] });
+  const placement = createSafeStopLossPlacement({ locks });
+  await placement.submit(safePrepared, {
+    calls: [safeCreateCall],
+    send: async () => ({ id: safeProposalId, kind: "proposal" }),
+  });
+  await placement.refresh(safePrepared, {
+    readTransaction: async () => ({ status: "success" }),
+    isCreated: async () => true,
+  });
+  const indexed: ReturnType<typeof apiParent>[] = [];
+  serveOrders(indexed);
+  render(<TableView />);
+  await connectWallet();
+  await screen.findByRole("cell", { name: "1 WETH for 1980 USDC" });
+
+  indexed.push({
+    ...apiParent(
+      1,
+      "indexed-safe",
+      safePrepared.paramsHash.toUpperCase().replace("0X", "0x"),
+    ),
+    owner: account,
+  });
+  indexed.push({
+    ...apiParent(1, "duplicate-safe", safePrepared.paramsHash),
+    owner: account,
+  });
+  await act(async () => {
+    await jest.advanceTimersByTimeAsync(15000);
+  });
+  expect(
+    await screen.findByRole("row", {
+      name: "View order indexed-safe on Ethereum",
+    }),
+  ).toBeInTheDocument();
+  expect(screen.getAllByRole("row")).toHaveLength(2);
+  expect(
+    screen.queryByRole("cell", { name: "1 WETH for 1980 USDC" }),
+  ).not.toBeInTheDocument();
+
+  indexed.push(apiParent(1, "later-manual-order"));
+  await act(async () => {
+    await jest.advanceTimersByTimeAsync(60000);
+  });
+  expect(
+    screen.queryByRole("row", { name: /later-manual-order/ }),
+  ).not.toBeInTheDocument();
+});
+
+test("recovers a paused Safe placement when its lost response later indexes", async () => {
+  jest.useFakeTimers({ doNotFake: ["queueMicrotask"] });
+  const placement = createSafeStopLossPlacement({ locks });
+  await placement.submit(safePrepared, {
+    calls: [{ ...safeCreateCall, stage: "approval" }],
+    send: async () => ({ id: safeProposalId, kind: "proposal" }),
+  });
+  await placement.refresh(safePrepared, {
+    readTransaction: async () => ({ status: "success" }),
+    isCreated: async () => false,
+  });
+  await expect(
+    placement.submit(safePrepared, {
+      calls: [safeCreateCall],
+      send: async () => {
+        throw new Error("Wallet response lost");
+      },
+    }),
+  ).rejects.toThrow("Wallet response lost");
+  const indexed: ReturnType<typeof apiParent>[] = [];
+  serveOrders(indexed);
+  const view = render(<TableView />);
+  await connectWallet();
+  await screen.findByText("Paused");
+
+  indexed.push({
+    ...apiParent(1, "recovered-safe", safePrepared.paramsHash),
+    owner: account,
+  });
+  await act(async () => {
+    await jest.advanceTimersByTimeAsync(15000);
+  });
+  expect(
+    await screen.findByRole("row", {
+      name: "View order recovered-safe on Ethereum",
+    }),
+  ).toBeInTheDocument();
+  expect(screen.queryByText("Paused")).not.toBeInTheDocument();
+  expect(screen.getAllByRole("row")).toHaveLength(2);
+
+  view.unmount();
+  serveOrders([], new Set([1, 100, 42161, 11155111]));
+  render(<TableView />);
+  const restored = (
+    await screen.findByRole("cell", { name: "1 WETH for 1980 USDC" })
+  ).closest("tr")!;
+  expect(within(restored).getByText("Open")).toBeInTheDocument();
+  expect(within(restored).queryByText("Paused")).not.toBeInTheDocument();
+});
+
+test("changes a pending Safe row to Expired at its fixed deadline without refreshing", async () => {
+  jest.useFakeTimers({ doNotFake: ["queueMicrotask"] });
+  const draft = {
+    ...safePrepared.draft,
+    validTo: Math.floor(Date.now() / 1000) + 5,
+  };
+  const order = {
+    ...safePrepared,
+    draft,
+    staticInput: encodeStopLossStaticInput(draft, safePrepared.appDataHash),
+  };
+  const placement = createSafeStopLossPlacement({ locks });
+  await placement.submit(order, {
+    calls: [safeCreateCall],
+    send: async () => ({ id: safeProposalId, kind: "proposal" }),
+  });
+  render(<TableView />);
+  await connectWallet();
+  await screen.findByText("Awaiting signatures");
+
+  await act(async () => {
+    await jest.advanceTimersByTimeAsync(5000);
+  });
+  const row = screen
+    .getByRole("cell", { name: "1 WETH for 1980 USDC" })
+    .closest("tr")!;
+  expect(within(row).getByText("Expired")).toBeInTheDocument();
+  expect(
+    within(row).queryByText("Awaiting signatures"),
+  ).not.toBeInTheDocument();
+  expect(within(row).queryByRole("alert")).not.toBeInTheDocument();
+});
+
+test("restores a confirmed Safe cancellation when its indexed identity changes after reload", async () => {
+  const placement = createSafeStopLossPlacement({ locks });
+  await placement.submit(safePrepared, {
+    calls: [safeCreateCall],
+    send: async () => ({ id: safeProposalId, kind: "proposal" }),
+  });
+  await placement.refresh(safePrepared, {
+    readTransaction: async () => ({ status: "success" }),
+    isCreated: async () => true,
+  });
+  const order = placement.mergeRows(safePrepared, [])[0];
+  const controls = createSafeOrderControls({ locks });
+  await controls.submitCancellation(
+    {
+      execution: "safe",
+      account,
+      order,
+      hash: safePrepared.paramsHash,
+      blockNumber: BigInt(100),
+      transaction: {
+        account,
+        chainId: 1,
+        to: COMPOSABLE_COW_ADDRESS,
+        data: "0x",
+        value: BigInt(0),
+      },
+    },
+    async () => ({ id: safeProposalId, kind: "proposal" }),
+  );
+  global.fetch = jest.fn(async () => ({
+    ok: true,
+    json: async () => ({
+      safe: account,
+      safeTxHash: safeProposalId,
+      nonce: "1",
+      isExecuted: true,
+      isSuccessful: true,
+      transactionHash: `0x${"ef".repeat(32)}`,
+    }),
+  })) as unknown as typeof fetch;
+  jest
+    .spyOn(publicClientsFromIds[1], "getBlockNumber")
+    .mockResolvedValue(BigInt(101));
+  let active = false;
+  jest
+    .spyOn(publicClientsFromIds[1], "readContract")
+    .mockImplementation(async () => active);
+  await controls.refresh(safePrepared);
+  const indexed: ReturnType<typeof apiParent>[] = [];
+  serveOrders(indexed);
+  render(<TableView />);
+  await connectWallet();
+  await screen.findByText("Canceled");
+
+  indexed.push({
+    ...apiParent(1, "indexed-cancelled-safe", safePrepared.paramsHash),
+    owner: account,
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
+  const row = await screen.findByRole("row", {
+    name: "View order indexed-cancelled-safe on Ethereum",
+  });
+  await waitFor(() =>
+    expect(within(row).getByText("Cancelled")).toBeInTheDocument(),
+  );
+
+  active = true;
+  indexed[0] = {
+    ...apiParent(1, "recreated-safe", safePrepared.paramsHash),
+    owner: account,
+  };
+  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
+  const recreated = await screen.findByRole("row", {
+    name: "View order recreated-safe on Ethereum",
+  });
+  expect(within(recreated).getByText("Open")).toBeInTheDocument();
 });
 
 test("shows a pending setup stage and its RPC error on the unindexed row", async () => {
