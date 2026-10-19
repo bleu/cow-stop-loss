@@ -4,6 +4,7 @@ import {
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
 import { cookieStorage, createConfig, createStorage } from "wagmi";
+import { safe } from "wagmi/connectors";
 
 import { createRpcTransports, supportedChains } from "#/lib/publicClients";
 
@@ -58,7 +59,7 @@ export function createWagmiConfig() {
     ssr: true,
     storage: createStorage({ storage: cookieStorage }),
     chains: supportedChains,
-    connectors,
+    connectors: [safe({ unstable_getInfoTimeout: 1000 }), ...connectors],
     transports: createRpcTransports(),
   });
 }

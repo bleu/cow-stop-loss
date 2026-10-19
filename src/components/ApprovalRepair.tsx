@@ -1,14 +1,18 @@
 "use client";
 
 import { Button, Dialog, DialogContent, DialogTitle } from "@bleu/ui";
+import SafeAppsSDK from "@safe-global/safe-apps-sdk";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { formatUnits, Hex } from "viem";
 import { useAccount, useSendTransaction } from "wagmi";
 
+import { useAccountExecution } from "#/hooks/useAccountExecution";
 import {
+  getSafeOrderControls,
   getStopLossApprovalRepair,
   resumeStopLossApprovalRepair,
+  useSafeOrderControls,
   useStopLossApprovalRepair,
 } from "#/hooks/useStopLossApprovalRepair";
 import { getStopLossPlacement } from "#/hooks/useStopLossPlacement";
@@ -18,11 +22,258 @@ import {
   buildApprovalRepair,
   refreshApprovalRepair,
 } from "#/lib/pollerStopLoss";
+import { buildSafeApprovalRepair } from "#/lib/safeOrderControls";
+import {
+  createSafeTransactionSender,
+  type SafeRpcProvider,
+} from "#/lib/safeTransactions";
 import { StopLossOrder } from "#/lib/stopLossOrders";
 import { PlacementNotSubmittedError } from "#/lib/stopLossPlacement";
 import { OrderStatus } from "#/lib/types";
 
-export function ApprovalRepair({
+export function ApprovalRepair(props: {
+  order: StopLossOrder;
+  onRefresh: () => unknown;
+}) {
+  const { address, chainId } = useAccount();
+  return address?.toLowerCase() === props.order.owner.toLowerCase() ? (
+    <DirectOwnerApprovalRepair
+      key={`${address}:${chainId}:${props.order.chainId}:${props.order.hash}`}
+      {...props}
+    />
+  ) : (
+    <EoaApprovalRepair {...props} />
+  );
+}
+
+function DirectOwnerApprovalRepair(props: {
+  order: StopLossOrder;
+  onRefresh: () => unknown;
+}) {
+  const execution = useAccountExecution();
+  if (execution.kind === "checking")
+    return <p role="status">Checking account...</p>;
+  if (execution.kind === "unsupported")
+    return <p role="alert">{execution.error}</p>;
+  return execution.kind === "safe" ? (
+    <SafeApprovalRepair {...props} />
+  ) : (
+    <EoaApprovalRepair {...props} />
+  );
+}
+
+function SafeApprovalRepair({
+  order,
+  onRefresh,
+}: {
+  order: StopLossOrder;
+  onRefresh: () => unknown;
+}) {
+  const { address, chainId, connector } = useAccount();
+  const { records, error: trackingError } = useSafeOrderControls(
+    address,
+    order.chainId,
+  );
+  const [open, setOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string>();
+  const stopped = useRef(false);
+  useEffect(() => {
+    stopped.current = false;
+    return () => {
+      stopped.current = true;
+    };
+  }, []);
+  const matches = !!address && chainId === order.chainId;
+  const supported =
+    order.isSellOrder &&
+    [OrderStatus.OPEN, OrderStatus.PARTIALLY_FILLED].includes(order.status);
+  const approvalRecords = records.filter(
+    (record) =>
+      record.action === "approve" &&
+      record.order.sellToken.address.toLowerCase() ===
+        order.sellToken.address.toLowerCase(),
+  );
+  const pending = approvalRecords.some((record) => record.status === "pending");
+  const last = approvalRecords.at(-1);
+  const review = useQuery({
+    queryKey: [
+      "safe-approval-repair",
+      address,
+      order.chainId,
+      order.hash,
+      last?.id,
+      last?.status,
+    ],
+    enabled: supported && matches,
+    queryFn: () => buildSafeApprovalRepair({ account: address!, order }),
+    retry: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
+  useEffect(() => {
+    if (last?.status === "confirmed") void onRefresh();
+  }, [last?.id, last?.status]);
+  async function submit() {
+    if (
+      !address ||
+      !connector ||
+      !matches ||
+      busy ||
+      pending ||
+      trackingError ||
+      error
+    )
+      return;
+    setBusy(true);
+    try {
+      const prepared = await buildSafeApprovalRepair({
+        account: address,
+        order,
+      });
+      if (!prepared || stopped.current) return;
+      const sdk = connector.id === "safe" ? new SafeAppsSDK() : undefined;
+      const provider = sdk
+        ? undefined
+        : ((await connector.getProvider()) as SafeRpcProvider);
+      const sender = sdk
+        ? createSafeTransactionSender({
+            account: address,
+            chainId: order.chainId,
+            sdk,
+          })
+        : createSafeTransactionSender({
+            account: address,
+            chainId: order.chainId,
+            provider: {
+              request(request) {
+                if (stopped.current)
+                  throw new Error(
+                    "Wallet or chain changed. Open the approval review again.",
+                  );
+                return provider!.request(request);
+              },
+            },
+          });
+      await getSafeOrderControls().submitApproval(prepared, async () => {
+        if (stopped.current)
+          throw new Error(
+            "Wallet or chain changed. Open the approval review again.",
+          );
+        if (sdk) {
+          const info = await sdk.safe.getInfo();
+          if (
+            stopped.current ||
+            info.safeAddress.toLowerCase() !== address.toLowerCase() ||
+            info.chainId !== order.chainId
+          )
+            throw new Error(
+              "Wallet or chain changed. Open the approval review again.",
+            );
+        }
+        return (
+          await sender.send([
+            {
+              ...prepared.transaction,
+              stage:
+                prepared.target === BigInt(0) ? "approval-reset" : "approval",
+            },
+          ])
+        ).reference;
+      });
+    } catch (cause) {
+      if (!stopped.current)
+        setError(
+          `${cause instanceof Error ? cause.message : "Safe approval failed."} No automatic retry was made. Check the Safe before submitting again.`,
+        );
+    } finally {
+      if (!stopped.current) setBusy(false);
+    }
+  }
+  if (!supported || !matches) return null;
+  if (review.isSuccess && !review.data && !pending)
+    return last?.status === "confirmed" ? (
+      <p role="status">Approval update confirmed.</p>
+    ) : null;
+  return (
+    <>
+      <div className="mb-5 flex justify-end">
+        <Button
+          variant="outline"
+          className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 rounded-none border-primary/30 bg-primary/10 px-5 text-primary shadow-sm hover:bg-primary/20 hover:text-primary"
+          onClick={() => setOpen(true)}
+        >
+          Update approval
+        </Button>
+      </div>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="pixel-frame rescue-dialog max-h-[85dvh] w-[calc(100vw-2rem)] max-w-xl overflow-y-auto rounded-none border border-border/70 bg-card p-5 text-foreground shadow-2xl sm:p-7">
+          <DialogTitle className="font-serif text-[28px] leading-tight tracking-tight">
+            Update approval
+          </DialogTitle>
+          <h3>Safe settlement approval</h3>
+          <p>Safe: {order.owner}</p>
+          <p>Token: {order.sellToken.address}</p>
+          <p>Spender: {GPV2_VAULT_RELAYER_ADDRESS}</p>
+          {review.data?.target === BigInt(0) ? (
+            <p>
+              Reset the current allowance to zero first. Other orders share this
+              permission. Wait for execution, then submit the unlimited approval
+              as a separate transaction.
+            </p>
+          ) : (
+            <p>
+              Target: Unlimited (max uint256). Other orders share this
+              permission. Approval does not reserve funds.
+            </p>
+          )}
+          {review.isFetching && <p role="status">Loading approval state...</p>}
+          {(error || trackingError || review.error) && (
+            <p role="alert">
+              {error || trackingError || review.error?.message}
+            </p>
+          )}
+          {(last?.status === "failed" || last?.status === "cancelled") && (
+            <p role="alert">
+              Safe approval {last.status}. No approval update was confirmed.
+            </p>
+          )}
+          {pending && <p role="status">Approval awaiting signatures.</p>}
+          <Button
+            className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-12 rounded-none"
+            onClick={() => void submit()}
+            disabled={
+              busy ||
+              pending ||
+              review.isFetching ||
+              !review.data ||
+              !!error ||
+              !!trackingError
+            }
+          >
+            Submit approval update
+          </Button>
+          {(trackingError || review.error) && (
+            <Button
+              variant="outline"
+              className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-12 rounded-none"
+              onClick={() => {
+                void getSafeOrderControls()
+                  .refresh({ account: address!, chainId: order.chainId })
+                  .catch(() => undefined);
+                void review.refetch();
+              }}
+            >
+              Check approval state
+            </Button>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
+function EoaApprovalRepair({
   order,
   onRefresh,
 }: {

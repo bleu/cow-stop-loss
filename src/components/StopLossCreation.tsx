@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { Address, maxUint256 } from "viem";
 import { useAccount, useSendTransaction } from "wagmi";
 
+import { useAccountExecution } from "#/hooks/useAccountExecution";
 import {
   abandonStopLossPlacement,
   getStopLossPlacement,
@@ -30,6 +31,7 @@ import { DraftOrder } from "#/lib/types";
 
 import { showOrderError, showOrderSuccess } from "./orderNotifications";
 import { ReviewOrderPanel } from "./ReviewOrderPanel";
+import { SafeStopLossCreation } from "./SafeStopLossCreation";
 import { SwapCard } from "./swap-card/SwapCard";
 
 type Review = {
@@ -64,6 +66,28 @@ function showPlacementError(
 }
 
 export function StopLossCreation() {
+  const execution = useAccountExecution();
+  if (execution.kind === "safe") return <SafeStopLossCreation />;
+  return (
+    <>
+      {execution.kind === "checking" && <p role="status">Checking wallet...</p>}
+      {execution.kind === "unsupported" && (
+        <p role="alert">
+          {execution.error || "This account is not supported."}
+        </p>
+      )}
+      <fieldset
+        className="min-w-0 border-0 p-0"
+        hidden={execution.kind !== "eoa"}
+        disabled={execution.kind !== "eoa"}
+      >
+        <EoaStopLossCreation />
+      </fieldset>
+    </>
+  );
+}
+
+function EoaStopLossCreation() {
   const { address, chainId } = useAccount();
   const { sendTransactionAsync } = useSendTransaction();
   const { records, error: trackingError } = useStopLossPlacement(

@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@bleu/ui";
 import { TrashIcon } from "@radix-ui/react-icons";
+import SafeAppsSDK from "@safe-global/safe-apps-sdk";
 import { useEffect, useRef, useState } from "react";
 import { formatUnits, type Hex } from "viem";
 import { useAccount, useConfig, useSendTransaction } from "wagmi";
@@ -15,7 +16,15 @@ import { getAccount } from "wagmi/actions";
 
 import { PixelIcon } from "#/components/ui/pixel-icon";
 import { useCancellationOverlay } from "#/hooks/useOrderList";
+import {
+  getSafeOrderControls,
+  useSafeOrderControls,
+} from "#/hooks/useStopLossApprovalRepair";
 import { chainNames } from "#/lib/publicClients";
+import {
+  createSafeTransactionSender,
+  type SafeRpcProvider,
+} from "#/lib/safeTransactions";
 import {
   buildCancellation,
   CancellationRevertedError,
@@ -94,7 +103,21 @@ function CancellationReview({
   close: () => void;
 }) {
   const [order] = useState(reviewedOrder);
-  const { address } = useAccount();
+  const { address, chainId, connector } = useAccount();
+  const directOwner = address?.toLowerCase() === order.owner.toLowerCase();
+  const { records: safeRecords, error: safeTrackingError } =
+    useSafeOrderControls(directOwner ? address : undefined, order.chainId);
+  const safeRecord = safeRecords
+    .filter(
+      (record) =>
+        record.action === "cancel" &&
+        record.order.hash.toLowerCase() === order.hash.toLowerCase() &&
+        (record.status !== "confirmed" ||
+          record.order.parentId === order.parentId),
+    )
+    .at(-1);
+  const [safeError, setSafeError] = useState<string>();
+  const safeExecution = useRef(false);
   const { sendTransactionAsync } = useSendTransaction();
   const config = useConfig();
   const overlay = useCancellationOverlay();
@@ -110,19 +133,83 @@ function CancellationReview({
       clearTimeout(timer.current);
     };
   }, []);
+  useEffect(() => {
+    if (safeRecord?.status === "confirmed" && address) {
+      overlay.confirm(address, order);
+      close();
+    }
+  }, [safeRecord?.status]);
   const submit = async () => {
-    if (!address || status === "loading") return;
+    if (
+      !address ||
+      status === "loading" ||
+      safeRecord?.status === "pending" ||
+      safeTrackingError ||
+      safeError
+    )
+      return;
     setStatus("loading");
     if (retryObservation.current) {
       await retryObservation.current();
       return;
     }
     try {
-      if (getAccount(config).chainId !== order.chainId)
+      if (
+        (directOwner ? chainId : getAccount(config).chainId) !== order.chainId
+      )
         throw new Error(
           `Switch the wallet to ${chainNames[order.chainId]} before cancelling.`,
         );
       const prepared = await buildCancellation({ account: address, order });
+      if (prepared.execution === "safe") {
+        safeExecution.current = true;
+        if (stopped.current || !connector) return;
+        const sdk = connector.id === "safe" ? new SafeAppsSDK() : undefined;
+        const provider = sdk
+          ? undefined
+          : ((await connector.getProvider()) as SafeRpcProvider);
+        const sender = sdk
+          ? createSafeTransactionSender({
+              account: address,
+              chainId: order.chainId,
+              sdk,
+            })
+          : createSafeTransactionSender({
+              account: address,
+              chainId: order.chainId,
+              provider: {
+                request(request) {
+                  if (stopped.current)
+                    throw new Error(
+                      "Wallet or chain changed. Open the cancellation review again.",
+                    );
+                  return provider!.request(request);
+                },
+              },
+            });
+        await getSafeOrderControls().submitCancellation(prepared, async () => {
+          if (stopped.current)
+            throw new Error(
+              "Wallet or chain changed. Open the cancellation review again.",
+            );
+          if (sdk) {
+            const info = await sdk.safe.getInfo();
+            if (
+              stopped.current ||
+              info.safeAddress.toLowerCase() !== address.toLowerCase() ||
+              info.chainId !== order.chainId
+            )
+              throw new Error(
+                "Wallet or chain changed. Open the cancellation review again.",
+              );
+          }
+          return (
+            await sender.send([{ ...prepared.transaction, stage: "cancel" }])
+          ).reference;
+        });
+        if (!stopped.current) setStatus("review");
+        return;
+      }
       const current = getAccount(config);
       if (
         stopped.current ||
@@ -171,6 +258,10 @@ function CancellationReview({
       void observe();
     } catch (cause) {
       if (!stopped.current) {
+        if (safeExecution.current)
+          setSafeError(
+            `${cause instanceof Error ? cause.message : "Safe cancellation failed."} No automatic retry was made. Check the Safe before submitting again.`,
+          );
         showOrderError("cancel", cause);
         setStatus("review");
       }
@@ -247,10 +338,28 @@ function CancellationReview({
           </p>
         </div>
       </div>
+      {safeRecord?.status === "pending" && (
+        <p role="status">Cancellation awaiting signatures.</p>
+      )}
+      {(safeRecord?.status === "failed" ||
+        safeRecord?.status === "cancelled") && (
+        <p role="alert">
+          Safe cancellation {safeRecord.status}. The order was not marked
+          cancelled.
+        </p>
+      )}
+      {(safeError || safeTrackingError) && (
+        <p role="alert">{safeError || safeTrackingError}</p>
+      )}
       <Button
         variant="destructive"
         className="rescue-danger-button pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-12 w-full rounded-none font-semibold"
-        disabled={status === "loading"}
+        disabled={
+          status === "loading" ||
+          safeRecord?.status === "pending" ||
+          !!safeError ||
+          !!safeTrackingError
+        }
         onClick={() => void submit()}
       >
         {status === "loading"

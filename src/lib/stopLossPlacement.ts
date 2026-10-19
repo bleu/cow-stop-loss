@@ -5,6 +5,7 @@ import { createStore } from "zustand/vanilla";
 
 import type { PreparedPlacement } from "./pollerStopLoss";
 import type { ChainId } from "./publicClients";
+import type { SafePlacementRecord } from "./safeStopLossPlacement";
 import { decodeStopLossStaticInput } from "./staticInputDecoder";
 import type { StopLossOrder } from "./stopLossOrders";
 import { OrderStatus } from "./types";
@@ -74,6 +75,12 @@ export type PlacementReader = {
 export type PlacementRow = StopLossOrder &
   (
     | { source: "api"; canLink: true }
+    | {
+        source: "safe";
+        canLink: false;
+        safePlacement: SafePlacementRecord;
+        error?: string;
+      }
     | {
         source: "local";
         canLink: false;

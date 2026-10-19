@@ -119,7 +119,13 @@ beforeEach(() => {
   jest
     .spyOn(publicClientsFromIds[1], "getBlock")
     .mockResolvedValue({ timestamp: chainTime } as never);
-  jest.spyOn(publicClientsFromIds[1], "getBytecode").mockResolvedValue("0x01");
+  jest
+    .spyOn(publicClientsFromIds[1], "getBytecode")
+    .mockImplementation(async ({ address }) =>
+      address.toLowerCase() === connectedAccount.toLowerCase()
+        ? undefined
+        : "0x01",
+    );
   jest
     .spyOn(publicClientsFromIds[1], "readContract")
     .mockImplementation(async ({ functionName, address }) => {
@@ -179,7 +185,7 @@ it("does not fill the trigger price when a sell token is selected", async () => 
   const user = userEvent.setup();
   showCreation();
 
-  await user.click(screen.getByRole("button", { name: "Select token" }));
+  await user.click(await screen.findByRole("button", { name: "Select token" }));
   await user.click(await screen.findByRole("option", { name: /WETH/ }));
   await screen.findByRole("button", {
     name: /Set trigger to current market price/,
@@ -217,7 +223,9 @@ it.each([true, false])(
       return fetch(input, init);
     });
     showCreation();
-    await user.click(screen.getByRole("button", { name: "Select token" }));
+    await user.click(
+      await screen.findByRole("button", { name: "Select token" }),
+    );
     await user.click(await screen.findByRole("option", { name: /WETH/ }));
     await user.type(
       screen.getByRole("textbox", { name: "Trigger price" }),
@@ -840,7 +848,7 @@ it("shows a saved-storage error without crashing or sending a wallet request", a
     screen.getByRole("textbox", { name: "Sell amount" }),
   ).toBeInTheDocument();
   const user = userEvent.setup();
-  await user.click(screen.getByRole("button", { name: "Select token" }));
+  await user.click(await screen.findByRole("button", { name: "Select token" }));
   await user.click(await screen.findByRole("option", { name: /WETH/ }));
   await user.type(
     screen.getByRole("textbox", { name: "Trigger price" }),
@@ -1071,7 +1079,7 @@ async function reviewOneOrder(
   approvalRequired = true,
   approvalLabel = "Approve WETH",
 ) {
-  await user.click(screen.getByRole("button", { name: "Select token" }));
+  await user.click(await screen.findByRole("button", { name: "Select token" }));
   await user.click(await screen.findByRole("option", { name: /WETH/ }));
   await user.type(
     screen.getByRole("textbox", { name: "Trigger price" }),
@@ -1098,7 +1106,7 @@ async function reviewOneOrder(
 it("opens a wallet-scoped review with checked permissions and separate approval and placement", async () => {
   const user = userEvent.setup();
   showCreation();
-  await user.click(screen.getByRole("button", { name: "Select token" }));
+  await user.click(await screen.findByRole("button", { name: "Select token" }));
   await user.click(await screen.findByRole("option", { name: /WETH/ }));
   await user.type(
     screen.getByRole("textbox", { name: "Trigger price" }),
