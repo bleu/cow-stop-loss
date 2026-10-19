@@ -1,9 +1,9 @@
 import { Button, formatNumber, Input } from "@bleu/ui";
-import { ChevronDownIcon } from "@radix-ui/react-icons";
 import { memo, useEffect, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { useAccount } from "wagmi";
 
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { useTokenPrice } from "#/hooks/useTokenPrice";
 import { ChainId } from "#/lib/publicClients";
@@ -147,8 +147,8 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                   className="pixel-inset flex h-11 w-full min-w-0 items-center justify-between gap-2 rounded-none border border-border/70 bg-muted/50 px-3 text-muted-foreground"
                 >
                   <TokenInfo token={token} showExplorerLink={false} />
-                  <ChevronDownIcon
-                    aria-hidden="true"
+                  <PixelIcon
+                    name="chevron-down"
                     className="size-4 shrink-0 opacity-45"
                   />
                 </div>

@@ -2,8 +2,9 @@
 
 import { cn } from "@bleu/ui";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
-import { ChevronDownIcon } from "@radix-ui/react-icons";
 import * as React from "react";
+
+import { PixelIcon } from "#/components/ui/pixel-icon";
 
 const Accordion = AccordionPrimitive.Root;
 
@@ -33,7 +34,10 @@ const AccordionTrigger = React.forwardRef<
       {...props}
     >
       {children}
-      <ChevronDownIcon className="size-4 shrink-0 text-muted-foreground transition-transform duration-200" />
+      <PixelIcon
+        name="chevron-down"
+        className="size-4 shrink-0 text-muted-foreground transition-transform duration-200"
+      />
     </AccordionPrimitive.Trigger>
   </AccordionPrimitive.Header>
 ));

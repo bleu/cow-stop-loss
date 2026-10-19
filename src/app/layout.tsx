@@ -1,6 +1,7 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import "./globals.css";
 import "../styles/order-review.css";
+import "../styles/landing.css";
 
 import localFont from "next/font/local";
 import { cookies, headers } from "next/headers";
@@ -29,22 +30,6 @@ const desktopDisplay = localFont({
   display: "swap",
 });
 
-const circularStd = localFont({
-  src: [
-    {
-      path: "../fonts/CircularStd-Book.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../fonts/CircularStd-Medium.woff2",
-      weight: "500",
-      style: "normal",
-    },
-  ],
-  variable: "--font-family-sans",
-});
-
 export async function generateMetadata() {
   const theme =
     (await cookies()).get("theme")?.value === "light" ? "light" : "dark";
@@ -71,7 +56,7 @@ export default async function Layout({
   return (
     <html lang="en" className={initialTheme === "light" ? "light" : undefined}>
       <body
-        className={`${pixelDisplay.variable} ${desktopDisplay.variable} ${circularStd.variable} min-h-full border-border bg-background font-sans font-normal`}
+        className={`${pixelDisplay.variable} ${desktopDisplay.variable} min-h-full border-border bg-background font-sans font-normal`}
       >
         <RootLayout initialState={initialState} initialTheme={initialTheme}>
           {children}

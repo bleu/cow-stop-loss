@@ -190,7 +190,7 @@ class BrowserWallet extends EventEmitter {
 }
 
 function TableView() {
-  const [url, setUrl] = React.useState(new URL("http://localhost/"));
+  const [url, setUrl] = React.useState(new URL("http://localhost/app"));
   const router = React.useMemo(
     () => ({
       push: (href: string) => {
@@ -271,7 +271,7 @@ beforeEach(() => {
       new StorageEvent("storage", { key: "stop-loss-placement" }),
     ),
   );
-  window.history.replaceState(null, "", "/");
+  window.history.replaceState(null, "", "/app");
   config = createWagmiConfig();
   provider = new BrowserWallet();
   Object.defineProperty(window, "ethereum", {
@@ -408,7 +408,7 @@ test("opens cancellation from an order row without navigating to its details", a
   const cancelButton = screen.getByRole("button", { name: /^Cancel order/ });
   fireEvent.click(cancelButton);
 
-  expect(window.location.pathname).toBe("/");
+  expect(window.location.pathname).toBe("/app");
   expect(
     await screen.findByRole("heading", { name: "Cancel this order?" }),
   ).toBeVisible();
@@ -423,7 +423,7 @@ test("opens cancellation from an order row without navigating to its details", a
   await waitFor(() =>
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
   );
-  expect(window.location.pathname).toBe("/");
+  expect(window.location.pathname).toBe("/app");
 });
 
 test("keeps a cancelled local creation cancelled when its stale API row arrives", async () => {

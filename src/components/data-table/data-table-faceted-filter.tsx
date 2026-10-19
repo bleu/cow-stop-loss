@@ -13,7 +13,6 @@ import {
   PopoverTrigger,
   Separator,
 } from "@bleu/ui";
-import { CheckIcon } from "@radix-ui/react-icons";
 import type { Column } from "@tanstack/react-table";
 
 import { PixelIcon } from "#/components/ui/pixel-icon";
@@ -107,7 +106,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                       : "opacity-50 [&_svg]:invisible",
                   )}
                 >
-                  <CheckIcon className="size-4" aria-hidden="true" />
+                  <PixelIcon name="check" className="size-4" />
                 </div>
                 <span>All</span>
               </CommandItem>
@@ -141,7 +140,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                           : "opacity-50 [&_svg]:invisible",
                       )}
                     >
-                      <CheckIcon className="size-4" aria-hidden="true" />
+                      <PixelIcon name="check" className="size-4" />
                     </div>
                     {option.icon && (
                       <option.icon
@@ -152,7 +151,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     <span>{option.label}</span>
                     {option.withCount &&
                       column?.getFacetedUniqueValues()?.get(option.value) && (
-                        <span className="ml-auto flex size-4 items-center justify-center font-mono text-xs">
+                        <span className="ml-auto flex size-4 items-center justify-center font-sans text-xs">
                           {column?.getFacetedUniqueValues().get(option.value)}
                         </span>
                       )}

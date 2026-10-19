@@ -1,12 +1,12 @@
 "use client";
 
 import { Button, cn, Input } from "@bleu/ui";
-import { Cross2Icon } from "@radix-ui/react-icons";
 import type { Table } from "@tanstack/react-table";
 import * as React from "react";
 
 import { DataTableFacetedFilter } from "#/components/data-table/data-table-faceted-filter";
 import { DataTableViewOptions } from "#/components/data-table/data-table-view-options";
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import { DataTableFilterField } from "#/hooks/useDataTable";
 
 interface DataTableToolbarProps<TData>
@@ -89,7 +89,7 @@ export function DataTableToolbar<TData>({
             onClick={() => table.resetColumnFilters()}
           >
             Reset
-            <Cross2Icon className="ml-2 size-4" aria-hidden="true" />
+            <PixelIcon name="close" className="ml-2 size-4" />
           </Button>
         )}
       </div>

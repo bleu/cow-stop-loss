@@ -1,10 +1,6 @@
-import {
-  DiscordLogoIcon,
-  ExternalLinkIcon,
-  GitHubLogoIcon,
-  PauseIcon,
-  PlayIcon,
-} from "@radix-ui/react-icons";
+import Link from "next/link";
+
+import { PixelIcon } from "#/components/ui/pixel-icon";
 
 export function Footer({
   githubLink,
@@ -31,6 +27,12 @@ export function Footer({
             bleu
           </a>
         </span>
+        <Link
+          href="/#faq"
+          className="inline-flex min-h-11 items-center hover:underline"
+        >
+          FAQ
+        </Link>
         <a
           href="https://cow.fi/"
           target="_blank"
@@ -38,7 +40,7 @@ export function Footer({
           className="inline-flex items-center gap-1 hover:underline"
         >
           Powered by CoW Protocol
-          <ExternalLinkIcon aria-hidden="true" />
+          <PixelIcon name="external-link" className="size-4" />
         </a>
       </div>
       <div className="flex shrink-0 items-center gap-1 sm:gap-3">
@@ -60,9 +62,9 @@ export function Footer({
             }
           >
             {scenePaused ? (
-              <PlayIcon aria-hidden="true" />
+              <PixelIcon name="play" className="size-4" />
             ) : (
-              <PauseIcon aria-hidden="true" />
+              <PixelIcon name="pause" className="size-4" />
             )}
           </button>
         )}
@@ -74,7 +76,7 @@ export function Footer({
             className="flex size-11 items-center justify-center hover:text-primary"
             aria-label="GitHub repository"
           >
-            <GitHubLogoIcon width={24} height={24} aria-hidden="true" />
+            <PixelIcon name="github" className="size-6" />
           </a>
         )}
         {discordLink && (
@@ -85,7 +87,7 @@ export function Footer({
             className="flex size-11 items-center justify-center hover:text-primary"
             aria-label="CoW Protocol Discord"
           >
-            <DiscordLogoIcon width={24} height={24} aria-hidden="true" />
+            <PixelIcon name="discord" className="size-6" />
           </a>
         )}
       </div>

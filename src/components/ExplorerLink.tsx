@@ -1,10 +1,10 @@
 // copied from https://github.com/cowprotocol/cowswap/blob/d2dd0b6aa835904e4fbe191ef63bca586a222c60/apps/explorer/src/components/common/BlockExplorerLink/BlockExplorerLink.tsx
 
-import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";
 import React, { ReactElement } from "react";
 
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import { BlockExplorerLinkType, getBlockExplorerUrl } from "#/lib/addressUtils";
 import { CHAIN_INFO } from "#/lib/chainInfo";
 import { ChainId } from "#/lib/publicClients";
@@ -85,8 +85,8 @@ export const BlockExplorerLink: React.FC<Props> = (props: Props) => {
       <>
         {hideLabel ? "" : <span>{label}</span>}
         {showExternalIcon && (
-          <ArrowTopRightIcon
-            aria-hidden="true"
+          <PixelIcon
+            name="external-link"
             className="size-3.5 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
           />
         )}

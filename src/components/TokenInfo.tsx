@@ -1,9 +1,9 @@
 "use client";
 import { formatNumber } from "@bleu/ui";
-import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { useAccount } from "wagmi";
 
 import { TokenLogo } from "#/components/TokenLogo";
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import { ChainId } from "#/lib/publicClients";
 import { IToken, ITokenWithValue } from "#/lib/types";
 
@@ -42,7 +42,7 @@ export function TokenInfo({
         {showExplorerLink && (
           <BlockExplorerLink
             type="token"
-            label={<ArrowTopRightIcon />}
+            label={<PixelIcon name="external-link" className="size-4" />}
             identifier={token.address}
             networkId={chainId}
           />
