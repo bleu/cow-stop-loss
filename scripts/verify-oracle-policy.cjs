@@ -136,8 +136,25 @@ function rpc(request) {
     }
     await page.getByRole('button', { name: 'Select token', exact: true }).click();
     await page.getByRole('option', { name: /WETH/ }).click();
+    await page.getByPlaceholder('Search supported tokens').waitFor({ state: 'hidden' });
     await page.getByRole('textbox', { name: 'Sell amount', exact: true }).fill('1');
     await page.getByRole('textbox', { name: 'Trigger price', exact: true }).fill('0.95');
+    await page.getByRole('button', { name: 'Order settings', exact: true }).click();
+    const settings = page.getByRole('region', { name: 'Order settings', exact: true });
+    const expiry = settings.getByRole('combobox', { name: 'Expires', exact: true });
+    await expiry.waitFor();
+    assert.equal(await expiry.innerText(), '6 months (max)');
+    assert.equal(await settings.locator('fieldset').count(), 1);
+    assert.equal(await settings.locator('.rescue-input-inline').count(), 5);
+    const maxAge = settings.getByRole('spinbutton', { name: 'Maximum oracle age (hours)', exact: true });
+    assert.equal(Number(await maxAge.getAttribute('min')), 1 / 3600);
+    assert.equal(Number(await maxAge.getAttribute('max')), 24);
+    assert.equal(await page.getByRole('textbox', { name: 'Sell amount', exact: true }).count(), 0);
+    await page.screenshot({ path: path.join(output, 'cow-policy-settings.png'), fullPage: true });
+    await settings.getByRole('button', { name: 'Return to order', exact: true }).click();
+    assert.equal(await page.getByRole('textbox', { name: 'Sell amount', exact: true }).inputValue(), '1');
+    assert.equal(await page.getByRole('textbox', { name: 'Trigger price', exact: true }).inputValue(), '0.95');
+    checks.push('New settings layout, six-month expiry, bounded oracle age, and preserved draft');
     await page.getByRole('button', { name: 'Review Stop Loss order', exact: true }).click();
     const panel = page.getByRole('region', { name: 'Review stop-loss order', exact: true });
     await panel.waitFor({ timeout: 20000 });
