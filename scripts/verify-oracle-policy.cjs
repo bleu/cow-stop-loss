@@ -32,7 +32,10 @@ function call(to, data) {
   if (sig === selector('decimals()')) return word(token?.decimals ?? 8);
   if (sig === selector('symbol()')) return encodeAbiParameters(parseAbiParameters('string'), [token?.symbol ?? 'TEST']);
   if (sig === selector('name()')) return encodeAbiParameters(parseAbiParameters('string'), [token?.name ?? 'Test token']);
-  if (sig === selector('latestRoundData()')) return encodeAbiParameters(parseAbiParameters('uint80,int256,uint256,uint256,uint80'), [1n, 100000000n, BigInt(now), BigInt(now), 1n]);
+  if (sig === selector('latestRoundData()')) {
+    const updatedAt = BigInt(now - (to === '0x8fffffd4afb6115b954bd326cbe7b4ba576818f6' ? 60000 : 60));
+    return encodeAbiParameters(parseAbiParameters('uint80,int256,uint256,uint256,uint80'), [1n, 100000000n, updatedAt, updatedAt, 1n]);
+  }
   throw new Error(`Unmocked read ${to} ${sig}`);
 }
 
@@ -95,10 +98,12 @@ function rpc(request) {
   page.on('console', message => { if (message.type() === 'error') consoleErrors.push(message.text()); });
   let passed = false, failure;
   try {
-    await page.goto(process.env.APP_URL || 'http://localhost:3001/', { waitUntil: 'networkidle' });
+    await page.goto(process.env.APP_URL || 'http://localhost:3001/', { waitUntil: 'domcontentloaded', timeout: 120000 });
+    await page.getByRole('button', { name: 'Connect wallet', exact: true }).waitFor({ timeout: 120000 });
     await page.getByRole('textbox', { name: 'Sell amount', exact: true }).waitFor();
     assert(await page.getByRole('button', { name: 'Connect wallet to place order', exact: true }).isVisible());
-    checks.push('Standalone root, unavailable production notice, disconnected wallet connection');
+    assert.equal(await page.getByText(/USD buy feed can stop reporting/).count(), 0);
+    checks.push('Standalone root, no blanket warning, disconnected wallet connection');
     await page.screenshot({ path: path.join(output, 'cow-policy-disconnected.png'), fullPage: true });
     await page.getByRole('button', { name: 'Connect wallet', exact: true }).click();
     await page.getByRole('button', { name: 'Browser wallet', exact: true }).click();
@@ -123,13 +128,18 @@ function rpc(request) {
       await page.getByTestId('rk-chain-option-' + id).click();
       await page.waitForFunction(value => Number(window.ethereum.chainId) === value, id);
       await page.getByRole('button', { name: 'Select token', exact: true }).waitFor();
-      if (id !== 11155111) {
-        await page.getByRole('alert').filter({ hasText: /bounded|approval|unavailable/i }).first().waitFor();
+      if (id !== 11155111 && id !== 1) {
+        await page.getByRole('alert').filter({ hasText: 'Select Ethereum' }).first().waitFor();
         assert.equal(await page.getByRole('button', { name: 'Select tokens', exact: true }).isEnabled(), false);
+      } else {
+        assert.equal(await page.getByText(/USD buy feed can stop reporting/).count(), 0);
       }
       await page.getByRole('button', { name: 'Select token', exact: true }).click();
       await page.getByPlaceholder('Search supported tokens').waitFor();
-      assert.equal(await page.getByRole('option').count(), id === 11155111 ? 1 : 0);
+      assert.equal(await page.getByRole('option').count(), id === 11155111 ? 1 : id === 1 ? 3 : 0);
+      if (id === 1) {
+        for (const symbol of ['WETH', 'LINK', 'UNI']) assert(await page.getByRole('option', { name: new RegExp(symbol) }).isVisible());
+      }
       await page.keyboard.press('Escape');
       assert.equal(appData.length, 0);
       checks.push(`Network ${id}: expected creation policy, no publication`);
@@ -169,6 +179,22 @@ function rpc(request) {
     assert.equal(await page.getByRole('textbox', { name: 'Sell amount', exact: true }).inputValue(), '');
     assert.equal(await panel.count(), 0);
     checks.push('Account change clears test review and amounts');
+    await page.getByRole('button', { name: 'Switch wallet network', exact: true }).click();
+    await page.getByTestId('rk-chain-option-1').click();
+    await page.waitForFunction(() => Number(window.ethereum.chainId) === 1);
+    await page.getByRole('button', { name: 'Select token', exact: true }).click();
+    await page.getByRole('option', { name: /WETH/ }).click();
+    await page.getByPlaceholder('Search supported tokens').waitFor({ state: 'hidden' });
+    await page.getByRole('textbox', { name: 'Sell amount', exact: true }).fill('1');
+    await page.getByRole('textbox', { name: 'Trigger price', exact: true }).fill('0.95');
+    await page.getByRole('button', { name: 'Review Stop Loss order', exact: true }).click();
+    await panel.waitFor({ timeout: 20000 });
+    const productionLinks = await panel.locator('a').evaluateAll(items => items.map(item => item.href.toLowerCase()));
+    assert(productionLinks.some(value => value.includes('0x5f4ec3df9cbd43714fe2740f5e3616155c5b8419')));
+    assert(productionLinks.some(value => value.includes('0x8fffffd4afb6115b954bd326cbe7b4ba576818f6')));
+    assert.equal(appData.length, 2);
+    checks.push('Ethereum WETH/USDC production review uses approved feeds; publication intercepted');
+    await page.screenshot({ path: path.join(output, 'cow-policy-ethereum-review.png'), fullPage: true });
     walletCalls.push(...await page.evaluate(() => window.ethereum.calls));
     assert.equal(walletCalls.filter(item => /sign|sendTransaction|sendRawTransaction/i.test(item.method)).length, 0);
     assert.deepEqual(errors, []);

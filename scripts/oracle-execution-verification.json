@@ -18,15 +18,54 @@
   "runtimeBytes": 4259,
   "runtimeSha256": "cd5e1324159124217c235f612031f0fbd4bf235dd531efdbab742d99b7d9db12",
   "chains": {
-    "1": {"runtimeMatch": null, "reason": "RPC requests failed with HTTP 403 or 525; explorer reports exact source verification. No independent live runtime comparison."},
-    "56": {"runtimeMatch": true, "rpc": "https://bsc-dataseed1.bnbchain.org", "observedBlock": "0x7aa0991"},
-    "100": {"runtimeMatch": true, "rpc": "https://rpc.gnosischain.com", "observedBlock": "0x2e93c9f"},
-    "137": {"runtimeMatch": true, "rpc": "https://polygon.drpc.org", "observedBlock": "0x5b6017b"},
-    "8453": {"runtimeMatch": true, "rpc": "https://mainnet.base.org", "observedBlock": "0x325f24c"},
-    "9745": {"runtimeMatch": true, "rpc": "https://rpc.plasma.to", "observedBlock": "0x21d751e"},
-    "42161": {"runtimeMatch": true, "rpc": "https://arb1.arbitrum.io/rpc", "observedBlock": "0x1ec6a8f9"},
-    "43114": {"runtimeMatch": true, "rpc": "https://api.avax.network/ext/bc/C/rpc", "observedBlock": "0x5d719dd"},
-    "59144": {"runtimeMatch": true, "rpc": "https://linea.drpc.org", "observedBlock": "0x1ede441"}
+    "1": {
+      "runtimeMatch": true,
+      "rpc": "https://ethereum-rpc.publicnode.com",
+      "checkedAt": "2026-10-19T21:20:50.498420+00:00",
+      "blockTag": "latest",
+      "runtimeSha256": "cd5e1324159124217c235f612031f0fbd4bf235dd531efdbab742d99b7d9db12",
+      "runtimeBytes": 4259
+    },
+    "56": {
+      "runtimeMatch": true,
+      "rpc": "https://bsc-dataseed1.bnbchain.org",
+      "observedBlock": "0x7aa0991"
+    },
+    "100": {
+      "runtimeMatch": true,
+      "rpc": "https://rpc.gnosischain.com",
+      "observedBlock": "0x2e93c9f"
+    },
+    "137": {
+      "runtimeMatch": true,
+      "rpc": "https://polygon.drpc.org",
+      "observedBlock": "0x5b6017b"
+    },
+    "8453": {
+      "runtimeMatch": true,
+      "rpc": "https://mainnet.base.org",
+      "observedBlock": "0x325f24c"
+    },
+    "9745": {
+      "runtimeMatch": true,
+      "rpc": "https://rpc.plasma.to",
+      "observedBlock": "0x21d751e"
+    },
+    "42161": {
+      "runtimeMatch": true,
+      "rpc": "https://arb1.arbitrum.io/rpc",
+      "observedBlock": "0x1ec6a8f9"
+    },
+    "43114": {
+      "runtimeMatch": true,
+      "rpc": "https://api.avax.network/ext/bc/C/rpc",
+      "observedBlock": "0x5d719dd"
+    },
+    "59144": {
+      "runtimeMatch": true,
+      "rpc": "https://linea.drpc.org",
+      "observedBlock": "0x1ede441"
+    }
   },
   "handlerBehavior": {
     "positiveRawAnswers": true,
@@ -40,6 +79,6 @@
     "highDecimalTruncationRisk": "Feeds above 18 decimals can normalize to zero; zero numerator can satisfy the trigger and zero denominator reverts.",
     "arithmeticLimits": "Signed scaling and normalized numerator times 10^18 must fit int256. Excessive maximum age can underflow block.timestamp subtraction."
   },
-  "decision": "No production route approved. Bounded USD buy-feed compatibility is not established. Arbitrum, Base, and Linea also lack required execution-time sequencer protection. Browser checks do not protect future execution.",
+  "decision": "Ethereum WETH, LINK and UNI sell routes to native USDC are approved by scripts/catalog-policy.json with explicit bounded-buy suitability. Other production routes remain unavailable. The handler has one shared age limit; it cannot enforce separate sell and buy heartbeat limits. Round completeness and future timestamp checks remain browser-only. Arbitrum, Base and Linea lack execution-time sequencer protection.",
   "limits": "This records a bounded source and deployment review, not a security audit, proof of feed quality, or execution guarantee. Source/input evidence is not a production route approval. No transactions were sent."
 }

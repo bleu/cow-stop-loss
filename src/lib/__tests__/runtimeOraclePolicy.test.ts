@@ -19,11 +19,16 @@ import {
   preparePlacement,
   refreshPlacementChecks,
 } from "../pollerStopLoss";
-import { publicClientsFromIds } from "../publicClients";
+import {
+  type ChainId,
+  publicClientsFromIds,
+  supportedChainIds,
+} from "../publicClients";
 import { generateAdvancedSettingsSchema, VALID_TO_OPTIONS } from "../schema";
 import { encodeStopLossStaticInput } from "../staticInputEncoder";
 import * as supported from "../supportedTokens";
 import * as catalog from "../tokenCatalog";
+import data from "../tokenCatalogData.json";
 import { DraftOrder, OrderStatus } from "../types";
 
 const account = "0x1111111111111111111111111111111111111111";
@@ -57,10 +62,7 @@ function sepoliaDraft(): DraftOrder {
   };
 }
 
-function prepared(
-  draft: DraftOrder,
-  chainId: 1 | typeof testChain,
-): PreparedPlacement {
+function prepared(draft: DraftOrder, chainId: ChainId): PreparedPlacement {
   return {
     account,
     chainId,
@@ -85,45 +87,156 @@ function swapData(draft: DraftOrder) {
 afterEach(() => jest.restoreAllMocks());
 
 describe("real creation admission policy", () => {
-  it("rejects saved production placements before reads, publication, approvals, or setup", async () => {
-    const tokenSell = supported.findKnownToken(
-      1,
-      "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-    )!;
-    const draft = {
-      ...sepoliaDraft(),
-      tokenSell,
-      tokenBuy: supported.getSupportedTokens(1).buyToken.token,
-    };
-    const saved = prepared(draft, 1);
-    const reason = supported.getSupportedTokens(1).unavailableReason!;
-    const readContract = jest.fn();
-    const client = { readContract } as unknown as PublicClient;
-    const publish = jest.spyOn(appData, "uploadAppData");
-    await expect(
-      preparePlacement({ account, chainId: 1, draft, client }),
-    ).rejects.toThrow(reason);
-    await expect(
-      useDraftOrder.getState().createDraftOrder(swapData(draft), 1, account),
-    ).rejects.toThrow(reason);
-    await expect(refreshPlacementChecks(saved, { client })).resolves.toEqual({
-      status: "unknown",
-      error: reason,
+  it("exposes the approved Ethereum routes to native USDC with chain evidence", async () => {
+    const { sellTokens, buyToken, unavailableReason } =
+      supported.getSupportedTokens(1);
+    expect(sellTokens.length).toBeGreaterThan(0);
+    expect(sellTokens.map(({ token }) => token.symbol).sort()).toEqual([
+      "LINK",
+      "UNI",
+      "WETH",
+    ]);
+    expect(buyToken.token).toMatchObject({
+      address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      symbol: "USDC",
+      decimals: 6,
     });
-    const checks = {
-      status: "unknown",
-      error: "must not reach funding checks",
-    } as const;
-    await expect(buildPlacementApproval(saved, { checks })).rejects.toThrow(
-      reason,
-    );
-    await expect(
-      buildPlacementSetup(saved, { checks, client }),
-    ).rejects.toThrow(reason);
-    expect(publish).not.toHaveBeenCalled();
-    expect(readContract).not.toHaveBeenCalled();
-    expect(tokenSell.symbol).toBe("WETH");
+    expect(unavailableReason).toBeUndefined();
+    expect(catalog.catalogUnavailableReason(1)).toBeUndefined();
+    expect(data.chains["1"]).toMatchObject({
+      status: "approved",
+      executionEvidence: expect.stringMatching(/\S/),
+      arithmeticBoundsEvidence: expect.stringMatching(/\S/),
+      reviewDate: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+    });
+    for (const sell of sellTokens) {
+      const pair = {
+        chainId: 1 as const,
+        tokenSell: sell.token,
+        tokenBuy: buyToken.token,
+      };
+      const route = configuredTokenRoute(pair);
+      expect(route).toEqual({
+        tokenSellOracle: sell.oracles.USD,
+        tokenBuyOracle: buyToken.oracles.USD,
+      });
+      expect(route.tokenSellOracle).toMatch(/^0x[0-9a-fA-F]{40}$/);
+      expect(route.tokenBuyOracle).toMatch(/^0x[0-9a-fA-F]{40}$/);
+      for (const leg of [sell, buyToken]) {
+        const row = data.tokens.find(
+          (token) =>
+            token.chainId === 1 &&
+            token.address.toLowerCase() === leg.token.address.toLowerCase(),
+        );
+        expect(catalog.parseOracleApprovals(row)).toEqual({
+          oracles: leg.oracles,
+          oracleApprovals: leg.oracleApprovals,
+        });
+        expect(leg.oracleApprovals?.USD?.maxAgeSeconds).toBeGreaterThan(0);
+      }
+      expect(configuredRouteMaxAgeSeconds(pair)).toBe(
+        Math.max(
+          sell.oracleApprovals!.USD!.maxAgeSeconds,
+          buyToken.oracleApprovals!.USD!.maxAgeSeconds,
+        ),
+      );
+      await expect(new ConfiguredRouter(pair).findRoute()).resolves.toEqual(
+        route,
+      );
+    }
   });
+
+  it.each(["fresh", "stale sell", "stale buy", "user limit"])(
+    "checks Ethereum feeds against their own ceilings: %s",
+    async (scenario) => {
+      const { sellTokens, buyToken } = supported.getSupportedTokens(1);
+      const sell = sellTokens.find(({ token }) => token.symbol === "WETH")!;
+      expect(sell).toBeDefined();
+      const sellCeiling = sell.oracleApprovals!.USD!.maxAgeSeconds;
+      const buyCeiling = buyToken.oracleApprovals!.USD!.maxAgeSeconds;
+      const sellAge = scenario === "stale sell" ? sellCeiling + 1 : 1000;
+      const buyAge = scenario === "stale buy" ? buyCeiling + 1 : 60000;
+      expect(sellCeiling).toBeGreaterThan(1000);
+      expect(buyCeiling).toBeGreaterThan(60000);
+      const client = publicClientsFromIds[1];
+      jest.spyOn(client, "getBlock").mockResolvedValue({
+        number: BigInt(10),
+        timestamp: BigInt(200000),
+      } as never);
+      jest
+        .spyOn(client, "readContract")
+        .mockImplementation(async ({ functionName, address }) => {
+          if (functionName === "decimals") return 8;
+          const selling =
+            address?.toLowerCase() === sell.oracles.USD!.toLowerCase();
+          return [
+            BigInt(1),
+            BigInt(selling ? 200000000000 : 100000000),
+            BigInt(200000 - (selling ? sellAge : buyAge)),
+            BigInt(200000 - (selling ? sellAge : buyAge)),
+            BigInt(1),
+          ];
+        });
+      const router = new ConfiguredRouter({
+        chainId: 1,
+        tokenSell: sell.token,
+        tokenBuy: buyToken.token,
+      });
+      const price = router.calculatePrice(
+        configuredTokenRoute(router),
+        scenario === "user limit" ? 500 : 86400,
+      );
+      if (scenario === "fresh") await expect(price).resolves.toBe(2000);
+      else await expect(price).rejects.toThrow("stale");
+    },
+  );
+
+  it.each(supportedChainIds.filter((id) => id !== 1 && id !== testChain))(
+    "rejects saved placements on blocked chain %s before reads, publication, approvals, or setup",
+    async (chainId) => {
+      const configured = supported.getSupportedTokens(chainId);
+      const tokenSell = catalog.TOKEN_CATALOG.find(
+        (token) =>
+          token.chainId === chainId &&
+          token.address !== configured.buyToken.token.address,
+      )!;
+      const draft = {
+        ...sepoliaDraft(),
+        tokenSell,
+        tokenBuy: configured.buyToken.token,
+      };
+      const saved = prepared(draft, chainId);
+      const reason = configured.unavailableReason!;
+      expect(reason).toEqual(expect.any(String));
+      const readContract = jest.fn();
+      const client = { readContract } as unknown as PublicClient;
+      const publish = jest.spyOn(appData, "uploadAppData");
+      await expect(
+        preparePlacement({ account, chainId, draft, client }),
+      ).rejects.toThrow(reason);
+      await expect(
+        useDraftOrder
+          .getState()
+          .createDraftOrder(swapData(draft), chainId, account),
+      ).rejects.toThrow(reason);
+      await expect(refreshPlacementChecks(saved, { client })).resolves.toEqual({
+        status: "unknown",
+        error: reason,
+      });
+      const checks = {
+        status: "unknown",
+        error: "must not reach funding checks",
+      } as const;
+      await expect(buildPlacementApproval(saved, { checks })).rejects.toThrow(
+        reason,
+      );
+      await expect(
+        buildPlacementSetup(saved, { checks, client }),
+      ).rejects.toThrow(reason);
+      expect(publish).not.toHaveBeenCalled();
+      expect(readContract).not.toHaveBeenCalled();
+    },
+  );
 
   it("keeps historical approval repair separate from creation admission", async () => {
     const historical = prepared(
@@ -148,7 +261,7 @@ describe("real creation admission policy", () => {
       }),
     ).rejects.toThrow("Historical funding check is still required");
     expect(() => assertPlacementRoute(historical.draft, 1)).toThrow(
-      supported.getSupportedTokens(1).unavailableReason,
+      "Unsupported sell token",
     );
   });
 
@@ -281,24 +394,24 @@ describe("TEST-only approved route ceilings", () => {
       });
   }
 
-  it("uses the tighter leg in settings, draft construction, and saved input", async () => {
+  it("uses the slower leg ceiling for settings, draft construction, and saved input", async () => {
     shorterApprovals();
     const draft = sepoliaDraft();
     expect(configuredRouteMaxAgeSeconds({ chainId: testChain, ...draft })).toBe(
-      900,
+      1800,
     );
     const schema = generateAdvancedSettingsSchema(testChain, draft);
     const settings = {
       receiver: "",
       partiallyFillable: true,
-      maxHoursSinceOracleUpdates: 0.25,
+      maxHoursSinceOracleUpdates: 0.5,
     };
     expect((await schema.safeParseAsync(settings)).success).toBe(true);
     expect(
       (
         await schema.safeParseAsync({
           ...settings,
-          maxHoursSinceOracleUpdates: 0.5,
+          maxHoursSinceOracleUpdates: 0.75,
         })
       ).success,
     ).toBe(false);

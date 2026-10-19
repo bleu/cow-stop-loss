@@ -1,10 +1,77 @@
 {
-  "checkedAt": "2026-10-19T16:32:25.375286+00:00",
-  "scope": "approved-feeds",
-  "status": "not-performed",
-  "chains": {},
+  "checkedAt": "2026-10-19T21:19:16.955231+00:00",
+  "scope": "candidate-review",
+  "status": "checked",
+  "chains": {
+    "1": {
+      "tokens": {
+        "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
+          "decimals": 18,
+          "symbol": "WETH"
+        },
+        "0x514910771af9ca656af840dff83e8264ecf986ca": {
+          "decimals": 18,
+          "symbol": "LINK"
+        },
+        "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
+          "decimals": 18,
+          "symbol": "UNI"
+        },
+        "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+          "decimals": 6,
+          "symbol": "USDC"
+        }
+      },
+      "feeds": {
+        "0x5f4ec3df9cbd43714fe2740f5e3616155c5b8419": {
+          "description": "ETH / USD",
+          "decimals": 8,
+          "roundId": "129127208515966896123",
+          "answer": "240292975734",
+          "updatedAt": 1792444475,
+          "answeredInRound": "129127208515966896123",
+          "heartbeat": 3600,
+          "observedAt": 1792444756,
+          "ageSeconds": 281
+        },
+        "0x2c1d072e956affc0d435cb7ac38ef18d24d9127c": {
+          "description": "LINK / USD",
+          "decimals": 8,
+          "roundId": "129127208515966895580",
+          "answer": "1190938600",
+          "updatedAt": 1792444703,
+          "answeredInRound": "129127208515966895580",
+          "heartbeat": 3600,
+          "observedAt": 1792444756,
+          "ageSeconds": 53
+        },
+        "0x553303d460ee0afb37edff9be42922d8ff63220e": {
+          "description": "UNI / USD",
+          "decimals": 8,
+          "roundId": "129127208515966888176",
+          "answer": "720986485",
+          "updatedAt": 1792441799,
+          "answeredInRound": "129127208515966888176",
+          "heartbeat": 3600,
+          "observedAt": 1792444756,
+          "ageSeconds": 2957
+        },
+        "0x8fffffd4afb6115b954bd326cbe7b4ba576818f6": {
+          "description": "USDC / USD",
+          "decimals": 8,
+          "roundId": "73786976294838206501",
+          "answer": "99984159",
+          "updatedAt": 1792385015,
+          "answeredInRound": "73786976294838206501",
+          "heartbeat": 82800,
+          "observedAt": 1792444756,
+          "ageSeconds": 59741
+        }
+      },
+      "issues": []
+    }
+  },
   "skippedChains": {
-    "1": "No selected production feeds; live verification was not performed",
     "100": "No selected production feeds; live verification was not performed",
     "42161": "No selected production feeds; live verification was not performed",
     "8453": "No selected production feeds; live verification was not performed",

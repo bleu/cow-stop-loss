@@ -4,7 +4,7 @@ import { useAccount } from "wagmi";
 
 import { fetchOraclePairPrice } from "#/lib/oraclePrice";
 import {
-  configuredRouteMaxAgeSeconds,
+  configuredRouteMaxAges,
   configuredTokenRoute,
   type IRoute,
 } from "#/lib/oracleRouter";
@@ -29,14 +29,20 @@ export const useTokenPairPrice = (
     (state) => state.advancedSettings.maxHoursSinceOracleUpdates,
   );
   let maxAge = savedOracles?.maxAge ?? maxHours * 60 * 60;
+  let sellMaxAge = maxAge;
+  let buyMaxAge = maxAge;
   let route: IRoute | undefined;
   let routeError: Error | undefined;
   if (chainId && tokenSell && tokenBuy) {
     try {
       const pair = { chainId, tokenSell, tokenBuy };
       route = savedOracles ?? configuredTokenRoute(pair);
-      if (!savedOracles)
-        maxAge = Math.min(maxAge, configuredRouteMaxAgeSeconds(pair));
+      if (!savedOracles) {
+        const limits = configuredRouteMaxAges(pair);
+        sellMaxAge = Math.min(maxAge, limits.sellMaxAge);
+        buyMaxAge = Math.min(maxAge, limits.buyMaxAge);
+        maxAge = Math.max(sellMaxAge, buyMaxAge);
+      }
     } catch (error) {
       routeError =
         error instanceof Error ? error : new Error("No matching oracles found");
@@ -50,9 +56,19 @@ export const useTokenPairPrice = (
           route.tokenSellOracle.toLowerCase(),
           route.tokenBuyOracle.toLowerCase(),
           maxAge,
+          sellMaxAge,
+          buyMaxAge,
         ] as const)
       : null,
-    ([, selectedChainId, tokenSellOracle, tokenBuyOracle, selectedMaxAge]) =>
+    ([
+      ,
+      selectedChainId,
+      tokenSellOracle,
+      tokenBuyOracle,
+      selectedMaxAge,
+      selectedSellMaxAge,
+      selectedBuyMaxAge,
+    ]) =>
       fetchOraclePairPrice({
         chainId: selectedChainId,
         route: {
@@ -60,6 +76,8 @@ export const useTokenPairPrice = (
           tokenBuyOracle: tokenBuyOracle as Address,
         },
         maxAge: selectedMaxAge,
+        sellMaxAge: selectedSellMaxAge,
+        buyMaxAge: selectedBuyMaxAge,
       }),
     {
       refreshInterval: 90_000,

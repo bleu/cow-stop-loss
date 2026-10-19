@@ -225,14 +225,16 @@ function WalletSwapForm({
             />
             <div
               aria-hidden={settingsOpen}
-              inert={settingsOpen}
+              ref={(element) => {
+                element?.toggleAttribute("inert", settingsOpen);
+              }}
               data-inactive={settingsOpen}
               className="rescue-order-fields flex flex-col gap-3"
             >
               {unavailableReason && (
                 <p role="alert" className="text-sm text-muted-foreground">
-                  {unavailableReason} Existing orders remain available in the
-                  order list.
+                  Select Ethereum to create a stop-loss order. Existing orders
+                  remain available in the order list.
                 </p>
               )}
               <TokenInputCard side="Sell" />

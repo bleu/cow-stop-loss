@@ -26,8 +26,12 @@ function validOrder(chainId: ChainId) {
 }
 
 describe("fixed USD buy token policy", () => {
-  it.each(supportedChainIds.filter((chainId) => chainId !== 11155111))(
-    "rejects production creation with the chain-specific reason on chain %s",
+  it.each(
+    supportedChainIds.filter(
+      (chainId) => chainId !== 1 && chainId !== 11155111,
+    ),
+  )(
+    "rejects creation with the chain-specific reason on blocked chain %s",
     (chainId) => {
       const configured = getSupportedTokens(chainId);
       expect(configured.sellTokens).toEqual([]);
@@ -42,8 +46,8 @@ describe("fixed USD buy token policy", () => {
     },
   );
 
-  it.each([11155111] as const)(
-    "accepts the designated test token on chain %s",
+  it.each([1, 11155111] as const)(
+    "accepts the designated buy token on chain %s",
     (chainId) => {
       expect(
         generateSwapSchema(chainId).safeParse(validOrder(chainId)).success,

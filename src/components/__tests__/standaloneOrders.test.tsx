@@ -30,7 +30,6 @@ import HomePage from "#/app/page";
 import { RootLayout as AppRootLayout } from "#/components/RootLayout";
 import { useOrderList } from "#/hooks/useOrderList";
 import { publicClientsFromIds, supportedChainIds } from "#/lib/publicClients";
-import { getSupportedTokens } from "#/lib/supportedTokens";
 import { createWagmiConfig } from "#/utils/wagmi";
 
 let config: ReturnType<typeof createWagmiConfig>;
@@ -1587,8 +1586,8 @@ test("keeps successful chains visible and retries a failed chain", async () => {
   expect(
     within(
       screen.getByRole("region", { name: "Create stop-loss order" }),
-    ).getByRole("alert"),
-  ).toHaveTextContent(getSupportedTokens(1).unavailableReason!);
+    ).queryByRole("alert"),
+  ).not.toBeInTheDocument();
 });
 
 test("does not show an API outage as an empty order list", async () => {

@@ -3,41 +3,121 @@
   "verificationFile": "scripts/catalog-policy-verification.json",
   "chains": {
     "1": {
-      "status": "unavailable",
-      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+      "status": "approved",
+      "executionEvidence": "scripts/oracle-execution-verification.json: Ethereum runtime SHA256 matches the retained compiled handler. Accept the known shared-age, round-completeness and timestamp limitations for this explicit three-token scope. No execution guarantee or security audit.",
+      "arithmeticBoundsEvidence": "All selected feeds have 8 decimals, positive observed answers and no truncation below 18 decimals. Observed normalization and ratio products fit int256; shared age ceiling 124260 seconds is below the chain timestamp. Extreme future oracle values can still overflow and revert. See scripts/catalog-policy-verification.json.",
+      "reviewDate": "2026-10-19"
     },
     "100": {
       "status": "unavailable",
-      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+      "unavailableReason": "Select Ethereum to create a stop-loss order."
     },
     "42161": {
       "status": "unavailable",
-      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved. The order handler also lacks protection for L2 sequencer outages."
+      "unavailableReason": "Select Ethereum to create a stop-loss order."
     },
     "8453": {
       "status": "unavailable",
-      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved. The order handler also lacks protection for L2 sequencer outages."
+      "unavailableReason": "Select Ethereum to create a stop-loss order."
     },
     "137": {
       "status": "unavailable",
-      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+      "unavailableReason": "Select Ethereum to create a stop-loss order."
     },
     "43114": {
       "status": "unavailable",
-      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+      "unavailableReason": "Select Ethereum to create a stop-loss order."
     },
     "56": {
       "status": "unavailable",
-      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+      "unavailableReason": "Select Ethereum to create a stop-loss order."
     },
     "59144": {
       "status": "unavailable",
-      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved. The order handler also lacks protection for L2 sequencer outages."
+      "unavailableReason": "Select Ethereum to create a stop-loss order."
     },
     "9745": {
       "status": "unavailable",
-      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+      "unavailableReason": "Select Ethereum to create a stop-loss order."
     }
   },
-  "approvals": []
+  "approvals": [
+    {
+      "chainId": 1,
+      "tokenAddress": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+      "quote": "USD",
+      "path": "eth-usd",
+      "proxyAddress": "0x5f4ec3df9cbd43714fe2740f5e3616155c5b8419",
+      "expectedDescription": "ETH / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 5460,
+      "assetRelationship": "native-wrapper",
+      "assetRelationshipReason": "Canonical WETH9 wraps and unwraps Ethereum ETH one for one; no bridge or third-party custody substitution.",
+      "identityEvidence": "https://etherscan.io/address/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2#code: exact Ethereum contract matches pinned metadata and live token decimals/symbol.",
+      "representationEvidence": "https://etherscan.io/address/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2#code: canonical Ethereum native wrapper.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row, USD quote; unbounded reference market price.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-mainnet.json: exact eth-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual candidate observations in scripts/catalog-policy-verification.json.",
+      "reviewDate": "2026-10-19",
+      "snapshotFingerprint": "sha256:3b84c36b1bb23c8717e3b89f754310f1939f4b5081557d86ea03501f6b9cd4cb"
+    },
+    {
+      "chainId": 1,
+      "tokenAddress": "0x514910771af9ca656af840dff83e8264ecf986ca",
+      "quote": "USD",
+      "path": "link-usd",
+      "proxyAddress": "0x2c1d072e956affc0d435cb7ac38ef18d24d9127c",
+      "expectedDescription": "LINK / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 5460,
+      "assetRelationship": "exact-asset",
+      "assetRelationshipReason": "The feed measures LINK, matching this exact Ethereum issued token; no underlying or bridged asset substitution.",
+      "identityEvidence": "https://docs.chain.link/resources/link-token-contracts: exact Ethereum contract matches pinned metadata and live token decimals/symbol.",
+      "representationEvidence": "https://docs.chain.link/resources/link-token-contracts: canonical Ethereum issued asset, not a bridged representation.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row, USD quote; unbounded reference market price.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-mainnet.json: exact link-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual candidate observations in scripts/catalog-policy-verification.json.",
+      "reviewDate": "2026-10-19",
+      "snapshotFingerprint": "sha256:ddc92963794ab2883b70b27ecdf9c6b3c2a48e43bdcca611c40c45b8c322aa69"
+    },
+    {
+      "chainId": 1,
+      "tokenAddress": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+      "quote": "USD",
+      "path": "uni-usd",
+      "proxyAddress": "0x553303d460ee0afb37edff9be42922d8ff63220e",
+      "expectedDescription": "UNI / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 5460,
+      "assetRelationship": "exact-asset",
+      "assetRelationshipReason": "The feed measures UNI, matching this exact Ethereum issued token; no underlying or bridged asset substitution.",
+      "identityEvidence": "https://etherscan.io/address/0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984#code: exact Ethereum contract matches pinned metadata and live token decimals/symbol.",
+      "representationEvidence": "https://etherscan.io/address/0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984#code: canonical Ethereum issued asset, not a bridged representation.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row, USD quote; unbounded reference market price.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-mainnet.json: exact uni-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual candidate observations in scripts/catalog-policy-verification.json.",
+      "reviewDate": "2026-10-19",
+      "snapshotFingerprint": "sha256:e6e9bdad4077e49f0c8835becfacc4ce9a9a0893342a94a8cb2786719faad9f9"
+    },
+    {
+      "chainId": 1,
+      "tokenAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "quote": "USD",
+      "path": "usdc-usd",
+      "proxyAddress": "0x8fffffd4afb6115b954bd326cbe7b4ba576818f6",
+      "expectedDescription": "USDC / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 124260,
+      "assetRelationship": "exact-asset",
+      "assetRelationshipReason": "The feed measures USDC, matching this exact Ethereum issued token; no underlying or bridged asset substitution.",
+      "identityEvidence": "https://developers.circle.com/stablecoins/usdc-contract-addresses: exact Ethereum contract matches pinned metadata and live token decimals/symbol.",
+      "representationEvidence": "https://developers.circle.com/stablecoins/usdc-contract-addresses: canonical Ethereum issued asset, not a bridged representation.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row, USD quote; bounded market price accepted only as fixed buy under boundedPriceSuitability.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-mainnet.json: exact usdc-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual candidate observations in scripts/catalog-policy-verification.json.",
+      "reviewDate": "2026-10-19",
+      "snapshotFingerprint": "sha256:21e8c38506b1259971c78c949992a816391e830eac34e27d98d35551e6e620f6",
+      "boundedPriceSuitability": {
+        "decision": "accepted-for-fixed-buy",
+        "reviewDate": "2026-10-19",
+        "evidence": "https://docs.chain.link/data-feeds/selecting-data-feeds#bounded-market-price-feeds: this exact USDC/USD source has stablecoinCapped=true and maxSubmissionValue=105000000 (1.05 USD at 8 decimals). Above the upper bound the last onchain answer remains until reporting resumes, which can delay a sell/USDC stop-loss trigger and later fail freshness. A USDC downside depeg has no corresponding lower bound. Accept this residual risk only for native USDC as the fixed Ethereum buy asset; no assumed dollar peg, bounded sell approval, or claim that frontend checks protect future execution."
+      }
+    }
+  ]
 }

@@ -154,7 +154,9 @@
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/c0b567bd541bf5033207.svg",
       "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weth.svg",
-      "logoSha256": "c0b567bd541bf50332072c13c19211ffd025062127c75818df52a588414a9655"
+      "logoSha256": "c0b567bd541bf50332072c13c19211ffd025062127c75818df52a588414a9655",
+      "canonicalNativeWrapper": true,
+      "canonicalNativeWrapperEvidence": "https://etherscan.io/address/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2#code: verified WETH9 deposit credits msg.value and withdraw returns the same ETH amount; canonical Ethereum wrapper, not a bridge claim."
     },
     {
       "chainId": 1,

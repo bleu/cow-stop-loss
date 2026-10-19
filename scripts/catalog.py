@@ -56,7 +56,7 @@ def review_date(value):
     require(parsed.isoformat() == value and parsed <= datetime.date.today(), "Invalid reviewDate")
 
 
-def excluded_reason(feed):
+def excluded_reason(feed, *, bounded_price_approved=False):
     docs = feed.get("docs", {})
     if feed.get("feedCategory") in {"hidden", "deprecating"} or docs.get("hidden") or docs.get("shutdownDate"):
         return "hidden-or-deprecating"
@@ -64,7 +64,7 @@ def excluded_reason(feed):
         return "no-onchain-proxy"
     if docs.get("assetClass") != "Crypto":
         return "non-crypto-price-or-data"
-    if docs.get("stablecoinCapped"):
+    if docs.get("stablecoinCapped") and not bounded_price_approved:
         return "bounded-price-methodology-not-approved"
     if feed.get("status") not in {None, "active"}:
         return "inactive-feed"
@@ -144,7 +144,15 @@ def approved_feeds(identities, inventories, policy, verification):
         matches = [feed for feed in inventories.get(str(chain), []) if feed.get("path") == entry["path"] and (feed.get("proxyAddress") or "").lower() == proxy.lower()]
         require(len(matches) == 1, "Approval must match exactly one source path/proxy")
         feed = matches[0]
-        reason = excluded_reason(feed)
+        bounded_price_approved = False
+        if "boundedPriceSuitability" in entry:
+            suitability = entry["boundedPriceSuitability"]
+            require(isinstance(suitability, dict) and suitability.get("decision") == "accepted-for-fixed-buy", "Invalid boundedPriceSuitability decision")
+            require(nonempty(suitability.get("evidence")), "Missing boundedPriceSuitability evidence")
+            review_date(suitability.get("reviewDate"))
+            require(address.lower() == identities["usdTokens"].get(str(chain), "").lower() and denomination == "USD" and entry.get("assetRelationship") == "exact-asset", "boundedPriceSuitability requires fixed buy token, USD quote and exact-asset relationship")
+            bounded_price_approved = True
+        reason = excluded_reason(feed, bounded_price_approved=bounded_price_approved)
         require(reason is None, f"Ineligible approved source: {reason}")
         require(feed["docs"]["quoteAsset"] == denomination, "Approval quote differs from source")
         for field in EVIDENCE_FIELDS:
@@ -225,7 +233,7 @@ def build(identities=None, inventories=None, policy=None, verification=None):
         if (chain, buy_address, "USD") not in approvals:
             chains[str(chain)] = {"status": "unavailable", "unavailableReason": "buy-token-has-no-approved-usd-feed"}
             continue
-        chains[str(chain)] = {"status": "approved"}
+        chains[str(chain)] = {key: execution[key] for key in ("status", "executionEvidence", "arithmeticBoundsEvidence", "reviewDate")}
         buy_quotes = {quote for approved_chain, address, quote in approvals if approved_chain == chain and address == buy_address}
         for (approved_chain, address, denomination), entry in approvals.items():
             if approved_chain == chain and denomination in buy_quotes:

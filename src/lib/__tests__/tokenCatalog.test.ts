@@ -106,8 +106,8 @@ it("has unique, valid token contracts and local images", () => {
   }
 });
 
-it.each(supportedChainIds.filter((id) => id !== 11155111))(
-  "retains metadata but advertises no production routes on chain %s",
+it.each(supportedChainIds.filter((id) => id !== 1 && id !== 11155111))(
+  "retains metadata but advertises no routes on blocked chain %s",
   async (chainId) => {
     const { sellTokens, buyToken, unavailableReason } =
       getSupportedTokens(chainId);

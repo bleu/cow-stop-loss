@@ -3,6 +3,8 @@
  * @jest-environment-options {"customExportConditions": ["node", "node-addons"]}
  */
 
+let mockUseRealSupportedTokens = false;
+
 // Opt in to simulated TEST approvals; production policy remains unchanged.
 jest.mock("#/lib/supportedTokens", () => {
   const actual = jest.requireActual("#/lib/supportedTokens");
@@ -10,7 +12,10 @@ jest.mock("#/lib/supportedTokens", () => {
   return {
     ...actual,
     getSupportedTokens: (chainId: import("#/lib/publicClients").ChainId) =>
-      TEST_SUPPORTED_TOKENS[chainId] ?? actual.getSupportedTokens(chainId),
+      mockUseRealSupportedTokens
+        ? actual.getSupportedTokens(chainId)
+        : (TEST_SUPPORTED_TOKENS[chainId] ??
+          actual.getSupportedTokens(chainId)),
   };
 });
 
@@ -30,7 +35,7 @@ import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 import { invalidatePlacementReads } from "#/lib/placementReads";
 import { publicClientsFromIds } from "#/lib/publicClients";
 import { VALID_TO_OPTIONS, VALID_TO_VALUES_MAP } from "#/lib/schema";
-import { getSupportedTokens } from "#/lib/supportedTokens";
+import * as supportedTokens from "#/lib/supportedTokens";
 import { createWagmiConfig } from "#/utils/wagmi";
 
 import { SwapForm } from "../swap-card/SwapForm";
@@ -58,6 +63,7 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
+  mockUseRealSupportedTokens = false;
   safe = {
     chainId: 1,
     safeAddress: "0x1111111111111111111111111111111111111111",
@@ -96,6 +102,44 @@ beforeEach(() => {
     });
 });
 afterEach(() => jest.restoreAllMocks());
+
+it("offers the real approved Ethereum sell tokens without an unavailable alert", async () => {
+  mockUseRealSupportedTokens = true;
+  const user = userEvent.setup();
+  renderForm();
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(screen.getByText("USDC")).toBeInTheDocument();
+  await user.click(screen.getByRole("button", { name: "Select token" }));
+  expect(screen.getAllByRole("option")).toHaveLength(3);
+  for (const symbol of ["WETH", "LINK", "UNI"])
+    expect(
+      screen.getByRole("option", { name: new RegExp(symbol) }),
+    ).toBeInTheDocument();
+});
+
+it("shows a short Ethereum prompt on a blocked network and keeps submission disabled", async () => {
+  const actual = jest.requireActual<typeof supportedTokens>(
+    "#/lib/supportedTokens",
+  );
+  mockUseRealSupportedTokens = true;
+  safe = { ...safe, chainId: 100 };
+  jest
+    .spyOn(publicClientsFromIds[100], "readContract")
+    .mockResolvedValue(BigInt(0));
+  const user = userEvent.setup();
+  const onReviewOrder = jest.fn();
+  renderForm(onReviewOrder);
+  expect(screen.getByRole("alert")).toHaveTextContent(
+    "Select Ethereum to create a stop-loss order. Existing orders remain available in the order list.",
+  );
+  expect(
+    screen.queryByText(actual.getSupportedTokens(100).unavailableReason!),
+  ).not.toBeInTheDocument();
+  const submit = screen.getByRole("button", { name: "Select tokens" });
+  expect(submit).toBeDisabled();
+  await user.click(submit);
+  expect(onReviewOrder).not.toHaveBeenCalled();
+});
 
 it("keeps the inactive order pane mounted and inaccessible while settings are open", async () => {
   const user = userEvent.setup();
@@ -703,7 +747,7 @@ it("filters the expanded sell catalog by address and resets prices when selectio
   );
 
   await user.click(screen.getByRole("button", { name: "Token Logo WETH" }));
-  const { sellTokens, buyToken } = getSupportedTokens(1);
+  const { sellTokens, buyToken } = supportedTokens.getSupportedTokens(1);
   expect(sellTokens.length).toBeGreaterThan(2);
   expect(screen.getAllByRole("option")).toHaveLength(sellTokens.length);
   expect(
