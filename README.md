@@ -4,7 +4,9 @@ A standalone app to create, review, and cancel exact-sell stop-loss orders on Co
 
 Orders for the connected account and its CowShed proxies appear in one list across Ethereum, Gnosis, Arbitrum, Base, Polygon, Avalanche, BNB Chain, Linea, Plasma, and Sepolia. Sepolia is marked as a testnet. Connection and browsing do not switch the wallet chain. The header's network control requests a wallet chain switch only when you select a network. Use the list's chain and status filters to narrow the list; both default to `All`. Open the header account button to disconnect.
 
-Select a catalog sell token, enter an exact sell amount and trigger price, and set slippage. Each chain has one fixed USD buy token; Gnosis uses USDT. Review one order, complete any required CowShed setup and token approval, then place it. Existing orders support approval repair and cancellation when their ownership and state permit it. Sepolia creation offers WETH only, with the existing USDC test token and fixed test feeds. Arbitrary token imports, manual feed overrides, and exact-buy mode are not supported. See [Supported networks](docs/supported-networks.md) and [Token catalog](docs/token-catalog.md) for coverage and limits.
+New production order creation is currently disabled on all nine mainnets. No token/feed route has the required approval evidence: all fixed USD buy feeds are marked as bounded-price feeds, and the deployed handler lacks L2 sequencer protection. Known token metadata does not imply creation eligibility. Sepolia still offers WETH into the existing USDC test token with fixed test feeds; this is test data, not production price coverage. Existing orders support approval repair and cancellation when their ownership and state permit it. See [Supported networks](docs/supported-networks.md) and [Token catalog](docs/token-catalog.md) for the evidence and limits.
+
+Future approved routes use an exact sell amount, trigger price, slippage, and one fixed USD buy token per chain. Dollar-pegged and dollar-linked tokens are excluded from sells. Arbitrary token imports, manual feed overrides, and exact-buy mode are not supported.
 
 ## Local setup
 
@@ -52,4 +54,6 @@ corepack pnpm@9 build:next
 corepack pnpm@9 build
 ```
 
-Tests replace external HTTP, wallet providers, and time. They use the real wallet, data-loading, and rendered-view modules. A real WalletConnect session also needs a configured project and an external wallet.
+Tests replace external HTTP, wallet providers, and time. Policy tests use the real disabled production catalog. Some order-math and EOA-flow suites opt into synthetic approved routes; those fixtures are not production approval evidence. A real WalletConnect session also needs a configured project and an external wallet.
+
+The read-only browser check in `scripts/verify-oracle-policy.cjs` opens the actual network menu, checks loaded images and unavailable production routes, and reviews a Sepolia test order. Start the app first, provide an installed Playwright module with `PLAYWRIGHT_PATH`, and set `CHROME_PATH` if Chrome is not at the default macOS path. The fixture mocks external reads, intercepts app-data publication, and blocks signing and transactions. It does not prove live execution.

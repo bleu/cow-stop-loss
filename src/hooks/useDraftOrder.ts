@@ -38,9 +38,10 @@ export const useDraftOrder = create<DraftOrderState>()((set) => ({
       sellDecimals: swapData.tokenSell.decimals,
       buyDecimals: swapData.tokenBuy.decimals,
     });
-    const advancedSettings = await generateAdvancedSettingsSchema(
-      chainId,
-    ).parseAsync(useAdvancedSettingsStore.getState().advancedSettings);
+    const advancedSettings = await generateAdvancedSettingsSchema(chainId, {
+      tokenSell: swapData.tokenSell,
+      tokenBuy: swapData.tokenBuy,
+    }).parseAsync(useAdvancedSettingsStore.getState().advancedSettings);
 
     const receiver =
       advancedSettings.receiver === ""

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "verificationFile": "scripts/catalog-policy-verification.json",
+  "chains": {
+    "1": {
+      "status": "unavailable",
+      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+    },
+    "100": {
+      "status": "unavailable",
+      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+    },
+    "42161": {
+      "status": "unavailable",
+      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved. The order handler also lacks protection for L2 sequencer outages."
+    },
+    "8453": {
+      "status": "unavailable",
+      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved. The order handler also lacks protection for L2 sequencer outages."
+    },
+    "137": {
+      "status": "unavailable",
+      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+    },
+    "43114": {
+      "status": "unavailable",
+      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+    },
+    "56": {
+      "status": "unavailable",
+      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+    },
+    "59144": {
+      "status": "unavailable",
+      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved. The order handler also lacks protection for L2 sequencer outages."
+    },
+    "9745": {
+      "status": "unavailable",
+      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+    }
+  },
+  "approvals": []
+}

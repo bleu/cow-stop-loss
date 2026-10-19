@@ -3,6 +3,17 @@
  * @jest-environment-options {"customExportConditions": ["node", "node-addons"]}
  */
 
+// Opt in to simulated TEST approvals; production policy remains unchanged.
+jest.mock("#/lib/supportedTokens", () => {
+  const actual = jest.requireActual("#/lib/supportedTokens");
+  const { TEST_SUPPORTED_TOKENS } = jest.requireActual("#/test/approvedRoutes");
+  return {
+    ...actual,
+    getSupportedTokens: (chainId: import("#/lib/publicClients").ChainId) =>
+      TEST_SUPPORTED_TOKENS[chainId] ?? actual.getSupportedTokens(chainId),
+  };
+});
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -696,7 +707,9 @@ it("filters the expanded sell catalog by address and resets prices when selectio
   expect(sellTokens.length).toBeGreaterThan(2);
   expect(screen.getAllByRole("option")).toHaveLength(sellTokens.length);
   expect(
-    screen.queryByRole("option", { name: `Token Logo ${buyToken.token.symbol}` }),
+    screen.queryByRole("option", {
+      name: `Token Logo ${buyToken.token.symbol}`,
+    }),
   ).not.toBeInTheDocument();
   const cbBtc = sellTokens.find(({ token }) => token.symbol === "cbBTC")!;
   await user.type(

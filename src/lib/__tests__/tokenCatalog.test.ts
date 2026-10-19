@@ -6,13 +6,13 @@ import { networkFor, networkIdFor } from "../../utils";
 import { CHAIN_INFO } from "../chainInfo";
 import { COW_API_URL_BY_CHAIN_ID } from "../cowApi/api";
 import { getExplorerOrderLink } from "../cowExplorer";
-import { getSupportedTokens } from "../supportedTokens";
 import { CHAINS_ORACLE_ROUTER_FACTORY } from "../oracleRouter";
 import {
   publicClientsFromIds,
   RPC_PROVIDERS,
   supportedChainIds,
 } from "../publicClients";
+import { getSupportedTokens } from "../supportedTokens";
 import { findTokenOracles, TOKEN_CATALOG, USD_TOKENS } from "../tokenCatalog";
 
 it("covers the requested CoW EVM networks and preserves Sepolia", () => {
@@ -65,49 +65,35 @@ it("has unique, valid token contracts and local images", () => {
 });
 
 it.each(supportedChainIds.filter((id) => id !== 11155111))(
-  "routes every advertised token to its USD buy token on chain %s",
+  "retains metadata but advertises no production routes on chain %s",
   async (chainId) => {
-    const { sellTokens, buyToken: configuredBuyToken } =
+    const { sellTokens, buyToken, unavailableReason } =
       getSupportedTokens(chainId);
-    const tokens = sellTokens.map(({ token }) => token);
-    const buyToken = USD_TOKENS[chainId];
-    expect(configuredBuyToken.token).toEqual(buyToken);
+    expect(buyToken.token).toEqual(USD_TOKENS[chainId]);
+    expect(sellTokens).toEqual([]);
+    expect(buyToken.oracles).toEqual({});
+    expect(unavailableReason).toEqual(expect.any(String));
+    const tokens = TOKEN_CATALOG.filter((token) => token.chainId === chainId);
     expect(tokens.length).toBeGreaterThan(0);
-    expect(
-      tokens.some(
-        (token) =>
-          token.address.toLowerCase() === buyToken.address.toLowerCase(),
-      ),
-    ).toBe(false);
-    const buyOracles = findTokenOracles(chainId, buyToken.address);
-    for (const token of tokens) {
-      const oracles = findTokenOracles(chainId, token.address);
-      expect(Object.keys(oracles).length).toBeGreaterThan(0);
-      for (const oracle of Object.values(oracles)) {
-        expect(isAddress(oracle)).toBe(true);
-        expect(oracle.toLowerCase()).not.toBe(zeroAddress);
-      }
-      expect(
-        !!(oracles.USD && buyOracles.USD) || !!(oracles.ETH && buyOracles.ETH),
-      ).toBe(true);
-      const Router = CHAINS_ORACLE_ROUTER_FACTORY[chainId];
-      const route = await new Router({
+    for (const token of tokens)
+      expect(findTokenOracles(chainId, token.address)).toEqual({});
+    const Router = CHAINS_ORACLE_ROUTER_FACTORY[chainId];
+    await expect(
+      new Router({
         chainId,
-        tokenSell: token,
-        tokenBuy: buyToken,
-      }).findRoute();
-      expect(route.tokenBuyOracle).toBe(
-        oracles.ETH && buyOracles.ETH ? buyOracles.ETH : buyOracles.USD,
-      );
-    }
+        tokenSell: tokens.find(
+          (token) => token.address !== buyToken.token.address,
+        )!,
+        tokenBuy: buyToken.token,
+      }).findRoute(),
+    ).rejects.toThrow(unavailableReason);
   },
 );
 
-it("looks up feeds by chain and case-insensitive contract address", () => {
+it("does not expose feeds for metadata-only, unknown or cross-chain addresses", () => {
   const token = USD_TOKENS[8453];
-  expect(findTokenOracles(8453, token.address.toUpperCase())).toEqual(
-    findTokenOracles(8453, token.address),
-  );
+  expect(findTokenOracles(8453, token.address.toUpperCase())).toEqual({});
+  expect(findTokenOracles(8453, token.address)).toEqual({});
   expect(
     findTokenOracles(8453, "0x0000000000000000000000000000000000000001"),
   ).toEqual({});

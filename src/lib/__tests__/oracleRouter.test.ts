@@ -1,8 +1,20 @@
+// Opt in to simulated TEST approvals; production policy remains unchanged.
+jest.mock("#/lib/supportedTokens", () => {
+  const actual = jest.requireActual("#/lib/supportedTokens");
+  const { TEST_SUPPORTED_TOKENS } = jest.requireActual("#/test/approvedRoutes");
+  return {
+    ...actual,
+    getSupportedTokens: (chainId: import("#/lib/publicClients").ChainId) =>
+      TEST_SUPPORTED_TOKENS[chainId] ?? actual.getSupportedTokens(chainId),
+  };
+});
+
 import type { Address } from "viem";
 
 import {
   CHAINS_ORACLE_ROUTER_FACTORY,
   configuredTokenRoute,
+  readOraclePairPrice,
 } from "../oracleRouter";
 import { publicClientsFromIds, supportedChainIds } from "../publicClients";
 import { getSupportedTokens } from "../supportedTokens";
@@ -22,10 +34,11 @@ function routerFor(chainId: (typeof supportedChainIds)[number] = 1) {
 
 afterEach(() => jest.restoreAllMocks());
 
-it.each(supportedChainIds)(
-  "uses the same canonical route for every eligible token on chain %s",
+it.each([1, 100, 42161, 11155111] as const)(
+  "uses the same canonical route for every TEST-approved token on chain %s",
   async (chainId) => {
     const { sellTokens, buyToken } = getSupportedTokens(chainId);
+    expect(sellTokens.length).toBeGreaterThan(0);
     for (const sell of sellTokens) {
       const args = { chainId, tokenSell: sell.token, tokenBuy: buyToken.token };
       const quote = sell.oracles.ETH && buyToken.oracles.ETH ? "ETH" : "USD";
@@ -156,8 +169,7 @@ it("normalizes feed decimals and pins pair reads to one block", async () => {
     expect(request.blockNumber).toBe(BigInt(123));
 });
 
-it("deduplicates identical pair feeds", async () => {
-  const router = routerFor();
+it("deduplicates identical pair feeds in the low-level reader", async () => {
   jest
     .spyOn(client, "getBlock")
     .mockResolvedValue({ number: BigInt(123), timestamp } as Awaited<
@@ -172,7 +184,10 @@ it("deduplicates identical pair feeds", async () => {
     );
   const oracle = getSupportedTokens(1).buyToken.oracles.USD as Address;
   await expect(
-    router.calculatePrice({ tokenSellOracle: oracle, tokenBuyOracle: oracle }),
+    readOraclePairPrice({
+      client,
+      route: { tokenSellOracle: oracle, tokenBuyOracle: oracle },
+    }),
   ).resolves.toBe(1);
   expect(client.readContract).toHaveBeenCalledTimes(2);
 });

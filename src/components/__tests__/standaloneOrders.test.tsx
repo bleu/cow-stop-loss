@@ -30,6 +30,7 @@ import HomePage from "#/app/page";
 import { RootLayout as AppRootLayout } from "#/components/RootLayout";
 import { useOrderList } from "#/hooks/useOrderList";
 import { publicClientsFromIds, supportedChainIds } from "#/lib/publicClients";
+import { getSupportedTokens } from "#/lib/supportedTokens";
 import { createWagmiConfig } from "#/utils/wagmi";
 
 let config: ReturnType<typeof createWagmiConfig>;
@@ -1565,7 +1566,10 @@ test("keeps successful chains visible and retries a failed chain", async () => {
       name: "View order stop-loss-1 on Ethereum",
     }),
   ).toBeInTheDocument();
-  expect(screen.getByRole("alert")).toHaveTextContent(
+  const ordersPanel = screen.getByRole("region", {
+    name: "Your stop-loss orders",
+  });
+  expect(within(ordersPanel).getByRole("alert")).toHaveTextContent(
     "Gnosis orders are unavailable.",
   );
   unavailable.delete(100);
@@ -1579,7 +1583,12 @@ test("keeps successful chains visible and retries a failed chain", async () => {
       name: "View order stop-loss-1 on Gnosis",
     }),
   ).toBeInTheDocument();
-  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(within(ordersPanel).queryByRole("alert")).not.toBeInTheDocument();
+  expect(
+    within(
+      screen.getByRole("region", { name: "Create stop-loss order" }),
+    ).getByRole("alert"),
+  ).toHaveTextContent(getSupportedTokens(1).unavailableReason!);
 });
 
 test("does not show an API outage as an empty order list", async () => {
@@ -1595,8 +1604,13 @@ test("does not show an API outage as an empty order list", async () => {
   );
   await connectBrowserWallet();
 
+  const ordersPanel = screen.getByRole("region", {
+    name: "Your stop-loss orders",
+  });
   await waitFor(() =>
-    expect(screen.getAllByRole("alert")).toHaveLength(supportedChainIds.length),
+    expect(within(ordersPanel).getAllByRole("alert")).toHaveLength(
+      supportedChainIds.length,
+    ),
   );
   expect(screen.queryByText("No results.")).not.toBeInTheDocument();
   expect(

@@ -6,11 +6,10 @@
       "symbol": "1INCH",
       "name": "1INCH Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/20414d41c3758c4c035b.svg",
-      "oracles": {
-        "ETH": "0x72afaecf99c9d9c8215ff44c77b94b99c28741e8",
-        "USD": "0xc929ad75b72593967de83e7f7cda0493458261d9"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -18,11 +17,10 @@
       "symbol": "AAVE",
       "name": "Aave Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/5b1b8adc120ffdfbd91e.svg",
-      "oracles": {
-        "ETH": "0x6df09e975c830ecae5bd4ed9d90f3a95a4f88012",
-        "USD": "0x547a514d5e3769680ce22b2361c10ea13619e8a9"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -30,10 +28,11 @@
       "symbol": "AMPL",
       "name": "Ampleforth",
       "decimals": 9,
+      "assetClass": "other-stable",
+      "classificationReason": "Ampleforth rebases supply around an inflation-adjusted dollar target; it does not target a fixed USD peg.",
       "logoURI": "/assets/tokens/6a6ad344737084ecaeb5.svg",
-      "oracles": {
-        "ETH": "0x492575fdd11a0fcf2c6c719867890a7648d526eb"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -41,11 +40,10 @@
       "symbol": "APE",
       "name": "ApeCoin",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/a6e71a5fec992353dc75.png",
-      "oracles": {
-        "ETH": "0xc7de7f4d4c9c991ff62a07d18b3e31e349833a18",
-        "USD": "0xd10abbc76679a20055e167bb80a24ac851b37056"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -53,10 +51,10 @@
       "symbol": "ARB",
       "name": "Arbitrum Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/ff7b4e5e76fdc55617ad.png",
-      "oracles": {
-        "USD": "0x31697852a68433dbcc2ff612c516d69e3d9bd08f"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -64,10 +62,10 @@
       "symbol": "AUSD",
       "name": "AUSD",
       "decimals": 6,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/4975bdef0d94963d359c.png",
-      "oracles": {
-        "USD": "0xb00341502dfea6ced8a5786b4059d29da5e4d1fd"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -75,11 +73,10 @@
       "symbol": "BAL",
       "name": "Balancer",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/29e4b9a70d290df8f2b1.svg",
-      "oracles": {
-        "ETH": "0xc1438aa3823a6ba0c159cfa8d98df5a994ba120b",
-        "USD": "0xdf2917806e30300537aeb49a7663062f4d1f2b5f"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -87,10 +84,10 @@
       "symbol": "BAT",
       "name": "Basic Attention Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/cd6726eb75190a1390a8.svg",
-      "oracles": {
-        "ETH": "0x0d16d4528239e9ee52fa531af613acdb23d88c94"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -98,10 +95,11 @@
       "symbol": "cbBTC",
       "name": "Coinbase Wrapped BTC",
       "decimals": 8,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/42cd15fe2b9391da51d5.svg",
-      "oracles": {
-        "USD": "0x2665701293fcbeb223d11a08d826563edcce423a"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -109,10 +107,11 @@
       "symbol": "cbETH",
       "name": "Coinbase Wrapped Staked ETH",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/d05a5e47f488b96b4541.svg",
-      "oracles": {
-        "ETH": "0xf017fcb346a1885194689ba23eff2fe6fa5c483b"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -120,11 +119,10 @@
       "symbol": "COMP",
       "name": "Compound",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/0f1a61d5a7a2dfb668ed.png",
-      "oracles": {
-        "ETH": "0x1b39ee86ec5979ba5c322b826b3ecb8c79991699",
-        "USD": "0xdbd020caef83efd542f4de03e3cf0c28a4428bd5"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -132,11 +130,10 @@
       "symbol": "CRV",
       "name": "Curve DAO Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/a420966c59b95b7a516c.svg",
-      "oracles": {
-        "ETH": "0x8a12be339b0cd1829b91adc01977caa5e9ac121e",
-        "USD": "0xcd627aa160a6fa45eb793d19ef54f5062f20f33f"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -144,10 +141,10 @@
       "symbol": "crvUSD",
       "name": "Curve.Fi USD Stablecoin",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/7c2d39c56b6f565b737b.svg",
-      "oracles": {
-        "USD": "0xeef0c605546958c1f899b6fb336c20671f9cd49f"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -155,11 +152,10 @@
       "symbol": "CVX",
       "name": "Convex Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/a295a877115db8495046.svg",
-      "oracles": {
-        "ETH": "0xc9cbf687f43176b302f03f5e58470b77d07c61c6",
-        "USD": "0xd962fc30a72a84ce50161031391756bf2876af5d"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -167,11 +163,10 @@
       "symbol": "DAI",
       "name": "Dai Stablecoin",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/91ad32e1db7073978ec7.svg",
-      "oracles": {
-        "ETH": "0x773616e4d11a78f511299002da57a0a94577f1f4",
-        "USD": "0xaed0c38402a5d19df6e4c03f4e2dced6e29c1ee9"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -179,10 +174,10 @@
       "symbol": "DOLA",
       "name": "DOLA",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/63cddd2fadb21e7bcde7.png",
-      "oracles": {
-        "USD": "0xe33592594f72cc7ec8a05788be8e8455746c3a32"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -190,10 +185,10 @@
       "symbol": "ENJ",
       "name": "Enjin Coin",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/a590835d2ac98c9a2e0b.svg",
-      "oracles": {
-        "ETH": "0x24d9ab51950f3d62e9144fdc2f3135daa6ce8d1b"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -201,10 +196,10 @@
       "symbol": "ENS",
       "name": "Ethereum Name Service",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/611b9578e0601f6e590e.svg",
-      "oracles": {
-        "USD": "0x5c00128d4d1c2f4f652c267d7bcdd7ac99c16e16"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -212,10 +207,11 @@
       "symbol": "ETH+",
       "name": "ETHPlus",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "ETHPlus holds an ETH-denominated staking basket; its USD value changes with ETH.",
       "logoURI": "/assets/tokens/fdd6839a8957dccddc33.png",
-      "oracles": {
-        "USD": "0x66ab900341c98de949ec31d11b3c4180743844f1"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -223,10 +219,11 @@
       "symbol": "ETHx",
       "name": "ETHx",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Staked or yield-bearing crypto exposure; the underlying asset has no fixed USD value.",
       "logoURI": "/assets/tokens/64ec8b57a99e494d1550.svg",
-      "oracles": {
-        "ETH": "0xc5f8c4ab091be1a899214c0c3636ca33dca0c547"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -234,10 +231,11 @@
       "symbol": "EURC",
       "name": "Euro Coin",
       "decimals": 6,
+      "assetClass": "other-stable",
+      "classificationReason": "Circle EURC targets one euro, not one US dollar.",
       "logoURI": "/assets/tokens/f748e0bd227d54e32b1e.svg",
-      "oracles": {
-        "USD": "0x04f84020fdf10d9ee64d1dcc2986edf2f556da11"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -245,10 +243,10 @@
       "symbol": "ezETH",
       "name": "Renzo Restaked ETH",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/2a49abcd5df4f45a34f3.svg",
-      "oracles": {
-        "ETH": "0x636a000262f6aa9e1f094abf0ad8f645c44f641c"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -256,10 +254,10 @@
       "symbol": "FDUSD",
       "name": "First Digital USD",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/48d73eb5aadb2ba77197.png",
-      "oracles": {
-        "USD": "0xfaa9147190c2c2cc5b8387b4f49016bdb3380572"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -267,10 +265,11 @@
       "symbol": "FRAX",
       "name": "Legacy Frax Dollar",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Legacy FRAX dollar exposure; separate from the FXS governance contract and FRAX governance feed identity.",
       "logoURI": "/assets/tokens/73a18837b56ffca2fb27.svg",
-      "oracles": {
-        "USD": "0xb9e1e3a9feff48998e45fa90847ed4d467e8bcfd"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -278,10 +277,10 @@
       "symbol": "frxUSD",
       "name": "Frax USD",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/7944457c88add3e3385b.png",
-      "oracles": {
-        "USD": "0x9b4a96210bc8d9d55b1908b465d8b0de68b7ff83"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -289,10 +288,11 @@
       "symbol": "FXS",
       "name": "Frax Share",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Frax Share governance token, now associated with FRAX governance; this contract is not the legacy FRAX dollar.",
       "logoURI": "/assets/tokens/d35a1537f35a5ea3661c.svg",
-      "oracles": {
-        "USD": "0x6ebc52c8c1089be9eb3945c4350b68b8e4c2233f"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -300,10 +300,10 @@
       "symbol": "GHO",
       "name": "Gho Token",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/4f5c435d1092cfa5cc74.svg",
-      "oracles": {
-        "USD": "0x3f12643d3f6f874d39c2a4c9f2cd6f2dbac877fc"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -311,11 +311,10 @@
       "symbol": "GRT",
       "name": "The Graph",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/5a7c71c4e8dba34b20d3.png",
-      "oracles": {
-        "ETH": "0x17d054ecac33d91f7340645341efb5de9009f1c1",
-        "USD": "0x86cf33a451de9dc61a2862fd94ff4ad4bd65a5d2"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -323,10 +322,10 @@
       "symbol": "IMX",
       "name": "Immutable",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/e1b19f6cf49df733e5c7.png",
-      "oracles": {
-        "USD": "0xbaebefc1d023c0feccc047bff42e75f15ff213e6"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -334,11 +333,10 @@
       "symbol": "KNC",
       "name": "Kyber Network Crystal v2",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/26d603391679656c9eb7.svg",
-      "oracles": {
-        "ETH": "0x656c0544ef4c98a6a98491833a89204abb045d6b",
-        "USD": "0xf8ff43e991a81e6ec886a3d281a2c6cc19ae70fc"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -346,10 +344,10 @@
       "symbol": "LDO",
       "name": "Lido DAO Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/5af908444abfe052ca06.svg",
-      "oracles": {
-        "ETH": "0x4e844125952d32acdf339be976c98e22f6f318db"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -357,11 +355,10 @@
       "symbol": "LINK",
       "name": "ChainLink Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/408cb6cf3c7ab80fe7b3.svg",
-      "oracles": {
-        "ETH": "0xdc530d9457755926550b59e8eccdae7624181557",
-        "USD": "0x2c1d072e956affc0d435cb7ac38ef18d24d9127c"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -369,10 +366,10 @@
       "symbol": "LUSD",
       "name": "LUSD Stablecoin",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/795d6873a5c43a17e9ab.svg",
-      "oracles": {
-        "USD": "0x3d7ae7e594f2f2091ad8798313450130d0aba3a0"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -380,10 +377,10 @@
       "symbol": "MANA",
       "name": "Decentraland MANA",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/b63f4f966d199e06bea2.svg",
-      "oracles": {
-        "ETH": "0x82a44d92d6c329826dc557c5e1be6ebec5d5feb9"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -391,10 +388,11 @@
       "symbol": "mETH",
       "name": "Mantle Staked Ether",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Staked or yield-bearing crypto exposure; the underlying asset has no fixed USD value.",
       "logoURI": "/assets/tokens/86cfbf40fa7273ebb8d5.png",
-      "oracles": {
-        "ETH": "0x5b563107c8666d2142c216114228443b94152362"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -402,11 +400,11 @@
       "symbol": "MKR",
       "name": "Maker",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "logoURI": "/assets/tokens/ffe7fb0ffdd5cad896e4.svg",
-      "oracles": {
-        "ETH": "0x24551a8fb2a7211a25a17b1481f043a8a8adc7f2",
-        "USD": "0xec1d1b3b0443256cc3860e24a46f108e699484aa"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -414,10 +412,10 @@
       "symbol": "MLN",
       "name": "Enzyme",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/2dd1dbcb2220876403c5.png",
-      "oracles": {
-        "ETH": "0xdaea8386611a157b08829ed4997a8a62b557014c"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -425,10 +423,10 @@
       "symbol": "mUSD",
       "name": "MetaMask USD",
       "decimals": 6,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/9d2e3cd7888db7176e28.svg",
-      "oracles": {
-        "USD": "0xc90e3460424fb8ea79775089e9053113fee34ed0"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -436,10 +434,11 @@
       "symbol": "OETH",
       "name": "Origin Ether",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Staked or yield-bearing crypto exposure; the underlying asset has no fixed USD value.",
       "logoURI": "/assets/tokens/24eb05f5d40a3bbec46f.png",
-      "oracles": {
-        "ETH": "0x703118c4cbcccbf2ab31913e0f8075fbbb15f563"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -447,10 +446,11 @@
       "symbol": "OUSD",
       "name": "Open USD",
       "decimals": 6,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Open Standard OUSD, not Origin Dollar; issuer lists this contract with 1:1 USD minting and redemption: https://joinopenstandard.com/blog/ousd-is-live",
       "logoURI": "/assets/tokens/d2d2f0d9196da47744e3.png",
-      "oracles": {
-        "USD": "0xaf0311ccc42d22d2624fec8024119cb71bbc7418"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -458,10 +458,11 @@
       "symbol": "PAXG",
       "name": "PAX Gold",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "PAX Gold tracks gold, whose USD price changes; it is not a fiat stablecoin.",
       "logoURI": "/assets/tokens/f29091d061c58a3ff726.png",
-      "oracles": {
-        "USD": "0x9944d86ceb9160af5c5feb251fd671923323f8c3"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -469,10 +470,10 @@
       "symbol": "PYUSD",
       "name": "PayPal USD",
       "decimals": 6,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/1529111317480f36627d.svg",
-      "oracles": {
-        "USD": "0x8f1df6d7f2db73eece86a18b4381f4707b918fb1"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -480,10 +481,11 @@
       "symbol": "RAI",
       "name": "Rai Reflex Index",
       "decimals": 18,
+      "assetClass": "other-stable",
+      "classificationReason": "RAI uses a floating redemption target rather than a fixed USD peg.",
       "logoURI": "/assets/tokens/99721bbde6733392a678.svg",
-      "oracles": {
-        "ETH": "0x4ad7b025127e89263242ab68f0f9c4e5c033b489"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -491,10 +493,10 @@
       "symbol": "RDNT",
       "name": "Radiant Capital",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/b154d30b94f350545a71.png",
-      "oracles": {
-        "USD": "0x393cc05bad439c9b36489384f11487d9c8410471"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -502,10 +504,10 @@
       "symbol": "REN",
       "name": "Republic Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/7f0bb9a2fb021204e6f3.svg",
-      "oracles": {
-        "ETH": "0x3147d7203354dc06d9fd350c7a2437bca92387a4"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -513,10 +515,11 @@
       "symbol": "rETH",
       "name": "Rocket Pool ETH",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Staked or yield-bearing crypto exposure; the underlying asset has no fixed USD value.",
       "logoURI": "/assets/tokens/b640f9143237c9663570.svg",
-      "oracles": {
-        "ETH": "0x536218f9e9eb48863970252233c8f271f554c2d0"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -524,10 +527,10 @@
       "symbol": "RLUSD",
       "name": "RLUSD",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/37a873dfc2569bea10a0.svg",
-      "oracles": {
-        "USD": "0x26c46b7ad0012ca71f2298ada567dc9af14e7f2a"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -535,10 +538,10 @@
       "symbol": "RPL",
       "name": "Rocket Pool Protocol",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/e051c95ebb176763ec56.svg",
-      "oracles": {
-        "USD": "0x4e155ed98afe9034b7a5962f6c84c86d869daa9d"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -546,10 +549,11 @@
       "symbol": "RSR",
       "name": "Reserve Rights",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "logoURI": "/assets/tokens/07f8444a8aaf62befa66.png",
-      "oracles": {
-        "USD": "0x759bbc1be8f90ee6457c44abc7d443842a976d02"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -557,10 +561,10 @@
       "symbol": "SAND",
       "name": "SAND",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/4a02bead2332e45c38a1.png",
-      "oracles": {
-        "USD": "0x35e3f7e558c04ce7eee1629258ecbba03b36ec56"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -568,10 +572,10 @@
       "symbol": "SHIB",
       "name": "SHIBA INU",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/8670d8e22280be2bc827.png",
-      "oracles": {
-        "ETH": "0x8dd1cd88f43af196ae478e91b9f5e4ac69a97c61"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -579,10 +583,11 @@
       "symbol": "SKY",
       "name": "SKY Governance Token",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "logoURI": "/assets/tokens/dc65498031030f9747a5.png",
-      "oracles": {
-        "USD": "0xee10fe5e7aa92dd7b136597449c3d5813cfc5f18"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -590,11 +595,11 @@
       "symbol": "SNX",
       "name": "Synthetix Network Token",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "logoURI": "/assets/tokens/edce5749a293cdcfa108.svg",
-      "oracles": {
-        "ETH": "0x79291a9d692df95334b1a0b3b4ae6bc606782f8c",
-        "USD": "0xdc3ea94cd0ac27d9a86c180091e7f78c683d3699"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -602,10 +607,11 @@
       "symbol": "SPELL",
       "name": "Spell Token",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "logoURI": "/assets/tokens/7c0ed34418a3738baf99.png",
-      "oracles": {
-        "USD": "0x8c110b94c5f1d347facf5e1e938ab2db60e3c9a8"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -613,11 +619,11 @@
       "symbol": "stETH",
       "name": "Liquid staked Ether 2.0",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Staked or yield-bearing crypto exposure; the underlying asset has no fixed USD value.",
       "logoURI": "/assets/tokens/1b49b18dcadb30e7b74d.svg",
-      "oracles": {
-        "ETH": "0x86392dc19c0b719886221c78ab11eb8cf5c52812",
-        "USD": "0xcfe54b5cd566ab89272946f602d76ea879cab4a8"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -625,10 +631,10 @@
       "symbol": "STG",
       "name": "StargateToken",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/4eeeb82fa2fdb559b9d5.svg",
-      "oracles": {
-        "USD": "0x7a9f34a0aa917d438e9b6e630067062b7f8f6f3d"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -636,10 +642,11 @@
       "symbol": "sUSDai",
       "name": "Staked USDai",
       "decimals": 18,
+      "assetClass": "usd-linked",
+      "classificationReason": "Yield-bearing staked USDai share; its value can grow against the dollar stablecoin.",
       "logoURI": "/assets/tokens/12cf249a445573b0c849.png",
-      "oracles": {
-        "USD": "0xf7e906179255ef13270604197610b79bffe546ca"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -647,10 +654,11 @@
       "symbol": "sUSDe",
       "name": "Staked USDe",
       "decimals": 18,
+      "assetClass": "usd-linked",
+      "classificationReason": "Yield-bearing staked USDe share; its exchange rate is not fixed at one USD.",
       "logoURI": "/assets/tokens/0d2e0f6e6e9be5af4f1b.svg",
-      "oracles": {
-        "USD": "0xff3bc18ccbd5999ce63e788a1c250a88626ad099"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -658,11 +666,10 @@
       "symbol": "SUSHI",
       "name": "SushiToken",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/c6bae7e2f38919eadefa.png",
-      "oracles": {
-        "ETH": "0xe572cef69f43c2e488b33924af04bdace19079cf",
-        "USD": "0xcc70f09a6cc17553b2e31954cd36e4a2d89501f7"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -670,10 +677,10 @@
       "symbol": "SWELL",
       "name": "Swell",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/01548ea149d9ee3fa006.webp",
-      "oracles": {
-        "ETH": "0x2a638b1203a3b62ff003598b7165fc5cd5b13b00"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -681,10 +688,10 @@
       "symbol": "SXT",
       "name": "Space and Time",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/28e835cdfc3600f49809.jpg",
-      "oracles": {
-        "USD": "0x2d27d9e1b74936d8e83c4ba118f09a4c4a897f62"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -692,10 +699,11 @@
       "symbol": "tBTC",
       "name": "tBTC v2",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/ec189f6774e528f5a60c.svg",
-      "oracles": {
-        "USD": "0x8350b7de6a6a2c1368e7d4bd968190e13e354297"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -703,10 +711,11 @@
       "symbol": "tGLD",
       "name": "Tenbin Gold",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Tenbin Gold gives gold-price exposure through futures; it does not target a fixed USD value.",
       "logoURI": "/assets/tokens/8ff17c7474eccd23942f.png",
-      "oracles": {
-        "USD": "0x369c67e8b026cc4ef98350f332d7dd52b85b7674"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -714,10 +723,10 @@
       "symbol": "TUSD",
       "name": "TrueUSD",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/b729a135a65a1aeead4b.svg",
-      "oracles": {
-        "USD": "0xec746ecf986e2927abd291a2a1716c940100f8ba"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -725,10 +734,11 @@
       "symbol": "U",
       "name": "United Stables",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "United Stables U targets one USD; issuer lists this exact contract on Ethereum and BNB Chain: https://u.tech/ecosystem/multichain/",
       "logoURI": "/assets/tokens/f3fb9646bcd462636261.jpg",
-      "oracles": {
-        "USD": "0xf6351b2dcf0110e76c71c1d319af2f410454b6f3"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -736,11 +746,10 @@
       "symbol": "UNI",
       "name": "Uniswap",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/a759241f778d34f294a4.svg",
-      "oracles": {
-        "ETH": "0xd6aa3d25116d8da79ea0246c4826eb951872e02e",
-        "USD": "0x553303d460ee0afb37edff9be42922d8ff63220e"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -748,10 +757,10 @@
       "symbol": "USD0",
       "name": "Usual USD",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/38e2b54b262b20c2cffc.png",
-      "oracles": {
-        "USD": "0x7e891debd8fa0a4cf6be58ddff5a8ca174febdcb"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -759,10 +768,10 @@
       "symbol": "USD1",
       "name": "USD1",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/3f7e7a7ae10f296bb141.png",
-      "oracles": {
-        "USD": "0xf0d9bb015cd7bfab877b7156146dc09bf461370d"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -770,11 +779,10 @@
       "symbol": "USDC",
       "name": "USD Coin",
       "decimals": 6,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/2782d3d47a9833601e60.svg",
-      "oracles": {
-        "ETH": "0x986b5e1e1755e3c2440e960477f25201b0a8bbd4",
-        "USD": "0x8fffffd4afb6115b954bd326cbe7b4ba576818f6"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -782,10 +790,11 @@
       "symbol": "USDe",
       "name": "USDe",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Ethena USDe targets one USD through synthetic dollar backing; this does not classify its backing as risk-free.",
       "logoURI": "/assets/tokens/1171f7df5d6b6c139a1e.svg",
-      "oracles": {
-        "USD": "0xa569d910839ae8865da8f8e70fffb0cba869f961"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -793,10 +802,11 @@
       "symbol": "USDf",
       "name": "Falcon USD",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Falcon USDf targets one USD; separate from a staked or yield-bearing USDf share.",
       "logoURI": "/assets/tokens/42163cd434bec170ad52.png",
-      "oracles": {
-        "USD": "0xb177857a1799aa5f7feb5799fdf12cbe8fdf78b1"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -804,10 +814,10 @@
       "symbol": "USDG",
       "name": "Global Dollar",
       "decimals": 6,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/3f81ec220ae417b1bb9e.png",
-      "oracles": {
-        "USD": "0x14f0737d6b705259e521ea6e9e3506ac78dbd311"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -815,10 +825,10 @@
       "symbol": "USDP",
       "name": "Pax Dollar",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/47eae5d62d1455aff3ef.svg",
-      "oracles": {
-        "USD": "0x09023c0da49aaf8fc3fa3adf34c6a7016d38d5e3"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -826,10 +836,10 @@
       "symbol": "USDS",
       "name": "USDS Stablecoin",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/8f7545e74d04d2aa3a25.svg",
-      "oracles": {
-        "USD": "0xff30586cd0f29ed462364c7e81375fc0c71219b1"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -837,11 +847,10 @@
       "symbol": "USDT",
       "name": "Tether USD",
       "decimals": 6,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/cbc193c35371ea70ff52.svg",
-      "oracles": {
-        "ETH": "0xee9f2375b4bdf6387aa8265dd4fb8f16512a1d46",
-        "USD": "0x3e7d1eab13ad0104d2750b8863b489d65364e32d"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -849,10 +858,10 @@
       "symbol": "USDtb",
       "name": "USDtb",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/3047375fab94b6fc5466.svg",
-      "oracles": {
-        "USD": "0x66704dad467a7ca508b3be15865d9b9f3e186c90"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -860,10 +869,11 @@
       "symbol": "UST",
       "name": "Wrapped USTC",
       "decimals": 18,
+      "assetClass": "usd-linked",
+      "classificationReason": "Wrapped TerraClassicUSD retains legacy dollar exposure after its peg failed; exclude conservatively as USD-linked, not a working USD peg.",
       "logoURI": "/assets/tokens/db33601ea5ac5cf4c30b.png",
-      "oracles": {
-        "ETH": "0xa20623070413d42a5c01db2c8111640dd7a5a03a"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -871,10 +881,11 @@
       "symbol": "weETH",
       "name": "Wrapped eETH",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/fe888a0aba0005d9f4ca.svg",
-      "oracles": {
-        "ETH": "0x5c9c449bbc9a6075a2c061df312a35fd1e05ff22"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -882,10 +893,10 @@
       "symbol": "WETH",
       "name": "Wrapped Ether",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/c0b567bd541bf5033207.svg",
-      "oracles": {
-        "USD": "0x5f4ec3df9cbd43714fe2740f5e3616155c5b8419"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -893,10 +904,11 @@
       "symbol": "WLFI",
       "name": "World Liberty Financial",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "logoURI": "/assets/tokens/3e3509465d1f024a2c19.png",
-      "oracles": {
-        "USD": "0x14e5fc91ddb3f97c33013cc9fa74f54062ad1aa1"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -904,10 +916,11 @@
       "symbol": "wstETH",
       "name": "Wrapped liquid staked Ether 2.0",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/a44eb9b6b4d97a7a9671.svg",
-      "oracles": {
-        "USD": "0x164b276057258d81941e97b0a900d4c7b358bce0"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -915,10 +928,10 @@
       "symbol": "XCN",
       "name": "Onyxcoin",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/dc14996765980c510b0e.jpg",
-      "oracles": {
-        "USD": "0xeb988b77b94c186053282bfcd8b7ed55142d3cab"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -926,10 +939,10 @@
       "symbol": "xSUSHI",
       "name": "SushiBar",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/75e38b0b6fa7f874dfc2.svg",
-      "oracles": {
-        "ETH": "0xf05d9b6c08757eacb1fbec18e36a1b7566a13deb"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -937,11 +950,10 @@
       "symbol": "YFI",
       "name": "yearn.finance",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/32226b0a1e9a8f2ec136.svg",
-      "oracles": {
-        "ETH": "0x7c5d4f8345e66f68099581db340cd65b078c41f4",
-        "USD": "0xa027702dbb89fbd58938e4324ac03b58d812b0e1"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 1,
@@ -949,11 +961,10 @@
       "symbol": "ZRX",
       "name": "0x Protocol Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/3216add0c2105ff42aa6.svg",
-      "oracles": {
-        "ETH": "0x2da4983a622a8498bb1a21fae9d8f6c664939962",
-        "USD": "0x2885d15b8af22648b98b122b22fdf4d2a56c6023"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -961,10 +972,10 @@
       "symbol": "1INCH",
       "name": "1INCH",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/20414d41c3758c4c035b.svg",
-      "oracles": {
-        "USD": "0x9a177bb9f5b6083e962f9e62bd21d4b5660aeb03"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -972,10 +983,10 @@
       "symbol": "AAVE",
       "name": "Aave",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/903f2b81be1916d89b34.png",
-      "oracles": {
-        "USD": "0xa8357bf572460fc40f4b0acacbb2a6a61c89f475"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -983,10 +994,10 @@
       "symbol": "ADA",
       "name": "Cardano Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/0f421e5680e8067e23de.png",
-      "oracles": {
-        "USD": "0xa767f745331d267c7751297d982b050c93985627"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -994,10 +1005,10 @@
       "symbol": "ASTER",
       "name": "Aster",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/33ccb10ab656514654b2.png",
-      "oracles": {
-        "USD": "0x3ae518be05e3f7fabf7e3ace22af795d7a09c2e5"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1005,10 +1016,10 @@
       "symbol": "ATOM",
       "name": "Cosmos Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/5c851916c4e397b5b00f.png",
-      "oracles": {
-        "USD": "0xb056b7c804297279a9a673289264c17e6dc6055d"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1016,10 +1027,10 @@
       "symbol": "AVAX",
       "name": "Binance-Peg Avalanche",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/290b145641a5001d47b8.png",
-      "oracles": {
-        "USD": "0x5974855ce31ee8e1fff2e76591cbf83d7110f151"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1027,10 +1038,10 @@
       "symbol": "AXS",
       "name": "Axie Infinity Shard",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/739d2de9ec6ee38bc57d.png",
-      "oracles": {
-        "USD": "0x7b49524ee5740c99435f52d731dfc94082fe61ab"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1038,10 +1049,10 @@
       "symbol": "BCH",
       "name": "Bitcoin Cash Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/0dccc0835054b9846287.png",
-      "oracles": {
-        "USD": "0x43d80f616daf0b0b42a928eed32147dc59027d41"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1049,10 +1060,11 @@
       "symbol": "BETH",
       "name": "Beacon ETH",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Staked or yield-bearing crypto exposure; the underlying asset has no fixed USD value.",
       "logoURI": "/assets/tokens/85d9f8f276ef0c398b0b.png",
-      "oracles": {
-        "USD": "0x2a3796273d47c4ed363b361d3aefb7f7e2a13782"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1060,10 +1072,11 @@
       "symbol": "BUSD",
       "name": "Binance-Peg BUSD Token",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Binance-Peg BUSD represents a dollar stablecoin; this class does not confirm current redemption or peg health.",
       "logoURI": "/assets/tokens/f8d25a164ee25fd0cb53.png",
-      "oracles": {
-        "USD": "0xcbb98864ef56e9042e7d2efef76141f15731b82f"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1071,10 +1084,10 @@
       "symbol": "C98",
       "name": "Coin98",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/450fcf12f7d24e5a519a.png",
-      "oracles": {
-        "USD": "0x889158e39628c0397dc54b84f6b1cbe0aaeb7ffc"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1082,10 +1095,10 @@
       "symbol": "Cake",
       "name": "PancakeSwap Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/1c2089167f79caaa3622.svg",
-      "oracles": {
-        "USD": "0xb6064ed41d4f67e353768aa239ca86f4f73665a1"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1093,10 +1106,10 @@
       "symbol": "COMP",
       "name": "Compound Finance",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/a71acba69abf78de80ef.png",
-      "oracles": {
-        "USD": "0x0db8945f9aef5651fa5bd52314c5aae78dfde540"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1104,10 +1117,11 @@
       "symbol": "DAI",
       "name": "Binance-Peg Dai Token",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/c3ddc7ea30c09d33e9b3.png",
-      "oracles": {
-        "USD": "0x132d3c0b1d2cea0bc552588063bdbb210fdeecfa"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1115,10 +1129,10 @@
       "symbol": "DOGE",
       "name": "Dogecoin",
       "decimals": 8,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/d68612fcc588aeb75535.png",
-      "oracles": {
-        "USD": "0x3ab0a0d137d4f946fbb19eecc6e92e64660231c8"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1126,10 +1140,10 @@
       "symbol": "DOT",
       "name": "Polkadot Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/ef8d18ede67304c7535b.png",
-      "oracles": {
-        "USD": "0xc333eb0086309a16aa7c8308dfd32c8bba0a2592"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1137,10 +1151,10 @@
       "symbol": "ETH",
       "name": "Ethereum Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/4acd86bb46b4884ccbd8.svg",
-      "oracles": {
-        "USD": "0x9ef1b8c0e4f7dc8bf5719ea496883dc6401d5b2e"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1148,10 +1162,10 @@
       "symbol": "FDUSD",
       "name": "First Digital USD",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/937d603bd15f64a2d020.svg",
-      "oracles": {
-        "USD": "0x390180e80058a8499930f0c13963ad3e0d86bfc9"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1159,10 +1173,10 @@
       "symbol": "FET",
       "name": "FetchToken",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/2ebdafc1b917926af9e5.png",
-      "oracles": {
-        "USD": "0x657e700c66c48c135c4a29c4292908dbda7aa280"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1170,10 +1184,10 @@
       "symbol": "FIL",
       "name": "Filecoin",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/e4c1b9aaf257947e85a5.png",
-      "oracles": {
-        "USD": "0xe5dbfd9003bff9df5feb2f4f445ca00fb121fb83"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1181,10 +1195,10 @@
       "symbol": "INJ",
       "name": "Injective Protocol",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/3caca809e784b9b6da93.png",
-      "oracles": {
-        "USD": "0x63a9133cd7c611d6049761038c16f238fdda71d7"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1192,10 +1206,10 @@
       "symbol": "LINK",
       "name": "ChainLink Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/62de5caebaa097ac8b37.png",
-      "oracles": {
-        "USD": "0xca236e327f629f9fc2c30a4e95775ebf0b89fac8"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1203,10 +1217,11 @@
       "symbol": "LISTA",
       "name": "Lista DAO",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "logoURI": "/assets/tokens/4a74b374dc3f4eeab67d.png",
-      "oracles": {
-        "USD": "0x801a72542e6f2c1a022ec6865600d6872b191308"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1214,10 +1229,11 @@
       "symbol": "lisUSD",
       "name": "Lista USD",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Lista lisUSD is the dollar stablecoin, separate from the LISTA governance token.",
       "logoURI": "/assets/tokens/c93f69f1013c23dec390.png",
-      "oracles": {
-        "USD": "0x3f5fc2cb37da3b351f7ef968d72be2ec3e1da08e"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1225,10 +1241,10 @@
       "symbol": "LTC",
       "name": "Litecoin Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/c76112d1266e62d58298.png",
-      "oracles": {
-        "USD": "0x74e72f37a8c415c8f1a98ed42e78ff997435791d"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1236,10 +1252,10 @@
       "symbol": "MASK",
       "name": "Mask Network",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/f81c5aa79e77c90a1640.png",
-      "oracles": {
-        "USD": "0x4978c0abe6899178c1a74838ee0062280888e2cf"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1247,10 +1263,10 @@
       "symbol": "NEAR",
       "name": "Binance-Peg NEAR Protocol",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/4eff5b88d50f74e8d0c5.webp",
-      "oracles": {
-        "USD": "0x0fe4d87883005fcafaf56b81d09473d9a29dcdc3"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1258,10 +1274,10 @@
       "symbol": "ONT",
       "name": "Ontology Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/553aa4ea47bc14331275.png",
-      "oracles": {
-        "USD": "0x887f177cbed2cf555a64e7bf125e1825eb69db82"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1269,10 +1285,10 @@
       "symbol": "RDNT",
       "name": "Radiant",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/093dd4a701c5fded7ece.png",
-      "oracles": {
-        "USD": "0x20123c6ebd45c6496102beea86e1a6616ca547c6"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1280,10 +1296,10 @@
       "symbol": "SHIB",
       "name": "Binance-Peg SHIB",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/bb01778b0de5d2831336.png",
-      "oracles": {
-        "USD": "0xa615be6cb0f3f36a641858db6f30b9242d0abed8"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1291,10 +1307,10 @@
       "symbol": "SOL",
       "name": "SOLANA",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/60bae40dc5a736fd80e6.png",
-      "oracles": {
-        "USD": "0x0e8a53dd9c13589df6382f13da6b3ec8f919b323"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1302,10 +1318,10 @@
       "symbol": "SUSHI",
       "name": "Sushi",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/5f2a350a407927aac3ed.png",
-      "oracles": {
-        "USD": "0xa679c72a97b654cfff58ab704de3ba15cde89b07"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1313,10 +1329,11 @@
       "symbol": "TREE",
       "name": "Treehouse",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "TREE is the Treehouse governance token, not a fixed-income or stable-value vault share.",
       "logoURI": "/assets/tokens/296afa2fbcbc8acd9a3b.png",
-      "oracles": {
-        "USD": "0x8fcc2d2973e3740c40af00d030725a429cd24b57"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1324,10 +1341,10 @@
       "symbol": "TRX",
       "name": "Tron V2",
       "decimals": 6,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/e5c6ce7a2b89423adb5d.webp",
-      "oracles": {
-        "USD": "0xf4c5e535756d11994fcbb12ba8add0192d9b88be"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1335,10 +1352,10 @@
       "symbol": "TUSD",
       "name": "TrueUSD",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/17e160c5cec991e27c09.png",
-      "oracles": {
-        "USD": "0xa3334a9762090e827413a7495afece76f41dfc06"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1346,10 +1363,11 @@
       "symbol": "U",
       "name": "United Stables",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "United Stables U targets one USD; issuer lists this exact contract on Ethereum and BNB Chain: https://u.tech/ecosystem/multichain/",
       "logoURI": "/assets/tokens/f3fb9646bcd462636261.jpg",
-      "oracles": {
-        "USD": "0x2ab73dc1c8a23bcddb4850ff811850e0d2a0c72f"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1357,10 +1375,10 @@
       "symbol": "UNI",
       "name": "Uniswap",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/21b27ec860616b9c8365.png",
-      "oracles": {
-        "USD": "0xb57f259e7c24e56a1da00f66b55a5640d9f9e7e4"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1368,10 +1386,10 @@
       "symbol": "USD1",
       "name": "USD1",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/3f7e7a7ae10f296bb141.png",
-      "oracles": {
-        "USD": "0xad8b4e59a7f25b68945faf0f3a3eaf027832ffb0"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1379,10 +1397,11 @@
       "symbol": "USDC",
       "name": "USD Coin",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/2782d3d47a9833601e60.svg",
-      "oracles": {
-        "USD": "0x51597f405303c4377e36123cbc172b13269ea163"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1390,10 +1409,11 @@
       "symbol": "USDe",
       "name": "Ethena USDe",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Ethena USDe targets one USD through synthetic dollar backing; this does not classify its backing as risk-free.",
       "logoURI": "/assets/tokens/211018048bc8a8fd89b7.png",
-      "oracles": {
-        "USD": "0x10402b01cd2e6a9ed6dbe683cbc68f78ff02f8fc"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1401,10 +1421,11 @@
       "symbol": "USDT",
       "name": "Tether USD",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/cbc193c35371ea70ff52.svg",
-      "oracles": {
-        "USD": "0xb97ad0e74fa7d920791e90258a6e2085088b4320"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1412,10 +1433,11 @@
       "symbol": "VAI",
       "name": "VAI Stablecoin",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Venus VAI targets one USD; separate from the XVS governance token.",
       "logoURI": "/assets/tokens/84137553e921711cab4f.png",
-      "oracles": {
-        "USD": "0x058316f8bb13acd442ee7a216c7b60cfb4ea1b53"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1423,10 +1445,10 @@
       "symbol": "WBNB",
       "name": "Wrapped BNB",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/ed7452f1b284f5cbac05.svg",
-      "oracles": {
-        "USD": "0x0567f2323251f0aab15c8dfb1967e4e8a7d42aee"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1434,10 +1456,11 @@
       "symbol": "WLFI",
       "name": "World Liberty Financial",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "logoURI": "/assets/tokens/3e3509465d1f024a2c19.png",
-      "oracles": {
-        "USD": "0xd3f669ef5c364c14d353f46b1d1a048a846e00f1"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1445,10 +1468,11 @@
       "symbol": "wstETH",
       "name": "Wrapped liquid staked Ether 2.0",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/a44eb9b6b4d97a7a9671.svg",
-      "oracles": {
-        "USD": "0xd97ab9e5bd461ebcd55009791c410294f7b42cdb"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1456,10 +1480,10 @@
       "symbol": "XRP",
       "name": "XRP Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/dffc89c6c9e0531eba70.png",
-      "oracles": {
-        "USD": "0x93a67d414896a280bf8ffb3b389fe3686e014fda"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1467,10 +1491,10 @@
       "symbol": "XTZ",
       "name": "Tezos Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/fcd7a890ab2c80c1aefc.png",
-      "oracles": {
-        "USD": "0x9a18137adcf7b05f033ad26968ed5a9cf0bf8e6b"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 56,
@@ -1478,10 +1502,10 @@
       "symbol": "XVS",
       "name": "Venus Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/d01e65e11bcfaeaa1fef.png",
-      "oracles": {
-        "USD": "0xbf63f430a79d4036a5900c19818aff1fa710f206"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 100,
@@ -1489,10 +1513,10 @@
       "symbol": "AAVE",
       "name": "Aave Token on Gnosis",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/22f5b3efbdb6032c7645.png",
-      "oracles": {
-        "USD": "0x2b481dc923aa050e009113dca8dcb0dab4b68cdf"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 100,
@@ -1500,10 +1524,10 @@
       "symbol": "COMP",
       "name": "Compound on Gnosis",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/f69a1f18629ccfffbc35.png",
-      "oracles": {
-        "USD": "0xba95bc8418ebcdf8a690924e1d4ad5292139f2ea"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 100,
@@ -1511,10 +1535,10 @@
       "symbol": "CRV",
       "name": "Curve DAO Token on Gnosis",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/8fc8782e9c8b6a814213.png",
-      "oracles": {
-        "USD": "0xc77b83ac3dd2a761073bd0f281f7b880b2ddde18"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 100,
@@ -1522,10 +1546,11 @@
       "symbol": "DAI",
       "name": "Dai Stablecoin on Gnosis Chain",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/1891aa6964b441a4a84a.png",
-      "oracles": {
-        "USD": "0x678df3415fc31947da4324ec63212874be5a82f8"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 100,
@@ -1533,10 +1558,10 @@
       "symbol": "GHO",
       "name": "Gho Token",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/4f5c435d1092cfa5cc74.svg",
-      "oracles": {
-        "USD": "0x855193775ef2abb12cf95de3086229a14ab8e0e3"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 100,
@@ -1544,10 +1569,10 @@
       "symbol": "GNO",
       "name": "Gnosis Token on xDai",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/1740d577e26d7300a6a4.svg",
-      "oracles": {
-        "USD": "0x22441d81416430a54336ab28765abd31a792ad37"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 100,
@@ -1555,10 +1580,10 @@
       "symbol": "GRT",
       "name": "Graph Token on Gnosis",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/f8d36a72b2f5ed286a64.png",
-      "oracles": {
-        "USD": "0xebbd67a84e33791f1bcfde74cdc22a71e332e2f1"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 100,
@@ -1566,10 +1591,10 @@
       "symbol": "LINK",
       "name": "ChainLink Token on Gnosis Chain",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/a833f5d349cfa227f5d2.png",
-      "oracles": {
-        "USD": "0xed322a5ac55bae091190dff9066760b86751947b"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 100,
@@ -1577,10 +1602,10 @@
       "symbol": "SNX",
       "name": "Synthetix Network Token on Gnosis",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/4d05f1b6788e2c830757.png",
-      "oracles": {
-        "USD": "0x3b84d6e6976d5826500572600eb44f9f1753827b"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 100,
@@ -1588,10 +1613,11 @@
       "symbol": "stETH",
       "name": "Liquid staked Ether 2.0 on Gnosis",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Staked or yield-bearing crypto exposure; the underlying asset has no fixed USD value.",
       "logoURI": "/assets/tokens/22728bea7127e38c148c.png",
-      "oracles": {
-        "USD": "0x229e486ee0d35b7a9f668d10a1e6029eee6b77e0"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 100,
@@ -1599,10 +1625,10 @@
       "symbol": "SUSHI",
       "name": "SushiToken on xDai",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/412f11a2b03b7a456510.jpg",
-      "oracles": {
-        "USD": "0xc0a6bf8d5d408b091d022c3c0653d4056d4b9c01"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 100,
@@ -1610,10 +1636,10 @@
       "symbol": "UNI",
       "name": "Uniswap",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/baee5b3bf59bc7321e8a.png",
-      "oracles": {
-        "USD": "0xd98735d78266c62277bb4dbf3e3bcdd3694782f4"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 100,
@@ -1621,10 +1647,11 @@
       "symbol": "USDC",
       "name": "USD//C on xDai",
       "decimals": 6,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/2782d3d47a9833601e60.svg",
-      "oracles": {
-        "USD": "0x26c31ac71010af62e6b486d1132e266d6298857d"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 100,
@@ -1632,10 +1659,11 @@
       "symbol": "USDT",
       "name": "Tether USD on xDai",
       "decimals": 6,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/b9a8244ef438462cd6d6.png",
-      "oracles": {
-        "USD": "0x68811d7df835b1c33e6eeae8e7c141ef48d48cc7"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 100,
@@ -1643,10 +1671,11 @@
       "symbol": "WBTC",
       "name": "Wrapped BTC on Gnosis Chain",
       "decimals": 8,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/6926608f6f9b06d0fc0d.png",
-      "oracles": {
-        "USD": "0x00288135be38b83249f380e9b6b9a04c90ec39ee"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 100,
@@ -1654,10 +1683,10 @@
       "symbol": "WETH",
       "name": "Wrapped Ether on xDai",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/c0b567bd541bf5033207.svg",
-      "oracles": {
-        "USD": "0xa767f745331d267c7751297d982b050c93985627"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 100,
@@ -1665,10 +1694,10 @@
       "symbol": "YFI",
       "name": "yearn.finance",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/ab8b8ddd24828478103e.jpg",
-      "oracles": {
-        "USD": "0x14030d5a0c9e63d9606c6f2c8771fc95b34b07e0"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1676,10 +1705,10 @@
       "symbol": "1INCH",
       "name": "1inch",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/20414d41c3758c4c035b.svg",
-      "oracles": {
-        "USD": "0x443c5116cdf663eb387e72c688d276e702135c87"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1687,11 +1716,10 @@
       "symbol": "AAVE",
       "name": "Aave (PoS)",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/5b1b8adc120ffdfbd91e.svg",
-      "oracles": {
-        "ETH": "0xbe23a3aa13038cfc28afd0ece4fde379fe7fbfc4",
-        "USD": "0x72484b12719e23115761d5da1646945632979bb6"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1699,10 +1727,10 @@
       "symbol": "APE",
       "name": "ApeCoin",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/a6e71a5fec992353dc75.png",
-      "oracles": {
-        "USD": "0x2ac3f3bfac8fc9094bc3f0f9041a51375235b992"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1710,10 +1738,10 @@
       "symbol": "AXS",
       "name": "Axie Infinity",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/c481d1986620456bebd8.png",
-      "oracles": {
-        "USD": "0x9c371ae34509590e10ab98205d2df5936a1ad875"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1721,11 +1749,10 @@
       "symbol": "BAL",
       "name": "Balancer (PoS)",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/29e4b9a70d290df8f2b1.svg",
-      "oracles": {
-        "ETH": "0x03cd157746c61f44597dd54c6f6702105258c722",
-        "USD": "0xd106b538f2a868c28ca1ec7e298c3325e0251d66"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1733,10 +1760,10 @@
       "symbol": "BAT",
       "name": "Basic Attention",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/4c54670a4be16fd2535a.png",
-      "oracles": {
-        "USD": "0x2346ce62bd732c62618944e51cbfa09d985d86d2"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1744,10 +1771,10 @@
       "symbol": "COMP",
       "name": "Compound",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/0f1a61d5a7a2dfb668ed.png",
-      "oracles": {
-        "USD": "0x2a8758b7257102461bc958279054e372c2b1bde6"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1755,11 +1782,10 @@
       "symbol": "CRV",
       "name": "CRV (PoS)",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/a420966c59b95b7a516c.svg",
-      "oracles": {
-        "ETH": "0x1cf68c76803c9a415be301f50e82e44c64b7f1d4",
-        "USD": "0x336584c8e6dc19637a5b36206b1c79923111b405"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1767,11 +1793,11 @@
       "symbol": "DAI",
       "name": "(PoS) Dai Stablecoin",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/91ad32e1db7073978ec7.svg",
-      "oracles": {
-        "ETH": "0xfc539a559e170f848323e19dfd66007520510085",
-        "USD": "0x4746dec9e833a82ec7c2c1356372ccf2cfcd2f3d"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1779,11 +1805,10 @@
       "symbol": "GHST",
       "name": "Aavegotchi GHST Token (PoS)",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/d0d86a3bcd99dba9a4e7.svg",
-      "oracles": {
-        "ETH": "0xe638249af9642cda55a92245525268482ee4c67b",
-        "USD": "0xdd229ce42f11d8ee7fff29bdb71c7b81352e11be"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1791,10 +1816,10 @@
       "symbol": "GRT",
       "name": "The Graph",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/5a7c71c4e8dba34b20d3.png",
-      "oracles": {
-        "USD": "0x3fabbfb300b1e2d7c9b84512fe9d30aedf24c410"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1802,11 +1827,10 @@
       "symbol": "LINK",
       "name": "ChainLink Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/408cb6cf3c7ab80fe7b3.svg",
-      "oracles": {
-        "ETH": "0xb77fa460604b9c6435a235d057f7d319ac83cb53",
-        "USD": "0xd9ffdb71ebe7496cc440152d43986aae0ab76665"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1814,10 +1838,10 @@
       "symbol": "MANA",
       "name": "Decentraland",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/408b28604b35641c7cee.png",
-      "oracles": {
-        "USD": "0xa1cbf3fe43bc3501e3fc4b573e822c70e76a7512"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1825,10 +1849,11 @@
       "symbol": "MaticX",
       "name": "Liquid Staking Matic (PoS)",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Staked or yield-bearing crypto exposure; the underlying asset has no fixed USD value.",
       "logoURI": "/assets/tokens/190810ef1bc01b54e805.svg",
-      "oracles": {
-        "USD": "0x5d37e4b374e6907de8fc7fb33ee3b0af403c7403"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1836,10 +1861,11 @@
       "symbol": "miMATIC",
       "name": "miMATIC",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "miMATIC is the MAI dollar stablecoin, not exposure to the MATIC or POL token.",
       "logoURI": "/assets/tokens/64da2c68a8a50c1c9f05.svg",
-      "oracles": {
-        "USD": "0xd8d483d813547cfb624b8dc33a00f2fcbcd2d428"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1847,10 +1873,10 @@
       "symbol": "SAND",
       "name": "The Sandbox",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/b0f0da75814127619cdf.jpg",
-      "oracles": {
-        "USD": "0x3d49406edd4d52fb7ffd25485f32e073b529c924"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1858,10 +1884,11 @@
       "symbol": "SNX",
       "name": "Synthetix",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "logoURI": "/assets/tokens/0243014e93eaf6c8d254.png",
-      "oracles": {
-        "USD": "0xbf90a5d9b6ee9019028dbfc2a9e50056d5252894"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1869,11 +1896,10 @@
       "symbol": "SUSHI",
       "name": "SushiToken (PoS)",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/1719ce80d15c07300be1.svg",
-      "oracles": {
-        "ETH": "0x17414eb5159a082e8d41d243c1601c2944401431",
-        "USD": "0x49b0c695039243bbfeb8ecd054eb70061fd54aa0"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1881,11 +1907,10 @@
       "symbol": "UNI",
       "name": "Uniswap",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/baee5b3bf59bc7321e8a.png",
-      "oracles": {
-        "ETH": "0x162d8c5bf15eb6bee003a1ffc4049c92114bc931",
-        "USD": "0xdf0fb4e4f928d2dcb76f438575fdd8682386e13c"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1893,11 +1918,10 @@
       "symbol": "USDC",
       "name": "USD Coin",
       "decimals": 6,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/2782d3d47a9833601e60.svg",
-      "oracles": {
-        "ETH": "0xefb7e6be8356ccc6827799b6a7348ee674a80eae",
-        "USD": "0xfe4a8cc5b5b2366c1b58bea3858e81843581b2f7"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1905,11 +1929,11 @@
       "symbol": "USDC.e",
       "name": "USD Coin (PoS)",
       "decimals": 6,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/2782d3d47a9833601e60.svg",
-      "oracles": {
-        "ETH": "0xefb7e6be8356ccc6827799b6a7348ee674a80eae",
-        "USD": "0xfe4a8cc5b5b2366c1b58bea3858e81843581b2f7"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1917,11 +1941,11 @@
       "symbol": "USDT0",
       "name": "(PoS) Tether USD",
       "decimals": 6,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/1d29a434146b992fdd66.svg",
-      "oracles": {
-        "ETH": "0xf9d5aac6e5572aefa6bd64108ff86a222f69b64d",
-        "USD": "0x0a6513e40db6eb1b165753ad52e80663aea50545"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1929,11 +1953,11 @@
       "symbol": "WBTC",
       "name": "(PoS) Wrapped BTC",
       "decimals": 8,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/54bfdd97b72719969a99.svg",
-      "oracles": {
-        "ETH": "0xa338e0492b2f944e9f8c0653d3ad1484f2657a37",
-        "USD": "0xde31f8bfbd8c84b5360cfacca3539b938dd78ae6"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1941,10 +1965,10 @@
       "symbol": "WETH",
       "name": "Wrapped Ether",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/c0b567bd541bf5033207.svg",
-      "oracles": {
-        "USD": "0xf9680d99d6c9589e2a93a78a04a279e509205945"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 137,
@@ -1952,10 +1976,10 @@
       "symbol": "WPOL",
       "name": "Wrapped Polygon Ecosystem Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/30e2fe33e7f2b3dd3f05.svg",
-      "oracles": {
-        "USD": "0xab594600376ec9fd91f8e885dadf0ce036862de0"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -1963,10 +1987,10 @@
       "symbol": "AAVE",
       "name": "Aave Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/5b1b8adc120ffdfbd91e.svg",
-      "oracles": {
-        "USD": "0x3d6774ef702a10b20fca8ed40fc022f7e4938e07"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -1974,10 +1998,10 @@
       "symbol": "AERO",
       "name": "Aerodrome Finance",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/54bc44ed9a78cd4ec558.png",
-      "oracles": {
-        "USD": "0x4ec5970fc728c5f65ba413992cd5ff6fd70fcff0"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -1985,10 +2009,10 @@
       "symbol": "AVNT",
       "name": "Avantis",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/5faf321f723b5916d4ea.png",
-      "oracles": {
-        "USD": "0x50997b806b574501cc34a2a6d845e4dc1bd9aa8c"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -1996,10 +2020,10 @@
       "symbol": "AXL",
       "name": "Axelar",
       "decimals": 6,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/f360e5d7231f3d9f9868.jpg",
-      "oracles": {
-        "USD": "0x676c4c6c31d97a5581d3204c04a8125b350e2f9d"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2007,10 +2031,11 @@
       "symbol": "cbBTC",
       "name": "Coinbase Wrapped BTC",
       "decimals": 8,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/42cd15fe2b9391da51d5.svg",
-      "oracles": {
-        "USD": "0x07da0e54543a844a80abe69c8a12f22b3aa59f9d"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2018,10 +2043,11 @@
       "symbol": "cbDOGE",
       "name": "Coinbase Wrapped DOGE",
       "decimals": 8,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/68395d0e54b67f667a63.png",
-      "oracles": {
-        "USD": "0x95051de9db5cac61682f64505006f2991deab3c2"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2029,11 +2055,11 @@
       "symbol": "cbETH",
       "name": "Coinbase Wrapped Staked ETH",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/d05a5e47f488b96b4541.svg",
-      "oracles": {
-        "ETH": "0x806b4ac04501c29769051e42783cf04dce41440b",
-        "USD": "0xd7818272b9e248357d13057aab0b417af31e817d"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2041,10 +2067,11 @@
       "symbol": "cbXRP",
       "name": "Coinbase Wrapped XRP",
       "decimals": 6,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/515fd37843b78a5cf7ac.png",
-      "oracles": {
-        "USD": "0xeee1a9d5a0c36d99972c057cb959267e88ab9160"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2052,10 +2079,10 @@
       "symbol": "COMP",
       "name": "Compound",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/0f1a61d5a7a2dfb668ed.png",
-      "oracles": {
-        "USD": "0x9dda783de64a9d1a60c49ca761ebe528c35ba428"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2063,10 +2090,11 @@
       "symbol": "DAI",
       "name": "Dai Stablecoin",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/c3ddc7ea30c09d33e9b3.png",
-      "oracles": {
-        "USD": "0x591e79239a7d679378ec8c847e5038150364c78f"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2074,10 +2102,10 @@
       "symbol": "DEGEN",
       "name": "Degen",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/c2d6fe032a1c20bc294f.png",
-      "oracles": {
-        "USD": "0xe62bce5d7cb9d16ab8b4d622538bc0a50a5799c2"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2085,10 +2113,11 @@
       "symbol": "EURC",
       "name": "EURC",
       "decimals": 6,
+      "assetClass": "other-stable",
+      "classificationReason": "Circle EURC targets one euro, not one US dollar.",
       "logoURI": "/assets/tokens/f748e0bd227d54e32b1e.svg",
-      "oracles": {
-        "USD": "0xdae398520e2b67cd3f27aef9cf14d93d927f8250"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2096,10 +2125,10 @@
       "symbol": "GHO",
       "name": "Gho Token",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/4f5c435d1092cfa5cc74.svg",
-      "oracles": {
-        "USD": "0x42868efcee13c0e71af89c04ff7d96f5bec479b0"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2107,10 +2136,11 @@
       "symbol": "HOME",
       "name": "HOME",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "HOME is the Defi App protocol token, not a real-estate or stable-value claim.",
       "logoURI": "/assets/tokens/15dfca319dab7fdf4baf.png",
-      "oracles": {
-        "USD": "0x121934c415937863d64ef93436169444633ee0d8"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2118,10 +2148,11 @@
       "symbol": "JitoSOL",
       "name": "Jito Staked SOL",
       "decimals": 9,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/cb9cedd5271145bc6bd6.png",
-      "oracles": {
-        "USD": "0x0ca181015d21a5ed19bafc17f2138883c2b16d54"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2129,10 +2160,11 @@
       "symbol": "LBTC",
       "name": "Lombard Staked Bitcoin",
       "decimals": 8,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/891e9887e7f68227e34b.svg",
-      "oracles": {
-        "USD": "0x9e07546c9fe8868855cd04b26051a26d1599e270"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2140,11 +2172,10 @@
       "symbol": "LINK",
       "name": "Chainlink",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/db40b31615a449abb1b8.png",
-      "oracles": {
-        "ETH": "0xc5e65227fe3385b88468f9a01600017cdc9f3a12",
-        "USD": "0x17cab8fe31e32f08326e5e27412894e49b0f9d65"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2152,10 +2183,11 @@
       "symbol": "MAMO",
       "name": "Mamo",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "MAMO is the Mamo protocol token, not a dollar vault share.",
       "logoURI": "/assets/tokens/28db54b1b5e74f9dc1ac.png",
-      "oracles": {
-        "USD": "0xef7541b388a77c1709a3d44bfbfc5c1ed3f0ac94"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2163,10 +2195,10 @@
       "symbol": "Mog",
       "name": "Mog Coin",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/25c240d6d552ebbb3025.png",
-      "oracles": {
-        "USD": "0x4aeb6d15769ead32d0c5be2940f40c7cff53801d"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2174,10 +2206,10 @@
       "symbol": "MORPHO",
       "name": "Morpho",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/a22b42f1dd00c20eca96.png",
-      "oracles": {
-        "USD": "0xe95e258bb6615d47515fc849f8542da651f12bf6"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2185,10 +2217,11 @@
       "symbol": "OUSD",
       "name": "Open USD",
       "decimals": 6,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Open Standard OUSD, not Origin Dollar; issuer lists this contract with 1:1 USD minting and redemption: https://joinopenstandard.com/blog/ousd-is-live",
       "logoURI": "/assets/tokens/d2d2f0d9196da47744e3.png",
-      "oracles": {
-        "USD": "0xa718561c4592217b9fa301addd183fe4f347e096"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2196,10 +2229,11 @@
       "symbol": "RSR",
       "name": "Reserve Rights",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "logoURI": "/assets/tokens/07f8444a8aaf62befa66.png",
-      "oracles": {
-        "USD": "0xaa98ae504658766dfe11f31c5d95a0bdcabde0b1"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2207,10 +2241,11 @@
       "symbol": "SNX",
       "name": "Synthetix",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "logoURI": "/assets/tokens/0243014e93eaf6c8d254.png",
-      "oracles": {
-        "USD": "0xe3971ed6f1a5903321479ef3148b5950c0612075"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2218,10 +2253,10 @@
       "symbol": "STG",
       "name": "Stargate Finance",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/5d50429ed8a17b3ceba8.png",
-      "oracles": {
-        "USD": "0x63af8341b62e683b87bb540896bf283d96b4d385"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2229,10 +2264,11 @@
       "symbol": "sUSDe",
       "name": "Ethena Staked USDe",
       "decimals": 18,
+      "assetClass": "usd-linked",
+      "classificationReason": "Yield-bearing staked USDe share; its exchange rate is not fixed at one USD.",
       "logoURI": "/assets/tokens/dad33d3f7f73b9a9ca28.png",
-      "oracles": {
-        "USD": "0x79cf4a31b29d69191f0b6e97916eb93feb81e533"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2240,10 +2276,11 @@
       "symbol": "tBTC",
       "name": "Base tBTC v2",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/ec189f6774e528f5a60c.svg",
-      "oracles": {
-        "USD": "0x6d75bfb5a5885f841b132198c9f0be8c872057bf"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2251,10 +2288,11 @@
       "symbol": "USDai",
       "name": "USDai",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "USDai is the dollar stablecoin; separate from the yield-bearing sUSDai share.",
       "logoURI": "/assets/tokens/3b4a9cc3514a1fce4db9.png",
-      "oracles": {
-        "USD": "0xfcb2c36ac8a91ce9d3c94590ed239e1f683467fe"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2262,10 +2300,10 @@
       "symbol": "USDC",
       "name": "USD Coin",
       "decimals": 6,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/2782d3d47a9833601e60.svg",
-      "oracles": {
-        "USD": "0x7e860098f58bbfc8648a4311b374b1d669a2bc6b"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2273,10 +2311,11 @@
       "symbol": "USDe",
       "name": "Ethena USDe",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Ethena USDe targets one USD through synthetic dollar backing; this does not classify its backing as risk-free.",
       "logoURI": "/assets/tokens/211018048bc8a8fd89b7.png",
-      "oracles": {
-        "USD": "0x790181e93e9f4eedb5b864860c12e4d2cfffe73b"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2284,10 +2323,11 @@
       "symbol": "USDS",
       "name": "USDS",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/447ad4b135e82e3a5f23.webp",
-      "oracles": {
-        "USD": "0x2330aae3bca5f05169d5f4597964d44522f62930"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2295,10 +2335,11 @@
       "symbol": "USDT",
       "name": "Tether USD",
       "decimals": 6,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/9a77e286cbd3a2e08126.png",
-      "oracles": {
-        "USD": "0xf19d560eb8d2adf07bd6d13ed03e1d11215721f9"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2306,10 +2347,10 @@
       "symbol": "VIRTUAL",
       "name": "Virtuals Protocol",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/73b9b42a4c101aa4b449.png",
-      "oracles": {
-        "USD": "0xeaf310161c9ef7c813a14f8fef6fb271434019f7"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2317,10 +2358,10 @@
       "symbol": "VVV",
       "name": "Venice Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/2ee9c757783277d6c28c.png",
-      "oracles": {
-        "USD": "0xaabc55ca55d70b034e4daa2551a224239890282f"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2328,10 +2369,11 @@
       "symbol": "WBTC",
       "name": "Wrapped Bitcoin",
       "decimals": 8,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/c96ab2e608fe218d0dfc.png",
-      "oracles": {
-        "USD": "0xccadc697c55bbb68dc5bcdf8d3cbe83cdd4e071e"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2339,10 +2381,10 @@
       "symbol": "WELL",
       "name": "Moonwell",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/e725e6cf86682282d274.png",
-      "oracles": {
-        "USD": "0xc15d9944daefe2db03e53bef8dda25a56832c5fe"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2350,10 +2392,10 @@
       "symbol": "WETH",
       "name": "Wrapped Ether",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/c0b567bd541bf5033207.svg",
-      "oracles": {
-        "USD": "0x5731ae06077c79a3b292498940211e0ae7130bd3"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2361,10 +2403,10 @@
       "symbol": "YFI",
       "name": "yearn.finance",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/ab8b8ddd24828478103e.jpg",
-      "oracles": {
-        "USD": "0xd40e758b5ec80820b68dfc302fc5ce1239083548"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 8453,
@@ -2372,10 +2414,10 @@
       "symbol": "ZRO",
       "name": "LayerZero",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/f09647b2e891397d4148.jpg",
-      "oracles": {
-        "USD": "0xdc31a4ccfca039bec6222e20be7770e12581bfeb"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 9745,
@@ -2383,10 +2425,10 @@
       "symbol": "GHO",
       "name": "Gho Token",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/4f5c435d1092cfa5cc74.svg",
-      "oracles": {
-        "USD": "0x26b2d944e1e9db3fc9d38760bde97cd0adc68c75"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 9745,
@@ -2394,10 +2436,10 @@
       "symbol": "LINK",
       "name": "Chainlink",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/db40b31615a449abb1b8.png",
-      "oracles": {
-        "USD": "0xe37f74cb2237c5274ddbbf841c3284bd2e23e65b"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 9745,
@@ -2405,10 +2447,11 @@
       "symbol": "sUSDe",
       "name": "Staked USDe",
       "decimals": 18,
+      "assetClass": "usd-linked",
+      "classificationReason": "Yield-bearing staked USDe share; its exchange rate is not fixed at one USD.",
       "logoURI": "/assets/tokens/0d2e0f6e6e9be5af4f1b.svg",
-      "oracles": {
-        "USD": "0x0ca32ed285addf84e8491f5edb835e10635945a2"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 9745,
@@ -2416,10 +2459,11 @@
       "symbol": "USDai",
       "name": "USDai",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "USDai is the dollar stablecoin; separate from the yield-bearing sUSDai share.",
       "logoURI": "/assets/tokens/3b4a9cc3514a1fce4db9.png",
-      "oracles": {
-        "USD": "0x157b02531ad702346b43686b9186b5271ea2bdad"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 9745,
@@ -2427,10 +2471,10 @@
       "symbol": "USDC",
       "name": "USDC",
       "decimals": 6,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/c41385816101232f0f20.png",
-      "oracles": {
-        "USD": "0xe3d6f313aeebc2d4ff780c2850f5ca95c85fafa4"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 9745,
@@ -2438,10 +2482,11 @@
       "symbol": "USDe",
       "name": "USDe",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Ethena USDe targets one USD through synthetic dollar backing; this does not classify its backing as risk-free.",
       "logoURI": "/assets/tokens/1171f7df5d6b6c139a1e.svg",
-      "oracles": {
-        "USD": "0x0dfdcf9af39be41e40a52a80fa86e23a69a69c3b"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 9745,
@@ -2449,10 +2494,11 @@
       "symbol": "USDT0",
       "name": "USDT0",
       "decimals": 6,
+      "assetClass": "usd-pegged",
+      "classificationReason": "USDT0 represents Tether dollar exposure; the cross-chain wrapper does not change its USD target.",
       "logoURI": "/assets/tokens/1d29a434146b992fdd66.svg",
-      "oracles": {
-        "USD": "0x3205b49b3c8c5d593589e1e70567993f72c5f845"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 9745,
@@ -2460,10 +2506,11 @@
       "symbol": "weETH",
       "name": "Wrapped eETH",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/fe888a0aba0005d9f4ca.svg",
-      "oracles": {
-        "USD": "0xbfed4ef33b8ec58bc15fcbb4a0f934a812d5d7b5"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 9745,
@@ -2471,10 +2518,10 @@
       "symbol": "WETH",
       "name": "WETH",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/c0b567bd541bf5033207.svg",
-      "oracles": {
-        "USD": "0x43a7dd2125266c5c4c26eb86cd61241132426fe7"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 9745,
@@ -2482,10 +2529,10 @@
       "symbol": "WXPL",
       "name": "Wrapped XPL",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/c7617a3781f2029e0017.svg",
-      "oracles": {
-        "USD": "0xf932477c37715ae6657ab884414bd9876fe3f750"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2493,10 +2540,10 @@
       "symbol": "1INCH",
       "name": "1INCH",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/20414d41c3758c4c035b.svg",
-      "oracles": {
-        "USD": "0x4bc735ef24bf286983024cad5d03f0738865aaef"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2504,10 +2551,10 @@
       "symbol": "AAVE",
       "name": "Aave Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/5b1b8adc120ffdfbd91e.svg",
-      "oracles": {
-        "USD": "0xad1d5344aade45f43e596773bcc4c423eabdd034"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2515,10 +2562,10 @@
       "symbol": "APE",
       "name": "ApeCoin",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/a6e71a5fec992353dc75.png",
-      "oracles": {
-        "USD": "0x221912ce795669f628c51c69b7d0873eda9c03bb"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2526,10 +2573,10 @@
       "symbol": "ARB",
       "name": "Arbitrum",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/f4916dbd8714b92b928c.svg",
-      "oracles": {
-        "USD": "0xb2a824043730fe05f3da2efafa1cbbe83fa548d6"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2537,10 +2584,10 @@
       "symbol": "ATH",
       "name": "Aethir",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/1934b0cccb651db2c7fb.png",
-      "oracles": {
-        "USD": "0x920e09a98f83b82701207ba7e433a5b53ecb888a"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2548,10 +2595,10 @@
       "symbol": "AXL",
       "name": "Axelar",
       "decimals": 6,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/f360e5d7231f3d9f9868.jpg",
-      "oracles": {
-        "USD": "0x84e8237cc1418ea1b4a1e0c3e7f48c3a5fbc81af"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2559,10 +2606,10 @@
       "symbol": "Cake",
       "name": "PancakeSwap Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/ee1c588bc40fe92324b9.png",
-      "oracles": {
-        "USD": "0x256654437f1ada8057684b18d742efd14034c400"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2570,10 +2617,10 @@
       "symbol": "COMP",
       "name": "Compound",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/0f1a61d5a7a2dfb668ed.png",
-      "oracles": {
-        "USD": "0xe7c53ffd03eb6cef7d208bc4c13446c76d1e5884"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2581,10 +2628,10 @@
       "symbol": "CRV",
       "name": "Curve DAO",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/1a4b2b6e4ddb91b33af3.png",
-      "oracles": {
-        "USD": "0xaebda2c976cfd1ee1977eac079b4382acb849325"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2592,10 +2639,11 @@
       "symbol": "crvUSD",
       "name": "Curve.Fi USD Stablecoin",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/eaf990b6bc3491aa4ecf.png",
-      "oracles": {
-        "USD": "0x0a32255dd4bb6177c994baac73e0606fdd568f66"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2603,10 +2651,11 @@
       "symbol": "DAI",
       "name": "Dai Stablecoin",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/91ad32e1db7073978ec7.svg",
-      "oracles": {
-        "USD": "0xc5c8e77b397e531b8ec06bfb0048328b30e9ecfb"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2614,10 +2663,11 @@
       "symbol": "ENA",
       "name": "Ethena",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "logoURI": "/assets/tokens/99b4be1dea09e0dbfa33.png",
-      "oracles": {
-        "USD": "0x9ee96caa9972c801058caa8e23419fc6516fbf7e"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2625,10 +2675,11 @@
       "symbol": "FRAX",
       "name": "Frax",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Legacy FRAX dollar exposure; separate from the FXS governance contract and FRAX governance feed identity.",
       "logoURI": "/assets/tokens/73a18837b56ffca2fb27.svg",
-      "oracles": {
-        "USD": "0x0809e3d38d1b4214958faf06d8b1b1a2b73f2ab8"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2636,10 +2687,10 @@
       "symbol": "GHO",
       "name": "Gho Token",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/4f5c435d1092cfa5cc74.svg",
-      "oracles": {
-        "USD": "0x3c786e934f23375ca345c9b8d5ad54838796e8e7"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2647,10 +2698,10 @@
       "symbol": "GMX",
       "name": "GMX",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/7e40f5a60d7ce701d1fe.png",
-      "oracles": {
-        "USD": "0xdb98056fecfff59d032ab628337a4887110df3db"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2658,10 +2709,10 @@
       "symbol": "GNS",
       "name": "Gains Network",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/032dff496763a5f3ec6d.png",
-      "oracles": {
-        "USD": "0xe89e98ce4e19071e59ed4780e0598b541ce76486"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2669,10 +2720,10 @@
       "symbol": "GRT",
       "name": "The Graph",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/5a7c71c4e8dba34b20d3.png",
-      "oracles": {
-        "USD": "0x0f38d86fcef4955b705f35c9e41d1a16e0637c73"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2680,10 +2731,10 @@
       "symbol": "LDO",
       "name": "Lido DAO",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/f051465fd4e08612625d.png",
-      "oracles": {
-        "USD": "0xa43a34030088e6510feccfb77e88ee5e7ed0fe64"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2691,11 +2742,10 @@
       "symbol": "LINK",
       "name": "ChainLink Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/408cb6cf3c7ab80fe7b3.svg",
-      "oracles": {
-        "ETH": "0xb7c8fb1db45007f98a68da0588e1aa524c317f27",
-        "USD": "0x86e53cf1b870786351da77a57575e79cb55812cb"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2703,10 +2753,11 @@
       "symbol": "LUSD",
       "name": "LUSD Stablecoin",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/795d6873a5c43a17e9ab.svg",
-      "oracles": {
-        "USD": "0x0411d28c94d85a36bc72cb0f875dfa8371d8ffff"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2714,10 +2765,10 @@
       "symbol": "MAGIC",
       "name": "Treasure",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/b83f4e733b46382270bc.png",
-      "oracles": {
-        "USD": "0x47e55ccec6582838e173f252d08afd8116c2202d"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2725,10 +2776,10 @@
       "symbol": "MORPHO",
       "name": "Morpho",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/b69957117412d29680c9.png",
-      "oracles": {
-        "USD": "0x1e48733eeee02468b674b69958b046eb6a0a7d94"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2736,10 +2787,10 @@
       "symbol": "PENDLE",
       "name": "Pendle",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/6a473a6e72ac146b8e6b.png",
-      "oracles": {
-        "USD": "0x66853e19d73c0f9301fe099c324a1e9726953433"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2747,10 +2798,10 @@
       "symbol": "PEPE",
       "name": "Pepe",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/da8086fe130a6267119f.jpg",
-      "oracles": {
-        "USD": "0x02ded5a7edda750e3eb240b54437a54d57b74dbe"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2758,10 +2809,11 @@
       "symbol": "PYUSD",
       "name": "PayPal USD",
       "decimals": 6,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/9d7ce0b577dfd5c69862.png",
-      "oracles": {
-        "USD": "0x3d50d699a812a0f66f36876df47b2ae68e781736"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2769,10 +2821,10 @@
       "symbol": "RDNT",
       "name": "Radiant Capital",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/b154d30b94f350545a71.png",
-      "oracles": {
-        "USD": "0x20d0fcab0ecfd078b036b6caf1fac69a6453b352"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2780,10 +2832,11 @@
       "symbol": "RSR",
       "name": "Reserve Rights",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "logoURI": "/assets/tokens/07f8444a8aaf62befa66.png",
-      "oracles": {
-        "USD": "0xcff9349ec6d027f20fc9360117fef4a1ad38b488"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2791,10 +2844,11 @@
       "symbol": "SPELL",
       "name": "Spell",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "logoURI": "/assets/tokens/c3e9be2f80712238629a.png",
-      "oracles": {
-        "USD": "0x383b3624478124697bef675f07ca37570b73992f"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2802,10 +2856,11 @@
       "symbol": "sUSDe",
       "name": "Ethena Staked USDe",
       "decimals": 18,
+      "assetClass": "usd-linked",
+      "classificationReason": "Yield-bearing staked USDe share; its exchange rate is not fixed at one USD.",
       "logoURI": "/assets/tokens/dad33d3f7f73b9a9ca28.png",
-      "oracles": {
-        "USD": "0xf2215b9c35b1697b5f47e407c917a40d055e68d7"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2813,10 +2868,10 @@
       "symbol": "SUSHI",
       "name": "Sushi",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/34c01e13ce9c918a272d.png",
-      "oracles": {
-        "USD": "0xb2a8ba74cbca38508ba1632761b56c897060147c"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2824,10 +2879,11 @@
       "symbol": "tBTC",
       "name": "Arbitrum tBTC v2",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/ec189f6774e528f5a60c.svg",
-      "oracles": {
-        "USD": "0xe808488e8627f6531ba79a13a9e0271b39abeb1c"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2835,10 +2891,10 @@
       "symbol": "UNI",
       "name": "Uniswap",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/baee5b3bf59bc7321e8a.png",
-      "oracles": {
-        "USD": "0x9c917083fdb403ab5adbec26ee294f6ecada2720"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2846,10 +2902,11 @@
       "symbol": "USDai",
       "name": "USDai",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "USDai is the dollar stablecoin; separate from the yield-bearing sUSDai share.",
       "logoURI": "/assets/tokens/3b4a9cc3514a1fce4db9.png",
-      "oracles": {
-        "USD": "0xf3d6b05e69918d71807ab005791daccec5de8c78"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2857,10 +2914,10 @@
       "symbol": "USDC",
       "name": "USD Coin",
       "decimals": 6,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/2782d3d47a9833601e60.svg",
-      "oracles": {
-        "USD": "0x50834f3163758fcc1df9973b6e91f0f0f0434ad3"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2868,10 +2925,11 @@
       "symbol": "USDC.e",
       "name": "USD Coin (Arb1)",
       "decimals": 6,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/2782d3d47a9833601e60.svg",
-      "oracles": {
-        "USD": "0x50834f3163758fcc1df9973b6e91f0f0f0434ad3"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2879,10 +2937,11 @@
       "symbol": "USDe",
       "name": "USDe",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Ethena USDe targets one USD through synthetic dollar backing; this does not classify its backing as risk-free.",
       "logoURI": "/assets/tokens/3a31948644f9212a0552.png",
-      "oracles": {
-        "USD": "0x88ac7bca36567525a866138f03a6f6844868e0bc"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2890,10 +2949,10 @@
       "symbol": "USDG",
       "name": "Global Dollar",
       "decimals": 6,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/3f81ec220ae417b1bb9e.png",
-      "oracles": {
-        "USD": "0xe9bd4ca2cdacb56cd06c9c4c5231e69c33340b3c"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2901,10 +2960,11 @@
       "symbol": "USDS",
       "name": "USDS",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/447ad4b135e82e3a5f23.webp",
-      "oracles": {
-        "USD": "0x37833e5b3fbbed4d613a3e0c354ef91a42b81eeb"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2912,10 +2972,11 @@
       "symbol": "USD₮0",
       "name": "USD₮0",
       "decimals": 6,
+      "assetClass": "usd-pegged",
+      "classificationReason": "USDT0 represents Tether dollar exposure; the cross-chain wrapper does not change its USD target.",
       "logoURI": "/assets/tokens/1d29a434146b992fdd66.svg",
-      "oracles": {
-        "USD": "0x3f3f5df88dc9f13eac63df89ec16ef6e7e25dde7"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2923,10 +2984,10 @@
       "symbol": "WBTC",
       "name": "Wrapped BTC",
       "decimals": 8,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/54bfdd97b72719969a99.svg",
-      "oracles": {
-        "USD": "0xd0c7101eacbb49f3decccc166d238410d6d46d57"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2934,10 +2995,10 @@
       "symbol": "WETH",
       "name": "Wrapped Ether",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/c0b567bd541bf5033207.svg",
-      "oracles": {
-        "USD": "0x639fe6ab55c921f74e7fac1ee960c0b6293ba612"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2945,10 +3006,10 @@
       "symbol": "WOO",
       "name": "WOO",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/505c596f89c01a4a0bbf.png",
-      "oracles": {
-        "USD": "0x5e2b5c5c07cca3437c4d724225bb42c7e55d1597"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2956,10 +3017,10 @@
       "symbol": "YFI",
       "name": "yearn.finance",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/ab8b8ddd24828478103e.jpg",
-      "oracles": {
-        "USD": "0x745ab5b69e01e2be1104ca84937bb71f96f5fb21"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 42161,
@@ -2967,10 +3028,10 @@
       "symbol": "ZRO",
       "name": "LayerZero",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/f09647b2e891397d4148.jpg",
-      "oracles": {
-        "USD": "0x1940fed49cdbc397941f2d336eb4994d599e568b"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -2978,10 +3039,10 @@
       "symbol": "AAVE.e",
       "name": "Aave Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/5b1b8adc120ffdfbd91e.svg",
-      "oracles": {
-        "USD": "0x3ca13391e9fb38a75330fb28f8cc2eb3d9ceceed"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -2989,10 +3050,10 @@
       "symbol": "AUSD",
       "name": "AUSD",
       "decimals": 6,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/7336b5bc7028359734d5.svg",
-      "oracles": {
-        "USD": "0x5c2d58627fbe746f5ea24ef6d618f09f8e3f0122"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3000,10 +3061,10 @@
       "symbol": "BAT.e",
       "name": "Basic Attention",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/4c54670a4be16fd2535a.png",
-      "oracles": {
-        "USD": "0xe89b3ce86d25599d1e615c0f6a353b4572ff868d"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3011,10 +3072,10 @@
       "symbol": "COMP.e",
       "name": "Compound",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/0f1a61d5a7a2dfb668ed.png",
-      "oracles": {
-        "USD": "0x9d6aa0ac8c4818433bea7a74f49c73b57bcec4ec"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3022,10 +3083,11 @@
       "symbol": "DAI.e",
       "name": "Dai Stablecoin",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/91ad32e1db7073978ec7.svg",
-      "oracles": {
-        "USD": "0x51d7180eda2260cc4f6e4eebb82fef5c3c2b8300"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3033,10 +3095,11 @@
       "symbol": "EURC",
       "name": "Euro Coin",
       "decimals": 6,
+      "assetClass": "other-stable",
+      "classificationReason": "Circle EURC targets one euro, not one US dollar.",
       "logoURI": "/assets/tokens/f748e0bd227d54e32b1e.svg",
-      "oracles": {
-        "USD": "0x3368310bc4aee5d96486a73bae8e6b49fcde62d3"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3044,10 +3107,11 @@
       "symbol": "FRAX",
       "name": "Frax",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Legacy FRAX dollar exposure; separate from the FXS governance contract and FRAX governance feed identity.",
       "logoURI": "/assets/tokens/73a18837b56ffca2fb27.svg",
-      "oracles": {
-        "USD": "0xbba56ef1565354217a3353a466edb82e8f25b08e"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3055,10 +3119,10 @@
       "symbol": "GHO",
       "name": "Gho Token",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/4f5c435d1092cfa5cc74.svg",
-      "oracles": {
-        "USD": "0x076de3812bdbdae1330064fc01adf7f4eaa123f3"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3066,10 +3130,10 @@
       "symbol": "GMX",
       "name": "GMX",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/7e40f5a60d7ce701d1fe.png",
-      "oracles": {
-        "USD": "0x3f968a21647d7ca81fb8a5b69c0a452701d5dce8"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3077,10 +3141,10 @@
       "symbol": "JOE",
       "name": "JOE",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/abfaffeb6f1ad9f73b18.png",
-      "oracles": {
-        "USD": "0x02d35d3a8ac3e1626d3ee09a78dd87286f5e8e3a"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3088,10 +3152,10 @@
       "symbol": "LINK.e",
       "name": "Chainlink Token",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/408cb6cf3c7ab80fe7b3.svg",
-      "oracles": {
-        "USD": "0x49ccd9ca821efeab2b98c60dc60f518e765ede9a"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3099,10 +3163,10 @@
       "symbol": "MIM",
       "name": "Magic Internet Money (Avalanche)",
       "decimals": 18,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/188ed6844f2887015448.png",
-      "oracles": {
-        "USD": "0x54edab30a7134a16a54218ae64c73e1daf48a8fb"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3110,10 +3174,10 @@
       "symbol": "QI",
       "name": "BENQI",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/4f445c82f44d917cc641.jpg",
-      "oracles": {
-        "USD": "0x36e039e6391a5e7a7267650979fdf613f659be5d"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3121,10 +3185,11 @@
       "symbol": "sAVAX",
       "name": "Staked AVAX",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Staked or yield-bearing crypto exposure; the underlying asset has no fixed USD value.",
       "logoURI": "/assets/tokens/cf6ba62672e8ba997cde.svg",
-      "oracles": {
-        "USD": "0x2854ca10a54800e15a2a25cfa52567166434ff0a"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3132,10 +3197,11 @@
       "symbol": "SNX.e",
       "name": "Synthetix",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "logoURI": "/assets/tokens/0243014e93eaf6c8d254.png",
-      "oracles": {
-        "USD": "0x01752eaab988ecb0ceba2c8fc97c4f1d38bf246d"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3143,10 +3209,11 @@
       "symbol": "sUSDe",
       "name": "Staked USDe",
       "decimals": 18,
+      "assetClass": "usd-linked",
+      "classificationReason": "Yield-bearing staked USDe share; its exchange rate is not fixed at one USD.",
       "logoURI": "/assets/tokens/0d2e0f6e6e9be5af4f1b.svg",
-      "oracles": {
-        "USD": "0x14488868fc8b1ffb381d6f49907ee75b3f0c2a0f"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3154,10 +3221,10 @@
       "symbol": "SUSHI.e",
       "name": "Sushi",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/34c01e13ce9c918a272d.png",
-      "oracles": {
-        "USD": "0x449a373a090d8a1e5f74c63ef831ceff39e94563"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3165,10 +3232,11 @@
       "symbol": "TUSD",
       "name": "TrueUSD",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/bdba9d3f664a1101de76.png",
-      "oracles": {
-        "USD": "0x9cf3ef104a973b351b2c032aa6793c3a6f76b448"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3176,10 +3244,10 @@
       "symbol": "UNI.e",
       "name": "Uniswap",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/baee5b3bf59bc7321e8a.png",
-      "oracles": {
-        "USD": "0x9a1372f9b1b71b3a5a72e092ae67e172dbd7daaa"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3187,10 +3255,10 @@
       "symbol": "USDC",
       "name": "USD Coin",
       "decimals": 6,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/2782d3d47a9833601e60.svg",
-      "oracles": {
-        "USD": "0xf096872672f44d6eba71458d74fe67f9a77a23b9"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3198,10 +3266,11 @@
       "symbol": "USDC.e",
       "name": "USD Coin",
       "decimals": 6,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/2782d3d47a9833601e60.svg",
-      "oracles": {
-        "USD": "0xf096872672f44d6eba71458d74fe67f9a77a23b9"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3209,10 +3278,10 @@
       "symbol": "USDt",
       "name": "TetherToken",
       "decimals": 6,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/cbc193c35371ea70ff52.svg",
-      "oracles": {
-        "USD": "0xebe676ee90fe1112671f19b6b7459bc678b67e8a"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3220,10 +3289,10 @@
       "symbol": "WAVAX",
       "name": "Wrapped AVAX",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/9f25dbf573e0f7470691.svg",
-      "oracles": {
-        "USD": "0x0a77230d17318075983913bc2145db16c7366156"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3231,10 +3300,11 @@
       "symbol": "WBTC",
       "name": "Wrapped Bitcoin",
       "decimals": 8,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/c96ab2e608fe218d0dfc.png",
-      "oracles": {
-        "USD": "0x86442e3a98558357d46e6182f4b262f76c4fa26f"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3242,10 +3312,10 @@
       "symbol": "WETH.e",
       "name": "Wrapped Ether",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/c0b567bd541bf5033207.svg",
-      "oracles": {
-        "USD": "0x976b3d034e162d8bd72d6b9c989d545b839003b0"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3253,11 +3323,11 @@
       "symbol": "wstETH",
       "name": "Wrapped liquid staked Ether 2.0",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/a44eb9b6b4d97a7a9671.svg",
-      "oracles": {
-        "ETH": "0xcf60b4e089ea1aba29c01b017b38c2f7d69eb36b",
-        "USD": "0xb5f607a2bb2c950053f4da1f535180e5902ead16"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3265,10 +3335,10 @@
       "symbol": "XAVA",
       "name": "Avalaunch",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/d4b9eae1b1000bb8e388.png",
-      "oracles": {
-        "USD": "0x4cf57dc9028187b9daaf773c8eca941036989238"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 43114,
@@ -3276,10 +3346,10 @@
       "symbol": "YFI.e",
       "name": "yearn.finance",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/ab8b8ddd24828478103e.jpg",
-      "oracles": {
-        "USD": "0x28043b1ebd41860b93ec1f1ec19560760b6db556"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 59144,
@@ -3287,10 +3357,11 @@
       "symbol": "DAI",
       "name": "Bridged Dai Stablecoin (Linea)",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/ce5266e664757c3ffbeb.png",
-      "oracles": {
-        "USD": "0x5133d67c38afbdd02997c14abd8d83676b4e309a"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 59144,
@@ -3298,10 +3369,10 @@
       "symbol": "LINEA",
       "name": "Linea",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/0879a2b69b8c4c76accf.png",
-      "oracles": {
-        "USD": "0x452b408b3e2805c109d52c80bd54deda239716d1"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 59144,
@@ -3309,11 +3380,10 @@
       "symbol": "LINK",
       "name": "Chainlink",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/db40b31615a449abb1b8.png",
-      "oracles": {
-        "ETH": "0xc4194f19e3a0836f6b998394445c6535c50604ce",
-        "USD": "0x8df01c2efed1404872b54a69f40a57fec1545998"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 59144,
@@ -3321,10 +3391,10 @@
       "symbol": "mUSD",
       "name": "MetaMask USD",
       "decimals": 6,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/9d2e3cd7888db7176e28.svg",
-      "oracles": {
-        "USD": "0xc834a55fb78dea866e9cd86047df0f584b9da339"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 59144,
@@ -3332,10 +3402,10 @@
       "symbol": "USDC",
       "name": "USDC",
       "decimals": 6,
+      "assetClass": "usd-pegged",
       "logoURI": "/assets/tokens/2782d3d47a9833601e60.svg",
-      "oracles": {
-        "USD": "0xaadaa473c1bdf7317ec07c915680af29debfdcb5"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 59144,
@@ -3343,10 +3413,11 @@
       "symbol": "USDT",
       "name": "Tether USD",
       "decimals": 6,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Bridged or pegged representation of a USD stablecoin; bridge and redemption risks do not change the target exposure.",
       "logoURI": "/assets/tokens/cbc193c35371ea70ff52.svg",
-      "oracles": {
-        "USD": "0xefca2bbe0edd0e22b2e0d2f8248e99f4bef4a7db"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 59144,
@@ -3354,10 +3425,10 @@
       "symbol": "WETH",
       "name": "Wrapped Ether",
       "decimals": 18,
+      "assetClass": "volatile",
       "logoURI": "/assets/tokens/c0b567bd541bf5033207.svg",
-      "oracles": {
-        "USD": "0x3c6cd9cc7c7a4c2cf5a82734cd249d7d593354da"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 59144,
@@ -3365,10 +3436,11 @@
       "symbol": "wstETH",
       "name": "Wrapped liquid staked Ether 2.0",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/a44eb9b6b4d97a7a9671.svg",
-      "oracles": {
-        "USD": "0x8ece1aba32716fdde8d6482bfd88e9a0ee01f565"
-      }
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 11155111,
@@ -3376,8 +3448,11 @@
       "symbol": "UNI",
       "name": "Uniswap",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Historical Sepolia UNI test token models the volatile Uniswap governance asset.",
       "logoURI": "/assets/tokens/8eaddfb8ec20f7792036.png",
-      "oracles": {}
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 11155111,
@@ -3385,8 +3460,11 @@
       "symbol": "USDC",
       "name": "USDC (test)",
       "decimals": 18,
+      "assetClass": "usd-pegged",
+      "classificationReason": "Historical Sepolia test USD buy token; models USD exposure without a claim of production backing or redemption.",
       "logoURI": "/assets/tokens/6d14601d0b1109046e36.png",
-      "oracles": {}
+      "oracles": {},
+      "oracleApprovals": {}
     },
     {
       "chainId": 11155111,
@@ -3394,8 +3472,11 @@
       "symbol": "WETH",
       "name": "Wrapped Ether",
       "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Sepolia WETH is the test wrapped-ETH asset; classified by ETH exposure, not by test-market value.",
       "logoURI": "/assets/tokens/da3e918513b3765ba8d5.png",
-      "oracles": {}
+      "oracles": {},
+      "oracleApprovals": {}
     }
   ],
   "usdTokens": {
@@ -3409,5 +3490,47 @@
     "59144": "0x176211869ca2b568f2a7d4ee941e073a821ee1ff",
     "9745": "0x2d661c89d812261039af9764eceaaee884f5f67f",
     "11155111": "0xbe72e441bf55620febc26715db68d3494213d8cb"
+  },
+  "chains": {
+    "1": {
+      "status": "unavailable",
+      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+    },
+    "56": {
+      "status": "unavailable",
+      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+    },
+    "100": {
+      "status": "unavailable",
+      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+    },
+    "137": {
+      "status": "unavailable",
+      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+    },
+    "8453": {
+      "status": "unavailable",
+      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved. The order handler also lacks protection for L2 sequencer outages."
+    },
+    "9745": {
+      "status": "unavailable",
+      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+    },
+    "42161": {
+      "status": "unavailable",
+      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved. The order handler also lacks protection for L2 sequencer outages."
+    },
+    "43114": {
+      "status": "unavailable",
+      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+    },
+    "59144": {
+      "status": "unavailable",
+      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved. The order handler also lacks protection for L2 sequencer outages."
+    },
+    "11155111": {
+      "status": "test-only",
+      "unavailableReason": "explicit-test-configuration-outside-production-policy"
+    }
   }
 }

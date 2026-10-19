@@ -1,5 +1,16 @@
 /** @jest-environment jsdom */
 
+// Opt in to simulated TEST approvals; production policy remains unchanged.
+jest.mock("#/lib/supportedTokens", () => {
+  const actual = jest.requireActual("#/lib/supportedTokens");
+  const { TEST_SUPPORTED_TOKENS } = jest.requireActual("#/test/approvedRoutes");
+  return {
+    ...actual,
+    getSupportedTokens: (chainId: import("#/lib/publicClients").ChainId) =>
+      TEST_SUPPORTED_TOKENS[chainId] ?? actual.getSupportedTokens(chainId),
+  };
+});
+
 import { act, renderHook, waitFor } from "@testing-library/react";
 import type { PropsWithChildren } from "react";
 import { SWRConfig } from "swr";

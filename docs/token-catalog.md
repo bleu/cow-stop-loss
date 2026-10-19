@@ -1,92 +1,64 @@
 # Token catalog
 
-The catalog contains 303 production ERC20 contracts on the nine approved CoW chains and three historical Sepolia test-token records. Ink and Solana are not supported chains. This is the set with reviewed contract identities and usable price routes, not a claim that every published feed has an eligible ERC20 deployment. The audit keeps all unmatched feed assets visible. The standalone EOA app uses this catalog through `getSupportedTokens`; historical records and catalog entries are not all selectable sell tokens.
+## Current creation status
 
-## Coverage
+Production order creation is disabled on all nine configured mainnets. No production token/feed route is approved under the stricter policy. This is intentional: missing evidence must not become a usable route. Network selection, historical order display, approval repair, and cancellation remain available, subject to their normal ownership and state checks. Sepolia retains its WETH-only sell and 18-decimal USDC test buy configuration. Those fixed test feeds are not production token-specific prices.
 
-| Chain     | Chain ID | Production tokens | USD buy token | Unresolved feed rows |
-| --------- | -------- | ----------------- | ------------- | -------------------- |
-| Ethereum  | 1        | 85                | Native USDC   | 6                    |
-| Gnosis    | 100      | 17                | USDT          | 5                    |
-| Arbitrum  | 42161    | 44                | Native USDC   | 74                   |
-| Base      | 8453     | 38                | Native USDC   | 20                   |
-| Polygon   | 137      | 25                | Native USDC   | 30                   |
-| Avalanche | 43114    | 28                | Native USDC   | 14                   |
-| BNB Chain | 56       | 48                | USDT          | 6                    |
-| Linea     | 59144    | 8                 | Native USDC   | 5                    |
-| Plasma    | 9745     | 10                | Native USDC   | 3                    |
+All nine designated USD buy feeds are marked `stablecoinCapped` in the pinned Chainlink inventory. Chainlink's [bounded market-price documentation](https://docs.chain.link/data-feeds/selecting-data-feeds#bounded-market-price-feeds) states that a bounded feed does not publish a new price above its upper limit; the proxy returns its last onchain price. That behavior needs a separate suitability decision for a stop-loss price ratio. A `USD` label, low-risk category, or successful round is not sufficient approval. This change does not assert that the feeds are defective.
 
-`USD_TOKENS` exposes one buy token per chain. Other stablecoins can remain sell tokens; the designated buy token cannot also be selected for sale. The native USDC addresses come from [Circle's contract directory](https://developers.circle.com/stablecoins/usdc-contract-addresses), which includes Linea and Plasma. Plasma USDC is `0x2d661c89d812261039af9764eceaaee884f5f67f`; Plasma USDT0 is the different contract `0xb8ce59fc3717ada4c02eadf9682a9e934f625ebb`. Gnosis and BNB Chain use USDT because Circle does not list a native USDC deployment there. Sepolia creation keeps only WETH as the sell token and the historical 18-decimal USDC test contract as the buy token. Its existing fixed sell and buy feeds are test data, not production token-specific USD prices.
+The deployed StopLoss handler also lacks sequencer-uptime and recovery checks. [Chainlink requires these checks for L2 consumers](https://docs.chain.link/data-feeds/using-data-feeds). A check when an order is created cannot protect its later execution. Arbitrum, Base, and Linea creation therefore also require a compatible execution-time guard. No new handler is deployed by this change. See [execution evidence](../scripts/oracle-execution-verification.json).
 
-New orders use exact-sell amounts and slippage. The selector, schema, draft builder, and final placement use the same eligible token set. Token addresses are compared without case sensitivity; symbols and decimals must match the configured metadata exactly. Arbitrary token imports, manual feed overrides, exact-buy mode, and token inversion are not supported.
+## Known metadata is not creation eligibility
 
-`findKnownToken` also resolves historical metadata for order display and approval repair, including Ethereum WBTC and the old Gnosis USDC.e buy token. These records do not add creation routes or price-feed eligibility. Existing orders keep their saved oracle pair for market-price reads and can still be cancelled when the normal ownership and order-state checks pass.
+The metadata inventory retains 303 production token contracts and three historical Sepolia records. All 306 have local images and explicit economic classifications. The production classifications are 207 volatile, 84 USD-pegged, seven USD-linked, and five other stable assets. Classification describes exposure, not current peg health, liquidity, bridge safety, or feed approval.
 
-There are 336 selected same-chain price-feed proxies. Direct USD feeds give the widest route coverage. ETH feeds are also retained when present. An ETH-only token is included only when the chain's USD buy token has its own ETH feed. `configuredTokenRoute` chooses a shared ETH quote first, then a shared USD quote. The pair-price hook, configured router, draft route, and placement validation use that same choice. Both feed prices are normalized by their decimals before the sell/buy ratio is calculated. Reads use one block and retain positive-answer, complete-round, timestamp, and maximum-age checks. Repeated feed addresses are read once per pair request. No synthetic bridge oracle or assumed USD peg is added.
+| Chain | Chain ID | Known production contracts | Fixed buy metadata | Approved production sells |
+| --- | --- | --- | --- | --- |
+| Ethereum | 1 | 85 | Native USDC | 0 |
+| Gnosis | 100 | 17 | USDT | 0 |
+| Arbitrum | 42161 | 44 | Native USDC | 0 |
+| Base | 8453 | 38 | Native USDC | 0 |
+| Polygon | 137 | 25 | Native USDC | 0 |
+| Avalanche | 43114 | 28 | Native USDC | 0 |
+| BNB Chain | 56 | 48 | USDT | 0 |
+| Linea | 59144 | 8 | Native USDC | 0 |
+| Plasma | 9745 | 10 | Native USDC | 0 |
 
-USD estimates are separate from pair prices. They use only a configured direct USD feed. ETH-only tokens have an unavailable USD estimate even when they have a valid pair route. An ETH feed is never treated as a USD price.
+Ink and Solana remain excluded. The fixed buy token is not a selectable sell. Dollar-pegged assets, their bridged forms, dollar-linked yield shares, other stable assets, and unclassified assets are excluded from new sells. Classification is pinned by exact chain and token contract, not a ticker rule. A volatile asset with a USD-quoted feed is not a dollar-pegged asset. FXS governance is separate from the old FRAX dollar contract.
 
-## Sources and identity checks
+`findKnownToken` retains catalog and historical metadata for existing orders, including Ethereum WBTC and the old Gnosis USDC.e buy token. Saved orders keep their original feeds for pair-price reads. Removing creation eligibility does not rewrite an order or make its saved feeds safe. Existing orders can still be cancelled or repaired when their ownership and state allow it. Saved but unsubmitted placements must pass the current policy before publication or transaction construction.
 
-The feed source is the [official Chainlink chain registry](https://raw.githubusercontent.com/smartcontractkit/documentation/main/src/features/data/chains.ts). The nine mainnet `rddUrl` inventories were fetched on 2026-10-16. `scripts/catalog-feeds.json` retains every one of their 2,102 rows, with the fields used for eligibility and identity review. `scripts/catalog-sources.json` records the source URLs and hashes of the downloaded source documents. A feed's `proxyAddress` is an oracle address, never a token contract address.
+## Approval requirements
 
-Token metadata was checked against the current [CoW token list](https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/CowSwap.json), which has 281 entries, the historical application lists, [Aave's underlying-token list](https://raw.githubusercontent.com/bgd-labs/aave-address-book/main/tokenlist.json), [PancakeSwap's extended list](https://raw.githubusercontent.com/pancakeswap/token-list/main/lists/pancakeswap-extended.json), and the chain-specific CoinGecko, Sushi and 1inch lists. All per-chain URLs are in `scripts/catalog-sources.json`. These wider lists cover assets that are absent from the CoW list.
+`scripts/catalog-policy.json` is the explicit approval source. Each feed approval must identify the exact chain, token contract, quote, path, and proxy. It must record identity, representation, methodology and source evidence, review date, expected live description and decimals, a freshness ceiling, and a fingerprint of its pinned inputs. The chain must also have approved execution evidence. Both sell and buy legs must qualify. Inventory refreshes cannot silently select another proxy or turn matching symbols into approved routes.
 
-`scripts/catalog-identities.json` pins the exact chain, token contract and reviewed Chainlink base asset. The build does not discover contracts by joining token symbols. Full asset names, known protocol identities and bridge representations were checked before these pins were added. Multiple same-symbol contracts are not interchangeable. For example, a Base token named One Path cannot use the OP Optimism feed, MAGA cannot use the Official Trump feed, and Chevron shares cannot use the Convex Finance CVX feed.
+Initial review is restricted to active `low`-category reference market-price feeds. [Chainlink describes its categories and feed methods](https://docs.chain.link/data-feeds/selecting-data-feeds). The category is a review input, not a guarantee. Medium, high, new, custom, hidden, deprecating, unknown, calculated, exchange-rate, and unsupported methods are excluded in this pass. Bounded stablecoin behavior is not approved by this standard market-price policy.
 
-Issuer references were checked where lists disagreed. [Avantis documents its Base AVNT contract](https://docs.avantisfi.com/avnt-token), despite an old metadata list calling it Veranta. [Lido's deployment directory](https://docs.lido.fi/deployed-contracts/) confirms BNB wstETH. [Lido's Avalanche deployment proposal](https://research.lido.fi/t/wsteth-on-avalanche-and-bnb-and-ownership-acceptance-by-lido-dao/5749) supplies the Avalanche wstETH contract, whose live metadata and dedicated WSTETH/USD feed were checked. The proposal is evidence of the deployed token address, not proof that the DAO accepted bridge ownership. [Trust Wallet's Binance-Peg ETH record](https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/assets/0x2170Ed0880ac9A755fd29B2688956BD959F933F8/info.json) identifies BNB Chain's `0x2170...` contract as ETH issued by Binance with a 1:1 ETH peg.
+An underlying asset feed does not measure the price or redemption risk of a bridge claim, custodian claim, or derivative. Such substitutions are excluded. A native asset wrapper can qualify only with explicit evidence that its wrapping contract preserves the intended unit. A bridged WETH contract does not inherit that exception. Approval must assess both feed suitability and the handler's arithmetic and execution limits.
 
-Canonical wrapped and reviewed bridged representations can use their underlying asset's price feed. This does not measure bridge, custodian or depeg risk. Staked shares and other derivatives require their own matching price feed. Native BTC feeds are not assigned to WBTC, cbBTC or BTCB by ticker. Dedicated WBTC and cbBTC feeds are used where available.
+Future approved pairs keep the existing common-ETH-first, otherwise common-USD routing rule. Feed decimals are normalized before division; approved feeds are restricted to 0 through 18 decimals to avoid the handler's truncation risk. Direct USD estimates remain separate: an ETH quote is not a USD price. No assumed dollar peg, synthetic conversion, arbitrary import, or manual oracle override is allowed. Each approved age ceiling must be no larger than `floor(1.5 * heartbeat) + 60` seconds. A pair uses the tighter ceiling of its two feeds. A user may choose a shorter limit but cannot extend it through settings, a restored draft, or encoded placement input.
 
-Two source exceptions are explicit. The old FRAX dollar contract uses `FRAX.OLD`; the FRAX governance feed, still named FXS/USD, uses the separate Frax Share contract. The xSUSHI feed's RDD `docs.quoteAsset` says USD, but its feed name and live contract description say ETH; the build uses ETH for that exact feed path.
+Browser reads retain block-pinned, positive-answer, complete-round, nonzero/nonfuture timestamp, and freshness checks. These checks do not add missing checks to the deployed handler. The verified handler normalizes prices but does not check round completeness, future timestamps, or sequencer state. These limits must remain part of any later route approval.
 
-## Images
+## Sources and audit history
 
-All 306 advertised token entries use files under `public/assets/tokens`. There are 208 distinct image files. `scripts/catalog-identities.json` records each downloaded source URL. A known canonical asset's image can be reused for its reviewed bridge representation, such as USDC.e. The generic token fallback is not catalog coverage. Empty 1inch image responses were replaced with verified 1inch Network artwork.
+The original source inventory was fetched on 2026-10-16 from the [official Chainlink chain registry](https://raw.githubusercontent.com/smartcontractkit/documentation/main/src/features/data/chains.ts). `scripts/catalog-sources.json` records inventory and token-metadata source URLs and hashes. `scripts/catalog-feeds.json` retains all 2,102 source feed rows. `scripts/catalog-identities.json` pins exact token identities and classifications. Token sources include CoW, issuer references, Aave, and chain-specific maintained lists; they are identity inputs, not proof of oracle suitability.
 
-## Audit and exclusions
+The former build selected 336 proxies and the 2026-10-16 live snapshot reported no check failures. It accepted some underlying-feed substitutions, selected alternates by ordering, required only a nonempty token symbol, and checked feed descriptions only for their quote. That snapshot remains in `scripts/catalog-verification.json` as historical evidence. It is not approval under the current policy and is not a current safety audit.
 
-`scripts/catalog-audit.json` classifies all 2,102 source rows as included, excluded or unresolved. It keeps the chain, feed path, proxy, base asset and reason. Hidden feeds, deprecating feeds and announced shutdowns are excluded. Reserve, NAV, ratio, exchange-rate, health-check, non-crypto and non-price data are excluded. Streams without a usable same-chain onchain proxy are excluded. Alternate proxies remain in the audit but do not create duplicate token entries.
-
-There are 163 unresolved rows: 154 lack a verified exact same-chain token contract, and nine describe pool shares whose exact token identity and composition have not been approved. Some unresolved assets are native coins on other networks. Their feed deployment does not prove that a usable ERC20 exists on this network. Other unresolved assets might have a valid deployment that these sources do not establish. No arbitrary wrapper is used to fill that gap. Pool-share coverage remains unresolved and is not advertised.
-
-Separate exclusions include 20 native BTC feed rows, 18 ETH-only rows with no common buy-token quote, 13 same-symbol identity conflicts, the Plasma USDT row where the actual listed token has its own USDT0 feed, and the Plasma XAUT row where the known bridged token is XAUT0. These are feed-row counts, not token counts.
-
-The unresolved base assets are listed below. A repeated base asset can have several unresolved proxies. Pool names are preserved because a GLV or GM symbol alone does not identify a pool contract.
-
-| Chain     | Unresolved base assets                                                                                                                                                                                                                                                                                                                                                                       |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Ethereum  | AVAX, BNB, FIL, SOL, TAO, ZEC                                                                                                                                                                                                                                                                                                                                                                |
-| Gnosis    | AVAX, BNB, DOGE, DOT, SOL                                                                                                                                                                                                                                                                                                                                                                    |
-| Arbitrum  | 0G, AB, ADA, ADI, AERO, APT, AR, ASTER, ASTR, ATOM, AVAX, AXS, BERA, BNB, CORE, CRO, DOGE, DOT, EURC, GAS, GLV, HSK, HYPE, KAIA, LIT, LTC, MELANIA, MIMATIC, MKR, MNT, MON, NEAR, OP, ORDI, PAXG, PLUME, POL, PUMP, RLUSD, SEI, SHIB, SOL, STETH, STX, SUI, SYRUP, TAC, TAO, TIA, TON, TRUMP, USD1, VVV, WEMIX, WIF, WLFI, XDC, XMR, XPL, XRP, XTZ, ZEC, gmARB, gmBTC, gmETH, gmWBTC, gmWETH |
-| Base      | ADA, AMP, APT, AVAX, BNB, LTC, MEW, MLN, PAXG, POL, RLUSD, SOL, STETH, SUI, XDC, XRP, ZEC                                                                                                                                                                                                                                                                                                    |
-| Polygon   | ADA, ALGO, AVAX, BCH, BNB, CHZ, CVX, DASH, DOGE, DOT, ETC, FIL, HBAR, ICP, ILV, LTC, PAXG, QNT, SHIB, SOL, SUSDE, THETA, TRX, USDE, USDS, XLM, XMR, XRP, XTZ, ZEC                                                                                                                                                                                                                            |
-| Avalanche | ADA, ARB, AXS, BNB, CHZ, CRV, DOT, FIL, GLV, MIMATIC, NEAR, POL, SHIB, USTC                                                                                                                                                                                                                                                                                                                  |
-| BNB Chain | CRV, ICP, PAXG, POL, SAVAX, XLM                                                                                                                                                                                                                                                                                                                                                              |
-| Linea     | AAVE, ARB, COMP, POL, USD1                                                                                                                                                                                                                                                                                                                                                                   |
-| Plasma    | AUSD, ENA, USDS                                                                                                                                                                                                                                                                                                                                                                              |
-
-A second issuer check did not establish Arbitrum EURC, RLUSD, USD1 or SYRUP token contracts. SYRUP is different from syrupUSDC. Ethena's key-address page did not establish Polygon USDe/sUSDe or Plasma ENA contracts. Plasma AUSD/USDS and Polygon USDS also remain unverified. These are open catalog gaps, not a claim that the contracts cannot exist.
+`scripts/catalog-audit.json` now accounts for all source rows under the stricter decisions. Excluded and unresolved rows remain visible. An unresolved same-chain identity, pool-share identity, unsupported method, unapproved route, or missing execution safeguard must not be filled by symbol inference. Metadata coverage, approved creation routes, and historic order support are separate counts.
 
 ## Build and verification
-
-Run the offline build and invariant checks with:
 
 ```sh
 python3 scripts/catalog.py
 python3 scripts/catalog.py --check
-```
-
-The build reads the pinned identities and feed inventory, writes `src/lib/tokenCatalogData.json` and the audit, and checks unique contracts, local images, the buy-token map and a common quote route for every production entry. `src/lib/tokenCatalog.ts` exports `TOKEN_CATALOG`, `USD_TOKENS`, and `findTokenOracles` with concrete address and chain types. `src/lib/supportedTokens.ts` applies the EOA creation policy and the Sepolia test configuration. It exports explicit `oracles` per token; the optional `priceFeed` field is a direct USD feed only. Catalog lookup and offline checks need no network access. Runtime prices and placement checks still need RPC access.
-
-To fetch the pinned image sources again, run `python3 scripts/catalog-assets.py`. To update token coverage, first review exact same-chain contracts against issuer or maintained list records, update the source evidence and identity pins, then regenerate and review the audit. A source refresh must keep every feed row accounted for. It must not turn unmatched symbols into automatic contract mappings.
-
-Live checks are separate from unit tests:
-
-```sh
+python3 -m unittest discover -s scripts -p 'test_catalog*.py'
 python3 scripts/catalog-live.py --output /tmp/catalog-verification.json
 ```
 
-Use `CATALOG_RPC_<chainId>` to replace a read-only public RPC endpoint. The script checks the RPC chain ID, token decimals and symbols, feed descriptions and decimals, and `latestRoundData`. Answers must be positive, update timestamps must be nonzero, and feed age must not exceed `1.5 * heartbeat + 60` seconds. It rejects timestamps more than five minutes in the future. The checked heartbeat, timestamp and observed age are kept in the output. No transactions are sent.
+The generator is offline. It writes typed catalog inputs and audit decisions from pinned evidence. Before changing approvals, review current official documents, exact token contracts, both feed legs, lifecycle, methodology, heartbeat, live state, and deployed execution behavior. Record source changes and repeat review; do not edit generated JSON directly.
 
-`scripts/catalog-verification.json` records the 2026-10-16 verification of all 303 production tokens and all 336 selected feeds. All nine chains passed. Sepolia is preserved test data and is outside the production eligibility and live-check policy. The EOA default maximum oracle age is 24 hours. A shorter user setting can reject a feed between heartbeat updates; choose a limit that fits the selected feeds. The snapshot does not promise future feed freshness or liquidity.
+Live verification normally checks only approved production feeds. Use `--candidates /path/to/proposed-policy.json` to observe exact proposed mappings before approval; its report is marked `candidate-review` and does not enable creation. The policy's `verificationFile` selects the pinned review observations, separate from the historical snapshot. Verification compares exact token symbols and decimals and exact expected feed descriptions and decimals, validates rounds, and applies the selected freshness ceiling. `CATALOG_RPC_<chainId>` can override read-only RPC endpoints. When no feeds are selected, the report says `not-performed` and lists skipped chains. A skipped check is not a successful live verification. The historical snapshot is not overwritten.
+
+All known token images remain under `public/assets/tokens`; there are 208 distinct files. Network images are local, including Linea and Plasma in RainbowKit's actual network menu. Neither an image nor a known contract makes a route eligible. No eligibility review guarantees future liquidity, freshness, or correct execution.

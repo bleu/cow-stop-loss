@@ -3,7 +3,11 @@ import type { Address } from "viem";
 import { useAccount } from "wagmi";
 
 import { fetchOraclePairPrice } from "#/lib/oraclePrice";
-import { configuredTokenRoute, type IRoute } from "#/lib/oracleRouter";
+import {
+  configuredRouteMaxAgeSeconds,
+  configuredTokenRoute,
+  type IRoute,
+} from "#/lib/oracleRouter";
 import type { ChainId } from "#/lib/publicClients";
 import type { IToken } from "#/lib/types";
 
@@ -24,13 +28,15 @@ export const useTokenPairPrice = (
   const maxHours = useAdvancedSettingsStore(
     (state) => state.advancedSettings.maxHoursSinceOracleUpdates,
   );
-  const maxAge = savedOracles?.maxAge ?? maxHours * 60 * 60;
+  let maxAge = savedOracles?.maxAge ?? maxHours * 60 * 60;
   let route: IRoute | undefined;
   let routeError: Error | undefined;
   if (chainId && tokenSell && tokenBuy) {
     try {
-      route =
-        savedOracles ?? configuredTokenRoute({ chainId, tokenSell, tokenBuy });
+      const pair = { chainId, tokenSell, tokenBuy };
+      route = savedOracles ?? configuredTokenRoute(pair);
+      if (!savedOracles)
+        maxAge = Math.min(maxAge, configuredRouteMaxAgeSeconds(pair));
     } catch (error) {
       routeError =
         error instanceof Error ? error : new Error("No matching oracles found");

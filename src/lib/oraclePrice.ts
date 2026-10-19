@@ -46,13 +46,21 @@ export async function fetchOracleUsdPrice({
   maxAge?: number;
 }) {
   const { sellTokens, buyToken } = getSupportedTokens(chainId);
+  const configured = [...sellTokens, buyToken].filter(
+    ({ oracles }) => oracles.USD?.toLowerCase() === oracle.toLowerCase(),
+  );
+  const ceilings = configured.map(
+    ({ oracleApprovals }) => oracleApprovals?.USD?.maxAgeSeconds,
+  );
   if (
-    ![...sellTokens, buyToken].some(
-      ({ oracles }) => oracles.USD?.toLowerCase() === oracle.toLowerCase(),
+    configured.length === 0 ||
+    ceilings.some(
+      (ceiling) => !ceiling || !Number.isSafeInteger(ceiling) || ceiling <= 0,
     )
   ) {
     throw new Error("No configured USD price feed");
   }
+  const approvedMaxAge = Math.min(maxAge, ...(ceilings as number[]));
   const client = publicClientsFromIds[chainId];
   const block = await client.getBlock();
   const { price } = await readOraclePrice({
@@ -60,7 +68,7 @@ export async function fetchOracleUsdPrice({
     oracle,
     blockNumber: block.number,
     timestamp: block.timestamp,
-    maxAge,
+    maxAge: approvedMaxAge,
   });
   if (!Number.isFinite(price) || price <= 0)
     throw new Error("Oracle price is unavailable");

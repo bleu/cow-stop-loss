@@ -18,10 +18,14 @@ import {
   useAdvancedSettingsStore,
 } from "#/hooks/useAdvancedSettings";
 import { slippagePercentSchema } from "#/lib/calculateAmounts";
+import {
+  configuredChainMaxAgeSeconds,
+  configuredRouteMaxAgeSeconds,
+} from "#/lib/oracleRouter";
 import { ChainId } from "#/lib/publicClients";
 import { generateAdvancedSettingsSchema } from "#/lib/schema";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
-import { AdvancedSwapSettings } from "#/lib/types";
+import { AdvancedSwapSettings, IToken } from "#/lib/types";
 
 import { BlockExplorerLink } from "./ExplorerLink";
 import { SlippageInputCard } from "./SlippageInputCard";
@@ -44,6 +48,7 @@ interface AdvancedSettingsPanelProps {
   onOpenChange: (open: boolean) => void;
   title: React.ReactNode;
   orderTiming?: React.ReactNode;
+  tokenPair?: { tokenSell: IToken; tokenBuy: IToken };
 }
 
 export function AdvancedSettingsPanel({
@@ -53,6 +58,7 @@ export function AdvancedSettingsPanel({
   onOpenChange,
   title,
   orderTiming,
+  tokenPair,
 }: AdvancedSettingsPanelProps) {
   const mounted = React.useRef(false);
   React.useEffect(() => {
@@ -69,10 +75,14 @@ export function AdvancedSettingsPanel({
     (state) => [state.advancedSettings, state.setAdvancedSettings],
   );
 
+  const maxOracleHours =
+    (tokenPair
+      ? configuredRouteMaxAgeSeconds({ chainId, ...tokenPair })
+      : configuredChainMaxAgeSeconds(chainId)) / 3600;
   const form = useForm<AdvancedSettingsDraft>({
     mode: "onChange",
     resolver: zodResolver(
-      generateAdvancedSettingsSchema(chainId).extend({
+      generateAdvancedSettingsSchema(chainId, tokenPair).extend({
         slippagePercent: slippagePercentSchema,
       }),
     ),
@@ -200,8 +210,8 @@ export function AdvancedSettingsPanel({
                 tooltipText={
                   TOOLTIP_DESCRIPTIONS.MAX_TIME_SINCE_LAST_ORACLE_UPDATE
                 }
-                min={0}
-                max={24 * 365}
+                min={1 / 3600}
+                max={maxOracleHours}
                 className="min-h-11 h-11 rounded-none border-border bg-card"
               />
               <div className="rescue-input-inline min-w-0">

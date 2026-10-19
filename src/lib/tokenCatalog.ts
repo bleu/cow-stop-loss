@@ -1,9 +1,24 @@
 import type { Address } from "viem";
-import type { ChainId } from "./publicClients";
+
 import type { Oracles } from "./oracleRouter";
+import type { ChainId } from "./publicClients";
 import data from "./tokenCatalogData.json";
 
+export type AssetClass =
+  | "volatile"
+  | "usd-pegged"
+  | "usd-linked"
+  | "other-stable"
+  | "unknown";
+
+export interface OracleApproval {
+  maxAgeSeconds: number;
+}
+
+export type OracleApprovals = Partial<Record<keyof Oracles, OracleApproval>>;
+
 export interface CatalogToken {
+  assetClass: AssetClass;
   chainId: ChainId;
   address: Address;
   symbol: string;
@@ -30,20 +45,120 @@ function catalogChainId(chainId: number): ChainId {
   }
 }
 
-export const TOKEN_CATALOG: CatalogToken[] = data.tokens.map(
-  ({ oracles: _oracles, ...token }) => ({
-    ...token,
-    chainId: catalogChainId(token.chainId),
-    address: token.address as Address,
-  }),
-);
+function record(value: unknown): Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+function assetClass(value: unknown): AssetClass {
+  return value === "volatile" ||
+    value === "usd-pegged" ||
+    value === "usd-linked" ||
+    value === "other-stable"
+    ? value
+    : "unknown";
+}
+
+export const TOKEN_CATALOG: CatalogToken[] = data.tokens.map((token) => ({
+  chainId: catalogChainId(token.chainId),
+  address: token.address as Address,
+  symbol: token.symbol,
+  name: token.name,
+  decimals: token.decimals,
+  logoURI: token.logoURI,
+  assetClass: assetClass(record(token).assetClass),
+}));
+
+export function parseOracleApprovals(value: unknown): {
+  oracles: Oracles;
+  oracleApprovals: OracleApprovals;
+} {
+  const token = record(value);
+  const oracles: Oracles = {};
+  const oracleApprovals: OracleApprovals = {};
+  for (const quote of ["USD", "ETH"] as const) {
+    const proxy = record(token.oracles)[quote];
+    const approval = record(record(token.oracleApprovals)[quote]);
+    if (
+      typeof proxy !== "string" ||
+      !/^0x[0-9a-fA-F]{40}$/.test(proxy) ||
+      approval.chainId !== token.chainId ||
+      typeof token.address !== "string" ||
+      typeof approval.tokenAddress !== "string" ||
+      approval.tokenAddress.toLowerCase() !== token.address.toLowerCase() ||
+      approval.quote !== quote ||
+      (approval.assetRelationship !== "exact-asset" &&
+        approval.assetRelationship !== "native-wrapper") ||
+      typeof approval.proxyAddress !== "string" ||
+      approval.proxyAddress.toLowerCase() !== proxy.toLowerCase() ||
+      typeof approval.maxAgeSeconds !== "number" ||
+      !Number.isSafeInteger(approval.maxAgeSeconds) ||
+      approval.maxAgeSeconds <= 0 ||
+      ![
+        "path",
+        "snapshotFingerprint",
+        "identityEvidence",
+        "representationEvidence",
+        "assetRelationshipReason",
+        "methodologyEvidence",
+        "sourceEvidence",
+        "expectedDescription",
+      ].every(
+        (field) =>
+          typeof approval[field] === "string" &&
+          (approval[field] as string).trim().length > 0,
+      ) ||
+      typeof approval.reviewDate !== "string" ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(approval.reviewDate) ||
+      typeof approval.expectedDecimals !== "number" ||
+      !Number.isInteger(approval.expectedDecimals) ||
+      approval.expectedDecimals < 0 ||
+      approval.expectedDecimals > 18
+    )
+      continue;
+    oracles[quote] = proxy as Address;
+    oracleApprovals[quote] = { maxAgeSeconds: approval.maxAgeSeconds };
+  }
+  return { oracles, oracleApprovals };
+}
+
+export function catalogUnavailableReason(chainId: ChainId): string | undefined {
+  const chain = record(record(record(data).chains)[String(chainId)]);
+  if (
+    chain.status === "approved" &&
+    ["executionEvidence", "arithmeticBoundsEvidence", "reviewDate"].every(
+      (field) =>
+        typeof chain[field] === "string" &&
+        (chain[field] as string).trim().length > 0,
+    )
+  )
+    return undefined;
+  return typeof chain.unavailableReason === "string" && chain.unavailableReason
+    ? chain.unavailableReason
+    : "New orders are unavailable on this network: oracle route approval is incomplete.";
+}
 
 export const TOKEN_ORACLES: Partial<Record<ChainId, Record<string, Oracles>>> =
   {};
+const TOKEN_ORACLE_APPROVALS: Partial<
+  Record<ChainId, Record<string, OracleApprovals>>
+> = {};
 for (const token of data.tokens) {
   const chainId = catalogChainId(token.chainId);
-  const chainOracles = (TOKEN_ORACLES[chainId] ??= {});
-  chainOracles[token.address.toLowerCase()] = token.oracles as Oracles;
+  const parsed = parseOracleApprovals(token);
+  (TOKEN_ORACLES[chainId] ??= {})[token.address.toLowerCase()] = parsed.oracles;
+  (TOKEN_ORACLE_APPROVALS[chainId] ??= {})[token.address.toLowerCase()] =
+    parsed.oracleApprovals;
+}
+
+export function findTokenOracleApprovals(
+  chainId: number,
+  address: Address | string,
+): OracleApprovals {
+  return (
+    TOKEN_ORACLE_APPROVALS[chainId as ChainId]?.[address.toLowerCase()] ?? {}
+  );
 }
 
 function requireCatalogToken(chainId: ChainId, address: string): CatalogToken {

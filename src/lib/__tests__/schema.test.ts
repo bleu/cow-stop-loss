@@ -1,4 +1,15 @@
-import { supportedChainIds, type ChainId } from "../publicClients";
+// Opt in to simulated TEST approvals; production policy remains unchanged.
+jest.mock("#/lib/supportedTokens", () => {
+  const actual = jest.requireActual("#/lib/supportedTokens");
+  const { TEST_SUPPORTED_TOKENS } = jest.requireActual("#/test/approvedRoutes");
+  return {
+    ...actual,
+    getSupportedTokens: (chainId: import("#/lib/publicClients").ChainId) =>
+      TEST_SUPPORTED_TOKENS[chainId] ?? actual.getSupportedTokens(chainId),
+  };
+});
+
+import { type ChainId } from "../publicClients";
 import { generateSwapSchema, VALID_TO_OPTIONS } from "../schema";
 import { getSupportedTokens } from "../supportedTokens";
 
@@ -86,10 +97,11 @@ describe("Supported stop loss order input", () => {
     expect(result.success).toBe(false);
   });
 
-  it.each(supportedChainIds)(
-    "accepts each configured pair on chain %s",
+  it.each([1, 100, 42161, 11155111] as const)(
+    "accepts each TEST-approved pair on chain %s",
     (chainId) => {
       const { sellTokens, buyToken } = getSupportedTokens(chainId);
+      expect(sellTokens.length).toBeGreaterThan(0);
       for (const { token } of sellTokens) {
         expect(
           generateSwapSchema(chainId).safeParse({

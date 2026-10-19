@@ -1,5 +1,16 @@
 /** @jest-environment jsdom */
 
+// Opt in to simulated TEST approvals; production policy remains unchanged.
+jest.mock("#/lib/supportedTokens", () => {
+  const actual = jest.requireActual("#/lib/supportedTokens");
+  const { TEST_SUPPORTED_TOKENS } = jest.requireActual("#/test/approvedRoutes");
+  return {
+    ...actual,
+    getSupportedTokens: (chainId: import("#/lib/publicClients").ChainId) =>
+      TEST_SUPPORTED_TOKENS[chainId] ?? actual.getSupportedTokens(chainId),
+  };
+});
+
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";

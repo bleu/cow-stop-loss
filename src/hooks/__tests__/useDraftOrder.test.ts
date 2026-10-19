@@ -3,6 +3,17 @@
  * @jest-environment-options {"customExportConditions": ["node", "node-addons"]}
  */
 
+// Opt in to simulated TEST approvals; production policy remains unchanged.
+jest.mock("#/lib/supportedTokens", () => {
+  const actual = jest.requireActual("#/lib/supportedTokens");
+  const { TEST_SUPPORTED_TOKENS } = jest.requireActual("#/test/approvedRoutes");
+  return {
+    ...actual,
+    getSupportedTokens: (chainId: import("#/lib/publicClients").ChainId) =>
+      TEST_SUPPORTED_TOKENS[chainId] ?? actual.getSupportedTokens(chainId),
+  };
+});
+
 import { configuredTokenRoute } from "#/lib/oracleRouter";
 import { invalidatePlacementReads } from "#/lib/placementReads";
 import { publicClientsFromIds } from "#/lib/publicClients";

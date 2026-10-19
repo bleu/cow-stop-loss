@@ -27,7 +27,12 @@ import {
   STOP_LOSS_ADDRESS,
 } from "./contracts";
 import { uploadAppData } from "./cowApi/uploadAppData";
-import { configuredTokenRoute, readOraclePrice } from "./oracleRouter";
+import {
+  assertOracleMaxAge,
+  configuredRouteMaxAgeSeconds,
+  configuredTokenRoute,
+  readOraclePrice,
+} from "./oracleRouter";
 import { getPlacementReads, type PlacementReads } from "./placementReads";
 import { ChainId, publicClientsFromIds } from "./publicClients";
 import { decodeStopLossStaticInput } from "./staticInputDecoder";
@@ -43,7 +48,11 @@ import { DraftOrder, IToken } from "./types";
 export function assertPlacementRoute(
   draft: Pick<
     DraftOrder,
-    "tokenSell" | "tokenBuy" | "tokenSellOracle" | "tokenBuyOracle"
+    | "tokenSell"
+    | "tokenBuy"
+    | "tokenSellOracle"
+    | "tokenBuyOracle"
+    | "maxHoursSinceOracleUpdates"
   >,
   chainId: ChainId,
   staticInput?: Hex,
@@ -59,8 +68,20 @@ export function assertPlacementRoute(
     route.tokenBuyOracle.toLowerCase() !== draft.tokenBuyOracle.toLowerCase()
   )
     throw new Error("Unsupported token or price-feed route");
+  const maxAge = draft.maxHoursSinceOracleUpdates * 3600;
+  const ceiling = configuredRouteMaxAgeSeconds({
+    chainId,
+    tokenSell: draft.tokenSell,
+    tokenBuy: draft.tokenBuy,
+  });
+  assertOracleMaxAge(maxAge, ceiling);
   if (staticInput) {
     const order = decodeStopLossStaticInput(staticInput);
+    assertOracleMaxAge(order.maxTimeSinceLastOracleUpdate, ceiling);
+    if (order.maxTimeSinceLastOracleUpdate !== Math.round(maxAge))
+      throw new Error(
+        "Encoded oracle time limit does not match the reviewed order",
+      );
     if (
       order.sellToken.toLowerCase() !== draft.tokenSell.address.toLowerCase() ||
       order.buyToken.toLowerCase() !== draft.tokenBuy.address.toLowerCase() ||
