@@ -106,40 +106,84 @@ it("has unique, valid token contracts and local images", () => {
   }
 });
 
-it.each(supportedChainIds.filter((id) => id !== 1 && id !== 11155111))(
-  "retains metadata but advertises no routes on blocked chain %s",
+it.each(supportedChainIds.filter((id) => id !== 11155111))(
+  "offers a small approved sell list on mainnet %s",
   async (chainId) => {
     const { sellTokens, buyToken, unavailableReason } =
       getSupportedTokens(chainId);
+    expect(unavailableReason).toBeUndefined();
     expect(buyToken.token).toEqual(USD_TOKENS[chainId]);
-    expect(sellTokens).toEqual([]);
-    expect(buyToken.oracles).toEqual({});
-    expect(unavailableReason).toEqual(expect.any(String));
-    const tokens = TOKEN_CATALOG.filter((token) => token.chainId === chainId);
-    expect(tokens.length).toBeGreaterThan(0);
-    for (const token of tokens)
-      expect(findTokenOracles(chainId, token.address)).toEqual({});
+    expect(sellTokens.length).toBeGreaterThan(0);
+    expect(sellTokens.length).toBeLessThanOrEqual(3);
+    const expectedSells = {
+      1: ["LINK", "UNI", "WETH"],
+      56: ["WBNB"],
+      100: ["GNO"],
+      137: ["WPOL"],
+      8453: ["VIRTUAL"],
+      9745: ["WXPL"],
+      42161: ["WETH"],
+      43114: ["WAVAX"],
+      59144: ["WETH"],
+    };
+    expect(sellTokens.map(({ token }) => token.symbol).sort()).toEqual(
+      expectedSells[chainId as keyof typeof expectedSells],
+    );
+    if (chainId === 8453)
+      expect(sellTokens[0].token.address).toBe(
+        "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b",
+      );
     const Router = CHAINS_ORACLE_ROUTER_FACTORY[chainId];
-    await expect(
-      new Router({
-        chainId,
-        tokenSell: tokens.find(
-          (token) => token.address !== buyToken.token.address,
-        )!,
-        tokenBuy: buyToken.token,
-      }).findRoute(),
-    ).rejects.toThrow(unavailableReason);
+    for (const sell of sellTokens) {
+      await expect(
+        new Router({
+          chainId,
+          tokenSell: sell.token,
+          tokenBuy: buyToken.token,
+        }).findRoute(),
+      ).resolves.toBeDefined();
+    }
   },
 );
 
+it("keeps the designated buy token contracts unchanged", () => {
+  expect(
+    Object.fromEntries(
+      Object.entries(USD_TOKENS).map(([chainId, token]) => [
+        chainId,
+        token.address.toLowerCase(),
+      ]),
+    ),
+  ).toEqual({
+    1: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    56: "0x55d398326f99059ff775485246999027b3197955",
+    100: "0x4ecaba5870353805a9f068101a40e0f32ed605c6",
+    137: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+    8453: "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+    9745: "0x2d661c89d812261039af9764eceaaee884f5f67f",
+    42161: "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+    43114: "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
+    59144: "0x176211869ca2b568f2a7d4ee941e073a821ee1ff",
+    11155111: "0xbe72e441bf55620febc26715db68d3494213d8cb",
+  });
+});
+
 it("does not expose feeds for metadata-only, unknown or cross-chain addresses", () => {
-  const token = USD_TOKENS[8453];
-  expect(findTokenOracles(8453, token.address.toUpperCase())).toEqual({});
-  expect(findTokenOracles(8453, token.address)).toEqual({});
+  const metadataOnly = "0x0555e30da8f98308edb960aa94c0db47230d2b9c";
+  expect(
+    TOKEN_CATALOG.find(
+      (token) => token.chainId === 8453 && token.address === metadataOnly,
+    ),
+  ).toMatchObject({
+    chainId: 8453,
+    symbol: "WBTC",
+  });
+  expect(findTokenOracles(8453, metadataOnly.toUpperCase())).toEqual({});
+  expect(findTokenOracles(8453, metadataOnly)).toEqual({});
   expect(
     findTokenOracles(8453, "0x0000000000000000000000000000000000000001"),
   ).toEqual({});
-  expect(findTokenOracles(1, token.address)).toEqual({});
+  expect(findTokenOracles(1, USD_TOKENS[8453].address)).toEqual({});
 });
 
 it("keeps reviewed identities without handwritten display metadata", () => {

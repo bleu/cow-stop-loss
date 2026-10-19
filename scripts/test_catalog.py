@@ -152,6 +152,120 @@ class CatalogPolicyTests(unittest.TestCase):
         self.refingerprint(approval, self.buy, self.buy_feed)
         return approval
 
+    def test_source_category_review_rejects_invalid_or_mismatched_decisions(self):
+        approval = self.policy["approvals"][1]
+        valid = {"decision": "accepted", "category": "medium", "evidence": "Reviewed source category", "reviewDate": "2026-01-01"}
+        invalid = [None, True, {}, dict(valid, decision="approved"), dict(valid, category="low"),
+                   dict(valid, category="hidden"), dict(valid, evidence=" "),
+                   dict(valid, reviewDate="2026-02-30"), dict(valid, reviewDate="9999-01-01")]
+        invalid.extend({key: value for key, value in valid.items() if key != field} for field in valid)
+        for suitability in invalid + [valid]:
+            with self.subTest(suitability=suitability):
+                approval["sourceCategorySuitability"] = suitability
+                with self.assertRaisesRegex(ValueError, "sourceCategorySuitability"):
+                    self.build()
+
+    def test_reviewed_category_is_narrow_and_keeps_other_exclusions(self):
+        approval = self.policy["approvals"][1]
+        for category in ("medium", "new"):
+            with self.subTest(category=category):
+                self.sell_feed["feedCategory"] = category
+                approval["sourceCategorySuitability"] = {"decision": "accepted", "category": category, "evidence": "Reviewed source category", "reviewDate": "2026-01-01"}
+                self.refingerprint(approval, self.sell, self.sell_feed)
+                result, audit = self.build()
+                self.assertEqual(self.token(result, self.sell)["oracles"], {"USD": self.sell_feed["proxyAddress"]})
+                self.assertEqual(audit[1]["reason"], "approved")
+                self.assertEqual(catalog.excluded_reason(self.sell_feed), "not-low-risk-category")
+                for field, value in (("evidence", " "), ("reviewDate", "2026-02-30"), ("reviewDate", "9999-01-01"), ("category", "low"), ("category", "new" if category == "medium" else "medium")):
+                    valid = approval["sourceCategorySuitability"][field]
+                    approval["sourceCategorySuitability"][field] = value
+                    with self.assertRaises(ValueError):
+                        self.build()
+                    approval["sourceCategorySuitability"][field] = valid
+                del approval["sourceCategorySuitability"]
+                with self.assertRaisesRegex(ValueError, "not-low-risk-category"):
+                    self.build()
+        for category in ("low", "medium", "new", "high", "hidden", "deprecating", None):
+            for review in (None, "medium", "new", "high", "hidden"):
+                feed = copy.deepcopy(self.sell_feed)
+                feed["feedCategory"] = category
+                expected = None if category == "low" or category in {"medium", "new"} and category == review else "hidden-or-deprecating" if category in {"hidden", "deprecating"} else "not-low-risk-category"
+                self.assertEqual(catalog.excluded_reason(feed, approved_source_category=review), expected)
+        self.sell_feed["feedCategory"] = "medium"
+        approval["sourceCategorySuitability"] = {"decision": "accepted", "category": "medium", "evidence": "Reviewed source category", "reviewDate": "2026-01-01"}
+        for target, field, value in (("feed", "status", "inactive"), ("docs", "hidden", True), ("docs", "stablecoinCapped", True), ("docs", "attributeType", "calculated"), ("docs", "productType", "NAVLink"), ("docs", "shutdownDate", "2099-01-01")):
+            inventories = copy.deepcopy(self.inventories)
+            feed = inventories["1"][1]
+            (feed if target == "feed" else feed["docs"])[field] = value
+            policy = copy.deepcopy(self.policy)
+            policy["approvals"][1]["snapshotFingerprint"] = catalog.snapshot_fingerprint(self.sell, feed, self.verification)
+            with self.assertRaisesRegex(ValueError, "Ineligible approved source"):
+                catalog.build(self.identities, inventories, policy, self.verification)
+
+    def test_representation_review_cannot_be_attached_to_an_unrelated_relationship(self):
+        self.policy["approvals"][1]["representationSuitability"] = {"decision": "accepted-underlying-feed", "bridgeRisk": "not-priced-by-feed", "evidence": "Reviewed bridge claim", "reviewDate": "2026-01-01"}
+        with self.assertRaisesRegex(ValueError, "representationSuitability"):
+            self.build()
+
+    def reviewed_bridge(self, approval):
+        approval["assetRelationship"] = "bridged-underlying"
+        approval["representationSuitability"] = {"decision": "accepted-underlying-feed", "bridgeRisk": "not-priced-by-feed", "evidence": "Reviewed this bridge contract against the underlying asset feed", "reviewDate": "2026-01-01"}
+
+    def test_bridged_underlying_requires_complete_review_and_identity_evidence(self):
+        approval = self.policy["approvals"][1]
+        self.reviewed_bridge(approval)
+        valid = copy.deepcopy(approval["representationSuitability"])
+        invalid = [None, True, {}, dict(valid, decision="accepted"), dict(valid, bridgeRisk="priced-by-feed"), dict(valid, evidence=" "), dict(valid, reviewDate="2026-02-30"), dict(valid, reviewDate="9999-01-01")]
+        invalid.extend({key: value for key, value in valid.items() if key != field} for field in valid)
+        for suitability in invalid:
+            with self.subTest(suitability=suitability):
+                approval["representationSuitability"] = suitability
+                with self.assertRaises(ValueError):
+                    self.build()
+        del approval["representationSuitability"]
+        with self.assertRaisesRegex(ValueError, "representationSuitability"):
+            self.build()
+        approval["representationSuitability"] = valid
+        for field in ("identityEvidence", "representationEvidence", "assetRelationshipReason", "snapshotFingerprint"):
+            original = approval.pop(field)
+            with self.assertRaises(ValueError):
+                self.build()
+            approval[field] = original
+        result, _ = self.build()
+        self.assertEqual(self.token(result, self.sell)["oracleApprovals"]["USD"]["representationSuitability"], valid)
+        for target, field in ((self.sell, "classificationReason"), (self.sell_feed["docs"], "baseAsset"), (self.verification["chains"]["1"]["feeds"][self.sell_feed["proxyAddress"]], "answer")):
+            original = target[field]
+            target[field] = "Changed reviewed snapshot"
+            with self.assertRaisesRegex(ValueError, "fingerprint changed"):
+                self.build()
+            target[field] = original
+
+    def test_bounded_bridged_fixed_buy_requires_representation_review(self):
+        approval = self.bounded_buy_approval()
+        self.reviewed_bridge(approval)
+        review = approval.pop("representationSuitability")
+        with self.assertRaisesRegex(ValueError, "representationSuitability"):
+            self.build()
+        approval["representationSuitability"] = review
+        self.buy_feed["feedCategory"] = "medium"
+        approval["sourceCategorySuitability"] = {"decision": "accepted", "category": "medium", "evidence": "Reviewed fixed-buy source category", "reviewDate": "2026-01-01"}
+        self.refingerprint(approval, self.buy, self.buy_feed)
+        result, _ = self.build()
+        self.assertEqual(self.token(result, self.buy)["oracles"], {"USD": self.buy_feed["proxyAddress"]})
+        for scope in ("other-token", "ETH", "native-wrapper", "bridge", "underlying", "derivative"):
+            with self.subTest(scope=scope):
+                policy = copy.deepcopy(self.policy)
+                entry = policy["approvals"][0]
+                if scope == "other-token":
+                    policy["approvals"].pop(1)
+                    entry["tokenAddress"] = self.sell["address"]
+                elif scope == "ETH":
+                    entry["quote"] = "ETH"
+                else:
+                    entry["assetRelationship"] = scope
+                with self.assertRaisesRegex(ValueError, "boundedPriceSuitability requires fixed buy token"):
+                    catalog.build(self.identities, self.inventories, policy, self.verification)
+
     def test_bounded_fixed_buy_can_be_approved_without_changing_source(self):
         approval = self.bounded_buy_approval()
         source = copy.deepcopy(self.buy_feed)
@@ -210,7 +324,7 @@ class CatalogPolicyTests(unittest.TestCase):
                     identity["canonicalNativeWrapper"] = True
                     identity["canonicalNativeWrapperEvidence"] = "Reviewed canonical wrapper"
                 entry["snapshotFingerprint"] = catalog.snapshot_fingerprint(identity, feed, verification)
-                with self.assertRaisesRegex(ValueError, "boundedPriceSuitability requires fixed buy token, USD quote and exact-asset relationship"):
+                with self.assertRaisesRegex(ValueError, "boundedPriceSuitability requires fixed buy token, USD quote and exact-asset or reviewed bridged-underlying relationship"):
                     catalog.build(identities, inventories, policy, verification)
         self.assertEqual(approval["assetRelationship"], "exact-asset")
 

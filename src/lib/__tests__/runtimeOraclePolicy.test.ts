@@ -11,6 +11,7 @@ import {
   ConfiguredRouter,
   configuredTokenRoute,
 } from "../oracleRouter";
+import { invalidatePlacementReads } from "../placementReads";
 import {
   assertPlacementRoute,
   buildPlacementApproval,
@@ -87,81 +88,185 @@ function swapData(draft: DraftOrder) {
 afterEach(() => jest.restoreAllMocks());
 
 describe("real creation admission policy", () => {
-  it("exposes the approved Ethereum routes to native USDC with chain evidence", async () => {
-    const { sellTokens, buyToken, unavailableReason } =
-      supported.getSupportedTokens(1);
-    expect(sellTokens.length).toBeGreaterThan(0);
-    expect(sellTokens.map(({ token }) => token.symbol).sort()).toEqual([
-      "LINK",
-      "UNI",
-      "WETH",
-    ]);
-    expect(buyToken.token).toMatchObject({
-      address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
-      symbol: "USDC",
-      decimals: 6,
-    });
-    expect(unavailableReason).toBeUndefined();
-    expect(catalog.catalogUnavailableReason(1)).toBeUndefined();
-    expect(data.chains["1"]).toMatchObject({
-      status: "approved",
-      executionEvidence: expect.stringMatching(/\S/),
-      arithmeticBoundsEvidence: expect.stringMatching(/\S/),
-      reviewDate: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
-    });
-    for (const sell of sellTokens) {
-      const pair = {
-        chainId: 1 as const,
-        tokenSell: sell.token,
-        tokenBuy: buyToken.token,
-      };
-      const route = configuredTokenRoute(pair);
-      expect(route).toEqual({
-        tokenSellOracle: sell.oracles.USD,
-        tokenBuyOracle: buyToken.oracles.USD,
-      });
-      expect(route.tokenSellOracle).toMatch(/^0x[0-9a-fA-F]{40}$/);
-      expect(route.tokenBuyOracle).toMatch(/^0x[0-9a-fA-F]{40}$/);
-      for (const leg of [sell, buyToken]) {
-        const row = data.tokens.find(
-          (token) =>
-            token.chainId === 1 &&
-            token.address.toLowerCase() === leg.token.address.toLowerCase(),
-        );
-        expect(catalog.parseOracleApprovals(row)).toEqual({
-          oracles: leg.oracles,
-          oracleApprovals: leg.oracleApprovals,
-        });
-        expect(leg.oracleApprovals?.USD?.maxAgeSeconds).toBeGreaterThan(0);
-      }
-      expect(configuredRouteMaxAgeSeconds(pair)).toBe(
-        Math.max(
-          sell.oracleApprovals!.USD!.maxAgeSeconds,
-          buyToken.oracleApprovals!.USD!.maxAgeSeconds,
-        ),
+  it.each([
+    [1, 86400],
+    [100, 86400],
+    [42161, 2692],
+    [8453, 86400],
+    [137, 100],
+    [43114, 86400],
+    [56, 1410],
+    [59144, 86400],
+    [9745, 86400],
+  ] as const)(
+    "creates a draft with automatic default settings on mainnet %s",
+    async (chainId, expectedAgeSeconds) => {
+      useAdvancedSettingsStore.setState(
+        useAdvancedSettingsStore.getInitialState(),
       );
-      await expect(new ConfiguredRouter(pair).findRoute()).resolves.toEqual(
-        route,
-      );
-    }
-  });
-
-  it.each(["fresh", "stale sell", "stale buy", "user limit"])(
-    "checks Ethereum feeds against their own ceilings: %s",
-    async (scenario) => {
-      const { sellTokens, buyToken } = supported.getSupportedTokens(1);
-      const sell = sellTokens.find(({ token }) => token.symbol === "WETH")!;
-      expect(sell).toBeDefined();
-      const sellCeiling = sell.oracleApprovals!.USD!.maxAgeSeconds;
-      const buyCeiling = buyToken.oracleApprovals!.USD!.maxAgeSeconds;
-      const sellAge = scenario === "stale sell" ? sellCeiling + 1 : 1000;
-      const buyAge = scenario === "stale buy" ? buyCeiling + 1 : 60000;
-      expect(sellCeiling).toBeGreaterThan(1000);
-      expect(buyCeiling).toBeGreaterThan(60000);
-      const client = publicClientsFromIds[1];
+      invalidatePlacementReads({ account, chainId });
+      const { sellTokens, buyToken } = supported.getSupportedTokens(chainId);
+      const client = publicClientsFromIds[chainId];
+      jest.spyOn(client, "getBlockNumber").mockResolvedValue(BigInt(10));
       jest.spyOn(client, "getBlock").mockResolvedValue({
         number: BigInt(10),
         timestamp: BigInt(200000),
+      } as never);
+      jest
+        .spyOn(client, "readContract")
+        .mockImplementation(async ({ functionName }) => {
+          if (functionName === "decimals") return 8;
+          return [
+            BigInt(1),
+            BigInt(100000000),
+            BigInt(199998),
+            BigInt(199998),
+            BigInt(1),
+          ];
+        });
+      try {
+        const draft = await useDraftOrder.getState().createDraftOrder(
+          {
+            ...swapData(sepoliaDraft()),
+            tokenSell: sellTokens[0].token,
+            tokenBuy: buyToken.token,
+          },
+          chainId,
+          account,
+        );
+        expect(draft.maxHoursSinceOracleUpdates * 3600).toBe(
+          expectedAgeSeconds,
+        );
+        expect(() => assertPlacementRoute(draft, chainId)).not.toThrow();
+      } finally {
+        invalidatePlacementReads({ account, chainId });
+        useAdvancedSettingsStore.setState(
+          useAdvancedSettingsStore.getInitialState(),
+        );
+      }
+    },
+  );
+
+  it.each([42161, 137, 56] as const)(
+    "rejects explicit, restored, and encoded over-limit ages on mainnet %s",
+    async (chainId) => {
+      const { sellTokens, buyToken } = supported.getSupportedTokens(chainId);
+      const draft = {
+        ...sepoliaDraft(),
+        tokenSell: sellTokens[0].token,
+        tokenBuy: buyToken.token,
+        ...configuredTokenRoute({
+          chainId,
+          tokenSell: sellTokens[0].token,
+          tokenBuy: buyToken.token,
+        }),
+        maxHoursSinceOracleUpdates: 24,
+      };
+      useAdvancedSettingsStore.getState().setAdvancedSettings({
+        receiver: "",
+        partiallyFillable: false,
+        maxHoursSinceOracleUpdates: 24,
+      });
+      try {
+        await expect(
+          useDraftOrder
+            .getState()
+            .createDraftOrder(swapData(draft), chainId, account),
+        ).rejects.toThrow("approved route limit");
+        expect(() => assertPlacementRoute(draft, chainId)).toThrow(
+          "Oracle time limit",
+        );
+        expect(() =>
+          assertPlacementRoute(
+            { ...draft, maxHoursSinceOracleUpdates: 1 / 3600 },
+            chainId,
+            prepared(draft, chainId).staticInput,
+          ),
+        ).toThrow("Oracle time limit");
+      } finally {
+        useAdvancedSettingsStore.getState().resetAdvancedSettings();
+      }
+    },
+  );
+
+  it.each(supportedChainIds.filter((chainId) => chainId !== testChain))(
+    "exposes approved routes to the fixed buy token with chain evidence on chain %s",
+    async (chainId) => {
+      const { sellTokens, buyToken, unavailableReason } =
+        supported.getSupportedTokens(chainId);
+      expect(sellTokens.length).toBeGreaterThan(0);
+      expect(unavailableReason).toBeUndefined();
+      expect(catalog.catalogUnavailableReason(chainId)).toBeUndefined();
+      expect(
+        data.chains[String(chainId) as keyof typeof data.chains],
+      ).toMatchObject({
+        status: "approved",
+        executionEvidence: expect.stringMatching(/\S/),
+        arithmeticBoundsEvidence: expect.stringMatching(/\S/),
+        reviewDate: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
+      });
+      for (const sell of sellTokens) {
+        const pair = {
+          chainId,
+          tokenSell: sell.token,
+          tokenBuy: buyToken.token,
+        };
+        const route = configuredTokenRoute(pair);
+        expect(route).toEqual({
+          tokenSellOracle: sell.oracles.USD,
+          tokenBuyOracle: buyToken.oracles.USD,
+        });
+        expect(route.tokenSellOracle).toMatch(/^0x[0-9a-fA-F]{40}$/);
+        expect(route.tokenBuyOracle).toMatch(/^0x[0-9a-fA-F]{40}$/);
+        for (const leg of [sell, buyToken]) {
+          const row = data.tokens.find(
+            (token) =>
+              token.chainId === chainId &&
+              token.address.toLowerCase() === leg.token.address.toLowerCase(),
+          );
+          expect(catalog.parseOracleApprovals(row)).toEqual({
+            oracles: leg.oracles,
+            oracleApprovals: leg.oracleApprovals,
+          });
+          expect(leg.oracleApprovals?.USD?.maxAgeSeconds).toBeGreaterThan(0);
+        }
+        expect(configuredRouteMaxAgeSeconds(pair)).toBe(
+          Math.max(
+            sell.oracleApprovals!.USD!.maxAgeSeconds,
+            buyToken.oracleApprovals!.USD!.maxAgeSeconds,
+          ),
+        );
+        await expect(new ConfiguredRouter(pair).findRoute()).resolves.toEqual(
+          route,
+        );
+      }
+    },
+  );
+
+  it.each(
+    supportedChainIds
+      .filter((chainId) => chainId !== testChain)
+      .flatMap((chainId) =>
+        ["fresh", "stale sell", "stale buy", "user limit"].map((scenario) => ({
+          chainId,
+          scenario,
+        })),
+      ),
+  )(
+    "checks feeds against their own ceilings on chain $chainId: $scenario",
+    async ({ chainId, scenario }) => {
+      const { sellTokens, buyToken } = supported.getSupportedTokens(chainId);
+      const sell = sellTokens[0];
+      expect(sell).toBeDefined();
+      const sellCeiling = sell.oracleApprovals!.USD!.maxAgeSeconds;
+      const buyCeiling = buyToken.oracleApprovals!.USD!.maxAgeSeconds;
+      const sellAge = scenario === "stale sell" ? sellCeiling + 1 : 2;
+      const buyAge = scenario === "stale buy" ? buyCeiling + 1 : 2;
+      const timestamp = Math.max(sellCeiling, buyCeiling) + 10000;
+      const client = publicClientsFromIds[chainId];
+      jest.spyOn(client, "getBlock").mockResolvedValue({
+        number: BigInt(10),
+        timestamp: BigInt(timestamp),
       } as never);
       jest
         .spyOn(client, "readContract")
@@ -172,28 +277,30 @@ describe("real creation admission policy", () => {
           return [
             BigInt(1),
             BigInt(selling ? 200000000000 : 100000000),
-            BigInt(200000 - (selling ? sellAge : buyAge)),
-            BigInt(200000 - (selling ? sellAge : buyAge)),
+            BigInt(timestamp - (selling ? sellAge : buyAge)),
+            BigInt(timestamp - (selling ? sellAge : buyAge)),
             BigInt(1),
           ];
         });
       const router = new ConfiguredRouter({
-        chainId: 1,
+        chainId,
         tokenSell: sell.token,
         tokenBuy: buyToken.token,
       });
       const price = router.calculatePrice(
         configuredTokenRoute(router),
-        scenario === "user limit" ? 500 : 86400,
+        scenario === "user limit" ? 1 : Math.max(sellCeiling, buyCeiling),
       );
       if (scenario === "fresh") await expect(price).resolves.toBe(2000);
       else await expect(price).rejects.toThrow("stale");
     },
   );
 
-  it.each(supportedChainIds.filter((id) => id !== 1 && id !== testChain))(
-    "rejects saved placements on blocked chain %s before reads, publication, approvals, or setup",
+  it.each(supportedChainIds.filter((id) => id !== testChain))(
+    "rejects saved placements under an unavailable fixture on chain %s before reads, publication, approvals, or setup",
     async (chainId) => {
+      const reason = "TEST-only: network execution review is incomplete.";
+      jest.spyOn(catalog, "catalogUnavailableReason").mockReturnValue(reason);
       const configured = supported.getSupportedTokens(chainId);
       const tokenSell = catalog.TOKEN_CATALOG.find(
         (token) =>
@@ -206,8 +313,7 @@ describe("real creation admission policy", () => {
         tokenBuy: configured.buyToken.token,
       };
       const saved = prepared(draft, chainId);
-      const reason = configured.unavailableReason!;
-      expect(reason).toEqual(expect.any(String));
+      expect(configured.unavailableReason).toBe(reason);
       const readContract = jest.fn();
       const client = { readContract } as unknown as PublicClient;
       const publish = jest.spyOn(appData, "uploadAppData");
@@ -336,6 +442,123 @@ describe("approval identity parsing", () => {
       },
     };
   }
+
+  it("rejects incomplete category reviews even for exact assets", () => {
+    const token = approvedToken();
+    for (const sourceCategorySuitability of [
+      null,
+      true,
+      {},
+      {
+        decision: "accepted",
+        category: "low",
+        evidence: "Reviewed",
+        reviewDate: "2026-01-01",
+      },
+      {
+        decision: "accepted",
+        category: "medium",
+        evidence: "",
+        reviewDate: "2026-01-01",
+      },
+      {
+        decision: "accepted",
+        category: "new",
+        evidence: "Reviewed",
+        reviewDate: "2026-02-30",
+      },
+      {
+        decision: "accepted",
+        category: "new",
+        evidence: "Reviewed",
+        reviewDate: "9999-01-01",
+      },
+    ]) {
+      expect(
+        catalog.parseOracleApprovals({
+          ...token,
+          oracleApprovals: {
+            USD: { ...token.oracleApprovals.USD, sourceCategorySuitability },
+          },
+        }).oracles,
+      ).toEqual({});
+    }
+  });
+
+  it("requires a reviewed bridged representation and explicit unpriced bridge risk", () => {
+    const token = approvedToken();
+    const representationSuitability = {
+      decision: "accepted-underlying-feed",
+      bridgeRisk: "not-priced-by-feed",
+      evidence: "Reviewed bridge claim",
+      reviewDate: "2026-01-01",
+    };
+    const parse = (patch: Record<string, unknown>) =>
+      catalog.parseOracleApprovals({
+        ...token,
+        oracleApprovals: { USD: { ...token.oracleApprovals.USD, ...patch } },
+      });
+    expect(parse({ representationSuitability }).oracles).toEqual({});
+    expect(
+      parse({
+        assetRelationship: "bridged-underlying",
+        representationSuitability,
+      }),
+    ).toEqual({
+      oracles: { USD: proxy },
+      oracleApprovals: { USD: { maxAgeSeconds: 1800 } },
+    });
+    for (const review of [
+      undefined,
+      null,
+      {},
+      ...Object.keys(representationSuitability).map((field) => ({
+        ...representationSuitability,
+        [field]: undefined,
+      })),
+      { ...representationSuitability, bridgeRisk: "priced-by-feed" },
+      { ...representationSuitability, decision: "accepted" },
+      { ...representationSuitability, evidence: " " },
+      { ...representationSuitability, reviewDate: "2026-02-30" },
+    ]) {
+      expect(
+        parse({
+          assetRelationship: "bridged-underlying",
+          representationSuitability: review,
+        }).oracles,
+      ).toEqual({});
+    }
+    for (const category of ["medium", "new"]) {
+      expect(
+        parse({
+          sourceCategorySuitability: {
+            decision: "accepted",
+            category,
+            evidence: "Reviewed category",
+            reviewDate: "2026-01-01",
+          },
+        }).oracles,
+      ).toEqual({ USD: proxy });
+    }
+    for (const field of [
+      "identityEvidence",
+      "representationEvidence",
+      "snapshotFingerprint",
+    ]) {
+      expect(
+        parse({
+          assetRelationship: "bridged-underlying",
+          representationSuitability,
+          [field]: "",
+        }).oracles,
+      ).toEqual({});
+    }
+    for (const assetRelationship of ["bridge", "underlying", "derivative"]) {
+      expect(
+        parse({ assetRelationship, representationSuitability }).oracles,
+      ).toEqual({});
+    }
+  });
 
   it("requires a complete exact chain/token/quote/proxy approval", () => {
     const token = approvedToken();

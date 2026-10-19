@@ -943,7 +943,9 @@
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/c0b567bd541bf5033207.svg",
       "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weth.svg",
-      "logoSha256": "c0b567bd541bf50332072c13c19211ffd025062127c75818df52a588414a9655"
+      "logoSha256": "c0b567bd541bf50332072c13c19211ffd025062127c75818df52a588414a9655",
+      "canonicalNativeWrapper": true,
+      "canonicalNativeWrapperEvidence": "https://sourcify.dev/server/v2/contract/42161/0x82af49447d8a07e3bd95bd0d56f35241523fbab1?fields=all and verified implementation 0x8b194bEae1d3e0788A1a35173978001ACDFba668: aeWETH.sol depositTo mints msg.value; withdrawTo burns amount and returns the same native ETH amount. This is an upgradeable proxy; proof applies to the reviewed implementation, not future upgrades."
     },
     {
       "chainId": 42161,
@@ -1659,7 +1661,9 @@
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/30e2fe33e7f2b3dd3f05.svg",
       "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wmatic.svg",
-      "logoSha256": "30e2fe33e7f2b3dd3f05b7ae9dee8a676d625ad30a7704eeef9affdbbecd8f0b"
+      "logoSha256": "30e2fe33e7f2b3dd3f05b7ae9dee8a676d625ad30a7704eeef9affdbbecd8f0b",
+      "canonicalNativeWrapper": true,
+      "canonicalNativeWrapperEvidence": "https://sourcify.dev/server/v2/contract/137/0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270?fields=all: verified creation and runtime match; deposit credits msg.value and withdraw subtracts the same amount before returning native currency. Polygon retains the legacy WMATIC source name after the native POL migration."
     },
     {
       "chainId": 137,
@@ -1742,7 +1746,9 @@
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/9f25dbf573e0f7470691.svg",
       "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wavax.svg",
-      "logoSha256": "9f25dbf573e0f74706912b6d61e2eebf50a0a34ffc1961412753df559db7a004"
+      "logoSha256": "9f25dbf573e0f74706912b6d61e2eebf50a0a34ffc1961412753df559db7a004",
+      "canonicalNativeWrapper": true,
+      "canonicalNativeWrapperEvidence": "https://sourcify.dev/server/v2/contract/43114/0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7?fields=all: verified creation and runtime match; deposit credits msg.value and withdraw subtracts the same amount before returning native currency."
     },
     {
       "chainId": 43114,
@@ -2016,7 +2022,9 @@
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/ed7452f1b284f5cbac05.svg",
       "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wbnb.svg",
-      "logoSha256": "ed7452f1b284f5cbac0578edec0f5e78ccc3b35271a1b85aa1bb6fbcd032c980"
+      "logoSha256": "ed7452f1b284f5cbac0578edec0f5e78ccc3b35271a1b85aa1bb6fbcd032c980",
+      "canonicalNativeWrapper": true,
+      "canonicalNativeWrapperEvidence": "https://sourcify.dev/server/v2/contract/56/0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c?fields=all: verified creation and runtime match; deposit credits msg.value and withdraw subtracts the same amount before returning native currency."
     },
     {
       "chainId": 56,
@@ -2350,7 +2358,9 @@
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/c0b567bd541bf5033207.svg",
       "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weth.svg",
-      "logoSha256": "c0b567bd541bf50332072c13c19211ffd025062127c75818df52a588414a9655"
+      "logoSha256": "c0b567bd541bf50332072c13c19211ffd025062127c75818df52a588414a9655",
+      "canonicalNativeWrapper": true,
+      "canonicalNativeWrapperEvidence": "https://sourcify.dev/server/v2/contract/59144/0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f?fields=all: matching deployed non-proxy WETH9.sol credits msg.value in deposit and subtracts wad before returning the same native ETH amount in withdraw. Local native ETH wrapping does not remove Linea L2/bridge risk."
     },
     {
       "chainId": 59144,
@@ -2476,7 +2486,9 @@
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/c7617a3781f2029e0017.svg",
       "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/xpl.svg",
-      "logoSha256": "c7617a3781f2029e0017801bef631e62f2862ed8174b6fdbbe9881295a1c25a5"
+      "logoSha256": "c7617a3781f2029e0017801bef631e62f2862ed8174b6fdbbe9881295a1c25a5",
+      "canonicalNativeWrapper": true,
+      "canonicalNativeWrapperEvidence": "scripts/native-wrapper-verification.json: read-only debug_traceCall on https://rpc.plasma.to confirms deposit() credits one token base unit per native XPL base unit and withdraw(1) burns one token base unit and returns one native XPL base unit. Native balance and token storage diffs use deployed code without a code override. Behavior evidence only; verified source was unavailable. https://github.com/PlasmaLaboratories/plasma-tokenlist/blob/main/plasma.tokenlist.json identifies this exact WXPL contract."
     },
     {
       "chainId": 9745,

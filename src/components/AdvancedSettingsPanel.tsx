@@ -13,6 +13,7 @@ import { useAccount } from "wagmi";
 
 import { PixelIcon } from "#/components/ui/pixel-icon";
 import {
+  advancedSettingsForRoute,
   defaultAdvancedSettings,
   haveSettingsChanged,
   useAdvancedSettingsStore,
@@ -71,14 +72,32 @@ export function AdvancedSettingsPanel({
   const chainId = (accountChainId ?? 1) as ChainId;
   const accountScope = `${address?.toLowerCase() ?? "disconnected"}:${chainId}`;
   const previousScope = React.useRef(accountScope);
-  const [advancedSettings, setAdvancedSettings] = useAdvancedSettingsStore(
-    (state) => [state.advancedSettings, state.setAdvancedSettings],
-  );
+  const [
+    savedSettings,
+    oracleAgeMode,
+    setAdvancedSettings,
+    resetAdvancedSettings,
+  ] = useAdvancedSettingsStore((state) => [
+    state.advancedSettings,
+    state.oracleAgeMode,
+    state.setAdvancedSettings,
+    state.resetAdvancedSettings,
+  ]);
 
-  const maxOracleHours =
-    (tokenPair
-      ? configuredRouteMaxAgeSeconds({ chainId, ...tokenPair })
-      : configuredChainMaxAgeSeconds(chainId)) / 3600;
+  const maxAgeSeconds = tokenPair
+    ? configuredRouteMaxAgeSeconds({ chainId, ...tokenPair })
+    : configuredChainMaxAgeSeconds(chainId);
+  const maxOracleHours = maxAgeSeconds / 3600;
+  const advancedSettings = advancedSettingsForRoute(
+    savedSettings,
+    oracleAgeMode,
+    maxAgeSeconds,
+  );
+  const routeDefaults = advancedSettingsForRoute(
+    defaultAdvancedSettings,
+    "automatic",
+    maxAgeSeconds,
+  );
   const form = useForm<AdvancedSettingsDraft>({
     mode: "onChange",
     resolver: zodResolver(
@@ -103,7 +122,7 @@ export function AdvancedSettingsPanel({
   }, [accountScope, advancedSettings, onOpenChange, reset, slippagePercent]);
 
   const areSavedSettingsDifferentFromDefault =
-    haveSettingsChanged(advancedSettings, defaultAdvancedSettings) ||
+    haveSettingsChanged(advancedSettings, routeDefaults) ||
     Number(slippagePercent) !== 0.1;
 
   const receiver = useWatch({ control, name: "receiver" });
@@ -111,19 +130,28 @@ export function AdvancedSettingsPanel({
   React.useEffect(() => {
     if (!open) return;
     let validationSequence = 0;
+    let active = true;
     const subscription = form.watch(() => {
       const currentSequence = ++validationSequence;
       void form.trigger().then((valid) => {
-        if (!valid || currentSequence !== validationSequence) return;
+        if (!active || !valid || currentSequence !== validationSequence) return;
         if (!mounted.current) return;
         const { slippagePercent: savedSlippage, ...settings } =
           form.getValues();
-        setAdvancedSettings(settings);
+        setAdvancedSettings(
+          settings,
+          form.getFieldState("maxHoursSinceOracleUpdates").isDirty
+            ? "explicit"
+            : oracleAgeMode,
+        );
         onApplySlippage(savedSlippage);
       });
     });
-    return () => subscription.unsubscribe();
-  }, [form, onApplySlippage, open, setAdvancedSettings]);
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, [form, onApplySlippage, open, oracleAgeMode, setAdvancedSettings]);
 
   return (
     <div className="rescue-settings w-full">
@@ -276,10 +304,10 @@ export function AdvancedSettingsPanel({
                   className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 w-full rounded-none text-xs text-muted-foreground hover:text-foreground"
                   onClick={() => {
                     reset({
-                      ...defaultAdvancedSettings,
+                      ...routeDefaults,
                       slippagePercent: "0.1",
                     });
-                    setAdvancedSettings(defaultAdvancedSettings);
+                    resetAdvancedSettings();
                     onApplySlippage("0.1");
                     onOpenChange(false);
                   }}

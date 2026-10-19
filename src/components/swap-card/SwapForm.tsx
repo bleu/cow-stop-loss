@@ -7,10 +7,7 @@ import { useForm, useWatch } from "react-hook-form";
 import { Address } from "viem";
 import { useAccount } from "wagmi";
 
-import {
-  defaultAdvancedSettings,
-  useAdvancedSettingsStore,
-} from "#/hooks/useAdvancedSettings";
+import { useAdvancedSettingsStore } from "#/hooks/useAdvancedSettings";
 import { useDraftOrder } from "#/hooks/useDraftOrder";
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { calculateAmounts } from "#/lib/calculateAmounts";
@@ -122,9 +119,7 @@ function WalletSwapForm({
 
   React.useEffect(
     () => () => {
-      useAdvancedSettingsStore
-        .getState()
-        .setAdvancedSettings(defaultAdvancedSettings);
+      useAdvancedSettingsStore.getState().resetAdvancedSettings();
     },
     [chainId, walletAddress],
   );
@@ -233,8 +228,7 @@ function WalletSwapForm({
             >
               {unavailableReason && (
                 <p role="alert" className="text-sm text-muted-foreground">
-                  Select Ethereum to create a stop-loss order. Existing orders
-                  remain available in the order list.
+                  {unavailableReason}
                 </p>
               )}
               <TokenInputCard side="Sell" />

@@ -1,0 +1,72 @@
+{
+  "reviewDate": "2026-10-19",
+  "rpcUrl": "https://rpc.plasma.to",
+  "chainId": 9745,
+  "address": "0x6100e367285b01f48d07953803a2d8dca5d19873",
+  "blockNumber": "35511637",
+  "blockTag": "0x21ddd55",
+  "runtimeCodeKeccak256": "0x47e6835a0a22b0d581faf0543c650db2190295e3ef4b9c442895b72e2b7dc056",
+  "caller": "0x0000000000000000000000000000000000000123",
+  "tokenBalanceStorageSlot": "0xb0f566e5e54ad5f271b39da0d24b21fd2c693a146cc0643b02f3481c94580329",
+  "storageSlotDerivation": "keccak256(abi.encode(address caller,uint256(3)))",
+  "method": "debug_traceCall",
+  "parameterOrder": ["call", "blockTag", "traceOptions"],
+  "traceOptions": {
+    "tracer": "prestateTracer",
+    "tracerConfig": { "diffMode": true },
+    "stateOverrides": {
+      "0x0000000000000000000000000000000000000123": {
+        "balance": "0x100000000000000000"
+      },
+      "0x6100e367285b01f48d07953803a2d8dca5d19873": {
+        "balance": "0x100000000000000000",
+        "stateDiff": {
+          "0xb0f566e5e54ad5f271b39da0d24b21fd2c693a146cc0643b02f3481c94580329": "0x0000000000000000000000000000000000000000000000000000000000000001"
+        }
+      }
+    }
+  },
+  "calls": [
+    {
+      "name": "deposit",
+      "call": {
+        "from": "0x0000000000000000000000000000000000000123",
+        "to": "0x6100e367285b01f48d07953803a2d8dca5d19873",
+        "data": "0xd0e30db0",
+        "value": "0x1"
+      },
+      "observed": {
+        "callerBalancePre": "0x100000000000000000",
+        "callerBalancePost": "0xfffffffffffffffff",
+        "contractBalancePre": "0x100000000000000000",
+        "contractBalancePost": "0x100000000000000001",
+        "tokenStoragePre": "0x01",
+        "tokenStoragePost": "0x02"
+      }
+    },
+    {
+      "name": "withdraw",
+      "call": {
+        "from": "0x0000000000000000000000000000000000000123",
+        "to": "0x6100e367285b01f48d07953803a2d8dca5d19873",
+        "data": "0x2e1a7d4d0000000000000000000000000000000000000000000000000000000000000001",
+        "value": "0x0"
+      },
+      "observed": {
+        "callerBalancePre": "0x100000000000000000",
+        "callerBalancePost": "0x100000000000000001",
+        "contractBalancePre": "0x100000000000000000",
+        "contractBalancePost": "0xfffffffffffffffff",
+        "tokenStoragePre": "0x01",
+        "tokenStoragePost": "0x00",
+        "zeroSlotRepresentation": "Slot omitted from post storage by prestateTracer because it was cleared."
+      }
+    }
+  ],
+  "limitations": [
+    "Behavior check, not inspected verified Solidity source.",
+    "Only native balance and token storage overrides; no code override.",
+    "No transaction sent.",
+    "Two finite calls, not a full contract audit."
+  ]
+}

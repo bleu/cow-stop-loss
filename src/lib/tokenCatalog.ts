@@ -70,6 +70,24 @@ export const TOKEN_CATALOG: CatalogToken[] = data.tokens.map((token) => ({
   assetClass: assetClass(record(token).assetClass),
 }));
 
+function reviewedDecision(value: unknown, decision: string): boolean {
+  const review = record(value);
+  if (
+    review.decision !== decision ||
+    typeof review.evidence !== "string" ||
+    !review.evidence.trim() ||
+    typeof review.reviewDate !== "string" ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(review.reviewDate)
+  )
+    return false;
+  const timestamp = Date.parse(`${review.reviewDate}T00:00:00Z`);
+  return (
+    Number.isFinite(timestamp) &&
+    new Date(timestamp).toISOString().slice(0, 10) === review.reviewDate &&
+    timestamp <= Date.now()
+  );
+}
+
 export function parseOracleApprovals(value: unknown): {
   oracles: Oracles;
   oracleApprovals: OracleApprovals;
@@ -88,8 +106,22 @@ export function parseOracleApprovals(value: unknown): {
       typeof approval.tokenAddress !== "string" ||
       approval.tokenAddress.toLowerCase() !== token.address.toLowerCase() ||
       approval.quote !== quote ||
+      ("sourceCategorySuitability" in approval &&
+        (!reviewedDecision(approval.sourceCategorySuitability, "accepted") ||
+          (record(approval.sourceCategorySuitability).category !== "medium" &&
+            record(approval.sourceCategorySuitability).category !== "new"))) ||
       (approval.assetRelationship !== "exact-asset" &&
-        approval.assetRelationship !== "native-wrapper") ||
+        approval.assetRelationship !== "native-wrapper" &&
+        approval.assetRelationship !== "bridged-underlying") ||
+      ((approval.assetRelationship === "bridged-underlying" ||
+        "representationSuitability" in approval) &&
+        (approval.assetRelationship !== "bridged-underlying" ||
+          !reviewedDecision(
+            approval.representationSuitability,
+            "accepted-underlying-feed",
+          ) ||
+          record(approval.representationSuitability).bridgeRisk !==
+            "not-priced-by-feed")) ||
       typeof approval.proxyAddress !== "string" ||
       approval.proxyAddress.toLowerCase() !== proxy.toLowerCase() ||
       typeof approval.maxAgeSeconds !== "number" ||
