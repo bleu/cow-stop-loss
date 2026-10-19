@@ -30,11 +30,11 @@ export function createWagmiConfig() {
           },
         ],
         {
-          appName: "CoW Stop Loss",
+          appName: "CoW Air Rescue",
           projectId,
           walletConnectParameters: {
             metadata: {
-              name: "CoW Stop Loss",
+              name: "CoW Air Rescue",
               description:
                 "View your stop-loss orders across supported chains.",
               url: appUrl,

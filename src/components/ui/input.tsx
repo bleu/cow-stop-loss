@@ -10,6 +10,7 @@ interface IInput extends Omit<HTMLProps<HTMLInputElement>, "name"> {
   tooltipText?: string;
   tooltipLink?: string;
   extraLabelElement?: React.ReactNode;
+  layout?: "stacked" | "inline";
 }
 
 export function Input({
@@ -20,6 +21,8 @@ export function Input({
   tooltipLink,
   extraLabelElement,
   className,
+  id = name,
+  layout = "stacked",
   ...props
 }: IInput) {
   const {
@@ -35,10 +38,14 @@ export function Input({
   const errorMessage = error?.message;
 
   return (
-    <div className="flex flex-col">
+    <div
+      className={layout === "inline" ? "rescue-input-inline" : "flex flex-col"}
+    >
       {label && (
-        <div className="flex flex-row gap-x-2 items-center mb-2">
-          <Label className="block text-sm">{label}</Label>
+        <div className="rescue-input-label flex flex-row gap-x-1.5 items-center mb-2">
+          <Label htmlFor={id} className="block text-sm">
+            {label}
+          </Label>
           {tooltipText && <InfoTooltip text={tooltipText} link={tooltipLink} />}
           {extraLabelElement}
         </div>
@@ -46,14 +53,17 @@ export function Input({
       <InputPrimitive
         {...props}
         {...register(name, validation)}
+        id={id}
         className={cn(
-          "w-full shadow-none rounded-xl bg-card placeholder:opacity-50 border border-border focus-visible:border-primary/60",
+          "w-full shadow-none rounded-none bg-card placeholder:opacity-50 border border-border focus-visible:border-primary/60",
           className,
         )}
       />
 
       {errorMessage && (
-        <div className="mt-1 text-sm text-destructive">{errorMessage}</div>
+        <div className="rescue-input-error mt-1 text-sm text-destructive">
+          {errorMessage}
+        </div>
       )}
     </div>
   );

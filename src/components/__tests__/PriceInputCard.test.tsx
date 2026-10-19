@@ -63,40 +63,44 @@ it("keeps the exact trigger text in a fixed USDC-per-WETH quote", async () => {
   ).toBeInTheDocument();
 });
 
-it("sets the trigger to the market quote without a reciprocal conversion", async () => {
-  const user = userEvent.setup();
+it.each([
+  [2000, "2000"],
+  [2000.123456789, "2000.1235"],
+])(
+  "sets the trigger from market %s without a reciprocal conversion",
+  async (price, expected) => {
+    marketPrice = price;
+    const user = userEvent.setup();
+    render(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <PriceForm />
+      </SWRConfig>,
+    );
+
+    const input = screen.getByRole("textbox", { name: "Trigger price" });
+    await user.clear(input);
+    await user.type(input, "1500");
+    await user.click(
+      await screen.findByRole("button", {
+        name: /Set trigger to current market price/,
+      }),
+    );
+
+    expect(input).toHaveValue(expected);
+  },
+);
+
+it("shows a dollar market quote and keeps the full pair in its accessible label", async () => {
   render(
     <SWRConfig value={{ provider: () => new Map() }}>
       <PriceForm />
     </SWRConfig>,
   );
 
-  await user.click(
-    await screen.findByRole("button", {
-      name: /Set trigger to current market price/,
-    }),
-  );
-
-  expect(screen.getByRole("textbox", { name: "Trigger price" })).toHaveValue(
-    "2000",
-  );
-});
-
-it("shows the market quote without a reciprocal-price control", async () => {
-  render(
-    <SWRConfig value={{ provider: () => new Map() }}>
-      <PriceForm />
-    </SWRConfig>,
-  );
-
-  expect(
-    await screen.findByText("Market: 2,000 USDC per WETH"),
-  ).toBeInTheDocument();
-  expect(
-    await screen.findByRole("button", {
-      name: /Set trigger to current market price.*USDC per WETH/,
-    }),
-  ).toBeInTheDocument();
+  const market = await screen.findByRole("button", {
+    name: "Set trigger to current market price 2,000 USDC per WETH",
+  });
+  expect(market).toHaveTextContent(/^Market: \$2,000$/);
   expect(screen.queryByText("1 USDC")).not.toBeInTheDocument();
 });
 

@@ -48,7 +48,7 @@ export function TokenSelect({
           <Button
             type="button"
             className={cn(
-              "h-11 w-full min-w-0 justify-between gap-2 rounded-2xl border border-primary/25 bg-primary/10 px-3 text-foreground shadow-sm transition-colors hover:border-primary/40 hover:bg-primary/15 hover:text-foreground",
+              "pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 w-full min-w-0 justify-between gap-2 rounded-none border border-primary/25 bg-primary/10 px-3 text-foreground shadow-sm transition-colors hover:border-primary/40 hover:bg-primary/15 hover:text-foreground",
               selectedToken
                 ? "bg-muted/70 text-foreground hover:text-foreground"
                 : "",
@@ -70,15 +70,15 @@ export function TokenSelect({
           )}
         </div>
       </PopoverTrigger>
-      <PopoverContent className="rescue-popover w-[min(22rem,calc(100vw-2rem))] overflow-hidden rounded-2xl border border-border bg-popover p-0 text-popover-foreground shadow-2xl">
+      <PopoverContent className="pixel-frame rescue-popover w-[min(22rem,calc(100vw-2rem))] rounded-none border border-border bg-popover p-0 text-popover-foreground shadow-2xl">
         <p className="border-b border-border/60 px-4 py-3 font-mono text-[10px] uppercase tracking-[0.16em] text-secondary">
           Choose your passenger
         </p>
         {/* @ts-ignore */}
-        <Command className="rounded-2xl bg-transparent text-popover-foreground">
+        <Command className="rounded-none bg-transparent text-popover-foreground">
           <CommandInput
             placeholder="Search supported tokens"
-            className="h-12 rounded-xl border-0 bg-transparent px-4"
+            className="rounded-none h-12 border-0 bg-transparent px-4"
           />
           {/* @ts-ignore */}
           <CommandList className="max-h-72 p-1.5">
@@ -91,7 +91,7 @@ export function TokenSelect({
                 value={token.symbol + token.address}
                 disabled={disabled}
                 onSelect={() => handleSelectToken(token)}
-                className="rounded-xl py-2.5 hover:bg-primary/15 hover:text-foreground"
+                className="rounded-none py-2.5 hover:bg-primary/15 hover:text-foreground"
               >
                 <TokenInfo token={token} showExplorerLink={false} />
               </CommandItem>

@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -28,13 +28,55 @@ function SlippageForm() {
 it("shows the default slippage in an always-visible custom input", () => {
   render(<SlippageForm />);
 
-  expect(screen.getByRole("textbox", { name: "Slippage" })).toHaveValue("0.1");
+  const input = screen.getByRole("textbox", { name: "Slippage (%)" });
+  expect(input).toHaveValue("0.1");
+  expect(screen.getByText("Slippage (%)")).toBeVisible();
+  expect(screen.queryByText("%", { exact: true })).not.toBeInTheDocument();
+  expect(input.closest(".rescue-input-inline")?.children[1]).toBe(input);
+});
+
+it("opens keyboard help outside the settings container and closes it with Escape", async () => {
+  const user = userEvent.setup();
+  const { container } = render(
+    <div className="rescue-settings-panel">
+      <SlippageForm />
+    </div>,
+  );
+
+  await user.tab();
+  expect(
+    screen.getByRole("button", { name: "More information" }),
+  ).toHaveFocus();
+  const tooltip = await screen.findByRole("tooltip");
+  expect(tooltip).toHaveTextContent("The maximum price difference allowed");
+  expect(container).not.toContainElement(tooltip);
+  expect(document.body).toContainElement(tooltip);
+
+  await user.keyboard("{Escape}");
+  await waitFor(() =>
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument(),
+  );
+});
+
+it("opens help when the information button is hovered", async () => {
+  const user = userEvent.setup();
+  render(<SlippageForm />);
+
+  await user.hover(screen.getByRole("button", { name: "More information" }));
+  expect(await screen.findByRole("tooltip")).toHaveTextContent(
+    "The maximum price difference allowed",
+  );
+  await user.unhover(screen.getByRole("button", { name: "More information" }));
+  await user.pointer({ target: document.body, coords: { x: 1000, y: 1000 } });
+  await waitFor(() =>
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument(),
+  );
 });
 
 it("accepts a custom slippage without preset controls", async () => {
   const user = userEvent.setup();
   render(<SlippageForm />);
-  const input = screen.getByRole("textbox", { name: "Slippage" });
+  const input = screen.getByRole("textbox", { name: "Slippage (%)" });
   await user.clear(input);
   await user.type(input, "0.25");
   expect(input).toHaveValue("0.25");
@@ -44,7 +86,7 @@ it("accepts a custom slippage without preset controls", async () => {
 it("shows an error for extra decimal places without changing the input", async () => {
   const user = userEvent.setup();
   render(<SlippageForm />);
-  const input = screen.getByRole("textbox", { name: "Slippage" });
+  const input = screen.getByRole("textbox", { name: "Slippage (%)" });
 
   await user.clear(input);
   await user.type(input, "0.001");

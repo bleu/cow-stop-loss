@@ -187,7 +187,7 @@ export function ApprovalRepair({
       <div className="mb-5 flex justify-end">
         <Button
           variant="outline"
-          className="h-11 rounded-xl border-primary/30 bg-primary/10 px-5 text-primary shadow-sm hover:bg-primary/20 hover:text-primary"
+          className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 rounded-none border-primary/30 bg-primary/10 px-5 text-primary shadow-sm hover:bg-primary/20 hover:text-primary"
           onClick={() => {
             setMode("limited");
             setOpen(true);
@@ -197,7 +197,7 @@ export function ApprovalRepair({
         </Button>
       </div>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="rescue-dialog max-h-[85dvh] w-[calc(100vw-2rem)] max-w-xl overflow-y-auto rounded-[28px] border border-border/70 bg-card p-5 text-foreground shadow-2xl sm:p-7">
+        <DialogContent className="pixel-frame rescue-dialog max-h-[85dvh] w-[calc(100vw-2rem)] max-w-xl overflow-y-auto rounded-none border border-border/70 bg-card p-5 text-foreground shadow-2xl sm:p-7">
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-secondary">
             Air rescue · Token clearance
           </p>
@@ -216,7 +216,7 @@ export function ApprovalRepair({
           {(checks?.status === "unknown" || review.error) && (
             <p
               role="alert"
-              className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive"
+              className="pixel-inset rounded-none bg-destructive/10 p-3 text-sm text-destructive"
             >
               {checks?.status === "unknown"
                 ? checks.error
@@ -228,7 +228,7 @@ export function ApprovalRepair({
               {checks.approvalRequired && (
                 <section
                   aria-label="Wallet approval"
-                  className="space-y-3 rounded-2xl border border-border/70 bg-background/45 p-4"
+                  className="pixel-inset space-y-3 rounded-none border border-border/70 bg-background/45 p-4"
                 >
                   <h3 className="font-semibold">Wallet-to-Poller approval</h3>
                   <div className="space-y-1 break-all text-sm text-muted-foreground">
@@ -239,7 +239,7 @@ export function ApprovalRepair({
                   </div>
                   <fieldset
                     aria-label="Approval amount"
-                    className="flex flex-wrap gap-4 rounded-xl border border-border/70 bg-card/70 p-3 text-sm"
+                    className="pixel-inset flex flex-wrap gap-4 rounded-none border border-border/70 bg-card/70 p-3 text-sm"
                   >
                     <label className="inline-flex items-center gap-2">
                       <input
@@ -277,7 +277,7 @@ export function ApprovalRepair({
               {checks.settlementApprovalRequired && (
                 <section
                   aria-label="Settlement approval"
-                  className="space-y-2 break-all rounded-2xl border border-primary/25 bg-primary/5 p-4 text-sm"
+                  className="pixel-inset space-y-2 break-all rounded-none border border-primary/25 bg-primary/5 p-4 text-sm"
                 >
                   <h3>CowShed settlement approval</h3>
                   <p>Token: {prepared.draft.tokenSell.address}</p>
@@ -298,20 +298,23 @@ export function ApprovalRepair({
           {(error || trackingError || (!reconciled && record?.error)) && (
             <p
               role="alert"
-              className="rounded-xl bg-destructive/10 p-3 text-sm text-destructive"
+              className="pixel-inset rounded-none bg-destructive/10 p-3 text-sm text-destructive"
             >
               {error ?? trackingError ?? record?.error}
             </p>
           )}
           {pending && (
-            <p role="status" className="rounded-xl bg-primary/10 p-3 text-sm">
+            <p
+              role="status"
+              className="pixel-inset rounded-none bg-primary/10 p-3 text-sm"
+            >
               Approval transaction pending. You can close this review. No new
               transaction will be sent.
             </p>
           )}
           {checks?.status === "known" && (
             <Button
-              className="h-12 rounded-2xl"
+              className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-12 rounded-none"
               onClick={() => void submit()}
               disabled={
                 busy ||
@@ -337,7 +340,7 @@ export function ApprovalRepair({
             <Button
               onClick={() => void retry()}
               variant="outline"
-              className="h-12 rounded-2xl"
+              className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-12 rounded-none"
               disabled={busy || review.isFetching}
             >
               Retry

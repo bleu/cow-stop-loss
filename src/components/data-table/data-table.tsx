@@ -59,10 +59,17 @@ export function DataTable<TData>({
       )}
       {...props}
     >
-      {fillPanel ? <div className="shrink-0">{children}</div> : children}
+      {fillPanel && children ? (
+        <div className="shrink-0">{children}</div>
+      ) : (
+        children
+      )}
       <div
+        role="region"
+        aria-label="Table rows"
+        tabIndex={0}
         className={cn(
-          "overflow-auto rounded-2xl border border-border/70 bg-background/35 shadow-inner scrollbar scrollbar-thumb-rounded-full scrollbar-track-rounded-full scrollbar-thumb-primary/50 scrollbar-track-background scrollbar-w-2",
+          "rescue-table-viewport pixel-frame overflow-auto rounded-none border border-border/70 bg-background/35 scrollbar scrollbar-thumb-primary/50 scrollbar-track-background scrollbar-w-2",
           fillPanel
             ? "min-h-0 flex-1 max-h-none [&>div]:overflow-visible"
             : "max-h-96",

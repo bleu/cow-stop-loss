@@ -5,13 +5,13 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   ArrowLeftIcon,
   ArrowTopRightIcon,
-  GearIcon,
   ResetIcon,
 } from "@radix-ui/react-icons";
 import * as React from "react";
 import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
 import { useAccount } from "wagmi";
 
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import {
   defaultAdvancedSettings,
   haveSettingsChanged,
@@ -43,6 +43,7 @@ interface AdvancedSettingsPanelProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: React.ReactNode;
+  orderTiming?: React.ReactNode;
 }
 
 export function AdvancedSettingsPanel({
@@ -51,6 +52,7 @@ export function AdvancedSettingsPanel({
   open,
   onOpenChange,
   title,
+  orderTiming,
 }: AdvancedSettingsPanelProps) {
   const mounted = React.useRef(false);
   React.useEffect(() => {
@@ -115,18 +117,15 @@ export function AdvancedSettingsPanel({
 
   return (
     <div className="rescue-settings w-full">
-      <div className="flex items-start justify-between gap-3">
+      <div className="rescue-settings-heading flex items-start justify-between gap-3">
         {open ? (
           <div className="min-w-0">
-            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-secondary">
+            <p className="rescue-display-eyebrow font-mono text-[10px] uppercase tracking-[0.18em] text-secondary">
               Flight controls
             </p>
-            <h1 className="mt-2 font-serif text-[28px] leading-tight tracking-tight sm:text-[32px]">
+            <h2 className="rescue-settings-title mt-2 font-serif text-[28px] leading-tight tracking-tight sm:text-[32px]">
               Order settings
-            </h1>
-            <p className="mt-2 max-w-md text-[13px] leading-5 text-muted-foreground">
-              Set price limits and where you receive tokens.
-            </p>
+            </h2>
           </div>
         ) : (
           title
@@ -141,7 +140,7 @@ export function AdvancedSettingsPanel({
               onOpenChange(true);
             }
           }}
-          className={`relative inline-flex size-11 shrink-0 sm:size-10 items-center justify-center rounded-xl border border-border/70 bg-muted/35 transition-colors hover:border-primary/40 hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${areSavedSettingsDifferentFromDefault ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+          className={`rescue-secondary-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring relative inline-flex size-11 shrink-0 items-center justify-center transition-colors ${areSavedSettingsDifferentFromDefault ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
           aria-label="Order settings"
           aria-expanded={open}
           aria-controls="order-settings-panel"
@@ -150,12 +149,12 @@ export function AdvancedSettingsPanel({
           {open ? (
             <ArrowLeftIcon aria-hidden="true" className="size-4" />
           ) : (
-            <GearIcon aria-hidden="true" className="size-4" />
+            <PixelIcon name="settings" className="size-4" />
           )}
           {areSavedSettingsDifferentFromDefault && (
             <span
               aria-hidden="true"
-              className="absolute -right-1 -top-1 size-2 rounded-full bg-secondary"
+              className="absolute -right-1 -top-1 size-2 bg-secondary"
             />
           )}
         </button>
@@ -164,16 +163,22 @@ export function AdvancedSettingsPanel({
         <section
           id="order-settings-panel"
           aria-label="Order settings"
-          className="mt-4"
+          className="rescue-settings-panel grid gap-3"
           onKeyDown={(event) => {
             if (event.key === "Escape") onOpenChange(false);
           }}
         >
+          {orderTiming && (
+            <fieldset className="min-w-0">
+              <legend className="sr-only">Order timing</legend>
+              {orderTiming}
+            </fieldset>
+          )}
           <FormProvider {...form}>
             <div
               role="group"
               aria-label="Advanced order settings"
-              className="grid w-full gap-4"
+              className="rescue-settings-fields grid w-full gap-3"
               onKeyDown={(event) => {
                 if (
                   event.key === "Enter" &&
@@ -184,88 +189,81 @@ export function AdvancedSettingsPanel({
                 }
               }}
             >
-              <fieldset className="rescue-settings-prices rescue-inset grid gap-3 rounded-2xl border border-border/70 bg-muted/45 p-3 min-[860px]:grid-cols-2">
-                <legend className="mb-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground sm:col-span-2">
-                  Price protection
-                </legend>
-                <SlippageInputCard />
-                <Input
-                  name="maxHoursSinceOracleUpdates"
-                  label="Maximum oracle age (hours)"
-                  type="number"
-                  step="any"
-                  tooltipText={
-                    TOOLTIP_DESCRIPTIONS.MAX_TIME_SINCE_LAST_ORACLE_UPDATE
-                  }
-                  min={0}
-                  max={24 * 365}
-                  className="h-10 w-24 rounded-xl border-border bg-card"
-                />
-              </fieldset>
-              <fieldset className="rescue-settings-handling rescue-inset grid gap-3 rounded-2xl border border-border/70 bg-muted/45 p-3 min-[860px]:grid-cols-2">
-                <legend className="mb-1 font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground sm:col-span-2">
-                  Order handling
-                </legend>
-                <div className="grid gap-1.5">
-                  <div className="flex items-center gap-1.5">
-                    <label
-                      htmlFor="execution-mode"
-                      className="text-sm font-medium leading-none"
-                    >
-                      Execution
-                    </label>
-                    <InfoTooltip text={TOOLTIP_DESCRIPTIONS.TYPE} />
-                  </div>
-                  <Controller
-                    control={control}
-                    name="partiallyFillable"
-                    render={({ field }) => (
-                      <Select
-                        value={field.value ? "partial" : "fill-or-kill"}
-                        onValueChange={(value) =>
-                          field.onChange(value === "partial")
-                        }
-                      >
-                        <SelectTrigger
-                          id="execution-mode"
-                          className="h-11 rounded-xl border-border bg-card"
-                        >
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="partial">
-                            Allow partial executions
-                          </SelectItem>
-                          <SelectItem value="fill-or-kill">
-                            Fill or kill execution only
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
+              <SlippageInputCard />
+              <Input
+                name="maxHoursSinceOracleUpdates"
+                layout="inline"
+                label={"Maximum oracle age\n(hours)"}
+                aria-label="Maximum oracle age (hours)"
+                type="number"
+                step="any"
+                tooltipText={
+                  TOOLTIP_DESCRIPTIONS.MAX_TIME_SINCE_LAST_ORACLE_UPDATE
+                }
+                min={0}
+                max={24 * 365}
+                className="min-h-11 h-11 rounded-none border-border bg-card"
+              />
+              <div className="rescue-input-inline min-w-0">
+                <div className="rescue-input-label flex items-center gap-1.5">
+                  <label
+                    htmlFor="execution-mode"
+                    className="text-sm font-medium leading-none"
+                  >
+                    Execution
+                  </label>
+                  <InfoTooltip text={TOOLTIP_DESCRIPTIONS.TYPE} />
                 </div>
-                <Input
-                  name="receiver"
-                  label="Receiver"
-                  placeholder="0xabc...123"
-                  tooltipText={TOOLTIP_DESCRIPTIONS.RECEIVER}
-                  extraLabelElement={
-                    <BlockExplorerLink
-                      type="address"
-                      label={<ArrowTopRightIcon />}
-                      identifier={receiver}
-                      networkId={chainId}
-                    />
-                  }
-                  className="h-11 rounded-xl border-border bg-card"
+                <Controller
+                  control={control}
+                  name="partiallyFillable"
+                  render={({ field }) => (
+                    <Select
+                      value={field.value ? "partial" : "fill-or-kill"}
+                      onValueChange={(value) =>
+                        field.onChange(value === "partial")
+                      }
+                    >
+                      <SelectTrigger
+                        id="execution-mode"
+                        className="pixel-control min-h-11 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 rounded-none border-border bg-card"
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="partial">
+                          Allow partial fills
+                        </SelectItem>
+                        <SelectItem value="fill-or-kill">
+                          Fill or kill
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
                 />
-              </fieldset>
-              <div className="rescue-settings-actions grid w-full gap-2 min-[860px]:grid-cols-[1fr_1.5fr] min-[860px]:items-center">
+              </div>
+              <Input
+                name="receiver"
+                layout="inline"
+                label="Receiver"
+                placeholder="0xabc...123"
+                tooltipText={TOOLTIP_DESCRIPTIONS.RECEIVER}
+                extraLabelElement={
+                  <BlockExplorerLink
+                    type="address"
+                    label={<ArrowTopRightIcon />}
+                    identifier={receiver}
+                    networkId={chainId}
+                  />
+                }
+                className="min-h-11 h-11 rounded-none border-border bg-card"
+              />
+              <div className="rescue-settings-actions grid w-full gap-2 sm:grid-cols-[1fr_1.5fr] sm:items-center">
                 <Button
                   variant="ghost"
                   type="button"
                   aria-label="Reset to default settings"
-                  className="h-9 w-full rounded-xl text-xs text-muted-foreground hover:text-foreground"
+                  className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 w-full rounded-none text-xs text-muted-foreground hover:text-foreground"
                   onClick={() => {
                     reset({
                       ...defaultAdvancedSettings,
@@ -279,7 +277,7 @@ export function AdvancedSettingsPanel({
                   <ResetIcon className="mr-1.5 size-3.5" /> Reset to defaults
                 </Button>
                 <Button
-                  className="rescue-primary-button h-12 w-full rounded-2xl text-sm"
+                  className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rescue-primary-button h-12 w-full rounded-none text-sm"
                   type="button"
                   aria-label="Return to order"
                   loading={isSubmitting}

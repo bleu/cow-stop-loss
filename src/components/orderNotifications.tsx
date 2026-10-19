@@ -34,10 +34,10 @@ export function OrderToaster() {
           <Toast
             key={id}
             {...props}
-            className="items-start justify-start gap-3 space-x-0 rounded-2xl border-border/70 bg-card p-4 pr-14 text-card-foreground shadow-[0_8px_32px_-8px_hsl(217_72%_6%/0.4)] transition-[opacity,transform] motion-reduce:animate-none motion-reduce:transition-none"
+            className="pixel-frame items-start justify-start gap-3 space-x-0 rounded-none border-border/70 bg-card p-4 pr-14 text-card-foreground shadow-[0_8px_32px_-8px_hsl(217_72%_6%/0.4)] transition-[opacity,transform] motion-reduce:animate-none motion-reduce:transition-none"
           >
             <div
-              className={`flex size-9 shrink-0 items-center justify-center rounded-xl ${failed ? "bg-destructive/10 text-destructive" : "bg-success/10 text-success"}`}
+              className={`pixel-inset flex size-9 shrink-0 items-center justify-center rounded-none ${failed ? "bg-destructive/10 text-destructive" : "bg-success/10 text-success"}`}
             >
               <Icon aria-hidden="true" className="size-[18px]" />
             </div>
@@ -56,7 +56,7 @@ export function OrderToaster() {
             </div>
             <ToastClose
               aria-label="Dismiss notification"
-              className="right-1 top-1 flex size-11 items-center justify-center rounded-xl p-0 text-muted-foreground opacity-100 hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+              className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring right-1 top-1 flex size-11 items-center justify-center rounded-none p-0 text-muted-foreground opacity-100 hover:bg-muted hover:text-foreground"
             />
           </Toast>
         );
@@ -114,7 +114,7 @@ export function showOrderSuccess(
       <ToastAction
         asChild
         altText="View order details"
-        className="h-10 gap-1.5 rounded-lg border-primary/20 bg-primary/10 px-3 text-xs font-semibold text-primary hover:border-primary/30 hover:bg-primary/20 focus-visible:ring-2 focus-visible:ring-ring"
+        className="pixel-inset h-10 gap-1.5 rounded-none border-primary/20 bg-primary/10 px-3 text-xs font-semibold text-primary hover:border-primary/30 hover:bg-primary/20 focus-visible:ring-2 focus-visible:ring-ring"
       >
         <Link
           href={`/${order.chainId}/${order.account}/${encodeURIComponent(orderId)}`}

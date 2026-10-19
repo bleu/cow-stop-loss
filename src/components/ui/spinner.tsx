@@ -9,7 +9,7 @@ export function Spinner({ size = "md" }: { size?: keyof typeof SpinnerSize }) {
   const SpinnerSizeNumber = SpinnerSize[size];
   return (
     <div
-      className={cn("flex flex-col items-center rounded-3xl", {
+      className={cn("flex flex-col items-center rounded-none", {
         "px-4 py-4": SpinnerSizeNumber === SpinnerSize.md,
       })}
     >

@@ -44,7 +44,7 @@ export function DataTableColumnHeader<TData, TValue>({
             }
             variant="ghost"
             size="sm"
-            className="-ml-3 h-8 data-[state=open]:bg-accent w-full justify-between"
+            className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring -ml-3 h-11 data-[state=open]:bg-accent w-full justify-between"
           >
             <span className="">{title}</span>
             <span className="flex-initial">
@@ -58,10 +58,11 @@ export function DataTableColumnHeader<TData, TValue>({
             </span>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start">
+        <DropdownMenuContent className="pixel-frame" align="start">
           {column.getCanSort() && (
             <>
               <DropdownMenuItem
+                className="rounded-none"
                 aria-label="Sort ascending"
                 onClick={() => column.toggleSorting(false)}
               >
@@ -72,6 +73,7 @@ export function DataTableColumnHeader<TData, TValue>({
                 Asc
               </DropdownMenuItem>
               <DropdownMenuItem
+                className="rounded-none"
                 aria-label="Sort descending"
                 onClick={() => column.toggleSorting(true)}
               >
@@ -88,6 +90,7 @@ export function DataTableColumnHeader<TData, TValue>({
           )}
           {column.getCanHide() && (
             <DropdownMenuItem
+              className="rounded-none"
               aria-label="Hide column"
               onClick={() => column.toggleVisibility(false)}
             >

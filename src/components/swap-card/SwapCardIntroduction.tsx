@@ -1,6 +1,6 @@
 import { Button, Card, CardContent, CardTitle } from "@bleu/ui";
-import { GearIcon } from "@radix-ui/react-icons";
 
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import { useUIStore } from "#/hooks/useUIState";
 
 const INTRODUCTION_STEPS = [
@@ -23,8 +23,8 @@ const StepBulletPoint = ({
   icon: React.ReactNode;
   description: string;
 }) => (
-  <div className="flex min-h-14 items-center gap-3 rounded-2xl border border-border/60 bg-background/40 p-3">
-    <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-sm font-semibold text-primary">
+  <div className="pixel-inset flex min-h-14 items-center gap-3 rounded-none border border-border/60 bg-background/40 p-3">
+    <div className="pixel-inset flex size-8 shrink-0 items-center justify-center rounded-none bg-primary/10 text-sm font-semibold text-primary">
       {icon}
     </div>
     <span className="w-full text-pretty text-sm leading-snug text-foreground/90">
@@ -55,7 +55,7 @@ export function SwapCardIntroduction() {
   const setFirstAccess = useUIStore((state) => state.setFirstAccess);
 
   return (
-    <Card className="w-full rounded-[28px] border-white/10 bg-gradient-to-br from-card via-card to-secondary/10 p-5 shadow-xl sm:p-7">
+    <Card className="pixel-inset w-full rounded-none border-white/10 bg-gradient-to-br from-card via-card to-secondary/10 p-5 shadow-xl sm:p-7">
       <CardTitle className="flex w-full flex-col items-start">
         <span className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           Get started
@@ -79,11 +79,13 @@ export function SwapCardIntroduction() {
           <h3 className="mb-3 text-sm font-semibold">Advanced settings</h3>
           <BulletPointList
             items={ADVANCED_OPTIONS}
-            iconGenerator={() => <GearIcon className="size-4" />}
+            iconGenerator={() => (
+              <PixelIcon name="settings" className="size-4" />
+            )}
           />
         </div>
         <Button
-          className="h-12 rounded-2xl font-semibold"
+          className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-12 rounded-none font-semibold"
           onClick={() => setFirstAccess(false)}
         >
           Create your first order

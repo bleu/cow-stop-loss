@@ -34,6 +34,7 @@ export function RootLayout({
 }>) {
   const [queryClient] = useState(() => new QueryClient());
   const [theme, setTheme] = useState<ColorTheme>(initialTheme);
+  const [scenePaused, setScenePaused] = useState(false);
 
   useEffect(() => {
     const icon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
@@ -53,22 +54,25 @@ export function RootLayout({
         <RainbowKitProvider
           theme={createWalletTheme(theme)}
           modalSize="compact"
-          appInfo={{ appName: "CoW Stop Loss" }}
+          appInfo={{ appName: "CoW Air Rescue" }}
         >
           <SWRConfig value={swrConfig}>
-            <div className="rescue-shell flex h-dvh min-h-0 flex-col">
+            <div
+              className="rescue-shell flex flex-col"
+              data-scene-paused={scenePaused}
+            >
               <Header
                 linkUrl="/"
-                imageSrc={`/assets/air-rescue/face-${theme}.svg`}
+                imageSrc={`/assets/air-rescue/passenger-${theme}.svg`}
                 theme={theme}
                 onToggleTheme={toggleTheme}
               />
-              <div className="app-scroll-area min-h-0 flex-1 overflow-y-auto bg-transparent">
-                {children}
-              </div>
+              <div className="app-scroll-area bg-transparent">{children}</div>
               <Footer
                 githubLink="https://github.com/bleu/cow-stop-loss"
                 discordLink="https://discord.gg/cowprotocol"
+                scenePaused={scenePaused}
+                onToggleScene={() => setScenePaused((paused) => !paused)}
               />
             </div>
             <OrderToaster />

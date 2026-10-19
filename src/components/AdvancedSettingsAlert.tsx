@@ -1,7 +1,6 @@
 "use client";
 
-import { InfoCircledIcon } from "@radix-ui/react-icons";
-
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import { useAdvancedSettingsStore } from "#/hooks/useAdvancedSettings";
 
 export function AdvancedSettingsAlert({
@@ -24,12 +23,9 @@ export function AdvancedSettingsAlert({
   return (
     <aside
       role="note"
-      className="mt-2 flex items-start gap-2 rounded-xl bg-muted/45 px-3 py-2.5 text-xs text-muted-foreground"
+      className="pixel-inset mt-2 flex items-start gap-2 rounded-none bg-muted/45 px-3 py-2.5 text-xs text-muted-foreground"
     >
-      <InfoCircledIcon
-        aria-hidden="true"
-        className="mt-0.5 size-4 shrink-0 text-primary"
-      />
+      <PixelIcon name="info" className="mt-0.5 size-4 shrink-0 text-primary" />
       <p>{warnings.join(" ")}</p>
     </aside>
   );

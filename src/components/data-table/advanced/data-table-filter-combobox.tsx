@@ -54,7 +54,7 @@ export function DataTableFilterCombobox<TData>({
             variant="outline"
             size="sm"
             role="combobox"
-            className="capitalize"
+            className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring capitalize"
           >
             <CaretSortIcon
               className="mr-2 size-4 shrink-0"
@@ -64,9 +64,9 @@ export function DataTableFilterCombobox<TData>({
           </Button>
         )}
       </PopoverTrigger>
-      <PopoverContent className="w-[12.5rem] p-0" align="end">
-        <Command>
-          <CommandInput placeholder="Filter by..." />
+      <PopoverContent className="pixel-frame w-[12.5rem] p-0" align="end">
+        <Command className="rounded-none">
+          <CommandInput className="rounded-none" placeholder="Filter by..." />
           <CommandList>
             <CommandEmpty>No item found.</CommandEmpty>
             <CommandGroup>
@@ -80,7 +80,7 @@ export function DataTableFilterCombobox<TData>({
                 .map((option) => (
                   <CommandItem
                     key={String(option.value)}
-                    className="capitalize"
+                    className="rounded-none capitalize"
                     value={String(option.value)}
                     onSelect={(currentValue) => {
                       setValue(currentValue === value ? "" : currentValue);
@@ -107,6 +107,7 @@ export function DataTableFilterCombobox<TData>({
             <CommandSeparator />
             <CommandGroup>
               <CommandItem
+                className="rounded-none"
                 onSelect={() => {
                   setOpen(false);
                   setSelectedOptions([

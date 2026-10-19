@@ -5,11 +5,8 @@ import {
   ArrowLeftIcon,
   ArrowTopRightIcon,
   CheckCircledIcon,
-  CheckIcon,
   ClockIcon,
-  CopyIcon,
   CrossCircledIcon,
-  InfoCircledIcon,
 } from "@radix-ui/react-icons";
 import Link from "next/link";
 import React, { useId, useState } from "react";
@@ -18,6 +15,7 @@ import { erc20Abi, formatUnits } from "viem";
 
 import { NetworkLogo } from "#/components/NetworkLogo";
 import { TokenLogo } from "#/components/TokenLogo";
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import { useOrderList } from "#/hooks/useOrderList";
 import { oracleMinimalAbi } from "#/lib/abis/oracleMinimalAbi";
 import { GPV2_VAULT_RELAYER_ADDRESS } from "#/lib/contracts";
@@ -164,7 +162,7 @@ function OrderHealth({ order }: { order: StopLossOrder }) {
   return (
     <aside
       role="alert"
-      className="mb-5 rounded-2xl border border-destructive/35 bg-destructive/8 p-4 text-sm"
+      className="pixel-inset mb-5 rounded-none border border-destructive/35 bg-destructive/8 p-4 text-sm"
     >
       <p className="font-semibold text-destructive">Order needs attention</p>
       <ul className="mt-1 list-disc space-y-1 pl-5 text-muted-foreground">
@@ -220,7 +218,7 @@ function DetailSection({
   description,
 }: React.PropsWithChildren<{ title: string; description: string }>) {
   return (
-    <section className="rescue-panel rounded-[24px] border border-border/70 bg-card p-4 sm:p-5">
+    <section className="pixel-frame rescue-panel rounded-none border border-border/70 bg-card p-4 sm:p-5">
       <header className="mb-4 border-b border-border/60 pb-3">
         <h2 className="font-serif text-2xl leading-tight tracking-tight">
           {title}
@@ -244,7 +242,7 @@ function TokenAmount({
   chainId: ChainId;
 }) {
   return (
-    <dl className="min-w-0 rounded-2xl border border-border/70 bg-background/50 p-4 sm:p-5">
+    <dl className="pixel-inset min-w-0 rounded-none border border-border/70 bg-background/50 p-4 sm:p-5">
       <dt className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
         {label}
       </dt>
@@ -288,7 +286,7 @@ function OrderDetailsHeading({ children }: React.PropsWithChildren) {
         <Link
           href="/"
           aria-label="Back to orders"
-          className="absolute left-0 top-1 inline-flex size-11 shrink-0 items-center justify-center rounded-2xl border border-border/70 bg-card/80 text-muted-foreground shadow-sm transition-colors hover:border-primary/40 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="pixel-control absolute left-0 top-1 inline-flex size-11 shrink-0 items-center justify-center rounded-none border border-border/70 bg-card/80 text-muted-foreground shadow-sm transition-colors hover:border-primary/40 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <ArrowLeftIcon className="size-5" aria-hidden="true" />
         </Link>
@@ -416,7 +414,7 @@ function OrderStatusSummary({
         ? ClockIcon
         : message.tone === "muted"
           ? CrossCircledIcon
-          : InfoCircledIcon;
+          : null;
   const color =
     message.tone === "success"
       ? "text-success"
@@ -427,12 +425,19 @@ function OrderStatusSummary({
           : "text-primary";
 
   return (
-    <aside className="mb-5 flex flex-wrap items-center gap-3 rounded-2xl border border-border/70 bg-primary/5 p-4">
+    <aside className="pixel-inset mb-5 flex flex-wrap items-center gap-3 rounded-none border border-border/70 bg-primary/5 p-4">
       <div className="flex min-w-0 flex-1 items-start gap-3">
-        <Icon
-          aria-hidden="true"
-          className={`mt-0.5 size-5 shrink-0 ${color}`}
-        />
+        {Icon ? (
+          <Icon
+            aria-hidden="true"
+            className={`mt-0.5 size-5 shrink-0 ${color}`}
+          />
+        ) : (
+          <PixelIcon
+            name="info"
+            className={`mt-0.5 size-5 shrink-0 ${color}`}
+          />
+        )}
         <div>
           <p className="font-semibold">{message.title}</p>
           <p className="mt-0.5 text-[13px] leading-5 text-muted-foreground">
@@ -470,7 +475,7 @@ function CopyableIdentifier({
   }
 
   return (
-    <span className="inline-flex items-center gap-2">
+    <span className="inline-flex items-center">
       <code title={value} className="font-mono text-xs text-muted-foreground">
         {shortIdentifier(value)}
       </code>
@@ -479,12 +484,12 @@ function CopyableIdentifier({
         aria-label={copied ? `${label} copied` : `Copy ${label}`}
         title={copied ? "Copied" : `Copy ${label}`}
         onClick={() => void copyValue()}
-        className="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="rescue-secondary-control pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring inline-flex size-11 shrink-0 items-center justify-center rounded-none p-0 text-muted-foreground transition-colors hover:text-foreground"
       >
         {copied ? (
-          <CheckIcon aria-hidden="true" className="size-4 text-success" />
+          <PixelIcon name="check" className="size-4 text-success" />
         ) : (
-          <CopyIcon aria-hidden="true" className="size-4" />
+          <PixelIcon name="copy" className="size-4" />
         )}
       </button>
     </span>
@@ -510,7 +515,7 @@ export function OrderDetails({
   const warning = chain?.status === "error" && (
     <div
       role="alert"
-      className="mb-5 rounded-2xl border border-destructive/40 bg-destructive/10 p-4 text-sm"
+      className="pixel-inset mb-5 rounded-none border border-destructive/40 bg-destructive/10 p-4 text-sm"
     >
       <p className="font-semibold">
         {chainNames[chainId]} order data is unavailable.
@@ -524,7 +529,7 @@ export function OrderDetails({
       <button
         disabled={isLoading}
         onClick={() => mutate()}
-        className="mt-3 rounded-lg text-primary underline underline-offset-4 disabled:opacity-50"
+        className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring mt-3 rounded-none text-primary underline underline-offset-4 disabled:opacity-50"
       >
         Retry {chainNames[chainId]}
       </button>
@@ -538,7 +543,7 @@ export function OrderDetails({
         {warning || (
           <div
             role="status"
-            className="rounded-[28px] border border-border/70 bg-card/85 p-6 text-muted-foreground shadow-xl sm:p-8"
+            className="pixel-inset rounded-none border border-border/70 bg-card/85 p-6 text-muted-foreground shadow-xl sm:p-8"
           >
             {isLoading
               ? "Loading order..."
@@ -565,7 +570,7 @@ export function OrderDetails({
       <OrderHealth order={order} />
       {warning}
 
-      <section className="rescue-panel rescue-portfolio-panel relative mb-5 overflow-hidden rounded-[24px] border border-border bg-card p-4 sm:p-7">
+      <section className="pixel-frame rescue-panel relative mb-5 rounded-none border border-border bg-card p-4 sm:p-7">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
@@ -576,7 +581,7 @@ export function OrderDetails({
             </h2>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background/50 px-3 py-1.5 text-xs font-medium text-muted-foreground">
+            <span className="pixel-badge inline-flex items-center gap-2 rounded-none border border-border/70 bg-background/50 px-3 py-1.5 text-xs font-medium text-muted-foreground">
               <NetworkLogo
                 chainId={chainId}
                 size={18}
@@ -602,8 +607,10 @@ export function OrderDetails({
           />
         </div>
 
-        <div className="mt-3 grid gap-3 sm:grid-cols-2">
-          <dl className="rounded-2xl border border-primary/20 bg-primary/10 p-4">
+        <div
+          className={`mt-3 grid gap-3 ${order.limitPrice !== undefined ? "sm:grid-cols-2" : ""}`}
+        >
+          <dl className="pixel-inset rounded-none border border-primary/20 bg-primary/10 p-4">
             <dt className="text-xs font-medium uppercase tracking-[0.12em] text-primary">
               Trigger price
             </dt>
@@ -615,7 +622,7 @@ export function OrderDetails({
             </dd>
           </dl>
           {order.limitPrice !== undefined && (
-            <dl className="rounded-2xl border border-secondary/25 bg-secondary/10 p-4">
+            <dl className="pixel-inset rounded-none border border-secondary/25 bg-secondary/10 p-4">
               <dt className="text-xs font-medium uppercase tracking-[0.12em] text-secondary">
                 Limit price
               </dt>

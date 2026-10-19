@@ -15,7 +15,7 @@ import { useDraftOrder } from "#/hooks/useDraftOrder";
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { ChainId } from "#/lib/publicClients";
-import { generateSwapSchema } from "#/lib/schema";
+import { generateSwapSchema, VALID_TO_OPTIONS } from "#/lib/schema";
 import { getSupportedTokens } from "#/lib/supportedTokens";
 import { DraftOrder, SwapData } from "#/lib/types";
 
@@ -25,6 +25,7 @@ import { PriceInputCard } from "../PriceInputCard";
 import { TokenInputCard } from "../TokenInputCard";
 import { Form } from "../ui/form";
 import { SwapCardSubmitButton } from "./SwapCardSubmitButton";
+import { ValidToInput } from "./ValidToInput";
 
 export interface SwapFormProps {
   reviewDisabled?: boolean;
@@ -60,6 +61,7 @@ function WalletSwapForm({
     defaultValues: {
       isSellOrder: true,
       slippagePercent: "0.1",
+      validTo: VALID_TO_OPTIONS.MONTHS_6,
       amountSell: "",
       amountBuy: "",
       strikePrice: "",
@@ -130,6 +132,7 @@ function WalletSwapForm({
     reset({
       isSellOrder: true,
       slippagePercent: "0.1",
+      validTo: VALID_TO_OPTIONS.MONTHS_6,
       amountSell: "",
       amountBuy: "",
       strikePrice: "",
@@ -190,22 +193,23 @@ function WalletSwapForm({
         className="flex w-full min-w-0 flex-col"
       >
         <Card className="flex w-full min-w-0 flex-col rounded-none border-0 bg-transparent p-0 shadow-none">
-          <CardContent className="rescue-swap-content flex flex-col gap-3 p-0 min-[860px]:gap-1">
+          <CardContent className="rescue-swap-content flex flex-col gap-3 p-0">
             <AdvancedSettingsPanel
               slippagePercent={slippagePercent}
               open={settingsOpen}
               onOpenChange={setSettingsOpen}
+              orderTiming={<ValidToInput />}
               title={
                 <div className="min-w-0">
-                  <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-secondary">
+                  <p className="rescue-display-eyebrow font-mono text-[10px] uppercase tracking-[0.18em] text-secondary">
                     Create · Your flight plan
                   </p>
-                  <h1
+                  <h2
                     id="place-order-title"
-                    className="mt-2 min-[860px]:mt-1 text-balance font-serif text-[28px] leading-tight tracking-tight sm:text-[32px] min-[860px]:text-[28px]"
+                    className="mt-2 text-balance font-serif text-[28px] leading-tight tracking-tight sm:text-[32px]"
                   >
                     Place a stop-loss order
-                  </h1>
+                  </h2>
                 </div>
               }
               onApplySlippage={(value) =>
@@ -216,13 +220,10 @@ function WalletSwapForm({
               }
             />
             <div
-              hidden={settingsOpen}
               aria-hidden={settingsOpen}
-              className={
-                settingsOpen
-                  ? "hidden"
-                  : "flex flex-col gap-3 min-[860px]:gap-1"
-              }
+              inert={settingsOpen}
+              data-inactive={settingsOpen}
+              className="rescue-order-fields flex flex-col gap-3"
             >
               <TokenInputCard side="Sell" />
               <PriceInputCard />

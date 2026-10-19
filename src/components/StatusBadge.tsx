@@ -18,7 +18,7 @@ export function StatusBadge({ status }: { status: OrderStatus | string }) {
   switch (status) {
     case OrderStatus.OPEN:
       return (
-        <Badge className="h-fit rounded-full border border-highlight/30 bg-highlight px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-black shadow-sm hover:bg-highlight">
+        <Badge className="pixel-badge h-fit rounded-none border border-highlight/30 bg-highlight px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-black shadow-sm hover:bg-highlight">
           Open
         </Badge>
       );
@@ -26,7 +26,7 @@ export function StatusBadge({ status }: { status: OrderStatus | string }) {
       return (
         <Badge
           color="success"
-          className="h-fit rounded-full border border-success/30 bg-success px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary-foreground shadow-sm hover:bg-success"
+          className="pixel-badge h-fit rounded-none border border-success/30 bg-success px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary-foreground shadow-sm hover:bg-success"
         >
           Filled
         </Badge>
@@ -37,7 +37,7 @@ export function StatusBadge({ status }: { status: OrderStatus | string }) {
       return (
         <Badge
           color="success"
-          className="h-fit rounded-full border border-success/30 bg-success px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary-foreground shadow-sm hover:bg-success"
+          className="pixel-badge h-fit rounded-none border border-success/30 bg-success px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary-foreground shadow-sm hover:bg-success"
         >
           {stopLossStatusLabels[status]}
         </Badge>
@@ -46,7 +46,7 @@ export function StatusBadge({ status }: { status: OrderStatus | string }) {
       return (
         <Badge
           color="destructive"
-          className="h-fit rounded-full border border-destructive/30 bg-destructive px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-destructive-foreground shadow-sm hover:bg-destructive"
+          className="pixel-badge h-fit rounded-none border border-destructive/30 bg-destructive px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-destructive-foreground shadow-sm hover:bg-destructive"
         >
           Cancelling
         </Badge>
@@ -57,14 +57,14 @@ export function StatusBadge({ status }: { status: OrderStatus | string }) {
       return (
         <Badge
           color="destructive"
-          className="h-fit rounded-full border border-destructive/30 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide shadow-sm hover:bg-destructive"
+          className="pixel-badge h-fit rounded-none border border-destructive/30 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide shadow-sm hover:bg-destructive"
         >
           {capitalize(status)}
         </Badge>
       );
     default:
       return (
-        <Badge className="h-fit rounded-full border border-primary/30 bg-primary px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary-foreground shadow-sm hover:bg-primary">
+        <Badge className="pixel-badge h-fit rounded-none border border-primary/30 bg-primary px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-primary-foreground shadow-sm hover:bg-primary">
           {capitalize(status)}
         </Badge>
       );
