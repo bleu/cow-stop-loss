@@ -556,11 +556,9 @@ export function OrderDetails({
   const price = (value: string) =>
     `${value} ${order.buyToken.symbol} per ${order.sellToken.symbol}`;
   const hasExecution =
-    order.executedSellAmount !== null ||
-    order.executedBuyAmount !== null ||
-    order.executedFee !== null ||
-    order.executionPrice !== undefined ||
-    order.cowOrder !== undefined;
+    Boolean(order.cowOrder?.uid) ||
+    (order.executedSellAmount ?? BigInt(0)) > BigInt(0) ||
+    (order.executedBuyAmount ?? BigInt(0)) > BigInt(0);
   return (
     <main className="rescue-detail-page mx-auto min-h-full w-full px-4 py-8 sm:px-6 sm:py-10">
       <OrderDetailsHeading />
@@ -725,7 +723,7 @@ export function OrderDetails({
                 {price(order.executionPrice)}
               </Field>
             )}
-            {order.cowOrder !== undefined && (
+            {order.cowOrder?.uid && (
               <Field label="CoW order">
                 <Link
                   href={buildOrderCowExplorerUrl({

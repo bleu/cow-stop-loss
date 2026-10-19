@@ -2068,6 +2068,67 @@ test("omits unavailable optional detail rows without adding placeholders", async
   );
 });
 
+test.each([
+  { status: "Cancelled", child: false, uid: "", filled: "0", visible: false },
+  { status: "Active", child: false, uid: "", filled: "0", visible: false },
+  { status: "Cancelled", child: true, uid: "", filled: "0", visible: false },
+  {
+    status: "Cancelled",
+    child: true,
+    uid: `0x${"cd".repeat(56)}`,
+    filled: "0",
+    visible: true,
+  },
+  {
+    status: "Cancelled",
+    child: true,
+    uid: "",
+    filled: "400000000000000000",
+    visible: true,
+  },
+])(
+  "shows Execution=$visible for $status with child=$child, UID=$uid, filled=$filled",
+  async ({ status, child, uid, filled, visible }) => {
+    serveOrders([
+      {
+        ...parent,
+        status,
+        discreteOrders: {
+          items: child
+            ? [
+                {
+                  orderUid: uid,
+                  status: "cancelled",
+                  validTo: 4102444800,
+                  executedSellAmount: filled,
+                  executedBuyAmount: "0",
+                  executedFee: "0",
+                },
+              ]
+            : [],
+        },
+      },
+    ]);
+    Object.defineProperty(window, "ethereum", {
+      configurable: true,
+      value: new BrowserWallet(),
+    });
+    render(
+      <RootLayout>
+        <OrderPage
+          params={{ safeAddress: wallet, chainId: 1, orderId: "stop-loss-1" }}
+        />
+      </RootLayout>,
+    );
+    await connectBrowserWallet();
+    await screen.findByRole("definition", { name: "Order ID" });
+
+    expect(Boolean(screen.queryByRole("heading", { name: "Execution" }))).toBe(
+      visible,
+    );
+  },
+);
+
 test.each(["0", "1000000000000000000"])(
   "retains zero values and false flags in available details with %s executed sell units",
   async (executedSellAmount) => {
