@@ -12,7 +12,8 @@ import {
 
 export const COW_PROTOCOL_LINK = "https://cow.fi/";
 
-import { ChainId, plasma } from "./publicClients";
+import { CHAIN_ASSETS } from "./chainAssets";
+import { type ChainId, plasma } from "./publicClients";
 
 export interface BaseChainInfo {
   readonly docs: string;
@@ -41,8 +42,7 @@ export const CHAIN_INFO: ChainInfoMap = {
     addressPrefix: "eth",
     explorerTitle: "Etherscan",
     urlAlias: "",
-    color: "#62688F",
-    icon: "/assets/chains/ethereum.svg",
+    ...CHAIN_ASSETS[mainnet.id],
   },
   [gnosis.id]: {
     docs: "https://docs.gnosischain.com",
@@ -54,8 +54,7 @@ export const CHAIN_INFO: ChainInfoMap = {
     addressPrefix: "gno",
     explorerTitle: "Gnosisscan",
     urlAlias: "gc",
-    color: "#07795B",
-    icon: "/assets/chains/gnosis.svg",
+    ...CHAIN_ASSETS[gnosis.id],
   },
   [sepolia.id]: {
     docs: "https://docs.cow.fi",
@@ -66,8 +65,7 @@ export const CHAIN_INFO: ChainInfoMap = {
     addressPrefix: "sep",
     explorerTitle: "Etherscan",
     urlAlias: "sepolia",
-    color: "#C12FF2",
-    icon: "/assets/chains/ethereum.svg",
+    ...CHAIN_ASSETS[sepolia.id],
   },
   [arbitrum.id]: {
     docs: "https://docs.cow.fi",
@@ -78,8 +76,7 @@ export const CHAIN_INFO: ChainInfoMap = {
     addressPrefix: "arb1",
     explorerTitle: "Arbiscan",
     urlAlias: "arb1",
-    color: "#29B6AF",
-    icon: "/assets/chains/arbitrum.svg",
+    ...CHAIN_ASSETS[arbitrum.id],
   },
   [base.id]: {
     docs: "https://docs.cow.fi",
@@ -90,8 +87,7 @@ export const CHAIN_INFO: ChainInfoMap = {
     addressPrefix: "base",
     explorerTitle: "Basescan",
     urlAlias: "base",
-    color: "#0052FF",
-    icon: "/assets/chains/base.svg",
+    ...CHAIN_ASSETS[base.id],
   },
   [polygon.id]: {
     docs: "https://docs.cow.fi",
@@ -102,8 +98,7 @@ export const CHAIN_INFO: ChainInfoMap = {
     addressPrefix: "matic",
     explorerTitle: "Polygonscan",
     urlAlias: "pol",
-    color: "#8247E5",
-    icon: "/assets/chains/polygon.svg",
+    ...CHAIN_ASSETS[polygon.id],
   },
   [avalanche.id]: {
     docs: "https://docs.cow.fi",
@@ -114,8 +109,7 @@ export const CHAIN_INFO: ChainInfoMap = {
     addressPrefix: "avax",
     explorerTitle: "Snowscan",
     urlAlias: "avax",
-    color: "#FF3944",
-    icon: "/assets/chains/avalanche.svg",
+    ...CHAIN_ASSETS[avalanche.id],
   },
   [bsc.id]: {
     docs: "https://docs.cow.fi",
@@ -126,8 +120,7 @@ export const CHAIN_INFO: ChainInfoMap = {
     addressPrefix: "bnb",
     explorerTitle: "Bscscan",
     urlAlias: "bnb",
-    color: "#F0B90B",
-    icon: "/assets/chains/bnb.svg",
+    ...CHAIN_ASSETS[bsc.id],
   },
   [linea.id]: {
     docs: "https://docs.cow.fi",
@@ -138,8 +131,7 @@ export const CHAIN_INFO: ChainInfoMap = {
     addressPrefix: "linea",
     explorerTitle: "Lineascan",
     urlAlias: "linea",
-    color: "#61DFFF",
-    icon: "/assets/chains/linea.svg",
+    ...CHAIN_ASSETS[linea.id],
   },
   [plasma.id]: {
     docs: "https://docs.cow.fi",
@@ -150,8 +142,7 @@ export const CHAIN_INFO: ChainInfoMap = {
     addressPrefix: "plasma",
     explorerTitle: "PlasmaScan",
     urlAlias: "plasma",
-    color: "#569F8C",
-    icon: "/assets/chains/plasma.svg",
+    ...CHAIN_ASSETS[plasma.id],
   },
 };
 

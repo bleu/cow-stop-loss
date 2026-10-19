@@ -17,6 +17,8 @@ import {
   sepolia,
 } from "viem/chains";
 
+import { CHAIN_ASSETS } from "./chainAssets";
+
 // Matches viem's Plasma definition, which is absent from the locked version.
 export const plasma = defineChain({
   id: 9745,
@@ -43,8 +45,17 @@ export const supportedChains = [
   polygon,
   avalanche,
   { ...bsc, name: "BNB Chain" },
-  { ...linea, name: "Linea" },
-  plasma,
+  {
+    ...linea,
+    name: "Linea",
+    iconUrl: CHAIN_ASSETS[linea.id].icon,
+    iconBackground: CHAIN_ASSETS[linea.id].color,
+  },
+  {
+    ...plasma,
+    iconUrl: CHAIN_ASSETS[plasma.id].icon,
+    iconBackground: CHAIN_ASSETS[plasma.id].color,
+  },
 ] as const;
 
 export type ChainId = (typeof supportedChains)[number]["id"];
