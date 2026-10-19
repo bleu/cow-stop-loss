@@ -9,20 +9,24 @@ import type { ReactNode } from "react";
 import { RootLayout } from "#/components/RootLayout";
 import { getWagmiInitialState } from "#/utils/wagmiServer";
 
-const flechaS = localFont({
+const pixelDisplay = localFont({
+  src: "../fonts/PixelifySans-Variable.ttf",
+  weight: "400 700",
+  variable: "--font-family-pixel-display",
+  display: "swap",
+});
+
+const desktopDisplay = localFont({
   src: [
+    { path: "../fonts/ChakraPetch-Medium.ttf", weight: "500", style: "normal" },
     {
-      path: "../fonts/FlechaS-Medium.woff2",
-      weight: "500",
+      path: "../fonts/ChakraPetch-SemiBold.ttf",
+      weight: "600",
       style: "normal",
     },
-    {
-      path: "../fonts/FlechaS-MediumItalic.woff2",
-      weight: "500",
-      style: "italic",
-    },
   ],
-  variable: "--font-family-serif",
+  variable: "--font-family-desktop-display",
+  display: "swap",
 });
 
 const circularStd = localFont({
@@ -45,6 +49,7 @@ export async function generateMetadata() {
   const theme =
     (await cookies()).get("theme")?.value === "light" ? "light" : "dark";
   return {
+    title: "CoW Air Rescue",
     icons: {
       icon: {
         url: `/assets/air-rescue/favicon-${theme}.svg`,
@@ -66,7 +71,7 @@ export default async function Layout({
   return (
     <html lang="en" className={initialTheme === "light" ? "light" : undefined}>
       <body
-        className={`${flechaS.variable} ${circularStd.variable} flex h-full flex-col border-border bg-background font-sans font-normal`}
+        className={`${pixelDisplay.variable} ${desktopDisplay.variable} ${circularStd.variable} min-h-full border-border bg-background font-sans font-normal`}
       >
         <RootLayout initialState={initialState} initialTheme={initialTheme}>
           {children}

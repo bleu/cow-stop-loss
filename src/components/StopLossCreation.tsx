@@ -448,7 +448,7 @@ export function StopLossCreation() {
                 : "Continue your order."}
           </p>
           <button
-            className="text-primary underline"
+            className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-primary underline"
             onClick={() => {
               invalidatePlacementReads(active.prepared);
               void loadReview(
@@ -463,7 +463,7 @@ export function StopLossCreation() {
           </button>
           {!pending && (
             <button
-              className="ml-4 text-primary underline"
+              className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ml-4 text-primary underline"
               onClick={() => {
                 void abandon();
               }}

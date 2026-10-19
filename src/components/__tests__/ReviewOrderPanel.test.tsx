@@ -3,7 +3,7 @@
  * @jest-environment-options {"customExportConditions": ["node", "node-addons"]}
  */
 
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import type { FundingSnapshot, PreparedPlacement } from "#/lib/pollerStopLoss";
@@ -110,6 +110,40 @@ it("shows a compact order summary with edit beside the heading", () => {
         ?.querySelector("a"),
     ).toHaveAttribute("href", `https://etherscan.io/address/${address}`);
   }
+});
+
+it("keeps exact amounts and oracle help as inline keyboard controls", async () => {
+  const user = userEvent.setup();
+  render(<ReviewOrderPanel {...props()} />);
+  const amount = screen.getByRole("button", {
+    name: "Show exact amount: 0.123456789012345678 WETH",
+  });
+  const oracleHelp = screen.getByRole("button", {
+    name: "About WETH oracle (2h max age)",
+  });
+  for (const control of [amount, oracleHelp]) {
+    expect(control).toHaveClass("rescue-review-inline-control");
+    expect(control).not.toHaveClass("pixel-control");
+    expect(control).toHaveClass("focus-visible:ring-2");
+  }
+  act(() => oracleHelp.focus());
+  expect(oracleHelp).toHaveFocus();
+  expect(screen.getByRole("tooltip")).toHaveTextContent(
+    "WETH price feed used to check the trigger price.",
+  );
+  await user.tab();
+  expect(
+    screen
+      .getByText("WETH oracle (2h max age)")
+      .closest(".rescue-review-address")
+      ?.querySelector("a"),
+  ).toHaveFocus();
+  expect(
+    screen.getByRole("link", { name: "WETH token contract" }),
+  ).toHaveAttribute(
+    "href",
+    `https://etherscan.io/token/${order.tokenSell.address}`,
+  );
 });
 
 it("shows one approval action until approval is sufficient, then one placement action", () => {

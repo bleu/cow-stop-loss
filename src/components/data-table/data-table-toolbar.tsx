@@ -39,7 +39,7 @@ export function DataTableToolbar<TData>({
   return (
     <div
       className={cn(
-        "flex w-full flex-wrap items-center justify-between gap-2 p-1",
+        "flex w-full flex-wrap items-center justify-between gap-2",
         className,
       )}
       {...props}
@@ -62,7 +62,7 @@ export function DataTableToolbar<TData>({
                       .getColumn(String(column.value))
                       ?.setFilterValue(event.target.value)
                   }
-                  className="h-8 w-40 lg:w-64"
+                  className="min-h-11 h-8 w-40 lg:w-64"
                 />
               ),
           )}
@@ -85,7 +85,7 @@ export function DataTableToolbar<TData>({
           <Button
             aria-label="Reset filters"
             variant="ghost"
-            className="h-8 px-2 lg:px-3"
+            className="rescue-secondary-control pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 px-2 lg:px-3"
             onClick={() => table.resetColumnFilters()}
           >
             Reset

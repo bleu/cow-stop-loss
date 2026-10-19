@@ -7,7 +7,6 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from "@bleu/ui";
-import { ReloadIcon } from "@radix-ui/react-icons";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useRouter } from "next/navigation";
 import React, { useMemo } from "react";
@@ -16,6 +15,7 @@ import { useAccount } from "wagmi";
 
 import { DataTable } from "#/components/data-table/data-table";
 import { DataTableToolbar } from "#/components/data-table/data-table-toolbar";
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import { DataTableFilterField, useDataTable } from "#/hooks/useDataTable";
 import { useOrderList } from "#/hooks/useOrderList";
 import { chainNames } from "#/lib/publicClients";
@@ -54,31 +54,48 @@ export function ConsolidatedOrdersTable() {
   return <ConnectedOrdersTable account={address} />;
 }
 
+function OrdersHeading({ children }: { children?: React.ReactNode }) {
+  return (
+    <div className="rescue-panel-heading rescue-portfolio-heading">
+      <div className="rescue-portfolio-title">
+        <p className="rescue-eyebrow">Portfolio</p>
+        <h2 id="orders-title" className="rescue-panel-title">
+          Your stop-loss orders
+        </h2>
+      </div>
+      {children}
+    </div>
+  );
+}
+
 function WalletRequiredOrders() {
   const { openConnectModal } = useConnectModal();
   return (
-    <div className="my-auto flex w-full flex-1 items-center justify-center gap-5 px-1 py-5 text-left sm:px-3">
-      <div
-        aria-hidden="true"
-        className="rescue-landing-art hidden size-32 shrink-0 sm:block"
-      />
-      <div className="max-w-sm">
-        <h3 className="font-serif text-2xl leading-tight tracking-tight">
-          Your herd, all in one place
-        </h3>
-        <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
-          Connect your wallet to see stop-loss orders across Ethereum, Gnosis,
-          Arbitrum, and Sepolia.
-        </p>
-        <Button
-          type="button"
-          className="mt-4 h-11 w-fit rounded-xl border border-primary/35 bg-primary/10 px-4 text-[13px] font-medium text-primary hover:bg-primary/15 hover:text-primary"
-          onClick={openConnectModal}
-        >
-          Connect wallet to view orders
-        </Button>
+    <>
+      <OrdersHeading />
+      <div className="my-auto flex w-full flex-1 items-center justify-center gap-5 px-1 py-5 text-left sm:px-3">
+        <div
+          aria-hidden="true"
+          className="rescue-landing-art hidden size-32 shrink-0 sm:block"
+        />
+        <div className="max-w-sm">
+          <h3 className="font-serif text-2xl leading-tight tracking-tight">
+            Your herd, all in one place
+          </h3>
+          <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
+            Connect your wallet to see stop-loss orders across Ethereum, Gnosis,
+            Arbitrum, and Sepolia.
+          </p>
+          <Button
+            type="button"
+            className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring mt-4 h-11 w-fit rounded-none border border-primary/35 bg-primary/10 px-4 text-[13px] font-medium text-primary hover:bg-primary/15 hover:text-primary"
+            onClick={openConnectModal}
+          >
+            Connect wallet to view orders
+          </Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 
@@ -131,7 +148,7 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
           <button
             disabled={isLoading}
             onClick={() => mutate()}
-            className="text-primary underline"
+            className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-primary underline"
           >
             Retry {chainNames[chain.chainId]}
           </button>
@@ -141,27 +158,10 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
   );
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-4">
-      <DataTable
-        table={table}
-        fillPanel
-        className="rescue-orders-table"
-        tableClassName="min-w-0 table-fixed xl:min-w-0"
-        onRowClick={(row: PlacementRow) => {
-          if (row.canLink)
-            router.push(
-              `/${row.chainId}/${account}/${encodeURIComponent(row.parentId)}`,
-            );
-        }}
-        getRowLabel={(row: PlacementRow) =>
-          row.canLink
-            ? `View order ${row.parentId} on ${chainNames[row.chainId]}`
-            : undefined
-        }
-        emptyMessage={emptyMessage}
-        notice={notice}
-      >
+    <>
+      <OrdersHeading>
         <DataTableToolbar
+          className="rescue-portfolio-toolbar"
           table={table}
           filterFields={filterFields}
           afterFilters={
@@ -171,14 +171,14 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
                   <Button
                     variant="outline"
                     size="icon"
-                    className="size-9 shrink-0 rounded-xl border-border/70 bg-card text-muted-foreground shadow-sm transition-colors hover:border-primary/40 hover:bg-primary/10 hover:text-primary"
+                    className="rescue-secondary-control pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring size-11 shrink-0 rounded-none text-muted-foreground hover:text-primary"
                     aria-label="Refresh orders"
                     aria-busy={isLoading}
                     disabled={isLoading}
                     onClick={() => mutate()}
                   >
-                    <ReloadIcon
-                      aria-hidden="true"
+                    <PixelIcon
+                      name="reload"
                       className={`size-4 ${isLoading ? "motion-safe:animate-spin" : ""}`}
                     />
                   </Button>
@@ -188,7 +188,28 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
             </TooltipProvider>
           }
         />
-      </DataTable>
-    </div>
+      </OrdersHeading>
+      <div className="flex min-h-0 flex-1 flex-col gap-4">
+        <DataTable
+          table={table}
+          fillPanel
+          className="rescue-orders-table"
+          tableClassName="min-w-0 table-fixed xl:min-w-0"
+          onRowClick={(row: PlacementRow) => {
+            if (row.canLink)
+              router.push(
+                `/${row.chainId}/${account}/${encodeURIComponent(row.parentId)}`,
+              );
+          }}
+          getRowLabel={(row: PlacementRow) =>
+            row.canLink
+              ? `View order ${row.parentId} on ${chainNames[row.chainId]}`
+              : undefined
+          }
+          emptyMessage={emptyMessage}
+          notice={notice}
+        />
+      </div>
+    </>
   );
 }

@@ -6,18 +6,14 @@ import {
   PopoverContent,
   PopoverTrigger,
   Tooltip,
-  TooltipTrigger,
 } from "@bleu/ui";
-import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  InfoCircledIcon,
-} from "@radix-ui/react-icons";
+import { ArrowLeftIcon, ArrowRightIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { formatUnits } from "viem";
 
 import { NetworkLogo } from "#/components/NetworkLogo";
 import { TokenLogo } from "#/components/TokenLogo";
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import type {
   ApprovalMode,
   FundingSnapshot,
@@ -71,7 +67,9 @@ export function ReviewOrderPanel({
       <header className="rescue-review-heading">
         <div>
           <div className="rescue-review-kicker">
-            <p className="rescue-review-eyebrow">Review · Pre-flight check</p>
+            <p className="rescue-review-eyebrow rescue-display-eyebrow">
+              Review · Pre-flight check
+            </p>
             <span className="rescue-review-network">
               <NetworkLogo
                 chainId={chainId}
@@ -89,7 +87,7 @@ export function ReviewOrderPanel({
           size="icon"
           aria-label="Edit order"
           title="Edit order"
-          className="size-9 shrink-0 rounded-xl border-border bg-card text-muted-foreground hover:text-primary"
+          className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring size-11 shrink-0 rounded-none border-border bg-card text-muted-foreground hover:text-primary"
           onClick={() => setOpen(false)}
         >
           <ArrowLeftIcon aria-hidden="true" className="size-4" />
@@ -99,7 +97,7 @@ export function ReviewOrderPanel({
       <div
         role="group"
         aria-label="Order amounts"
-        className="rescue-review-trade"
+        className="rescue-review-trade pixel-inset"
       >
         <AmountSummary
           label="Sell"
@@ -183,7 +181,10 @@ export function ReviewOrderPanel({
       </section>
 
       {funding?.combinedCommitmentsExceedBalance && (
-        <p role="alert" className="rescue-review-notice text-warning">
+        <p
+          role="alert"
+          className="rescue-review-notice pixel-inset text-warning"
+        >
           Your other open orders may use this balance. Check them before
           continuing.
         </p>
@@ -192,7 +193,9 @@ export function ReviewOrderPanel({
         <fieldset disabled={actionsBlocked} className="rescue-review-approvals">
           <legend>
             Token approval{" "}
-            <span className="rescue-review-badge">Approval needed</span>
+            <span className="rescue-review-badge pixel-badge">
+              Approval needed
+            </span>
           </legend>
           <div className="rescue-review-choices">
             <ApprovalChoice
@@ -223,7 +226,7 @@ export function ReviewOrderPanel({
       <div className="rescue-review-actions">
         <Button
           type="button"
-          className="rescue-primary-button h-10 min-h-10 flex-1 rounded-xl text-sm"
+          className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rescue-primary-button h-11 flex-1 rounded-none text-sm"
           disabled={actionsBlocked}
           onClick={() => (needsApproval ? onApprove(mode) : onPlace())}
         >
@@ -261,7 +264,7 @@ function PreciseAmount({ value, symbol }: { value: string; symbol: string }) {
           type="button"
           title={`${value} ${symbol}`}
           aria-label={`Show exact amount: ${value} ${symbol}`}
-          className="rescue-review-number max-w-full rounded-sm text-left underline decoration-dotted decoration-muted-foreground/50 underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="rescue-review-inline-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rescue-review-number max-w-full rounded-none text-left underline decoration-dotted decoration-muted-foreground/50 underline-offset-4"
         >
           <span>{compactAmount(value)}</span>{" "}
           <span className="rescue-review-symbol">{symbol}</span>
@@ -269,10 +272,12 @@ function PreciseAmount({ value, symbol }: { value: string; symbol: string }) {
       </PopoverTrigger>
       <PopoverContent
         aria-label="Exact token amount"
-        className="rescue-popover w-fit max-w-[calc(100vw-2rem)] rounded-2xl border border-border bg-popover p-4 text-popover-foreground"
+        className="pixel-frame rescue-popover w-fit max-w-[calc(100vw-2rem)] rounded-none border border-border bg-popover p-4 text-popover-foreground"
       >
-        <p className="mb-1 text-xs text-muted-foreground">Exact amount</p>
-        <p className="break-all text-sm font-medium tabular-nums">
+        <p className="mb-1 font-serif text-xs text-muted-foreground">
+          Exact amount
+        </p>
+        <p className="break-all font-sans text-sm font-medium tabular-nums">
           {value} {symbol}
         </p>
       </PopoverContent>
@@ -336,16 +341,17 @@ function AddressLine({
       <span className="inline-flex flex-wrap items-center gap-1">
         {label}
         {tooltip && (
-          <Tooltip content={tooltip}>
-            <TooltipTrigger asChild>
-              <button
-                type="button"
-                aria-label={`About ${label}`}
-                className="inline-flex shrink-0 rounded-sm text-muted-foreground hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              >
-                <InfoCircledIcon aria-hidden="true" className="size-3.5" />
-              </button>
-            </TooltipTrigger>
+          <Tooltip
+            content={tooltip}
+            className="rescue-info-tooltip rescue-review-tooltip"
+          >
+            <button
+              type="button"
+              aria-label={`About ${label}`}
+              className="rescue-review-inline-control rescue-review-info-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring inline-flex items-center justify-center shrink-0 rounded-none text-muted-foreground hover:text-primary"
+            >
+              <PixelIcon name="info" className="size-4" />
+            </button>
           </Tooltip>
         )}
       </span>
@@ -373,7 +379,7 @@ function ApprovalChoice({
 }) {
   return (
     <label
-      className={`rescue-review-choice ${checked ? "rescue-review-choice-selected" : ""}`}
+      className={`rescue-review-choice pixel-inset ${checked ? "rescue-review-choice-selected" : ""}`}
     >
       <input
         type="radio"

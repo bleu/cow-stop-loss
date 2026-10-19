@@ -137,7 +137,7 @@ export function SwapCardSubmitButton({
   if (!address) {
     return (
       <Button
-        className="mt-2 h-auto min-h-12 w-full rounded-2xl bg-primary py-3 font-semibold tracking-tight text-primary-foreground shadow-[0_10px_30px_-16px_hsl(var(--primary)/0.55)] transition-colors hover:bg-primary/90 active:scale-[0.96]"
+        className="pixel-control min-h-12 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring mt-2 h-auto min-h-12 w-full rounded-none bg-primary py-3 font-semibold tracking-tight text-primary-foreground shadow-[0_10px_30px_-16px_hsl(var(--primary)/0.55)] transition-colors hover:bg-primary/90 "
         type="button"
         onClick={openConnectModal}
       >
@@ -148,7 +148,7 @@ export function SwapCardSubmitButton({
 
   return (
     <Button
-      className="mt-2 h-auto min-h-12 rounded-2xl py-3 font-semibold tracking-tight shadow-[0_10px_30px_-16px_hsl(var(--primary)/0.8)] transition-transform active:scale-[0.96]"
+      className="pixel-control min-h-12 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring mt-2 h-auto min-h-12 rounded-none py-3 font-semibold tracking-tight shadow-[0_10px_30px_-16px_hsl(var(--primary)/0.8)] transition-transform "
       type="submit"
       loading={isSubmitting}
       loadingText="Validating..."

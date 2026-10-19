@@ -3,11 +3,11 @@
 import { Button } from "@bleu/ui";
 import { ChevronDownIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { WalletIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 import { NetworkLogo } from "#/components/NetworkLogo";
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import { ChainId, supportedChainIds } from "#/lib/publicClients";
 
 interface IHeader {
@@ -26,12 +26,12 @@ export function Header({
   onToggleTheme,
 }: IHeader) {
   return (
-    <header className="relative z-20 flex min-h-[76px] w-full shrink-0 flex-wrap items-center gap-3 border-b border-border/70 bg-card px-4 py-3 sm:px-8 lg:px-10">
+    <header className="rescue-header pixel-frame relative z-20 flex shrink-0 flex-wrap items-center gap-3">
       <Link
         href={linkUrl}
         onClick={onLinkClick}
-        aria-label="CoW Stop Loss"
-        className="mr-auto flex shrink-0 items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        aria-label="CoW Air Rescue"
+        className="mr-auto flex shrink-0 items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         {imageSrc && (
           <Image
@@ -44,11 +44,11 @@ export function Header({
           />
         )}
         <span>
-          <span className="block text-base font-medium leading-5 tracking-tight text-foreground sm:text-xl">
-            CoW <span className="font-normal">Stop Loss</span>
+          <span className="rescue-brand block text-foreground">
+            CoW Air Rescue
           </span>
-          <span className="mt-1 block font-mono text-[8px] uppercase tracking-[0.18em] text-muted-foreground">
-            Air rescue · by bleu
+          <span className="rescue-brand-subtitle mt-2 block font-serif text-xs text-muted-foreground">
+            A plan for the way down
           </span>
         </span>
       </Link>
@@ -68,12 +68,12 @@ export function Header({
               onClick={onToggleTheme}
               aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
               title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-              className="size-10 rounded-xl border-border bg-card text-foreground hover:border-primary/50 hover:bg-muted"
+              className="pixel-control rescue-header-control size-11 bg-card text-foreground"
             >
               {theme === "dark" ? (
-                <SunIcon aria-hidden="true" className="size-4" />
+                <SunIcon aria-hidden="true" className="size-5" />
               ) : (
-                <MoonIcon aria-hidden="true" className="size-4" />
+                <MoonIcon aria-hidden="true" className="size-5" />
               )}
             </Button>
             {mounted && account ? (
@@ -82,7 +82,7 @@ export function Header({
                   variant="outline"
                   aria-label="Switch wallet network"
                   onClick={openChainModal}
-                  className="h-10 gap-2 rounded-xl border-border bg-card px-3 text-sm font-medium text-foreground shadow-sm hover:border-primary/50 hover:bg-muted"
+                  className="pixel-control rescue-header-control h-11 gap-2 bg-card px-4 font-medium text-foreground"
                 >
                   {chain && supportedChainIds.includes(chain.id as ChainId) ? (
                     <NetworkLogo
@@ -109,13 +109,9 @@ export function Header({
                   title={account.address}
                   onClick={openAccountModal}
                   aria-label={`Wallet account ${account.displayName}`}
-                  className="h-10 gap-2 rounded-xl border-primary/30 bg-primary/10 px-3 text-sm font-medium text-primary shadow-sm hover:bg-primary/15 hover:text-primary"
+                  className="pixel-control rescue-header-control rescue-wallet-button h-11 gap-2 px-4 font-medium text-primary"
                 >
-                  <WalletIcon
-                    aria-hidden="true"
-                    className="size-4"
-                    strokeWidth={1.5}
-                  />
+                  <PixelIcon name="wallet" className="size-4" />
                   {account.displayName}
                   <ChevronDownIcon
                     aria-hidden="true"
@@ -128,7 +124,7 @@ export function Header({
                 variant="outline"
                 disabled
                 aria-label="Loading wallet"
-                className="h-9 gap-2 rounded-xl border-foreground/15 bg-muted/50 px-4 text-muted-foreground"
+                className="pixel-control rescue-header-control h-11 gap-2 px-4 text-muted-foreground"
               >
                 <span
                   aria-hidden="true"
@@ -140,13 +136,9 @@ export function Header({
               <Button
                 onClick={openConnectModal}
                 aria-label="Connect wallet"
-                className="h-10 gap-2 rounded-xl bg-primary px-3 text-primary-foreground hover:bg-primary/90 sm:px-4"
+                className="pixel-control rescue-primary-button rescue-header-control h-11 gap-2 bg-primary px-4 text-primary-foreground"
               >
-                <WalletIcon
-                  aria-hidden="true"
-                  className="size-4"
-                  strokeWidth={1.5}
-                />
+                <PixelIcon name="wallet" className="size-4" />
                 <span className="sm:hidden">Connect</span>
                 <span className="hidden sm:inline">Connect wallet</span>
               </Button>

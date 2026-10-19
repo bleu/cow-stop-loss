@@ -24,12 +24,12 @@ export function TxPendingDialog() {
         <DialogOverlay
           id="dialog-overlay"
           className={cn(
-            "bg-background/65 backdrop-blur-sm data-[state=open]:animate-overlayShow fixed inset-0 rounded-lg",
+            "bg-background/65 backdrop-blur-sm data-[state=open]:animate-overlayShow fixed inset-0 rounded-none",
           )}
         />
         <DialogContent
           className={cn(
-            "rescue-dialog data-[state=open]:animate-contentShow fixed left-1/2 top-1/2 max-h-[85dvh] overflow-y-auto w-[calc(100vw-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-[28px] border border-border/70 bg-card p-5 text-foreground shadow-2xl focus:outline-none sm:p-7",
+            "pixel-frame rescue-dialog data-[state=open]:animate-contentShow fixed left-1/2 top-1/2 max-h-[85dvh] overflow-y-auto w-[calc(100vw-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-none border border-border/70 bg-card p-5 text-foreground shadow-2xl focus:outline-none sm:p-7",
           )}
         >
           <div className="flex w-full flex-col gap-3">
@@ -49,7 +49,7 @@ export function TxPendingDialog() {
               dashboard.
             </span>
             <Button
-              className="rescue-primary-button mt-2 h-12 w-full rounded-2xl"
+              className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rescue-primary-button mt-2 h-12 w-full rounded-none"
               onClick={() => {
                 setTxPendingDialogOpen(false);
               }}

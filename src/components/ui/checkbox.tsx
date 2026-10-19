@@ -27,6 +27,7 @@ export function Checkbox({
   return (
     <div className="flex items-center gap-1.5">
       <CheckboxPrimitive
+        className="pixel-control min-h-11 min-w-11 rounded-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         checked={value}
         onClick={() => setValue(name, !value)}
         disabled={disabled}

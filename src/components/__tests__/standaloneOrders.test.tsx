@@ -1157,27 +1157,18 @@ test("keeps the order builder and orders panel in normal flow on mobile", async 
     formPanel.compareDocumentPosition(ordersPanel) &
       Node.DOCUMENT_POSITION_FOLLOWING,
   ).toBeTruthy();
-  expect(formPanel.parentElement).toHaveClass(
-    "grid-cols-1",
-    "min-[860px]:grid-cols-[minmax(0,min(480px,52%))_minmax(0,1fr)]",
-  );
+  expect(formPanel.parentElement).toHaveClass("rescue-home-cards");
   for (const panel of [formPanel, ordersPanel]) {
     expect(panel).not.toHaveClass("lg:h-[48rem]");
     expect(panel).not.toHaveClass("lg:overflow-y-auto");
   }
-  expect(ordersPanel).toHaveClass("relative", "min-[860px]:min-h-0");
+  expect(ordersPanel).toHaveClass("rescue-panel", "rescue-portfolio-panel");
   const ordersContent = ordersPanel.firstElementChild;
-  expect(ordersContent).toHaveClass(
-    "flex",
-    "min-h-0",
-    "flex-col",
-    "min-[860px]:absolute",
-    "min-[860px]:inset-0",
-  );
+  expect(ordersContent).toHaveClass("rescue-portfolio-content");
   for (const className of ["absolute", "h-full", "overflow-y-auto"]) {
     expect(ordersContent).not.toHaveClass(className);
   }
-  expect(ordersContent?.firstElementChild).toHaveClass("shrink-0");
+  expect(ordersContent?.firstElementChild).toHaveClass("rescue-panel-heading");
   expectOrderDestination(
     await screen.findByRole("row", {
       name: "View order stop-loss-1 on Ethereum",
@@ -1952,6 +1943,13 @@ test("omits unavailable optional detail rows without adding placeholders", async
   expect(
     screen.getByRole("definition", { name: "Sell amount" }),
   ).toHaveTextContent("1000000000000000000 base units Unknown token");
+  const trigger = screen.getByRole("definition", { name: "Trigger price" });
+  expect(trigger.closest(".rescue-panel")).not.toHaveClass(
+    "rescue-portfolio-panel",
+  );
+  expect(trigger.parentElement?.parentElement).not.toHaveClass(
+    "sm:grid-cols-2",
+  );
 });
 
 test.each(["0", "1000000000000000000"])(
@@ -2019,6 +2017,10 @@ test.each(["0", "1000000000000000000"])(
         value,
       );
     }
+    expect(
+      screen.getByRole("definition", { name: "Limit price" }).parentElement
+        ?.parentElement,
+    ).toHaveClass("sm:grid-cols-2");
     expect(
       screen.getByRole("link", { name: "0xefef…efef" }),
     ).toBeInTheDocument();

@@ -80,7 +80,7 @@ export const BlockExplorerLink: React.FC<Props> = (props: Props) => {
       target="_blank"
       rel="noopener noreferrer"
       title={identifier}
-      className={`${showExternalIcon ? "group inline-flex items-center gap-1.5 rounded-md text-primary underline-offset-4 transition-colors hover:text-secondary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" : ""} ${className ?? ""}`}
+      className={`${showExternalIcon ? "group inline-flex items-center gap-1.5 rounded-none text-primary underline-offset-4 transition-colors hover:text-secondary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" : ""} ${className ?? ""}`}
     >
       <>
         {hideLabel ? "" : <span>{label}</span>}

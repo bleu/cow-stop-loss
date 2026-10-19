@@ -10,7 +10,6 @@ import { ChainId } from "#/lib/publicClients";
 import { fetchFormattedBalanceOf } from "#/lib/tokenUtils";
 import { SwapData } from "#/lib/types";
 
-import { ValidToInput } from "./swap-card/ValidToInput";
 import { TokenInfo } from "./TokenInfo";
 import { TokenSelect } from "./TokenSelect";
 
@@ -100,13 +99,13 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   ]);
 
   return (
-    <>
+    <div className="rescue-token-group" data-side={side.toLowerCase()}>
       <section
         className={
-          "w-full rounded-2xl border border-border/80 bg-muted/55 p-3.5 transition-colors focus-within:border-primary/70 sm:p-4 min-[860px]:p-2"
+          "rescue-token-card pixel-inset w-full rounded-none border border-border/80 bg-muted/35 p-3 transition-colors focus-within:border-primary/70"
         }
       >
-        <div className="mb-1 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+        <div className="rescue-token-heading mb-1 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
           <label
             htmlFor={`amount-${side.toLowerCase()}`}
             className={`font-semibold uppercase text-muted-foreground ${side === "Buy" ? "whitespace-nowrap text-[12px] tracking-[0.08em] sm:text-[13px] sm:tracking-[0.12em]" : "text-[13px] tracking-[0.12em]"}`}
@@ -114,9 +113,9 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
             {getCardTitle(side)}
           </label>
         </div>
-        <div className="flex min-w-0 items-center justify-between gap-3">
+        <div className="rescue-token-amount flex min-w-0 items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <div className="mt-0.5 flex min-w-0 items-center gap-2">
+            <div className="rescue-token-value mt-0.5 flex min-w-0 items-center gap-2">
               <Input
                 id={`amount-${side.toLowerCase()}`}
                 {...register(amountFieldName)}
@@ -124,7 +123,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                 inputMode="decimal"
                 aria-label={getCardTitle(side)}
                 placeholder="0.0"
-                className="h-10 min-w-0 flex-1 rounded-xl border-none bg-transparent px-0 text-left text-xl font-medium tracking-tight tabular-nums shadow-none placeholder:text-muted-foreground/80 focus-visible:ring-transparent sm:text-2xl min-[860px]:h-8"
+                className="h-11 min-w-0 flex-1 rounded-none border-none bg-transparent px-0 text-left text-[28px] font-medium tracking-tight tabular-nums shadow-none placeholder:text-muted-foreground/80 focus-visible:ring-2 focus-visible:ring-ring sm:text-[28px]"
                 disabled={isAmountDisabled}
               />
               {amount && Number(amount) > 0 && usdPrice && (
@@ -140,12 +139,12 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
               )}
             </div>
           </div>
-          <div className="w-36 shrink-0 sm:w-40">
+          <div className="w-32 shrink-0 sm:w-40">
             {side === "Buy" ? (
               token && (
                 <div
                   aria-disabled="true"
-                  className="flex h-11 w-full min-w-0 items-center justify-between gap-2 rounded-2xl border border-border/70 bg-muted/50 px-3 text-muted-foreground"
+                  className="pixel-inset flex h-11 w-full min-w-0 items-center justify-between gap-2 rounded-none border border-border/70 bg-muted/50 px-3 text-muted-foreground"
                 >
                   <TokenInfo token={token} showExplorerLink={false} />
                   <ChevronDownIcon
@@ -168,7 +167,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
           </div>
         </div>
         {side === "Sell" && (
-          <div className="mt-1 flex h-5 items-center gap-2 text-xs text-muted-foreground">
+          <div className="rescue-token-balance mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
             {token && (
               <>
                 <span className="whitespace-nowrap">
@@ -183,7 +182,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                     type="button"
                     variant="ghost"
                     aria-label={`Retry ${token.symbol} balance`}
-                    className="h-fit px-1 py-0 text-[13px] text-primary"
+                    className="rescue-secondary-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 p-0 text-xs text-primary underline-offset-4 hover:underline"
                     onClick={() => retryBalance((attempt) => attempt + 1)}
                   >
                     Retry
@@ -193,7 +192,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                   <Button
                     type="button"
                     variant="ghost"
-                    className="h-fit px-1 py-0 text-[13px] text-primary"
+                    className="rescue-secondary-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 p-0 text-xs text-primary underline-offset-4 hover:underline"
                     onClick={() => {
                       setValue(amountFieldName, tokenBalance, {
                         shouldValidate: true,
@@ -209,12 +208,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
           </div>
         )}
       </section>
-      {side === "Buy" && token && (
-        <div className="mt-1 px-1 text-[13px] text-muted-foreground">
-          <ValidToInput />
-        </div>
-      )}
-    </>
+    </div>
   );
 }
 

@@ -4,7 +4,7 @@
  */
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SWRConfig } from "swr";
 import type { Address } from "viem";
@@ -18,6 +18,7 @@ import { useDraftOrder } from "#/hooks/useDraftOrder";
 import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 import { invalidatePlacementReads } from "#/lib/placementReads";
 import { publicClientsFromIds } from "#/lib/publicClients";
+import { VALID_TO_OPTIONS, VALID_TO_VALUES_MAP } from "#/lib/schema";
 import { createWagmiConfig } from "#/utils/wagmi";
 
 import { SwapForm } from "../swap-card/SwapForm";
@@ -81,7 +82,7 @@ beforeEach(() => {
 });
 afterEach(() => jest.restoreAllMocks());
 
-it("replaces the order form with settings while settings are open", async () => {
+it("keeps the inactive order pane mounted and inaccessible while settings are open", async () => {
   const user = userEvent.setup();
   renderForm();
   const heading = screen.getByRole("heading", {
@@ -89,11 +90,37 @@ it("replaces the order form with settings while settings are open", async () => 
   });
   const settings = screen.getByRole("button", { name: "Order settings" });
   expect(heading.parentElement?.parentElement).toContainElement(settings);
+  const sellAmount = screen.getByRole("textbox", { name: "Sell amount" });
+  const trigger = screen.getByRole("textbox", { name: "Trigger price" });
+  const pane = sellAmount.closest("[data-inactive]");
+  expect(pane).toHaveAttribute("aria-hidden", "false");
+  expect(pane).toHaveAttribute("data-inactive", "false");
+  expect(pane).not.toHaveAttribute("inert");
+  expect(pane).not.toHaveAttribute("hidden");
 
   await user.click(settings);
+  expect(pane).toHaveAttribute("aria-hidden", "true");
+  expect(pane).toHaveAttribute("inert", "");
+  expect(pane).toHaveAttribute("data-inactive", "true");
+  expect(pane).not.toHaveAttribute("hidden");
+  expect(pane).toContainElement(sellAmount);
+  expect(pane).toContainElement(trigger);
+  expect(
+    screen.queryByRole("textbox", { name: "Sell amount" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("textbox", { name: "Trigger price" }),
+  ).not.toBeInTheDocument();
   expect(
     screen.getByRole("group", { name: "Advanced order settings" }),
   ).toBeVisible();
+  expect(
+    screen.getByRole("spinbutton", { name: "Maximum oracle age (hours)" }),
+  ).toHaveValue(24);
+  expect(screen.getByRole("textbox", { name: "Receiver" })).toHaveAttribute(
+    "placeholder",
+    "0xabc...123",
+  );
   expect(
     screen.queryByRole("textbox", { name: "Sell" }),
   ).not.toBeInTheDocument();
@@ -103,6 +130,55 @@ it("replaces the order form with settings while settings are open", async () => 
   expect(
     screen.queryByRole("button", { name: "Review Stop Loss order" }),
   ).not.toBeInTheDocument();
+
+  await user.click(screen.getByRole("button", { name: "Return to order" }));
+  await waitFor(() => expect(pane).toHaveAttribute("aria-hidden", "false"));
+  expect(pane).toHaveAttribute("data-inactive", "false");
+  expect(pane).not.toHaveAttribute("inert");
+  expect(pane).not.toHaveAttribute("hidden");
+  expect(screen.getByRole("textbox", { name: "Sell amount" })).toBe(sellAmount);
+  expect(screen.getByRole("textbox", { name: "Trigger price" })).toBe(trigger);
+});
+
+it("shows five accessible settings in uniform rows with only an undecorated Order timing fieldset", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  await user.click(screen.getByRole("button", { name: "Order settings" }));
+
+  const panel = screen.getByRole("region", { name: "Order settings" });
+  const settings = within(panel);
+  const timing = settings.getByRole("group", { name: "Order timing" });
+  const advanced = settings.getByRole("group", {
+    name: "Advanced order settings",
+  });
+  expect(panel.querySelectorAll("fieldset")).toHaveLength(1);
+  expect(timing.tagName).toBe("FIELDSET");
+  expect(timing).toHaveAttribute("class", "min-w-0");
+  expect(panel.querySelectorAll("legend")).toHaveLength(1);
+  expect(timing.querySelector("legend")).toHaveClass("sr-only");
+  expect(settings.queryByText("Price protection")).not.toBeInTheDocument();
+  expect(settings.queryByText("Order handling")).not.toBeInTheDocument();
+
+  const expiry = settings.getByRole("combobox", { name: "Expires" });
+  const fields = [
+    expiry,
+    settings.getByRole("textbox", { name: "Slippage (%)" }),
+    settings.getByRole("spinbutton", { name: "Maximum oracle age (hours)" }),
+    settings.getByRole("combobox", { name: "Execution" }),
+    settings.getByRole("textbox", { name: "Receiver" }),
+  ];
+  expect(timing).toContainElement(expiry);
+  const rows = panel.querySelectorAll(".rescue-input-inline");
+  expect(rows).toHaveLength(5);
+  expect(panel.querySelectorAll(".rescue-input-label")).toHaveLength(5);
+  fields.forEach((field, index) => {
+    expect(field).toBeVisible();
+    expect(field).toBeEnabled();
+    expect(field.closest(".rescue-input-inline")).toBe(rows[index]);
+    const label = rows[index].querySelector(":scope > .rescue-input-label");
+    expect(label?.querySelector("label")).toHaveAttribute("for", field.id);
+    if (field !== expiry) expect(advanced).toContainElement(field);
+  });
 });
 
 function renderForm(onReviewOrder = jest.fn()) {
@@ -172,14 +248,16 @@ it("shows default slippage only inside Advanced Settings and no limit input", as
   renderForm();
 
   expect(
-    screen.queryByRole("textbox", { name: "Slippage" }),
+    screen.queryByRole("textbox", { name: "Slippage (%)" }),
   ).not.toBeInTheDocument();
   expect(screen.queryByText("Limit price")).not.toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "Order settings" }));
   expect(
     screen.getByRole("group", { name: "Advanced order settings" }),
   ).toBeInTheDocument();
-  expect(screen.getByRole("textbox", { name: "Slippage" })).toHaveValue("0.1");
+  expect(screen.getByRole("textbox", { name: "Slippage (%)" })).toHaveValue(
+    "0.1",
+  );
 });
 
 async function selectWeth(user: ReturnType<typeof userEvent.setup>) {
@@ -193,13 +271,94 @@ async function setTriggerPrice(user: ReturnType<typeof userEvent.setup>) {
   await user.type(trigger, "2000");
 }
 
+async function selectExpiry(
+  user: ReturnType<typeof userEvent.setup>,
+  expiry: VALID_TO_OPTIONS,
+) {
+  screen.getByRole("combobox", { name: "Expires" }).focus();
+  await user.keyboard("[Space]");
+  await user.click(await screen.findByRole("option", { name: expiry }));
+}
+
+it("reviews with the six-month expiry without opening settings", async () => {
+  const user = userEvent.setup();
+  const onReviewOrder = jest.fn();
+  renderForm(onReviewOrder);
+  expect(
+    screen.queryByRole("combobox", { name: "Expires" }),
+  ).not.toBeInTheDocument();
+  await selectWeth(user);
+  await setTriggerPrice(user);
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  const beforeReview = Math.floor(Date.now() / 1000);
+  await user.click(
+    await screen.findByRole("button", { name: "Review Stop Loss order" }),
+  );
+  await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(1));
+  const duration = VALID_TO_VALUES_MAP[VALID_TO_OPTIONS.MONTHS_6];
+  expect(onReviewOrder.mock.calls[0][0].validTo).toBeGreaterThanOrEqual(
+    beforeReview + duration,
+  );
+  expect(onReviewOrder.mock.calls[0][0].validTo).toBeLessThanOrEqual(
+    Math.floor(Date.now() / 1000) + duration,
+  );
+});
+
+it("keeps expiry across settings close, reopen, edits and advanced reset", async () => {
+  const user = userEvent.setup();
+  const onReviewOrder = jest.fn();
+  renderForm(onReviewOrder);
+  await selectWeth(user);
+  await setTriggerPrice(user);
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  await user.click(screen.getByRole("button", { name: "Order settings" }));
+  expect(screen.getByRole("group", { name: "Order timing" })).toContainElement(
+    screen.getByRole("combobox", { name: "Expires" }),
+  );
+  expect(screen.getByRole("combobox", { name: "Expires" })).toHaveTextContent(
+    VALID_TO_OPTIONS.MONTHS_6,
+  );
+  await selectExpiry(user, VALID_TO_OPTIONS.MINUTES_30);
+  await user.click(screen.getByRole("button", { name: "Return to order" }));
+  await user.click(screen.getByRole("button", { name: "Order settings" }));
+  expect(screen.getByRole("combobox", { name: "Expires" })).toHaveTextContent(
+    VALID_TO_OPTIONS.MINUTES_30,
+  );
+  await selectExpiry(user, VALID_TO_OPTIONS.DAY);
+  await user.keyboard("{Escape}");
+  await user.click(screen.getByRole("button", { name: "Order settings" }));
+  expect(screen.getByRole("combobox", { name: "Expires" })).toHaveTextContent(
+    VALID_TO_OPTIONS.DAY,
+  );
+  await user.click(
+    screen.getByRole("button", { name: "Reset to default settings" }),
+  );
+  await user.click(screen.getByRole("button", { name: "Order settings" }));
+  expect(screen.getByRole("combobox", { name: "Expires" })).toHaveTextContent(
+    VALID_TO_OPTIONS.DAY,
+  );
+  await user.click(screen.getByRole("button", { name: "Order settings" }));
+  const beforeReview = Math.floor(Date.now() / 1000);
+  await user.click(
+    await screen.findByRole("button", { name: "Review Stop Loss order" }),
+  );
+  await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(1));
+  const duration = VALID_TO_VALUES_MAP[VALID_TO_OPTIONS.DAY];
+  expect(onReviewOrder.mock.calls[0][0].validTo).toBeGreaterThanOrEqual(
+    beforeReview + duration,
+  );
+  expect(onReviewOrder.mock.calls[0][0].validTo).toBeLessThanOrEqual(
+    Math.floor(Date.now() / 1000) + duration,
+  );
+});
+
 async function allowPartialExecutions(
   user: ReturnType<typeof userEvent.setup>,
 ) {
   screen.getByRole("combobox", { name: "Execution" }).focus();
   await user.keyboard("[Space]");
   await user.click(
-    await screen.findByRole("option", { name: "Allow partial executions" }),
+    await screen.findByRole("option", { name: "Allow partial fills" }),
   );
 }
 
@@ -217,8 +376,8 @@ it("applies valid slippage edits immediately and reviews the recalculated minimu
   const minimumBuy = screen.getByRole("textbox", { name: "Receive at least" });
   await waitFor(() => expect(minimumBuy).toHaveValue("246.666665"));
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  await user.clear(screen.getByRole("textbox", { name: "Slippage" }));
-  await user.type(screen.getByRole("textbox", { name: "Slippage" }), "0.5");
+  await user.clear(screen.getByRole("textbox", { name: "Slippage (%)" }));
+  await user.type(screen.getByRole("textbox", { name: "Slippage (%)" }), "0.5");
   await waitFor(() => expect(minimumBuy).toHaveValue("245.679011"));
   await user.click(screen.getByRole("button", { name: "Return to order" }));
   await waitFor(() =>
@@ -256,7 +415,7 @@ it("blocks return for invalid slippage without changing the saved amount", async
   const minimumBuy = screen.getByRole("textbox", { name: "Receive at least" });
   await waitFor(() => expect(minimumBuy).toHaveValue("1998"));
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  const slippage = screen.getByRole("textbox", { name: "Slippage" });
+  const slippage = screen.getByRole("textbox", { name: "Slippage (%)" });
   await user.clear(slippage);
   await user.paste("0.001");
   await user.click(screen.getByRole("button", { name: "Return to order" }));
@@ -269,6 +428,10 @@ it("blocks return for invalid slippage without changing the saved amount", async
     screen.getByRole("group", { name: "Advanced order settings" }),
   ).toBeInTheDocument();
   expect(minimumBuy).toHaveValue("1998");
+  expect(
+    screen.queryByRole("textbox", { name: "Receive at least" }),
+  ).not.toBeInTheDocument();
+  expect(minimumBuy.closest("[data-inactive]")).toHaveAttribute("inert", "");
   expect(onReviewOrder).not.toHaveBeenCalled();
   await user.click(screen.getByRole("button", { name: "Order settings" }));
   await user.click(
@@ -295,8 +458,8 @@ it("keeps valid slippage and receiver edits when returning with the settings arr
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
   const minimumBuy = screen.getByRole("textbox", { name: "Receive at least" });
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  await user.clear(screen.getByRole("textbox", { name: "Slippage" }));
-  await user.type(screen.getByRole("textbox", { name: "Slippage" }), "0.5");
+  await user.clear(screen.getByRole("textbox", { name: "Slippage (%)" }));
+  await user.type(screen.getByRole("textbox", { name: "Slippage (%)" }), "0.5");
   await user.type(
     screen.getByPlaceholderText("0xabc...123"),
     "0x2222222222222222222222222222222222222222",
@@ -310,8 +473,8 @@ it("keeps valid slippage and receiver edits when returning with the settings arr
   await waitFor(() => expect(minimumBuy).toHaveValue("1990"));
 
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  await user.clear(screen.getByRole("textbox", { name: "Slippage" }));
-  await user.type(screen.getByRole("textbox", { name: "Slippage" }), "1");
+  await user.clear(screen.getByRole("textbox", { name: "Slippage (%)" }));
+  await user.type(screen.getByRole("textbox", { name: "Slippage (%)" }), "1");
   await user.clear(screen.getByPlaceholderText("0xabc...123"));
   await user.type(
     screen.getByPlaceholderText("0xabc...123"),
@@ -320,7 +483,9 @@ it("keeps valid slippage and receiver edits when returning with the settings arr
   await user.click(screen.getByRole("button", { name: "Order settings" }));
   await waitFor(() => expect(minimumBuy).toHaveValue("1980"));
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  expect(screen.getByRole("textbox", { name: "Slippage" })).toHaveValue("1");
+  expect(screen.getByRole("textbox", { name: "Slippage (%)" })).toHaveValue(
+    "1",
+  );
   expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue(
     "0x3333333333333333333333333333333333333333",
   );
@@ -350,8 +515,8 @@ it("Reset immediately restores default slippage and the 24-hour oracle limit wit
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
   const minimumBuy = screen.getByRole("textbox", { name: "Receive at least" });
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  await user.clear(screen.getByRole("textbox", { name: "Slippage" }));
-  await user.type(screen.getByRole("textbox", { name: "Slippage" }), "1");
+  await user.clear(screen.getByRole("textbox", { name: "Slippage (%)" }));
+  await user.type(screen.getByRole("textbox", { name: "Slippage (%)" }), "1");
   await user.type(
     screen.getByPlaceholderText("0xabc...123"),
     "0x2222222222222222222222222222222222222222",
@@ -378,12 +543,18 @@ it("Reset immediately restores default slippage and the 24-hour oracle limit wit
   expect(
     screen.getByRole("heading", { name: "Place a stop-loss order" }),
   ).toBeVisible();
+  expect(screen.getByRole("textbox", { name: "Receive at least" })).toBe(
+    minimumBuy,
+  );
+  expect(minimumBuy.closest("[data-inactive]")).not.toHaveAttribute("inert");
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  expect(screen.getByRole("textbox", { name: "Slippage" })).toHaveValue("0.1");
+  expect(screen.getByRole("textbox", { name: "Slippage (%)" })).toHaveValue(
+    "0.1",
+  );
   expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue("");
   expect(screen.getByRole("spinbutton")).toHaveValue(24);
   expect(screen.getByRole("combobox", { name: "Execution" })).toHaveTextContent(
-    "Fill or kill execution only",
+    "Fill or kill",
   );
   await waitFor(() => expect(minimumBuy).toHaveValue("1998"));
   await user.keyboard("{Escape}");
@@ -483,8 +654,8 @@ it("marks saved slippage changes on the gear and offers Reset for slippage alone
   expect(
     screen.getByRole("button", { name: "Reset to default settings" }),
   ).toBeInTheDocument();
-  await user.clear(screen.getByRole("textbox", { name: "Slippage" }));
-  await user.type(screen.getByRole("textbox", { name: "Slippage" }), "1");
+  await user.clear(screen.getByRole("textbox", { name: "Slippage (%)" }));
+  await user.type(screen.getByRole("textbox", { name: "Slippage (%)" }), "1");
   await waitFor(() => expect(settingsTrigger).toHaveClass("text-primary"));
   await user.click(screen.getByRole("button", { name: "Return to order" }));
   await waitFor(() =>
@@ -637,9 +808,9 @@ it("resolves a saved custom receiver and preserves expiry, oracle age and partia
     "2000",
   );
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
-  screen.getByRole("combobox").focus();
-  await user.keyboard("[Space]");
-  await user.click(await screen.findByRole("option", { name: "30 minutes" }));
+  await user.click(screen.getByRole("button", { name: "Order settings" }));
+  await selectExpiry(user, VALID_TO_OPTIONS.MINUTES_30);
+  await user.click(screen.getByRole("button", { name: "Order settings" }));
   const beforeReview = Math.floor(Date.now() / 1000);
   await user.click(
     await screen.findByRole("button", { name: "Review Stop Loss order" }),
@@ -712,7 +883,7 @@ it("rejects a zero receiver without clearing the editable form", async () => {
   expect(screen.getByRole("textbox", { name: "Sell amount" })).toHaveValue("1");
 });
 
-it("resets committed slippage and exact-sell inputs when the chain changes", async () => {
+it("resets committed slippage, expiry and exact-sell inputs when the chain changes", async () => {
   jest
     .spyOn(publicClientsFromIds[100], "readContract")
     .mockResolvedValue(BigInt("2000000000"));
@@ -726,8 +897,9 @@ it("resets committed slippage and exact-sell inputs when the chain changes", asy
   );
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  await user.clear(screen.getByRole("textbox", { name: "Slippage" }));
-  await user.type(screen.getByRole("textbox", { name: "Slippage" }), "1");
+  await user.clear(screen.getByRole("textbox", { name: "Slippage (%)" }));
+  await user.type(screen.getByRole("textbox", { name: "Slippage (%)" }), "1");
+  await selectExpiry(user, VALID_TO_OPTIONS.MINUTES_30);
   await user.click(screen.getByRole("button", { name: "Return to order" }));
   await waitFor(() =>
     expect(
@@ -760,11 +932,16 @@ it("resets committed slippage and exact-sell inputs when the chain changes", asy
     screen.getByRole("button", { name: "Order settings" }),
   ).not.toHaveClass("text-primary");
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  expect(screen.getByRole("textbox", { name: "Slippage" })).toHaveValue("0.1");
+  expect(screen.getByRole("textbox", { name: "Slippage (%)" })).toHaveValue(
+    "0.1",
+  );
   expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue("");
   expect(screen.getByRole("spinbutton")).toHaveValue(24);
   expect(screen.getByRole("combobox", { name: "Execution" })).toHaveTextContent(
-    "Fill or kill execution only",
+    "Fill or kill",
+  );
+  expect(screen.getByRole("combobox", { name: "Expires" })).toHaveTextContent(
+    VALID_TO_OPTIONS.MONTHS_6,
   );
 });
 
@@ -772,12 +949,10 @@ it("closes unapplied settings and resets expiry when the wallet changes", async 
   const user = userEvent.setup();
   const onReviewOrder = jest.fn();
   const { rerender } = renderForm(onReviewOrder);
-  screen.getByRole("combobox").focus();
-  await user.keyboard("[Space]");
-  await user.click(await screen.findByRole("option", { name: "30 minutes" }));
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  await user.clear(screen.getByRole("textbox", { name: "Slippage" }));
-  await user.type(screen.getByRole("textbox", { name: "Slippage" }), "1");
+  await selectExpiry(user, VALID_TO_OPTIONS.MINUTES_30);
+  await user.clear(screen.getByRole("textbox", { name: "Slippage (%)" }));
+  await user.type(screen.getByRole("textbox", { name: "Slippage (%)" }), "1");
   await user.type(
     screen.getByPlaceholderText("0xabc...123"),
     "0x3333333333333333333333333333333333333333",
@@ -791,9 +966,16 @@ it("closes unapplied settings and resets expiry when the wallet changes", async 
   expect(
     screen.queryByRole("group", { name: "Advanced order settings" }),
   ).not.toBeInTheDocument();
-  expect(screen.getByRole("combobox")).toHaveTextContent("6 months");
+  expect(
+    screen.queryByRole("combobox", { name: "Expires" }),
+  ).not.toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  expect(screen.getByRole("textbox", { name: "Slippage" })).toHaveValue("0.1");
+  expect(screen.getByRole("combobox", { name: "Expires" })).toHaveTextContent(
+    VALID_TO_OPTIONS.MONTHS_6,
+  );
+  expect(screen.getByRole("textbox", { name: "Slippage (%)" })).toHaveValue(
+    "0.1",
+  );
   expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue("");
 });
 
@@ -810,8 +992,8 @@ it("ignores settings validation that finishes after a wallet change", async () =
     .mockImplementation(async () => delayed);
   await user.click(screen.getByRole("button", { name: "Order settings" }));
   await user.type(screen.getByPlaceholderText("0xabc...123"), "receiver.eth");
-  await user.clear(screen.getByRole("textbox", { name: "Slippage" }));
-  await user.type(screen.getByRole("textbox", { name: "Slippage" }), "1");
+  await user.clear(screen.getByRole("textbox", { name: "Slippage (%)" }));
+  await user.type(screen.getByRole("textbox", { name: "Slippage (%)" }), "1");
   await user.click(screen.getByRole("button", { name: "Return to order" }));
   await waitFor(() => expect(ens).toHaveBeenCalled());
   safe = { ...safe, safeAddress: "0x2222222222222222222222222222222222222222" };
@@ -825,7 +1007,9 @@ it("ignores settings validation that finishes after a wallet change", async () =
   });
   await user.click(screen.getByRole("button", { name: "Order settings" }));
   expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue("");
-  expect(screen.getByRole("textbox", { name: "Slippage" })).toHaveValue("0.1");
+  expect(screen.getByRole("textbox", { name: "Slippage (%)" })).toHaveValue(
+    "0.1",
+  );
 });
 
 it("resets the exact-sell form when the wallet changes", async () => {
@@ -834,8 +1018,8 @@ it("resets the exact-sell form when the wallet changes", async () => {
   const { rerender } = renderForm(onReviewOrder);
   await selectWeth(user);
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  await user.clear(screen.getByRole("textbox", { name: "Slippage" }));
-  await user.type(screen.getByRole("textbox", { name: "Slippage" }), "1");
+  await user.clear(screen.getByRole("textbox", { name: "Slippage (%)" }));
+  await user.type(screen.getByRole("textbox", { name: "Slippage (%)" }), "1");
   await user.type(
     screen.getByPlaceholderText("0xabc...123"),
     "0x3333333333333333333333333333333333333333",
@@ -862,10 +1046,12 @@ it("resets the exact-sell form when the wallet changes", async () => {
     screen.getByRole("button", { name: "Select token" }),
   ).toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  expect(screen.getByRole("textbox", { name: "Slippage" })).toHaveValue("0.1");
+  expect(screen.getByRole("textbox", { name: "Slippage (%)" })).toHaveValue(
+    "0.1",
+  );
   expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue("");
   expect(screen.getByRole("spinbutton")).toHaveValue(24);
   expect(screen.getByRole("combobox", { name: "Execution" })).toHaveTextContent(
-    "Fill or kill execution only",
+    "Fill or kill",
   );
 });

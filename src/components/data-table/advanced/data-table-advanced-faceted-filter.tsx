@@ -31,11 +31,11 @@ export function DataTableAdvancedFacetedFilter<TData, TValue>({
   setSelectedOptions,
 }: DataTableAdvancedFacetedFilterProps<TData, TValue>) {
   return (
-    <Command className="p-1">
-      <div className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm [&_[cmdk-input-wrapper]]:border-0 [&_[cmdk-input-wrapper]]:px-0">
+    <Command className=" rounded-none p-1">
+      <div className="pixel-inset flex h-9 w-full rounded-none border border-input bg-transparent px-3 py-1 text-sm shadow-sm [&_[cmdk-input-wrapper]]:border-0 [&_[cmdk-input-wrapper]]:px-0">
         <CommandInput
           placeholder={title}
-          className="h-full border-0 pl-0 ring-0"
+          className="rounded-none h-full border-0 pl-0 ring-0"
           autoFocus
         />
       </div>
@@ -47,6 +47,7 @@ export function DataTableAdvancedFacetedFilter<TData, TValue>({
 
             return (
               <CommandItem
+                className="rounded-none"
                 key={option.value}
                 onSelect={() => {
                   if (isSelected) {
@@ -72,7 +73,7 @@ export function DataTableAdvancedFacetedFilter<TData, TValue>({
               >
                 <div
                   className={cn(
-                    "mr-2 flex size-4 items-center justify-center rounded-sm border border-primary",
+                    "mr-2 flex size-4 items-center justify-center rounded-none border border-primary",
                     isSelected
                       ? "bg-primary text-primary-foreground"
                       : "opacity-50 [&_svg]:invisible",
@@ -115,7 +116,7 @@ export function DataTableAdvancedFacetedFilter<TData, TValue>({
                     ),
                   );
                 }}
-                className="justify-center text-center"
+                className="rounded-none justify-center text-center"
               >
                 Clear filters
               </CommandItem>

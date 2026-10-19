@@ -28,12 +28,12 @@ export function createWalletTheme(theme: ColorTheme) {
   walletTheme.colors.modalBackdrop = "hsl(217 72% 6% / 0.55)";
   walletTheme.colors.downloadTopCardBackground = "hsl(var(--primary) / 0.08)";
   walletTheme.colors.downloadBottomCardBackground = "hsl(var(--card))";
-  walletTheme.radii.modal = "24px";
-  walletTheme.radii.modalMobile = "24px";
-  walletTheme.radii.actionButton = "14px";
-  walletTheme.radii.connectButton = "14px";
-  walletTheme.radii.menuButton = "12px";
-  walletTheme.shadows.dialog = "0 24px 80px -24px hsl(217 72% 6% / 0.45)";
+  walletTheme.radii.modal = "0px";
+  walletTheme.radii.modalMobile = "0px";
+  walletTheme.radii.actionButton = "0px";
+  walletTheme.radii.connectButton = "0px";
+  walletTheme.radii.menuButton = "0px";
+  walletTheme.shadows.dialog = "0 0 0 2px hsl(var(--frame))";
   walletTheme.fonts.body = "var(--font-family-sans), sans-serif";
   return walletTheme;
 }

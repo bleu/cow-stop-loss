@@ -13,9 +13,10 @@ import {
   PopoverTrigger,
   Separator,
 } from "@bleu/ui";
-import { CheckIcon, PlusCircledIcon } from "@radix-ui/react-icons";
+import { CheckIcon } from "@radix-ui/react-icons";
 import type { Column } from "@tanstack/react-table";
 
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import { Option } from "#/hooks/useDataTable";
 
 interface DataTableFacetedFilterProps<TData, TValue> {
@@ -38,24 +39,24 @@ export function DataTableFacetedFilter<TData, TValue>({
           variant="outline"
           size="sm"
           aria-label={title}
-          className="h-8 rounded-lg border-foreground/15 bg-muted/50 hover:bg-muted hover:text-primary"
+          className="rescue-secondary-control pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 gap-2 rounded-none px-2 text-muted-foreground hover:text-primary"
         >
-          <PlusCircledIcon className="mr-2 size-4" aria-hidden="true" />
+          <PixelIcon name="filter" className="size-4" />
           {title}
           {selectedValues.size === 0 && (
             <Badge
               variant="secondary"
-              className="ml-2 rounded px-1.5 font-normal bg-primary/10 text-primary"
+              className="rounded-none border-0 bg-transparent p-0 font-normal text-muted-foreground"
             >
               All
             </Badge>
           )}
           {selectedValues?.size > 0 && (
             <>
-              <Separator orientation="vertical" className="mx-2 h-4" />
+              <Separator orientation="vertical" className="h-4" />
               <Badge
                 variant="secondary"
-                className="rounded-sm px-1 font-normal lg:hidden"
+                className="pixel-badge rounded-none px-1 font-normal lg:hidden"
               >
                 {selectedValues.size}
               </Badge>
@@ -63,7 +64,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                 {selectedValues.size > 2 ? (
                   <Badge
                     variant="secondary"
-                    className="rounded-sm px-1 font-normal"
+                    className="pixel-badge rounded-none px-1 font-normal"
                   >
                     {selectedValues.size} selected
                   </Badge>
@@ -74,7 +75,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                       <Badge
                         variant="secondary"
                         key={option.value}
-                        className="rounded-sm px-1 font-normal"
+                        className="pixel-badge rounded-none px-1 font-normal"
                       >
                         {option.label}
                       </Badge>
@@ -85,13 +86,14 @@ export function DataTableFacetedFilter<TData, TValue>({
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[12.5rem] p-0" align="start">
-        <Command>
-          <CommandInput placeholder={title} />
+      <PopoverContent className="pixel-frame w-[12.5rem] p-0" align="start">
+        <Command className="rounded-none">
+          <CommandInput className="rounded-none" placeholder={title} />
           <CommandList aria-multiselectable="true">
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
               <CommandItem
+                className="rounded-none"
                 aria-label="All"
                 aria-checked={selectedValues.size === 0}
                 onSelect={() => column?.setFilterValue(undefined)}
@@ -99,7 +101,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                 <div
                   aria-hidden="true"
                   className={cn(
-                    "mr-2 flex size-4 items-center justify-center rounded-sm border border-primary",
+                    "mr-2 flex size-4 items-center justify-center rounded-none border border-primary",
                     selectedValues.size === 0
                       ? "bg-primary text-primary-foreground"
                       : "opacity-50 [&_svg]:invisible",
@@ -114,6 +116,7 @@ export function DataTableFacetedFilter<TData, TValue>({
 
                 return (
                   <CommandItem
+                    className="rounded-none"
                     key={option.value}
                     aria-label={option.label}
                     aria-checked={isSelected}
@@ -132,7 +135,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     <div
                       aria-hidden="true"
                       className={cn(
-                        "mr-2 flex size-4 items-center justify-center rounded-sm border border-primary",
+                        "mr-2 flex size-4 items-center justify-center rounded-none border border-primary",
                         isSelected
                           ? "bg-primary text-primary-foreground"
                           : "opacity-50 [&_svg]:invisible",

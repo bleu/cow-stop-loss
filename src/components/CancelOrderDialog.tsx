@@ -13,6 +13,7 @@ import { formatUnits, type Hex } from "viem";
 import { useAccount, useConfig, useSendTransaction } from "wagmi";
 import { getAccount } from "wagmi/actions";
 
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import { useCancellationOverlay } from "#/hooks/useOrderList";
 import { chainNames } from "#/lib/publicClients";
 import {
@@ -59,7 +60,7 @@ function OrderCancellation({
         <Button
           variant="outline"
           title="Cancel order"
-          className={`${compact ? "size-8 rounded-lg p-0" : "h-10 min-h-10 rounded-xl px-3"} border-destructive/30 bg-destructive/5 text-sm font-semibold text-destructive shadow-none hover:border-destructive/50 hover:bg-destructive/10 hover:text-destructive focus-visible:ring-destructive/30`}
+          className={`rescue-danger-outline pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${compact ? "rescue-icon-action size-11 rounded-none p-0" : "h-11 min-h-11 rounded-none px-3"} border-destructive/30 bg-destructive/5 text-sm font-semibold text-destructive shadow-none hover:border-destructive/50 hover:bg-destructive/10 hover:text-destructive focus-visible:ring-destructive/30`}
           aria-label={`Cancel order ${order.parentId} on ${chainNames[order.chainId]}`}
           onClick={(event) => {
             event.stopPropagation();
@@ -67,7 +68,10 @@ function OrderCancellation({
           }}
         >
           {compact ? (
-            <TrashIcon aria-hidden="true" className="size-4" />
+            <>
+              <TrashIcon aria-hidden="true" className="size-4 lg:hidden" />
+              <PixelIcon name="trash" className="hidden size-4 lg:block" />
+            </>
           ) : (
             "Cancel"
           )}
@@ -185,7 +189,7 @@ function CancellationReview({
   });
   return (
     <DialogContent
-      className="rescue-dialog max-h-[calc(100dvh-2rem)] overflow-y-auto w-[calc(100vw-2rem)] max-w-md rounded-3xl border border-border/70 bg-card p-5 text-foreground shadow-2xl sm:p-6"
+      className="pixel-frame rescue-dialog max-h-[calc(100dvh-2rem)] overflow-y-auto w-[calc(100vw-2rem)] max-w-md rounded-none border border-border/70 bg-card p-5 text-foreground shadow-2xl sm:p-6"
       onClick={(event) => event.stopPropagation()}
     >
       <div className="mb-5 pr-5">
@@ -201,7 +205,7 @@ function CancellationReview({
         </DialogDescription>
       </div>
       <div className="mb-5 grid grid-cols-2 gap-3">
-        <div className="min-w-0 rounded-2xl border border-border/70 bg-muted/45 p-3.5">
+        <div className="pixel-inset min-w-0 rounded-none border border-border/70 bg-muted/45 p-3.5">
           <p className="text-xs font-medium text-muted-foreground">
             Remaining sell
           </p>
@@ -212,7 +216,7 @@ function CancellationReview({
             )}
           </p>
         </div>
-        <div className="min-w-0 rounded-2xl border border-border/70 bg-muted/45 p-3.5">
+        <div className="pixel-inset min-w-0 rounded-none border border-border/70 bg-muted/45 p-3.5">
           <p className="text-xs font-medium text-muted-foreground">
             Minimum buy
           </p>
@@ -228,7 +232,7 @@ function CancellationReview({
             )}
           </p>
         </div>
-        <div className="col-span-2 min-w-0 rounded-2xl border border-border/70 bg-muted/45 p-3.5">
+        <div className="pixel-inset col-span-2 min-w-0 rounded-none border border-border/70 bg-muted/45 p-3.5">
           <p className="text-xs font-medium text-muted-foreground">
             Trigger price
           </p>
@@ -236,7 +240,7 @@ function CancellationReview({
             {triggerPrice}
           </p>
         </div>
-        <div className="col-span-2 min-w-0 rounded-2xl border border-border/70 bg-muted/45 p-3.5">
+        <div className="pixel-inset col-span-2 min-w-0 rounded-none border border-border/70 bg-muted/45 p-3.5">
           <p className="text-xs font-medium text-muted-foreground">Expires</p>
           <p className="mt-1 break-words text-sm font-semibold tabular-nums">
             {expires}
@@ -245,7 +249,7 @@ function CancellationReview({
       </div>
       <Button
         variant="destructive"
-        className="h-12 w-full rounded-2xl font-semibold"
+        className="rescue-danger-button pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-12 w-full rounded-none font-semibold"
         disabled={status === "loading"}
         onClick={() => void submit()}
       >

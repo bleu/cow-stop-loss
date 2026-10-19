@@ -494,7 +494,38 @@ test("keeps a cancelled local creation cancelled when its stale API row arrives"
   expect(screen.getAllByRole("row")).toHaveLength(2);
 });
 
-test("fills the empty orders viewport without putting filters or pagination in its scroll area", async () => {
+test("shows the portfolio heading without table controls when the wallet is disconnected", () => {
+  render(<TableView />);
+
+  const title = screen.getByRole("heading", {
+    level: 2,
+    name: "Your stop-loss orders",
+  });
+  expect(title).toHaveAttribute("id", "orders-title");
+  expect(title.parentElement).toHaveClass("rescue-portfolio-title");
+  expect(within(title.parentElement!).getByText("Portfolio")).toHaveClass(
+    "rescue-eyebrow",
+  );
+  expect(title.parentElement!.parentElement).toHaveClass(
+    "rescue-panel-heading",
+    "rescue-portfolio-heading",
+  );
+  expect(
+    screen.getByRole("button", { name: "Connect wallet to view orders" }),
+  ).toBeVisible();
+  expect(
+    screen.queryByRole("button", { name: "Chain" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Status" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Refresh orders" }),
+  ).not.toBeInTheDocument();
+  expect(screen.queryByRole("table")).not.toBeInTheDocument();
+});
+
+test("fills the empty orders viewport with heading controls outside its scroll area", async () => {
   render(<TableView />);
   await connectWallet();
   await screen.findByRole("cell", { name: "No results." });
@@ -519,16 +550,34 @@ test("fills the empty orders viewport without putting filters or pagination in i
     "z-10",
     "bg-background",
   );
-  expect(panel.firstElementChild).toHaveClass("shrink-0");
-  expect(panel.firstElementChild).toContainElement(
-    screen.getByRole("button", { name: "Refresh orders" }),
+  const title = screen.getByRole("heading", {
+    level: 2,
+    name: "Your stop-loss orders",
+  });
+  expect(title).toHaveAttribute("id", "orders-title");
+  expect(title.parentElement).toHaveClass("rescue-portfolio-title");
+  const heading = title.parentElement!.parentElement!;
+  expect(heading).toHaveClass(
+    "rescue-panel-heading",
+    "rescue-portfolio-heading",
   );
+  const refresh = screen.getByRole("button", { name: "Refresh orders" });
+  const toolbar = refresh.closest<HTMLDivElement>(".rescue-portfolio-toolbar")!;
+  expect(heading).toContainElement(toolbar);
+  expect(toolbar).toContainElement(
+    screen.getByRole("button", { name: "Chain" }),
+  );
+  expect(toolbar).toContainElement(
+    screen.getByRole("button", { name: "Status" }),
+  );
+  expect(refresh).toBeEnabled();
+  expect(panel).not.toContainElement(heading);
+  expect(panel.firstElementChild).toBe(viewport);
   expect(panel.lastElementChild).toBe(viewport);
   expect(
     screen.queryByRole("button", { name: "Go to next page" }),
   ).not.toBeInTheDocument();
-  const chainFilter = screen.queryByRole("button", { name: "Chain" });
-  if (chainFilter) expect(viewport).not.toContainElement(chainFilter);
+  expect(viewport).not.toContainElement(toolbar);
   expect(screen.queryByText("Rows per page")).not.toBeInTheDocument();
 });
 
@@ -555,6 +604,9 @@ test("keeps the expanding table shell while the connected account's first orders
     expect(
       screen.getByRole("button", { name: "Refresh orders" }),
     ).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Refresh orders" }),
+    ).toHaveAttribute("aria-busy", "true");
     const viewport = table.parentElement!.parentElement!;
     expect(viewport).toHaveClass("min-h-0", "flex-1", "max-h-none");
     expect(viewport.parentElement!.parentElement).toHaveClass(
