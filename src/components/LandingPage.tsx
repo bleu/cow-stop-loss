@@ -1,6 +1,5 @@
 "use client";
 
-import { ArrowRightIcon, ExternalLinkIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 
 import {
@@ -9,6 +8,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "#/components/ui/accordion";
+import { PixelIcon } from "#/components/ui/pixel-icon";
 
 const steps = [
   {
@@ -91,7 +91,7 @@ function OpenAppLink() {
       href="/app"
       className="pixel-control rescue-primary-button landing-app-link"
     >
-      Open app <ArrowRightIcon aria-hidden="true" />
+      Open app <PixelIcon name="arrow-right" className="size-4" />
     </Link>
   );
 }
@@ -116,7 +116,7 @@ export function LandingPage() {
             <div className="landing-actions">
               <OpenAppLink />
               <a className="landing-text-link" href="#how-it-works">
-                How it works <ArrowRightIcon aria-hidden="true" />
+                How it works <PixelIcon name="arrow-right" className="size-4" />
               </a>
             </div>
             <p className="landing-hero-note">
@@ -174,7 +174,7 @@ export function LandingPage() {
               rel="noopener noreferrer"
             >
               Read the Composable CoW docs
-              <ExternalLinkIcon aria-hidden="true" />
+              <PixelIcon name="external-link" className="size-4" />
             </a>
           </div>
           <dl className="landing-dependencies">

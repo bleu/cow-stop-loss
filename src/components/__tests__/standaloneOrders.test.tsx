@@ -1060,6 +1060,18 @@ test("shows the app link in the header and FAQ in the footer without wallet cont
   expect(
     screen.queryByRole("button", { name: /wallet/i }),
   ).not.toBeInTheDocument();
+  expect(
+    screen
+      .getByRole("button", { name: "Switch to light mode" })
+      .querySelector("svg"),
+  ).toHaveAttribute("data-pixel-icon", "sun");
+  for (const name of ["github", "discord"]) {
+    expect(
+      screen
+        .getByRole("contentinfo")
+        .querySelector(`[data-pixel-icon="${name}"]`),
+    ).toBeInTheDocument();
+  }
   fireEvent.click(screen.getByRole("button", { name: "Switch to light mode" }));
   expect(document.documentElement).toHaveClass("light");
   expect(

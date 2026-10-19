@@ -116,6 +116,7 @@
   }
   body {
     --font-family-serif: var(--font-family-pixel-display);
+    --font-family-sans: var(--font-family-serif);
     margin: 0;
     font-synthesis-weight: none;
     text-rendering: optimizeLegibility;

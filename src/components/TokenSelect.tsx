@@ -10,10 +10,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@bleu/ui";
-import { ChevronDownIcon } from "@radix-ui/react-icons";
 import React, { useState } from "react";
 import { useAccount } from "wagmi";
 
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import { ChainId } from "#/lib/publicClients";
 import { getSupportedTokens } from "#/lib/supportedTokens";
 import { IToken } from "#/lib/types";
@@ -61,7 +61,9 @@ export function TokenSelect({
             ) : (
               "Select token"
             )}
-            {!disabled && <ChevronDownIcon className="size-4 shrink-0" />}
+            {!disabled && (
+              <PixelIcon name="chevron-down" className="size-4 shrink-0" />
+            )}
           </Button>
           {errorMessage && (
             <div className="mt-1 text-sm text-destructive">
@@ -71,7 +73,7 @@ export function TokenSelect({
         </div>
       </PopoverTrigger>
       <PopoverContent className="pixel-frame rescue-popover w-[min(22rem,calc(100vw-2rem))] rounded-none border border-border bg-popover p-0 text-popover-foreground shadow-2xl">
-        <p className="border-b border-border/60 px-4 py-3 font-mono text-[10px] uppercase tracking-[0.16em] text-secondary">
+        <p className="border-b border-border/60 px-4 py-3 font-sans text-[10px] uppercase tracking-[0.16em] text-secondary">
           Choose your passenger
         </p>
         {/* @ts-ignore */}

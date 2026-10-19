@@ -1,11 +1,7 @@
 import { Button, cn } from "@bleu/ui";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  DoubleArrowLeftIcon,
-  DoubleArrowRightIcon,
-} from "@radix-ui/react-icons";
 import { type Table } from "@tanstack/react-table";
+
+import { PixelIcon } from "#/components/ui/pixel-icon";
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
@@ -48,7 +44,7 @@ export function DataTablePagination<TData>({
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
-            <DoubleArrowLeftIcon className="size-4" aria-hidden="true" />
+            <PixelIcon name="chevrons-left" className="size-4" />
           </Button>
           <Button
             aria-label="Go to previous page"
@@ -58,7 +54,7 @@ export function DataTablePagination<TData>({
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            <ChevronLeftIcon className="size-4" aria-hidden="true" />
+            <PixelIcon name="chevron-left" className="size-4" />
           </Button>
           <Button
             aria-label="Go to next page"
@@ -68,7 +64,7 @@ export function DataTablePagination<TData>({
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            <ChevronRightIcon className="size-4" aria-hidden="true" />
+            <PixelIcon name="chevron-right" className="size-4" />
           </Button>
           <Button
             aria-label="Go to last page"
@@ -78,7 +74,7 @@ export function DataTablePagination<TData>({
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >
-            <DoubleArrowRightIcon className="size-4" aria-hidden="true" />
+            <PixelIcon name="chevrons-right" className="size-4" />
           </Button>
         </div>
       </div>

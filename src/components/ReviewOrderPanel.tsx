@@ -7,7 +7,6 @@ import {
   PopoverTrigger,
   Tooltip,
 } from "@bleu/ui";
-import { ArrowLeftIcon, ArrowRightIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
 import { formatUnits } from "viem";
 
@@ -90,7 +89,7 @@ export function ReviewOrderPanel({
           className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring size-11 shrink-0 rounded-none border-border bg-card text-muted-foreground hover:text-primary"
           onClick={() => setOpen(false)}
         >
-          <ArrowLeftIcon aria-hidden="true" className="size-4" />
+          <PixelIcon name="arrow-left" className="size-4" />
         </Button>
       </header>
 
@@ -105,7 +104,7 @@ export function ReviewOrderPanel({
           token={order.tokenSell}
           chainId={chainId}
         />
-        <ArrowRightIcon aria-hidden="true" className="size-4 text-primary" />
+        <PixelIcon name="arrow-right" className="size-4 text-primary" />
         <AmountSummary
           label="Receive at least"
           amount={order.amountBuy}

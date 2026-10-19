@@ -11,13 +11,9 @@ import {
   ToastViewport,
   useToast,
 } from "@bleu/ui";
-import {
-  ArrowTopRightIcon,
-  CheckCircledIcon,
-  ExclamationTriangleIcon,
-} from "@radix-ui/react-icons";
 import Link from "next/link";
 
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import type { ChainId } from "#/lib/publicClients";
 import { isRejected } from "#/lib/stopLossPlacement";
 
@@ -29,7 +25,7 @@ export function OrderToaster() {
     <ToastProvider>
       {toasts.map(({ id, title, description, action, variant, ...props }) => {
         const failed = variant === "destructive";
-        const Icon = failed ? ExclamationTriangleIcon : CheckCircledIcon;
+        const iconName = failed ? "warning" : "check-circle";
         return (
           <Toast
             key={id}
@@ -39,7 +35,7 @@ export function OrderToaster() {
             <div
               className={`pixel-inset flex size-9 shrink-0 items-center justify-center rounded-none ${failed ? "bg-destructive/10 text-destructive" : "bg-success/10 text-success"}`}
             >
-              <Icon aria-hidden="true" className="size-[18px]" />
+              <PixelIcon name={iconName} className="size-[18px]" />
             </div>
             <div className="min-w-0 flex-1 space-y-2 pt-1.5">
               {title && (
@@ -120,7 +116,7 @@ export function showOrderSuccess(
           href={`/${order.chainId}/${order.account}/${encodeURIComponent(orderId)}`}
         >
           View order
-          <ArrowTopRightIcon aria-hidden="true" className="size-3.5" />
+          <PixelIcon name="external-link" className="size-3.5" />
         </Link>
       </ToastAction>
     ),

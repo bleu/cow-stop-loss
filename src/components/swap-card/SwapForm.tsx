@@ -205,7 +205,7 @@ function WalletSwapForm({
               orderTiming={<ValidToInput />}
               title={
                 <div className="min-w-0">
-                  <p className="rescue-display-eyebrow font-mono text-[10px] uppercase tracking-[0.18em] text-secondary">
+                  <p className="rescue-display-eyebrow font-sans text-[10px] uppercase tracking-[0.18em] text-secondary">
                     Create · Your flight plan
                   </p>
                   <h2

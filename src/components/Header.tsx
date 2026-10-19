@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@bleu/ui";
-import { ChevronDownIcon, MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Image from "next/image";
 import Link from "next/link";
@@ -64,9 +63,9 @@ export function Header({
           className="pixel-control rescue-header-control size-11 bg-card text-foreground"
         >
           {theme === "dark" ? (
-            <SunIcon aria-hidden="true" className="size-5" />
+            <PixelIcon name="sun" className="size-5" />
           ) : (
-            <MoonIcon aria-hidden="true" className="size-5" />
+            <PixelIcon name="moon" className="size-5" />
           )}
         </Button>
         {isLandingPage ? (
@@ -111,8 +110,8 @@ export function Header({
                       {chain?.unsupported
                         ? "Unsupported network"
                         : (chain?.name ?? "Select network")}
-                      <ChevronDownIcon
-                        aria-hidden="true"
+                      <PixelIcon
+                        name="chevron-down"
                         className="size-4 opacity-70"
                       />
                     </Button>
@@ -125,8 +124,8 @@ export function Header({
                     >
                       <PixelIcon name="wallet" className="size-4" />
                       {account.displayName}
-                      <ChevronDownIcon
-                        aria-hidden="true"
+                      <PixelIcon
+                        name="chevron-down"
                         className="size-4 opacity-70"
                       />
                     </Button>

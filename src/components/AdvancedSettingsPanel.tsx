@@ -2,11 +2,6 @@
 
 import { Button } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  ArrowLeftIcon,
-  ArrowTopRightIcon,
-  ResetIcon,
-} from "@radix-ui/react-icons";
 import * as React from "react";
 import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
 import { useAccount } from "wagmi";
@@ -130,7 +125,7 @@ export function AdvancedSettingsPanel({
       <div className="rescue-settings-heading flex items-start justify-between gap-3">
         {open ? (
           <div className="min-w-0">
-            <p className="rescue-display-eyebrow font-mono text-[10px] uppercase tracking-[0.18em] text-secondary">
+            <p className="rescue-display-eyebrow font-sans text-[10px] uppercase tracking-[0.18em] text-secondary">
               Flight controls
             </p>
             <h2 className="rescue-settings-title mt-2 font-serif text-[28px] leading-tight tracking-tight sm:text-[32px]">
@@ -157,7 +152,7 @@ export function AdvancedSettingsPanel({
           title={open ? "Back to order" : "Order settings"}
         >
           {open ? (
-            <ArrowLeftIcon aria-hidden="true" className="size-4" />
+            <PixelIcon name="arrow-left" className="size-4" />
           ) : (
             <PixelIcon name="settings" className="size-4" />
           )}
@@ -261,7 +256,9 @@ export function AdvancedSettingsPanel({
                 extraLabelElement={
                   <BlockExplorerLink
                     type="address"
-                    label={<ArrowTopRightIcon />}
+                    label={
+                      <PixelIcon name="external-link" className="size-4" />
+                    }
                     identifier={receiver}
                     networkId={chainId}
                   />
@@ -284,7 +281,8 @@ export function AdvancedSettingsPanel({
                     onOpenChange(false);
                   }}
                 >
-                  <ResetIcon className="mr-1.5 size-3.5" /> Reset to defaults
+                  <PixelIcon name="reload" className="mr-1.5 size-3.5" /> Reset
+                  to defaults
                 </Button>
                 <Button
                   className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rescue-primary-button h-12 w-full rounded-none text-sm"

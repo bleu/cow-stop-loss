@@ -1,13 +1,6 @@
 "use client";
 
 import { formatNumber } from "@bleu/ui";
-import {
-  ArrowLeftIcon,
-  ArrowTopRightIcon,
-  CheckCircledIcon,
-  ClockIcon,
-  CrossCircledIcon,
-} from "@radix-ui/react-icons";
 import Link from "next/link";
 import React, { useId, useState } from "react";
 import useSWR from "swr";
@@ -288,7 +281,7 @@ function OrderDetailsHeading({ children }: React.PropsWithChildren) {
           aria-label="Back to orders"
           className="pixel-control absolute left-0 top-1 inline-flex size-11 shrink-0 items-center justify-center rounded-none border border-border/70 bg-card/80 text-muted-foreground shadow-sm transition-colors hover:border-primary/40 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <ArrowLeftIcon className="size-5" aria-hidden="true" />
+          <PixelIcon name="arrow-left" className="size-5" />
         </Link>
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">
           Air rescue · Flight log
@@ -407,14 +400,14 @@ function OrderStatusSummary({
   children,
 }: React.PropsWithChildren<{ status: OrderStatus | string }>) {
   const message = getOrderStatusMessage(status);
-  const Icon =
+  const iconName =
     message.tone === "success"
-      ? CheckCircledIcon
+      ? "check-circle"
       : message.tone === "warning"
-        ? ClockIcon
+        ? "clock"
         : message.tone === "muted"
-          ? CrossCircledIcon
-          : null;
+          ? "cancel-circle"
+          : "info";
   const color =
     message.tone === "success"
       ? "text-success"
@@ -427,17 +420,10 @@ function OrderStatusSummary({
   return (
     <aside className="pixel-inset mb-5 flex flex-wrap items-center gap-3 rounded-none border border-border/70 bg-primary/5 p-4">
       <div className="flex min-w-0 flex-1 items-start gap-3">
-        {Icon ? (
-          <Icon
-            aria-hidden="true"
-            className={`mt-0.5 size-5 shrink-0 ${color}`}
-          />
-        ) : (
-          <PixelIcon
-            name="info"
-            className={`mt-0.5 size-5 shrink-0 ${color}`}
-          />
-        )}
+        <PixelIcon
+          name={iconName}
+          className={`mt-0.5 size-5 shrink-0 ${color}`}
+        />
         <div>
           <p className="font-semibold">{message.title}</p>
           <p className="mt-0.5 text-[13px] leading-5 text-muted-foreground">
@@ -682,8 +668,8 @@ export function OrderDetails({
                 <span className="font-mono text-sm">
                   {truncateAddress(order.transactionHash)}
                 </span>
-                <ArrowTopRightIcon
-                  aria-hidden="true"
+                <PixelIcon
+                  name="external-link"
                   className="ml-1 size-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                 />
               </Link>
@@ -735,8 +721,8 @@ export function OrderDetails({
                   className="group inline-flex items-center text-primary transition-colors hover:text-secondary"
                 >
                   View CoW order
-                  <ArrowTopRightIcon
-                    aria-hidden="true"
+                  <PixelIcon
+                    name="external-link"
                     className="ml-1 size-3.5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                   />
                 </Link>

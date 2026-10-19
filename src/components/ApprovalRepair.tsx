@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { formatUnits, Hex } from "viem";
 import { useAccount, useSendTransaction } from "wagmi";
 
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import {
   getStopLossApprovalRepair,
   resumeStopLossApprovalRepair,
@@ -197,8 +198,16 @@ export function ApprovalRepair({
         </Button>
       </div>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="pixel-frame rescue-dialog max-h-[85dvh] w-[calc(100vw-2rem)] max-w-xl overflow-y-auto rounded-none border border-border/70 bg-card p-5 text-foreground shadow-2xl sm:p-7">
-          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-secondary">
+        <DialogContent
+          closeButton={
+            <>
+              <PixelIcon name="close" className="size-4" />
+              <span className="sr-only">Close</span>
+            </>
+          }
+          className="pixel-frame rescue-dialog max-h-[85dvh] w-[calc(100vw-2rem)] max-w-xl overflow-y-auto rounded-none border border-border/70 bg-card p-5 text-foreground shadow-2xl sm:p-7"
+        >
+          <p className="font-sans text-[10px] uppercase tracking-[0.18em] text-secondary">
             Air rescue · Token clearance
           </p>
           <DialogTitle className="font-serif text-[28px] leading-tight tracking-tight">

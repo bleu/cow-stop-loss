@@ -10,6 +10,7 @@ import {
 } from "@bleu/ui";
 import cn from "clsx";
 
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import { useUIStore } from "#/hooks/useUIState";
 
 export function TxPendingDialog() {
@@ -28,6 +29,12 @@ export function TxPendingDialog() {
           )}
         />
         <DialogContent
+          closeButton={
+            <>
+              <PixelIcon name="close" className="size-4" />
+              <span className="sr-only">Close</span>
+            </>
+          }
           className={cn(
             "pixel-frame rescue-dialog data-[state=open]:animate-contentShow fixed left-1/2 top-1/2 max-h-[85dvh] overflow-y-auto w-[calc(100vw-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-none border border-border/70 bg-card p-5 text-foreground shadow-2xl focus:outline-none sm:p-7",
           )}
@@ -37,7 +44,7 @@ export function TxPendingDialog() {
               aria-hidden="true"
               className="rescue-hero-cow mx-auto h-24 w-20"
             />
-            <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-secondary">
+            <p className="font-sans text-[10px] uppercase tracking-[0.18em] text-secondary">
               Air rescue · In transit
             </p>
             <DialogTitle className="font-serif text-[28px] leading-tight tracking-tight">

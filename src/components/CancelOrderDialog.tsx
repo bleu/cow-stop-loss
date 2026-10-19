@@ -7,7 +7,6 @@ import {
   DialogDescription,
   DialogTitle,
 } from "@bleu/ui";
-import { TrashIcon } from "@radix-ui/react-icons";
 import { useEffect, useRef, useState } from "react";
 import { formatUnits, type Hex } from "viem";
 import { useAccount, useConfig, useSendTransaction } from "wagmi";
@@ -67,14 +66,7 @@ function OrderCancellation({
             setOpen(true);
           }}
         >
-          {compact ? (
-            <>
-              <TrashIcon aria-hidden="true" className="size-4 lg:hidden" />
-              <PixelIcon name="trash" className="hidden size-4 lg:block" />
-            </>
-          ) : (
-            "Cancel"
-          )}
+          {compact ? <PixelIcon name="trash" className="size-4" /> : "Cancel"}
         </Button>
       )}
       <Dialog open={open} onOpenChange={setOpen}>
@@ -189,11 +181,17 @@ function CancellationReview({
   });
   return (
     <DialogContent
+      closeButton={
+        <>
+          <PixelIcon name="close" className="size-4" />
+          <span className="sr-only">Close</span>
+        </>
+      }
       className="pixel-frame rescue-dialog max-h-[calc(100dvh-2rem)] overflow-y-auto w-[calc(100vw-2rem)] max-w-md rounded-none border border-border/70 bg-card p-5 text-foreground shadow-2xl sm:p-6"
       onClick={(event) => event.stopPropagation()}
     >
       <div className="mb-5 pr-5">
-        <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.18em] text-secondary">
+        <p className="mb-2 font-sans text-[10px] uppercase tracking-[0.18em] text-secondary">
           Air rescue · Order check
         </p>
         <DialogTitle className="font-serif text-[28px] leading-tight tracking-tight">
