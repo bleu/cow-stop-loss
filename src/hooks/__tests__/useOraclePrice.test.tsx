@@ -1,5 +1,7 @@
 /** @jest-environment jsdom */
 
+let mockUseRealSupportedTokens = false;
+
 // Opt in to simulated TEST approvals; production policy remains unchanged.
 jest.mock("#/lib/supportedTokens", () => {
   const actual = jest.requireActual("#/lib/supportedTokens");
@@ -7,7 +9,10 @@ jest.mock("#/lib/supportedTokens", () => {
   return {
     ...actual,
     getSupportedTokens: (chainId: import("#/lib/publicClients").ChainId) =>
-      TEST_SUPPORTED_TOKENS[chainId] ?? actual.getSupportedTokens(chainId),
+      mockUseRealSupportedTokens
+        ? actual.getSupportedTokens(chainId)
+        : (TEST_SUPPORTED_TOKENS[chainId] ??
+          actual.getSupportedTokens(chainId)),
   };
 });
 
@@ -21,8 +26,10 @@ import {
   fetchOracleUsdPrice,
 } from "#/lib/oraclePrice";
 import { configuredTokenRoute } from "#/lib/oracleRouter";
-import { getSupportedTokens } from "#/lib/supportedTokens";
+import { publicClientsFromIds } from "#/lib/publicClients";
+import { findKnownToken, getSupportedTokens } from "#/lib/supportedTokens";
 
+import { useAdvancedSettingsStore } from "../useAdvancedSettings";
 import { useOraclePrice } from "../useOraclePrice";
 import { useTokenPairPrice } from "../useTokenPairPrice";
 import { useTokenPrice } from "../useTokenPrice";
@@ -54,8 +61,15 @@ function wrapper({ children }: PropsWithChildren) {
   );
 }
 
-beforeEach(() => fetchPrice.mockReset());
-afterEach(() => jest.useRealTimers());
+beforeEach(() => {
+  mockUseRealSupportedTokens = false;
+  fetchPrice.mockReset();
+  jest.mocked(fetchOraclePairPrice).mockReset();
+});
+afterEach(() => {
+  jest.useRealTimers();
+  jest.restoreAllMocks();
+});
 
 it("does not request a price without a feed", () => {
   const { result } = renderHook(() => useOraclePrice(1), { wrapper });
@@ -123,6 +137,8 @@ it("uses the canonical ETH route for pair prices and direct USD for estimates", 
       tokenBuy: buyToken.token,
     }),
     maxAge: expect.any(Number),
+    sellMaxAge: expect.any(Number),
+    buyMaxAge: expect.any(Number),
   });
   expect(configuredTokenOracle(sell.token.address, 1)).toBe(sell.oracles.USD);
   expect(fetchPrice).toHaveBeenCalledWith(
@@ -140,8 +156,85 @@ it("leaves USD estimates unavailable for ETH-only tokens", () => {
   expect(fetchPrice).not.toHaveBeenCalled();
 });
 
+it.each(["fresh", "stale sell", "stale buy", "user limit"])(
+  "applies real Ethereum feed limits through the pair-price hook: %s",
+  async (scenario) => {
+    mockUseRealSupportedTokens = true;
+    const actual =
+      jest.requireActual<typeof import("#/lib/oraclePrice")>(
+        "#/lib/oraclePrice",
+      );
+    const pairPrice = jest
+      .mocked(fetchOraclePairPrice)
+      .mockImplementation(actual.fetchOraclePairPrice);
+    const { sellTokens, buyToken } = getSupportedTokens(1);
+    const sell = sellTokens.find(({ token }) => token.symbol === "WETH")!;
+    const sellCeiling = sell.oracleApprovals!.USD!.maxAgeSeconds;
+    const buyCeiling = buyToken.oracleApprovals!.USD!.maxAgeSeconds;
+    const sellAge = scenario === "stale sell" ? sellCeiling + 1 : 1000;
+    const buyAge = scenario === "stale buy" ? buyCeiling + 1 : 60000;
+    const original = useAdvancedSettingsStore.getState().advancedSettings;
+    const maxAge = scenario === "user limit" ? 3600 : 86400;
+    useAdvancedSettingsStore.getState().setAdvancedSettings({
+      ...original,
+      maxHoursSinceOracleUpdates: maxAge / 3600,
+    });
+    const client = publicClientsFromIds[1];
+    jest.spyOn(client, "getBlock").mockResolvedValue({
+      number: BigInt(10),
+      timestamp: BigInt(200000),
+    } as never);
+    jest
+      .spyOn(client, "readContract")
+      .mockImplementation(async ({ functionName, address }) => {
+        if (functionName === "decimals") return 8;
+        const selling =
+          address?.toLowerCase() === sell.oracles.USD!.toLowerCase();
+        return [
+          BigInt(1),
+          BigInt(selling ? 200000000000 : 100000000),
+          BigInt(200000 - (selling ? sellAge : buyAge)),
+          BigInt(200000 - (selling ? sellAge : buyAge)),
+          BigInt(1),
+        ];
+      });
+    try {
+      const { result } = renderHook(
+        () => useTokenPairPrice(sell.token, buyToken.token, 1),
+        { wrapper },
+      );
+      if (scenario === "fresh")
+        await waitFor(() => expect(result.current.data).toBe(2000));
+      else {
+        await waitFor(() =>
+          expect(result.current.error?.message).toContain("stale"),
+        );
+        expect(result.current.data).toBeUndefined();
+      }
+      expect(pairPrice).toHaveBeenCalledWith({
+        chainId: 1,
+        route: {
+          tokenSellOracle: sell.oracles.USD!.toLowerCase(),
+          tokenBuyOracle: buyToken.oracles.USD!.toLowerCase(),
+        },
+        maxAge: Math.min(maxAge, Math.max(sellCeiling, buyCeiling)),
+        sellMaxAge: Math.min(maxAge, sellCeiling),
+        buyMaxAge: Math.min(maxAge, buyCeiling),
+      });
+    } finally {
+      await act(async () => {
+        useAdvancedSettingsStore.getState().setAdvancedSettings(original);
+      });
+    }
+  },
+);
+
 it("keeps saved historical pair feeds without enabling their creation route", async () => {
-  const { sellTokens } = getSupportedTokens(100);
+  mockUseRealSupportedTokens = true;
+  const tokenSell = findKnownToken(
+    100,
+    "0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1",
+  )!;
   const pairPrice = jest.mocked(fetchOraclePairPrice).mockResolvedValue(2000);
   const saved = {
     tokenSellOracle: "0xa767f745331D267c7751297D982b050c93985627" as const,
@@ -154,7 +247,7 @@ it("keeps saved historical pair feeds without enabling their creation route", as
     decimals: 6,
   };
   const { result } = renderHook(
-    () => useTokenPairPrice(sellTokens[0].token, tokenBuy, 100, saved),
+    () => useTokenPairPrice(tokenSell, tokenBuy, 100, saved),
     { wrapper },
   );
   await waitFor(() => expect(result.current.data).toBe(2000));
@@ -165,12 +258,14 @@ it("keeps saved historical pair feeds without enabling their creation route", as
       tokenBuyOracle: saved.tokenBuyOracle.toLowerCase(),
     },
     maxAge: 3600,
+    sellMaxAge: 3600,
+    buyMaxAge: 3600,
   });
   expect(() =>
     configuredTokenRoute({
       chainId: 100,
-      tokenSell: sellTokens[0].token,
+      tokenSell,
       tokenBuy,
     }),
-  ).toThrow("Unsupported buy token");
+  ).toThrow(getSupportedTokens(100).unavailableReason);
 });

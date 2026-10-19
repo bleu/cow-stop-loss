@@ -1,8 +1,8 @@
 # Supported networks
 
-The standalone app provides wallet selection and historical order access for Ethereum (1), Gnosis (100), Arbitrum One (42161), Base (8453), Polygon (137), Avalanche (43114), BNB Chain (56), Linea (59144), and Plasma (9745). New production order creation is disabled on all nine mainnets because no route meets the current approval requirements. Sepolia (11155111) remains available for tests. Ink and Solana are excluded. The app connects through Wagmi and RainbowKit and does not require a Safe frame or Safe gateway.
+The standalone app provides wallet selection and historical order access for Ethereum (1), Gnosis (100), Arbitrum One (42161), Base (8453), Polygon (137), Avalanche (43114), BNB Chain (56), Linea (59144), and Plasma (9745). New production orders are supported on every listed mainnet with a small explicit sell list. Ethereum supports WETH, LINK, and UNI; Gnosis GNO; Arbitrum WETH; Base VIRTUAL; Polygon WPOL; Avalanche WAVAX; BNB Chain WBNB; Linea WETH; and Plasma WXPL. Sepolia (11155111) remains available for tests. Ink and Solana are excluded. The app connects through Wagmi and RainbowKit and does not require a Safe frame or Safe gateway.
 
-Connection and browsing do not switch the wallet chain. Only an explicit network selection requests a switch. Order creation uses exact-sell amounts, a trigger price, slippage, and one fixed USD buy token per chain. Gnosis uses USDT. Sepolia offers only WETH into the existing 18-decimal USDC test token, with fixed test feeds. See [Token catalog](token-catalog.md) for token eligibility and oracle limits.
+Connection and browsing do not switch the wallet chain. Only an explicit network selection requests a switch. Order creation uses exact-sell amounts, a trigger price, slippage, and one fixed USD buy token per chain. Gnosis and BNB Chain use USDT; the other mainnets use native USDC. Sepolia offers only WETH into the existing 18-decimal USDC test token, with fixed test feeds. See [Token catalog](token-catalog.md) for token eligibility and oracle limits.
 
 ## RPC configuration
 
@@ -12,7 +12,7 @@ Without an override, clients use the viem chain defaults except for Ethereum, Po
 
 ## Placement requirements
 
-Placement first requires an explicitly approved token/feed route and chain execution policy. All nine production buy feeds are marked as bounded stablecoin feeds, whose stop-loss ratio suitability is not established. Arbitrum, Base, and Linea also lack proven execution-time sequencer protection in the configured handler. The UI must show why creation is unavailable; contract presence alone must not enable it. See [Token catalog](token-catalog.md) and [handler evidence](../scripts/oracle-execution-verification.json).
+Placement first requires an explicitly approved token/feed route and chain execution policy. Each fixed buy feed has its own bounded-feed suitability decision. Gnosis GNO has an explicit medium-category decision. Gnosis GNO and USDT, and BNB Chain USDT use reviewed underlying-asset pricing, which does not measure bridge or custody risk. The handler has one shared timeout and no execution-time sequencer or recovery check on Arbitrum, Base, or Linea. These limits are accepted for the exact allowlisted routes; they have not been fixed by browser checks or a new handler. See [Token catalog](token-catalog.md) and [handler evidence](../scripts/oracle-execution-verification.json).
 
 For an approved route, placement also requires the configured Poller, CowShed factory, ComposableCoW, StopLoss handler, settlement, and vault relayer. The app checks the account's CowShed state, funding, approvals, and canonical route. Approval repair and cancellation remain available for existing orders when their normal checks pass. Historical token metadata does not make a token eligible for new orders.
 

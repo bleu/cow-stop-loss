@@ -1,17 +1,371 @@
 {
-  "checkedAt": "2026-10-19T16:32:25.375286+00:00",
-  "scope": "approved-feeds",
-  "status": "not-performed",
-  "chains": {},
-  "skippedChains": {
-    "1": "No selected production feeds; live verification was not performed",
-    "100": "No selected production feeds; live verification was not performed",
-    "42161": "No selected production feeds; live verification was not performed",
-    "8453": "No selected production feeds; live verification was not performed",
-    "137": "No selected production feeds; live verification was not performed",
-    "43114": "No selected production feeds; live verification was not performed",
-    "56": "No selected production feeds; live verification was not performed",
-    "59144": "No selected production feeds; live verification was not performed",
-    "9745": "No selected production feeds; live verification was not performed"
-  }
+  "checkedAt": "2026-10-19T23:33:26.073671+00:00",
+  "scope": "candidate-review",
+  "status": "checked",
+  "chains": {
+    "1": {
+      "tokens": {
+        "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2": {
+          "decimals": 18,
+          "symbol": "WETH"
+        },
+        "0x514910771af9ca656af840dff83e8264ecf986ca": {
+          "decimals": 18,
+          "symbol": "LINK"
+        },
+        "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984": {
+          "decimals": 18,
+          "symbol": "UNI"
+        },
+        "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+          "decimals": 6,
+          "symbol": "USDC"
+        }
+      },
+      "feeds": {
+        "0x5f4ec3df9cbd43714fe2740f5e3616155c5b8419": {
+          "description": "ETH / USD",
+          "decimals": 8,
+          "roundId": "129127208515966896125",
+          "answer": "240409000000",
+          "updatedAt": 1792451699,
+          "answeredInRound": "129127208515966896125",
+          "heartbeat": 3600,
+          "observedAt": 1792452805,
+          "ageSeconds": 1106
+        },
+        "0x2c1d072e956affc0d435cb7ac38ef18d24d9127c": {
+          "description": "LINK / USD",
+          "decimals": 8,
+          "roundId": "129127208515966895583",
+          "answer": "1199907000",
+          "updatedAt": 1792451831,
+          "answeredInRound": "129127208515966895583",
+          "heartbeat": 3600,
+          "observedAt": 1792452805,
+          "ageSeconds": 974
+        },
+        "0x553303d460ee0afb37edff9be42922d8ff63220e": {
+          "description": "UNI / USD",
+          "decimals": 8,
+          "roundId": "129127208515966888180",
+          "answer": "727347890",
+          "updatedAt": 1792451291,
+          "answeredInRound": "129127208515966888180",
+          "heartbeat": 3600,
+          "observedAt": 1792452805,
+          "ageSeconds": 1514
+        },
+        "0x8fffffd4afb6115b954bd326cbe7b4ba576818f6": {
+          "description": "USDC / USD",
+          "decimals": 8,
+          "roundId": "73786976294838206501",
+          "answer": "99984159",
+          "updatedAt": 1792385015,
+          "answeredInRound": "73786976294838206501",
+          "heartbeat": 82800,
+          "observedAt": 1792452805,
+          "ageSeconds": 67790
+        }
+      },
+      "issues": []
+    },
+    "137": {
+      "tokens": {
+        "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270": {
+          "decimals": 18,
+          "symbol": "WPOL"
+        },
+        "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359": {
+          "decimals": 6,
+          "symbol": "USDC"
+        }
+      },
+      "feeds": {
+        "0xab594600376ec9fd91f8e885dadf0ce036862de0": {
+          "description": "MATIC / USD",
+          "decimals": 8,
+          "roundId": "55340232221133133387",
+          "answer": "9241558",
+          "updatedAt": 1792452789,
+          "answeredInRound": "55340232221133133387",
+          "heartbeat": 27,
+          "observedAt": 1792452805,
+          "ageSeconds": 16
+        },
+        "0xfe4a8cc5b5b2366c1b58bea3858e81843581b2f7": {
+          "description": "USDC / USD",
+          "decimals": 8,
+          "roundId": "73786976294838420275",
+          "answer": "99987759",
+          "updatedAt": 1792452774,
+          "answeredInRound": "73786976294838420275",
+          "heartbeat": 27,
+          "observedAt": 1792452805,
+          "ageSeconds": 31
+        }
+      },
+      "issues": []
+    },
+    "42161": {
+      "tokens": {
+        "0x82af49447d8a07e3bd95bd0d56f35241523fbab1": {
+          "decimals": 18,
+          "symbol": "WETH"
+        },
+        "0xaf88d065e77c8cc2239327c5edb3a432268e5831": {
+          "decimals": 6,
+          "symbol": "USDC"
+        }
+      },
+      "feeds": {
+        "0x639fe6ab55c921f74e7fac1ee960c0b6293ba612": {
+          "description": "ETH / USD",
+          "decimals": 8,
+          "roundId": "36893488147419242688",
+          "answer": "240547526255",
+          "updatedAt": 1792452618,
+          "answeredInRound": "36893488147419242688",
+          "heartbeat": 1755,
+          "observedAt": 1792452805,
+          "ageSeconds": 187
+        },
+        "0x50834f3163758fcc1df9973b6e91f0f0f0434ad3": {
+          "description": "USDC / USD",
+          "decimals": 8,
+          "roundId": "55340232221128674089",
+          "answer": "99988075",
+          "updatedAt": 1792452780,
+          "answeredInRound": "55340232221128674089",
+          "heartbeat": 255,
+          "observedAt": 1792452805,
+          "ageSeconds": 25
+        }
+      },
+      "issues": []
+    },
+    "43114": {
+      "tokens": {
+        "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7": {
+          "decimals": 18,
+          "symbol": "WAVAX"
+        },
+        "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e": {
+          "decimals": 6,
+          "symbol": "USDC"
+        }
+      },
+      "feeds": {
+        "0x0a77230d17318075983913bc2145db16c7366156": {
+          "description": "AVAX / USD",
+          "decimals": 8,
+          "roundId": "36893488147419942611",
+          "answer": "960314710",
+          "updatedAt": 1792452735,
+          "answeredInRound": "36893488147419942611",
+          "heartbeat": 120,
+          "observedAt": 1792452805,
+          "ageSeconds": 70
+        },
+        "0xf096872672f44d6eba71458d74fe67f9a77a23b9": {
+          "description": "USDC / USD",
+          "decimals": 8,
+          "roundId": "55340232221128654926",
+          "answer": "99983430",
+          "updatedAt": 1792419876,
+          "answeredInRound": "55340232221128654926",
+          "heartbeat": 86400,
+          "observedAt": 1792452805,
+          "ageSeconds": 32929
+        }
+      },
+      "issues": []
+    },
+    "8453": {
+      "tokens": {
+        "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b": {
+          "decimals": 18,
+          "symbol": "VIRTUAL"
+        },
+        "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913": {
+          "decimals": 6,
+          "symbol": "USDC"
+        }
+      },
+      "feeds": {
+        "0xeaf310161c9ef7c813a14f8fef6fb271434019f7": {
+          "description": "VIRTUAL / USD",
+          "decimals": 8,
+          "roundId": "36893488147419115255",
+          "answer": "66432029",
+          "updatedAt": 1792448659,
+          "answeredInRound": "36893488147419115255",
+          "heartbeat": 86400,
+          "observedAt": 1792452805,
+          "ageSeconds": 4146
+        },
+        "0x7e860098f58bbfc8648a4311b374b1d669a2bc6b": {
+          "description": "USDC / USD",
+          "decimals": 8,
+          "roundId": "55340232221128654909",
+          "answer": "99981689",
+          "updatedAt": 1792414297,
+          "answeredInRound": "55340232221128654909",
+          "heartbeat": 86400,
+          "observedAt": 1792452805,
+          "ageSeconds": 38508
+        }
+      },
+      "issues": []
+    },
+    "59144": {
+      "tokens": {
+        "0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f": {
+          "decimals": 18,
+          "symbol": "WETH"
+        },
+        "0x176211869ca2b568f2a7d4ee941e073a821ee1ff": {
+          "decimals": 6,
+          "symbol": "USDC"
+        }
+      },
+      "feeds": {
+        "0x3c6cd9cc7c7a4c2cf5a82734cd249d7d593354da": {
+          "description": "ETH / USD",
+          "decimals": 8,
+          "roundId": "18446744073709586495",
+          "answer": "240282290000",
+          "updatedAt": 1792444467,
+          "answeredInRound": "18446744073709586495",
+          "heartbeat": 86400,
+          "observedAt": 1792452805,
+          "ageSeconds": 8338
+        },
+        "0xaadaa473c1bdf7317ec07c915680af29debfdcb5": {
+          "description": "USDC / USD",
+          "decimals": 8,
+          "roundId": "36893488147419103338",
+          "answer": "99983539",
+          "updatedAt": 1792427763,
+          "answeredInRound": "36893488147419103338",
+          "heartbeat": 86400,
+          "observedAt": 1792452805,
+          "ageSeconds": 25042
+        }
+      },
+      "issues": []
+    },
+    "100": {
+      "tokens": {
+        "0x9c58bacc331c9aa871afd802db6379a98e80cedb": {
+          "decimals": 18,
+          "symbol": "GNO"
+        },
+        "0x4ecaba5870353805a9f068101a40e0f32ed605c6": {
+          "decimals": 6,
+          "symbol": "USDT"
+        }
+      },
+      "feeds": {
+        "0x22441d81416430a54336ab28765abd31a792ad37": {
+          "description": "GNO / USD",
+          "decimals": 8,
+          "roundId": "92233720368547760141",
+          "answer": "11448457836",
+          "updatedAt": 1792448410,
+          "answeredInRound": "92233720368547760141",
+          "heartbeat": 86400,
+          "observedAt": 1792452805,
+          "ageSeconds": 4395
+        },
+        "0x68811d7df835b1c33e6eeae8e7c141ef48d48cc7": {
+          "description": "USDT / USD",
+          "decimals": 8,
+          "roundId": "55340232221128654947",
+          "answer": "99885000",
+          "updatedAt": 1792434050,
+          "answeredInRound": "55340232221128654947",
+          "heartbeat": 86400,
+          "observedAt": 1792452805,
+          "ageSeconds": 18755
+        }
+      },
+      "issues": []
+    },
+    "9745": {
+      "tokens": {
+        "0x6100e367285b01f48d07953803a2d8dca5d19873": {
+          "decimals": 18,
+          "symbol": "WXPL"
+        },
+        "0x2d661c89d812261039af9764eceaaee884f5f67f": {
+          "decimals": 6,
+          "symbol": "USDC"
+        }
+      },
+      "feeds": {
+        "0xf932477c37715ae6657ab884414bd9876fe3f750": {
+          "description": "XPL / USD",
+          "decimals": 8,
+          "roundId": "18446744073709598620",
+          "answer": "7624756",
+          "updatedAt": 1792451305,
+          "answeredInRound": "18446744073709598620",
+          "heartbeat": 86400,
+          "observedAt": 1792452806,
+          "ageSeconds": 1501
+        },
+        "0xe3d6f313aeebc2d4ff780c2850f5ca95c85fafa4": {
+          "description": "USDC / USD",
+          "decimals": 8,
+          "roundId": "36893488147419103321",
+          "answer": "99984062",
+          "updatedAt": 1792424360,
+          "answeredInRound": "36893488147419103321",
+          "heartbeat": 86400,
+          "observedAt": 1792452806,
+          "ageSeconds": 28446
+        }
+      },
+      "issues": []
+    },
+    "56": {
+      "tokens": {
+        "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c": {
+          "decimals": 18,
+          "symbol": "WBNB"
+        },
+        "0x55d398326f99059ff775485246999027b3197955": {
+          "decimals": 18,
+          "symbol": "USDT"
+        }
+      },
+      "feeds": {
+        "0x0567f2323251f0aab15c8dfb1967e4e8a7d42aee": {
+          "description": "BNB / USD",
+          "decimals": 8,
+          "roundId": "55340232221132178813",
+          "answer": "73194208718",
+          "updatedAt": 1792452787,
+          "answeredInRound": "55340232221132178813",
+          "heartbeat": 27,
+          "observedAt": 1792452806,
+          "ageSeconds": 19
+        },
+        "0xb97ad0e74fa7d920791e90258a6e2085088b4320": {
+          "description": "USDT / USD",
+          "decimals": 8,
+          "roundId": "73786976294838212220",
+          "answer": "99878490",
+          "updatedAt": 1792452111,
+          "answeredInRound": "73786976294838212220",
+          "heartbeat": 900,
+          "observedAt": 1792452806,
+          "ageSeconds": 695
+        }
+      },
+      "issues": []
+    }
+  },
+  "skippedChains": {}
 }

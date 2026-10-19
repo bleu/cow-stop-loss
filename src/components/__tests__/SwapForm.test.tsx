@@ -3,6 +3,8 @@
  * @jest-environment-options {"customExportConditions": ["node", "node-addons"]}
  */
 
+let mockUseRealSupportedTokens = false;
+
 // Opt in to simulated TEST approvals; production policy remains unchanged.
 jest.mock("#/lib/supportedTokens", () => {
   const actual = jest.requireActual("#/lib/supportedTokens");
@@ -10,7 +12,10 @@ jest.mock("#/lib/supportedTokens", () => {
   return {
     ...actual,
     getSupportedTokens: (chainId: import("#/lib/publicClients").ChainId) =>
-      TEST_SUPPORTED_TOKENS[chainId] ?? actual.getSupportedTokens(chainId),
+      mockUseRealSupportedTokens
+        ? actual.getSupportedTokens(chainId)
+        : (TEST_SUPPORTED_TOKENS[chainId] ??
+          actual.getSupportedTokens(chainId)),
   };
 });
 
@@ -28,9 +33,10 @@ import {
 import { useDraftOrder } from "#/hooks/useDraftOrder";
 import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 import { invalidatePlacementReads } from "#/lib/placementReads";
-import { publicClientsFromIds } from "#/lib/publicClients";
+import { publicClientsFromIds, supportedChainIds } from "#/lib/publicClients";
 import { VALID_TO_OPTIONS, VALID_TO_VALUES_MAP } from "#/lib/schema";
-import { getSupportedTokens } from "#/lib/supportedTokens";
+import * as supportedTokens from "#/lib/supportedTokens";
+import * as catalog from "#/lib/tokenCatalog";
 import { createWagmiConfig } from "#/utils/wagmi";
 
 import { SwapForm } from "../swap-card/SwapForm";
@@ -58,6 +64,7 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
+  mockUseRealSupportedTokens = false;
   safe = {
     chainId: 1,
     safeAddress: "0x1111111111111111111111111111111111111111",
@@ -67,9 +74,7 @@ beforeEach(() => {
     .spyOn(publicClientsFromIds[1], "getBlockNumber")
     .mockResolvedValue(BigInt(1));
   useDraftOrder.getState().setCurrentDraftOrder(undefined);
-  useAdvancedSettingsStore
-    .getState()
-    .setAdvancedSettings(defaultAdvancedSettings);
+  useAdvancedSettingsStore.getState().resetAdvancedSettings();
   jest.spyOn(publicClientsFromIds[1], "getBlock").mockResolvedValue({
     number: BigInt(1),
     timestamp: BigInt(1),
@@ -96,6 +101,158 @@ beforeEach(() => {
     });
 });
 afterEach(() => jest.restoreAllMocks());
+
+it.each(supportedChainIds)(
+  "offers the real approved sell tokens on chain %s without an unavailable alert",
+  async (chainId) => {
+    mockUseRealSupportedTokens = true;
+    safe = { ...safe, chainId };
+    if (chainId !== 1)
+      jest
+        .spyOn(publicClientsFromIds[chainId], "readContract")
+        .mockResolvedValue(BigInt(0));
+    const { sellTokens, buyToken } =
+      supportedTokens.getSupportedTokens(chainId);
+    expect(sellTokens.length).toBeGreaterThan(0);
+    const user = userEvent.setup();
+    renderForm();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.getByText(buyToken.token.symbol)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Select token" }));
+    expect(screen.getAllByRole("option")).toHaveLength(sellTokens.length);
+    for (const { token } of sellTokens)
+      expect(
+        screen.getByRole("option", { name: new RegExp(token.symbol) }),
+      ).toBeInTheDocument();
+  },
+);
+
+it.each([
+  [42161, 2692],
+  [137, 100],
+  [56, 1410],
+] as const)(
+  "resets to a valid automatic oracle age and reviews on mainnet %s",
+  async (chainId, expectedAgeSeconds) => {
+    mockUseRealSupportedTokens = true;
+    safe = { ...safe, chainId };
+    invalidatePlacementReads({ account: safe.safeAddress, chainId });
+    const client = publicClientsFromIds[chainId];
+    jest.spyOn(client, "getBlockNumber").mockResolvedValue(BigInt(10));
+    jest.spyOn(client, "getBlock").mockResolvedValue({
+      number: BigInt(10),
+      timestamp: BigInt(200000),
+    } as never);
+    jest
+      .spyOn(client, "readContract")
+      .mockImplementation(async ({ functionName }) => {
+        if (functionName === "balanceOf")
+          return BigInt("100000000000000000000");
+        if (functionName === "decimals") return 8;
+        return [
+          BigInt(1),
+          BigInt(100000000),
+          BigInt(199998),
+          BigInt(199998),
+          BigInt(1),
+        ];
+      });
+    useAdvancedSettingsStore.getState().setAdvancedSettings({
+      ...defaultAdvancedSettings,
+      maxHoursSinceOracleUpdates: 1 / 3600,
+    });
+    const user = userEvent.setup();
+    const onReviewOrder = jest.fn();
+    renderForm(onReviewOrder);
+    await user.click(screen.getByRole("button", { name: "Select token" }));
+    await user.click(screen.getByRole("option"));
+    await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+    await user.type(
+      screen.getByRole("textbox", { name: "Trigger price" }),
+      "0.95",
+    );
+    await user.click(screen.getByRole("button", { name: "Order settings" }));
+    expect(screen.getByRole("spinbutton")).toHaveValue(1 / 3600);
+    await user.click(
+      screen.getByRole("button", { name: "Reset to default settings" }),
+    );
+    await user.click(screen.getByRole("button", { name: "Order settings" }));
+    const oracleAge = screen.getByRole("spinbutton");
+    expect(oracleAge).toHaveValue(expectedAgeSeconds / 3600);
+    expect(oracleAge).toHaveAttribute("step", "any");
+    expect((oracleAge as HTMLInputElement).checkValidity()).toBe(true);
+    await user.click(screen.getByRole("button", { name: "Return to order" }));
+    await user.click(
+      await screen.findByRole("button", { name: "Review Stop Loss order" }),
+    );
+    await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(1));
+    expect(
+      onReviewOrder.mock.calls[0][0].maxHoursSinceOracleUpdates * 3600,
+    ).toBe(expectedAgeSeconds);
+    expect(useAdvancedSettingsStore.getState().oracleAgeMode).toBe("automatic");
+  },
+);
+
+it.each(["account", "chain"] as const)(
+  "restores automatic route defaults when the %s changes",
+  async (scope) => {
+    mockUseRealSupportedTokens = true;
+    safe = { ...safe, chainId: 137 };
+    jest
+      .spyOn(publicClientsFromIds[137], "readContract")
+      .mockResolvedValue(BigInt(0));
+    jest
+      .spyOn(publicClientsFromIds[42161], "readContract")
+      .mockResolvedValue(BigInt(0));
+    useAdvancedSettingsStore.getState().setAdvancedSettings({
+      ...defaultAdvancedSettings,
+      maxHoursSinceOracleUpdates: 0.01,
+    });
+    const user = userEvent.setup();
+    const onReviewOrder = jest.fn();
+    const { rerender } = renderForm(onReviewOrder);
+    await user.click(screen.getByRole("button", { name: "Order settings" }));
+    expect(screen.getByRole("spinbutton")).toHaveValue(0.01);
+    safe =
+      scope === "account"
+        ? { ...safe, safeAddress: "0x2222222222222222222222222222222222222222" }
+        : { ...safe, chainId: 42161 };
+    rerender(
+      <SWRConfig
+        value={{ provider: () => new Map(), revalidateOnFocus: false }}
+      >
+        <SwapForm onReviewOrder={onReviewOrder} />
+      </SWRConfig>,
+    );
+    await user.click(screen.getByRole("button", { name: "Order settings" }));
+    expect(screen.getByRole("spinbutton")).toHaveValue(
+      (scope === "account" ? 100 : 2692) / 3600,
+    );
+    expect(useAdvancedSettingsStore.getState().oracleAgeMode).toBe("automatic");
+  },
+);
+
+it("shows the unavailable policy reason and keeps submission disabled", async () => {
+  mockUseRealSupportedTokens = true;
+  const unavailableReason =
+    "TEST-only: network execution review is incomplete.";
+  jest
+    .spyOn(catalog, "catalogUnavailableReason")
+    .mockReturnValue(unavailableReason);
+  safe = { ...safe, chainId: 100 };
+  jest
+    .spyOn(publicClientsFromIds[100], "readContract")
+    .mockResolvedValue(BigInt(0));
+  const user = userEvent.setup();
+  const onReviewOrder = jest.fn();
+  renderForm(onReviewOrder);
+  expect(screen.getByRole("alert")).toHaveTextContent(unavailableReason);
+  expect(screen.queryByText(/Select Ethereum/)).not.toBeInTheDocument();
+  const submit = screen.getByRole("button", { name: "Select tokens" });
+  expect(submit).toBeDisabled();
+  await user.click(submit);
+  expect(onReviewOrder).not.toHaveBeenCalled();
+});
 
 it("keeps the inactive order pane mounted and inaccessible while settings are open", async () => {
   const user = userEvent.setup();
@@ -703,7 +860,7 @@ it("filters the expanded sell catalog by address and resets prices when selectio
   );
 
   await user.click(screen.getByRole("button", { name: "Token Logo WETH" }));
-  const { sellTokens, buyToken } = getSupportedTokens(1);
+  const { sellTokens, buyToken } = supportedTokens.getSupportedTokens(1);
   expect(sellTokens.length).toBeGreaterThan(2);
   expect(screen.getAllByRole("option")).toHaveLength(sellTokens.length);
   expect(

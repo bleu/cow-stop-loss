@@ -3,14 +3,14 @@ import type { Address } from "viem";
 import { ChainId, supportedChainIds } from "../publicClients";
 import { generateSwapSchema, swapSchema, VALID_TO_OPTIONS } from "../schema";
 import { findKnownToken, getSupportedTokens } from "../supportedTokens";
-import { TOKEN_CATALOG } from "../tokenCatalog";
+import * as catalog from "../tokenCatalog";
 
 function validOrder(chainId: ChainId) {
   const { sellTokens, buyToken } = getSupportedTokens(chainId);
   return {
     tokenSell:
       sellTokens[0]?.token ??
-      TOKEN_CATALOG.find(
+      catalog.TOKEN_CATALOG.find(
         (token) =>
           token.chainId === chainId &&
           token.address.toLowerCase() !== buyToken.token.address.toLowerCase(),
@@ -25,25 +25,32 @@ function validOrder(chainId: ChainId) {
   };
 }
 
+afterEach(() => jest.restoreAllMocks());
+
 describe("fixed USD buy token policy", () => {
   it.each(supportedChainIds.filter((chainId) => chainId !== 11155111))(
-    "rejects production creation with the chain-specific reason on chain %s",
+    "rejects creation with a fixture unavailable reason on chain %s",
     (chainId) => {
+      const unavailableReason =
+        "TEST-only: network execution review is incomplete.";
+      jest
+        .spyOn(catalog, "catalogUnavailableReason")
+        .mockReturnValue(unavailableReason);
       const configured = getSupportedTokens(chainId);
       expect(configured.sellTokens).toEqual([]);
-      expect(configured.unavailableReason).toEqual(expect.any(String));
+      expect(configured.unavailableReason).toBe(unavailableReason);
       expect(swapSchema.safeParse(validOrder(chainId)).success).toBe(true);
       const result = generateSwapSchema(chainId).safeParse(validOrder(chainId));
       expect(result.success).toBe(false);
       if (!result.success)
         expect(result.error.issues.map(({ message }) => message)).toContain(
-          configured.unavailableReason,
+          unavailableReason,
         );
     },
   );
 
-  it.each([11155111] as const)(
-    "accepts the designated test token on chain %s",
+  it.each(supportedChainIds)(
+    "accepts the designated buy token on chain %s",
     (chainId) => {
       expect(
         generateSwapSchema(chainId).safeParse(validOrder(chainId)).success,

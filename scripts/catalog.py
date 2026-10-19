@@ -56,7 +56,7 @@ def review_date(value):
     require(parsed.isoformat() == value and parsed <= datetime.date.today(), "Invalid reviewDate")
 
 
-def excluded_reason(feed):
+def excluded_reason(feed, *, bounded_price_approved=False, approved_source_category=None):
     docs = feed.get("docs", {})
     if feed.get("feedCategory") in {"hidden", "deprecating"} or docs.get("hidden") or docs.get("shutdownDate"):
         return "hidden-or-deprecating"
@@ -64,11 +64,11 @@ def excluded_reason(feed):
         return "no-onchain-proxy"
     if docs.get("assetClass") != "Crypto":
         return "non-crypto-price-or-data"
-    if docs.get("stablecoinCapped"):
+    if docs.get("stablecoinCapped") and not bounded_price_approved:
         return "bounded-price-methodology-not-approved"
     if feed.get("status") not in {None, "active"}:
         return "inactive-feed"
-    if feed.get("feedCategory") != "low":
+    if feed.get("feedCategory") != "low" and not (approved_source_category in {"medium", "new"} and feed.get("feedCategory") == approved_source_category):
         return "not-low-risk-category"
     if docs.get("productType") != "Price" or docs.get("attributeType") != "cex_price" or docs.get("productSubType") != "Reference":
         return "not-cex-reference-price"
@@ -144,13 +144,35 @@ def approved_feeds(identities, inventories, policy, verification):
         matches = [feed for feed in inventories.get(str(chain), []) if feed.get("path") == entry["path"] and (feed.get("proxyAddress") or "").lower() == proxy.lower()]
         require(len(matches) == 1, "Approval must match exactly one source path/proxy")
         feed = matches[0]
-        reason = excluded_reason(feed)
+        approved_source_category = None
+        if "sourceCategorySuitability" in entry:
+            suitability = entry["sourceCategorySuitability"]
+            require(isinstance(suitability, dict) and suitability.get("decision") == "accepted", "Invalid sourceCategorySuitability decision")
+            require(suitability.get("category") in {"medium", "new"} and suitability["category"] == feed.get("feedCategory"), "sourceCategorySuitability must match medium/new source category")
+            require(nonempty(suitability.get("evidence")), "Missing sourceCategorySuitability evidence")
+            review_date(suitability.get("reviewDate"))
+            approved_source_category = suitability["category"]
+        bounded_price_approved = False
+        if "boundedPriceSuitability" in entry:
+            suitability = entry["boundedPriceSuitability"]
+            require(isinstance(suitability, dict) and suitability.get("decision") == "accepted-for-fixed-buy", "Invalid boundedPriceSuitability decision")
+            require(nonempty(suitability.get("evidence")), "Missing boundedPriceSuitability evidence")
+            review_date(suitability.get("reviewDate"))
+            require(address.lower() == identities["usdTokens"].get(str(chain), "").lower() and denomination == "USD" and entry.get("assetRelationship") in {"exact-asset", "bridged-underlying"}, "boundedPriceSuitability requires fixed buy token, USD quote and exact-asset or reviewed bridged-underlying relationship")
+            bounded_price_approved = True
+        reason = excluded_reason(feed, bounded_price_approved=bounded_price_approved, approved_source_category=approved_source_category)
         require(reason is None, f"Ineligible approved source: {reason}")
         require(feed["docs"]["quoteAsset"] == denomination, "Approval quote differs from source")
         for field in EVIDENCE_FIELDS:
             require(nonempty(entry.get(field)), f"Missing {field}")
         relationship = entry.get("assetRelationship")
-        require(relationship in {"exact-asset", "native-wrapper"}, "Unsupported assetRelationship: underlying substitutions are not allowed")
+        require(relationship in {"exact-asset", "native-wrapper", "bridged-underlying"}, "Unsupported assetRelationship: unreviewed underlying substitutions are not allowed")
+        if relationship == "bridged-underlying" or "representationSuitability" in entry:
+            suitability = entry.get("representationSuitability")
+            require(relationship == "bridged-underlying" and isinstance(suitability, dict) and suitability.get("decision") == "accepted-underlying-feed", "Invalid representationSuitability decision")
+            require(suitability.get("bridgeRisk") == "not-priced-by-feed", "representationSuitability must acknowledge bridge risk is not priced by feed")
+            require(nonempty(suitability.get("evidence")), "Missing representationSuitability evidence")
+            review_date(suitability.get("reviewDate"))
         require(nonempty(entry.get("assetRelationshipReason")), "Missing assetRelationshipReason")
         if relationship == "native-wrapper":
             require(identity.get("canonicalNativeWrapper") is True and nonempty(identity.get("canonicalNativeWrapperEvidence")), "Native-wrapper requires reviewed canonical identity marker and evidence")
@@ -225,7 +247,7 @@ def build(identities=None, inventories=None, policy=None, verification=None):
         if (chain, buy_address, "USD") not in approvals:
             chains[str(chain)] = {"status": "unavailable", "unavailableReason": "buy-token-has-no-approved-usd-feed"}
             continue
-        chains[str(chain)] = {"status": "approved"}
+        chains[str(chain)] = {key: execution[key] for key in ("status", "executionEvidence", "arithmeticBoundsEvidence", "reviewDate")}
         buy_quotes = {quote for approved_chain, address, quote in approvals if approved_chain == chain and address == buy_address}
         for (approved_chain, address, denomination), entry in approvals.items():
             if approved_chain == chain and denomination in buy_quotes:

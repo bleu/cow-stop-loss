@@ -123,18 +123,23 @@ export async function readOraclePairPrice({
   client,
   route,
   maxAge = 24 * 60 * 60,
+  sellMaxAge = maxAge,
+  buyMaxAge = maxAge,
 }: {
   client: PublicClient;
   route: IRoute;
   maxAge?: number;
+  sellMaxAge?: number;
+  buyMaxAge?: number;
 }): Promise<number> {
   const block = await client.getBlock();
   const prices = new Map<
     string,
     Promise<Awaited<ReturnType<typeof readOraclePrice>>>
   >();
-  const read = (oracle: Address) => {
-    const key = oracle.toLowerCase();
+  const read = (oracle: Address, feedMaxAge: number) => {
+    const cappedMaxAge = Math.min(maxAge, feedMaxAge);
+    const key = `${oracle.toLowerCase()}:${cappedMaxAge}`;
     if (!prices.has(key)) {
       prices.set(
         key,
@@ -143,15 +148,15 @@ export async function readOraclePairPrice({
           oracle,
           blockNumber: block.number,
           timestamp: block.timestamp,
-          maxAge,
+          maxAge: cappedMaxAge,
         }),
       );
     }
     return prices.get(key)!;
   };
   const [sell, buy] = await Promise.all([
-    read(route.tokenSellOracle),
-    read(route.tokenBuyOracle),
+    read(route.tokenSellOracle, sellMaxAge),
+    read(route.tokenBuyOracle, buyMaxAge),
   ]);
   const price = sell.price / buy.price;
   if (!Number.isFinite(price) || price <= 0) {
@@ -201,12 +206,19 @@ function configuredRoute(args: IOracleRouterArgs) {
     throw new Error("No approved matching oracle route");
   return {
     route: { tokenSellOracle, tokenBuyOracle },
-    maxAgeSeconds: Math.min(sellMaxAge, buyMaxAge),
+    maxAgeSeconds: Math.max(sellMaxAge, buyMaxAge),
+    sellMaxAge,
+    buyMaxAge,
   };
 }
 
 export function configuredTokenRoute(args: IOracleRouterArgs): IRoute {
   return configuredRoute(args).route;
+}
+
+export function configuredRouteMaxAges(args: IOracleRouterArgs) {
+  const { sellMaxAge, buyMaxAge } = configuredRoute(args);
+  return { sellMaxAge, buyMaxAge };
 }
 
 export function configuredRouteMaxAgeSeconds(args: IOracleRouterArgs): number {
@@ -249,6 +261,8 @@ export class ConfiguredRouter extends OracleRouter {
       client: this.publicClient,
       route,
       maxAge: Math.min(maxAge, configured.maxAgeSeconds),
+      sellMaxAge: configured.sellMaxAge,
+      buyMaxAge: configured.buyMaxAge,
     });
   }
 

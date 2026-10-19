@@ -24,15 +24,21 @@ export async function fetchOraclePairPrice({
   chainId,
   route,
   maxAge,
+  sellMaxAge,
+  buyMaxAge,
 }: {
   chainId: ChainId;
   route: IRoute;
   maxAge?: number;
+  sellMaxAge?: number;
+  buyMaxAge?: number;
 }) {
   return readOraclePairPrice({
     client: publicClientsFromIds[chainId],
     route,
     maxAge,
+    sellMaxAge,
+    buyMaxAge,
   });
 }
 

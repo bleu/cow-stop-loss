@@ -2,7 +2,10 @@ import { Address, zeroAddress } from "viem";
 import { create } from "zustand";
 
 import { calculateAmounts } from "#/lib/calculateAmounts";
-import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
+import {
+  CHAINS_ORACLE_ROUTER_FACTORY,
+  configuredRouteMaxAgeSeconds,
+} from "#/lib/oracleRouter";
 import { getPlacementReads } from "#/lib/placementReads";
 import { ChainId } from "#/lib/publicClients";
 import {
@@ -13,7 +16,10 @@ import {
 import { DraftOrder, OrderStatus, SwapData } from "#/lib/types";
 import { generateRandomHex } from "#/utils";
 
-import { useAdvancedSettingsStore } from "./useAdvancedSettings";
+import {
+  advancedSettingsForRoute,
+  useAdvancedSettingsStore,
+} from "./useAdvancedSettings";
 
 interface DraftOrderState {
   currentDraftOrder?: DraftOrder;
@@ -38,10 +44,17 @@ export const useDraftOrder = create<DraftOrderState>()((set) => ({
       sellDecimals: swapData.tokenSell.decimals,
       buyDecimals: swapData.tokenBuy.decimals,
     });
+    const settingsState = useAdvancedSettingsStore.getState();
     const advancedSettings = await generateAdvancedSettingsSchema(chainId, {
       tokenSell: swapData.tokenSell,
       tokenBuy: swapData.tokenBuy,
-    }).parseAsync(useAdvancedSettingsStore.getState().advancedSettings);
+    }).parseAsync(
+      advancedSettingsForRoute(
+        settingsState.advancedSettings,
+        settingsState.oracleAgeMode,
+        configuredRouteMaxAgeSeconds({ chainId, ...swapData }),
+      ),
+    );
 
     const receiver =
       advancedSettings.receiver === ""

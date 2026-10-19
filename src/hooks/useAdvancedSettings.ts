@@ -2,9 +2,16 @@ import { create } from "zustand";
 
 import { AdvancedSwapSettings } from "#/lib/types";
 
+type OracleAgeMode = "automatic" | "explicit";
+
 interface AdvancedSettingsState {
   advancedSettings: AdvancedSwapSettings;
-  setAdvancedSettings: (settings: AdvancedSwapSettings) => void;
+  oracleAgeMode: OracleAgeMode;
+  setAdvancedSettings: (
+    settings: AdvancedSwapSettings,
+    oracleAgeMode?: OracleAgeMode,
+  ) => void;
+  resetAdvancedSettings: () => void;
 }
 
 export const defaultAdvancedSettings: AdvancedSwapSettings = {
@@ -24,9 +31,32 @@ export function haveSettingsChanged(
   );
 }
 
+export function advancedSettingsForRoute(
+  settings: AdvancedSwapSettings,
+  oracleAgeMode: OracleAgeMode,
+  maxAgeSeconds: number,
+): AdvancedSwapSettings {
+  return oracleAgeMode === "automatic"
+    ? {
+        ...settings,
+        maxHoursSinceOracleUpdates: Math.min(
+          defaultAdvancedSettings.maxHoursSinceOracleUpdates,
+          maxAgeSeconds / 3600,
+        ),
+      }
+    : settings;
+}
+
 export const useAdvancedSettingsStore = create<AdvancedSettingsState>()(
   (set) => ({
     advancedSettings: defaultAdvancedSettings,
-    setAdvancedSettings: (settings) => set({ advancedSettings: settings }),
+    oracleAgeMode: "automatic",
+    setAdvancedSettings: (settings, oracleAgeMode = "explicit") =>
+      set({ advancedSettings: settings, oracleAgeMode }),
+    resetAdvancedSettings: () =>
+      set({
+        advancedSettings: defaultAdvancedSettings,
+        oracleAgeMode: "automatic",
+      }),
   }),
 );

@@ -3,41 +3,489 @@
   "verificationFile": "scripts/catalog-policy-verification.json",
   "chains": {
     "1": {
-      "status": "unavailable",
-      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+      "status": "approved",
+      "executionEvidence": "scripts/oracle-execution-verification.json: block-pinned runtime SHA256 matches the retained compiled handler on this chain. Accept the existing shared-age, browser-only round-completeness and future-timestamp checks for these exact routes. No execution guarantee or security audit.",
+      "arithmeticBoundsEvidence": "All selected feeds have 8 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 124260 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json.",
+      "reviewDate": "2026-10-19"
     },
     "100": {
-      "status": "unavailable",
-      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+      "status": "approved",
+      "executionEvidence": "scripts/oracle-execution-verification.json: block-pinned runtime SHA256 matches the retained compiled handler on this chain. Accept the existing shared-age, browser-only round-completeness and future-timestamp checks for these exact routes. No execution guarantee or security audit.",
+      "arithmeticBoundsEvidence": "All selected feeds have 8 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json.",
+      "reviewDate": "2026-10-19"
     },
     "42161": {
-      "status": "unavailable",
-      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved. The order handler also lacks protection for L2 sequencer outages."
+      "status": "approved",
+      "executionEvidence": "scripts/oracle-execution-verification.json: block-pinned runtime SHA256 matches the retained compiled handler on this chain. Accept the existing shared-age, browser-only round-completeness and future-timestamp checks for these exact routes. No execution guarantee or security audit. The deployed handler has no execution-time L2 sequencer uptime or recovery check. Accept outage/recovery risk; browser checks at creation cannot protect later execution.",
+      "arithmeticBoundsEvidence": "All selected feeds have 8 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 2692 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json.",
+      "reviewDate": "2026-10-19"
     },
     "8453": {
-      "status": "unavailable",
-      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved. The order handler also lacks protection for L2 sequencer outages."
+      "status": "approved",
+      "executionEvidence": "scripts/oracle-execution-verification.json: block-pinned runtime SHA256 matches the retained compiled handler on this chain. Accept the existing shared-age, browser-only round-completeness and future-timestamp checks for these exact routes. No execution guarantee or security audit. The deployed handler has no execution-time L2 sequencer uptime or recovery check. Accept outage/recovery risk; browser checks at creation cannot protect later execution.",
+      "arithmeticBoundsEvidence": "All selected feeds have 8 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json.",
+      "reviewDate": "2026-10-19"
     },
     "137": {
-      "status": "unavailable",
-      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+      "status": "approved",
+      "executionEvidence": "scripts/oracle-execution-verification.json: block-pinned runtime SHA256 matches the retained compiled handler on this chain. Accept the existing shared-age, browser-only round-completeness and future-timestamp checks for these exact routes. No execution guarantee or security audit.",
+      "arithmeticBoundsEvidence": "All selected feeds have 8 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 100 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json.",
+      "reviewDate": "2026-10-19"
     },
     "43114": {
-      "status": "unavailable",
-      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+      "status": "approved",
+      "executionEvidence": "scripts/oracle-execution-verification.json: block-pinned runtime SHA256 matches the retained compiled handler on this chain. Accept the existing shared-age, browser-only round-completeness and future-timestamp checks for these exact routes. No execution guarantee or security audit.",
+      "arithmeticBoundsEvidence": "All selected feeds have 8 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json.",
+      "reviewDate": "2026-10-19"
     },
     "56": {
-      "status": "unavailable",
-      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+      "status": "approved",
+      "executionEvidence": "scripts/oracle-execution-verification.json: block-pinned runtime SHA256 matches the retained compiled handler on this chain. Accept the existing shared-age, browser-only round-completeness and future-timestamp checks for these exact routes. No execution guarantee or security audit.",
+      "arithmeticBoundsEvidence": "All selected feeds have 8 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 1410 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json.",
+      "reviewDate": "2026-10-19"
     },
     "59144": {
-      "status": "unavailable",
-      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved. The order handler also lacks protection for L2 sequencer outages."
+      "status": "approved",
+      "executionEvidence": "scripts/oracle-execution-verification.json: block-pinned runtime SHA256 matches the retained compiled handler on this chain. Accept the existing shared-age, browser-only round-completeness and future-timestamp checks for these exact routes. No execution guarantee or security audit. The deployed handler has no execution-time L2 sequencer uptime or recovery check. Accept outage/recovery risk; browser checks at creation cannot protect later execution.",
+      "arithmeticBoundsEvidence": "All selected feeds have 8 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json.",
+      "reviewDate": "2026-10-19"
     },
     "9745": {
-      "status": "unavailable",
-      "unavailableReason": "New orders are unavailable. The USD buy feed can stop reporting new prices above a limit. Its use for stop-loss orders has not been approved."
+      "status": "approved",
+      "executionEvidence": "scripts/oracle-execution-verification.json: block-pinned runtime SHA256 matches the retained compiled handler on this chain. Accept the existing shared-age, browser-only round-completeness and future-timestamp checks for these exact routes. No execution guarantee or security audit.",
+      "arithmeticBoundsEvidence": "All selected feeds have 8 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json.",
+      "reviewDate": "2026-10-19"
     }
   },
-  "approvals": []
+  "approvals": [
+    {
+      "chainId": 1,
+      "tokenAddress": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+      "quote": "USD",
+      "path": "eth-usd",
+      "proxyAddress": "0x5f4ec3df9cbd43714fe2740f5e3616155c5b8419",
+      "expectedDescription": "ETH / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 5460,
+      "assetRelationship": "native-wrapper",
+      "assetRelationshipReason": "Canonical WETH9 wraps and unwraps Ethereum ETH one for one; no bridge or third-party custody substitution.",
+      "identityEvidence": "https://etherscan.io/address/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2#code: exact Ethereum contract matches pinned metadata and live token decimals/symbol.",
+      "representationEvidence": "https://etherscan.io/address/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2#code: canonical Ethereum native wrapper.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row, USD quote; unbounded reference market price.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-mainnet.json: exact eth-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual candidate observations in scripts/catalog-policy-verification.json.",
+      "reviewDate": "2026-10-19",
+      "snapshotFingerprint": "sha256:1af0b8125c5fcf6b593c21ea42ef8833f773d933dd277b86043e25e3e8ed2a93"
+    },
+    {
+      "chainId": 1,
+      "tokenAddress": "0x514910771af9ca656af840dff83e8264ecf986ca",
+      "quote": "USD",
+      "path": "link-usd",
+      "proxyAddress": "0x2c1d072e956affc0d435cb7ac38ef18d24d9127c",
+      "expectedDescription": "LINK / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 5460,
+      "assetRelationship": "exact-asset",
+      "assetRelationshipReason": "The feed measures LINK, matching this exact Ethereum issued token; no underlying or bridged asset substitution.",
+      "identityEvidence": "https://docs.chain.link/resources/link-token-contracts: exact Ethereum contract matches pinned metadata and live token decimals/symbol.",
+      "representationEvidence": "https://docs.chain.link/resources/link-token-contracts: canonical Ethereum issued asset, not a bridged representation.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row, USD quote; unbounded reference market price.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-mainnet.json: exact link-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual candidate observations in scripts/catalog-policy-verification.json.",
+      "reviewDate": "2026-10-19",
+      "snapshotFingerprint": "sha256:89fcc3892062834a93fbdedf4e08e149669ab5f7a12cb2a79fd95014c5207cd8"
+    },
+    {
+      "chainId": 1,
+      "tokenAddress": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+      "quote": "USD",
+      "path": "uni-usd",
+      "proxyAddress": "0x553303d460ee0afb37edff9be42922d8ff63220e",
+      "expectedDescription": "UNI / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 5460,
+      "assetRelationship": "exact-asset",
+      "assetRelationshipReason": "The feed measures UNI, matching this exact Ethereum issued token; no underlying or bridged asset substitution.",
+      "identityEvidence": "https://etherscan.io/address/0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984#code: exact Ethereum contract matches pinned metadata and live token decimals/symbol.",
+      "representationEvidence": "https://etherscan.io/address/0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984#code: canonical Ethereum issued asset, not a bridged representation.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row, USD quote; unbounded reference market price.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-mainnet.json: exact uni-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual candidate observations in scripts/catalog-policy-verification.json.",
+      "reviewDate": "2026-10-19",
+      "snapshotFingerprint": "sha256:24ca8823d162b4922762fa520d04c11b0d56fcf76da3ace0d0b72f52deae91ea"
+    },
+    {
+      "chainId": 1,
+      "tokenAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "quote": "USD",
+      "path": "usdc-usd",
+      "proxyAddress": "0x8fffffd4afb6115b954bd326cbe7b4ba576818f6",
+      "expectedDescription": "USDC / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 124260,
+      "assetRelationship": "exact-asset",
+      "assetRelationshipReason": "The feed measures USDC, matching this exact Ethereum issued token; no underlying or bridged asset substitution.",
+      "identityEvidence": "https://developers.circle.com/stablecoins/usdc-contract-addresses: exact Ethereum contract matches pinned metadata and live token decimals/symbol.",
+      "representationEvidence": "https://developers.circle.com/stablecoins/usdc-contract-addresses: canonical Ethereum issued asset, not a bridged representation.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row, USD quote; bounded market price accepted only as fixed buy under boundedPriceSuitability.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-mainnet.json: exact usdc-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual candidate observations in scripts/catalog-policy-verification.json.",
+      "reviewDate": "2026-10-19",
+      "snapshotFingerprint": "sha256:58fb8d9e50d1884e9dac47f87bead14c5007bffda2f8a9c11985c30318449567",
+      "boundedPriceSuitability": {
+        "decision": "accepted-for-fixed-buy",
+        "reviewDate": "2026-10-19",
+        "evidence": "https://docs.chain.link/data-feeds/selecting-data-feeds#bounded-market-price-feeds: this exact USDC/USD source has stablecoinCapped=true and maxSubmissionValue=105000000 (1.05 USD at 8 decimals). Above the upper bound the last onchain answer remains until reporting resumes, which can delay a sell/USDC stop-loss trigger and later fail freshness. A USDC downside depeg has no corresponding lower bound. Accept this residual risk only for native USDC as the fixed Ethereum buy asset; no assumed dollar peg, bounded sell approval, or claim that frontend checks protect future execution."
+      }
+    },
+    {
+      "chainId": 100,
+      "tokenAddress": "0x9c58bacc331c9aa871afd802db6379a98e80cedb",
+      "quote": "USD",
+      "path": "gno-usd",
+      "proxyAddress": "0x22441d81416430a54336ab28765abd31a792ad37",
+      "expectedDescription": "GNO / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 129660,
+      "assetRelationship": "bridged-underlying",
+      "reviewDate": "2026-10-19",
+      "identityEvidence": "https://docs.gnosischain.com/about/tokens/gno and https://docs.gnosischain.com/developers/Usefulcontracts: Gnosis GNO is bridged Ethereum GNO. At Gnosis block 48844552, mediator 0xf6A78083ca3e2a662D6dd1703c939c8aCE2e268d foreignTokenAddress(0x9c58bacc331c9aa871afd802db6379a98e80cedb) returned Ethereum GNO 0x6810e776880C02933D47DB1b9fc05908e5386b96.",
+      "representationEvidence": "https://docs.gnosischain.com/about/tokens/gno and https://docs.gnosischain.com/developers/Usefulcontracts: Gnosis GNO is bridged Ethereum GNO. At Gnosis block 48844552, mediator 0xf6A78083ca3e2a662D6dd1703c939c8aCE2e268d foreignTokenAddress(0x9c58bacc331c9aa871afd802db6379a98e80cedb) returned Ethereum GNO 0x6810e776880C02933D47DB1b9fc05908e5386b96.",
+      "assetRelationshipReason": "This exact GNO representation uses the underlying asset reference price. The feed does not measure its bridge, custody or redemption risk.",
+      "representationSuitability": {
+        "decision": "accepted-underlying-feed",
+        "bridgeRisk": "not-priced-by-feed",
+        "reviewDate": "2026-10-19",
+        "evidence": "https://docs.gnosischain.com/about/tokens/gno and https://docs.gnosischain.com/developers/Usefulcontracts: Gnosis GNO is bridged Ethereum GNO. At Gnosis block 48844552, mediator 0xf6A78083ca3e2a662D6dd1703c939c8aCE2e268d foreignTokenAddress(0x9c58bacc331c9aa871afd802db6379a98e80cedb) returned Ethereum GNO 0x6810e776880C02933D47DB1b9fc05908e5386b96. Accept underlying pricing only for this exact mapping. A bridge depeg, custody loss or failed redemption can make the trigger price wrong for the token held; no peg or redemption guarantee is assumed."
+      },
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official medium-category Crypto cex_price Reference Price row with USD quote. Fixed-buy bounded behavior and bridge risk are reviewed separately where present.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-xdai-mainnet.json: exact gno-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual observations in scripts/catalog-policy-verification.json.",
+      "sourceCategorySuitability": {
+        "decision": "accepted",
+        "category": "medium",
+        "reviewDate": "2026-10-19",
+        "evidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: accept the medium-category GNO/USD reference feed only for this exact Gnosis GNO mapping. Category carries greater market/liquidity risk than low; observed complete fresh rounds do not prove future liquidity or correct execution. Other medium/new feeds remain unapproved."
+      },
+      "snapshotFingerprint": "sha256:64c74b0f310549b327c091bda4e40bd8312b47919617bf033b9d377a78142342"
+    },
+    {
+      "chainId": 100,
+      "tokenAddress": "0x4ecaba5870353805a9f068101a40e0f32ed605c6",
+      "quote": "USD",
+      "path": "usdt-usd",
+      "proxyAddress": "0x68811d7df835b1c33e6eeae8e7c141ef48d48cc7",
+      "expectedDescription": "USDT / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 129660,
+      "assetRelationship": "bridged-underlying",
+      "reviewDate": "2026-10-19",
+      "identityEvidence": "https://docs.gnosischain.com/developers/Usefulcontracts: the fixed Gnosis USDT is bridged, not native Tether issuance. At Gnosis block 48844552, mediator 0xf6A78083ca3e2a662D6dd1703c939c8aCE2e268d foreignTokenAddress(0x4ecaba5870353805a9f068101a40e0f32ed605c6) returned Ethereum USDT 0xdac17f958d2ee523a2206206994597c13d831ec7.",
+      "representationEvidence": "https://docs.gnosischain.com/developers/Usefulcontracts: the fixed Gnosis USDT is bridged, not native Tether issuance. At Gnosis block 48844552, mediator 0xf6A78083ca3e2a662D6dd1703c939c8aCE2e268d foreignTokenAddress(0x4ecaba5870353805a9f068101a40e0f32ed605c6) returned Ethereum USDT 0xdac17f958d2ee523a2206206994597c13d831ec7.",
+      "assetRelationshipReason": "This exact USDT representation uses the underlying asset reference price. The feed does not measure its bridge, custody or redemption risk.",
+      "representationSuitability": {
+        "decision": "accepted-underlying-feed",
+        "bridgeRisk": "not-priced-by-feed",
+        "reviewDate": "2026-10-19",
+        "evidence": "https://docs.gnosischain.com/developers/Usefulcontracts: the fixed Gnosis USDT is bridged, not native Tether issuance. At Gnosis block 48844552, mediator 0xf6A78083ca3e2a662D6dd1703c939c8aCE2e268d foreignTokenAddress(0x4ecaba5870353805a9f068101a40e0f32ed605c6) returned Ethereum USDT 0xdac17f958d2ee523a2206206994597c13d831ec7. Accept underlying pricing only for this exact mapping. A bridge depeg, custody loss or failed redemption can make the trigger price wrong for the token held; no peg or redemption guarantee is assumed."
+      },
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row with USD quote. Fixed-buy bounded behavior and bridge risk are reviewed separately where present.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-xdai-mainnet.json: exact usdt-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual observations in scripts/catalog-policy-verification.json.",
+      "boundedPriceSuitability": {
+        "decision": "accepted-for-fixed-buy",
+        "reviewDate": "2026-10-19",
+        "evidence": "https://docs.chain.link/data-feeds/selecting-data-feeds#bounded-market-price-feeds: this exact USDT/USD source has stablecoinCapped=true and maxSubmissionValue=105000000 (1.05 USD at 8 decimals). Above the upper bound reporting stops and the last onchain answer remains until reporting resumes. This can delay a stop-loss trigger and later fail freshness. Accept this residual risk only for this chain's exact fixed buy token; no assumed dollar peg or bounded sell approval. Bridge risk, where present, is accepted separately and is not measured by this feed."
+      },
+      "snapshotFingerprint": "sha256:e0c1bbfcd4db8680b56e50857dd533690b34891b02d177141faf40ca9abfdc57"
+    },
+    {
+      "chainId": 42161,
+      "tokenAddress": "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
+      "quote": "USD",
+      "path": "eth-usd",
+      "proxyAddress": "0x639fe6ab55c921f74e7fac1ee960c0b6293ba612",
+      "expectedDescription": "ETH / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 2692,
+      "assetRelationship": "native-wrapper",
+      "reviewDate": "2026-10-19",
+      "identityEvidence": "https://sourcify.dev/server/v2/contract/42161/0x82af49447d8a07e3bd95bd0d56f35241523fbab1?fields=all and verified implementation 0x8b194bEae1d3e0788A1a35173978001ACDFba668: aeWETH.sol depositTo mints msg.value; withdrawTo burns amount and returns the same native ETH amount. This is an upgradeable proxy; proof applies to the reviewed implementation, not future upgrades.",
+      "representationEvidence": "https://sourcify.dev/server/v2/contract/42161/0x82af49447d8a07e3bd95bd0d56f35241523fbab1?fields=all and verified implementation 0x8b194bEae1d3e0788A1a35173978001ACDFba668: aeWETH.sol depositTo mints msg.value; withdrawTo burns amount and returns the same native ETH amount. This is an upgradeable proxy; proof applies to the reviewed implementation, not future upgrades.",
+      "assetRelationshipReason": "Verified local native-currency wrapping credits and redeems the same unit; the feed measures that native asset, not a derivative exchange rate.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row with USD quote. Fixed-buy bounded behavior and bridge risk are reviewed separately where present.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-arbitrum-1.json: exact eth-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual observations in scripts/catalog-policy-verification.json.",
+      "snapshotFingerprint": "sha256:d8aa65991636303b1e64de0ed4a3b0dac06685061db181fa8332dd1f625dd92c"
+    },
+    {
+      "chainId": 42161,
+      "tokenAddress": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "quote": "USD",
+      "path": "usdc-usd",
+      "proxyAddress": "0x50834f3163758fcc1df9973b6e91f0f0f0434ad3",
+      "expectedDescription": "USDC / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 442,
+      "assetRelationship": "exact-asset",
+      "reviewDate": "2026-10-19",
+      "identityEvidence": "https://developers.circle.com/stablecoins/usdc-contract-addresses: exact chain and token contract match pinned metadata and live symbol/decimals.",
+      "representationEvidence": "https://developers.circle.com/stablecoins/usdc-contract-addresses: issuer-listed asset on this chain; no bridge claim is substituted.",
+      "assetRelationshipReason": "The feed measures USDC, matching the exact issued token on this chain.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row with USD quote. Fixed-buy bounded behavior and bridge risk are reviewed separately where present.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-arbitrum-1.json: exact usdc-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual observations in scripts/catalog-policy-verification.json.",
+      "boundedPriceSuitability": {
+        "decision": "accepted-for-fixed-buy",
+        "reviewDate": "2026-10-19",
+        "evidence": "https://docs.chain.link/data-feeds/selecting-data-feeds#bounded-market-price-feeds: this exact USDC/USD source has stablecoinCapped=true and maxSubmissionValue=105000000 (1.05 USD at 8 decimals). Above the upper bound reporting stops and the last onchain answer remains until reporting resumes. This can delay a stop-loss trigger and later fail freshness. Accept this residual risk only for this chain's exact fixed buy token; no assumed dollar peg or bounded sell approval. Bridge risk, where present, is accepted separately and is not measured by this feed."
+      },
+      "snapshotFingerprint": "sha256:e03c120072cb31e20696b810d3381409703a41ae0f0e3e7bc7aef45db64e0f96"
+    },
+    {
+      "chainId": 8453,
+      "tokenAddress": "0x0b3e328455c4059eeb9e3f84b5543f74e24e7e1b",
+      "quote": "USD",
+      "path": "virtual-usd",
+      "proxyAddress": "0xeaf310161c9ef7c813a14f8fef6fb271434019f7",
+      "expectedDescription": "VIRTUAL / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 129660,
+      "assetRelationship": "exact-asset",
+      "reviewDate": "2026-10-19",
+      "identityEvidence": "https://whitepaper.virtuals.io/about-virtuals-1/usdvirtual-tokenomics: exact chain and token contract match pinned metadata and live symbol/decimals.",
+      "representationEvidence": "https://whitepaper.virtuals.io/about-virtuals-1/usdvirtual-tokenomics: issuer-listed asset on this chain; no bridge claim is substituted.",
+      "assetRelationshipReason": "The feed measures VIRTUAL, matching the exact issued token on this chain.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row with USD quote. Fixed-buy bounded behavior and bridge risk are reviewed separately where present.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-base-1.json: exact virtual-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual observations in scripts/catalog-policy-verification.json.",
+      "snapshotFingerprint": "sha256:1a263d3f78b3e54c5dd8ea0ef8d70716e92dd650b82162e43adaf3f539ce9d3f"
+    },
+    {
+      "chainId": 8453,
+      "tokenAddress": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+      "quote": "USD",
+      "path": "usdc-usd",
+      "proxyAddress": "0x7e860098f58bbfc8648a4311b374b1d669a2bc6b",
+      "expectedDescription": "USDC / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 129660,
+      "assetRelationship": "exact-asset",
+      "reviewDate": "2026-10-19",
+      "identityEvidence": "https://developers.circle.com/stablecoins/usdc-contract-addresses: exact chain and token contract match pinned metadata and live symbol/decimals.",
+      "representationEvidence": "https://developers.circle.com/stablecoins/usdc-contract-addresses: issuer-listed asset on this chain; no bridge claim is substituted.",
+      "assetRelationshipReason": "The feed measures USDC, matching the exact issued token on this chain.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row with USD quote. Fixed-buy bounded behavior and bridge risk are reviewed separately where present.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-base-1.json: exact usdc-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual observations in scripts/catalog-policy-verification.json.",
+      "boundedPriceSuitability": {
+        "decision": "accepted-for-fixed-buy",
+        "reviewDate": "2026-10-19",
+        "evidence": "https://docs.chain.link/data-feeds/selecting-data-feeds#bounded-market-price-feeds: this exact USDC/USD source has stablecoinCapped=true and maxSubmissionValue=105000000 (1.05 USD at 8 decimals). Above the upper bound reporting stops and the last onchain answer remains until reporting resumes. This can delay a stop-loss trigger and later fail freshness. Accept this residual risk only for this chain's exact fixed buy token; no assumed dollar peg or bounded sell approval. Bridge risk, where present, is accepted separately and is not measured by this feed."
+      },
+      "snapshotFingerprint": "sha256:224ac5bc7822d60c61d2aedec992f4448eea74d775c775595962cece8449757a"
+    },
+    {
+      "chainId": 137,
+      "tokenAddress": "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
+      "quote": "USD",
+      "path": "matic-usd",
+      "proxyAddress": "0xab594600376ec9fd91f8e885dadf0ce036862de0",
+      "expectedDescription": "MATIC / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 100,
+      "assetRelationship": "native-wrapper",
+      "reviewDate": "2026-10-19",
+      "identityEvidence": "https://sourcify.dev/server/v2/contract/137/0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270?fields=all: verified creation and runtime match; deposit credits msg.value and withdraw subtracts the same amount before returning native currency. Polygon retains the legacy WMATIC source name after the native POL migration.",
+      "representationEvidence": "https://sourcify.dev/server/v2/contract/137/0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270?fields=all: verified creation and runtime match; deposit credits msg.value and withdraw subtracts the same amount before returning native currency. Polygon retains the legacy WMATIC source name after the native POL migration.",
+      "assetRelationshipReason": "Verified local native-currency wrapping credits and redeems the same unit; the feed measures that native asset, not a derivative exchange rate.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row with USD quote. Fixed-buy bounded behavior and bridge risk are reviewed separately where present.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-matic-mainnet.json: exact matic-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual observations in scripts/catalog-policy-verification.json.",
+      "snapshotFingerprint": "sha256:e1bcdb524f70ae22cb8cf15fd4de0d0b184208e6b975318e69956b7327d72cf7"
+    },
+    {
+      "chainId": 137,
+      "tokenAddress": "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+      "quote": "USD",
+      "path": "usdc-usd",
+      "proxyAddress": "0xfe4a8cc5b5b2366c1b58bea3858e81843581b2f7",
+      "expectedDescription": "USDC / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 100,
+      "assetRelationship": "exact-asset",
+      "reviewDate": "2026-10-19",
+      "identityEvidence": "https://developers.circle.com/stablecoins/usdc-contract-addresses: exact chain and token contract match pinned metadata and live symbol/decimals.",
+      "representationEvidence": "https://developers.circle.com/stablecoins/usdc-contract-addresses: issuer-listed asset on this chain; no bridge claim is substituted.",
+      "assetRelationshipReason": "The feed measures USDC, matching the exact issued token on this chain.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row with USD quote. Fixed-buy bounded behavior and bridge risk are reviewed separately where present.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-matic-mainnet.json: exact usdc-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual observations in scripts/catalog-policy-verification.json.",
+      "boundedPriceSuitability": {
+        "decision": "accepted-for-fixed-buy",
+        "reviewDate": "2026-10-19",
+        "evidence": "https://docs.chain.link/data-feeds/selecting-data-feeds#bounded-market-price-feeds: this exact USDC/USD source has stablecoinCapped=true and maxSubmissionValue=105000000 (1.05 USD at 8 decimals). Above the upper bound reporting stops and the last onchain answer remains until reporting resumes. This can delay a stop-loss trigger and later fail freshness. Accept this residual risk only for this chain's exact fixed buy token; no assumed dollar peg or bounded sell approval. Bridge risk, where present, is accepted separately and is not measured by this feed."
+      },
+      "snapshotFingerprint": "sha256:a203d512592d8f96bf257081c169901c3505052965970191067ccaad00c28330"
+    },
+    {
+      "chainId": 43114,
+      "tokenAddress": "0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7",
+      "quote": "USD",
+      "path": "avax-usd",
+      "proxyAddress": "0x0a77230d17318075983913bc2145db16c7366156",
+      "expectedDescription": "AVAX / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 240,
+      "assetRelationship": "native-wrapper",
+      "reviewDate": "2026-10-19",
+      "identityEvidence": "https://sourcify.dev/server/v2/contract/43114/0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7?fields=all: verified creation and runtime match; deposit credits msg.value and withdraw subtracts the same amount before returning native currency.",
+      "representationEvidence": "https://sourcify.dev/server/v2/contract/43114/0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7?fields=all: verified creation and runtime match; deposit credits msg.value and withdraw subtracts the same amount before returning native currency.",
+      "assetRelationshipReason": "Verified local native-currency wrapping credits and redeems the same unit; the feed measures that native asset, not a derivative exchange rate.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row with USD quote. Fixed-buy bounded behavior and bridge risk are reviewed separately where present.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-avalanche-mainnet.json: exact avax-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual observations in scripts/catalog-policy-verification.json.",
+      "snapshotFingerprint": "sha256:542f21c1c53e40be9c0950e882d4c101db455c39d4c7dc38b8a522f5fec5dddc"
+    },
+    {
+      "chainId": 43114,
+      "tokenAddress": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
+      "quote": "USD",
+      "path": "usdc-usd",
+      "proxyAddress": "0xf096872672f44d6eba71458d74fe67f9a77a23b9",
+      "expectedDescription": "USDC / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 129660,
+      "assetRelationship": "exact-asset",
+      "reviewDate": "2026-10-19",
+      "identityEvidence": "https://developers.circle.com/stablecoins/usdc-contract-addresses: exact chain and token contract match pinned metadata and live symbol/decimals.",
+      "representationEvidence": "https://developers.circle.com/stablecoins/usdc-contract-addresses: issuer-listed asset on this chain; no bridge claim is substituted.",
+      "assetRelationshipReason": "The feed measures USDC, matching the exact issued token on this chain.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row with USD quote. Fixed-buy bounded behavior and bridge risk are reviewed separately where present.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-avalanche-mainnet.json: exact usdc-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual observations in scripts/catalog-policy-verification.json.",
+      "boundedPriceSuitability": {
+        "decision": "accepted-for-fixed-buy",
+        "reviewDate": "2026-10-19",
+        "evidence": "https://docs.chain.link/data-feeds/selecting-data-feeds#bounded-market-price-feeds: this exact USDC/USD source has stablecoinCapped=true and maxSubmissionValue=105000000 (1.05 USD at 8 decimals). Above the upper bound reporting stops and the last onchain answer remains until reporting resumes. This can delay a stop-loss trigger and later fail freshness. Accept this residual risk only for this chain's exact fixed buy token; no assumed dollar peg or bounded sell approval. Bridge risk, where present, is accepted separately and is not measured by this feed."
+      },
+      "snapshotFingerprint": "sha256:46699b3136984d5dc80c9d0c0cc9908bb776078fd01215d8654611f9266120c7"
+    },
+    {
+      "chainId": 56,
+      "tokenAddress": "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+      "quote": "USD",
+      "path": "bnb-usd",
+      "proxyAddress": "0x0567f2323251f0aab15c8dfb1967e4e8a7d42aee",
+      "expectedDescription": "BNB / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 100,
+      "assetRelationship": "native-wrapper",
+      "reviewDate": "2026-10-19",
+      "identityEvidence": "https://sourcify.dev/server/v2/contract/56/0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c?fields=all: verified creation and runtime match; deposit credits msg.value and withdraw subtracts the same amount before returning native currency.",
+      "representationEvidence": "https://sourcify.dev/server/v2/contract/56/0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c?fields=all: verified creation and runtime match; deposit credits msg.value and withdraw subtracts the same amount before returning native currency.",
+      "assetRelationshipReason": "Verified local native-currency wrapping credits and redeems the same unit; the feed measures that native asset, not a derivative exchange rate.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row with USD quote. Fixed-buy bounded behavior and bridge risk are reviewed separately where present.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-bsc-mainnet.json: exact bnb-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual observations in scripts/catalog-policy-verification.json.",
+      "snapshotFingerprint": "sha256:ae5d744610ff401f2ebbe81792a958dd3a13f7f4d4b0915f46b452e5298af80e"
+    },
+    {
+      "chainId": 56,
+      "tokenAddress": "0x55d398326f99059ff775485246999027b3197955",
+      "quote": "USD",
+      "path": "usdt-usd",
+      "proxyAddress": "0xb97ad0e74fa7d920791e90258a6e2085088b4320",
+      "expectedDescription": "USDT / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 1410,
+      "assetRelationship": "bridged-underlying",
+      "reviewDate": "2026-10-19",
+      "identityEvidence": "https://sourcify.dev/server/v2/contract/56/0x55d398326f99059ff775485246999027b3197955?fields=all: verified BEP20USDT.sol has owner-controlled issuance. https://www.binance.com/en/blog/all/421499824684901059 describes Binance wrapped USDT backed by locked tokens. This is a Binance custodial peg representation; backing and redemption were not independently verified. Underlying USDT pricing does not measure its custody or peg risk.",
+      "representationEvidence": "https://sourcify.dev/server/v2/contract/56/0x55d398326f99059ff775485246999027b3197955?fields=all: verified BEP20USDT.sol has owner-controlled issuance. https://www.binance.com/en/blog/all/421499824684901059 describes Binance wrapped USDT backed by locked tokens. This is a Binance custodial peg representation; backing and redemption were not independently verified. Underlying USDT pricing does not measure its custody or peg risk.",
+      "assetRelationshipReason": "This exact USDT representation uses the underlying asset reference price. The feed does not measure its bridge, custody or redemption risk.",
+      "representationSuitability": {
+        "decision": "accepted-underlying-feed",
+        "bridgeRisk": "not-priced-by-feed",
+        "reviewDate": "2026-10-19",
+        "evidence": "https://sourcify.dev/server/v2/contract/56/0x55d398326f99059ff775485246999027b3197955?fields=all: verified BEP20USDT.sol has owner-controlled issuance. https://www.binance.com/en/blog/all/421499824684901059 describes Binance wrapped USDT backed by locked tokens. This is a Binance custodial peg representation; backing and redemption were not independently verified. Underlying USDT pricing does not measure its custody or peg risk. Accept underlying pricing only for this exact mapping. A bridge depeg, custody loss or failed redemption can make the trigger price wrong for the token held; no peg or redemption guarantee is assumed."
+      },
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row with USD quote. Fixed-buy bounded behavior and bridge risk are reviewed separately where present.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-bsc-mainnet.json: exact usdt-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual observations in scripts/catalog-policy-verification.json.",
+      "boundedPriceSuitability": {
+        "decision": "accepted-for-fixed-buy",
+        "reviewDate": "2026-10-19",
+        "evidence": "https://docs.chain.link/data-feeds/selecting-data-feeds#bounded-market-price-feeds: this exact USDT/USD source has stablecoinCapped=true and maxSubmissionValue=105000000 (1.05 USD at 8 decimals). Above the upper bound reporting stops and the last onchain answer remains until reporting resumes. This can delay a stop-loss trigger and later fail freshness. Accept this residual risk only for this chain's exact fixed buy token; no assumed dollar peg or bounded sell approval. Bridge risk, where present, is accepted separately and is not measured by this feed."
+      },
+      "snapshotFingerprint": "sha256:67e79797ee5a6e877e224bb80ec5035f4a830071c10810c1a9b3ace07a2ca653"
+    },
+    {
+      "chainId": 59144,
+      "tokenAddress": "0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f",
+      "quote": "USD",
+      "path": "eth-usd",
+      "proxyAddress": "0x3c6cd9cc7c7a4c2cf5a82734cd249d7d593354da",
+      "expectedDescription": "ETH / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 129660,
+      "assetRelationship": "native-wrapper",
+      "reviewDate": "2026-10-19",
+      "identityEvidence": "https://sourcify.dev/server/v2/contract/59144/0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f?fields=all: matching deployed non-proxy WETH9.sol credits msg.value in deposit and subtracts wad before returning the same native ETH amount in withdraw. Local native ETH wrapping does not remove Linea L2/bridge risk.",
+      "representationEvidence": "https://sourcify.dev/server/v2/contract/59144/0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f?fields=all: matching deployed non-proxy WETH9.sol credits msg.value in deposit and subtracts wad before returning the same native ETH amount in withdraw. Local native ETH wrapping does not remove Linea L2/bridge risk.",
+      "assetRelationshipReason": "Verified local native-currency wrapping credits and redeems the same unit; the feed measures that native asset, not a derivative exchange rate.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row with USD quote. Fixed-buy bounded behavior and bridge risk are reviewed separately where present.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-linea-1.json: exact eth-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual observations in scripts/catalog-policy-verification.json.",
+      "snapshotFingerprint": "sha256:7f0b7f6ae604458ca0a01fc4ca102bf9cdc9d00e07fe942e0b4bbd69b091f0d0"
+    },
+    {
+      "chainId": 59144,
+      "tokenAddress": "0x176211869ca2b568f2a7d4ee941e073a821ee1ff",
+      "quote": "USD",
+      "path": "usdc-usd",
+      "proxyAddress": "0xaadaa473c1bdf7317ec07c915680af29debfdcb5",
+      "expectedDescription": "USDC / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 129660,
+      "assetRelationship": "exact-asset",
+      "reviewDate": "2026-10-19",
+      "identityEvidence": "https://developers.circle.com/stablecoins/usdc-contract-addresses: exact chain and token contract match pinned metadata and live symbol/decimals.",
+      "representationEvidence": "https://developers.circle.com/stablecoins/usdc-contract-addresses: issuer-listed asset on this chain; no bridge claim is substituted.",
+      "assetRelationshipReason": "The feed measures USDC, matching the exact issued token on this chain.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row with USD quote. Fixed-buy bounded behavior and bridge risk are reviewed separately where present.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-linea-1.json: exact usdc-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual observations in scripts/catalog-policy-verification.json.",
+      "boundedPriceSuitability": {
+        "decision": "accepted-for-fixed-buy",
+        "reviewDate": "2026-10-19",
+        "evidence": "https://docs.chain.link/data-feeds/selecting-data-feeds#bounded-market-price-feeds: this exact USDC/USD source has stablecoinCapped=true and maxSubmissionValue=105000000 (1.05 USD at 8 decimals). Above the upper bound reporting stops and the last onchain answer remains until reporting resumes. This can delay a stop-loss trigger and later fail freshness. Accept this residual risk only for this chain's exact fixed buy token; no assumed dollar peg or bounded sell approval. Bridge risk, where present, is accepted separately and is not measured by this feed."
+      },
+      "snapshotFingerprint": "sha256:0f6657552fc5ce758727627c65a4b27ca3b12b00b785a1d1c5c93a95e6a744d4"
+    },
+    {
+      "chainId": 9745,
+      "tokenAddress": "0x6100e367285b01f48d07953803a2d8dca5d19873",
+      "quote": "USD",
+      "path": "xpl-usd",
+      "proxyAddress": "0xf932477c37715ae6657ab884414bd9876fe3f750",
+      "expectedDescription": "XPL / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 129660,
+      "assetRelationship": "native-wrapper",
+      "reviewDate": "2026-10-19",
+      "identityEvidence": "scripts/native-wrapper-verification.json: read-only debug_traceCall on https://rpc.plasma.to confirms deposit() credits one token base unit per native XPL base unit and withdraw(1) burns one token base unit and returns one native XPL base unit. Native balance and token storage diffs use deployed code without a code override. Behavior evidence only; verified source was unavailable. https://github.com/PlasmaLaboratories/plasma-tokenlist/blob/main/plasma.tokenlist.json identifies this exact WXPL contract.",
+      "representationEvidence": "scripts/native-wrapper-verification.json: read-only debug_traceCall on https://rpc.plasma.to confirms deposit() credits one token base unit per native XPL base unit and withdraw(1) burns one token base unit and returns one native XPL base unit. Native balance and token storage diffs use deployed code without a code override. Behavior evidence only; verified source was unavailable. https://github.com/PlasmaLaboratories/plasma-tokenlist/blob/main/plasma.tokenlist.json identifies this exact WXPL contract.",
+      "assetRelationshipReason": "Verified local native-currency wrapping credits and redeems the same unit; the feed measures that native asset, not a derivative exchange rate.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row with USD quote. Fixed-buy bounded behavior and bridge risk are reviewed separately where present.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-plasma-mainnet.json: exact xpl-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual observations in scripts/catalog-policy-verification.json.",
+      "snapshotFingerprint": "sha256:5ba6eaf68f63cd1086cfa89191410f66895d82fe93fead1840c6aacaa5ea390c"
+    },
+    {
+      "chainId": 9745,
+      "tokenAddress": "0x2d661c89d812261039af9764eceaaee884f5f67f",
+      "quote": "USD",
+      "path": "usdc-usd",
+      "proxyAddress": "0xe3d6f313aeebc2d4ff780c2850f5ca95c85fafa4",
+      "expectedDescription": "USDC / USD",
+      "expectedDecimals": 8,
+      "maxAgeSeconds": 129660,
+      "assetRelationship": "exact-asset",
+      "reviewDate": "2026-10-19",
+      "identityEvidence": "https://developers.circle.com/stablecoins/usdc-contract-addresses: exact chain and token contract match pinned metadata and live symbol/decimals.",
+      "representationEvidence": "https://developers.circle.com/stablecoins/usdc-contract-addresses: issuer-listed asset on this chain; no bridge claim is substituted.",
+      "assetRelationshipReason": "The feed measures USDC, matching the exact issued token on this chain.",
+      "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row with USD quote. Fixed-buy bounded behavior and bridge risk are reviewed separately where present.",
+      "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-plasma-mainnet.json: exact usdc-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual observations in scripts/catalog-policy-verification.json.",
+      "boundedPriceSuitability": {
+        "decision": "accepted-for-fixed-buy",
+        "reviewDate": "2026-10-19",
+        "evidence": "https://docs.chain.link/data-feeds/selecting-data-feeds#bounded-market-price-feeds: this exact USDC/USD source has stablecoinCapped=true and maxSubmissionValue=105000000 (1.05 USD at 8 decimals). Above the upper bound reporting stops and the last onchain answer remains until reporting resumes. This can delay a stop-loss trigger and later fail freshness. Accept this residual risk only for this chain's exact fixed buy token; no assumed dollar peg or bounded sell approval. Bridge risk, where present, is accepted separately and is not measured by this feed."
+      },
+      "snapshotFingerprint": "sha256:15436d4f77376e8d596d81f399893988f712f0530bc2853ad967e41ab7144aab"
+    }
+  ]
 }
