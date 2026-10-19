@@ -1,12 +1,16 @@
 # CoW Stop Loss
 
-A standalone, read-only app for stop-loss orders on CoW Protocol. Use `Connect wallet` to open RainbowKit and select a browser wallet or WalletConnect. A Safe connected through WalletConnect uses the Safe account address. The app does not require a Safe frame and does not create or cancel orders.
+A standalone app to create, review, and cancel exact-sell stop-loss orders on CoW Protocol. Use `Connect wallet` to open RainbowKit and select a browser wallet or WalletConnect. The app does not require a Safe frame or Safe gateway.
 
-Orders for the connected account and its CowShed proxies appear in one list across Ethereum, Gnosis, Arbitrum, and Sepolia. Sepolia is marked as a testnet. Connection and browsing do not switch the wallet chain. The header's network control requests a wallet chain switch only when you select a network. Use the list's chain and status filters to narrow the list; both default to `All`. Open the header account button to disconnect.
+Orders for the connected account and its CowShed proxies appear in one list across Ethereum, Gnosis, Arbitrum, Base, Polygon, Avalanche, BNB Chain, Linea, Plasma, and Sepolia. Sepolia is marked as a testnet. Connection and browsing do not switch the wallet chain. The header's network control requests a wallet chain switch only when you select a network. Use the list's chain and status filters to narrow the list; both default to `All`. Open the header account button to disconnect.
+
+New production order creation is currently disabled on all nine mainnets. No token/feed route has the required approval evidence: all fixed USD buy feeds are marked as bounded-price feeds, and the deployed handler lacks L2 sequencer protection. Known token metadata does not imply creation eligibility. Sepolia still offers WETH into the existing USDC test token with fixed test feeds; this is test data, not production price coverage. Existing orders support approval repair and cancellation when their ownership and state permit it. See [Supported networks](docs/supported-networks.md) and [Token catalog](docs/token-catalog.md) for the evidence and limits.
+
+Future approved routes use an exact sell amount, trigger price, slippage, and one fixed USD buy token per chain. Dollar-pegged and dollar-linked tokens are excluded from sells. Arbitrary token imports, manual feed overrides, and exact-buy mode are not supported.
 
 ## Local setup
 
-Use Node.js 20.9 or later and pnpm 9. The private `@bleu/ui` package requires a package-read `NPM_TOKEN` in the install environment.
+Use Node.js 20.9 or later, pnpm 9, and Python 3. The private `@bleu/ui` package requires a package-read `NPM_TOKEN` in the install environment.
 
 ```bash
 corepack pnpm@9 install
@@ -14,6 +18,8 @@ corepack pnpm@9 dev:next
 ```
 
 Open http://localhost:3000. Run `corepack pnpm@9 dev` to start the app and documentation together.
+
+`dev:next` and `build:next` first prepare pinned token-list bytes and local token images, then check image hashes and the generated catalog offline. A clean checkout needs network access for missing files. Verified metadata in `.cache/token-catalog` and verified images in `public/assets/tokens` can be reused offline. Images keep their current local URLs and exact bytes; baseline assets and any image that cannot be restored remain committed. Changed bytes or corrupt data stop the command, as does a network failure without verified local files. There is no latest-list or replacement-artwork fallback. These commands do not regenerate the runtime catalog. After an intentional catalog change, run `corepack pnpm@9 generate:catalog`, review the diff, and repeat the checks. See [Token catalog](docs/token-catalog.md) for sources and maintenance.
 
 ## WalletConnect setup
 
@@ -32,15 +38,21 @@ RainbowKit 2.2.0 is pinned with a pnpm patch in `patches/`. The patch removes it
 
 ## Order data
 
-The app reads https://programmatic-orders.cow.fi/graphql. It loads all ownership and order pages for the configured StopLoss handler. Each row is a stop-loss parent with at most one resulting CoW order. Details show available execution amounts, prices, oracle settings, and explorer links. Historical tokens without configured metadata are shown in raw base units. The API does not supply the execution fee token, so fees also remain in raw base units.
+The app reads https://programmatic-orders.cow.fi/graphql. It loads all ownership and order pages for the configured StopLoss handler. Each row is a stop-loss parent with at most one resulting CoW order. Details show available execution amounts, prices, oracle settings, and explorer links. Known historical tokens retain their metadata without becoming eligible for new orders. Tokens without known metadata are shown in raw base units. The API does not supply the execution fee token, so fees also remain in raw base units.
+
+Read-only checks on 2026-10-19 verified the required EOA contract deployments on all nine production chains. The order endpoint accepted queries for all ten configured chains, but returned no sample orders for Polygon, Avalanche, BNB Chain, Linea, or Plasma. Indexing on those five chains is not proven. The dated evidence is in `scripts/eoa-deployments-verification.json` and `scripts/eoa-indexer-verification.json`; it does not prove end-to-end order execution.
 
 Data loads on connection and account changes. Use the reload icon beside `Status` or a chain's retry button for later updates. There is no automatic polling, focus refresh, or local expiry timer. A failed chain shows a warning; other chains remain visible. Previously loaded orders for that account stay visible with a stale-data warning if a refresh fails. Account changes and disconnects clear the prior account's orders.
 
-A detail link for a different account asks you to connect that account and does not load its orders. The old `/<chainId>/<safeAddress>` list route now shows the same connected-account, read-only view. The configured tokens and price feeds remain unchanged.
+A detail link for a different account asks you to connect that account and does not load its orders. The old `/<chainId>/<safeAddress>` list route now shows the same connected-account view. Current creation uses the reviewed catalog and canonical oracle routes; historical orders keep their saved feeds. USD estimates require a direct USD feed and remain unavailable for ETH-only tokens.
 
 ## Checks
 
 ```bash
+corepack pnpm@9 prepare:catalog
+corepack pnpm@9 check:assets
+corepack pnpm@9 check:catalog
+python3 -m unittest discover -s scripts -p 'test_catalog*.py'
 corepack pnpm@9 test:jest --runInBand
 corepack pnpm@9 lint
 corepack pnpm@9 exec tsc --noEmit
@@ -48,4 +60,8 @@ corepack pnpm@9 build:next
 corepack pnpm@9 build
 ```
 
-Tests replace external HTTP, wallet providers, and time. They use the real wallet, data-loading, and rendered-view modules. A real WalletConnect session also needs a configured project and an external wallet.
+The app uses the checked-in runtime catalog and local images. Ordinary Jest tests do not fetch token lists or images; they check the reviewed image manifest. CI prepares metadata and images, checks image hashes and the runtime snapshot, then runs the Python catalog tests and Jest. The browser loads local images and does not depend on list-server CORS settings. Detailed reports are optional ignored outputs: `python3 scripts/catalog.py --reports .cache/token-catalog/reports` regenerates the runtime snapshot and writes `catalog-audit.json` and `catalog-metadata-report.json` there. Normal generation and checks do not require these reports.
+
+Tests replace external HTTP, wallet providers, and time. Policy tests use the real disabled production catalog. Some order-math and EOA-flow suites opt into synthetic approved routes; those fixtures are not production approval evidence. A real WalletConnect session also needs a configured project and an external wallet.
+
+The read-only browser check in `scripts/verify-oracle-policy.cjs` opens the actual network menu, checks loaded images and unavailable production routes, and reviews a Sepolia test order. Start the app first, provide an installed Playwright module with `PLAYWRIGHT_PATH`, and set `CHROME_PATH` if Chrome is not at the default macOS path. The fixture mocks external reads, intercepts app-data publication, and blocks signing and transactions. It does not prove live execution.

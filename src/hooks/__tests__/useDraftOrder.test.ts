@@ -3,6 +3,18 @@
  * @jest-environment-options {"customExportConditions": ["node", "node-addons"]}
  */
 
+// Opt in to simulated TEST approvals; production policy remains unchanged.
+jest.mock("#/lib/supportedTokens", () => {
+  const actual = jest.requireActual("#/lib/supportedTokens");
+  const { TEST_SUPPORTED_TOKENS } = jest.requireActual("#/test/approvedRoutes");
+  return {
+    ...actual,
+    getSupportedTokens: (chainId: import("#/lib/publicClients").ChainId) =>
+      TEST_SUPPORTED_TOKENS[chainId] ?? actual.getSupportedTokens(chainId),
+  };
+});
+
+import { configuredTokenRoute } from "#/lib/oracleRouter";
 import { invalidatePlacementReads } from "#/lib/placementReads";
 import { publicClientsFromIds } from "#/lib/publicClients";
 import { VALID_TO_OPTIONS } from "#/lib/schema";
@@ -17,8 +29,10 @@ import { useDraftOrder } from "../useDraftOrder";
 
 const safeAddress = "0x1111111111111111111111111111111111111111";
 const { sellTokens, buyToken } = getSupportedTokens(1);
+const weth = sellTokens.find(({ token }) => token.symbol === "WETH")!;
+const cbBtc = sellTokens.find(({ token }) => token.symbol === "cbBTC")!;
 const orderInput: SwapData = {
-  tokenSell: sellTokens[1].token,
+  tokenSell: cbBtc.token,
   tokenBuy: buyToken.token,
   amountSell: "1",
   amountBuy: "54945",
@@ -35,6 +49,12 @@ describe("Supported stop loss draft creation", () => {
       jest
         .spyOn(publicClientsFromIds[chainId], "getBlockNumber")
         .mockResolvedValue(BigInt(100));
+      jest.spyOn(publicClientsFromIds[chainId], "getBlock").mockResolvedValue({
+        number: BigInt(100),
+        timestamp: BigInt(1),
+      } as Awaited<
+        ReturnType<(typeof publicClientsFromIds)[typeof chainId]["getBlock"]>
+      >);
     }
     useAdvancedSettingsStore
       .getState()
@@ -54,8 +74,7 @@ describe("Supported stop loss draft creation", () => {
       .mockImplementation(async ({ address, functionName }) => {
         if (functionName === "decimals") return 8;
         const answer =
-          address?.toLowerCase() ===
-          "0xf4030086522a5beea4988f8ca5b36dbc97bee88c"
+          address?.toLowerCase() === cbBtc.priceFeed?.toLowerCase()
             ? BigInt("6000000000000")
             : BigInt("100000000");
         return [BigInt(1), answer, BigInt(1), BigInt(1), BigInt(1)];
@@ -69,7 +88,7 @@ describe("Supported stop loss draft creation", () => {
       useDraftOrder.getState().createDraftOrder(
         {
           ...orderInput,
-          tokenSell: sellTokens[0].token,
+          tokenSell: weth.token,
           amountSell: "0.123456789012345678",
           amountBuy: "1",
           strikePrice: "2000",
@@ -90,7 +109,7 @@ describe("Supported stop loss draft creation", () => {
     const draft = await useDraftOrder.getState().createDraftOrder(
       {
         ...orderInput,
-        tokenSell: sellTokens[0].token,
+        tokenSell: weth.token,
         amountSell: "0.123456789012345678",
         amountBuy: "1",
         strikePrice: "2000",
@@ -115,8 +134,7 @@ describe("Supported stop loss draft creation", () => {
     await expect(
       useDraftOrder.getState().createDraftOrder(orderInput, 1, safeAddress),
     ).resolves.toMatchObject({
-      tokenSellOracle: "0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c",
-      tokenBuyOracle: "0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6",
+      ...configuredTokenRoute({ chainId: 1, ...orderInput }),
       oraclePrice: 60000,
     });
   });
@@ -128,13 +146,16 @@ describe("Supported stop loss draft creation", () => {
       useDraftOrder
         .getState()
         .createDraftOrder(
-          { ...orderInput, tokenSell: sellTokens[0].token },
+          { ...orderInput, tokenSell: weth.token },
           1,
           safeAddress,
         ),
     ).resolves.toMatchObject({
-      tokenSellOracle: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
-      tokenBuyOracle: "0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6",
+      ...configuredTokenRoute({
+        chainId: 1,
+        tokenSell: weth.token,
+        tokenBuy: buyToken.token,
+      }),
     });
   });
 
@@ -145,9 +166,7 @@ describe("Supported stop loss draft creation", () => {
 
     await expect(
       useDraftOrder.getState().createDraftOrder(orderInput, 1, safeAddress),
-    ).rejects.toThrow(
-      "Unable to read configured price feeds. Please try again.",
-    );
+    ).rejects.toThrow("RPC unavailable");
   });
 
   it("ignores stored manual oracles while retaining the other advanced settings", async () => {
@@ -164,13 +183,38 @@ describe("Supported stop loss draft creation", () => {
     await expect(
       useDraftOrder.getState().createDraftOrder(orderInput, 1, safeAddress),
     ).resolves.toMatchObject({
-      tokenSellOracle: "0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c",
-      tokenBuyOracle: "0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6",
+      ...configuredTokenRoute({ chainId: 1, ...orderInput }),
       receiver: "0x4444444444444444444444444444444444444444",
       maxHoursSinceOracleUpdates: 2,
       partiallyFillable: true,
     });
   });
+
+  it.each([1, 2.5])(
+    "checks feed freshness against the applied %s-hour limit",
+    async (maxHoursSinceOracleUpdates) => {
+      useAdvancedSettingsStore.getState().setAdvancedSettings({
+        ...defaultAdvancedSettings,
+        maxHoursSinceOracleUpdates,
+      });
+      jest.mocked(publicClientsFromIds[1].getBlock).mockResolvedValue({
+        number: BigInt(100),
+        timestamp: BigInt(3602),
+      } as Awaited<ReturnType<(typeof publicClientsFromIds)[1]["getBlock"]>>);
+
+      const draft = useDraftOrder
+        .getState()
+        .createDraftOrder(orderInput, 1, safeAddress);
+      if (maxHoursSinceOracleUpdates === 1) {
+        await expect(draft).rejects.toThrow("Oracle price data is stale.");
+      } else {
+        await expect(draft).resolves.toMatchObject({
+          maxHoursSinceOracleUpdates,
+          oraclePrice: 60000,
+        });
+      }
+    },
+  );
 
   it("rejects noncanonical tokens even when draft creation bypasses the form", async () => {
     await expect(
@@ -185,8 +229,12 @@ describe("Supported stop loss draft creation", () => {
     ).rejects.toThrow("Unsupported sell token on this chain");
   });
 
-  it("uses USDC.e as the Gnosis market-price reference", async () => {
+  it("uses the catalog USDT token as the fixed Gnosis buy token", async () => {
     const gnosisTokens = getSupportedTokens(100);
+    const gnosisWeth = gnosisTokens.sellTokens.find(
+      ({ token }) => token.symbol === "WETH",
+    )!;
+    expect(gnosisTokens.buyToken.token.symbol).toBe("USDT");
     jest
       .spyOn(publicClientsFromIds[100], "readContract")
       .mockImplementation(async ({ address, functionName }) => {
@@ -203,7 +251,7 @@ describe("Supported stop loss draft creation", () => {
       useDraftOrder.getState().createDraftOrder(
         {
           ...orderInput,
-          tokenSell: gnosisTokens.sellTokens[0].token,
+          tokenSell: gnosisWeth.token,
           tokenBuy: gnosisTokens.buyToken.token,
         },
         100,

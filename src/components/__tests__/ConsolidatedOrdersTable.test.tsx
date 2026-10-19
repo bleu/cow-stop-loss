@@ -28,7 +28,7 @@ import { ConsolidatedOrdersTable } from "#/components/ConsolidatedOrdersTable";
 import { RootLayout } from "#/components/RootLayout";
 import { getStopLossPlacement } from "#/hooks/useStopLossPlacement";
 import type { PreparedPlacement } from "#/lib/pollerStopLoss";
-import { publicClientsFromIds } from "#/lib/publicClients";
+import { publicClientsFromIds, supportedChainIds } from "#/lib/publicClients";
 import { encodeStopLossStaticInput } from "#/lib/staticInputEncoder";
 import { createStopLossPlacement } from "#/lib/stopLossPlacement";
 import { OrderStatus } from "#/lib/types";
@@ -629,11 +629,13 @@ test("keeps the expanding table shell while the connected account's first orders
 });
 
 test("keeps an expanding unavailable viewport and retries into the same table without showing an empty account", async () => {
-  const unavailable = new Set([1, 100, 42161, 11155111]);
+  const unavailable = new Set<number>(supportedChainIds);
   serveOrders([apiParent()], unavailable);
   render(<TableView />);
   await connectWallet();
-  await waitFor(() => expect(screen.getAllByRole("alert")).toHaveLength(4));
+  await waitFor(() =>
+    expect(screen.getAllByRole("alert")).toHaveLength(supportedChainIds.length),
+  );
 
   const table = screen.getByRole("table");
   expect(table).toContainElement(
@@ -658,7 +660,9 @@ test("keeps an expanding unavailable viewport and retries into the same table wi
     }),
   ).toBeVisible();
   expect(screen.getByRole("table")).toBe(table);
-  expect(screen.getAllByRole("alert")).toHaveLength(3);
+  expect(screen.getAllByRole("alert")).toHaveLength(
+    supportedChainIds.length - 1,
+  );
   expect(
     screen.queryByText("Orders are unavailable on all supported chains."),
   ).not.toBeInTheDocument();
@@ -674,10 +678,14 @@ test("keeps chain and placement warnings inside the scroll area so pagination re
       ? '{"version":2,"state":{"records":[]}}'
       : getItem.call(this, key);
   });
-  serveOrders([], new Set([1, 100, 42161, 11155111]));
+  serveOrders([], new Set(supportedChainIds));
   render(<TableView />);
   await connectWallet();
-  await waitFor(() => expect(screen.getAllByRole("alert")).toHaveLength(5));
+  await waitFor(() =>
+    expect(screen.getAllByRole("alert")).toHaveLength(
+      supportedChainIds.length + 1,
+    ),
+  );
 
   const viewport = screen.getByRole("table").parentElement!.parentElement!;
   for (const warning of screen.getAllByRole("alert")) {

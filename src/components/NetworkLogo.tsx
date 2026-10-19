@@ -1,13 +1,7 @@
 import Image from "next/image";
 
+import { CHAIN_INFO } from "#/lib/chainInfo";
 import { ChainId } from "#/lib/publicClients";
-
-const networkAssets: Record<ChainId, { src: string }> = {
-  1: { src: "/assets/networks/ethereum.svg" },
-  100: { src: "/assets/networks/gnosis.svg" },
-  42161: { src: "/assets/networks/arbitrum.svg" },
-  11155111: { src: "/assets/networks/sepolia.svg" },
-};
 
 export function NetworkLogo({
   chainId,
@@ -18,10 +12,9 @@ export function NetworkLogo({
   size?: number;
   className?: string;
 }) {
-  const asset = networkAssets[chainId];
   return (
     <Image
-      src={asset.src}
+      src={CHAIN_INFO[chainId].icon}
       alt=""
       aria-hidden="true"
       width={size}

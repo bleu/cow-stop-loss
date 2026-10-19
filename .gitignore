@@ -8,6 +8,16 @@
 
 # testing
 /coverage
+__pycache__/
+
+# prepared catalog metadata, token images, and optional reports
+/.cache/token-catalog/
+/public/assets/tokens/*
+!/public/assets/tokens/usdc.svg
+!/public/assets/tokens/wbtc.svg
+!/public/assets/tokens/weth.svg
+/scripts/catalog-audit.json
+/scripts/catalog-metadata-report.json
 
 # next.js
 /.next/

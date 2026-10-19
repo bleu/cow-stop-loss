@@ -4,6 +4,10 @@ import { normalize } from "viem/ens";
 import { literal, z } from "zod";
 
 import { calculateAmounts, slippagePercentSchema } from "./calculateAmounts";
+import {
+  configuredChainMaxAgeSeconds,
+  configuredRouteMaxAgeSeconds,
+} from "./oracleRouter";
 import { ChainId, publicClientsFromIds } from "./publicClients";
 import { getSupportedTokens } from "./supportedTokens";
 import type { IToken } from "./types";
@@ -111,8 +115,17 @@ function matchesToken(token: IToken, supportedToken: IToken) {
 }
 
 export const generateSwapSchema = (chainId: ChainId) => {
-  const { sellTokens, buyToken } = getSupportedTokens(chainId);
+  const { sellTokens, buyToken, unavailableReason } =
+    getSupportedTokens(chainId);
   return swapSchema.superRefine((data, context) => {
+    if (unavailableReason) {
+      context.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["tokenSell"],
+        message: unavailableReason,
+      });
+      return;
+    }
     if (!sellTokens.some(({ token }) => matchesToken(data.tokenSell, token))) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
@@ -124,18 +137,27 @@ export const generateSwapSchema = (chainId: ChainId) => {
       context.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["tokenBuy"],
-        message: "Use the fixed USDC buy token for this chain",
+        message: "Use the fixed USD buy token for this chain",
       });
     }
   });
 };
 
-export const generateAdvancedSettingsSchema = (chainId: ChainId) => {
+export const generateAdvancedSettingsSchema = (
+  chainId: ChainId,
+  pair?: { tokenSell: IToken; tokenBuy: IToken },
+) => {
+  const maxAgeSeconds = pair
+    ? configuredRouteMaxAgeSeconds({ chainId, ...pair })
+    : configuredChainMaxAgeSeconds(chainId);
   return z.object({
     maxHoursSinceOracleUpdates: z.coerce
       .number()
-      .positive()
-      .max(365 * 24),
+      .min(1 / 3600)
+      .max(
+        maxAgeSeconds / 3600,
+        "Oracle time limit exceeds the approved route limit",
+      ),
     receiver: z.union([
       basicAddressSchema,
       generateEnsSchema(chainId),

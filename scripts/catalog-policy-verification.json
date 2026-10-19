@@ -1,0 +1,17 @@
+{
+  "checkedAt": "2026-10-19T16:32:25.375286+00:00",
+  "scope": "approved-feeds",
+  "status": "not-performed",
+  "chains": {},
+  "skippedChains": {
+    "1": "No selected production feeds; live verification was not performed",
+    "100": "No selected production feeds; live verification was not performed",
+    "42161": "No selected production feeds; live verification was not performed",
+    "8453": "No selected production feeds; live verification was not performed",
+    "137": "No selected production feeds; live verification was not performed",
+    "43114": "No selected production feeds; live verification was not performed",
+    "56": "No selected production feeds; live verification was not performed",
+    "59144": "No selected production feeds; live verification was not performed",
+    "9745": "No selected production feeds; live verification was not performed"
+  }
+}

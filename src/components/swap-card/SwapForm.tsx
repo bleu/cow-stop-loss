@@ -49,6 +49,7 @@ function WalletSwapForm({
 }: SwapFormProps) {
   const { chainId: accountChainId, address: walletAddress } = useAccount();
   const chainId = (accountChainId ?? 1) as ChainId;
+  const { buyToken, unavailableReason } = getSupportedTokens(chainId);
 
   const [setCurrentDraftOrder, createDraftOrder] = useDraftOrder((state) => [
     state.setCurrentDraftOrder,
@@ -65,7 +66,7 @@ function WalletSwapForm({
       amountSell: "",
       amountBuy: "",
       strikePrice: "",
-      tokenBuy: getSupportedTokens(chainId).buyToken.token,
+      tokenBuy: buyToken.token,
     },
   });
   const [settingsOpen, setSettingsOpen] = React.useState(false);
@@ -136,12 +137,12 @@ function WalletSwapForm({
       amountSell: "",
       amountBuy: "",
       strikePrice: "",
-      tokenBuy: getSupportedTokens(chainId).buyToken.token,
+      tokenBuy: buyToken.token,
     });
     const balances = useSwapTokenBalances.getState();
     balances.setTokenSellBalance(undefined);
     balances.setTokenBuyBalance(undefined);
-  }, [chainId, walletAddress, reset]);
+  }, [chainId, walletAddress, reset, buyToken.token]);
 
   React.useEffect(() => {
     submissionId.current += 1;
@@ -163,7 +164,7 @@ function WalletSwapForm({
     <Form
       {...form}
       onSubmit={async (data) => {
-        if (reviewDisabled) return;
+        if (reviewDisabled || unavailableReason) return;
         const requestId = ++submissionId.current;
         clearErrors("root");
         try {
@@ -196,6 +197,9 @@ function WalletSwapForm({
           <CardContent className="rescue-swap-content flex flex-col gap-3 p-0">
             <AdvancedSettingsPanel
               slippagePercent={slippagePercent}
+              tokenPair={
+                tokenSell && tokenBuy ? { tokenSell, tokenBuy } : undefined
+              }
               open={settingsOpen}
               onOpenChange={setSettingsOpen}
               orderTiming={<ValidToInput />}
@@ -225,6 +229,12 @@ function WalletSwapForm({
               data-inactive={settingsOpen}
               className="rescue-order-fields flex flex-col gap-3"
             >
+              {unavailableReason && (
+                <p role="alert" className="text-sm text-muted-foreground">
+                  {unavailableReason} Existing orders remain available in the
+                  order list.
+                </p>
+              )}
               <TokenInputCard side="Sell" />
               <PriceInputCard />
               <TokenInputCard side="Buy" />
@@ -234,7 +244,9 @@ function WalletSwapForm({
                   {form.formState.errors.root.message}
                 </p>
               )}
-              <SwapCardSubmitButton disabled={reviewDisabled} />
+              <SwapCardSubmitButton
+                disabled={reviewDisabled || Boolean(unavailableReason)}
+              />
             </div>
           </CardContent>
         </Card>

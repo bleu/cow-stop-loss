@@ -3,27 +3,17 @@ import {
   cookieToInitialState,
   createConfig,
   createStorage,
-  http,
 } from "wagmi";
-import { arbitrum, gnosis, mainnet, sepolia } from "wagmi/chains";
 
-const config = createConfig({
+import { createRpcTransports, supportedChains } from "#/lib/publicClients";
+
+export const wagmiServerConfig = createConfig({
   ssr: true,
   storage: createStorage({ storage: cookieStorage }),
-  chains: [
-    mainnet,
-    { ...sepolia, name: "Sepolia (testnet)" },
-    gnosis,
-    { ...arbitrum, name: "Arbitrum" },
-  ],
-  transports: {
-    [mainnet.id]: http(),
-    [sepolia.id]: http(),
-    [gnosis.id]: http(),
-    [arbitrum.id]: http(),
-  },
+  chains: supportedChains,
+  transports: createRpcTransports(),
 });
 
 export function getWagmiInitialState(cookie: string | null) {
-  return cookieToInitialState(config, cookie);
+  return cookieToInitialState(wagmiServerConfig, cookie);
 }

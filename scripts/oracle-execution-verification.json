@@ -1,0 +1,45 @@
+{
+  "reviewDate": "2026-10-19",
+  "handler": "0x412c36e5011cd2517016d243a2dfb37f73a242e7",
+  "sourceRevision": "c0435953ac8312a606d66c91554f2bb4d22ec686",
+  "compiler": "0.8.19",
+  "optimizerRuns": 20000,
+  "sources": {
+    "manifest": "https://github.com/cowprotocol/composable-cow/blob/c0435953ac8312a606d66c91554f2bb4d22ec686/canonical/manifest.json",
+    "compilerInput": "https://github.com/cowprotocol/composable-cow/blob/c0435953ac8312a606d66c91554f2bb4d22ec686/broadcast/StandardJsonInput/StopLoss.json",
+    "initcode": "https://github.com/cowprotocol/composable-cow/blob/c0435953ac8312a606d66c91554f2bb4d22ec686/canonical/initcode/StopLoss.initcode",
+    "ethereumExplorer": "https://etherscan.io/address/0x412c36e5011cd2517016d243a2dfb37f73a242e7#code",
+    "l2ConsumerRequirements": "https://docs.chain.link/data-feeds/using-data-feeds",
+    "sequencerRequirements": "https://docs.chain.link/data-feeds/l2-sequencer-feeds",
+    "boundedFeedBehavior": "https://docs.chain.link/data-feeds/selecting-data-feeds#bounded-market-price-feeds"
+  },
+  "method": "Compile the pinned standard JSON input with its settings, compare creation bytecode with canonical initcode, then compare compiled runtime with read-only eth_getCode responses.",
+  "canonicalCreationBytecodeMatches": true,
+  "runtimeBytes": 4259,
+  "runtimeSha256": "cd5e1324159124217c235f612031f0fbd4bf235dd531efdbab742d99b7d9db12",
+  "chains": {
+    "1": {"runtimeMatch": null, "reason": "RPC requests failed with HTTP 403 or 525; explorer reports exact source verification. No independent live runtime comparison."},
+    "56": {"runtimeMatch": true, "rpc": "https://bsc-dataseed1.bnbchain.org", "observedBlock": "0x7aa0991"},
+    "100": {"runtimeMatch": true, "rpc": "https://rpc.gnosischain.com", "observedBlock": "0x2e93c9f"},
+    "137": {"runtimeMatch": true, "rpc": "https://polygon.drpc.org", "observedBlock": "0x5b6017b"},
+    "8453": {"runtimeMatch": true, "rpc": "https://mainnet.base.org", "observedBlock": "0x325f24c"},
+    "9745": {"runtimeMatch": true, "rpc": "https://rpc.plasma.to", "observedBlock": "0x21d751e"},
+    "42161": {"runtimeMatch": true, "rpc": "https://arb1.arbitrum.io/rpc", "observedBlock": "0x1ec6a8f9"},
+    "43114": {"runtimeMatch": true, "rpc": "https://api.avax.network/ext/bc/C/rpc", "observedBlock": "0x5d719dd"},
+    "59144": {"runtimeMatch": true, "rpc": "https://linea.drpc.org", "observedBlock": "0x1ede441"}
+  },
+  "handlerBehavior": {
+    "positiveRawAnswers": true,
+    "normalizesEachFeedTo18Decimals": true,
+    "sharedUserSuppliedMaximumAge": true,
+    "roundCompletenessCheck": false,
+    "futureTimestampCheck": false,
+    "explicitZeroTimestampCheck": false,
+    "sequencerUptimeAndGraceCheck": false,
+    "quoteIdentityCheck": false,
+    "highDecimalTruncationRisk": "Feeds above 18 decimals can normalize to zero; zero numerator can satisfy the trigger and zero denominator reverts.",
+    "arithmeticLimits": "Signed scaling and normalized numerator times 10^18 must fit int256. Excessive maximum age can underflow block.timestamp subtraction."
+  },
+  "decision": "No production route approved. Bounded USD buy-feed compatibility is not established. Arbitrum, Base, and Linea also lack required execution-time sequencer protection. Browser checks do not protect future execution.",
+  "limits": "This records a bounded source and deployment review, not a security audit, proof of feed quality, or execution guarantee. Source/input evidence is not a production route approval. No transactions were sent."
+}

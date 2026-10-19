@@ -1,6 +1,6 @@
 // from https://github.com/cowprotocol/cowswap/blob/develop/libs/common-utils/src/explorer.ts
 
-import { gnosis, mainnet, sepolia, arbitrum } from "viem/chains";
+import { CHAIN_INFO } from "./chainInfo";
 import { ChainId } from "./publicClients";
 
 /**
@@ -11,32 +11,19 @@ import { ChainId } from "./publicClients";
  */
 export type UID = string;
 
-function _getExplorerUrlByEnvironment(): Record<ChainId, string> {
+export function getExplorerBaseUrl(chainId: ChainId): string {
   const baseUrl =
     process.env.NEXT_PUBLIC_COW_EXPLORER_URL_PROD || "https://explorer.cow.fi";
+  const chainInfo = CHAIN_INFO[chainId];
 
-  return {
-    [mainnet.id]: baseUrl,
-    [gnosis.id]: `${baseUrl}/gc`,
-    [arbitrum.id]: `${baseUrl}/arb1`,
-    [sepolia.id]: `${baseUrl}/sepolia`,
-  };
-}
-
-const EXPLORER_BASE_URL: Record<ChainId, string> =
-  _getExplorerUrlByEnvironment();
-
-export function getExplorerBaseUrl(chainId: ChainId): string {
-  const baseUrl = EXPLORER_BASE_URL[chainId];
-
-  if (!baseUrl) {
+  if (!chainInfo) {
     throw new Error(
       "Unsupported Network. The operator API is not deployed in the Network " +
         chainId,
     );
-  } else {
-    return baseUrl;
   }
+
+  return chainInfo.urlAlias ? `${baseUrl}/${chainInfo.urlAlias}` : baseUrl;
 }
 
 export function getExplorerOrderLink(chainId: ChainId, orderId: UID): string {

@@ -1,8 +1,11 @@
 import { Address, formatUnits, PublicClient } from "viem";
-import { arbitrum, gnosis, mainnet, sepolia } from "viem/chains";
 
 import { oracleMinimalAbi } from "./abis/oracleMinimalAbi";
-import { ChainId, publicClientsFromIds } from "./publicClients";
+import {
+  ChainId,
+  publicClientsFromIds,
+  supportedChainIds,
+} from "./publicClients";
 import { getSupportedTokens } from "./supportedTokens";
 import { IToken } from "./types";
 
@@ -19,6 +22,8 @@ export async function readOraclePrice({
   timestamp: bigint;
   maxAge: number;
 }) {
+  if (!Number.isFinite(maxAge) || maxAge <= 0)
+    throw new Error("Oracle time limit must be a positive finite number");
   const round = (await client.readContract({
     address: oracle,
     abi: oracleMinimalAbi,
@@ -109,66 +114,157 @@ export abstract class OracleRouter {
     return this.matchOracles(tokenSellOracles, tokenBuyOracles);
   }
 
-  async fetchOraclePrice(oracle: Address): Promise<number> {
-    const [roundData, oracleDecimals] = await Promise.all([
-      this.publicClient.readContract({
-        address: oracle,
-        abi: oracleMinimalAbi,
-        functionName: "latestRoundData",
-      }) as Promise<[bigint, bigint, bigint, bigint, bigint]>,
-      this.publicClient.readContract({
-        address: oracle,
-        abi: oracleMinimalAbi,
-        functionName: "decimals",
-      }) as Promise<number>,
-    ]);
-    return Number(formatUnits(roundData[1], oracleDecimals));
+  async calculatePrice(route: IRoute, maxAge = 24 * 60 * 60): Promise<number> {
+    return readOraclePairPrice({ client: this.publicClient, route, maxAge });
   }
+}
 
-  async calculatePrice(route: IRoute): Promise<number> {
-    try {
-      const [sellPrice, buyPrice] = await Promise.all([
-        this.fetchOraclePrice(route.tokenSellOracle),
-        this.fetchOraclePrice(route.tokenBuyOracle),
-      ]);
-      return sellPrice / buyPrice;
-    } catch {
-      throw new Error(
-        "Unable to read configured price feeds. Please try again.",
+export async function readOraclePairPrice({
+  client,
+  route,
+  maxAge = 24 * 60 * 60,
+}: {
+  client: PublicClient;
+  route: IRoute;
+  maxAge?: number;
+}): Promise<number> {
+  const block = await client.getBlock();
+  const prices = new Map<
+    string,
+    Promise<Awaited<ReturnType<typeof readOraclePrice>>>
+  >();
+  const read = (oracle: Address) => {
+    const key = oracle.toLowerCase();
+    if (!prices.has(key)) {
+      prices.set(
+        key,
+        readOraclePrice({
+          client: client,
+          oracle,
+          blockNumber: block.number,
+          timestamp: block.timestamp,
+          maxAge,
+        }),
       );
     }
+    return prices.get(key)!;
+  };
+  const [sell, buy] = await Promise.all([
+    read(route.tokenSellOracle),
+    read(route.tokenBuyOracle),
+  ]);
+  const price = sell.price / buy.price;
+  if (!Number.isFinite(price) || price <= 0) {
+    throw new Error("Oracle price is unavailable");
   }
+  return price;
+}
+
+function matchesToken(token: IToken, configured: IToken) {
+  return (
+    token.address.toLowerCase() === configured.address.toLowerCase() &&
+    token.decimals === configured.decimals &&
+    token.symbol === configured.symbol
+  );
+}
+
+function configuredPair({ chainId, tokenSell, tokenBuy }: IOracleRouterArgs) {
+  const { sellTokens, buyToken, unavailableReason } =
+    getSupportedTokens(chainId);
+  if (unavailableReason) throw new Error(unavailableReason);
+  if (!matchesToken(tokenBuy, buyToken.token))
+    throw new Error("Unsupported buy token");
+  const sellToken = sellTokens.find(({ token }) =>
+    matchesToken(tokenSell, token),
+  );
+  if (!sellToken) throw new Error("Unsupported sell token");
+  return { sellToken, buyToken };
+}
+
+function configuredRoute(args: IOracleRouterArgs) {
+  const { sellToken, buyToken } = configuredPair(args);
+  const quote = sellToken.oracles.ETH && buyToken.oracles.ETH ? "ETH" : "USD";
+  const tokenSellOracle = sellToken.oracles[quote];
+  const tokenBuyOracle = buyToken.oracles[quote];
+  const sellMaxAge = sellToken.oracleApprovals?.[quote]?.maxAgeSeconds;
+  const buyMaxAge = buyToken.oracleApprovals?.[quote]?.maxAgeSeconds;
+  if (
+    !tokenSellOracle ||
+    !tokenBuyOracle ||
+    !Number.isSafeInteger(sellMaxAge) ||
+    !Number.isSafeInteger(buyMaxAge) ||
+    !sellMaxAge ||
+    sellMaxAge <= 0 ||
+    !buyMaxAge ||
+    buyMaxAge <= 0
+  )
+    throw new Error("No approved matching oracle route");
+  return {
+    route: { tokenSellOracle, tokenBuyOracle },
+    maxAgeSeconds: Math.min(sellMaxAge, buyMaxAge),
+  };
+}
+
+export function configuredTokenRoute(args: IOracleRouterArgs): IRoute {
+  return configuredRoute(args).route;
+}
+
+export function configuredRouteMaxAgeSeconds(args: IOracleRouterArgs): number {
+  return configuredRoute(args).maxAgeSeconds;
+}
+
+export function assertOracleMaxAge(maxAge: number, ceiling: number): void {
+  if (!Number.isFinite(maxAge) || maxAge < 1 || maxAge > ceiling)
+    throw new Error(
+      `Oracle time limit must be between 1 and ${ceiling} seconds for this route`,
+    );
+}
+
+export function configuredChainMaxAgeSeconds(chainId: ChainId): number {
+  const { sellTokens, buyToken, unavailableReason } =
+    getSupportedTokens(chainId);
+  if (unavailableReason || sellTokens.length === 0) return 24 * 60 * 60;
+  return Math.max(
+    ...sellTokens.map(({ token }) =>
+      configuredRouteMaxAgeSeconds({
+        chainId,
+        tokenSell: token,
+        tokenBuy: buyToken.token,
+      }),
+    ),
+  );
 }
 
 export class ConfiguredRouter extends OracleRouter {
-  async findBuyOracle(): Promise<Oracles> {
-    const { buyToken } = getSupportedTokens(this.chainId);
+  async calculatePrice(route: IRoute, maxAge = 24 * 60 * 60): Promise<number> {
+    const configured = configuredRoute(this);
     if (
-      buyToken.token.address.toLowerCase() !==
-      this.tokenBuy.address.toLowerCase()
-    ) {
-      throw new Error("Unsupported buy token");
-    }
-    return { USD: buyToken.priceFeed };
+      route.tokenSellOracle.toLowerCase() !==
+        configured.route.tokenSellOracle.toLowerCase() ||
+      route.tokenBuyOracle.toLowerCase() !==
+        configured.route.tokenBuyOracle.toLowerCase()
+    )
+      throw new Error("Unsupported token or price-feed route");
+    return readOraclePairPrice({
+      client: this.publicClient,
+      route,
+      maxAge: Math.min(maxAge, configured.maxAgeSeconds),
+    });
+  }
+
+  async findBuyOracle(): Promise<Oracles> {
+    return configuredPair(this).buyToken.oracles;
   }
 
   async findSellOracle(): Promise<Oracles> {
-    const { sellTokens } = getSupportedTokens(this.chainId);
-    const sellToken = sellTokens.find(
-      ({ token }) =>
-        token.address.toLowerCase() === this.tokenSell.address.toLowerCase(),
-    );
-    if (!sellToken) throw new Error("Unsupported sell token");
-    return { USD: sellToken.priceFeed };
+    return configuredPair(this).sellToken.oracles;
+  }
+
+  async findRoute(): Promise<IRoute> {
+    return configuredTokenRoute(this);
   }
 }
 
-export const CHAINS_ORACLE_ROUTER_FACTORY: Record<
-  ChainId,
-  new (args: IOracleRouterArgs) => OracleRouter
-> = {
-  [mainnet.id]: ConfiguredRouter,
-  [sepolia.id]: ConfiguredRouter,
-  [gnosis.id]: ConfiguredRouter,
-  [arbitrum.id]: ConfiguredRouter,
-};
+export const CHAINS_ORACLE_ROUTER_FACTORY = Object.fromEntries(
+  supportedChainIds.map((chainId) => [chainId, ConfiguredRouter]),
+) as Record<ChainId, new (args: IOracleRouterArgs) => OracleRouter>;

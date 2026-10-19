@@ -1,0 +1,82 @@
+[
+  {
+    "chainId": 1,
+    "checkedAt": "2026-10-19T14:37:16.706Z",
+    "httpStatus": 200,
+    "ownerQueryAccepted": true,
+    "orderQueryAccepted": true,
+    "sampleOrderCount": 1
+  },
+  {
+    "chainId": 100,
+    "checkedAt": "2026-10-19T14:37:16.717Z",
+    "httpStatus": 200,
+    "ownerQueryAccepted": true,
+    "orderQueryAccepted": true,
+    "sampleOrderCount": 1
+  },
+  {
+    "chainId": 42161,
+    "checkedAt": "2026-10-19T14:37:16.718Z",
+    "httpStatus": 200,
+    "ownerQueryAccepted": true,
+    "orderQueryAccepted": true,
+    "sampleOrderCount": 1
+  },
+  {
+    "chainId": 8453,
+    "checkedAt": "2026-10-19T14:37:16.718Z",
+    "httpStatus": 200,
+    "ownerQueryAccepted": true,
+    "orderQueryAccepted": true,
+    "sampleOrderCount": 1
+  },
+  {
+    "chainId": 137,
+    "checkedAt": "2026-10-19T14:37:16.718Z",
+    "httpStatus": 200,
+    "ownerQueryAccepted": true,
+    "orderQueryAccepted": true,
+    "sampleOrderCount": 0
+  },
+  {
+    "chainId": 43114,
+    "checkedAt": "2026-10-19T14:37:16.719Z",
+    "httpStatus": 200,
+    "ownerQueryAccepted": true,
+    "orderQueryAccepted": true,
+    "sampleOrderCount": 0
+  },
+  {
+    "chainId": 56,
+    "checkedAt": "2026-10-19T14:37:16.719Z",
+    "httpStatus": 200,
+    "ownerQueryAccepted": true,
+    "orderQueryAccepted": true,
+    "sampleOrderCount": 0
+  },
+  {
+    "chainId": 59144,
+    "checkedAt": "2026-10-19T14:37:16.719Z",
+    "httpStatus": 200,
+    "ownerQueryAccepted": true,
+    "orderQueryAccepted": true,
+    "sampleOrderCount": 0
+  },
+  {
+    "chainId": 9745,
+    "checkedAt": "2026-10-19T14:37:16.719Z",
+    "httpStatus": 200,
+    "ownerQueryAccepted": true,
+    "orderQueryAccepted": true,
+    "sampleOrderCount": 0
+  },
+  {
+    "chainId": 11155111,
+    "checkedAt": "2026-10-19T14:37:16.720Z",
+    "httpStatus": 200,
+    "ownerQueryAccepted": true,
+    "orderQueryAccepted": true,
+    "sampleOrderCount": 1
+  }
+]

@@ -9,7 +9,7 @@ import {
 
 import { STOP_LOSS_ADDRESS } from "./contracts";
 import { type ChainId, supportedChainIds } from "./publicClients";
-import { getSupportedTokens } from "./supportedTokens";
+import { findKnownToken } from "./supportedTokens";
 import { type IToken, OrderStatus } from "./types";
 
 export type OrderToken = Omit<IToken, "decimals"> & { decimals: number | null };
@@ -271,11 +271,12 @@ async function fetchPages<T>(
 }
 
 function tokenForAddress(chainId: ChainId, address: Address): OrderToken {
-  const { sellTokens, buyToken } = getSupportedTokens(chainId);
   return (
-    [...sellTokens, buyToken].find(
-      ({ token }) => token.address.toLowerCase() === address.toLowerCase(),
-    )?.token ?? { address, symbol: "Unknown token", decimals: null }
+    findKnownToken(chainId, address) ?? {
+      address,
+      symbol: "Unknown token",
+      decimals: null,
+    }
   );
 }
 

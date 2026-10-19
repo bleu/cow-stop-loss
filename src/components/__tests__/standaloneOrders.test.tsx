@@ -29,7 +29,8 @@ import LegacyListPage from "#/app/[chainId]/[safeAddress]/page";
 import HomePage from "#/app/page";
 import { RootLayout as AppRootLayout } from "#/components/RootLayout";
 import { useOrderList } from "#/hooks/useOrderList";
-import { publicClientsFromIds } from "#/lib/publicClients";
+import { publicClientsFromIds, supportedChainIds } from "#/lib/publicClients";
+import { getSupportedTokens } from "#/lib/supportedTokens";
 import { createWagmiConfig } from "#/utils/wagmi";
 
 let config: ReturnType<typeof createWagmiConfig>;
@@ -1246,10 +1247,8 @@ test("keeps the legacy list route scoped to the connected account", async () => 
   expect(screen.queryByText("Pending transactions")).not.toBeInTheDocument();
 });
 
-test("combines all four chains and filters Sepolia as a testnet without switching the wallet", async () => {
-  serveOrders(
-    [1, 100, 42161, 11155111].map((chainId) => ({ ...parent, chainId })),
-  );
+test("combines all supported chains and filters Sepolia as a testnet without switching the wallet", async () => {
+  serveOrders(supportedChainIds.map((chainId) => ({ ...parent, chainId })));
   const provider = new BrowserWallet();
   const request = jest.spyOn(provider, "request");
   provider.chainId = 137;
@@ -1265,8 +1264,11 @@ test("combines all four chains and filters Sepolia as a testnet without switchin
   await connectBrowserWallet();
 
   expect(
-    await screen.findAllByRole("row", { name: /^View order/ }),
-  ).toHaveLength(4);
+    await screen.findByText(
+      `0 of ${supportedChainIds.length} row(s) selected.`,
+    ),
+  ).toBeInTheDocument();
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(5);
   fireEvent.click(screen.getByRole("button", { name: "Chain" }));
   fireEvent.click(
     await screen.findByRole("option", { name: "Sepolia (testnet)" }),
@@ -1288,9 +1290,7 @@ test("combines all four chains and filters Sepolia as a testnet without switchin
 });
 
 test("switches the wallet network only through the header and keeps all chains visible", async () => {
-  serveOrders(
-    [1, 100, 42161, 11155111].map((chainId) => ({ ...parent, chainId })),
-  );
+  serveOrders(supportedChainIds.map((chainId) => ({ ...parent, chainId })));
   const provider = new BrowserWallet();
   const request = jest.spyOn(provider, "request");
   Object.defineProperty(window, "ethereum", {
@@ -1304,9 +1304,11 @@ test("switches the wallet network only through the header and keeps all chains v
   );
   await connectBrowserWallet();
   await screen.findByTitle(wallet);
-  await waitFor(() =>
-    expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(4),
-  );
+  expect(
+    await screen.findByText(
+      `0 of ${supportedChainIds.length} row(s) selected.`,
+    ),
+  ).toBeInTheDocument();
   expect(request).not.toHaveBeenCalledWith(
     expect.objectContaining({ method: "wallet_switchEthereumChain" }),
   );
@@ -1324,6 +1326,21 @@ test("switches the wallet network only through the header and keeps all chains v
   expect(
     within(networkDialog).getByRole("button", { name: /Arbitrum/ }),
   ).toBeInTheDocument();
+  for (const name of [
+    "Base",
+    "Polygon",
+    "Avalanche",
+    "BNB|BSC",
+    "Linea",
+    "Plasma",
+  ]) {
+    expect(
+      within(networkDialog).getByRole("button", { name: new RegExp(name) }),
+    ).toBeInTheDocument();
+  }
+  expect(
+    within(networkDialog).queryByRole("button", { name: /Ink|Solana/ }),
+  ).not.toBeInTheDocument();
   fireEvent.click(
     within(networkDialog).getByRole("button", { name: /Sepolia \(testnet\)/ }),
   );
@@ -1340,7 +1357,10 @@ test("switches the wallet network only through the header and keeps all chains v
       params: [{ chainId: "0xaa36a7" }],
     }),
   );
-  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(4);
+  expect(
+    screen.getByText(`0 of ${supportedChainIds.length} row(s) selected.`),
+  ).toBeInTheDocument();
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(5);
 });
 
 test("keeps account access and orders when a wallet network switch is rejected", async () => {
@@ -1546,7 +1566,10 @@ test("keeps successful chains visible and retries a failed chain", async () => {
       name: "View order stop-loss-1 on Ethereum",
     }),
   ).toBeInTheDocument();
-  expect(screen.getByRole("alert")).toHaveTextContent(
+  const ordersPanel = screen.getByRole("region", {
+    name: "Your stop-loss orders",
+  });
+  expect(within(ordersPanel).getByRole("alert")).toHaveTextContent(
     "Gnosis orders are unavailable.",
   );
   unavailable.delete(100);
@@ -1560,11 +1583,16 @@ test("keeps successful chains visible and retries a failed chain", async () => {
       name: "View order stop-loss-1 on Gnosis",
     }),
   ).toBeInTheDocument();
-  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(within(ordersPanel).queryByRole("alert")).not.toBeInTheDocument();
+  expect(
+    within(
+      screen.getByRole("region", { name: "Create stop-loss order" }),
+    ).getByRole("alert"),
+  ).toHaveTextContent(getSupportedTokens(1).unavailableReason!);
 });
 
 test("does not show an API outage as an empty order list", async () => {
-  serveOrders([], new Set([1, 100, 42161, 11155111]));
+  serveOrders([], new Set(supportedChainIds));
   Object.defineProperty(window, "ethereum", {
     configurable: true,
     value: new BrowserWallet(),
@@ -1576,7 +1604,14 @@ test("does not show an API outage as an empty order list", async () => {
   );
   await connectBrowserWallet();
 
-  await waitFor(() => expect(screen.getAllByRole("alert")).toHaveLength(4));
+  const ordersPanel = screen.getByRole("region", {
+    name: "Your stop-loss orders",
+  });
+  await waitFor(() =>
+    expect(within(ordersPanel).getAllByRole("alert")).toHaveLength(
+      supportedChainIds.length,
+    ),
+  );
   expect(screen.queryByText("No results.")).not.toBeInTheDocument();
   expect(
     screen.getByText("Orders are unavailable on all supported chains."),
@@ -1683,7 +1718,7 @@ test("keeps this account's last loaded orders with a warning when refresh fails"
     name: "View order stop-loss-1 on Ethereum",
   });
 
-  [1, 100, 42161, 11155111].forEach((chain) => unavailable.add(chain));
+  supportedChainIds.forEach((chain) => unavailable.add(chain));
   fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
 
   expect(
@@ -2359,7 +2394,11 @@ test("rejects an unsupported detail chain before fetching any orders", async () 
   render(
     <RootLayout>
       <OrderPage
-        params={{ safeAddress: wallet, chainId: "137", orderId: "stop-loss-1" }}
+        params={{
+          safeAddress: wallet,
+          chainId: "57073",
+          orderId: "stop-loss-1",
+        }}
       />
     </RootLayout>,
   );
@@ -2367,7 +2406,7 @@ test("rejects an unsupported detail chain before fetching any orders", async () 
   await screen.findByTitle(wallet);
 
   expect(screen.getByRole("alert")).toHaveTextContent(
-    "Unsupported chain: 137.",
+    "Unsupported chain: 57073.",
   );
   expect(global.fetch).not.toHaveBeenCalled();
 });

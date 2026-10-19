@@ -1,0 +1,195 @@
+{
+  "retrievedAt": "2026-10-16",
+  "currentMetadataManifest": "scripts/catalog-metadata-sources.json",
+  "metadataSourcesScope": "Historical identity inputs from the 2026-10-16 inventory, not the current display-metadata resolver.",
+  "registry": "https://raw.githubusercontent.com/smartcontractkit/documentation/main/src/features/data/chains.ts",
+  "feedSources": {
+    "1": {
+      "url": "https://reference-data-directory.vercel.app/feeds-mainnet.json",
+      "sha256": "3a654b2ffd742134cb0b222fb8715ee94d3857c5af510e6522bb29a333040b33"
+    },
+    "100": {
+      "url": "https://reference-data-directory.vercel.app/feeds-xdai-mainnet.json",
+      "sha256": "12627f33c7713e42664633350d97532f9eac5326957f2c9c89cb3efb19cb2f21"
+    },
+    "42161": {
+      "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-arbitrum-1.json",
+      "sha256": "45dd5b717f39e272868923366720c12abb146d053d6498ded603b9b66754d126"
+    },
+    "8453": {
+      "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-base-1.json",
+      "sha256": "c85976b8be013b054d354bdedaab31dd9de7eedbd758755855b481be6750f90b"
+    },
+    "137": {
+      "url": "https://reference-data-directory.vercel.app/feeds-matic-mainnet.json",
+      "sha256": "d01606a308bdf71e8f440c23f3c6efd4a659c9b4e7440d2a16ca205b1ec0212e"
+    },
+    "43114": {
+      "url": "https://reference-data-directory.vercel.app/feeds-avalanche-mainnet.json",
+      "sha256": "166c99a7a318e2eb195aa8cb54c6e551b399aae38ec546d7b938ae82bbf7a76c"
+    },
+    "56": {
+      "url": "https://reference-data-directory.vercel.app/feeds-bsc-mainnet.json",
+      "sha256": "83062ed7a4891dcbe09da40795819bd0f78fbd3c83452c0702dc1be7f168d688"
+    },
+    "59144": {
+      "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-linea-1.json",
+      "sha256": "0cb350fa552cbe667c60c8061bf2807be91817841097bff28749ea4c01feca90"
+    },
+    "9745": {
+      "url": "https://reference-data-directory.vercel.app/feeds-plasma-mainnet.json",
+      "sha256": "7b6fd0bf585692f82aca0ca676033747636016c4d8210a551e509716b70318dc"
+    }
+  },
+  "metadataSources": {
+    "cow": {
+      "url": "https://raw.githubusercontent.com/cowprotocol/token-lists/main/src/public/CowSwap.json",
+      "sha256": "10592d189a8f454110b07996e027b0b573b620a461c0ad70e18c851e06747a15"
+    },
+    "aave": {
+      "url": "https://raw.githubusercontent.com/bgd-labs/aave-address-book/main/tokenlist.json",
+      "sha256": "d612cd1f50d960364b8e5ed65cde9a7ddca25f7faa8f0faa32533948a7f27ef5"
+    },
+    "pancake": {
+      "url": "https://raw.githubusercontent.com/pancakeswap/token-list/main/lists/pancakeswap-extended.json",
+      "sha256": "a53df1241f87bb7e44232994b55024abe71278449391e0952378a533c479c46a"
+    },
+    "cg1": {
+      "url": "https://tokens.coingecko.com/ethereum/all.json",
+      "sha256": "695cc2a860cae5400a6b7dd6e78a7238d65cc93b535c1b1cc1341fb601f0a253"
+    },
+    "cg100": {
+      "url": "https://tokens.coingecko.com/xdai/all.json",
+      "sha256": "c966a4046f7b59cad1c97b2f52f4db6884ecee81c8e866a427919b78e5f54132"
+    },
+    "cg42161": {
+      "url": "https://tokens.coingecko.com/arbitrum-one/all.json",
+      "sha256": "9ca7f9768dda68beb20ce289be0f5aac1a34944912cd742e3806925c2fbbd625"
+    },
+    "cg8453": {
+      "url": "https://tokens.coingecko.com/base/all.json",
+      "sha256": "36d1b2f96c103b59a6b0ea07a9ca7835fe20116b66b28267950a8e74afd040f5"
+    },
+    "cg137": {
+      "url": "https://tokens.coingecko.com/polygon-pos/all.json",
+      "sha256": "e526340d775d4091fbf6c5b9ce4073d0760e7b0f81e2e2bfe0253de34762f7e2"
+    },
+    "cg43114": {
+      "url": "https://tokens.coingecko.com/avalanche/all.json",
+      "sha256": "3cb60089f95e9dbe6d72055005f785e39f6688e8e56c80c0f6c58c30d254ee9e"
+    },
+    "cg56": {
+      "url": "https://tokens.coingecko.com/binance-smart-chain/all.json",
+      "sha256": "1e42e237d6d951f6a2c84aed4ad1bbb72077011c30d6b23fd4b0899e9705e20b"
+    },
+    "cg59144": {
+      "url": "https://tokens.coingecko.com/linea/all.json",
+      "sha256": "b36f2305f71127258edbf9da307a07f0dec1a647c2c6442fb2a1581013fb2d29"
+    },
+    "cg9745": {
+      "url": "https://tokens.coingecko.com/plasma/all.json",
+      "sha256": "654446ad0f9fe45d7b09a4a52aa588d3172d7c7d14ea0c07833d30880d7a3024"
+    },
+    "sushi1": {
+      "url": "https://raw.githubusercontent.com/sushiswap/list/master/lists/token-lists/default-token-list/tokens/ethereum.json",
+      "sha256": "f37547f731639ae02ef1a6e577789434f5bf41d3f9f96752dec248c42f3adf70"
+    },
+    "1inch1": {
+      "url": "https://tokens.1inch.io/v1.2/1",
+      "sha256": "95c7ff9bbd3b66d7a4defba538ee3936719e24ad0f7db427550047b05f5e0eb3"
+    },
+    "sushi100": {
+      "url": "https://raw.githubusercontent.com/sushiswap/list/master/lists/token-lists/default-token-list/tokens/gnosis.json",
+      "sha256": "a8fa63fff83f0551c59231036fe9920c6b0e10c1d0fb1dd75e085f11195fbaa6"
+    },
+    "1inch100": {
+      "url": "https://tokens.1inch.io/v1.2/100",
+      "sha256": "c3b871e26cd74acbc1237940714ac3a9139f4e65ef91dddd89f4581e57367944"
+    },
+    "sushi42161": {
+      "url": "https://raw.githubusercontent.com/sushiswap/list/master/lists/token-lists/default-token-list/tokens/arbitrum.json",
+      "sha256": "a17a728c5b24d11d397f19e143032e577bfd31cf8852085a30d9ca95fc9f7040"
+    },
+    "1inch42161": {
+      "url": "https://tokens.1inch.io/v1.2/42161",
+      "sha256": "66006958a5ce5630b63efad67d227cf17db75608e3c0b04b2a250338e0f5249d"
+    },
+    "sushi8453": {
+      "url": "https://raw.githubusercontent.com/sushiswap/list/master/lists/token-lists/default-token-list/tokens/base.json",
+      "sha256": "105d216fe9cb141c13e891ad1725bfb1ad9de52dc8f686b063138f5c032aa6f7"
+    },
+    "1inch8453": {
+      "url": "https://tokens.1inch.io/v1.2/8453",
+      "sha256": "7728aba54a8a97d5f42b7c320e1f80b2ce790874df682076050657dd342580eb"
+    },
+    "sushi137": {
+      "url": "https://raw.githubusercontent.com/sushiswap/list/master/lists/token-lists/default-token-list/tokens/polygon.json",
+      "sha256": "9ea7fb6126fa7cee7fc1c248724b01ba5c577a5ba262b133946e38632fa38aff"
+    },
+    "1inch137": {
+      "url": "https://tokens.1inch.io/v1.2/137",
+      "sha256": "1c08c78596ee4894b8a641733c53bf009e2ffdeb0476dfcb9de23e3d74ce7401"
+    },
+    "sushi43114": {
+      "url": "https://raw.githubusercontent.com/sushiswap/list/master/lists/token-lists/default-token-list/tokens/avalanche.json",
+      "sha256": "a21815cbf39cd4608cac4bc00259f8c5b906b9b6f0176ef074fde0c6b86a2516"
+    },
+    "1inch43114": {
+      "url": "https://tokens.1inch.io/v1.2/43114",
+      "sha256": "773887813b9a7bca6ee631216354e572cb8c6c4ef5e4eb2916ee6634437f6342"
+    },
+    "sushi56": {
+      "url": "https://raw.githubusercontent.com/sushiswap/list/master/lists/token-lists/default-token-list/tokens/bsc.json",
+      "sha256": "468815de961f7e41814c676c484371a84e8331ed642757ec7d396f75627c8aec"
+    },
+    "1inch56": {
+      "url": "https://tokens.1inch.io/v1.2/56",
+      "sha256": "d60397b271c65847b461f5648061b527add5318d126c69525e67ab7d594da4df"
+    },
+    "sushi59144": {
+      "url": "https://raw.githubusercontent.com/sushiswap/list/master/lists/token-lists/default-token-list/tokens/linea.json",
+      "sha256": "e8c91ee8d8ea4349239f1d97f878b207880227614d42491c2d418e18e735e884"
+    },
+    "1inch59144": {
+      "url": "https://tokens.1inch.io/v1.2/59144",
+      "sha256": "b7af28ca4645af3ff43b00c88d4fa644b05c2855ad386f6d8c217e86c8dac3f7"
+    }
+  },
+  "historicalSource": "src/lib/cowTokenList.ts at repository commit 9d1c6e6 (original reference: cowprotocol/cowswap commit12191b4296708214263445b88b9ddf1aa20f3f78)",
+  "issuerReferences": [
+    "https://developers.circle.com/stablecoins/usdc-contract-addresses",
+    "https://docs.avantisfi.com/avnt-token",
+    "https://docs.lido.fi/deployed-contracts/",
+    "https://research.lido.fi/t/wsteth-on-avalanche-and-bnb-and-ownership-acceptance-by-lido-dao/5749",
+    "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/assets/0x2170Ed0880ac9A755fd29B2688956BD959F933F8/info.json"
+  ],
+  "historicalSnapshots": {
+    "feedInventory": {
+      "retrievedAt": "2026-10-16",
+      "rowCount": 2102,
+      "sha256": "f93472574d6a018fd73c8d6c7dab222d19e47bb9ec9fd68c0d800660424c51b8",
+      "retention": "summary-only",
+      "limitations": "Full directory rows are no longer retained. Mutable source endpoints cannot reproduce this snapshot reliably; these rows were not route approvals."
+    },
+    "feedAudit": {
+      "rowCount": 2102,
+      "reasonCounts": {
+        "non-crypto-price-or-data": 284,
+        "not-low-risk-category": 563,
+        "hidden-or-deprecating": 345,
+        "awaiting-approval": 249,
+        "not-cex-reference-price": 45,
+        "bounded-price-methodology-not-approved": 32,
+        "no-onchain-proxy": 584
+      },
+      "sha256": "0c6ad7bbb623c9cb6ea343fb248cf3d5874cab503933b795ee978597907c1876",
+      "limitations": "Historical counts only, not a current or reproducible exhaustive audit."
+    },
+    "tokenAndFeedObservations": {
+      "checkedAt": "2026-10-16T22:02:52.111341+00:00",
+      "sha256": "24f0cb6ebaa837d47b3febadd42916d96cb92e02ec713b1aad3e23f864b7e1b8",
+      "retention": "summary-only",
+      "limitations": "The old checks accepted nonempty token symbols and quote-only feed descriptions. Detailed observations are no longer retained and were not approvals under the current policy."
+    }
+  }
+}

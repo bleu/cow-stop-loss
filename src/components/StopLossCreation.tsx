@@ -171,6 +171,11 @@ export function StopLossCreation() {
           return;
         }
       }
+      await prefetchPlacementChecks({
+        account,
+        chainId: selectedChain,
+        tokenSell: order.tokenSell,
+      });
       const prepared =
         existing ??
         (await preparePlacement({

@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "revision": "60b9905e7eeb10af657700f749c143ab68953df4",
+  "sources": [
+    {
+      "id": "cow",
+      "url": "https://raw.githubusercontent.com/cowprotocol/token-lists/60b9905e7eeb10af657700f749c143ab68953df4/src/public/CowSwap.json",
+      "sha256": "10592d189a8f454110b07996e027b0b573b620a461c0ad70e18c851e06747a15"
+    },
+    {
+      "id": "coingecko-1",
+      "url": "https://raw.githubusercontent.com/cowprotocol/token-lists/60b9905e7eeb10af657700f749c143ab68953df4/src/public/CoinGecko.1.json",
+      "sha256": "a728eb5f2e6e6d4d34b0ed3e98422e70de9c74c7a4b5d94854ab0d08c233f194",
+      "chainId": 1
+    },
+    {
+      "id": "coingecko-100",
+      "url": "https://raw.githubusercontent.com/cowprotocol/token-lists/60b9905e7eeb10af657700f749c143ab68953df4/src/public/CoinGecko.100.json",
+      "sha256": "b36fcd08516b240317bdd667f9a3f1011a325fa6605469e4f3018eb379a4077c",
+      "chainId": 100
+    },
+    {
+      "id": "coingecko-42161",
+      "url": "https://raw.githubusercontent.com/cowprotocol/token-lists/60b9905e7eeb10af657700f749c143ab68953df4/src/public/CoinGecko.42161.json",
+      "sha256": "a6d0cc8fc29a79a01803daf5c1e740285788f0f53f486d0b84bfa4397e735907",
+      "chainId": 42161
+    },
+    {
+      "id": "coingecko-8453",
+      "url": "https://raw.githubusercontent.com/cowprotocol/token-lists/60b9905e7eeb10af657700f749c143ab68953df4/src/public/CoinGecko.8453.json",
+      "sha256": "755bf7f511a07f3b32777a2bc761d4437450f7d0640da08c092a07efc066ad97",
+      "chainId": 8453
+    },
+    {
+      "id": "coingecko-137",
+      "url": "https://raw.githubusercontent.com/cowprotocol/token-lists/60b9905e7eeb10af657700f749c143ab68953df4/src/public/CoinGecko.137.json",
+      "sha256": "8adb73b32746d98859fec52446a77fa5b1c7830a91dc5d5e166114a2cb7bc7e2",
+      "chainId": 137
+    },
+    {
+      "id": "coingecko-43114",
+      "url": "https://raw.githubusercontent.com/cowprotocol/token-lists/60b9905e7eeb10af657700f749c143ab68953df4/src/public/CoinGecko.43114.json",
+      "sha256": "40173536453266f9166cf98b6b365cad96e89007907cc741d71214dc8a2982e3",
+      "chainId": 43114
+    },
+    {
+      "id": "coingecko-56",
+      "url": "https://raw.githubusercontent.com/cowprotocol/token-lists/60b9905e7eeb10af657700f749c143ab68953df4/src/public/CoinGecko.56.json",
+      "sha256": "9ec0da87fe4b4085f45964d22c42df3b019b69c68c80c822ee7c65e2e2419e71",
+      "chainId": 56
+    },
+    {
+      "id": "coingecko-59144",
+      "url": "https://raw.githubusercontent.com/cowprotocol/token-lists/60b9905e7eeb10af657700f749c143ab68953df4/src/public/CoinGecko.59144.json",
+      "sha256": "adcb1539d2e7b64f19dee984703e0eb931cb6dca0a60631a8054a4379ebf1d8f",
+      "chainId": 59144
+    },
+    {
+      "id": "coingecko-9745",
+      "url": "https://raw.githubusercontent.com/cowprotocol/token-lists/60b9905e7eeb10af657700f749c143ab68953df4/src/public/CoinGecko.9745.json",
+      "sha256": "472feaba0822ca8b8af2fb1cb222866bbd592bbf0c36338a0db45816278a09cb",
+      "chainId": 9745
+    },
+    {
+      "id": "uniswap-100",
+      "url": "https://raw.githubusercontent.com/cowprotocol/token-lists/60b9905e7eeb10af657700f749c143ab68953df4/src/public/Uniswap.100.json",
+      "sha256": "5e6b26476cb74361eb1f3e58914272942e02b065681fc1c54f1b68d3c1f53aee",
+      "chainId": 100
+    },
+    {
+      "id": "uniswap-42161",
+      "url": "https://raw.githubusercontent.com/cowprotocol/token-lists/60b9905e7eeb10af657700f749c143ab68953df4/src/public/Uniswap.42161.json",
+      "sha256": "7fd0e032cc78d29503601251c5c906caacf92bf58324cb71bcdc9efda982c36f",
+      "chainId": 42161
+    },
+    {
+      "id": "uniswap-8453",
+      "url": "https://raw.githubusercontent.com/cowprotocol/token-lists/60b9905e7eeb10af657700f749c143ab68953df4/src/public/Uniswap.8453.json",
+      "sha256": "7291c7321842711ed4ef3388f2f7bec519dc5334dc74e71cb18cc136518689a0",
+      "chainId": 8453
+    },
+    {
+      "id": "uniswap-137",
+      "url": "https://raw.githubusercontent.com/cowprotocol/token-lists/60b9905e7eeb10af657700f749c143ab68953df4/src/public/Uniswap.137.json",
+      "sha256": "b46f041181ad92183f676697ab40b02a013d245426d5741a5dcce671d74c875b",
+      "chainId": 137
+    },
+    {
+      "id": "uniswap-43114",
+      "url": "https://raw.githubusercontent.com/cowprotocol/token-lists/60b9905e7eeb10af657700f749c143ab68953df4/src/public/Uniswap.43114.json",
+      "sha256": "b7187905c77ac0d790fa11b9cb2cee2b267825ad45fb4ce363507259b1f86bc8",
+      "chainId": 43114
+    },
+    {
+      "id": "uniswap-56",
+      "url": "https://raw.githubusercontent.com/cowprotocol/token-lists/60b9905e7eeb10af657700f749c143ab68953df4/src/public/Uniswap.56.json",
+      "sha256": "b146824792b461848f059fd2f7062f288922ef81d456147cfc6c309020c10bfe",
+      "chainId": 56
+    },
+    {
+      "id": "uniswap-59144",
+      "url": "https://raw.githubusercontent.com/cowprotocol/token-lists/60b9905e7eeb10af657700f749c143ab68953df4/src/public/Uniswap.59144.json",
+      "sha256": "8a15e5f306e9b6e22e188a09a10b6e7b9fd5816dfc9542c72ce31f9af8b4c544",
+      "chainId": 59144
+    },
+    {
+      "id": "uniswap-9745",
+      "url": "https://raw.githubusercontent.com/cowprotocol/token-lists/60b9905e7eeb10af657700f749c143ab68953df4/src/public/Uniswap.9745.json",
+      "sha256": "8394427e7a707f6e6206178430b6e0a1d5b7a25a16684be14a0e0a32af3cee68",
+      "chainId": 9745
+    }
+  ]
+}
