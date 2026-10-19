@@ -26,7 +26,7 @@ import { disconnect } from "wagmi/actions";
 
 import OrderPage from "#/app/[chainId]/[safeAddress]/[orderId]/page";
 import LegacyListPage from "#/app/[chainId]/[safeAddress]/page";
-import HomePage from "#/app/page";
+import HomePage from "#/app/app/page";
 import { RootLayout as AppRootLayout } from "#/components/RootLayout";
 import { useOrderList } from "#/hooks/useOrderList";
 import { publicClientsFromIds, supportedChainIds } from "#/lib/publicClients";
@@ -115,8 +115,13 @@ function expectOrderDestination(row: HTMLElement, destination: string) {
   expect(window.location.pathname).toBe(destination);
 }
 
-function Router({ children }: React.PropsWithChildren) {
-  const [url, setUrl] = React.useState(new URL("http://localhost/"));
+function Router({
+  children,
+  initialPath = "/app",
+}: React.PropsWithChildren<{ initialPath?: string }>) {
+  const [url, setUrl] = React.useState(
+    () => new URL(initialPath, "http://localhost"),
+  );
   const router = React.useMemo(
     () => ({
       push: (href: string) => {
@@ -976,7 +981,7 @@ beforeAll(() => {
 
 beforeEach(() => {
   toast({}).dismiss();
-  window.history.replaceState(null, "", "/");
+  window.history.replaceState(null, "", "/app");
   config = createWagmiConfig();
   for (const client of Object.values(publicClientsFromIds)) {
     jest
@@ -1031,6 +1036,82 @@ afterEach(async () => {
   Reflect.deleteProperty(window, "ethereum");
   localStorage.clear();
   jest.restoreAllMocks();
+});
+
+test("shows the app link in the header and FAQ in the footer without wallet controls", async () => {
+  renderView(
+    <Router initialPath="/">
+      <RootLayout>
+        <main>Landing page</main>
+      </RootLayout>
+    </Router>,
+  );
+
+  expect(screen.getByRole("link", { name: "Open app" })).toHaveAttribute(
+    "href",
+    "/app",
+  );
+  expect(
+    within(screen.getByRole("contentinfo")).getByRole("link", { name: "FAQ" }),
+  ).toHaveAttribute("href", "/#faq");
+  expect(
+    within(screen.getByRole("banner")).queryByRole("link", { name: "FAQ" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: /wallet/i }),
+  ).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Switch to light mode" }));
+  expect(document.documentElement).toHaveClass("light");
+  expect(
+    screen.getByRole("button", { name: "Switch to dark mode" }),
+  ).toBeEnabled();
+  fireEvent.click(screen.getByRole("button", { name: "Switch to dark mode" }));
+  expect(document.documentElement).not.toHaveClass("light");
+
+  fireEvent.click(screen.getByRole("link", { name: "Open app" }));
+  expect(window.location.pathname).toBe("/app");
+  expect(
+    await screen.findByRole("button", { name: "Connect wallet" }),
+  ).toBeEnabled();
+  expect(
+    screen.queryByRole("link", { name: "Open app" }),
+  ).not.toBeInTheDocument();
+});
+
+test("keeps the footer FAQ and header theme controls on trading and legacy routes", async () => {
+  renderView(
+    <Router initialPath={`/1/${wallet}`}>
+      <RootLayout>
+        <main>Trading page</main>
+      </RootLayout>
+    </Router>,
+  );
+
+  expect(
+    await screen.findByRole("button", { name: "Connect wallet" }),
+  ).toBeEnabled();
+  expect(
+    screen.getByRole("button", { name: "Switch to light mode" }),
+  ).toBeEnabled();
+  expect(
+    within(screen.getByRole("contentinfo")).getByRole("link", { name: "FAQ" }),
+  ).toHaveAttribute("href", "/#faq");
+  expect(
+    within(screen.getByRole("banner")).queryByRole("link", { name: "FAQ" }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("link", { name: "Open app" }),
+  ).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("link", { name: "FAQ" }));
+  expect(window.location.pathname).toBe("/");
+  expect(window.location.hash).toBe("#faq");
+  expect(screen.getByRole("link", { name: "Open app" })).toHaveAttribute(
+    "href",
+    "/app",
+  );
+  expect(
+    screen.queryByRole("button", { name: /wallet/i }),
+  ).not.toBeInTheDocument();
 });
 
 test("hydrates the wallet header before showing browser-discovered wallets", async () => {
@@ -1921,7 +2002,7 @@ test("places an accessible back arrow beside the detail heading without a detail
   const heading = screen.getByRole("heading", { name: "Order details" });
   const back = screen.getByRole("link", { name: "Back to orders" });
   const transaction = screen.getByRole("link", { name: "0xefef…efef" });
-  expect(back).toHaveAttribute("href", "/");
+  expect(back).toHaveAttribute("href", "/app");
   expect(transaction).toHaveAttribute(
     "href",
     expect.stringContaining(`/tx/${parent.transaction.hash}`),
@@ -2104,7 +2185,7 @@ test("keeps the shared detail heading while order data is loading", async () => 
     const heading = screen.getByRole("heading", { name: "Order details" });
     const back = screen.getByRole("link", { name: "Back to orders" });
     expect(heading.parentElement).toContainElement(back);
-    expect(back).toHaveAttribute("href", "/");
+    expect(back).toHaveAttribute("href", "/app");
     expect(back.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
     expect(
       screen.queryByRole("button", { name: "Refresh orders" }),
@@ -2434,7 +2515,7 @@ test("keeps detail API failure separate from not found and retries the requested
   const heading = screen.getByRole("heading", { name: "Order details" });
   const back = screen.getByRole("link", { name: "Back to orders" });
   expect(heading.parentElement).toContainElement(back);
-  expect(back).toHaveAttribute("href", "/");
+  expect(back).toHaveAttribute("href", "/app");
   expect(back.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
   expect(
     screen.queryByRole("button", { name: "Refresh orders" }),

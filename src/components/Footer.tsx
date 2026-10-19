@@ -5,6 +5,7 @@ import {
   PauseIcon,
   PlayIcon,
 } from "@radix-ui/react-icons";
+import Link from "next/link";
 
 export function Footer({
   githubLink,
@@ -31,6 +32,12 @@ export function Footer({
             bleu
           </a>
         </span>
+        <Link
+          href="/#faq"
+          className="inline-flex min-h-11 items-center hover:underline"
+        >
+          FAQ
+        </Link>
         <a
           href="https://cow.fi/"
           target="_blank"

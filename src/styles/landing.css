@@ -1,0 +1,322 @@
+.rescue-landing.air-rescue-page {
+  display: block;
+  padding: 0 36px 180px;
+}
+
+.landing-content {
+  width: 100%;
+  max-width: 1160px;
+  margin-inline: auto;
+}
+
+.landing-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 24px;
+  min-height: 620px;
+  padding-block: 88px 72px;
+}
+
+.landing-hero h1 {
+  margin-block: 24px;
+  font-family: var(--font-family-pixel-display), monospace;
+  font-size: clamp(56px, 6.5vw, 88px);
+  font-weight: 600;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+}
+
+.landing-hero h1 span {
+  color: hsl(var(--primary));
+}
+
+.landing-intro {
+  max-width: 480px;
+  font-size: 19px;
+  line-height: 1.7;
+}
+
+.landing-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+  margin-top: 30px;
+}
+
+.landing-app-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  min-height: 52px;
+  padding: 14px 24px;
+  font-size: 16px;
+}
+
+.landing-text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  color: hsl(var(--primary));
+  font-weight: 500;
+  text-underline-offset: 4px;
+}
+
+.landing-text-link:hover {
+  text-decoration: underline;
+}
+
+.landing-hero-note {
+  max-width: 400px;
+  margin-top: 20px;
+  color: hsl(var(--muted-foreground));
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.landing-scene {
+  position: relative;
+  align-self: stretch;
+  min-height: 390px;
+}
+
+.landing-scene .landing-passenger {
+  top: 4%;
+  right: 26%;
+  width: 170px;
+  height: 204px;
+}
+
+.landing-ground {
+  position: absolute;
+  inset: auto 0 16px;
+  width: 100%;
+  height: 240px;
+}
+
+.landing-scene-label {
+  position: absolute;
+  bottom: -8px;
+  width: 100%;
+  text-align: center;
+  font-family: var(--font-family-pixel-display), monospace;
+  font-size: 17px;
+  color: hsl(var(--muted-foreground));
+}
+
+.landing-section {
+  margin-top: 64px;
+  scroll-margin-top: 28px;
+}
+
+.landing-section-heading {
+  margin-bottom: 28px;
+}
+
+.rescue-landing h2 {
+  margin-block: 12px 16px;
+  font-family: var(--font-family-serif), sans-serif;
+  font-weight: 600;
+  font-size: clamp(28px, 3vw, 38px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+.landing-section-heading > p:not(.rescue-eyebrow),
+.landing-step p,
+.landing-dependencies dd,
+.landing-closing p {
+  color: hsl(var(--muted-foreground));
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.landing-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  list-style: none;
+}
+
+.landing-step {
+  padding: 28px;
+}
+
+.landing-step-number {
+  display: block;
+  margin-bottom: 32px;
+  font-family: var(--font-family-pixel-display), monospace;
+  font-size: 32px;
+  color: hsl(var(--primary));
+}
+
+.landing-step h3 {
+  margin-bottom: 12px;
+  font-family: var(--font-family-serif), sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.landing-technical {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 56px;
+  padding: 40px;
+}
+
+.landing-technical .landing-section-heading {
+  margin-bottom: 0;
+}
+
+.landing-technical .landing-text-link {
+  margin-top: 20px;
+}
+
+.landing-dependencies > div + div {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid hsl(var(--border));
+}
+
+.landing-dependencies dt {
+  margin-bottom: 8px;
+  font-weight: 500;
+  font-size: 18px;
+}
+
+.landing-faq {
+  display: grid;
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.5fr);
+  gap: 48px;
+  align-items: start;
+}
+
+.landing-faq-panel {
+  min-width: 0;
+  padding: 8px 28px;
+}
+
+.landing-faq-panel [data-orientation="vertical"]:last-child {
+  border-bottom: 0;
+}
+
+.landing-faq-trigger {
+  gap: 20px;
+  padding-block: 22px;
+  font-size: 16px;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.landing-faq-answer {
+  padding-bottom: 24px;
+  color: hsl(var(--muted-foreground));
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.landing-closing {
+  margin-top: 72px;
+  text-align: center;
+}
+
+.landing-closing .landing-app-link {
+  margin-top: 24px;
+}
+
+@media (max-width: 1023px) {
+  .landing-hero {
+    min-height: 540px;
+    padding-top: 64px;
+  }
+
+  .landing-scene .landing-passenger {
+    top: 12%;
+    right: 20%;
+    width: 120px;
+    height: 144px;
+  }
+
+  .landing-technical {
+    gap: 32px;
+    padding: 32px;
+  }
+
+  .landing-step {
+    padding: 24px;
+  }
+
+  .landing-faq {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .rescue-landing.air-rescue-page {
+    padding-inline: 20px;
+    padding-bottom: 220px;
+  }
+
+  .landing-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding-block: 48px 0;
+  }
+
+  .landing-hero h1 {
+    font-size: clamp(52px, 11vw, 76px);
+  }
+
+  .landing-intro {
+    font-size: 17px;
+  }
+
+  .landing-scene {
+    min-height: 300px;
+    max-width: 400px;
+    width: 100%;
+    justify-self: center;
+    margin-top: 32px;
+  }
+
+  .landing-scene .landing-passenger {
+    top: 0;
+    right: 28%;
+    width: 100px;
+    height: 120px;
+  }
+
+  .landing-ground {
+    height: 200px;
+  }
+
+  .landing-section {
+    margin-top: 48px;
+  }
+
+  .landing-steps,
+  .landing-technical {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .landing-step-number {
+    margin-bottom: 16px;
+  }
+
+  .landing-technical {
+    padding: 28px 24px;
+  }
+
+  .landing-faq-panel {
+    padding-inline: 20px;
+  }
+
+  .landing-closing {
+    margin-top: 48px;
+  }
+}

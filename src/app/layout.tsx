@@ -1,6 +1,7 @@
 import "@rainbow-me/rainbowkit/styles.css";
 import "./globals.css";
 import "../styles/order-review.css";
+import "../styles/landing.css";
 
 import localFont from "next/font/local";
 import { cookies, headers } from "next/headers";

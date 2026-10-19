@@ -2,6 +2,7 @@
 
 import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { SWRConfig, SWRConfiguration } from "swr";
 import { type State, WagmiProvider } from "wagmi";
@@ -32,6 +33,7 @@ export function RootLayout({
   initialState?: State;
   initialTheme?: ColorTheme;
 }>) {
+  const pathname = usePathname();
   const [queryClient] = useState(() => new QueryClient());
   const [theme, setTheme] = useState<ColorTheme>(initialTheme);
   const [scenePaused, setScenePaused] = useState(false);
@@ -63,6 +65,7 @@ export function RootLayout({
             >
               <Header
                 linkUrl="/"
+                isLandingPage={pathname === "/"}
                 imageSrc={`/assets/air-rescue/passenger-${theme}.svg`}
                 theme={theme}
                 onToggleTheme={toggleTheme}

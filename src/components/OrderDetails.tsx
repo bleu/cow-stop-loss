@@ -284,7 +284,7 @@ function OrderDetailsHeading({ children }: React.PropsWithChildren) {
     <header className="mb-6 flex items-center justify-between gap-4">
       <div className="relative pl-14">
         <Link
-          href="/"
+          href="/app"
           aria-label="Back to orders"
           className="pixel-control absolute left-0 top-1 inline-flex size-11 shrink-0 items-center justify-center rounded-none border border-border/70 bg-card/80 text-muted-foreground shadow-sm transition-colors hover:border-primary/40 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
