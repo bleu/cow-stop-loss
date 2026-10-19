@@ -1,0 +1,4 @@
+# The catalog generator owns formatting.
+src/lib/tokenCatalogData.json
+scripts/catalog-audit.json
+scripts/catalog-metadata-report.json

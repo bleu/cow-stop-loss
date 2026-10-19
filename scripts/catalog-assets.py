@@ -36,25 +36,22 @@ def download(url):
 
 def main():
     data = json.loads(PATH.read_text())
-    urls = sorted({url for token in data["tokens"] for url in token["logoSources"]})
+    urls = sorted({token["logoSource"] for token in data["tokens"]})
     with concurrent.futures.ThreadPoolExecutor(max_workers=12) as pool:
         images = dict(pool.map(download, urls))
     failures = []
     for token in data["tokens"]:
-        for url in token["logoSources"]:
-            content = images[url]
-            if content:
-                filename = hashlib.sha256(content).hexdigest()[:20] + "." + image_extension(content)
-                destination = ROOT / "public/assets/tokens" / filename
-                destination.write_bytes(content)
-                token["localLogo"] = "/assets/tokens/" + filename
-                token["downloadedLogoSource"] = url
-                break
-        else:
-            failures.append(f"{token['chainId']} {token['symbol']} {token['address']}")
-    PATH.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+        content = images[token["logoSource"]]
+        if not content:
+            failures.append(f"{token['chainId']} {token['address']}")
+            continue
+        filename = hashlib.sha256(content).hexdigest()[:20] + "." + image_extension(content)
+        destination = ROOT / "public/assets/tokens" / filename
+        destination.write_bytes(content)
+        token["localLogo"] = "/assets/tokens/" + filename
     if failures:
         raise SystemExit("Missing verified asset images:\n" + "\n".join(failures))
+    PATH.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n")
     print(f"Saved local images for {len(data['tokens'])} token contracts")
 
 

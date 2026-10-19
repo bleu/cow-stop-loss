@@ -161,6 +161,26 @@ class CatalogPolicyTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "fingerprint changed"):
             self.build()
 
+    def test_resolved_symbol_and_decimals_changes_invalidate_approval(self):
+        for field, value in [("symbol", "ALIAS"), ("decimals", 6)]:
+            with self.subTest(field=field):
+                original = self.sell[field]
+                self.sell[field] = value
+                with self.assertRaisesRegex(ValueError, "fingerprint changed"):
+                    self.build()
+                self.sell[field] = original
+
+    def test_live_token_metadata_must_match_resolved_identity(self):
+        token = self.verification["chains"]["1"]["tokens"][self.sell["address"]]
+        for field, value in [("symbol", "ALIAS"), ("decimals", 6)]:
+            with self.subTest(field=field):
+                original = token[field]
+                token[field] = value
+                self.refingerprint(self.policy["approvals"][1], self.sell, self.sell_feed)
+                with self.assertRaisesRegex(ValueError, "Token verification metadata differs"):
+                    self.build()
+                token[field] = original
+
     def test_live_snapshot_change_invalidates_approval(self):
         self.verification["chains"]["1"]["feeds"][self.sell_feed["proxyAddress"]]["answer"] = "1"
         with self.assertRaisesRegex(ValueError, "fingerprint changed"):

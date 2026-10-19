@@ -12,17 +12,17 @@ The deployed StopLoss handler also lacks sequencer-uptime and recovery checks. [
 
 The metadata inventory retains 303 production token contracts and three historical Sepolia records. All 306 have local images and explicit economic classifications. The production classifications are 207 volatile, 84 USD-pegged, seven USD-linked, and five other stable assets. Classification describes exposure, not current peg health, liquidity, bridge safety, or feed approval.
 
-| Chain | Chain ID | Known production contracts | Fixed buy metadata | Approved production sells |
-| --- | --- | --- | --- | --- |
-| Ethereum | 1 | 85 | Native USDC | 0 |
-| Gnosis | 100 | 17 | USDT | 0 |
-| Arbitrum | 42161 | 44 | Native USDC | 0 |
-| Base | 8453 | 38 | Native USDC | 0 |
-| Polygon | 137 | 25 | Native USDC | 0 |
-| Avalanche | 43114 | 28 | Native USDC | 0 |
-| BNB Chain | 56 | 48 | USDT | 0 |
-| Linea | 59144 | 8 | Native USDC | 0 |
-| Plasma | 9745 | 10 | Native USDC | 0 |
+| Chain     | Chain ID | Known production contracts | Fixed buy metadata | Approved production sells |
+| --------- | -------- | -------------------------- | ------------------ | ------------------------- |
+| Ethereum  | 1        | 85                         | Native USDC        | 0                         |
+| Gnosis    | 100      | 17                         | USDT               | 0                         |
+| Arbitrum  | 42161    | 44                         | Native USDC        | 0                         |
+| Base      | 8453     | 38                         | Native USDC        | 0                         |
+| Polygon   | 137      | 25                         | Native USDC        | 0                         |
+| Avalanche | 43114    | 28                         | Native USDC        | 0                         |
+| BNB Chain | 56       | 48                         | USDT               | 0                         |
+| Linea     | 59144    | 8                          | Native USDC        | 0                         |
+| Plasma    | 9745     | 10                         | Native USDC        | 0                         |
 
 Ink and Solana remain excluded. The fixed buy token is not a selectable sell. Dollar-pegged assets, their bridged forms, dollar-linked yield shares, other stable assets, and unclassified assets are excluded from new sells. Classification is pinned by exact chain and token contract, not a ticker rule. A volatile asset with a USD-quoted feed is not a dollar-pegged asset. FXS governance is separate from the old FRAX dollar contract.
 
@@ -42,22 +42,43 @@ Browser reads retain block-pinned, positive-answer, complete-round, nonzero/nonf
 
 ## Sources and audit history
 
-The original source inventory was fetched on 2026-10-16 from the [official Chainlink chain registry](https://raw.githubusercontent.com/smartcontractkit/documentation/main/src/features/data/chains.ts). `scripts/catalog-sources.json` records inventory and token-metadata source URLs and hashes. `scripts/catalog-feeds.json` retains all 2,102 source feed rows. `scripts/catalog-identities.json` pins exact token identities and classifications. Token sources include CoW, issuer references, Aave, and chain-specific maintained lists; they are identity inputs, not proof of oracle suitability.
+The original source inventory was fetched on 2026-10-16 from the [official Chainlink chain registry](https://raw.githubusercontent.com/smartcontractkit/documentation/main/src/features/data/chains.ts). `scripts/catalog-sources.json` retains that inventory's source URLs and hashes, including its original token-metadata references. `scripts/catalog-feeds.json` retains all 2,102 source feed rows. Those dated sources include CoW, issuer references, Aave, and chain-specific maintained lists; they are identity inputs, not proof of oracle suitability. The current display-metadata sources are separate and pinned as described below.
 
 The former build selected 336 proxies and the 2026-10-16 live snapshot reported no check failures. It accepted some underlying-feed substitutions, selected alternates by ordering, required only a nonempty token symbol, and checked feed descriptions only for their quote. That snapshot remains in `scripts/catalog-verification.json` as historical evidence. It is not approval under the current policy and is not a current safety audit.
 
 `scripts/catalog-audit.json` now accounts for all source rows under the stricter decisions. Excluded and unresolved rows remain visible. An unresolved same-chain identity, pool-share identity, unsupported method, unapproved route, or missing execution safeguard must not be filled by symbol inference. Metadata coverage, approved creation routes, and historic order support are separate counts.
 
+## Display metadata
+
+`scripts/catalog-metadata-sources.json` pins 18 files from [cowprotocol/token-lists at revision `60b9905e7eeb10af657700f749c143ab68953df4`](https://github.com/cowprotocol/token-lists/tree/60b9905e7eeb10af657700f749c143ab68953df4): one CoW Swap list, nine CoinGecko lists, and eight Uniswap lists. Each source has an immutable URL, a content hash, and an explicit priority. Selection uses exact chain and contract matches for reviewed local identities. A new upstream token does not enter the catalog automatically.
+
+`scripts/catalog-identities.json` keeps the compact local identity inventory: chain, address, economic classification, evidence, and local logo references. It does not duplicate display names, symbols, or decimals. `scripts/catalog-metadata-overrides.json` holds full metadata for local gaps and field corrections for matched sources. The pinned sources cover 270 known records; the remaining 33 production records and three Sepolia records use full local entries. Reviewed corrections keep the existing metadata for externally matched records. All 306 known records keep their exact display metadata, fixed buy tokens, and local images. Historical records and saved feeds remain available.
+
+The generated runtime snapshot is `src/lib/tokenCatalogData.json`. `scripts/catalog-metadata-report.json` is a separate compact provenance report with source selections, overridden fields, and counts. Review both generated diffs. The report does not copy full token metadata. Source manifests, identities, overrides, and provenance are checked in; broad downloaded lists are not. The browser and ordinary tests read the runtime snapshot without asynchronous list requests. List-server availability and CORS settings cannot change runtime metadata.
+
+External display metadata does not approve oracle routes. `scripts/catalog-policy.json` keeps exact approval fingerprints; a metadata refresh cannot renew them automatically. All nine production creation blocks remain unchanged. Historical token support does not make its saved feeds suitable for a new order.
+
 ## Build and verification
 
 ```sh
+python3 scripts/catalog_metadata.py
 python3 scripts/catalog.py
 python3 scripts/catalog.py --check
 python3 -m unittest discover -s scripts -p 'test_catalog*.py'
 python3 scripts/catalog-live.py --output /tmp/catalog-verification.json
 ```
 
-The generator is offline. It writes typed catalog inputs and audit decisions from pinned evidence. Before changing approvals, review current official documents, exact token contracts, both feed legs, lifecycle, methodology, heartbeat, live state, and deployed execution behavior. Record source changes and repeat review; do not edit generated JSON directly.
+`python3 scripts/catalog_metadata.py` downloads and verifies the pinned bytes into ignored `.cache/token-catalog`; use `--cache-dir` to choose another cache directory. A cold cache needs network access. A warm cache works offline only when its bytes match the pinned hashes. Corrupt data or a hash mismatch fails the command; a network failure without verified cached bytes also fails. There is no latest-list or stale-data fallback. This preparation step uses Python's standard library and adds no dependency.
+
+`python3 scripts/catalog.py` is offline. It loads verified cached bytes, resolves metadata, and writes the runtime snapshot, provenance report, and audit decisions from pinned evidence. `--check` checks the generated files without rewriting them and never downloads missing sources. The package commands are `prepare:catalog`, `generate:catalog`, and `check:catalog`, respectively. `dev:next` and `build:next` run preparation, then the offline check, then Next.js in sequence. The combined `dev` and `build` commands run app and documentation tasks in parallel, but keep those catalog steps in sequence within the app task. They do not silently regenerate changed output. CI runs preparation and the offline check, then the Python catalog tests and Jest.
+
+## Maintenance
+
+To add a known token, first review its exact chain and contract. Add its identity, classification evidence, and `localLogo` reference to `scripts/catalog-identities.json`; keep any required identity, wrapper, and logo-source evidence. Resolve display metadata from a pinned source or add a reviewed full local gap entry in `scripts/catalog-metadata-overrides.json`. Use field corrections only where the selected source differs from reviewed metadata. Do not infer an identity or classification from a symbol. Keep removed upstream tokens locally when historical orders need their metadata.
+
+To refresh lists, select an explicit revision and update source hashes after review. Prepare the bytes, regenerate, and inspect source selection, runtime metadata, provenance, and correction drift. Corrections pin expected upstream field values; resolution fails when those values change or a correction becomes redundant. Check whether old corrections are still needed and whether new gaps need local entries. Do not delete a correction or accept a metadata change only because an upstream list changed. Run the offline check and catalog tests after reviewing the generated diff; do not edit generated JSON directly.
+
+Before changing approvals, review current official documents, exact token contracts, both feed legs, lifecycle, methodology, heartbeat, live state, and deployed execution behavior. Record source changes and repeat approval review without automatically renewing fingerprints.
 
 Live verification normally checks only approved production feeds. Use `--candidates /path/to/proposed-policy.json` to observe exact proposed mappings before approval; its report is marked `candidate-review` and does not enable creation. The policy's `verificationFile` selects the pinned review observations, separate from the historical snapshot. Verification compares exact token symbols and decimals and exact expected feed descriptions and decimals, validates rounds, and applies the selected freshness ceiling. `CATALOG_RPC_<chainId>` can override read-only RPC endpoints. When no feeds are selected, the report says `not-performed` and lists skipped chains. A skipped check is not a successful live verification. The historical snapshot is not overwritten.
 

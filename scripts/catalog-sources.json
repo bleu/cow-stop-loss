@@ -1,5 +1,7 @@
 {
   "retrievedAt": "2026-10-16",
+  "currentMetadataManifest": "scripts/catalog-metadata-sources.json",
+  "metadataSourcesScope": "Historical identity inputs from the 2026-10-16 inventory, not the current display-metadata resolver.",
   "registry": "https://raw.githubusercontent.com/smartcontractkit/documentation/main/src/features/data/chains.ts",
   "feedSources": {
     "1": {

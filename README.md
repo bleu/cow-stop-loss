@@ -10,7 +10,7 @@ Future approved routes use an exact sell amount, trigger price, slippage, and on
 
 ## Local setup
 
-Use Node.js 20.9 or later and pnpm 9. The private `@bleu/ui` package requires a package-read `NPM_TOKEN` in the install environment.
+Use Node.js 20.9 or later, pnpm 9, and Python 3. The private `@bleu/ui` package requires a package-read `NPM_TOKEN` in the install environment.
 
 ```bash
 corepack pnpm@9 install
@@ -18,6 +18,8 @@ corepack pnpm@9 dev:next
 ```
 
 Open http://localhost:3000. Run `corepack pnpm@9 dev` to start the app and documentation together.
+
+`dev:next` and `build:next` first prepare pinned token-list bytes, then check the generated catalog offline. A cold cache needs network access; exact, hash-verified bytes in `.cache/token-catalog` can be reused offline. A hash mismatch or corrupt data stops the command, as does a network failure without verified cached bytes; there is no latest-list or stale-data fallback. These commands do not regenerate changed catalog files. After an intentional catalog change, run `corepack pnpm@9 generate:catalog`, review the diff, and repeat the check. See [Token catalog](docs/token-catalog.md) for sources and maintenance.
 
 ## WalletConnect setup
 
@@ -47,6 +49,9 @@ A detail link for a different account asks you to connect that account and does 
 ## Checks
 
 ```bash
+corepack pnpm@9 prepare:catalog
+corepack pnpm@9 check:catalog
+python3 -m unittest discover -s scripts -p 'test_catalog*.py'
 corepack pnpm@9 test:jest --runInBand
 corepack pnpm@9 lint
 corepack pnpm@9 exec tsc --noEmit
@@ -54,6 +59,6 @@ corepack pnpm@9 build:next
 corepack pnpm@9 build
 ```
 
-Tests replace external HTTP, wallet providers, and time. Policy tests use the real disabled production catalog. Some order-math and EOA-flow suites opt into synthetic approved routes; those fixtures are not production approval evidence. A real WalletConnect session also needs a configured project and an external wallet.
+The app and ordinary Jest tests use the checked-in runtime catalog without fetching token lists. The browser does not fetch list metadata or depend on list-server CORS settings. CI prepares the pinned bytes, checks generated files, and runs the Python catalog tests before Jest. Tests replace external HTTP, wallet providers, and time. Policy tests use the real disabled production catalog. Some order-math and EOA-flow suites opt into synthetic approved routes; those fixtures are not production approval evidence. A real WalletConnect session also needs a configured project and an external wallet.
 
 The read-only browser check in `scripts/verify-oracle-policy.cjs` opens the actual network menu, checks loaded images and unavailable production routes, and reviews a Sepolia test order. Start the app first, provide an installed Playwright module with `PLAYWRIGHT_PATH`, and set `CHROME_PATH` if Chrome is not at the default macOS path. The fixture mocks external reads, intercepts app-data publication, and blocks signing and transactions. It does not prove live execution.

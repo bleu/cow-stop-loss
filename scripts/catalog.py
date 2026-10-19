@@ -8,6 +8,8 @@ import json
 import pathlib
 import re
 
+from catalog_metadata import load_identities, load_metadata
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 ADDRESS = re.compile(r"0x[0-9a-fA-F]{40}")
 PRODUCTION_CHAINS = {1, 100, 42161, 8453, 137, 43114, 56, 59144, 9745}
@@ -182,7 +184,7 @@ def approved_feeds(identities, inventories, policy, verification):
 
 
 def build(identities=None, inventories=None, policy=None, verification=None):
-    identities = read("scripts/catalog-identities.json") if identities is None else identities
+    identities = load_identities(ROOT) if identities is None else identities
     inventories = read("scripts/catalog-feeds.json") if inventories is None else inventories
     policy = read("scripts/catalog-policy.json") if policy is None else policy
     verification = read(verification_file(policy)) if verification is None else verification
@@ -253,15 +255,25 @@ def build(identities=None, inventories=None, policy=None, verification=None):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true", help="Check generated files without changing them")
+    parser.add_argument("--cache-dir", type=pathlib.Path, help="Read pinned source bytes from this cache")
     args = parser.parse_args()
-    catalog, audit = build()
-    for filename, value in [("src/lib/tokenCatalogData.json", catalog), ("scripts/catalog-audit.json", audit)]:
+    identities, metadata = load_metadata(ROOT, args.cache_dir)
+    manifest_path = "scripts/catalog-metadata-sources.json"
+    metadata = {
+        "schemaVersion": 1,
+        "sourceManifest": manifest_path,
+        "sourceManifestSha256": hashlib.sha256((ROOT / manifest_path).read_bytes()).hexdigest(),
+        **metadata,
+    }
+    catalog, audit = build(identities=identities)
+    for filename, value in [("src/lib/tokenCatalogData.json", catalog), ("scripts/catalog-audit.json", audit), ("scripts/catalog-metadata-report.json", metadata)]:
         content = json.dumps(value, indent=2, ensure_ascii=False) + "\n"
         path = ROOT / filename
         if args.check:
             require(path.read_text() == content, f"Run python3 scripts/catalog.py: {filename} differs")
         else:
             path.write_text(content)
+    print("Metadata:", metadata["summary"])
     print("Tokens by chain:", dict(sorted(collections.Counter(token["chainId"] for token in catalog["tokens"]).items())))
     print("Feed rows:", len(audit), dict(collections.Counter(row["reason"] for row in audit)))
 

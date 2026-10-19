@@ -10,6 +10,9 @@
 /coverage
 __pycache__/
 
+# downloaded token metadata
+/.cache/token-catalog/
+
 # next.js
 /.next/
 /out/
