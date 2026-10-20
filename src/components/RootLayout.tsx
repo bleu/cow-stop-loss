@@ -1,73 +1,87 @@
 "use client";
-import { Toaster } from "@bleu/ui";
-import SafeProvider from "@safe-global/safe-apps-react-sdk";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Link from "next/link";
-import React, { useState } from "react";
-import { SWRConfig, SWRConfiguration } from "swr";
-import { WagmiProvider } from "wagmi";
 
-import { localStorageProvider } from "#/lib/localStorageProvider";
+import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { usePathname } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { SWRConfig, SWRConfiguration } from "swr";
+import { type State, WagmiProvider } from "wagmi";
+
 import { wagmiConfig } from "#/utils/wagmi";
 
 import { Footer } from "./Footer";
 import { Header } from "./Header";
+import { OrderToaster } from "./orderNotifications";
+import { ColorTheme, createWalletTheme } from "./walletTheme";
 
 export const swrConfig: SWRConfiguration = {
   revalidateOnFocus: false,
-  revalidateOnReconnect: true,
-  refreshInterval: 30_000,
+  revalidateOnReconnect: false,
+  refreshInterval: 0,
   shouldRetryOnError: false,
-  keepPreviousData: true,
-  provider: localStorageProvider,
+  keepPreviousData: false,
+  provider: () => new Map(),
 };
 
-export function RootLayout({ children }: React.PropsWithChildren) {
+export function RootLayout({
+  children,
+  config = wagmiConfig,
+  initialState,
+  initialTheme = "dark",
+}: React.PropsWithChildren<{
+  config?: typeof wagmiConfig;
+  initialState?: State;
+  initialTheme?: ColorTheme;
+}>) {
+  const pathname = usePathname();
   const [queryClient] = useState(() => new QueryClient());
+  const [theme, setTheme] = useState<ColorTheme>(initialTheme);
+  const [scenePaused, setScenePaused] = useState(false);
+
+  useEffect(() => {
+    const icon = document.querySelector<HTMLLinkElement>('link[rel="icon"]');
+    if (icon) icon.href = `/assets/air-rescue/favicon-${theme}.svg`;
+  }, [theme]);
+
+  function toggleTheme() {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    document.documentElement.classList.toggle("light", nextTheme === "light");
+    document.cookie = `theme=${nextTheme}; Path=/; Max-Age=31536000; SameSite=Lax`;
+  }
 
   return (
-    <SafeProvider loader={<SafeLoader />}>
-      <WagmiProvider config={wagmiConfig}>
-        <QueryClientProvider client={queryClient}>
+    <WagmiProvider config={config} initialState={initialState}>
+      <QueryClientProvider client={queryClient}>
+        <RainbowKitProvider
+          theme={createWalletTheme(theme)}
+          modalSize="compact"
+          appInfo={{ appName: "CoW Air Rescue" }}
+        >
           <SWRConfig value={swrConfig}>
-            <div className="flex flex-col min-h-screen size-screen justify-between">
-              <Header linkUrl={"/"} imageSrc={"/assets/stoploss.svg"} />
-              <div className="size-full bg-background">{children}</div>
+            <div
+              className="rescue-shell flex flex-col"
+              data-scene-paused={scenePaused}
+            >
+              <Header
+                linkUrl="/"
+                isLandingPage={pathname === "/"}
+                imageSrc={`/assets/air-rescue/passenger-${theme}.svg`}
+                theme={theme}
+                onToggleTheme={toggleTheme}
+              />
+              <div className="app-scroll-area bg-transparent">{children}</div>
               <Footer
                 githubLink="https://github.com/bleu/cow-stop-loss"
                 discordLink="https://discord.gg/cowprotocol"
+                scenePaused={scenePaused}
+                onToggleScene={() => setScenePaused((paused) => !paused)}
               />
             </div>
-            <Toaster />
+            <OrderToaster />
           </SWRConfig>
-        </QueryClientProvider>
-      </WagmiProvider>
-    </SafeProvider>
-  );
-}
-
-function SafeLoader() {
-  return (
-    <div className="bg-background size-full flex-col justify-center items-center px-12 py-16 md:py-20 flex items-center justify-center">
-      {/* eslint-disable-next-line @next/next/no-img-element*/}
-      <img
-        className="flex justify-center h-32 my-2"
-        alt="CoW Stop Loss logo"
-        src="/assets/stoploss.svg"
-      />
-      <div className="text-center text-3xl">This is a Safe (wallet) App</div>
-      <p className="text-xl">
-        To access please use this
-        <Link
-          target="_blank"
-          href="https://app.safe.global/share/safe-app?appUrl=https%3A%2F%2Fstoploss.bleu.builders&chain=eth"
-          className="text-highlight"
-        >
-          {" "}
-          link{" "}
-        </Link>
-        with your safe account connected
-      </p>
-    </div>
+        </RainbowKitProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }

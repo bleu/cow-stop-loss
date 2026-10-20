@@ -1,0 +1,316 @@
+.rescue-review {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  min-height: 0;
+  font-family: var(--font-family-sans), sans-serif;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.rescue-review-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rescue-review-kicker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+}
+.rescue-review-kicker .rescue-review-network {
+  font-size: 11px;
+  line-height: 14px;
+}
+
+.rescue-detail-page {
+  font-family: var(--font-family-sans), sans-serif;
+}
+
+.rescue-review-eyebrow,
+.rescue-review-heading h2,
+.rescue-review-amount-label,
+.rescue-review-price-row dt,
+.rescue-review-address > span,
+.rescue-review-approvals legend,
+.rescue-review-choice-title,
+.rescue-detail-page h1,
+.rescue-detail-page h2,
+.rescue-detail-page dt,
+.rescue-detail-page .uppercase {
+  font-family: var(--font-family-serif), sans-serif;
+}
+
+.rescue-review-eyebrow {
+  font-size: 10px;
+  line-height: 14px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: hsl(var(--secondary));
+}
+
+.rescue-review-heading h2 {
+  margin-top: 3px;
+  font-family: var(--font-family-serif), serif;
+  font-size: 28px;
+  line-height: 32px;
+  letter-spacing: -0.025em;
+}
+
+.rescue-review-trade {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid hsl(var(--primary) / 0.18);
+  border-radius: 0;
+  background: hsl(var(--muted) / 0.35);
+}
+
+.rescue-review-amount {
+  min-width: 0;
+}
+.rescue-review-amount-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  margin-bottom: 3px;
+  color: hsl(var(--muted-foreground));
+  font-size: 12px;
+  line-height: 16px;
+}
+.rescue-review-amount-value a {
+  padding: 0;
+}
+.rescue-review-amount-value a svg {
+  width: 12px;
+  height: 12px;
+}
+.rescue-review-amount-value {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+.rescue-review-inline-control {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  font-family: var(--font-family-sans), sans-serif;
+}
+.rescue-review-info-control {
+  width: 44px;
+  margin-inline: -10px;
+}
+.rescue-review-tooltip {
+  font-family: var(--font-family-sans), sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: normal;
+  text-transform: none;
+}
+.rescue-review-number {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-block: -8px;
+  font-variant-numeric: tabular-nums;
+}
+.rescue-review-number > span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rescue-review-symbol {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: hsl(var(--muted-foreground));
+}
+
+.rescue-review-terms {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.rescue-review-price-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: 12px;
+}
+.rescue-review-price-row > div:nth-child(2) {
+  text-align: center;
+}
+.rescue-review-price-row dt {
+  color: hsl(var(--muted-foreground));
+  font-size: 12px;
+  line-height: 16px;
+}
+.rescue-review-price-row dd {
+  font-size: 14px;
+  line-height: 21px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+.rescue-review-price-row .rescue-review-strike {
+  overflow-wrap: anywhere;
+  font-size: 19px;
+  font-weight: 600;
+  color: hsl(var(--primary));
+}
+.rescue-review-strike span {
+  font-size: 12px;
+  font-weight: 500;
+}
+.rescue-review-expiry {
+  text-align: right;
+}
+.rescue-review-destination,
+.rescue-review-oracles {
+  border-top: 1px solid hsl(var(--border) / 0.65);
+  padding-top: 6px;
+}
+.rescue-review-address {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  line-height: 18px;
+}
+.rescue-review-address > span {
+  color: hsl(var(--muted-foreground));
+}
+
+.rescue-review-approvals {
+  min-width: 0;
+  border-top: 1px solid hsl(var(--border) / 0.65);
+  padding-top: 4px;
+}
+.rescue-review-approvals legend {
+  padding-right: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+}
+.rescue-review-badge {
+  --pixel-surface: hsl(var(--warning) / 0.1);
+  --pixel-edge: hsl(var(--warning) / 0.35);
+  margin-left: 6px;
+  border-radius: 0;
+  padding: 2px 6px;
+  background: hsl(var(--warning) / 0.1);
+  color: hsl(var(--warning));
+  font-size: 10px;
+  font-weight: 500;
+}
+.rescue-review-choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+.rescue-review-choice {
+  display: flex;
+  align-items: start;
+  gap: 6px;
+  min-height: 60px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+  border-radius: 0;
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+}
+.rescue-review-choice input {
+  margin-top: 3px;
+  accent-color: hsl(var(--primary));
+}
+.rescue-review-choice-selected {
+  border-color: hsl(var(--primary) / 0.25);
+  background: hsl(var(--primary) / 0.07);
+}
+.rescue-review-choice-title {
+  display: block;
+  font-size: 13px;
+  line-height: 17px;
+  font-weight: 500;
+}
+.rescue-review-choice-description {
+  display: block;
+  font-size: 12px;
+  line-height: 16px;
+  color: hsl(var(--muted-foreground));
+}
+.rescue-review-ready {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.rescue-review-network {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: hsl(var(--muted-foreground));
+}
+.rescue-review-notice {
+  border-radius: 0;
+  background: hsl(var(--muted) / 0.6);
+  padding: 4px 6px;
+  font-size: 12px;
+  line-height: 16px;
+}
+.rescue-review-actions {
+  display: flex;
+  gap: 8px;
+}
+.rescue-review-actions > button {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  height: auto;
+  border-radius: 0;
+  font-size: 14px;
+}
+
+@media (max-width: 480px) {
+  .rescue-review-trade {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+  .rescue-review-trade > svg {
+    justify-self: center;
+    transform: rotate(90deg);
+  }
+  .rescue-review-price-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  .rescue-review-price-row > div:nth-child(2),
+  .rescue-review-expiry {
+    text-align: left;
+  }
+  .rescue-review-choices {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.rescue-review-choice:focus-within {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+}

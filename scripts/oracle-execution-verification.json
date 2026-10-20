@@ -1,0 +1,108 @@
+{
+  "reviewDate": "2026-10-19",
+  "handler": "0x412c36e5011cd2517016d243a2dfb37f73a242e7",
+  "sourceRevision": "c0435953ac8312a606d66c91554f2bb4d22ec686",
+  "compiler": "0.8.19",
+  "optimizerRuns": 20000,
+  "sources": {
+    "manifest": "https://github.com/cowprotocol/composable-cow/blob/c0435953ac8312a606d66c91554f2bb4d22ec686/canonical/manifest.json",
+    "compilerInput": "https://github.com/cowprotocol/composable-cow/blob/c0435953ac8312a606d66c91554f2bb4d22ec686/broadcast/StandardJsonInput/StopLoss.json",
+    "initcode": "https://github.com/cowprotocol/composable-cow/blob/c0435953ac8312a606d66c91554f2bb4d22ec686/canonical/initcode/StopLoss.initcode",
+    "ethereumExplorer": "https://etherscan.io/address/0x412c36e5011cd2517016d243a2dfb37f73a242e7#code",
+    "l2ConsumerRequirements": "https://docs.chain.link/data-feeds/using-data-feeds",
+    "sequencerRequirements": "https://docs.chain.link/data-feeds/l2-sequencer-feeds",
+    "boundedFeedBehavior": "https://docs.chain.link/data-feeds/selecting-data-feeds#bounded-market-price-feeds"
+  },
+  "method": "Compile the pinned standard JSON input with its settings, compare creation bytecode with canonical initcode, then compare compiled runtime with read-only eth_getCode responses.",
+  "canonicalCreationBytecodeMatches": true,
+  "runtimeBytes": 4259,
+  "runtimeSha256": "cd5e1324159124217c235f612031f0fbd4bf235dd531efdbab742d99b7d9db12",
+  "chains": {
+    "1": {
+      "runtimeMatch": true,
+      "rpc": "https://ethereum-rpc.publicnode.com",
+      "checkedAt": "2026-10-19T23:33:57.369063+00:00",
+      "observedBlock": "0x1903caf",
+      "runtimeSha256": "cd5e1324159124217c235f612031f0fbd4bf235dd531efdbab742d99b7d9db12",
+      "runtimeBytes": 4259
+    },
+    "100": {
+      "runtimeMatch": true,
+      "rpc": "https://gnosis-rpc.publicnode.com",
+      "checkedAt": "2026-10-19T23:33:57.383373+00:00",
+      "observedBlock": "0x2e94eeb",
+      "runtimeSha256": "cd5e1324159124217c235f612031f0fbd4bf235dd531efdbab742d99b7d9db12",
+      "runtimeBytes": 4259
+    },
+    "42161": {
+      "runtimeMatch": true,
+      "rpc": "https://arbitrum-one-rpc.publicnode.com",
+      "checkedAt": "2026-10-19T23:33:57.345222+00:00",
+      "observedBlock": "0x1ec81802",
+      "runtimeSha256": "cd5e1324159124217c235f612031f0fbd4bf235dd531efdbab742d99b7d9db12",
+      "runtimeBytes": 4259
+    },
+    "8453": {
+      "runtimeMatch": true,
+      "rpc": "https://base-rpc.publicnode.com",
+      "checkedAt": "2026-10-19T23:33:57.312703+00:00",
+      "observedBlock": "0x3262600",
+      "runtimeSha256": "cd5e1324159124217c235f612031f0fbd4bf235dd531efdbab742d99b7d9db12",
+      "runtimeBytes": 4259
+    },
+    "137": {
+      "runtimeMatch": true,
+      "rpc": "https://polygon-bor-rpc.publicnode.com",
+      "checkedAt": "2026-10-19T23:33:57.293316+00:00",
+      "observedBlock": "0x5b64668",
+      "runtimeSha256": "cd5e1324159124217c235f612031f0fbd4bf235dd531efdbab742d99b7d9db12",
+      "runtimeBytes": 4259
+    },
+    "43114": {
+      "runtimeMatch": true,
+      "rpc": "https://avalanche-c-chain-rpc.publicnode.com",
+      "checkedAt": "2026-10-19T23:33:57.338629+00:00",
+      "observedBlock": "0x5d7836b",
+      "runtimeSha256": "cd5e1324159124217c235f612031f0fbd4bf235dd531efdbab742d99b7d9db12",
+      "runtimeBytes": 4259
+    },
+    "56": {
+      "runtimeMatch": true,
+      "rpc": "https://bsc-rpc.publicnode.com",
+      "checkedAt": "2026-10-19T23:33:57.351854+00:00",
+      "observedBlock": "0x7aaef84",
+      "runtimeSha256": "cd5e1324159124217c235f612031f0fbd4bf235dd531efdbab742d99b7d9db12",
+      "runtimeBytes": 4259
+    },
+    "59144": {
+      "runtimeMatch": true,
+      "rpc": "https://rpc.linea.build",
+      "checkedAt": "2026-10-19T23:33:57.455439+00:00",
+      "observedBlock": "0x1edf0be",
+      "runtimeSha256": "cd5e1324159124217c235f612031f0fbd4bf235dd531efdbab742d99b7d9db12",
+      "runtimeBytes": 4259
+    },
+    "9745": {
+      "runtimeMatch": true,
+      "rpc": "https://rpc.plasma.to",
+      "checkedAt": "2026-10-19T23:33:57.774780+00:00",
+      "observedBlock": "0x21ddc9f",
+      "runtimeSha256": "cd5e1324159124217c235f612031f0fbd4bf235dd531efdbab742d99b7d9db12",
+      "runtimeBytes": 4259
+    }
+  },
+  "handlerBehavior": {
+    "positiveRawAnswers": true,
+    "normalizesEachFeedTo18Decimals": true,
+    "sharedUserSuppliedMaximumAge": true,
+    "roundCompletenessCheck": false,
+    "futureTimestampCheck": false,
+    "explicitZeroTimestampCheck": false,
+    "sequencerUptimeAndGraceCheck": false,
+    "quoteIdentityCheck": false,
+    "highDecimalTruncationRisk": "Feeds above 18 decimals can normalize to zero; zero numerator can satisfy the trigger and zero denominator reverts.",
+    "arithmeticLimits": "Signed scaling and normalized numerator times 10^18 must fit int256. Excessive maximum age can underflow block.timestamp subtraction."
+  },
+  "decision": "The exact routes in scripts/catalog-policy.json are approved for creation on all nine mainnets with separate bounded-buy, source-category and bridge-representation decisions where needed. This accepts existing handler limits: one shared age limit, browser-only round completeness and future timestamp checks, and no execution-time sequencer/recovery checks on Arbitrum, Base or Linea. These are accepted risks, not implemented protections.",
+  "limits": "This records a bounded source and deployment review, not a security audit, proof of feed quality, or execution guarantee. Source/input evidence is not a production route approval. No transactions were sent."
+}

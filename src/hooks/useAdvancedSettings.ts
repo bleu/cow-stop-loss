@@ -1,18 +1,22 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
 
 import { AdvancedSwapSettings } from "#/lib/types";
 
+type OracleAgeMode = "automatic" | "explicit";
+
 interface AdvancedSettingsState {
   advancedSettings: AdvancedSwapSettings;
-  setAdvancedSettings: (settings: AdvancedSwapSettings) => void;
+  oracleAgeMode: OracleAgeMode;
+  setAdvancedSettings: (
+    settings: AdvancedSwapSettings,
+    oracleAgeMode?: OracleAgeMode,
+  ) => void;
+  resetAdvancedSettings: () => void;
 }
 
 export const defaultAdvancedSettings: AdvancedSwapSettings = {
   receiver: "",
-  maxHoursSinceOracleUpdates: 1,
-  tokenBuyOracle: "",
-  tokenSellOracle: "",
+  maxHoursSinceOracleUpdates: 24,
   partiallyFillable: false,
 };
 
@@ -27,15 +31,32 @@ export function haveSettingsChanged(
   );
 }
 
+export function advancedSettingsForRoute(
+  settings: AdvancedSwapSettings,
+  oracleAgeMode: OracleAgeMode,
+  maxAgeSeconds: number,
+): AdvancedSwapSettings {
+  return oracleAgeMode === "automatic"
+    ? {
+        ...settings,
+        maxHoursSinceOracleUpdates: Math.min(
+          defaultAdvancedSettings.maxHoursSinceOracleUpdates,
+          maxAgeSeconds / 3600,
+        ),
+      }
+    : settings;
+}
+
 export const useAdvancedSettingsStore = create<AdvancedSettingsState>()(
-  persist(
-    (set) => ({
-      advancedSettings: defaultAdvancedSettings,
-      setAdvancedSettings: (settings) => set({ advancedSettings: settings }),
-    }),
-    {
-      name: "advanced-settings-storage",
-      partialize: (state) => ({ advancedSettings: state.advancedSettings }),
-    },
-  ),
+  (set) => ({
+    advancedSettings: defaultAdvancedSettings,
+    oracleAgeMode: "automatic",
+    setAdvancedSettings: (settings, oracleAgeMode = "explicit") =>
+      set({ advancedSettings: settings, oracleAgeMode }),
+    resetAdvancedSettings: () =>
+      set({
+        advancedSettings: defaultAdvancedSettings,
+        oracleAgeMode: "automatic",
+      }),
+  }),
 );

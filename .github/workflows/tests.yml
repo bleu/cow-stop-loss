@@ -23,5 +23,20 @@ jobs:
         with:
           npm_token: ${{ secrets.NPM_TOKEN }}
 
+      - name: Prepare catalog metadata and token images
+        run: pnpm prepare:catalog
+
+      - name: Check token image hashes
+        run: pnpm check:assets
+
+      - name: Check generated catalog
+        run: pnpm check:catalog
+
+      - name: Test catalog scripts
+        run: python3 -m unittest discover -s scripts -p 'test_catalog*.py'
+
+      - name: Check TypeScript
+        run: pnpm exec tsc --noEmit
+
       - name: Run tests
-        run: pnpm test:jest
+        run: pnpm test:jest --runInBand

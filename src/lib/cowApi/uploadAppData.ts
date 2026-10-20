@@ -12,12 +12,23 @@ export async function uploadAppData({
 }) {
   const url = COW_API_URL_BY_CHAIN_ID[chainId];
 
-  return fetch(`${url}/api/v1/app_data/${appDataHex}`, {
+  const response = await fetch(`${url}/api/v1/app_data/${appDataHex}`, {
     method: "PUT",
     body: JSON.stringify({ fullAppData }),
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
     },
-  }).then((response) => response.json());
+  });
+  if (!response.ok) {
+    throw new Error(`App-data upload failed (${response.status})`);
+  }
+  const uploadedHash: unknown = await response.json();
+  if (
+    typeof uploadedHash !== "string" ||
+    uploadedHash.toLowerCase() !== appDataHex.toLowerCase()
+  ) {
+    throw new Error("App-data upload returned an unexpected hash");
+  }
+  return uploadedHash;
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardTitle } from "@bleu/ui";
 import { Controller, useFormContext } from "react-hook-form";
 
 import { VALID_TO_OPTIONS } from "#/lib/schema";
@@ -21,23 +20,22 @@ export function ValidToInput() {
   const { control } = useFormContext<SwapData>();
 
   return (
-    <Card className="flex flex-col gap-2 bg-background w-full p-2 rounded-lg">
-      <CardTitle className="flex justify-between font-normal text-xs">
-        <div className="flex gap-1">
-          <span>Expiry</span>
-          <InfoTooltip
-            text={TOOLTIP_DESCRIPTIONS.VALID_TO_INPUT}
-            side={"right"}
-          />
-        </div>
-      </CardTitle>
+    <div className="rescue-input-inline min-w-0">
+      <div className="rescue-input-label flex items-center gap-1.5">
+        <label htmlFor="order-expiry" className="text-sm font-medium">
+          Expires
+        </label>
+        <InfoTooltip text={TOOLTIP_DESCRIPTIONS.VALID_TO_INPUT} side="right" />
+      </div>
       <Controller
         control={control}
         name="validTo"
-        defaultValue={VALID_TO_OPTIONS.MONTHS_6}
         render={({ field: { onChange, value } }) => (
-          <Select onValueChange={onChange} defaultValue={value} name="validTo">
-            <SelectTrigger className="w-full">
+          <Select onValueChange={onChange} value={value} name="validTo">
+            <SelectTrigger
+              id="order-expiry"
+              className="pixel-control min-h-11 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 w-full border-border bg-card text-sm text-foreground"
+            >
               <SelectValue placeholder="Select order expiry" />
             </SelectTrigger>
             <SelectContent>
@@ -57,6 +55,6 @@ export function ValidToInput() {
           </Select>
         )}
       />
-    </Card>
+    </div>
   );
 }

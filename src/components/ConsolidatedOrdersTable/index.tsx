@@ -1,139 +1,214 @@
 "use client";
 
-import { ReloadIcon } from "@radix-ui/react-icons";
-import { useSafeAppsSDK } from "@safe-global/safe-apps-react-sdk";
+import {
+  Button,
+  TooltipContent,
+  TooltipProvider,
+  TooltipRoot,
+  TooltipTrigger,
+} from "@bleu/ui";
+import { useConnectModal } from "@rainbow-me/rainbowkit";
+import { useRouter } from "next/navigation";
 import React, { useMemo } from "react";
+import { Address } from "viem";
+import { useAccount } from "wagmi";
 
 import { DataTable } from "#/components/data-table/data-table";
-import { useCreatingOrders } from "#/hooks/useCreatingOrders";
+import { DataTableToolbar } from "#/components/data-table/data-table-toolbar";
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import { DataTableFilterField, useDataTable } from "#/hooks/useDataTable";
-import { useDraftOrders } from "#/hooks/useDraftOrders";
 import { useOrderList } from "#/hooks/useOrderList";
-import { useQueuedTxs } from "#/hooks/useQueuedOrders";
-import {
-  CreatingOrder,
-  DraftOrder,
-  OrderStatus,
-  StopLossOrderType,
-} from "#/lib/types";
+import { chainNames } from "#/lib/publicClients";
+import { PlacementRow } from "#/lib/stopLossPlacement";
 
-import { DataTableToolbar } from "../data-table/data-table-toolbar";
-import { Spinner } from "../ui/spinner";
 import { getColumns } from "./columns";
-import { ConsolidatedOrdersTableToolbarActions } from "./toolbar-actions";
 
-export type ConsolidatedOrderType =
-  | DraftOrder
-  | StopLossOrderType
-  | CreatingOrder;
+const filterFields: DataTableFilterField<PlacementRow>[] = [
+  {
+    label: "Chain",
+    value: "chainId",
+    options: Object.entries(chainNames).map(([value, label]) => ({
+      value,
+      label,
+    })),
+  },
+  {
+    label: "Status",
+    value: "status",
+    options: [
+      "Open",
+      "Filled",
+      "Canceled",
+      "Expired",
+      "Partially filled, cancelled",
+      "Partially filled, expired",
+    ].map((value) => ({ value, label: value })),
+  },
+];
+
+export type ConsolidatedOrderType = PlacementRow;
 
 export function ConsolidatedOrdersTable() {
-  const draftOrders = useDraftOrders((state) => state.draftOrders);
-  const { orders, isLoading, mutate: mutateOrderList } = useOrderList();
-  const { ordersOnQueue, mutate: mutateQueuedOrders } = useQueuedTxs();
-  const [creatingOrders] = useCreatingOrders((state) => [state.creatingOrders]);
-  const { safe } = useSafeAppsSDK();
+  const { address } = useAccount();
+  if (!address) return <WalletRequiredOrders />;
+  return <ConnectedOrdersTable account={address} />;
+}
 
-  const allOrders: ConsolidatedOrderType[] = useMemo(
-    () => [
-      ...creatingOrders,
-      ...draftOrders.map(
-        (order) => ({ ...order, status: OrderStatus.DRAFT }) as const,
-      ),
-      ...ordersOnQueue,
-      ...orders,
-    ],
-    [draftOrders, orders, creatingOrders, ordersOnQueue],
-  );
-
-  const columns = React.useMemo(
-    () => getColumns(),
-    [safe.chainId, safe.safeAddress],
-  );
-
-  const filterFields: DataTableFilterField<ConsolidatedOrderType>[] = [
-    {
-      label: "Status",
-      value: "status",
-      options: [
-        { label: "Draft", value: OrderStatus.DRAFT },
-        { label: "Queue", value: OrderStatus.ON_QUEUE },
-        { label: "Creating", value: OrderStatus.CREATING },
-        {
-          label: "Open",
-          value: OrderStatus.OPEN || OrderStatus.PARTIALLY_FILLED,
-        },
-        {
-          label: "Filled",
-          value:
-            OrderStatus.FULFILLED || OrderStatus.PARTIALLY_FILLED_AND_EXPIRED,
-        },
-        {
-          label: "Partially filled",
-          value:
-            OrderStatus.PARTIALLY_FILLED ||
-            OrderStatus.PARTIALLY_FILLED_AND_CANCELLED ||
-            OrderStatus.PARTIALLY_FILLED_AND_EXPIRED,
-        },
-        {
-          label: "Cancelled",
-          value:
-            OrderStatus.CANCELLED || OrderStatus.PARTIALLY_FILLED_AND_CANCELLED,
-        },
-        {
-          label: "Cancelling",
-          value:
-            OrderStatus.CANCELLING ||
-            OrderStatus.PARTIALLY_FILLED_AND_CANCELLING,
-        },
-        {
-          label: "Expired",
-          value:
-            OrderStatus.EXPIRED || OrderStatus.PARTIALLY_FILLED_AND_EXPIRED,
-        },
-      ],
-    },
-  ];
-
-  const { table } = useDataTable({
-    data: allOrders,
-    columns,
-    filterFields,
-    enableRowSelection: (row) =>
-      [
-        OrderStatus.DRAFT,
-        OrderStatus.OPEN,
-        OrderStatus.PARTIALLY_FILLED,
-      ].includes(row.original.status),
-  });
-
+function OrdersHeading({ children }: { children?: React.ReactNode }) {
   return (
-    <div>
-      <div className="md:-mt-10">
-        <div className="flex items-center space-x-2 mb-2">
-          <span className="text-2xl font-semibold">Your orders</span>
-          {isLoading ? (
-            <Spinner size="sm" />
-          ) : (
-            <button
-              onClick={() => {
-                mutateQueuedOrders();
-                mutateOrderList();
-              }}
-              className="text-primary hover:text-primary/50 px-1"
-            >
-              <ReloadIcon className="size-4" />
-            </button>
-          )}
+    <div className="rescue-panel-heading rescue-portfolio-heading">
+      <div className="rescue-portfolio-title">
+        <p className="rescue-eyebrow">Portfolio</p>
+        <h2 id="orders-title" className="rescue-panel-title">
+          Your stop-loss orders
+        </h2>
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function WalletRequiredOrders() {
+  const { openConnectModal } = useConnectModal();
+  return (
+    <>
+      <OrdersHeading />
+      <div className="my-auto flex w-full flex-1 items-center justify-center gap-5 px-1 py-5 text-left sm:px-3">
+        <div
+          aria-hidden="true"
+          className="rescue-landing-art hidden size-32 shrink-0 sm:block"
+        />
+        <div className="max-w-sm">
+          <h3 className="font-serif text-2xl leading-tight tracking-tight">
+            Your herd, all in one place
+          </h3>
+          <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
+            Connect your wallet to see stop-loss orders across supported networks.
+          </p>
+          <Button
+            type="button"
+            className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring mt-4 h-11 w-fit rounded-none border border-primary/35 bg-primary/10 px-4 text-[13px] font-medium text-primary hover:bg-primary/15 hover:text-primary"
+            onClick={openConnectModal}
+          >
+            Connect wallet to view orders
+          </Button>
         </div>
       </div>
-      <div className="flex rounded-lg bg-muted p-2">
-        <DataTable table={table}>
-          <DataTableToolbar table={table} filterFields={filterFields}>
-            <ConsolidatedOrdersTableToolbarActions table={table} />
-          </DataTableToolbar>
-        </DataTable>
-      </div>
+    </>
+  );
+}
+
+function ConnectedOrdersTable({ account }: { account: Address }) {
+  const router = useRouter();
+  const { orders, chains, isLoading, mutate, trackingError } = useOrderList();
+  const columns = useMemo(() => getColumns(), []);
+  const { table } = useDataTable({
+    data: orders,
+    columns,
+    initialColumnVisibility: { chainId: false },
+    filterFields,
+    defaultSort: "chainId.asc",
+    enableRowSelection: false,
+  });
+
+  const isInitialLoading = isLoading && !chains.length && !orders.length;
+  const hasAvailableOrders =
+    orders.length > 0 || chains.some((chain) => chain.status === "success");
+  const emptyMessage = isInitialLoading ? (
+    <p role="status">Loading stop-loss orders...</p>
+  ) : hasAvailableOrders ? (
+    "No results."
+  ) : (
+    "Orders are unavailable on all supported chains."
+  );
+
+  const failedChains = chains.filter((chain) => chain.status === "error");
+  const notice = (trackingError || failedChains.length > 0) && (
+    <div className="space-y-4 text-left">
+      {trackingError && (
+        <p role="alert" className="rounded border border-destructive p-3">
+          Placement tracking is unavailable. {trackingError}
+        </p>
+      )}
+      {failedChains.map((chain) => (
+        <div
+          key={chain.chainId}
+          role="alert"
+          className="rounded border border-destructive p-3"
+        >
+          <p>{chainNames[chain.chainId]} orders are unavailable.</p>
+          <p>{chain.error}</p>
+          {chain.orders.length > 0 && (
+            <p>
+              Previously loaded {chainNames[chain.chainId]} orders may be out of
+              date.
+            </p>
+          )}
+          <button
+            disabled={isLoading}
+            onClick={() => mutate()}
+            className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-primary underline"
+          >
+            Retry {chainNames[chain.chainId]}
+          </button>
+        </div>
+      ))}
     </div>
+  );
+
+  return (
+    <>
+      <OrdersHeading>
+        <DataTableToolbar
+          className="rescue-portfolio-toolbar"
+          table={table}
+          filterFields={filterFields}
+          afterFilters={
+            <TooltipProvider>
+              <TooltipRoot>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="rescue-secondary-control pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring size-11 shrink-0 rounded-none text-muted-foreground hover:text-primary"
+                    aria-label="Refresh orders"
+                    aria-busy={isLoading}
+                    disabled={isLoading}
+                    onClick={() => mutate()}
+                  >
+                    <PixelIcon
+                      name="reload"
+                      className={`size-4 ${isLoading ? "motion-safe:animate-spin" : ""}`}
+                    />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Refresh orders</TooltipContent>
+              </TooltipRoot>
+            </TooltipProvider>
+          }
+        />
+      </OrdersHeading>
+      <div className="flex min-h-0 flex-1 flex-col gap-4">
+        <DataTable
+          table={table}
+          fillPanel
+          className="rescue-orders-table"
+          tableClassName="min-w-0 table-fixed xl:min-w-0"
+          onRowClick={(row: PlacementRow) => {
+            if (row.canLink)
+              router.push(
+                `/${row.chainId}/${account}/${encodeURIComponent(row.parentId)}`,
+              );
+          }}
+          getRowLabel={(row: PlacementRow) =>
+            row.canLink
+              ? `View order ${row.parentId} on ${chainNames[row.chainId]}`
+              : undefined
+          }
+          emptyMessage={emptyMessage}
+          notice={notice}
+        />
+      </div>
+    </>
   );
 }

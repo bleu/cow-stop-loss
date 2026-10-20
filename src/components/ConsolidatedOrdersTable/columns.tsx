@@ -1,295 +1,258 @@
-import { Button, Checkbox, formatNumber } from "@bleu/ui";
-import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowLeftRight } from "lucide-react";
-import React, { useState } from "react";
 import { formatUnits } from "viem";
 
-import { DataTableColumnHeader } from "#/components/data-table/data-table-column-header";
-import { useSafeApp } from "#/hooks/useSafeApp";
+import { NetworkLogo } from "#/components/NetworkLogo";
+import { TokenLogo } from "#/components/TokenLogo";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
-import { DraftOrder, IToken, StopLossOrderType } from "#/lib/types";
+import { chainNames } from "#/lib/publicClients";
+import { PlacementRow } from "#/lib/stopLossPlacement";
+import { OrderStatus } from "#/lib/types";
 
+import { CancelOrderDialog } from "../CancelOrderDialog";
 import { StatusBadge } from "../StatusBadge";
-import { LinkComponent } from "../ui/link";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../ui/tooltip-primitive";
-import { ConsolidatedOrderType } from ".";
 
-type PriceKey = "strikePrice" | "limitPrice" | "currentPrice";
-
-interface TokenPair {
-  tokenA: Omit<IToken, "__typename">;
-  tokenB: Omit<IToken, "__typename">;
+function shortAmount(value: string) {
+  const [whole, fraction = ""] = value.split(".");
+  const visibleFraction = fraction.slice(0, 4).replace(/0+$/, "");
+  if (whole === "0" && !visibleFraction && /[1-9]/.test(fraction))
+    return "<0.0001";
+  return `${whole}${visibleFraction ? `.${visibleFraction}` : ""}`;
 }
 
-const isPostedOrder = (
-  order: ConsolidatedOrderType,
-): order is StopLossOrderType => {
-  return "stopLossData" in order && order.stopLossData !== null;
-};
-
-const isDraftOrder = (order: ConsolidatedOrderType): order is DraftOrder => {
-  return "tokenBuy" in order && "tokenSell" in order;
-};
-
-export function formatNumberWrapper(number: number | string): string {
-  return formatNumber(number, 2, "decimal", "compact", 0.01);
+function placementLabel(row: PlacementRow) {
+  if (row.source !== "local" || row.placement.status === "confirmed")
+    return undefined;
+  const stage = {
+    "approval-reset": "Approval reset",
+    approval: "Approval",
+    setup: "Setup",
+  }[row.placement.stage];
+  if (row.placement.status === "prompting")
+    return `Waiting for wallet: ${stage.toLowerCase()}`;
+  if (row.placement.status === "ready")
+    return row.placement.stage === "approval-reset"
+      ? "Approval reset confirmed. Approval required."
+      : "Approval confirmed. Ready to place.";
+  return `${stage} pending`;
 }
 
-export function getOrderDescription(order: ConsolidatedOrderType): string {
-  if (isPostedOrder(order) && order.stopLossData) {
-    const {
-      isSellOrder,
-      tokenSellAmount,
-      tokenSell,
-      tokenBuyAmount,
-      tokenBuy,
-    } = order.stopLossData;
-    return `${isSellOrder ? "Sell" : "Buy"} ${formatNumberWrapper(formatUnits(tokenSellAmount as bigint, tokenSell.decimals))} ${tokenSell.symbol} for ${formatNumberWrapper(formatUnits(tokenBuyAmount as bigint, tokenBuy.decimals))} ${tokenBuy.symbol}`;
-  } else if (isDraftOrder(order)) {
-    return `${order.isSellOrder ? "Sell" : "Buy"} ${formatNumberWrapper(order.amountSell)} ${order.tokenSell.symbol} for ${formatNumberWrapper(order.amountBuy)} ${order.tokenBuy.symbol}`;
-  }
-  return "Invalid order";
+function formatPrice(value: number) {
+  return new Intl.NumberFormat("en-US", {
+    maximumSignificantDigits: 8,
+  }).format(value);
 }
 
-const getTokenPair = (order: ConsolidatedOrderType): TokenPair | null => {
-  if (isPostedOrder(order) && order.stopLossData) {
-    return {
-      tokenA: order.stopLossData.tokenBuy,
-      tokenB: order.stopLossData.tokenSell,
-    } as TokenPair;
-  }
-  if (isDraftOrder(order)) {
-    return {
-      tokenA: order.tokenBuy,
-      tokenB: order.tokenSell,
-    };
-  }
-  return null;
-};
-
-const usePrice = (
-  order: ConsolidatedOrderType,
-  priceKey: PriceKey,
-): number | null => {
-  const tokenPair = getTokenPair(order);
+function MarketDistance({ order }: { order: PlacementRow }) {
+  const sellToken = {
+    ...order.sellToken,
+    decimals: order.sellToken.decimals ?? 18,
+  };
+  const buyToken = {
+    ...order.buyToken,
+    decimals: order.buyToken.decimals ?? 18,
+  };
   const { data: marketPrice } = useTokenPairPrice(
-    tokenPair?.tokenB,
-    tokenPair?.tokenA,
+    sellToken,
+    buyToken,
+    order.chainId,
+    {
+      tokenSellOracle: order.sellTokenPriceOracle,
+      tokenBuyOracle: order.buyTokenPriceOracle,
+      maxAge: order.maxTimeSinceLastOracleUpdate,
+    },
   );
+  if (!marketPrice) return null;
 
-  if (priceKey === "currentPrice") {
-    return marketPrice ?? null;
-  }
+  const triggerPrice = Number(formatUnits(order.strike, 18));
+  const distance = ((marketPrice - triggerPrice) / marketPrice) * 100;
 
-  if (priceKey === "limitPrice" && isPostedOrder(order) && order.stopLossData) {
-    const amountSell = formatUnits(
-      order.stopLossData.tokenSellAmount as bigint,
-      order.stopLossData.tokenSell.decimals,
-    );
-    const amountBuy = formatUnits(
-      order.stopLossData.tokenBuyAmount as bigint,
-      order.stopLossData.tokenBuy.decimals,
-    );
-    return Number(amountBuy) / Number(amountSell);
-  }
-
-  if (
-    isPostedOrder(order) &&
-    order.stopLossData &&
-    priceKey === "strikePrice"
-  ) {
-    return Number(formatUnits(order.stopLossData.strike as bigint, 18));
-  }
-
-  if (isDraftOrder(order) && priceKey in order) {
-    return order[priceKey] as number;
-  }
-
-  return null;
-};
-
-const PriceDisplay: React.FC<{
-  tokenPair: TokenPair;
-  price: number | null;
-}> = ({ tokenPair, price }) => {
-  const [isInverted, setIsInverted] = useState(false);
-  const { tokenA, tokenB } = tokenPair;
-  const displayPrice = price !== null ? (isInverted ? 1 / price : price) : null;
-  const symbols = isInverted
-    ? `${tokenB.symbol}/ ${tokenA.symbol}`
-    : `${tokenA.symbol}/ ${tokenB.symbol}`;
-
-  if (displayPrice === null) return "-";
-  if (displayPrice === 0) return null;
   return (
-    <div className="flex flex-row gap-1">
-      <div className="my-auto flex-1">{formatNumber(displayPrice, 4)}</div>
-      {displayPrice && (
-        <Button
-          type="button"
-          variant="ghost"
-          className="py-0 px-1 text-accent text-xs whitespace-break-spaces flex-1"
-          onClick={() => setIsInverted(!isInverted)}
-        >
-          {symbols}
-
-          <ArrowLeftRight className="size-4" />
-        </Button>
-      )}
-    </div>
+    <p className="mt-0.5 text-xs text-muted-foreground tabular-nums">
+      {Math.abs(distance) < 0.005
+        ? "At market"
+        : `${Math.abs(distance).toFixed(2)}% ${distance >= 0 ? "below" : "above"} market`}
+    </p>
   );
-};
+}
 
-export const InvertiblePrice: React.FC<{
-  order: ConsolidatedOrderType;
-  priceKey: PriceKey;
-}> = ({ order, priceKey }) => {
-  const tokenPair = getTokenPair(order);
-  const price = usePrice(order, priceKey);
+function expiryLabel(validTo: number) {
+  const expiry = new Date(validTo * 1000);
+  return {
+    label: expiry.toLocaleDateString(undefined, {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }),
+    full: expiry.toLocaleString(),
+  };
+}
 
-  if (!tokenPair) return <span>Invalid order type</span>;
-
-  return <PriceDisplay tokenPair={tokenPair} price={price} />;
-};
-
-export function getColumns(): ColumnDef<ConsolidatedOrderType>[] {
+export function getColumns(): ColumnDef<PlacementRow>[] {
   return [
     {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          className="mr-1"
-          checked={table.getIsAllPageRowsSelected()}
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      cell: ({ row }) => {
-        const isSelectable = row.getCanSelect();
+      id: "chainId",
+      accessorFn: (order) => String(order.chainId),
+      enableHiding: true,
+      header: "Chain",
+      filterFn: (row, id, values: string[]) =>
+        values.includes(String(row.getValue(id))),
+    },
+    {
+      id: "order",
+      header: "Order",
+      cell: ({ row: { original: order } }) => {
+        const sell =
+          order.sellToken.decimals === null
+            ? `${order.sellAmount} base units`
+            : formatUnits(order.sellAmount, order.sellToken.decimals);
+        const buy =
+          order.buyToken.decimals === null
+            ? `${order.buyAmount} base units`
+            : formatUnits(order.buyAmount, order.buyToken.decimals);
         return (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger>
-                <Checkbox
-                  className="mr-1"
-                  checked={row.getIsSelected()}
-                  onCheckedChange={(value) => row.toggleSelected(!!value)}
-                  aria-label="Select row"
-                  disabled={!isSelectable}
+          <div
+            aria-label={`${shortAmount(sell)} ${order.sellToken.symbol} for ${shortAmount(buy)} ${order.buyToken.symbol}`}
+            title={`${sell} ${order.sellToken.symbol} for ${buy} ${order.buyToken.symbol}`}
+            className="flex min-w-0 items-center gap-2 xl:gap-2.5"
+          >
+            <div aria-hidden="true" className="flex shrink-0 -space-x-2">
+              <TokenLogo
+                tokenAddress={order.sellToken.address}
+                chainId={order.chainId}
+                alt=""
+                className="size-6 rounded-full ring-2 ring-card xl:size-7"
+                height={28}
+                width={28}
+              />
+              <TokenLogo
+                tokenAddress={order.buyToken.address}
+                chainId={order.chainId}
+                alt=""
+                className="size-6 rounded-full ring-2 ring-card xl:size-7"
+                height={28}
+                width={28}
+              />
+            </div>
+            <div className="min-w-0">
+              <p className="whitespace-nowrap text-xs font-semibold tracking-tight tabular-nums">
+                {shortAmount(sell)} {order.sellToken.symbol} for{" "}
+                {shortAmount(buy)} {order.buyToken.symbol}
+              </p>
+              <p className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+                <NetworkLogo
+                  chainId={order.chainId}
+                  size={14}
+                  className="rounded-full"
                 />
-              </TooltipTrigger>
-              {!isSelectable && (
-                <TooltipContent className="bg-primary text-primary-foreground text-xs">
-                  You can only manage Draft, Open, or Partially Filled orders
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </TooltipProvider>
+                {chainNames[order.chainId]}
+              </p>
+            </div>
+          </div>
         );
       },
-      enableSorting: false,
-      enableHiding: false,
     },
     {
-      accessorKey: "order",
-      enableSorting: false,
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Order" />
-      ),
-      cell: ({ row }) => (
-        <div className="min-w-32">{getOrderDescription(row.original)}</div>
-      ),
-    },
-    {
-      accessorKey: "strikePrice",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Trigger price" />
-      ),
-      cell: ({ row }) => (
-        <InvertiblePrice order={row.original} priceKey="strikePrice" />
+      id: "trigger",
+      header: "Trigger",
+      cell: ({ row: { original: order } }) => (
+        <div className="min-w-0">
+          <p className="text-xs font-semibold tabular-nums">
+            {formatPrice(Number(formatUnits(order.strike, 18)))}{" "}
+            {order.buyToken.symbol}
+          </p>
+          <MarketDistance order={order} />
+        </div>
       ),
     },
     {
-      accessorKey: "limitPrice",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Limit price" />
-      ),
-      cell: ({ row }) => (
-        <InvertiblePrice order={row.original} priceKey="limitPrice" />
-      ),
-    },
-    {
-      accessorKey: "currentPrice",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Current price" />
-      ),
-      cell: ({ row }) => (
-        <InvertiblePrice order={row.original} priceKey="currentPrice" />
-      ),
-    },
-    {
-      accessorKey: "blockTimestamp",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Created" />
-      ),
-      cell: ({ row }) => {
-        if (isPostedOrder(row.original)) {
-          const timestamp = Number(row.original.blockTimestamp);
-          return new Date(timestamp * 1000)
-            .toLocaleTimeString("en-GB", {
-              year: "numeric",
-              month: "2-digit",
-              day: "2-digit",
-              hour: "2-digit",
-              minute: "2-digit",
-            })
-            .replace(",", "");
-        }
-        return "-";
+      id: "expiry",
+      header: "Expires",
+      cell: ({ row: { original: order } }) => {
+        const expiry = expiryLabel(order.validTo);
+        return (
+          <time
+            dateTime={new Date(order.validTo * 1000).toISOString()}
+            title={expiry.full}
+            className="text-xs text-muted-foreground tabular-nums"
+          >
+            {expiry.label}
+          </time>
+        );
       },
     },
     {
       accessorKey: "status",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Status" />
-      ),
-      cell: ({ row }) => {
-        return <StatusBadge status={row.original.status} />;
+      header: "Status",
+      cell: ({ row: { original: order } }) => {
+        const progress = placementLabel(order);
+        return (
+          <div className={progress ? "min-w-32" : undefined}>
+            {progress ? (
+              <span className="text-sm font-semibold">Pending</span>
+            ) : (
+              <StatusBadge status={order.status} />
+            )}
+            {(progress || order.source === "local") && (
+              <p className="mt-0.5 max-w-48 text-xs text-muted-foreground">
+                {progress ?? "Waiting for API indexing"}
+              </p>
+            )}
+            {order.source === "local" && order.error && (
+              <p
+                role="alert"
+                className="mt-1 max-w-48 text-xs text-destructive"
+              >
+                {order.error}
+              </p>
+            )}
+          </div>
+        );
       },
-      filterFn: (row, id, value) => {
-        return Array.isArray(value) && value.includes(row.getValue(id));
+      filterFn: (row, id, values: string[]) => {
+        const status = row.original.status;
+        const groups: Record<string, OrderStatus[]> = {
+          Open: [
+            OrderStatus.OPEN,
+            OrderStatus.DRAFT,
+            OrderStatus.ON_QUEUE,
+            OrderStatus.CREATING,
+          ],
+          Filled: [
+            OrderStatus.FULFILLED,
+            OrderStatus.PARTIALLY_FILLED,
+            OrderStatus.PARTIALLY_FILLED_AND_CANCELLED,
+            OrderStatus.PARTIALLY_FILLED_AND_EXPIRED,
+            OrderStatus.PARTIALLY_FILLED_AND_CANCELLING,
+          ],
+          Canceled: [
+            OrderStatus.CANCELLED,
+            OrderStatus.CANCELLING,
+            OrderStatus.PARTIALLY_FILLED_AND_CANCELLED,
+            OrderStatus.PARTIALLY_FILLED_AND_CANCELLING,
+          ],
+          Expired: [
+            OrderStatus.EXPIRED,
+            OrderStatus.PARTIALLY_FILLED_AND_EXPIRED,
+          ],
+          "Partially filled, cancelled": [
+            OrderStatus.PARTIALLY_FILLED_AND_CANCELLED,
+            OrderStatus.PARTIALLY_FILLED_AND_CANCELLING,
+          ],
+          "Partially filled, expired": [
+            OrderStatus.PARTIALLY_FILLED_AND_EXPIRED,
+          ],
+        };
+        return values.some((group) => groups[group]?.includes(status));
       },
     },
     {
-      id: "details",
-      cell: ({ row }) => {
-        if (isPostedOrder(row.original) && row.original.id) {
-          const { safeAddress, chainId } = useSafeApp();
-          return (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger>
-                  <LinkComponent
-                    href={`/${chainId}/${safeAddress}/${row.original.id}`}
-                  >
-                    <ArrowTopRightIcon className="size-4 hover:text-primary" />
-                  </LinkComponent>
-                </TooltipTrigger>
-                <TooltipContent className="bg-primary text-primary-foreground text-xs">
-                  View details
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          );
-        }
-        return <span className="text-center">-</span>;
-      },
+      id: "actions",
+      header: () => <span className="sr-only">Cancel order</span>,
+      cell: ({ row: { original: order } }) => (
+        <div className="flex items-center justify-center">
+          <CancelOrderDialog order={order} compact />
+        </div>
+      ),
     },
   ];
 }

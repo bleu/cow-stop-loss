@@ -1,4 +1,6 @@
-import { mainnet } from "viem/chains";
+import type { Address } from "viem";
+
+import type { ChainId } from "./publicClients";
 
 // These addresses are the same for all supported chains
 export const COMPOSABLE_COW_ADDRESS =
@@ -13,7 +15,15 @@ export const GPV2_VAULT_RELAYER_ADDRESS =
   "0xC92E8bdf79f0507f65a392b0ab4667716BFE0110" as const;
 export const STOP_LOSS_ADDRESS =
   "0x412c36e5011cd2517016d243a2dfb37f73a242e7" as const;
-
-export const PRICE_FEED_REGISTER_ADDRESS = {
-  [mainnet.id]: "0x47Fb2585D2C56Fe188D0E6ec628a38b74fCeeeDf",
-} as const;
+export const POLLER_ADDRESS_BY_CHAIN_ID = {
+  1: "0xd8088f0d57dB91AC6404FB3a9723A890100a6bB3",
+  100: "0xd8088f0d57dB91AC6404FB3a9723A890100a6bB3",
+  42161: "0xd8088f0d57dB91AC6404FB3a9723A890100a6bB3",
+  8453: "0xd8088f0d57dB91AC6404FB3a9723A890100a6bB3",
+  137: "0xd8088f0d57dB91AC6404FB3a9723A890100a6bB3",
+  43114: "0xd8088f0d57dB91AC6404FB3a9723A890100a6bB3",
+  56: "0xd8088f0d57dB91AC6404FB3a9723A890100a6bB3",
+  59144: "0xd8088f0d57dB91AC6404FB3a9723A890100a6bB3",
+  9745: "0xd8088f0d57dB91AC6404FB3a9723A890100a6bB3",
+  11155111: "0xd8088f0d57dB91AC6404FB3a9723A890100a6bB3",
+} as const satisfies Record<ChainId, Address>;

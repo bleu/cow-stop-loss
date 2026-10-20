@@ -8,16 +8,17 @@ export function TokenAmount({
   usdPrice,
 }: {
   token: IToken;
-  balance: number;
+  balance: number | string;
   usdPrice: number;
 }) {
   return (
     <div className="flex flex-col items-end">
       <span>
-        {formatNumber(balance, 4)} {token.symbol}
+        {typeof balance === "string" ? balance : formatNumber(balance, 4)}{" "}
+        {token.symbol}
       </span>
       <i className="text-xs h-5">
-        ≈ {usdPrice > 0 && `$${formatNumber(balance * usdPrice, 2)}`}
+        ≈ {usdPrice > 0 && `$${formatNumber(Number(balance) * usdPrice, 2)}`}
       </i>
     </div>
   );

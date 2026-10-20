@@ -1,58 +1,66 @@
-"use client";
+import "@rainbow-me/rainbowkit/styles.css";
 import "./globals.css";
+import "../styles/order-review.css";
+import "../styles/landing.css";
 
-import { cn } from "@bleu/ui";
 import localFont from "next/font/local";
+import { cookies, headers } from "next/headers";
+import type { ReactNode } from "react";
 
 import { RootLayout } from "#/components/RootLayout";
+import { getWagmiInitialState } from "#/utils/wagmiServer";
 
-const flechaS = localFont({
-  src: [
-    {
-      path: "../fonts/FlechaS-Medium.woff2",
-      weight: "500",
-      style: "normal",
-    },
-    {
-      path: "../fonts/FlechaS-MediumItalic.woff2",
-      weight: "500",
-      style: "italic",
-    },
-  ],
-  variable: "--font-family-serif",
+const pixelDisplay = localFont({
+  src: "../fonts/PixelifySans-Variable.ttf",
+  weight: "400 700",
+  variable: "--font-family-pixel-display",
+  display: "swap",
 });
 
-const circularStd = localFont({
+const desktopDisplay = localFont({
   src: [
+    { path: "../fonts/ChakraPetch-Medium.ttf", weight: "500", style: "normal" },
     {
-      path: "../fonts/CircularStd-Book.woff2",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "../fonts/CircularStd-Medium.woff2",
-      weight: "500",
+      path: "../fonts/ChakraPetch-SemiBold.ttf",
+      weight: "600",
       style: "normal",
     },
   ],
-  variable: "--font-family-sans",
+  variable: "--font-family-desktop-display",
+  display: "swap",
 });
 
-export default function Layout({
+export async function generateMetadata() {
+  const theme =
+    (await cookies()).get("theme")?.value === "light" ? "light" : "dark";
+  return {
+    title: "CoW Air Rescue",
+    icons: {
+      icon: {
+        url: `/assets/air-rescue/favicon-${theme}.svg`,
+        type: "image/svg+xml",
+      },
+    },
+  };
+}
+
+export default async function Layout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
+  const initialState = getWagmiInitialState((await headers()).get("cookie"));
+  const initialTheme =
+    (await cookies()).get("theme")?.value === "light" ? "light" : "dark";
+
   return (
-    <html lang="en">
+    <html lang="en" className={initialTheme === "light" ? "light" : undefined}>
       <body
-        className={cn(
-          flechaS.variable,
-          circularStd.variable,
-          "flex h-full flex-col font-sans font-normal text-white bg-background border-border",
-        )}
+        className={`${pixelDisplay.variable} ${desktopDisplay.variable} min-h-full border-border bg-background font-sans font-normal`}
       >
-        <RootLayout>{children}</RootLayout>
+        <RootLayout initialState={initialState} initialTheme={initialTheme}>
+          {children}
+        </RootLayout>
       </body>
     </html>
   );

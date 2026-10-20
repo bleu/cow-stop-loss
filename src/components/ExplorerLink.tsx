@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { ReactElement } from "react";
 
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import { BlockExplorerLinkType, getBlockExplorerUrl } from "#/lib/addressUtils";
 import { CHAIN_INFO } from "#/lib/chainInfo";
 import { ChainId } from "#/lib/publicClients";
@@ -43,6 +44,7 @@ export interface Props {
    * to hide label
    */
   hideLabel?: boolean;
+  showExternalIcon?: boolean;
 }
 
 /**
@@ -61,6 +63,7 @@ export const BlockExplorerLink: React.FC<Props> = (props: Props) => {
     networkId,
     hideLabel = false,
     showLogo = false,
+    showExternalIcon = false,
   } = props;
 
   if (!networkId || !identifier) {
@@ -76,10 +79,17 @@ export const BlockExplorerLink: React.FC<Props> = (props: Props) => {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className={className}
+      title={identifier}
+      className={`${showExternalIcon ? "group inline-flex items-center gap-1.5 rounded-none text-primary underline-offset-4 transition-colors hover:text-secondary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" : ""} ${className ?? ""}`}
     >
       <>
         {hideLabel ? "" : <span>{label}</span>}
+        {showExternalIcon && (
+          <PixelIcon
+            name="external-link"
+            className="size-3.5 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+          />
+        )}
         {showLogo && (
           <Image
             title={`Open it on ${CHAIN_INFO[networkId].explorerTitle}`}

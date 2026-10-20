@@ -1,14 +1,24 @@
 "use client";
 
-import { useUIStore } from "#/hooks/useUIState";
+import { useAccount } from "wagmi";
 
-import { SwapCardIntroduction } from "./SwapCardIntroduction";
-import { SwapForm } from "./SwapForm";
+import { supportedChainIds } from "#/lib/publicClients";
 
-export function SwapCard() {
-  const firstAccess = useUIStore((state) => state.firstAccess);
-  if (firstAccess) {
-    return <SwapCardIntroduction />;
+import { SwapForm, SwapFormProps } from "./SwapForm";
+
+export function SwapCard({
+  onReviewOrder = () => {},
+  reviewDisabled,
+}: Partial<SwapFormProps>) {
+  const { chainId } = useAccount();
+  if (chainId && !supportedChainIds.some((id) => id === chainId)) {
+    return (
+      <p role="alert">
+        Switch to a supported wallet network to place an order.
+      </p>
+    );
   }
-  return <SwapForm />;
+  return (
+    <SwapForm onReviewOrder={onReviewOrder} reviewDisabled={reviewDisabled} />
+  );
 }

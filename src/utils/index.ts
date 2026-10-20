@@ -1,6 +1,6 @@
 import { Address } from "viem";
-import { arbitrum, gnosis, goerli, mainnet, sepolia } from "viem/chains";
 
+import { getExplorerOrderLink } from "#/lib/cowExplorer";
 import { ChainId } from "#/lib/publicClients";
 
 export function truncateAddress(address?: string | null) {
@@ -23,6 +23,9 @@ export enum Network {
   PolygonZKEVM = "polygon-zkevm",
   Base = "base",
   Avalanche = "avalanche",
+  Bnb = "bnb",
+  Linea = "linea",
+  Plasma = "plasma",
 }
 
 export enum NetworkChainId {
@@ -36,6 +39,9 @@ export enum NetworkChainId {
   POLYGONZKEVM = 1_101,
   BASE = 8453,
   AVALANCHE = 43114,
+  BNB = 56,
+  LINEA = 59144,
+  PLASMA = 9745,
 }
 
 export const NetworkChainIdFromNetwork = {
@@ -49,7 +55,10 @@ export const NetworkChainIdFromNetwork = {
   [Network.PolygonZKEVM]: NetworkChainId.POLYGONZKEVM,
   [Network.Base]: NetworkChainId.BASE,
   [Network.Avalanche]: NetworkChainId.AVALANCHE,
-};
+  [Network.Bnb]: NetworkChainId.BNB,
+  [Network.Linea]: NetworkChainId.LINEA,
+  [Network.Plasma]: NetworkChainId.PLASMA,
+} satisfies Record<Network, NetworkChainId>;
 
 export const NetworkFromNetworkChainId = {
   [NetworkChainId.ETHEREUM]: Network.Ethereum,
@@ -62,7 +71,10 @@ export const NetworkFromNetworkChainId = {
   [NetworkChainId.POLYGONZKEVM]: Network.PolygonZKEVM,
   [NetworkChainId.BASE]: Network.Base,
   [NetworkChainId.AVALANCHE]: Network.Avalanche,
-};
+  [NetworkChainId.BNB]: Network.Bnb,
+  [NetworkChainId.LINEA]: Network.Linea,
+  [NetworkChainId.PLASMA]: Network.Plasma,
+} satisfies Record<NetworkChainId, Network>;
 
 export const networkUrls = {
   [NetworkChainId.ETHEREUM]: {
@@ -102,10 +114,22 @@ export const networkUrls = {
     name: "Base Chain Explorer",
   },
   [NetworkChainId.AVALANCHE]: {
-    url: "https://snowtrace.io/",
+    url: "https://snowscan.xyz/",
     name: "Avalanche C-Chain Explorer",
   },
-};
+  [NetworkChainId.BNB]: {
+    url: "https://bscscan.com/",
+    name: "Bscscan",
+  },
+  [NetworkChainId.LINEA]: {
+    url: "https://lineascan.build/",
+    name: "Lineascan",
+  },
+  [NetworkChainId.PLASMA]: {
+    url: "https://plasmascan.to/",
+    name: "PlasmaScan",
+  },
+} satisfies Record<NetworkChainId, { url: string; name: string }>;
 
 export function buildBlockExplorerTxUrl({
   chainId,
@@ -157,7 +181,10 @@ export const networkIdEnumMap = {
   "1101": Network.PolygonZKEVM,
   "43114": Network.Avalanche,
   "8453": Network.Base,
-};
+  "56": Network.Bnb,
+  "59144": Network.Linea,
+  "9745": Network.Plasma,
+} satisfies Record<NetworkChainId, Network>;
 
 const networksNamesOnBalancer = [
   String(NetworkChainId.ETHEREUM),
@@ -198,16 +225,6 @@ export function unsafeNetworkIdFor(name: string) {
 }
 export const addressRegex = /0x[a-fA-F0-9]{40}$/;
 
-const cowExplorerBaseUrl = "https://explorer.cow.fi/";
-
-const cowExplorerUrl = {
-  [mainnet.id]: "",
-  [goerli.id]: "goerli",
-  [gnosis.id]: "gc",
-  [sepolia.id]: "sepolia",
-  [arbitrum.id]: "arb1",
-};
-
 export function buildOrderCowExplorerUrl({
   chainId,
   orderId,
@@ -215,7 +232,7 @@ export function buildOrderCowExplorerUrl({
   chainId: ChainId;
   orderId: `0x${string}`;
 }) {
-  return `${cowExplorerBaseUrl}${cowExplorerUrl[chainId]}/orders/${orderId}`;
+  return getExplorerOrderLink(chainId, orderId);
 }
 
 export function generateRandomHex(length: number) {

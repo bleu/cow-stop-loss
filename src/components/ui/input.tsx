@@ -10,55 +10,61 @@ interface IInput extends Omit<HTMLProps<HTMLInputElement>, "name"> {
   tooltipText?: string;
   tooltipLink?: string;
   extraLabelElement?: React.ReactNode;
+  layout?: "stacked" | "inline";
 }
 
-export const Input = React.forwardRef<HTMLInputElement, IInput>(
-  ({
-    name,
-    label,
-    validation,
-    tooltipText,
-    tooltipLink,
-    extraLabelElement,
-    className,
-    ...props
-  }: IInput) => {
-    const {
-      register,
-      formState: { errors },
-    } = useFormContext();
+export function Input({
+  name,
+  label,
+  validation,
+  tooltipText,
+  tooltipLink,
+  extraLabelElement,
+  className,
+  id = name,
+  layout = "stacked",
+  ...props
+}: IInput) {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext();
 
-    if (!name) {
-      throw new Error("Input component requires a name prop");
-    }
+  if (!name) {
+    throw new Error("Input component requires a name prop");
+  }
 
-    const error = errors[name] as FieldError | undefined;
-    const errorMessage = error?.message;
+  const error = errors[name] as FieldError | undefined;
+  const errorMessage = error?.message;
 
-    return (
-      <div className="flex flex-col">
-        {label && (
-          <div className="flex flex-row gap-x-2 items-center mb-2">
-            <Label className="block text-sm">{label}</Label>
-            {tooltipText && (
-              <InfoTooltip text={tooltipText} link={tooltipLink} />
-            )}
-            {extraLabelElement}
-          </div>
+  return (
+    <div
+      className={layout === "inline" ? "rescue-input-inline" : "flex flex-col"}
+    >
+      {label && (
+        <div className="rescue-input-label flex flex-row gap-x-1.5 items-center mb-2">
+          <Label htmlFor={id} className="block text-sm">
+            {label}
+          </Label>
+          {tooltipText && <InfoTooltip text={tooltipText} link={tooltipLink} />}
+          {extraLabelElement}
+        </div>
+      )}
+      <InputPrimitive
+        {...props}
+        {...register(name, validation)}
+        id={id}
+        className={cn(
+          "w-full shadow-none rounded-none bg-card placeholder:opacity-50 border border-border focus-visible:border-primary/60",
+          className,
         )}
-        <InputPrimitive
-          {...props}
-          {...register(name, validation)}
-          className={cn(
-            "w-full shadow-none rounded-md placeholder:opacity-50 border border-border",
-            className,
-          )}
-        />
+      />
 
-        {errorMessage && (
-          <div className="mt-1 text-sm text-destructive">{errorMessage}</div>
-        )}
-      </div>
-    );
-  },
-);
+      {errorMessage && (
+        <div className="rescue-input-error mt-1 text-sm text-destructive">
+          {errorMessage}
+        </div>
+      )}
+    </div>
+  );
+}

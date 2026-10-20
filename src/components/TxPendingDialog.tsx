@@ -10,6 +10,7 @@ import {
 } from "@bleu/ui";
 import cn from "clsx";
 
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import { useUIStore } from "#/hooks/useUIState";
 
 export function TxPendingDialog() {
@@ -24,25 +25,38 @@ export function TxPendingDialog() {
         <DialogOverlay
           id="dialog-overlay"
           className={cn(
-            "bg-black/20 data-[state=open]:animate-overlayShow fixed inset-0 rounded-lg",
+            "bg-background/65 backdrop-blur-sm data-[state=open]:animate-overlayShow fixed inset-0 rounded-none",
           )}
         />
         <DialogContent
+          closeButton={
+            <>
+              <PixelIcon name="close" className="size-4" />
+              <span className="sr-only">Close</span>
+            </>
+          }
           className={cn(
-            "data-[state=open]:animate-contentShow fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] rounded-lg focus:outline-none bg-muted  w-[90vw] max-w-[450px] p-[25px]",
+            "pixel-frame rescue-dialog data-[state=open]:animate-contentShow fixed left-1/2 top-1/2 max-h-[85dvh] overflow-y-auto w-[calc(100vw-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-none border border-border/70 bg-card p-5 text-foreground shadow-2xl focus:outline-none sm:p-7",
           )}
         >
-          <div className="flex flex-col gap-2 w-full">
-            <DialogTitle className="text-2xl font-medium ">
+          <div className="flex w-full flex-col gap-3">
+            <div
+              aria-hidden="true"
+              className="rescue-hero-cow mx-auto h-24 w-20"
+            />
+            <p className="font-sans text-[10px] uppercase tracking-[0.18em] text-secondary">
+              Air rescue · In transit
+            </p>
+            <DialogTitle className="font-serif text-[28px] leading-tight tracking-tight">
               Transaction being processed
             </DialogTitle>
-            <span className="text-wrap">
+            <span className="text-pretty text-sm leading-relaxed text-muted-foreground">
               Almost there! Your transaction is being processed. You can check
               the status of your transaction in the Safe App or track the order
               dashboard.
             </span>
             <Button
-              className="w-full mt-3"
+              className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rescue-primary-button mt-2 h-12 w-full rounded-none"
               onClick={() => {
                 setTxPendingDialogOpen(false);
               }}

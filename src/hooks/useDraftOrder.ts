@@ -1,16 +1,25 @@
-import { Address } from "viem";
+import { Address, zeroAddress } from "viem";
 import { create } from "zustand";
 
-import { CHAINS_ORACLE_ROUTER_FACTORY } from "#/lib/oracleRouter";
+import { calculateAmounts } from "#/lib/calculateAmounts";
+import {
+  CHAINS_ORACLE_ROUTER_FACTORY,
+  configuredRouteMaxAgeSeconds,
+} from "#/lib/oracleRouter";
+import { getPlacementReads } from "#/lib/placementReads";
 import { ChainId } from "#/lib/publicClients";
-import { VALID_TO_VALUES_MAP } from "#/lib/schema";
-import { fetchPairUsdPrice } from "#/lib/tokenUtils";
+import {
+  generateAdvancedSettingsSchema,
+  generateSwapSchema,
+  VALID_TO_VALUES_MAP,
+} from "#/lib/schema";
 import { DraftOrder, OrderStatus, SwapData } from "#/lib/types";
 import { generateRandomHex } from "#/utils";
 
-import { useAdvancedSettingsStore } from "./useAdvancedSettings";
-import { useDraftOrders } from "./useDraftOrders";
-import { useOracleStore } from "./useOracle";
+import {
+  advancedSettingsForRoute,
+  useAdvancedSettingsStore,
+} from "./useAdvancedSettings";
 
 interface DraftOrderState {
   currentDraftOrder?: DraftOrder;
@@ -18,67 +27,79 @@ interface DraftOrderState {
   createDraftOrder: (
     data: SwapData,
     chainId: ChainId,
-    safeAddress: Address,
+    walletAddress: Address,
   ) => Promise<DraftOrder>;
 }
 
 export const useDraftOrder = create<DraftOrderState>()((set) => ({
   currentDraftOrder: undefined,
   setCurrentDraftOrder: (order) => set({ currentDraftOrder: order }),
-  createDraftOrder: async (data, chainId, safeAddress) => {
-    const { advancedSettings } = useAdvancedSettingsStore.getState();
-    const { oracleRoute } = useOracleStore.getState();
-    const draftOrders = useDraftOrders.getState().draftOrders;
+  createDraftOrder: async (data, chainId, walletAddress) => {
+    const swapData = generateSwapSchema(chainId).parse(data);
+    const amounts = calculateAmounts({
+      isSellOrder: swapData.isSellOrder,
+      amount: swapData.amountSell,
+      strikePrice: swapData.strikePrice,
+      slippagePercent: swapData.slippagePercent,
+      sellDecimals: swapData.tokenSell.decimals,
+      buyDecimals: swapData.tokenBuy.decimals,
+    });
+    const settingsState = useAdvancedSettingsStore.getState();
+    const advancedSettings = await generateAdvancedSettingsSchema(chainId, {
+      tokenSell: swapData.tokenSell,
+      tokenBuy: swapData.tokenBuy,
+    }).parseAsync(
+      advancedSettingsForRoute(
+        settingsState.advancedSettings,
+        settingsState.oracleAgeMode,
+        configuredRouteMaxAgeSeconds({ chainId, ...swapData }),
+      ),
+    );
 
     const receiver =
       advancedSettings.receiver === ""
-        ? safeAddress
+        ? walletAddress
         : advancedSettings.receiver;
-
-    let tokenBuyOracle = advancedSettings.tokenBuyOracle;
-    let tokenSellOracle = advancedSettings.tokenSellOracle;
-    if (!tokenBuyOracle || !tokenSellOracle) {
-      if (!oracleRoute) throw new Error("No route found");
-      tokenBuyOracle = oracleRoute.tokenBuyOracle;
-      tokenSellOracle = oracleRoute.tokenSellOracle;
+    if (receiver.toLowerCase() === zeroAddress) {
+      throw new Error("Receiver must not be the zero address.");
     }
-    if (!tokenBuyOracle || !tokenSellOracle)
-      throw new Error("Oracle not found");
 
-    const oracleRouterClass = CHAINS_ORACLE_ROUTER_FACTORY[chainId as ChainId];
+    const oracleRouterClass = CHAINS_ORACLE_ROUTER_FACTORY[chainId];
     const oracleRouter = new oracleRouterClass({
-      chainId: chainId as ChainId,
-      tokenBuy: data.tokenBuy,
-      tokenSell: data.tokenSell,
+      chainId,
+      tokenBuy: swapData.tokenBuy,
+      tokenSell: swapData.tokenSell,
+      client: getPlacementReads({ account: walletAddress, chainId }).client,
     });
 
-    const oraclePrice = await oracleRouter.calculatePrice({
-      tokenBuyOracle,
-      tokenSellOracle,
-    });
+    const { tokenBuyOracle, tokenSellOracle } = await oracleRouter.findRoute();
 
-    const fallbackMarketPrice = await fetchPairUsdPrice({
-      sellToken: data.tokenSell,
-      buyToken: data.tokenBuy,
-      chainId: chainId as ChainId,
-    });
+    const oraclePrice = await oracleRouter.calculatePrice(
+      { tokenBuyOracle, tokenSellOracle },
+      advancedSettings.maxHoursSinceOracleUpdates * 3600,
+    );
+
+    if (!Number.isFinite(oraclePrice) || oraclePrice <= 0) {
+      throw new Error("Required price feeds are unavailable or invalid.");
+    }
 
     const timestamp = Date.now();
     const timestampHex = timestamp.toString(16);
     const randomPart = generateRandomHex(64 - timestampHex.length);
     const salt = `0x${timestampHex}${randomPart}` as `0x${string}`;
     const validTo =
-      Math.floor(timestamp / 1000) + VALID_TO_VALUES_MAP[data.validTo];
+      Math.floor(timestamp / 1000) + VALID_TO_VALUES_MAP[swapData.validTo];
 
     const draftOrder: DraftOrder = {
-      ...data,
-      ...advancedSettings,
+      ...swapData,
+      ...amounts,
+      maxHoursSinceOracleUpdates: advancedSettings.maxHoursSinceOracleUpdates,
+      partiallyFillable: advancedSettings.partiallyFillable,
       receiver,
       tokenBuyOracle,
       tokenSellOracle,
-      id: `draft-${draftOrders.length}-${Date.now()}`,
+      id: crypto.randomUUID(),
       oraclePrice,
-      fallbackMarketPrice,
       salt,
       validTo,
       status: OrderStatus.DRAFT,

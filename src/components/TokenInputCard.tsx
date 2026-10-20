@@ -1,206 +1,219 @@
-import {
-  Button,
-  Card,
-  CardContent,
-  CardTitle,
-  formatNumber,
-  Input,
-} from "@bleu/ui";
+import { Button, formatNumber, Input } from "@bleu/ui";
 import { memo, useEffect, useState } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
-import { Address } from "viem";
+import { useAccount } from "wagmi";
 
-import { useOracleStore } from "#/hooks/useOracle";
-import { useSafeApp } from "#/hooks/useSafeApp";
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { useTokenPrice } from "#/hooks/useTokenPrice";
-import { calculateAmounts } from "#/lib/calculateAmounts";
 import { ChainId } from "#/lib/publicClients";
 import { fetchFormattedBalanceOf } from "#/lib/tokenUtils";
 import { SwapData } from "#/lib/types";
-import { convertStringToNumberAndRoundDown } from "#/utils";
-import { pasteAbsoluteValue, preventNegativeKeyDown } from "#/utils/inputs";
 
+import { TokenInfo } from "./TokenInfo";
 import { TokenSelect } from "./TokenSelect";
 
 function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
-  const { safeAddress, chainId } = useSafeApp();
+  const { address: walletAddress, chainId: accountChainId } = useAccount();
+  const chainId = (accountChainId ?? 1) as ChainId;
 
   const {
     setValue,
     register,
     control,
-    getValues,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useFormContext<SwapData>();
   const tokenFieldName = `token${side}` as const;
-  const otherTokenFieldName =
-    `token${side === "Buy" ? "Sell" : "Buy"}` as const;
   const amountFieldName = `amount${side}` as const;
 
-  const [isAmountDisabled, setIsAmountDisabled] = useState(false);
-
-  const [token, isSellOrder, amount] = useWatch({
+  const [token, amount] = useWatch({
     control,
-    name: [tokenFieldName, "isSellOrder", amountFieldName],
+    name: [tokenFieldName, amountFieldName],
   });
-
+  const tokenAddress = token?.address;
+  const tokenDecimals = token?.decimals;
+  const tokenSymbol = token?.symbol;
   const { data: usdPrice } = useTokenPrice(token);
 
-  const [
-    tokenSellBalance,
-    tokenBuyBalance,
-    setTokenBuyBalance,
-    setTokenSellBalance,
-  ] = useSwapTokenBalances((state) => [
-    state.tokenSellBalance,
-    state.tokenBuyBalance,
-    state.setTokenBuyBalance,
-    state.setTokenSellBalance,
+  const [tokenSellBalance, setTokenSellBalance] = useSwapTokenBalances(
+    (state) => [state.tokenSellBalance, state.setTokenSellBalance],
+  );
+  const storedBalance = tokenSellBalance;
+  const setTokenBalance = setTokenSellBalance;
+
+  const isAmountDisabled = side === "Buy";
+  const [balanceFailed, setBalanceError] = useState(false);
+  const [balanceScope, setBalanceScope] = useState<string>();
+  const [balanceAttempt, retryBalance] = useState(0);
+  const currentBalanceScope = `${walletAddress?.toLowerCase()}:${chainId}:${tokenAddress?.toLowerCase()}:${tokenDecimals}`;
+  const balanceError = balanceScope === currentBalanceScope && balanceFailed;
+  const tokenBalance =
+    balanceScope === currentBalanceScope ? storedBalance : undefined;
+
+  useEffect(() => {
+    let active = true;
+    setBalanceError(false);
+    setBalanceScope(undefined);
+    setTokenBalance(undefined);
+    if (
+      tokenAddress &&
+      tokenDecimals !== undefined &&
+      tokenSymbol !== undefined &&
+      walletAddress
+    ) {
+      fetchFormattedBalanceOf({
+        token: {
+          address: tokenAddress,
+          decimals: tokenDecimals,
+          symbol: tokenSymbol,
+        },
+        address: walletAddress,
+        chainId,
+      })
+        .then((balance) => {
+          if (active) {
+            setTokenBalance(balance);
+            setBalanceScope(currentBalanceScope);
+          }
+        })
+        .catch(() => {
+          if (active) {
+            setTokenBalance(undefined);
+            setBalanceScope(currentBalanceScope);
+            setBalanceError(true);
+          }
+        });
+    }
+    return () => {
+      active = false;
+    };
+  }, [
+    tokenAddress,
+    tokenDecimals,
+    tokenSymbol,
+    chainId,
+    walletAddress,
+    setTokenBalance,
+    balanceAttempt,
+    currentBalanceScope,
   ]);
-  const updateOracle = useOracleStore((state) => state.updateOracle);
-  const tokenBalance = side === "Buy" ? tokenBuyBalance : tokenSellBalance;
-  const setTokenBalance =
-    side === "Buy" ? setTokenBuyBalance : setTokenSellBalance;
-
-  async function updateOtherSideAmount() {
-    const limitPrice = getValues("limitPrice");
-    if (!limitPrice) return;
-    const [sellAmount, buyAmount] = calculateAmounts({
-      isSellOrder,
-      amount,
-      limitPrice,
-    });
-    const anotherSideAmount = side === "Buy" ? sellAmount : buyAmount;
-    setValue(
-      `amount${side === "Buy" ? "Sell" : "Buy"}` as const,
-      anotherSideAmount,
-    );
-  }
-
-  async function updateTokenBalance() {
-    const balance = await fetchFormattedBalanceOf({
-      token: token,
-      address: safeAddress as Address,
-      chainId: chainId as ChainId,
-    });
-    setTokenBalance(balance);
-  }
-
-  useEffect(() => {
-    // Control if the amount field should be disabled
-    setIsAmountDisabled(
-      (isSellOrder && side === "Buy") || (!isSellOrder && side === "Sell"),
-    );
-  }, [isSellOrder, side]);
-
-  useEffect(() => {
-    // Update token balance on token change
-    if (token) {
-      updateTokenBalance();
-    }
-  }, [token, safeAddress]);
-
-  useEffect(() => {
-    // Update other side amount on amount change
-    if (!isAmountDisabled) {
-      updateOtherSideAmount();
-    }
-  }, [amount]);
 
   return (
-    <Card className="bg-background w-full p-2 rounded-lg">
-      <CardTitle className="w-full flex justify-between font-normal text-xs">
-        {getCardTitle(isAmountDisabled, side)}
-      </CardTitle>
-      <CardContent className="px-0 py-2 items-start flex flex-row justify-between flex-wrap">
-        <div className="min-w-32 max-w-40 basis-32">
-          <TokenSelect
-            selectedToken={token}
-            onSelectToken={(newToken) => {
-              const otherToken = getValues(otherTokenFieldName);
-              const tokenSell = side == "Sell" ? newToken : otherToken;
-              const tokenBuy = side == "Sell" ? otherToken : newToken;
-              if (otherToken) {
-                updateOracle({ tokenSell, tokenBuy, chainId });
-              }
-              setValue(tokenFieldName, newToken);
-            }}
-            errorMessage={errors[tokenFieldName]?.message}
-          />
+    <div className="rescue-token-group" data-side={side.toLowerCase()}>
+      <section
+        className={
+          "rescue-token-card pixel-inset w-full rounded-none border border-border/80 bg-muted/35 p-3 transition-colors focus-within:border-primary/70"
+        }
+      >
+        <div className="rescue-token-heading mb-1 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+          <label
+            htmlFor={`amount-${side.toLowerCase()}`}
+            className={`font-semibold uppercase text-muted-foreground ${side === "Buy" ? "whitespace-nowrap text-[12px] tracking-[0.08em] sm:text-[13px] sm:tracking-[0.12em]" : "text-[13px] tracking-[0.12em]"}`}
+          >
+            {getCardTitle(side)}
+          </label>
         </div>
-        <div className="flex flex-col gap-y-1 items-end overflow-x-auto basis-1/2 grow">
-          <Input
-            {...register(amountFieldName)}
-            type="number"
-            step={1 / 10 ** (token ? token.decimals : 18)}
-            placeholder="0.0"
-            className="w-full border-none shadow-none h-9 focus-visible:ring-transparent placeholder:/70 px-0 text-2xl text-right bg-background"
-            disabled={isAmountDisabled}
-            min={0}
-            max={10 ** 18}
-            onKeyDown={preventNegativeKeyDown}
-            onPaste={pasteAbsoluteValue}
-          />
-          <i className="text-xs pr-1">
-            {`≈ ${formatNumber(
-              amount && usdPrice ? amount * (usdPrice || 0) : 0,
-              2,
-              "currency",
-              "standard",
-            )}`}
-          </i>
-        </div>
-        <div className="w-full">
-          {token && (
-            <span className="text-xs">
-              <span>
-                Balance:{" "}
-                {formatNumber(
-                  tokenBalance || "0",
-                  4,
-                  "decimal",
-                  "standard",
-                  0.0001,
-                )}{" "}
-              </span>
-              {!isAmountDisabled && tokenBalance && tokenBalance !== "0" && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="py-0 px-1 h-fit text-accent text-xs"
-                  onClick={() => {
-                    setValue(
-                      amountFieldName,
-                      Number(
-                        convertStringToNumberAndRoundDown(
-                          tokenBalance,
-                          token.decimals,
-                        ),
-                      ),
-                    );
-                  }}
-                >
-                  Max
-                </Button>
+        <div className="rescue-token-amount flex min-w-0 items-center justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="rescue-token-value mt-0.5 flex min-w-0 items-center gap-2">
+              <Input
+                id={`amount-${side.toLowerCase()}`}
+                {...register(amountFieldName)}
+                type="text"
+                inputMode="decimal"
+                aria-label={getCardTitle(side)}
+                placeholder="0.0"
+                className="h-11 min-w-0 flex-1 rounded-none border-none bg-transparent px-0 text-left text-[28px] font-medium tracking-tight tabular-nums shadow-none placeholder:text-muted-foreground/80 focus-visible:ring-2 focus-visible:ring-ring sm:text-[28px]"
+                disabled={isAmountDisabled}
+              />
+              {amount && Number(amount) > 0 && usdPrice && (
+                <span className="shrink-0 text-[13px] text-muted-foreground tabular-nums sm:text-sm">
+                  ≈{" "}
+                  {formatNumber(
+                    usdPrice ? Number(amount) * usdPrice : 0,
+                    2,
+                    "currency",
+                    "standard",
+                  )}
+                </span>
               )}
-            </span>
-          )}
+            </div>
+          </div>
+          <div className="w-32 shrink-0 sm:w-40">
+            {side === "Buy" ? (
+              token && (
+                <div
+                  aria-disabled="true"
+                  className="pixel-inset flex h-11 w-full min-w-0 items-center justify-between gap-2 rounded-none border border-border/70 bg-muted/50 px-3 text-muted-foreground"
+                >
+                  <TokenInfo token={token} showExplorerLink={false} />
+                  <PixelIcon
+                    name="chevron-down"
+                    className="size-4 shrink-0 opacity-45"
+                  />
+                </div>
+              )
+            ) : (
+              <TokenSelect
+                selectedToken={token}
+                disabled={isSubmitting}
+                onSelectToken={(newToken) => {
+                  setValue("strikePrice", "");
+                  setValue("tokenSell", newToken, { shouldValidate: true });
+                }}
+                errorMessage={errors.tokenSell?.message}
+              />
+            )}
+          </div>
         </div>
-      </CardContent>
-    </Card>
+        {side === "Sell" && (
+          <div className="rescue-token-balance mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            {token && (
+              <>
+                <span className="whitespace-nowrap">
+                  {!walletAddress
+                    ? "Connect wallet to view balance"
+                    : balanceError
+                      ? "Balance unavailable"
+                      : `Balance: ${tokenBalance === undefined ? "Loading…" : formatNumber(tokenBalance, 4, "decimal", "standard", 0.0001)}`}
+                </span>
+                {balanceError && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    aria-label={`Retry ${token.symbol} balance`}
+                    className="rescue-secondary-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 p-0 text-xs text-primary underline-offset-4 hover:underline"
+                    onClick={() => retryBalance((attempt) => attempt + 1)}
+                  >
+                    Retry
+                  </Button>
+                )}
+                {tokenBalance && tokenBalance !== "0" && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="rescue-secondary-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 p-0 text-xs text-primary underline-offset-4 hover:underline"
+                    onClick={() => {
+                      setValue(amountFieldName, tokenBalance, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                      });
+                    }}
+                  >
+                    Max
+                  </Button>
+                )}
+              </>
+            )}
+          </div>
+        )}
+      </section>
+    </div>
   );
 }
 
 export const TokenInputCard = memo(TokenInputCardComponent);
 
-export function getCardTitle(isAmountDisabled: boolean, side: "Sell" | "Buy") {
-  if (!isAmountDisabled) {
-    return `${side} amount`;
-  }
-  if (side === "Buy") {
-    return "Receive at least";
-  } else {
-    return "Sell at most";
-  }
+function getCardTitle(side: "Sell" | "Buy") {
+  return side === "Sell" ? "Sell amount" : "Receive at least";
 }

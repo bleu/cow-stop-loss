@@ -1,12 +1,12 @@
 "use client";
 
 import { Button, cn, Input } from "@bleu/ui";
-import { Cross2Icon } from "@radix-ui/react-icons";
 import type { Table } from "@tanstack/react-table";
 import * as React from "react";
 
 import { DataTableFacetedFilter } from "#/components/data-table/data-table-faceted-filter";
 import { DataTableViewOptions } from "#/components/data-table/data-table-view-options";
+import { PixelIcon } from "#/components/ui/pixel-icon";
 import { DataTableFilterField } from "#/hooks/useDataTable";
 
 interface DataTableToolbarProps<TData>
@@ -14,6 +14,7 @@ interface DataTableToolbarProps<TData>
   table: Table<TData>;
   filterFields?: DataTableFilterField<TData>[];
   showDataTableViewOptions?: boolean;
+  afterFilters?: React.ReactNode;
 }
 
 export function DataTableToolbar<TData>({
@@ -22,6 +23,7 @@ export function DataTableToolbar<TData>({
   children,
   className,
   showDataTableViewOptions = false,
+  afterFilters,
   ...props
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0;
@@ -37,12 +39,12 @@ export function DataTableToolbar<TData>({
   return (
     <div
       className={cn(
-        "flex w-full items-center justify-between space-x-2 overflow-auto p-1",
+        "flex w-full flex-wrap items-center justify-between gap-2",
         className,
       )}
       {...props}
     >
-      <div className="flex flex-1 items-center space-x-2">
+      <div className="flex flex-1 flex-wrap items-center gap-2">
         {searchableColumns.length > 0 &&
           searchableColumns.map(
             (column) =>
@@ -60,7 +62,7 @@ export function DataTableToolbar<TData>({
                       .getColumn(String(column.value))
                       ?.setFilterValue(event.target.value)
                   }
-                  className="h-8 w-40 lg:w-64"
+                  className="min-h-11 h-8 w-40 lg:w-64"
                 />
               ),
           )}
@@ -78,15 +80,16 @@ export function DataTableToolbar<TData>({
                 />
               ),
           )}
+        {afterFilters}
         {isFiltered && (
           <Button
             aria-label="Reset filters"
             variant="ghost"
-            className="h-8 px-2 lg:px-3"
+            className="rescue-secondary-control pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 px-2 lg:px-3"
             onClick={() => table.resetColumnFilters()}
           >
             Reset
-            <Cross2Icon className="ml-2 size-4" aria-hidden="true" />
+            <PixelIcon name="close" className="ml-2 size-4" />
           </Button>
         )}
       </div>
