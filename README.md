@@ -21,6 +21,16 @@ Open http://localhost:3000. Run `corepack pnpm@9 dev` to start the app and docum
 
 `dev:next` and `build:next` first prepare pinned token-list bytes and local token images, then check image hashes and the generated catalog offline. A clean checkout needs network access for missing files. Verified metadata in `.cache/token-catalog` and verified images in `public/assets/tokens` can be reused offline. Images keep their current local URLs and exact bytes; baseline assets and any image that cannot be restored remain committed. Changed bytes or corrupt data stop the command, as does a network failure without verified local files. There is no latest-list or replacement-artwork fallback. These commands do not regenerate the runtime catalog. After an intentional catalog change, run `corepack pnpm@9 generate:catalog`, review the diff, and repeat the checks. See [Token catalog](docs/token-catalog.md) for sources and maintenance.
 
+## RPC setup
+
+Set this optional value in `.env.local` before starting or building Next.js:
+
+```dotenv
+NEXT_PUBLIC_DRPC_KEY=your-public-drpc-key
+```
+
+All ten chains use this key with their own dRPC network endpoint. Without a key, or with an empty value, the app uses its existing public RPC defaults. The old per-chain RPC URL settings are no longer read. The key is visible in the browser; use a key intended for public browser use. Restart the development server or rebuild the deployed app after changing it. See [RPC configuration](docs/supported-networks.md#rpc-configuration) for details.
+
 ## WalletConnect setup
 
 Set these values in `.env.local` before starting or building Next.js:
