@@ -35,5 +35,8 @@ jobs:
       - name: Test catalog scripts
         run: python3 -m unittest discover -s scripts -p 'test_catalog*.py'
 
+      - name: Check TypeScript
+        run: pnpm exec tsc --noEmit
+
       - name: Run tests
         run: pnpm test:jest
