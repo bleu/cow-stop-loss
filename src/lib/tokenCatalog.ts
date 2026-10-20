@@ -108,8 +108,7 @@ export function parseOracleApprovals(value: unknown): {
       approval.quote !== quote ||
       ("sourceCategorySuitability" in approval &&
         (!reviewedDecision(approval.sourceCategorySuitability, "accepted") ||
-          (record(approval.sourceCategorySuitability).category !== "medium" &&
-            record(approval.sourceCategorySuitability).category !== "new"))) ||
+          record(approval.sourceCategorySuitability).category !== "medium")) ||
       (approval.assetRelationship !== "exact-asset" &&
         approval.assetRelationship !== "native-wrapper" &&
         approval.assetRelationship !== "bridged-underlying") ||

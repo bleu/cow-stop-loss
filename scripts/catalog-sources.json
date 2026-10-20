@@ -191,5 +191,105 @@
       "retention": "summary-only",
       "limitations": "The old checks accepted nonempty token symbols and quote-only feed descriptions. Detailed observations are no longer retained and were not approvals under the current policy."
     }
+  },
+  "expansionReview": {
+    "reviewDate": "2026-10-20",
+    "scope": "Four new exact-asset USD sell approvals; no new representation, category, bounded-price or methodology exceptions. Original feedSources hashes remain historical. Each source digest below covers the complete fetched directory; only named primary rows are retained.",
+    "sources": {
+      "1": {
+        "url": "https://reference-data-directory.vercel.app/feeds-mainnet.json",
+        "retrievedAt": "2026-10-20T14:08:43.478547+00:00",
+        "sha256": "3a654b2ffd742134cb0b222fb8715ee94d3857c5af510e6522bb29a333040b33",
+        "paths": ["aave-usd", "comp-usd"]
+      },
+      "56": {
+        "url": "https://reference-data-directory.vercel.app/feeds-bsc-mainnet.json",
+        "retrievedAt": "2026-10-20T14:08:43.701431+00:00",
+        "sha256": "1404df9b89bf2dc9b706d7b093f45b66779462686f6a9cb6a64d39500d09a064",
+        "paths": ["cake-usd"]
+      },
+      "42161": {
+        "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-arbitrum-1.json",
+        "retrievedAt": "2026-10-20T14:10:54.854579+00:00",
+        "sha256": "3bf7d41ea1b724cc0e100273f341681ead318c979a05f43d3119b6cadcb9d055",
+        "paths": ["arb-usd"]
+      }
+    }
+  },
+  "revisedPolicyReview": {
+    "reviewDate": "2026-10-20",
+    "scope": "Exact new sell approvals under the revised Low/Medium, bridge/custody and price-method policy. Complete fetched directory hashes cover more rows than the retained reviewed primary rows. Historical sources and approvals are not renewed.",
+    "sources": {
+      "1": {
+        "url": "https://reference-data-directory.vercel.app/feeds-mainnet.json",
+        "sha256": "3a654b2ffd742134cb0b222fb8715ee94d3857c5af510e6522bb29a333040b33",
+        "retrievedAt": "2026-10-20T17:02:36.752811+00:00",
+        "paths": ["cbbtc-usd"]
+      },
+      "100": {
+        "url": "https://reference-data-directory.vercel.app/feeds-xdai-mainnet.json",
+        "sha256": "12627f33c7713e42664633350d97532f9eac5326957f2c9c89cb3efb19cb2f21",
+        "retrievedAt": "2026-10-20T17:02:36.860299+00:00",
+        "paths": ["eth-usd", "link-usd", "aave-usd", "uni-usd", "comp-usd"]
+      },
+      "42161": {
+        "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-arbitrum-1.json",
+        "sha256": "3bf7d41ea1b724cc0e100273f341681ead318c979a05f43d3119b6cadcb9d055",
+        "retrievedAt": "2026-10-20T17:02:37.686202+00:00",
+        "paths": ["link-usd", "aave-usd", "uni-usd", "comp-usd", "wbtc-usd"]
+      },
+      "8453": {
+        "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-base-1.json",
+        "sha256": "c85976b8be013b054d354bdedaab31dd9de7eedbd758755855b481be6750f90b",
+        "retrievedAt": "2026-10-20T17:02:36.940581+00:00",
+        "paths": ["eth-usd-shared-svr-2", "link-usd", "aave-usd", "comp-usd"]
+      },
+      "137": {
+        "url": "https://reference-data-directory.vercel.app/feeds-matic-mainnet.json",
+        "sha256": "d01606a308bdf71e8f440c23f3c6efd4a659c9b4e7440d2a16ca205b1ec0212e",
+        "retrievedAt": "2026-10-20T17:02:36.769015+00:00",
+        "paths": ["link-usd", "aave-usd", "uni-usd", "eth-usd"]
+      },
+      "43114": {
+        "url": "https://reference-data-directory.vercel.app/feeds-avalanche-mainnet.json",
+        "sha256": "166c99a7a318e2eb195aa8cb54c6e551b399aae38ec546d7b938ae82bbf7a76c",
+        "retrievedAt": "2026-10-20T17:02:36.992608+00:00",
+        "paths": [
+          "aave-usd",
+          "comp-usd",
+          "link-usd",
+          "uni-usd",
+          "eth-usd",
+          "joe-usd",
+          "gmx-usd"
+        ]
+      },
+      "56": {
+        "url": "https://reference-data-directory.vercel.app/feeds-bsc-mainnet.json",
+        "sha256": "1404df9b89bf2dc9b706d7b093f45b66779462686f6a9cb6a64d39500d09a064",
+        "retrievedAt": "2026-10-20T17:02:36.981849+00:00",
+        "paths": [
+          "eth-usd",
+          "link-usd",
+          "uni-usd",
+          "xvs-usd",
+          "lista-usd",
+          "aave-usd",
+          "c98-usd"
+        ]
+      },
+      "59144": {
+        "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-linea-1.json",
+        "sha256": "0cb350fa552cbe667c60c8061bf2807be91817841097bff28749ea4c01feca90",
+        "retrievedAt": "2026-10-20T17:02:36.874300+00:00",
+        "paths": ["link-usd", "wsteth-usd"]
+      },
+      "9745": {
+        "url": "https://reference-data-directory.vercel.app/feeds-plasma-mainnet.json",
+        "sha256": "6fea77476a00ef9d3d15338d2a41cbbdb443a10f8f09c722d856e49fd83221eb",
+        "retrievedAt": "2026-10-20T17:02:36.852698+00:00",
+        "paths": ["link-usd", "eth-usd", "weeth-usd"]
+      }
+    }
   }
 }

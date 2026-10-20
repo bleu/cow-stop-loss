@@ -20,6 +20,18 @@
         "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
           "decimals": 6,
           "symbol": "USDC"
+        },
+        "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9": {
+          "decimals": 18,
+          "symbol": "AAVE"
+        },
+        "0xc00e94cb662c3520282e6f5717214004a7f26888": {
+          "decimals": 18,
+          "symbol": "COMP"
+        },
+        "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf": {
+          "decimals": 8,
+          "symbol": "cbBTC"
         }
       },
       "feeds": {
@@ -66,6 +78,39 @@
           "heartbeat": 82800,
           "observedAt": 1792452805,
           "ageSeconds": 67790
+        },
+        "0x547a514d5e3769680ce22b2361c10ea13619e8a9": {
+          "description": "AAVE / USD",
+          "decimals": 8,
+          "roundId": "92233720368547784147",
+          "answer": "15344811000",
+          "updatedAt": 1792505003,
+          "answeredInRound": "92233720368547784147",
+          "heartbeat": 3600,
+          "observedAt": 1792505455,
+          "ageSeconds": 452
+        },
+        "0xdbd020caef83efd542f4de03e3cf0c28a4428bd5": {
+          "description": "COMP / USD",
+          "decimals": 8,
+          "roundId": "110680464442257334601",
+          "answer": "2410237800",
+          "updatedAt": 1792504823,
+          "answeredInRound": "110680464442257334601",
+          "heartbeat": 3600,
+          "observedAt": 1792505455,
+          "ageSeconds": 632
+        },
+        "0x2665701293fcbeb223d11a08d826563edcce423a": {
+          "description": "cbBTC / USD",
+          "decimals": 8,
+          "roundId": "18446744073709552917",
+          "answer": "8170294161069",
+          "updatedAt": 1792464635,
+          "answeredInRound": "18446744073709552917",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 51532
         }
       },
       "issues": []
@@ -79,6 +124,22 @@
         "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359": {
           "decimals": 6,
           "symbol": "USDC"
+        },
+        "0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39": {
+          "decimals": 18,
+          "symbol": "LINK"
+        },
+        "0xd6df932a45c0f255f85145f286ea0b292b21c90b": {
+          "decimals": 18,
+          "symbol": "AAVE"
+        },
+        "0xb33eaad8d922b1083446dc23f610c2567fb5180f": {
+          "decimals": 18,
+          "symbol": "UNI"
+        },
+        "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619": {
+          "decimals": 18,
+          "symbol": "WETH"
         }
       },
       "feeds": {
@@ -103,6 +164,50 @@
           "heartbeat": 27,
           "observedAt": 1792452805,
           "ageSeconds": 31
+        },
+        "0xd9ffdb71ebe7496cc440152d43986aae0ab76665": {
+          "description": "LINK / USD",
+          "decimals": 8,
+          "roundId": "55340232221132582340",
+          "answer": "1226057400",
+          "updatedAt": 1792516188,
+          "answeredInRound": "55340232221132582340",
+          "heartbeat": 27,
+          "observedAt": 1792516196,
+          "ageSeconds": 8
+        },
+        "0x72484b12719e23115761d5da1646945632979bb6": {
+          "description": "AAVE / USD",
+          "decimals": 8,
+          "roundId": "36893488147423054009",
+          "answer": "15326237000",
+          "updatedAt": 1792516196,
+          "answeredInRound": "36893488147423054009",
+          "heartbeat": 27,
+          "observedAt": 1792516196,
+          "ageSeconds": 0
+        },
+        "0xdf0fb4e4f928d2dcb76f438575fdd8682386e13c": {
+          "description": "UNI / USD",
+          "decimals": 8,
+          "roundId": "36893488147423589416",
+          "answer": "738105743",
+          "updatedAt": 1792516187,
+          "answeredInRound": "36893488147423589416",
+          "heartbeat": 27,
+          "observedAt": 1792516196,
+          "ageSeconds": 9
+        },
+        "0xf9680d99d6c9589e2a93a78a04a279e509205945": {
+          "description": "ETH / USD",
+          "decimals": 8,
+          "roundId": "55340232221132632232",
+          "answer": "245161000000",
+          "updatedAt": 1792516178,
+          "answeredInRound": "55340232221132632232",
+          "heartbeat": 27,
+          "observedAt": 1792516196,
+          "ageSeconds": 18
         }
       },
       "issues": []
@@ -116,6 +221,30 @@
         "0xaf88d065e77c8cc2239327c5edb3a432268e5831": {
           "decimals": 6,
           "symbol": "USDC"
+        },
+        "0x912ce59144191c1204e64559fe8253a0e49e6548": {
+          "decimals": 18,
+          "symbol": "ARB"
+        },
+        "0xf97f4df75117a78c1a5a0dbb814af92458539fb4": {
+          "decimals": 18,
+          "symbol": "LINK"
+        },
+        "0xba5ddd1f9d7f570dc94a51479a000e3bce967196": {
+          "decimals": 18,
+          "symbol": "AAVE"
+        },
+        "0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0": {
+          "decimals": 18,
+          "symbol": "UNI"
+        },
+        "0x354a6da3fcde098f8389cad84b0182725c6c91de": {
+          "decimals": 18,
+          "symbol": "COMP"
+        },
+        "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f": {
+          "decimals": 8,
+          "symbol": "WBTC"
         }
       },
       "feeds": {
@@ -140,6 +269,72 @@
           "heartbeat": 255,
           "observedAt": 1792452805,
           "ageSeconds": 25
+        },
+        "0xb2a824043730fe05f3da2efafa1cbbe83fa548d6": {
+          "description": "ARB / USD",
+          "decimals": 8,
+          "roundId": "36893488147419355233",
+          "answer": "19438205",
+          "updatedAt": 1792505427,
+          "answeredInRound": "36893488147419355233",
+          "heartbeat": 86400,
+          "observedAt": 1792505455,
+          "ageSeconds": 28
+        },
+        "0x86e53cf1b870786351da77a57575e79cb55812cb": {
+          "description": "LINK / USD",
+          "decimals": 8,
+          "roundId": "36893488147419114419",
+          "answer": "1222753810",
+          "updatedAt": 1792514527,
+          "answeredInRound": "36893488147419114419",
+          "heartbeat": 1755,
+          "observedAt": 1792516167,
+          "ageSeconds": 1640
+        },
+        "0xad1d5344aade45f43e596773bcc4c423eabdd034": {
+          "description": "AAVE / USD",
+          "decimals": 8,
+          "roundId": "36893488147419114046",
+          "answer": "15284430000",
+          "updatedAt": 1792514884,
+          "answeredInRound": "36893488147419114046",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 1283
+        },
+        "0x9c917083fdb403ab5adbec26ee294f6ecada2720": {
+          "description": "UNI / USD",
+          "decimals": 8,
+          "roundId": "36893488147419178164",
+          "answer": "737020195",
+          "updatedAt": 1792516131,
+          "answeredInRound": "36893488147419178164",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 36
+        },
+        "0xe7c53ffd03eb6cef7d208bc4c13446c76d1e5884": {
+          "description": "COMP / USD",
+          "decimals": 8,
+          "roundId": "36893488147419114298",
+          "answer": "2864731818",
+          "updatedAt": 1792516105,
+          "answeredInRound": "36893488147419114298",
+          "heartbeat": 3600,
+          "observedAt": 1792516167,
+          "ageSeconds": 62
+        },
+        "0xd0c7101eacbb49f3decccc166d238410d6d46d57": {
+          "description": "WBTC / USD",
+          "decimals": 8,
+          "roundId": "36893488147419164086",
+          "answer": "8258102254109",
+          "updatedAt": 1792516094,
+          "answeredInRound": "36893488147419164086",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 73
         }
       },
       "issues": []
@@ -153,6 +348,34 @@
         "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e": {
           "decimals": 6,
           "symbol": "USDC"
+        },
+        "0x63a72806098bd3d9520cc43356dd78afe5d386d9": {
+          "decimals": 18,
+          "symbol": "AAVE.e"
+        },
+        "0xc3048e19e76cb9a3aa9d77d8c03c29fc906e2437": {
+          "decimals": 18,
+          "symbol": "COMP.e"
+        },
+        "0x5947bb275c521040051d82396192181b413227a3": {
+          "decimals": 18,
+          "symbol": "LINK.e"
+        },
+        "0x8ebaf22b6f053dffeaf46f4dd9efa95d89ba8580": {
+          "decimals": 18,
+          "symbol": "UNI.e"
+        },
+        "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab": {
+          "decimals": 18,
+          "symbol": "WETH.e"
+        },
+        "0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd": {
+          "decimals": 18,
+          "symbol": "JOE"
+        },
+        "0x62edc0692bd897d2295872a9ffcac5425011c661": {
+          "decimals": 18,
+          "symbol": "GMX"
         }
       },
       "feeds": {
@@ -177,6 +400,83 @@
           "heartbeat": 86400,
           "observedAt": 1792452805,
           "ageSeconds": 32929
+        },
+        "0x3ca13391e9fb38a75330fb28f8cc2eb3d9ceceed": {
+          "description": "AAVE / USD",
+          "decimals": 8,
+          "roundId": "36893488147419155802",
+          "answer": "15292740000",
+          "updatedAt": 1792514875,
+          "answeredInRound": "36893488147419155802",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 1292
+        },
+        "0x9d6aa0ac8c4818433bea7a74f49c73b57bcec4ec": {
+          "description": "COMP / USD",
+          "decimals": 8,
+          "roundId": "36893488147419148179",
+          "answer": "2860299000",
+          "updatedAt": 1792516101,
+          "answeredInRound": "36893488147419148179",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 66
+        },
+        "0x49ccd9ca821efeab2b98c60dc60f518e765ede9a": {
+          "description": "LINK / USD",
+          "decimals": 8,
+          "roundId": "36893488147419147864",
+          "answer": "1223530000",
+          "updatedAt": 1792513938,
+          "answeredInRound": "36893488147419147864",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 2229
+        },
+        "0x9a1372f9b1b71b3a5a72e092ae67e172dbd7daaa": {
+          "description": "UNI / USD",
+          "decimals": 8,
+          "roundId": "36893488147419422914",
+          "answer": "737020195",
+          "updatedAt": 1792516132,
+          "answeredInRound": "36893488147419422914",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 35
+        },
+        "0x976b3d034e162d8bd72d6b9c989d545b839003b0": {
+          "description": "ETH / USD",
+          "decimals": 8,
+          "roundId": "36893488147419413237",
+          "answer": "245069120000",
+          "updatedAt": 1792515967,
+          "answeredInRound": "36893488147419413237",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 200
+        },
+        "0x02d35d3a8ac3e1626d3ee09a78dd87286f5e8e3a": {
+          "description": "JOE / USD",
+          "decimals": 8,
+          "roundId": "36893488147419170369",
+          "answer": "3261515",
+          "updatedAt": 1792515713,
+          "answeredInRound": "36893488147419170369",
+          "heartbeat": 1800,
+          "observedAt": 1792516167,
+          "ageSeconds": 454
+        },
+        "0x3f968a21647d7ca81fb8a5b69c0a452701d5dce8": {
+          "description": "GMX / USD",
+          "decimals": 8,
+          "roundId": "36893488147419471685",
+          "answer": "814451359",
+          "updatedAt": 1792515959,
+          "answeredInRound": "36893488147419471685",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 208
         }
       },
       "issues": []
@@ -190,6 +490,22 @@
         "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913": {
           "decimals": 6,
           "symbol": "USDC"
+        },
+        "0x4200000000000000000000000000000000000006": {
+          "decimals": 18,
+          "symbol": "WETH"
+        },
+        "0x88fb150bdc53a65fe94dea0c9ba0a6daf8c6e196": {
+          "decimals": 18,
+          "symbol": "LINK"
+        },
+        "0x63706e401c06ac8513145b7687a14804d17f814b": {
+          "decimals": 18,
+          "symbol": "AAVE"
+        },
+        "0x9e1028f5f1d5ede59748ffcee5532509976840e0": {
+          "decimals": 18,
+          "symbol": "COMP"
         }
       },
       "feeds": {
@@ -214,6 +530,50 @@
           "heartbeat": 86400,
           "observedAt": 1792452805,
           "ageSeconds": 38508
+        },
+        "0x50015f8b17fb2c290dde41fdc246ed0dcee93a8b": {
+          "description": "ETH / USD",
+          "decimals": 8,
+          "roundId": "18446744073709560771",
+          "answer": "245125920000",
+          "updatedAt": 1792516039,
+          "answeredInRound": "18446744073709560771",
+          "heartbeat": 1200,
+          "observedAt": 1792516167,
+          "ageSeconds": 128
+        },
+        "0x17cab8fe31e32f08326e5e27412894e49b0f9d65": {
+          "description": "LINK / USD",
+          "decimals": 8,
+          "roundId": "36893488147419110250",
+          "answer": "1224072725",
+          "updatedAt": 1792513945,
+          "answeredInRound": "36893488147419110250",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 2222
+        },
+        "0x3d6774ef702a10b20fca8ed40fc022f7e4938e07": {
+          "description": "AAVE / USD",
+          "decimals": 8,
+          "roundId": "36893488147419114303",
+          "answer": "15285983708",
+          "updatedAt": 1792514877,
+          "answeredInRound": "36893488147419114303",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 1290
+        },
+        "0x9dda783de64a9d1a60c49ca761ebe528c35ba428": {
+          "description": "COMP / USD",
+          "decimals": 8,
+          "roundId": "36893488147419112062",
+          "answer": "2864731818",
+          "updatedAt": 1792516107,
+          "answeredInRound": "36893488147419112062",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 60
         }
       },
       "issues": []
@@ -227,6 +587,14 @@
         "0x176211869ca2b568f2a7d4ee941e073a821ee1ff": {
           "decimals": 6,
           "symbol": "USDC"
+        },
+        "0xa18152629128738a5c081eb226335fed4b9c95e9": {
+          "decimals": 18,
+          "symbol": "LINK"
+        },
+        "0xb5bedd42000b71fdde22d3ee8a79bd49a568fc8f": {
+          "decimals": 18,
+          "symbol": "wstETH"
         }
       },
       "feeds": {
@@ -251,6 +619,28 @@
           "heartbeat": 86400,
           "observedAt": 1792452805,
           "ageSeconds": 25042
+        },
+        "0x8df01c2efed1404872b54a69f40a57fec1545998": {
+          "description": "LINK / USD",
+          "decimals": 8,
+          "roundId": "18446744073709614477",
+          "answer": "1223523585",
+          "updatedAt": 1792513936,
+          "answeredInRound": "18446744073709614477",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 2231
+        },
+        "0x8ece1aba32716fdde8d6482bfd88e9a0ee01f565": {
+          "description": "WSTETH / USD",
+          "decimals": 8,
+          "roundId": "18446744073709578335",
+          "answer": "304397959555",
+          "updatedAt": 1792513947,
+          "answeredInRound": "18446744073709578335",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 2220
         }
       },
       "issues": []
@@ -264,6 +654,26 @@
         "0x4ecaba5870353805a9f068101a40e0f32ed605c6": {
           "decimals": 6,
           "symbol": "USDT"
+        },
+        "0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1": {
+          "decimals": 18,
+          "symbol": "WETH"
+        },
+        "0xe2e73a1c69ecf83f464efce6a5be353a37ca09b2": {
+          "decimals": 18,
+          "symbol": "LINK"
+        },
+        "0xdf613af6b44a31299e48131e9347f034347e2f00": {
+          "decimals": 18,
+          "symbol": "AAVE"
+        },
+        "0x4537e328bf7e4efa29d05caea260d7fe26af9d74": {
+          "decimals": 18,
+          "symbol": "UNI"
+        },
+        "0xdf6ff92bfdc1e8be45177dc1f4845d391d3ad8fd": {
+          "decimals": 18,
+          "symbol": "COMP"
         }
       },
       "feeds": {
@@ -288,6 +698,61 @@
           "heartbeat": 86400,
           "observedAt": 1792452805,
           "ageSeconds": 18755
+        },
+        "0xa767f745331d267c7751297d982b050c93985627": {
+          "description": "ETH / USD",
+          "decimals": 8,
+          "roundId": "55340232221128656603",
+          "answer": "244284648527",
+          "updatedAt": 1792513965,
+          "answeredInRound": "55340232221128656603",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 2202
+        },
+        "0xed322a5ac55bae091190dff9066760b86751947b": {
+          "description": "LINK / USD",
+          "decimals": 8,
+          "roundId": "55340232221128658413",
+          "answer": "1223608437",
+          "updatedAt": 1792513945,
+          "answeredInRound": "55340232221128658413",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 2222
+        },
+        "0x2b481dc923aa050e009113dca8dcb0dab4b68cdf": {
+          "description": "AAVE / USD",
+          "decimals": 8,
+          "roundId": "55340232221128659906",
+          "answer": "15286569539",
+          "updatedAt": 1792514905,
+          "answeredInRound": "55340232221128659906",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 1262
+        },
+        "0xd98735d78266c62277bb4dbf3e3bcdd3694782f4": {
+          "description": "UNI / USD",
+          "decimals": 8,
+          "roundId": "55340232221128662579",
+          "answer": "737673140",
+          "updatedAt": 1792514980,
+          "answeredInRound": "55340232221128662579",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 1187
+        },
+        "0xba95bc8418ebcdf8a690924e1d4ad5292139f2ea": {
+          "description": "COMP / USD",
+          "decimals": 8,
+          "roundId": "55340232221128658598",
+          "answer": "2864770598",
+          "updatedAt": 1792516110,
+          "answeredInRound": "55340232221128658598",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 57
         }
       },
       "issues": []
@@ -301,6 +766,18 @@
         "0x2d661c89d812261039af9764eceaaee884f5f67f": {
           "decimals": 6,
           "symbol": "USDC"
+        },
+        "0x76a443768a5e3b8d1aed0105fc250877841deb40": {
+          "decimals": 18,
+          "symbol": "LINK"
+        },
+        "0x9895d81bb462a195b4922ed7de0e3acd007c32cb": {
+          "decimals": 18,
+          "symbol": "WETH"
+        },
+        "0xa3d68b74bf0528fdd07263c60d6488749044914b": {
+          "decimals": 18,
+          "symbol": "weETH"
         }
       },
       "feeds": {
@@ -325,6 +802,39 @@
           "heartbeat": 86400,
           "observedAt": 1792452806,
           "ageSeconds": 28446
+        },
+        "0xe37f74cb2237c5274ddbbf841c3284bd2e23e65b": {
+          "description": "LINK / USD",
+          "decimals": 8,
+          "roundId": "18446744073709567984",
+          "answer": "1229136000",
+          "updatedAt": 1792514882,
+          "answeredInRound": "18446744073709567984",
+          "heartbeat": 86400,
+          "observedAt": 1792516168,
+          "ageSeconds": 1286
+        },
+        "0x43a7dd2125266c5c4c26eb86cd61241132426fe7": {
+          "description": "ETH / USD",
+          "decimals": 8,
+          "roundId": "18446744073709563216",
+          "answer": "245305990000",
+          "updatedAt": 1792514970,
+          "answeredInRound": "18446744073709563216",
+          "heartbeat": 86400,
+          "observedAt": 1792516168,
+          "ageSeconds": 1198
+        },
+        "0xbfed4ef33b8ec58bc15fcbb4a0f934a812d5d7b5": {
+          "description": "WEETH / USD",
+          "decimals": 8,
+          "roundId": "18446744073709562632",
+          "answer": "270911755411",
+          "updatedAt": 1792514893,
+          "answeredInRound": "18446744073709562632",
+          "heartbeat": 86400,
+          "observedAt": 1792516168,
+          "ageSeconds": 1275
         }
       },
       "issues": []
@@ -338,6 +848,38 @@
         "0x55d398326f99059ff775485246999027b3197955": {
           "decimals": 18,
           "symbol": "USDT"
+        },
+        "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82": {
+          "decimals": 18,
+          "symbol": "Cake"
+        },
+        "0x2170ed0880ac9a755fd29b2688956bd959f933f8": {
+          "decimals": 18,
+          "symbol": "ETH"
+        },
+        "0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd": {
+          "decimals": 18,
+          "symbol": "LINK"
+        },
+        "0xbf5140a22578168fd562dccf235e5d43a02ce9b1": {
+          "decimals": 18,
+          "symbol": "UNI"
+        },
+        "0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63": {
+          "decimals": 18,
+          "symbol": "XVS"
+        },
+        "0xfceb31a79f71ac9cbdcf853519c1b12d379edc46": {
+          "decimals": 18,
+          "symbol": "LISTA"
+        },
+        "0xfb6115445bff7b52feb98650c87f44907e58f802": {
+          "decimals": 18,
+          "symbol": "AAVE"
+        },
+        "0xaec945e04baf28b135fa7c640f624f8d90f1c3a6": {
+          "decimals": 18,
+          "symbol": "C98"
         }
       },
       "feeds": {
@@ -362,10 +904,713 @@
           "heartbeat": 900,
           "observedAt": 1792452806,
           "ageSeconds": 695
+        },
+        "0xb6064ed41d4f67e353768aa239ca86f4f73665a1": {
+          "description": "CAKE / USD",
+          "decimals": 8,
+          "roundId": "55340232221129742258",
+          "answer": "220782000",
+          "updatedAt": 1792505433,
+          "answeredInRound": "55340232221129742258",
+          "heartbeat": 60,
+          "observedAt": 1792505455,
+          "ageSeconds": 22
+        },
+        "0x9ef1b8c0e4f7dc8bf5719ea496883dc6401d5b2e": {
+          "description": "ETH / USD",
+          "decimals": 8,
+          "roundId": "55340232221129828099",
+          "answer": "245161000000",
+          "updatedAt": 1792516118,
+          "answeredInRound": "55340232221129828099",
+          "heartbeat": 60,
+          "observedAt": 1792516167,
+          "ageSeconds": 49
+        },
+        "0xca236e327f629f9fc2c30a4e95775ebf0b89fac8": {
+          "description": "LINK / USD",
+          "decimals": 8,
+          "roundId": "55340232221128905692",
+          "answer": "1226185000",
+          "updatedAt": 1792515917,
+          "answeredInRound": "55340232221128905692",
+          "heartbeat": 600,
+          "observedAt": 1792516167,
+          "ageSeconds": 250
+        },
+        "0xb57f259e7c24e56a1da00f66b55a5640d9f9e7e4": {
+          "description": "UNI / USD",
+          "decimals": 8,
+          "roundId": "55340232221128912024",
+          "answer": "737868890",
+          "updatedAt": 1792515916,
+          "answeredInRound": "55340232221128912024",
+          "heartbeat": 600,
+          "observedAt": 1792516167,
+          "ageSeconds": 251
+        },
+        "0xbf63f430a79d4036a5900c19818aff1fa710f206": {
+          "description": "XVS / USD",
+          "decimals": 8,
+          "roundId": "73786976294838327030",
+          "answer": "306952751",
+          "updatedAt": 1792515946,
+          "answeredInRound": "73786976294838327030",
+          "heartbeat": 900,
+          "observedAt": 1792516167,
+          "ageSeconds": 221
+        },
+        "0x801a72542e6f2c1a022ec6865600d6872b191308": {
+          "description": "LISTA / USD",
+          "decimals": 8,
+          "roundId": "18446744073709605489",
+          "answer": "7765781",
+          "updatedAt": 1792510822,
+          "answeredInRound": "18446744073709605489",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 5345
+        },
+        "0xa8357bf572460fc40f4b0acacbb2a6a61c89f475": {
+          "description": "AAVE / USD",
+          "decimals": 8,
+          "roundId": "36893488147419384599",
+          "answer": "15311192714",
+          "updatedAt": 1792516024,
+          "answeredInRound": "36893488147419384599",
+          "heartbeat": 600,
+          "observedAt": 1792516167,
+          "ageSeconds": 143
+        },
+        "0x889158e39628c0397dc54b84f6b1cbe0aaeb7ffc": {
+          "description": "C98 / USD",
+          "decimals": 8,
+          "roundId": "36893488147419162295",
+          "answer": "1559783",
+          "updatedAt": 1792514901,
+          "answeredInRound": "36893488147419162295",
+          "heartbeat": 86400,
+          "observedAt": 1792516167,
+          "ageSeconds": 1266
         }
       },
       "issues": []
     }
   },
-  "skippedChains": {}
+  "skippedChains": {},
+  "additionalReviews": [
+    {
+      "checkedAt": "2026-10-20T14:10:55.513120+00:00",
+      "scope": "candidate-review",
+      "mappings": [
+        {
+          "chainId": 1,
+          "tokenAddress": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
+          "proxyAddress": "0x547a514d5e3769680ce22b2361c10ea13619e8a9"
+        },
+        {
+          "chainId": 1,
+          "tokenAddress": "0xc00e94cb662c3520282e6f5717214004a7f26888",
+          "proxyAddress": "0xdbd020caef83efd542f4de03e3cf0c28a4428bd5"
+        },
+        {
+          "chainId": 56,
+          "tokenAddress": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+          "proxyAddress": "0xb6064ed41d4f67e353768aa239ca86f4f73665a1"
+        },
+        {
+          "chainId": 42161,
+          "tokenAddress": "0x912ce59144191c1204e64559fe8253a0e49e6548",
+          "proxyAddress": "0xb2a824043730fe05f3da2efafa1cbbe83fa548d6"
+        }
+      ],
+      "note": "Only the listed new token/feed observations were appended. Original observations and approval fingerprints are unchanged; checkedAt at the top remains the original batch date. The full live check also observed all existing approved legs on all nine mainnets without issues or skipped chains."
+    },
+    {
+      "checkedAt": "2026-10-20T17:09:56.189281+00:00",
+      "scope": "candidate-review",
+      "policyScope": "Low and Medium feeds; bridge/custody exposure accepted per route; no blanket price-method exclusion. Stable sells and bounded sells remain excluded.",
+      "mappings": [
+        {
+          "chainId": 100,
+          "tokenAddress": "0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1",
+          "quote": "USD",
+          "path": "eth-usd",
+          "proxyAddress": "0xa767f745331d267c7751297d982b050c93985627"
+        },
+        {
+          "chainId": 100,
+          "tokenAddress": "0xe2e73a1c69ecf83f464efce6a5be353a37ca09b2",
+          "quote": "USD",
+          "path": "link-usd",
+          "proxyAddress": "0xed322a5ac55bae091190dff9066760b86751947b"
+        },
+        {
+          "chainId": 100,
+          "tokenAddress": "0xdf613af6b44a31299e48131e9347f034347e2f00",
+          "quote": "USD",
+          "path": "aave-usd",
+          "proxyAddress": "0x2b481dc923aa050e009113dca8dcb0dab4b68cdf"
+        },
+        {
+          "chainId": 100,
+          "tokenAddress": "0x4537e328bf7e4efa29d05caea260d7fe26af9d74",
+          "quote": "USD",
+          "path": "uni-usd",
+          "proxyAddress": "0xd98735d78266c62277bb4dbf3e3bcdd3694782f4"
+        },
+        {
+          "chainId": 100,
+          "tokenAddress": "0xdf6ff92bfdc1e8be45177dc1f4845d391d3ad8fd",
+          "quote": "USD",
+          "path": "comp-usd",
+          "proxyAddress": "0xba95bc8418ebcdf8a690924e1d4ad5292139f2ea"
+        },
+        {
+          "chainId": 42161,
+          "tokenAddress": "0xf97f4df75117a78c1a5a0dbb814af92458539fb4",
+          "quote": "USD",
+          "path": "link-usd",
+          "proxyAddress": "0x86e53cf1b870786351da77a57575e79cb55812cb"
+        },
+        {
+          "chainId": 42161,
+          "tokenAddress": "0xba5ddd1f9d7f570dc94a51479a000e3bce967196",
+          "quote": "USD",
+          "path": "aave-usd",
+          "proxyAddress": "0xad1d5344aade45f43e596773bcc4c423eabdd034"
+        },
+        {
+          "chainId": 42161,
+          "tokenAddress": "0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0",
+          "quote": "USD",
+          "path": "uni-usd",
+          "proxyAddress": "0x9c917083fdb403ab5adbec26ee294f6ecada2720"
+        },
+        {
+          "chainId": 42161,
+          "tokenAddress": "0x354a6da3fcde098f8389cad84b0182725c6c91de",
+          "quote": "USD",
+          "path": "comp-usd",
+          "proxyAddress": "0xe7c53ffd03eb6cef7d208bc4c13446c76d1e5884"
+        },
+        {
+          "chainId": 42161,
+          "tokenAddress": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+          "quote": "USD",
+          "path": "wbtc-usd",
+          "proxyAddress": "0xd0c7101eacbb49f3decccc166d238410d6d46d57"
+        },
+        {
+          "chainId": 8453,
+          "tokenAddress": "0x4200000000000000000000000000000000000006",
+          "quote": "USD",
+          "path": "eth-usd-shared-svr-2",
+          "proxyAddress": "0x50015f8b17fb2c290dde41fdc246ed0dcee93a8b"
+        },
+        {
+          "chainId": 8453,
+          "tokenAddress": "0x88fb150bdc53a65fe94dea0c9ba0a6daf8c6e196",
+          "quote": "USD",
+          "path": "link-usd",
+          "proxyAddress": "0x17cab8fe31e32f08326e5e27412894e49b0f9d65"
+        },
+        {
+          "chainId": 8453,
+          "tokenAddress": "0x63706e401c06ac8513145b7687a14804d17f814b",
+          "quote": "USD",
+          "path": "aave-usd",
+          "proxyAddress": "0x3d6774ef702a10b20fca8ed40fc022f7e4938e07"
+        },
+        {
+          "chainId": 8453,
+          "tokenAddress": "0x9e1028f5f1d5ede59748ffcee5532509976840e0",
+          "quote": "USD",
+          "path": "comp-usd",
+          "proxyAddress": "0x9dda783de64a9d1a60c49ca761ebe528c35ba428"
+        },
+        {
+          "chainId": 137,
+          "tokenAddress": "0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39",
+          "quote": "USD",
+          "path": "link-usd",
+          "proxyAddress": "0xd9ffdb71ebe7496cc440152d43986aae0ab76665"
+        },
+        {
+          "chainId": 137,
+          "tokenAddress": "0xd6df932a45c0f255f85145f286ea0b292b21c90b",
+          "quote": "USD",
+          "path": "aave-usd",
+          "proxyAddress": "0x72484b12719e23115761d5da1646945632979bb6"
+        },
+        {
+          "chainId": 137,
+          "tokenAddress": "0xb33eaad8d922b1083446dc23f610c2567fb5180f",
+          "quote": "USD",
+          "path": "uni-usd",
+          "proxyAddress": "0xdf0fb4e4f928d2dcb76f438575fdd8682386e13c"
+        },
+        {
+          "chainId": 137,
+          "tokenAddress": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+          "quote": "USD",
+          "path": "eth-usd",
+          "proxyAddress": "0xf9680d99d6c9589e2a93a78a04a279e509205945"
+        },
+        {
+          "chainId": 1,
+          "tokenAddress": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+          "quote": "USD",
+          "path": "cbbtc-usd",
+          "proxyAddress": "0x2665701293fcbeb223d11a08d826563edcce423a"
+        },
+        {
+          "chainId": 43114,
+          "tokenAddress": "0x63a72806098bd3d9520cc43356dd78afe5d386d9",
+          "quote": "USD",
+          "path": "aave-usd",
+          "proxyAddress": "0x3ca13391e9fb38a75330fb28f8cc2eb3d9ceceed"
+        },
+        {
+          "chainId": 43114,
+          "tokenAddress": "0xc3048e19e76cb9a3aa9d77d8c03c29fc906e2437",
+          "quote": "USD",
+          "path": "comp-usd",
+          "proxyAddress": "0x9d6aa0ac8c4818433bea7a74f49c73b57bcec4ec"
+        },
+        {
+          "chainId": 43114,
+          "tokenAddress": "0x5947bb275c521040051d82396192181b413227a3",
+          "quote": "USD",
+          "path": "link-usd",
+          "proxyAddress": "0x49ccd9ca821efeab2b98c60dc60f518e765ede9a"
+        },
+        {
+          "chainId": 43114,
+          "tokenAddress": "0x8ebaf22b6f053dffeaf46f4dd9efa95d89ba8580",
+          "quote": "USD",
+          "path": "uni-usd",
+          "proxyAddress": "0x9a1372f9b1b71b3a5a72e092ae67e172dbd7daaa"
+        },
+        {
+          "chainId": 43114,
+          "tokenAddress": "0x49d5c2bdffac6ce2bfdb6640f4f80f226bc10bab",
+          "quote": "USD",
+          "path": "eth-usd",
+          "proxyAddress": "0x976b3d034e162d8bd72d6b9c989d545b839003b0"
+        },
+        {
+          "chainId": 43114,
+          "tokenAddress": "0x6e84a6216ea6dacc71ee8e6b0a5b7322eebc0fdd",
+          "quote": "USD",
+          "path": "joe-usd",
+          "proxyAddress": "0x02d35d3a8ac3e1626d3ee09a78dd87286f5e8e3a"
+        },
+        {
+          "chainId": 43114,
+          "tokenAddress": "0x62edc0692bd897d2295872a9ffcac5425011c661",
+          "quote": "USD",
+          "path": "gmx-usd",
+          "proxyAddress": "0x3f968a21647d7ca81fb8a5b69c0a452701d5dce8"
+        },
+        {
+          "chainId": 59144,
+          "tokenAddress": "0xa18152629128738a5c081eb226335fed4b9c95e9",
+          "quote": "USD",
+          "path": "link-usd",
+          "proxyAddress": "0x8df01c2efed1404872b54a69f40a57fec1545998"
+        },
+        {
+          "chainId": 59144,
+          "tokenAddress": "0xb5bedd42000b71fdde22d3ee8a79bd49a568fc8f",
+          "quote": "USD",
+          "path": "wsteth-usd",
+          "proxyAddress": "0x8ece1aba32716fdde8d6482bfd88e9a0ee01f565"
+        },
+        {
+          "chainId": 9745,
+          "tokenAddress": "0x76a443768a5e3b8d1aed0105fc250877841deb40",
+          "quote": "USD",
+          "path": "link-usd",
+          "proxyAddress": "0xe37f74cb2237c5274ddbbf841c3284bd2e23e65b"
+        },
+        {
+          "chainId": 9745,
+          "tokenAddress": "0x9895d81bb462a195b4922ed7de0e3acd007c32cb",
+          "quote": "USD",
+          "path": "eth-usd",
+          "proxyAddress": "0x43a7dd2125266c5c4c26eb86cd61241132426fe7"
+        },
+        {
+          "chainId": 9745,
+          "tokenAddress": "0xa3d68b74bf0528fdd07263c60d6488749044914b",
+          "quote": "USD",
+          "path": "weeth-usd",
+          "proxyAddress": "0xbfed4ef33b8ec58bc15fcbb4a0f934a812d5d7b5"
+        },
+        {
+          "chainId": 56,
+          "tokenAddress": "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
+          "quote": "USD",
+          "path": "eth-usd",
+          "proxyAddress": "0x9ef1b8c0e4f7dc8bf5719ea496883dc6401d5b2e"
+        },
+        {
+          "chainId": 56,
+          "tokenAddress": "0xf8a0bf9cf54bb92f17374d9e9a321e6a111a51bd",
+          "quote": "USD",
+          "path": "link-usd",
+          "proxyAddress": "0xca236e327f629f9fc2c30a4e95775ebf0b89fac8"
+        },
+        {
+          "chainId": 56,
+          "tokenAddress": "0xbf5140a22578168fd562dccf235e5d43a02ce9b1",
+          "quote": "USD",
+          "path": "uni-usd",
+          "proxyAddress": "0xb57f259e7c24e56a1da00f66b55a5640d9f9e7e4"
+        },
+        {
+          "chainId": 56,
+          "tokenAddress": "0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63",
+          "quote": "USD",
+          "path": "xvs-usd",
+          "proxyAddress": "0xbf63f430a79d4036a5900c19818aff1fa710f206"
+        },
+        {
+          "chainId": 56,
+          "tokenAddress": "0xfceb31a79f71ac9cbdcf853519c1b12d379edc46",
+          "quote": "USD",
+          "path": "lista-usd",
+          "proxyAddress": "0x801a72542e6f2c1a022ec6865600d6872b191308"
+        },
+        {
+          "chainId": 56,
+          "tokenAddress": "0xfb6115445bff7b52feb98650c87f44907e58f802",
+          "quote": "USD",
+          "path": "aave-usd",
+          "proxyAddress": "0xa8357bf572460fc40f4b0acacbb2a6a61c89f475"
+        },
+        {
+          "chainId": 56,
+          "tokenAddress": "0xaec945e04baf28b135fa7c640f624f8d90f1c3a6",
+          "quote": "USD",
+          "path": "c98-usd",
+          "proxyAddress": "0x889158e39628c0397dc54b84f6b1cbe0aaeb7ffc"
+        }
+      ],
+      "note": "Only new token/feed observations were appended. Incumbent observations and approval fingerprints were preserved. Accepted batches together cover all nine production chains and unchanged fixed-buy legs, with no remaining issues or unchecked chains. Earlier Polygon checks rejected one-second future timestamps; the independent Polygon RPC attempt failed. A later Polygon check passed without weakening timestamp or freshness limits. These read-only checks do not prove future execution.",
+      "observationBatches": [
+        {
+          "checkedAt": "2026-10-20T17:09:28.829594+00:00",
+          "acceptedChains": [
+            "8453",
+            "100",
+            "1",
+            "42161",
+            "59144",
+            "43114",
+            "56",
+            "9745"
+          ],
+          "scope": "candidate-review",
+          "note": "Polygon RPC failed; its later accepted check is a separate batch."
+        },
+        {
+          "checkedAt": "2026-10-20T17:09:56.189281+00:00",
+          "acceptedChains": ["137"],
+          "scope": "candidate-review",
+          "skippedChains": {
+            "1": "No selected production feeds; live verification was not performed",
+            "100": "No selected production feeds; live verification was not performed",
+            "42161": "No selected production feeds; live verification was not performed",
+            "8453": "No selected production feeds; live verification was not performed",
+            "43114": "No selected production feeds; live verification was not performed",
+            "56": "No selected production feeds; live verification was not performed",
+            "59144": "No selected production feeds; live verification was not performed",
+            "9745": "No selected production feeds; live verification was not performed"
+          }
+        }
+      ],
+      "priorAttempts": [
+        {
+          "checkedAt": "2026-10-20T17:08:00.274048+00:00",
+          "scope": "candidate-review",
+          "outcome": "failed",
+          "chainIssues": {
+            "137": [
+              "Feed is outside its approved freshness limit: 0xf9680d99d6c9589e2a93a78a04a279e509205945: {'description': 'ETH / USD', 'decimals': 8, 'roundId': '55340232221132632229', 'answer': '245234834578', 'updatedAt': 1792516079, 'answeredInRound': '55340232221132632229', 'heartbeat': 27, 'observedAt': 1792516078, 'ageSeconds': -1}"
+            ]
+          }
+        },
+        {
+          "checkedAt": "2026-10-20T17:08:42.002648+00:00",
+          "scope": "candidate-review",
+          "outcome": "failed",
+          "chainIssues": {
+            "137": [
+              "Feed is outside its approved freshness limit: 0xdf0fb4e4f928d2dcb76f438575fdd8682386e13c: {'description': 'UNI / USD', 'decimals': 8, 'roundId': '36893488147423589414', 'answer': '737299728', 'updatedAt': 1792516121, 'answeredInRound': '36893488147423589414', 'heartbeat': 27, 'observedAt': 1792516120, 'ageSeconds': -1}"
+            ]
+          }
+        },
+        {
+          "checkedAt": "2026-10-20T17:09:28.829594+00:00",
+          "scope": "candidate-review",
+          "outcome": "failed",
+          "chainIssues": {
+            "137": ["RPC 137: "]
+          }
+        }
+      ]
+    }
+  ],
+  "representationReviews": {
+    "reviewDate": "2026-10-20",
+    "readOnlyOriginLookups": {
+      "100": {
+        "checkedAt": 1792515866,
+        "tokens": [
+          {
+            "symbol": "AAVE",
+            "address": "0xdf613af6b44a31299e48131e9347f034347e2f00",
+            "call": {
+              "to": "0xf6a78083ca3e2a662d6dd1703c939c8ace2e268d",
+              "data": "0x47ac7d6a000000000000000000000000df613af6b44a31299e48131e9347f034347e2f00"
+            },
+            "result": {
+              "jsonrpc": "2.0",
+              "result": "0x0000000000000000000000007fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
+              "id": 0
+            }
+          },
+          {
+            "symbol": "COMP",
+            "address": "0xdf6ff92bfdc1e8be45177dc1f4845d391d3ad8fd",
+            "call": {
+              "to": "0xf6a78083ca3e2a662d6dd1703c939c8ace2e268d",
+              "data": "0x47ac7d6a000000000000000000000000df6ff92bfdc1e8be45177dc1f4845d391d3ad8fd"
+            },
+            "result": {
+              "jsonrpc": "2.0",
+              "result": "0x000000000000000000000000c00e94cb662c3520282e6f5717214004a7f26888",
+              "id": 1
+            }
+          },
+          {
+            "symbol": "LINK",
+            "address": "0xe2e73a1c69ecf83f464efce6a5be353a37ca09b2",
+            "call": {
+              "to": "0xf6a78083ca3e2a662d6dd1703c939c8ace2e268d",
+              "data": "0x47ac7d6a000000000000000000000000e2e73a1c69ecf83f464efce6a5be353a37ca09b2"
+            },
+            "result": {
+              "jsonrpc": "2.0",
+              "result": "0x000000000000000000000000514910771af9ca656af840dff83e8264ecf986ca",
+              "id": 2
+            }
+          },
+          {
+            "symbol": "UNI",
+            "address": "0x4537e328bf7e4efa29d05caea260d7fe26af9d74",
+            "call": {
+              "to": "0xf6a78083ca3e2a662d6dd1703c939c8ace2e268d",
+              "data": "0x47ac7d6a0000000000000000000000004537e328bf7e4efa29d05caea260d7fe26af9d74"
+            },
+            "result": {
+              "jsonrpc": "2.0",
+              "result": "0x0000000000000000000000001f9840a85d5af5bf1d1762f925bdaddc4201f984",
+              "id": 3
+            }
+          },
+          {
+            "symbol": "WETH",
+            "address": "0x6a023ccd1ff6f2045c3309768ead9e68f978f6e1",
+            "call": {
+              "to": "0xf6a78083ca3e2a662d6dd1703c939c8ace2e268d",
+              "data": "0x47ac7d6a0000000000000000000000006a023ccd1ff6f2045c3309768ead9e68f978f6e1"
+            },
+            "result": {
+              "jsonrpc": "2.0",
+              "result": "0x000000000000000000000000c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+              "id": 4
+            }
+          }
+        ]
+      },
+      "42161": {
+        "checkedAt": 1792515866,
+        "tokens": [
+          {
+            "symbol": "AAVE",
+            "address": "0xba5ddd1f9d7f570dc94a51479a000e3bce967196",
+            "call": {
+              "to": "0xba5ddd1f9d7f570dc94a51479a000e3bce967196",
+              "data": "0xc2eeeebd"
+            },
+            "result": {
+              "jsonrpc": "2.0",
+              "id": 0,
+              "result": "0x0000000000000000000000007fc66500c84a76ad7e9c93437bfc5ac33e2ddae9"
+            }
+          },
+          {
+            "symbol": "COMP",
+            "address": "0x354a6da3fcde098f8389cad84b0182725c6c91de",
+            "call": {
+              "to": "0x354a6da3fcde098f8389cad84b0182725c6c91de",
+              "data": "0xc2eeeebd"
+            },
+            "result": {
+              "jsonrpc": "2.0",
+              "id": 1,
+              "result": "0x000000000000000000000000c00e94cb662c3520282e6f5717214004a7f26888"
+            }
+          },
+          {
+            "symbol": "LINK",
+            "address": "0xf97f4df75117a78c1a5a0dbb814af92458539fb4",
+            "call": {
+              "to": "0xf97f4df75117a78c1a5a0dbb814af92458539fb4",
+              "data": "0xc2eeeebd"
+            },
+            "result": {
+              "jsonrpc": "2.0",
+              "id": 2,
+              "result": "0x000000000000000000000000514910771af9ca656af840dff83e8264ecf986ca"
+            }
+          },
+          {
+            "symbol": "UNI",
+            "address": "0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0",
+            "call": {
+              "to": "0xfa7f8980b0f1e64a2062791cc3b0871572f1f7f0",
+              "data": "0xc2eeeebd"
+            },
+            "result": {
+              "jsonrpc": "2.0",
+              "id": 3,
+              "result": "0x0000000000000000000000001f9840a85d5af5bf1d1762f925bdaddc4201f984"
+            }
+          },
+          {
+            "symbol": "WBTC",
+            "address": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+            "call": {
+              "to": "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f",
+              "data": "0xc2eeeebd"
+            },
+            "result": {
+              "jsonrpc": "2.0",
+              "id": 4,
+              "result": "0x0000000000000000000000002260fac5e5542a773aa44fbcfedf7c193bc2c599"
+            }
+          }
+        ]
+      },
+      "8453": {
+        "checkedAt": 1792515866,
+        "tokens": [
+          {
+            "symbol": "AAVE",
+            "address": "0x63706e401c06ac8513145b7687a14804d17f814b",
+            "call": {
+              "to": "0x63706e401c06ac8513145b7687a14804d17f814b",
+              "data": "0xd6c0b2c4"
+            },
+            "result": {
+              "jsonrpc": "2.0",
+              "id": 0,
+              "result": "0x0000000000000000000000007fc66500c84a76ad7e9c93437bfc5ac33e2ddae9"
+            }
+          },
+          {
+            "symbol": "COMP",
+            "address": "0x9e1028f5f1d5ede59748ffcee5532509976840e0",
+            "call": {
+              "to": "0x9e1028f5f1d5ede59748ffcee5532509976840e0",
+              "data": "0xd6c0b2c4"
+            },
+            "result": {
+              "jsonrpc": "2.0",
+              "id": 1,
+              "result": "0x000000000000000000000000c00e94cb662c3520282e6f5717214004a7f26888"
+            }
+          }
+        ]
+      },
+      "137": {
+        "checkedAt": 1792515866,
+        "tokens": [
+          {
+            "symbol": "AAVE",
+            "address": "0xd6df932a45c0f255f85145f286ea0b292b21c90b",
+            "call": {
+              "to": "0xd6df932a45c0f255f85145f286ea0b292b21c90b",
+              "data": "0x1f2d0065"
+            },
+            "result": {
+              "jsonrpc": "2.0",
+              "id": 0,
+              "error": {
+                "code": 3,
+                "message": "execution reverted",
+                "data": "0x"
+              }
+            }
+          },
+          {
+            "symbol": "LINK",
+            "address": "0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39",
+            "call": {
+              "to": "0x53e0bca35ec356bd5dddfebbd1fc0fd03fabad39",
+              "data": "0x1f2d0065"
+            },
+            "result": {
+              "jsonrpc": "2.0",
+              "id": 1,
+              "error": {
+                "code": 3,
+                "message": "execution reverted",
+                "data": "0x"
+              }
+            }
+          },
+          {
+            "symbol": "UNI",
+            "address": "0xb33eaad8d922b1083446dc23f610c2567fb5180f",
+            "call": {
+              "to": "0xb33eaad8d922b1083446dc23f610c2567fb5180f",
+              "data": "0x1f2d0065"
+            },
+            "result": {
+              "jsonrpc": "2.0",
+              "id": 2,
+              "error": {
+                "code": 3,
+                "message": "execution reverted",
+                "data": "0x"
+              }
+            }
+          },
+          {
+            "symbol": "WETH",
+            "address": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+            "call": {
+              "to": "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619",
+              "data": "0x1f2d0065"
+            },
+            "result": {
+              "jsonrpc": "2.0",
+              "id": 3,
+              "error": {
+                "code": 3,
+                "message": "execution reverted",
+                "data": "0x"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "note": "Successful origin getters supplement prior reviewed contract and maintained-list evidence. Polygon rootToken() calls reverted; no origin-getter proof is claimed for those tokens. Their approvals use the prior child-bridge source review and maintained exact-contract metadata."
+  }
 }

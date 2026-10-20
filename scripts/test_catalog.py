@@ -141,6 +141,130 @@ class CatalogPolicyTests(unittest.TestCase):
         self.assertEqual(token["classificationReason"], "Fixture classification")
         self.assertNotIn("logoSources", token)
 
+    def test_multiple_new_exact_asset_sells_require_separate_approvals(self):
+        third = self.identity(1, 90003, "THIRD", "volatile")
+        pending = self.identity(1, 90004, "OTHER", "volatile")
+        self.identities["tokens"].extend([third, pending])
+        third_feed = self.feed(1, 80004, "third-usd", "THIRD")
+        pending_feed = self.feed(1, 80005, "pending-other-usd", "OTHER")
+        other_approval = self.approve(self.other, self.other_feed)
+        third_approval = self.approve(third, third_feed)
+        result, audit = self.build()
+        for identity, feed, approval in [
+            (self.sell, self.sell_feed, self.policy["approvals"][1]),
+            (self.other, self.other_feed, other_approval),
+            (third, third_feed, third_approval),
+        ]:
+            with self.subTest(token=identity["address"]):
+                token = self.token(result, identity)
+                self.assertEqual(token["oracles"], {"USD": feed["proxyAddress"]})
+                self.assertEqual(token["oracleApprovals"], {"USD": approval})
+                self.assertEqual(approval["assetRelationship"], "exact-asset")
+        self.assertEqual(self.token(result, pending)["oracles"], {})
+        self.assertEqual(self.token(result, pending)["oracleApprovals"], {})
+        self.assertEqual(next(row["reason"] for row in audit if row["path"] == pending_feed["path"]), "awaiting-approval")
+        self.policy["approvals"].remove(other_approval)
+        result, _ = self.build()
+        self.assertEqual(self.token(result, self.other)["oracles"], {})
+        self.assertEqual(self.token(result, third)["oracles"], {"USD": third_feed["proxyAddress"]})
+
+    def test_same_contract_and_source_on_another_chain_do_not_inherit_approval(self):
+        other_chain_sell = dict(self.sell, chainId=100)
+        self.identities["tokens"].append(other_chain_sell)
+        other_chain_feed = self.feed(100, 80002, "sell-usd", "SELL")
+        other_chain_buy = next(token for token in self.identities["tokens"] if token["chainId"] == 100 and token["address"] == self.identities["usdTokens"]["100"])
+        other_chain_buy_feed = self.feed(100, 80001, "buy-usd", "BUY")
+        self.policy["chains"]["100"] = copy.deepcopy(self.policy["chains"]["1"])
+        self.approve(other_chain_buy, other_chain_buy_feed)
+        self.verification["chains"]["100"]["tokens"][other_chain_sell["address"]] = copy.deepcopy(self.verification["chains"]["1"]["tokens"][self.sell["address"]])
+        result, _ = self.build()
+        self.assertEqual(result["chains"]["100"]["status"], "approved")
+        self.assertEqual(self.token(result, self.sell)["oracles"], {"USD": self.sell_feed["proxyAddress"]})
+        self.assertEqual(self.token(result, other_chain_sell)["oracles"], {})
+        self.assertEqual(self.token(result, other_chain_sell)["oracleApprovals"], {})
+        copied_approval = dict(self.policy["approvals"][1], chainId=100)
+        self.policy["approvals"].append(copied_approval)
+        with self.assertRaisesRegex(ValueError, "fingerprint changed"):
+            self.build()
+        self.refingerprint(copied_approval, other_chain_sell, other_chain_feed)
+        result, _ = self.build()
+        self.assertEqual(self.token(result, other_chain_sell)["oracleApprovals"], {"USD": copied_approval})
+
+    def test_wrapped_btc_dex_state_price_requires_exact_approval(self):
+        wrapped_btc = self.identity(1, 90003, "WBTC", "volatile")
+        self.identities["tokens"].append(wrapped_btc)
+        feed = self.feed(1, 80004, "wbtc-usd", "WBTC")
+        feed["docs"]["attributeType"] = "dex_state_price"
+        result, audit = self.build()
+        self.assertEqual(self.token(result, wrapped_btc)["oracles"], {})
+        self.assertEqual(self.token(result, wrapped_btc)["oracleApprovals"], {})
+        row = next(row for row in audit if row["path"] == feed["path"])
+        self.assertEqual((row["status"], row["reason"]), ("unresolved", "awaiting-approval"))
+        approval = self.approve(wrapped_btc, feed)
+        approval["methodologyEvidence"] = "Reviewed WBTC onchain-state USD price; it can differ from the traded price"
+        result, audit = self.build()
+        self.assertEqual(self.token(result, wrapped_btc)["oracles"], {"USD": feed["proxyAddress"]})
+        self.assertEqual(self.token(result, wrapped_btc)["oracleApprovals"], {"USD": approval})
+        self.assertEqual(next(row["reason"] for row in audit if row["path"] == feed["path"]), "approved")
+
+    def test_alternate_price_methods_require_existing_exact_approval(self):
+        for method in ("calculated", "dex_state_price", "backing_value", "direct_usd_price", "another-price-method", None):
+            with self.subTest(method=method):
+                self.other_feed["docs"]["attributeType"] = method
+                self.other_feed["docs"]["productSubType"] = "Calculated"
+                self.other_feed["name"] = "OTHER exchange rate"
+                result, audit = self.build()
+                self.assertIsNone(catalog.excluded_reason(self.other_feed))
+                self.assertEqual(self.token(result, self.other)["oracles"], {})
+                self.assertEqual(next(row["reason"] for row in audit if row["path"] == self.other_feed["path"]), "awaiting-approval")
+                approval = self.approve(self.other, self.other_feed)
+                approval["expectedDescription"] = "OTHER / USD"
+                approval["methodologyEvidence"] = "Reviewed directly usable USD value and what the answer measures"
+                result, _ = self.build()
+                self.assertEqual(self.token(result, self.other)["oracles"], {"USD": self.other_feed["proxyAddress"]})
+                for field in ("methodologyEvidence", "identityEvidence", "sourceEvidence", "snapshotFingerprint"):
+                    value = approval.pop(field)
+                    with self.assertRaises(ValueError):
+                        self.build()
+                    approval[field] = value
+                self.policy["approvals"].remove(approval)
+                result, _ = self.build()
+                self.assertEqual(self.token(result, self.other)["oracles"], {})
+
+    def test_alternate_prices_keep_quote_and_nonprice_guards(self):
+        for method in ("calculated", "dex_state_price", "backing_value"):
+            for field, value, reason in (
+                ("quoteAsset", "BTC", "unsupported-quote"),
+                ("quoteAsset", "SOL", "unsupported-quote"),
+                ("quoteAsset", None, "unsupported-quote"),
+                ("productType", "Proof of Reserve", "not-price-data"),
+                ("productType", None, "not-price-data"),
+                ("assetClass", "Equities", "non-crypto-price-or-data"),
+                ("baseAsset", "", "missing-source-metadata"),
+            ):
+                with self.subTest(method=method, field=field, value=value):
+                    inventories = copy.deepcopy(self.inventories)
+                    feed = inventories["1"][1]
+                    feed["docs"]["attributeType"] = method
+                    feed["docs"][field] = value
+                    policy = copy.deepcopy(self.policy)
+                    policy["approvals"][1]["snapshotFingerprint"] = catalog.snapshot_fingerprint(self.sell, feed, self.verification)
+                    self.assertEqual(catalog.excluded_reason(feed), reason)
+                    with self.assertRaisesRegex(ValueError, reason):
+                        catalog.build(self.identities, inventories, policy, self.verification)
+
+    def test_alternate_eth_price_requires_approved_common_quote_without_conversion(self):
+        feed = self.feed(1, 80004, "other-eth", "OTHER", "ETH")
+        feed["docs"]["attributeType"] = "calculated"
+        self.approve(self.other, feed)
+        result, _ = self.build()
+        self.assertEqual(self.token(result, self.other)["oracles"], {})
+        buy_eth = self.feed(1, 80005, "buy-eth", "BUY", "ETH")
+        self.approve(self.buy, buy_eth)
+        result, _ = self.build()
+        self.assertEqual(self.token(result, self.other)["oracles"], {"ETH": feed["proxyAddress"]})
+        self.assertEqual(self.token(result, self.buy)["oracles"], {"USD": self.buy_feed["proxyAddress"], "ETH": buy_eth["proxyAddress"]})
+
     def bounded_buy_approval(self):
         self.buy_feed["docs"]["stablecoinCapped"] = True
         approval = self.policy["approvals"][0]
@@ -156,44 +280,57 @@ class CatalogPolicyTests(unittest.TestCase):
         approval = self.policy["approvals"][1]
         valid = {"decision": "accepted", "category": "medium", "evidence": "Reviewed source category", "reviewDate": "2026-01-01"}
         invalid = [None, True, {}, dict(valid, decision="approved"), dict(valid, category="low"),
-                   dict(valid, category="hidden"), dict(valid, evidence=" "),
+                   dict(valid, category="new"), dict(valid, category="high"),
+                   dict(valid, category="custom"), dict(valid, category="hidden"), dict(valid, evidence=" "),
                    dict(valid, reviewDate="2026-02-30"), dict(valid, reviewDate="9999-01-01")]
         invalid.extend({key: value for key, value in valid.items() if key != field} for field in valid)
-        for suitability in invalid + [valid]:
-            with self.subTest(suitability=suitability):
-                approval["sourceCategorySuitability"] = suitability
-                with self.assertRaisesRegex(ValueError, "sourceCategorySuitability"):
-                    self.build()
+        for category in ("low", "medium"):
+            self.sell_feed["feedCategory"] = category
+            self.refingerprint(approval, self.sell, self.sell_feed)
+            for suitability in invalid + ([valid] if category == "low" else []):
+                with self.subTest(category=category, suitability=suitability):
+                    approval["sourceCategorySuitability"] = suitability
+                    with self.assertRaises(ValueError):
+                        self.build()
 
-    def test_reviewed_category_is_narrow_and_keeps_other_exclusions(self):
+    def test_low_and_medium_categories_need_no_suitability_exception(self):
         approval = self.policy["approvals"][1]
-        for category in ("medium", "new"):
+        for category in ("low", "medium"):
             with self.subTest(category=category):
                 self.sell_feed["feedCategory"] = category
-                approval["sourceCategorySuitability"] = {"decision": "accepted", "category": category, "evidence": "Reviewed source category", "reviewDate": "2026-01-01"}
                 self.refingerprint(approval, self.sell, self.sell_feed)
                 result, audit = self.build()
                 self.assertEqual(self.token(result, self.sell)["oracles"], {"USD": self.sell_feed["proxyAddress"]})
                 self.assertEqual(audit[1]["reason"], "approved")
-                self.assertEqual(catalog.excluded_reason(self.sell_feed), "not-low-risk-category")
-                for field, value in (("evidence", " "), ("reviewDate", "2026-02-30"), ("reviewDate", "9999-01-01"), ("category", "low"), ("category", "new" if category == "medium" else "medium")):
-                    valid = approval["sourceCategorySuitability"][field]
-                    approval["sourceCategorySuitability"][field] = value
-                    with self.assertRaises(ValueError):
-                        self.build()
-                    approval["sourceCategorySuitability"][field] = valid
-                del approval["sourceCategorySuitability"]
-                with self.assertRaisesRegex(ValueError, "not-low-risk-category"):
-                    self.build()
-        for category in ("low", "medium", "new", "high", "hidden", "deprecating", None):
-            for review in (None, "medium", "new", "high", "hidden"):
-                feed = copy.deepcopy(self.sell_feed)
-                feed["feedCategory"] = category
-                expected = None if category == "low" or category in {"medium", "new"} and category == review else "hidden-or-deprecating" if category in {"hidden", "deprecating"} else "not-low-risk-category"
-                self.assertEqual(catalog.excluded_reason(feed, approved_source_category=review), expected)
+                self.assertIsNone(catalog.excluded_reason(self.sell_feed))
+                self.assertNotIn("sourceCategorySuitability", approval)
+        review = {"decision": "accepted", "category": "medium", "evidence": "Historical Medium category review", "reviewDate": "2026-01-01"}
+        approval["sourceCategorySuitability"] = review
+        result, _ = self.build()
+        self.assertEqual(self.token(result, self.sell)["oracleApprovals"]["USD"]["sourceCategorySuitability"], review)
+
+    def test_new_high_custom_and_unknown_categories_cannot_be_overridden(self):
+        for category in ("new", "high", "custom", "unknown", "hidden", "deprecating", None):
+            for override in (False, True):
+                with self.subTest(category=category, override=override):
+                    inventories = copy.deepcopy(self.inventories)
+                    feed = inventories["1"][1]
+                    feed["feedCategory"] = category
+                    policy = copy.deepcopy(self.policy)
+                    approval = policy["approvals"][1]
+                    if override:
+                        approval["sourceCategorySuitability"] = {"decision": "accepted", "category": category, "evidence": "Reviewed source category", "reviewDate": "2026-01-01"}
+                    approval["snapshotFingerprint"] = catalog.snapshot_fingerprint(self.sell, feed, self.verification)
+                    expected = "hidden-or-deprecating" if category in {"hidden", "deprecating"} else "not-low-or-medium-risk-category"
+                    self.assertEqual(catalog.excluded_reason(feed), expected)
+                    with self.assertRaisesRegex(ValueError, "sourceCategorySuitability" if override else expected):
+                        catalog.build(self.identities, inventories, policy, self.verification)
+
+    def test_historical_medium_category_review_keeps_other_exclusions(self):
         self.sell_feed["feedCategory"] = "medium"
+        approval = self.policy["approvals"][1]
         approval["sourceCategorySuitability"] = {"decision": "accepted", "category": "medium", "evidence": "Reviewed source category", "reviewDate": "2026-01-01"}
-        for target, field, value in (("feed", "status", "inactive"), ("docs", "hidden", True), ("docs", "stablecoinCapped", True), ("docs", "attributeType", "calculated"), ("docs", "productType", "NAVLink"), ("docs", "shutdownDate", "2099-01-01")):
+        for target, field, value in (("feed", "status", "inactive"), ("docs", "hidden", True), ("docs", "stablecoinCapped", True), ("docs", "productType", "Proof of Reserve"), ("docs", "shutdownDate", "2099-01-01")):
             inventories = copy.deepcopy(self.inventories)
             feed = inventories["1"][1]
             (feed if target == "feed" else feed["docs"])[field] = value
@@ -338,12 +475,8 @@ class CatalogPolicyTests(unittest.TestCase):
             ("feed", "proxyAddress", "invalid", "no-onchain-proxy"),
             ("docs", "assetClass", "Equities", "non-crypto-price-or-data"),
             ("feed", "status", "inactive", "inactive-feed"),
-            ("feed", "feedCategory", "medium", "not-low-risk-category"),
-            ("docs", "productType", "NAVLink", "not-cex-reference-price"),
-            ("docs", "attributeType", "calculated", "not-cex-reference-price"),
-            ("docs", "attributeType", "dex_state_price", "not-cex-reference-price"),
-            ("docs", "productSubType", "Calculated", "not-cex-reference-price"),
-            ("feed", "name", "BUY exchange rate", "exchange-rate"),
+            ("feed", "feedCategory", "new", "not-low-or-medium-risk-category"),
+            ("docs", "productType", "Proof of Reserve", "not-price-data"),
             ("docs", "quoteAsset", "BTC", "unsupported-quote"),
             ("docs", "baseAsset", "", "missing-source-metadata"),
             ("feed", "path", "", "missing-source-metadata"),
@@ -618,9 +751,10 @@ class CatalogPolicyTests(unittest.TestCase):
 
     def test_strict_source_requirements(self):
         for target, field, value in [
-            ("feed", "feedCategory", "medium"), ("docs", "attributeType", "calculated"),
-            ("docs", "attributeType", "dex_state_price"), ("docs", "productSubType", "Calculated"),
-            ("docs", "productType", "NAVLink"), ("docs", "hidden", True),
+            ("feed", "feedCategory", "new"), ("docs", "productType", "Proof of Reserve"),
+            ("docs", "hidden", True), ("docs", "assetClass", "Equities"),
+            ("docs", "quoteAsset", "BTC"), ("docs", "baseAsset", ""),
+            ("feed", "heartbeat", 0), ("feed", "decimals", 37),
             ("docs", "shutdownDate", "2099-01-01"), ("docs", "stablecoinCapped", True),
             ("feed", "status", "inactive"),
         ]:
