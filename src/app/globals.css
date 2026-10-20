@@ -895,6 +895,8 @@
     padding: 20px;
   }
   .rescue-home-cards > .rescue-portfolio-panel {
+    width: 100%;
+    max-width: 700px;
     height: 460px;
     min-height: 0;
   }
