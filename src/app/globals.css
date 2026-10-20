@@ -977,24 +977,6 @@
   .rescue-token-balance:empty {
     display: none;
   }
-  .rescue-price-card {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    column-gap: 12px;
-  }
-  .rescue-price-heading,
-  .rescue-price-body {
-    display: contents !important;
-  }
-  .rescue-price-heading > span:first-child {
-    grid-area: 1 / 1;
-  }
-  .rescue-market-price {
-    grid-area: 1 / 2;
-    max-width: 210px;
-    width: auto !important;
-  }
   .rescue-market-price button {
     font-size: 11px !important;
   }
@@ -1002,15 +984,7 @@
   .rescue-market-price button::after {
     display: none;
   }
-  .rescue-price-card #trigger-price {
-    grid-column: 1 / -1;
-    grid-row: 2;
-  }
-  .rescue-price-card:has(.rescue-price-distance) #trigger-price {
-    grid-column: 1;
-  }
   .rescue-price-distance {
-    grid-area: 2 / 2;
     font-size: 11px !important;
   }
   .rescue-info-control,
