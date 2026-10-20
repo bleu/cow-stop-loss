@@ -1298,7 +1298,9 @@
       "assetClass": "volatile",
       "localLogo": "/assets/tokens/c0b567bd541bf5033207.svg",
       "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/weth.svg",
-      "logoSha256": "c0b567bd541bf50332072c13c19211ffd025062127c75818df52a588414a9655"
+      "logoSha256": "c0b567bd541bf50332072c13c19211ffd025062127c75818df52a588414a9655",
+      "canonicalNativeWrapper": true,
+      "canonicalNativeWrapperEvidence": "https://sourcify.dev/server/v2/contract/8453/0x4200000000000000000000000000000000000006?fields=all: matching WETH9.sol deposit credits msg.value and withdraw subtracts wad before returning the same native ETH amount. Local wrapping preserves units; Base L2/bridge risk remains. The selected eth-usd-shared-svr-2 source is the official 8-decimal primary proxy, not secondaryProxyAddress."
     },
     {
       "chainId": 8453,

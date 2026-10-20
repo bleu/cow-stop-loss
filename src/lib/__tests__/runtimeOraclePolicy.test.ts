@@ -212,9 +212,10 @@ describe("real creation admission policy", () => {
           tokenBuy: buyToken.token,
         };
         const route = configuredTokenRoute(pair);
+        const quote = sell.oracles.ETH && buyToken.oracles.ETH ? "ETH" : "USD";
         expect(route).toEqual({
-          tokenSellOracle: sell.oracles.USD,
-          tokenBuyOracle: buyToken.oracles.USD,
+          tokenSellOracle: sell.oracles[quote],
+          tokenBuyOracle: buyToken.oracles[quote],
         });
         expect(route.tokenSellOracle).toMatch(/^0x[0-9a-fA-F]{40}$/);
         expect(route.tokenBuyOracle).toMatch(/^0x[0-9a-fA-F]{40}$/);
@@ -228,12 +229,14 @@ describe("real creation admission policy", () => {
             oracles: leg.oracles,
             oracleApprovals: leg.oracleApprovals,
           });
-          expect(leg.oracleApprovals?.USD?.maxAgeSeconds).toBeGreaterThan(0);
+          expect(leg.oracleApprovals?.[quote]?.maxAgeSeconds).toBeGreaterThan(
+            0,
+          );
         }
         expect(configuredRouteMaxAgeSeconds(pair)).toBe(
           Math.max(
-            sell.oracleApprovals!.USD!.maxAgeSeconds,
-            buyToken.oracleApprovals!.USD!.maxAgeSeconds,
+            sell.oracleApprovals![quote]!.maxAgeSeconds,
+            buyToken.oracleApprovals![quote]!.maxAgeSeconds,
           ),
         );
         await expect(new ConfiguredRouter(pair).findRoute()).resolves.toEqual(
@@ -258,8 +261,9 @@ describe("real creation admission policy", () => {
       const { sellTokens, buyToken } = supported.getSupportedTokens(chainId);
       const sell = sellTokens[0];
       expect(sell).toBeDefined();
-      const sellCeiling = sell.oracleApprovals!.USD!.maxAgeSeconds;
-      const buyCeiling = buyToken.oracleApprovals!.USD!.maxAgeSeconds;
+      const quote = sell.oracles.ETH && buyToken.oracles.ETH ? "ETH" : "USD";
+      const sellCeiling = sell.oracleApprovals![quote]!.maxAgeSeconds;
+      const buyCeiling = buyToken.oracleApprovals![quote]!.maxAgeSeconds;
       const sellAge = scenario === "stale sell" ? sellCeiling + 1 : 2;
       const buyAge = scenario === "stale buy" ? buyCeiling + 1 : 2;
       const timestamp = Math.max(sellCeiling, buyCeiling) + 10000;
@@ -273,7 +277,7 @@ describe("real creation admission policy", () => {
         .mockImplementation(async ({ functionName, address }) => {
           if (functionName === "decimals") return 8;
           const selling =
-            address?.toLowerCase() === sell.oracles.USD!.toLowerCase();
+            address?.toLowerCase() === sell.oracles[quote]!.toLowerCase();
           return [
             BigInt(1),
             BigInt(selling ? 200000000000 : 100000000),
@@ -350,7 +354,7 @@ describe("real creation admission policy", () => {
         ...sepoliaDraft(),
         tokenSell: supported.findKnownToken(
           1,
-          "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
+          "0x6B175474E89094C44Da98b954EedeAC495271d0F",
         )!,
         tokenBuy: supported.getSupportedTokens(1).buyToken.token,
         maxHoursSinceOracleUpdates: 365 * 24,
@@ -443,6 +447,54 @@ describe("approval identity parsing", () => {
     };
   }
 
+  it("accepts default approvals and historical Medium category reviews", () => {
+    const token = approvedToken();
+    const expected = {
+      oracles: { USD: proxy },
+      oracleApprovals: { USD: { maxAgeSeconds: 1800 } },
+    };
+    expect(catalog.parseOracleApprovals(token)).toEqual(expected);
+    expect(
+      catalog.parseOracleApprovals({
+        ...token,
+        oracleApprovals: {
+          USD: {
+            ...token.oracleApprovals.USD,
+            sourceCategorySuitability: {
+              decision: "accepted",
+              category: "medium",
+              evidence: "Historical Medium category review",
+              reviewDate: "2026-01-01",
+            },
+          },
+        },
+      }),
+    ).toEqual(expected);
+  });
+
+  it.each(["new", "high", "custom", "unknown", null])(
+    "rejects a complete suitability override for category %s",
+    (category) => {
+      const token = approvedToken();
+      expect(
+        catalog.parseOracleApprovals({
+          ...token,
+          oracleApprovals: {
+            USD: {
+              ...token.oracleApprovals.USD,
+              sourceCategorySuitability: {
+                decision: "accepted",
+                category,
+                evidence: "Reviewed category",
+                reviewDate: "2026-01-01",
+              },
+            },
+          },
+        }),
+      ).toEqual({ oracles: {}, oracleApprovals: {} });
+    },
+  );
+
   it("rejects incomplete category reviews even for exact assets", () => {
     const token = approvedToken();
     for (const sourceCategorySuitability of [
@@ -463,13 +515,13 @@ describe("approval identity parsing", () => {
       },
       {
         decision: "accepted",
-        category: "new",
+        category: "medium",
         evidence: "Reviewed",
         reviewDate: "2026-02-30",
       },
       {
         decision: "accepted",
-        category: "new",
+        category: "medium",
         evidence: "Reviewed",
         reviewDate: "9999-01-01",
       },
@@ -528,18 +580,18 @@ describe("approval identity parsing", () => {
         }).oracles,
       ).toEqual({});
     }
-    for (const category of ["medium", "new"]) {
-      expect(
-        parse({
-          sourceCategorySuitability: {
-            decision: "accepted",
-            category,
-            evidence: "Reviewed category",
-            reviewDate: "2026-01-01",
-          },
-        }).oracles,
-      ).toEqual({ USD: proxy });
-    }
+    expect(
+      parse({
+        assetRelationship: "bridged-underlying",
+        representationSuitability,
+        sourceCategorySuitability: {
+          decision: "accepted",
+          category: "medium",
+          evidence: "Reviewed category",
+          reviewDate: "2026-01-01",
+        },
+      }).oracles,
+    ).toEqual({ USD: proxy });
     for (const field of [
       "identityEvidence",
       "representationEvidence",

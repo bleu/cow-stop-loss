@@ -56,7 +56,7 @@ def review_date(value):
     require(parsed.isoformat() == value and parsed <= datetime.date.today(), "Invalid reviewDate")
 
 
-def excluded_reason(feed, *, bounded_price_approved=False, approved_source_category=None):
+def excluded_reason(feed, *, bounded_price_approved=False):
     docs = feed.get("docs", {})
     if feed.get("feedCategory") in {"hidden", "deprecating"} or docs.get("hidden") or docs.get("shutdownDate"):
         return "hidden-or-deprecating"
@@ -68,12 +68,10 @@ def excluded_reason(feed, *, bounded_price_approved=False, approved_source_categ
         return "bounded-price-methodology-not-approved"
     if feed.get("status") not in {None, "active"}:
         return "inactive-feed"
-    if feed.get("feedCategory") != "low" and not (approved_source_category in {"medium", "new"} and feed.get("feedCategory") == approved_source_category):
-        return "not-low-risk-category"
-    if docs.get("productType") != "Price" or docs.get("attributeType") != "cex_price" or docs.get("productSubType") != "Reference":
-        return "not-cex-reference-price"
-    if "exchange rate" in feed.get("name", "").lower():
-        return "exchange-rate"
+    if feed.get("feedCategory") not in {"low", "medium"}:
+        return "not-low-or-medium-risk-category"
+    if docs.get("productType") != "Price":
+        return "not-price-data"
     if docs.get("quoteAsset") not in {"ETH", "USD"}:
         return "unsupported-quote"
     if not nonempty(docs.get("baseAsset")) or not nonempty(feed.get("path")):
@@ -144,14 +142,12 @@ def approved_feeds(identities, inventories, policy, verification):
         matches = [feed for feed in inventories.get(str(chain), []) if feed.get("path") == entry["path"] and (feed.get("proxyAddress") or "").lower() == proxy.lower()]
         require(len(matches) == 1, "Approval must match exactly one source path/proxy")
         feed = matches[0]
-        approved_source_category = None
         if "sourceCategorySuitability" in entry:
             suitability = entry["sourceCategorySuitability"]
             require(isinstance(suitability, dict) and suitability.get("decision") == "accepted", "Invalid sourceCategorySuitability decision")
-            require(suitability.get("category") in {"medium", "new"} and suitability["category"] == feed.get("feedCategory"), "sourceCategorySuitability must match medium/new source category")
+            require(suitability.get("category") == "medium" and suitability["category"] == feed.get("feedCategory"), "sourceCategorySuitability must match medium source category")
             require(nonempty(suitability.get("evidence")), "Missing sourceCategorySuitability evidence")
             review_date(suitability.get("reviewDate"))
-            approved_source_category = suitability["category"]
         bounded_price_approved = False
         if "boundedPriceSuitability" in entry:
             suitability = entry["boundedPriceSuitability"]
@@ -160,7 +156,7 @@ def approved_feeds(identities, inventories, policy, verification):
             review_date(suitability.get("reviewDate"))
             require(address.lower() == identities["usdTokens"].get(str(chain), "").lower() and denomination == "USD" and entry.get("assetRelationship") in {"exact-asset", "bridged-underlying"}, "boundedPriceSuitability requires fixed buy token, USD quote and exact-asset or reviewed bridged-underlying relationship")
             bounded_price_approved = True
-        reason = excluded_reason(feed, bounded_price_approved=bounded_price_approved, approved_source_category=approved_source_category)
+        reason = excluded_reason(feed, bounded_price_approved=bounded_price_approved)
         require(reason is None, f"Ineligible approved source: {reason}")
         require(feed["docs"]["quoteAsset"] == denomination, "Approval quote differs from source")
         for field in EVIDENCE_FIELDS:

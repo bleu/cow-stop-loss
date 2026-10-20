@@ -122,18 +122,66 @@ it.each(supportedChainIds)(
     expect(screen.getAllByRole("option")).toHaveLength(sellTokens.length);
     for (const { token } of sellTokens)
       expect(
-        screen.getByRole("option", { name: new RegExp(token.symbol) }),
+        screen.getByRole("option", {
+          name: `Token Logo ${token.symbol}`,
+        }),
       ).toBeInTheDocument();
   },
 );
 
 it.each([
-  [42161, 2692],
-  [137, 100],
-  [56, 1410],
+  ["AAVE", "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9"],
+  ["COMP", "0xc00e94cb662c3520282e6f5717214004a7f26888"],
+])(
+  "finds the approved %s contract by address and reviews its route",
+  async (symbol, address) => {
+    mockUseRealSupportedTokens = true;
+    const user = userEvent.setup();
+    const onReviewOrder = jest.fn();
+    renderForm(onReviewOrder);
+    await user.click(screen.getByRole("button", { name: "Select token" }));
+    expect(
+      screen.queryByRole("option", { name: "Token Logo USDC" }),
+    ).not.toBeInTheDocument();
+    await user.type(
+      screen.getByPlaceholderText("Search supported tokens"),
+      address,
+    );
+    expect(screen.getAllByRole("option")).toHaveLength(1);
+    await user.click(
+      screen.getByRole("option", { name: `Token Logo ${symbol}` }),
+    );
+    await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+    await user.type(
+      screen.getByRole("textbox", { name: "Trigger price" }),
+      "0.95",
+    );
+    await user.click(
+      await screen.findByRole("button", { name: "Review Stop Loss order" }),
+    );
+    await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(1));
+    expect(onReviewOrder.mock.calls[0][0]).toMatchObject({
+      tokenSell: { symbol, address },
+      tokenBuy: {
+        symbol: "USDC",
+        address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      },
+    });
+  },
+);
+
+it.each([
+  [42161, "WETH", 2692],
+  [42161, "ARB", 86400],
+  [42161, "WBTC", 86400],
+  [8453, "WETH", 86400],
+  [43114, "JOE", 86400],
+  [137, "WPOL", 100],
+  [56, "WBNB", 1410],
+  [56, "Cake", 1410],
 ] as const)(
-  "resets to a valid automatic oracle age and reviews on mainnet %s",
-  async (chainId, expectedAgeSeconds) => {
+  "resets to a valid automatic oracle age and reviews %s %s",
+  async (chainId, symbol, expectedAgeSeconds) => {
     mockUseRealSupportedTokens = true;
     safe = { ...safe, chainId };
     invalidatePlacementReads({ account: safe.safeAddress, chainId });
@@ -165,7 +213,9 @@ it.each([
     const onReviewOrder = jest.fn();
     renderForm(onReviewOrder);
     await user.click(screen.getByRole("button", { name: "Select token" }));
-    await user.click(screen.getByRole("option"));
+    await user.click(
+      screen.getByRole("option", { name: `Token Logo ${symbol}` }),
+    );
     await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
     await user.type(
       screen.getByRole("textbox", { name: "Trigger price" }),
@@ -226,7 +276,7 @@ it.each(["account", "chain"] as const)(
     );
     await user.click(screen.getByRole("button", { name: "Order settings" }));
     expect(screen.getByRole("spinbutton")).toHaveValue(
-      (scope === "account" ? 100 : 2692) / 3600,
+      (scope === "account" ? 100 : 86400) / 3600,
     );
     expect(useAdvancedSettingsStore.getState().oracleAgeMode).toBe("automatic");
   },
