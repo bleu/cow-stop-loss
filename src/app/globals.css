@@ -888,6 +888,9 @@
     animation-delay: -6s;
   }
   .rescue-home-cards {
+    width: 100%;
+    max-width: 1170px;
+    margin-inline: auto;
     align-items: start;
     gap: 20px;
   }
