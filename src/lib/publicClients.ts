@@ -77,31 +77,38 @@ export const chainNames: Record<ChainId, string> = {
   11155111: "Sepolia (testnet)",
 };
 
+const DRPC_NETWORKS = {
+  [mainnet.id]: "ethereum",
+  [gnosis.id]: "gnosis",
+  [sepolia.id]: "sepolia",
+  [arbitrum.id]: "arbitrum",
+  [base.id]: "base",
+  [polygon.id]: "polygon",
+  [avalanche.id]: "avalanche",
+  [bsc.id]: "bsc",
+  [linea.id]: "linea",
+  [plasma.id]: "plasma",
+} as const satisfies Record<ChainId, string>;
+
+const drpcKey = process.env.NEXT_PUBLIC_DRPC_KEY;
+
+function rpcUrl(chainId: ChainId, defaultUrl: string): string {
+  return drpcKey
+    ? `https://lb.drpc.live/${DRPC_NETWORKS[chainId]}/${encodeURIComponent(drpcKey)}`
+    : defaultUrl;
+}
+
 export const RPC_PROVIDERS = {
-  [mainnet.id]:
-    process.env.NEXT_PUBLIC_RPC_URL_MAINNET ||
-    "https://ethereum-rpc.publicnode.com",
-  [gnosis.id]:
-    process.env.NEXT_PUBLIC_RPC_URL_GNOSIS || gnosis.rpcUrls.default.http[0],
-  [sepolia.id]:
-    process.env.NEXT_PUBLIC_RPC_URL_SEPOLIA || sepolia.rpcUrls.default.http[0],
-  [arbitrum.id]:
-    process.env.NEXT_PUBLIC_RPC_URL_ARBITRUM ||
-    arbitrum.rpcUrls.default.http[0],
-  [base.id]:
-    process.env.NEXT_PUBLIC_RPC_URL_BASE || base.rpcUrls.default.http[0],
-  [polygon.id]:
-    process.env.NEXT_PUBLIC_RPC_URL_POLYGON ||
-    "https://polygon-bor-rpc.publicnode.com",
-  [avalanche.id]:
-    process.env.NEXT_PUBLIC_RPC_URL_AVALANCHE ||
-    avalanche.rpcUrls.default.http[0],
-  [bsc.id]:
-    process.env.NEXT_PUBLIC_RPC_URL_BNB || "https://bsc-dataseed1.bnbchain.org",
-  [linea.id]:
-    process.env.NEXT_PUBLIC_RPC_URL_LINEA || linea.rpcUrls.default.http[0],
-  [plasma.id]:
-    process.env.NEXT_PUBLIC_RPC_URL_PLASMA || plasma.rpcUrls.default.http[0],
+  [mainnet.id]: rpcUrl(mainnet.id, "https://ethereum-rpc.publicnode.com"),
+  [gnosis.id]: rpcUrl(gnosis.id, gnosis.rpcUrls.default.http[0]),
+  [sepolia.id]: rpcUrl(sepolia.id, sepolia.rpcUrls.default.http[0]),
+  [arbitrum.id]: rpcUrl(arbitrum.id, arbitrum.rpcUrls.default.http[0]),
+  [base.id]: rpcUrl(base.id, base.rpcUrls.default.http[0]),
+  [polygon.id]: rpcUrl(polygon.id, "https://polygon-bor-rpc.publicnode.com"),
+  [avalanche.id]: rpcUrl(avalanche.id, avalanche.rpcUrls.default.http[0]),
+  [bsc.id]: rpcUrl(bsc.id, "https://bsc-dataseed1.bnbchain.org"),
+  [linea.id]: rpcUrl(linea.id, linea.rpcUrls.default.http[0]),
+  [plasma.id]: rpcUrl(plasma.id, plasma.rpcUrls.default.http[0]),
 } as const satisfies Record<ChainId, string>;
 
 export function createRpcTransport(chain: ChainType) {

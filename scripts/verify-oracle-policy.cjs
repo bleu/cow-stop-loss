@@ -14,26 +14,25 @@ const catalog = require("../src/lib/tokenCatalogData.json");
 const appUrl = process.env.APP_URL || "http://localhost:3001/app";
 const chains = require("viem/chains");
 const rpcNetworks = [
-  [1, "MAINNET", "https://ethereum-rpc.publicnode.com"],
-  [100, "GNOSIS", chains.gnosis.rpcUrls.default.http[0]],
-  [42161, "ARBITRUM", chains.arbitrum.rpcUrls.default.http[0]],
-  [8453, "BASE", chains.base.rpcUrls.default.http[0]],
-  [137, "POLYGON", "https://polygon-bor-rpc.publicnode.com"],
-  [43114, "AVALANCHE", chains.avalanche.rpcUrls.default.http[0]],
-  [56, "BNB", "https://bsc-dataseed1.bnbchain.org"],
-  [59144, "LINEA", chains.linea.rpcUrls.default.http[0]],
-  [9745, "PLASMA", "https://rpc.plasma.to"],
-  [11155111, "SEPOLIA", chains.sepolia.rpcUrls.default.http[0]],
-].map(([id, name, fallback]) => [
-  id,
-  new URL(process.env["NEXT_PUBLIC_RPC_URL_" + name] || fallback),
-]);
+  [1, "ethereum", "https://ethereum-rpc.publicnode.com"],
+  [100, "gnosis", chains.gnosis.rpcUrls.default.http[0]],
+  [42161, "arbitrum", chains.arbitrum.rpcUrls.default.http[0]],
+  [8453, "base", chains.base.rpcUrls.default.http[0]],
+  [137, "polygon", "https://polygon-bor-rpc.publicnode.com"],
+  [43114, "avalanche", chains.avalanche.rpcUrls.default.http[0]],
+  [56, "bsc", "https://bsc-dataseed1.bnbchain.org"],
+  [59144, "linea", chains.linea.rpcUrls.default.http[0]],
+  [9745, "plasma", "https://rpc.plasma.to"],
+  [11155111, "sepolia", chains.sepolia.rpcUrls.default.http[0]],
+].map(([id, network, fallback]) => [id, network, new URL(fallback)]);
 
 function rpcNetwork(url, fallback) {
   return (
     rpcNetworks.find(
-      ([, rpcUrl]) =>
-        rpcUrl.origin === url.origin && rpcUrl.pathname === url.pathname,
+      ([, network, rpcUrl]) =>
+        (rpcUrl.origin === url.origin && rpcUrl.pathname === url.pathname) ||
+        (url.origin === "https://lb.drpc.live" &&
+          url.pathname.split("/")[1] === network),
     )?.[0] ?? fallback
   );
 }

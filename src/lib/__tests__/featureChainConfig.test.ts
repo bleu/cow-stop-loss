@@ -83,15 +83,7 @@ describe("standalone chain configuration", () => {
     }
   });
 
-  it("keeps the reviewed Polygon and BNB public RPC defaults", () => {
-    expect(RPC_PROVIDERS[137]).toBe(
-      process.env.NEXT_PUBLIC_RPC_URL_POLYGON ||
-        "https://polygon-bor-rpc.publicnode.com",
-    );
-    expect(RPC_PROVIDERS[56]).toBe(
-      process.env.NEXT_PUBLIC_RPC_URL_BNB ||
-        "https://bsc-dataseed1.bnbchain.org",
-    );
+  it("keeps the local Plasma chain definition", () => {
     expect(plasma.id).toBe(9745);
     expect(plasma.rpcUrls.default.http).toEqual(["https://rpc.plasma.to"]);
   });

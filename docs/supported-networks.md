@@ -6,9 +6,15 @@ Connection and browsing do not switch the wallet chain. Only an explicit network
 
 ## RPC configuration
 
-Set `NEXT_PUBLIC_RPC_URL_MAINNET`, `NEXT_PUBLIC_RPC_URL_GNOSIS`, `NEXT_PUBLIC_RPC_URL_ARBITRUM`, `NEXT_PUBLIC_RPC_URL_BASE`, `NEXT_PUBLIC_RPC_URL_POLYGON`, `NEXT_PUBLIC_RPC_URL_AVALANCHE`, `NEXT_PUBLIC_RPC_URL_BNB`, `NEXT_PUBLIC_RPC_URL_LINEA`, `NEXT_PUBLIC_RPC_URL_PLASMA`, and `NEXT_PUBLIC_RPC_URL_SEPOLIA` to override the public RPCs. These values are included in the browser bundle. Do not use private server credentials.
+Set `NEXT_PUBLIC_DRPC_KEY` in `.env.local` or the build environment to use one dRPC key for all ten chains, including Sepolia. Each chain uses its own network endpoint at `https://lb.drpc.live/<network>/<key>`. Wagmi and read clients share these RPC settings. The old per-chain RPC URL settings are no longer read.
 
-Without an override, clients use the viem chain defaults except for Ethereum, Polygon, and BNB Chain. Their defaults are `https://ethereum-rpc.publicnode.com`, `https://polygon-bor-rpc.publicnode.com`, and `https://bsc-dataseed1.bnbchain.org`. Plasma has a local chain definition with `https://rpc.plasma.to` because the locked viem version has no Plasma definition. Wagmi and read clients share these RPC settings.
+```dotenv
+NEXT_PUBLIC_DRPC_KEY=your-public-drpc-key
+```
+
+The key is included in the browser bundle. Use a key intended for public browser use, not a private server credential. Restart the development server or rebuild the deployed app after changing it.
+
+Without a key, or with an empty key, clients use the viem chain defaults except for Ethereum, Polygon, and BNB Chain. Their defaults are `https://ethereum-rpc.publicnode.com`, `https://polygon-bor-rpc.publicnode.com`, and `https://bsc-dataseed1.bnbchain.org`. Plasma has a local chain definition with `https://rpc.plasma.to` because the locked viem version has no Plasma definition. A failed dRPC request does not switch to a public endpoint.
 
 ## Placement requirements
 
