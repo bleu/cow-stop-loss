@@ -1,9 +1,7 @@
-import { ResultOf } from "gql.tada";
 import { Address } from "viem";
 import { z } from "zod";
 
 import type { IRoute } from "./oracleRouter";
-import { ORDER_QUERY } from "./ponderApi/queries";
 import { generateAdvancedSettingsSchema, swapSchema } from "./schema";
 
 export interface IToken {
@@ -47,48 +45,3 @@ export type DraftOrder = Omit<SwapData, "validTo"> &
     salt: `0x${string}`;
     validTo: number;
   };
-
-export interface CowOrder {
-  appData: string;
-  availableBalance: string;
-  buyAmount: string;
-  buyToken: string;
-  buyTokenBalance: string;
-  class: string;
-  creationDate: string;
-  executedBuyAmount: string;
-  executedFeeAmount: string;
-  executedSellAmount: string;
-  executedSellAmountBeforeFees: string;
-  executedSurplusFee: string;
-  feeAmount: string;
-  fullAppData: string;
-  fullFeeAmount: string;
-  interactions: {
-    pre: Array<string>;
-    post: Array<string>;
-  };
-  invalidated: boolean;
-  isLiquidityOrder: boolean;
-  kind: string;
-  owner: string;
-  partiallyFillable: boolean;
-  receiver: string;
-  sellAmount: string;
-  sellToken: string;
-  sellTokenBalance: string;
-  settlementContract: string;
-  signature: string;
-  signingScheme: string;
-  solverFee: string;
-  status: string;
-  uid: string;
-  validTo: number;
-}
-export type IStopLossPonder = ResultOf<typeof ORDER_QUERY>["order"];
-
-export type StopLossOrderType = IStopLossPonder & {
-  status: OrderStatus;
-  canceled: boolean;
-  cowOrder?: CowOrder;
-};
