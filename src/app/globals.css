@@ -888,6 +888,9 @@
     animation-delay: -6s;
   }
   .rescue-home-cards {
+    width: 100%;
+    max-width: 1170px;
+    margin-inline: auto;
     align-items: start;
     gap: 20px;
   }
@@ -895,6 +898,8 @@
     padding: 20px;
   }
   .rescue-home-cards > .rescue-portfolio-panel {
+    width: 100%;
+    max-width: 700px;
     height: 460px;
     min-height: 0;
   }
