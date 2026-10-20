@@ -1,6 +1,6 @@
 ## Git workflow
 
-For now, use `stop-loss-for-eoa` as the integration branch instead of `main`. Create separate feature branches from `stop-loss-for-eoa` and target all PRs to it. Do not commit feature work directly on the integration branch.
+Use `main` as the integration branch. Create separate feature branches from `main` and target PRs to it. Do not commit feature work directly on `main`.
 
 ## Agent skills
 

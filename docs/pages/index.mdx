@@ -4,9 +4,9 @@ A stop-loss order sells a token if its oracle price drops below the trigger pric
 
 ## View your orders
 
-Open the app directly and use `Connect wallet` to select a browser wallet or WalletConnect in RainbowKit. A Safe connected through WalletConnect uses the Safe account address. You do not need to open the app inside Safe UI. This version is read-only: creation, review, and cancellation controls are unavailable.
+Open the app directly and use `Connect wallet` to select a browser wallet or WalletConnect in RainbowKit. You do not need to open the app inside Safe UI. The app supports creation, review, and cancellation of exact-sell stop-loss orders.
 
-The list combines the connected account's orders and its CowShed orders across Ethereum, Gnosis, Arbitrum, and Sepolia. Sepolia is marked as a testnet. Connection and browsing do not switch your wallet chain. Use the header network control when you want to switch it. The list's chain and status filters both default to `All` and do not change the wallet network. Open an order's details to see its amounts, trigger and limit prices, oracle settings, and available execution data.
+The list combines the connected account's orders and its CowShed orders across the networks listed below. Sepolia is marked as a testnet. Connection and browsing do not switch your wallet chain. Use the header network control when you want to switch it. The list's chain and status filters both default to `All` and do not change the wallet network. Open an order's details to see its amounts, trigger and limit prices, oracle settings, and available execution data.
 
 Orders load on connection and account changes. Use the reload icon beside `Status` to get later changes. The app does not poll or refresh on focus or network reconnect. Expiry is calculated when data loads; there is no local expiry timer.
 
@@ -16,20 +16,32 @@ If one chain fails, its warning and retry button appear while other chains remai
 
 Trigger, limit, and execution prices are in buy-token units per sell token. Amounts use configured token decimals where available. Historical orders with unknown token metadata show raw base units instead of estimated token amounts. Execution fees also show raw base units because the order API does not supply the fee token.
 
-The configured tokens and Chainlink price feeds remain unchanged:
+New orders use a small approved sell list and one fixed buy token per chain:
 
-| Chain | Sell tokens | Buy token |
-| --- | --- | --- |
-| Ethereum | WETH, WBTC | USDC |
-| Gnosis | WETH, WBTC | USDC.e |
-| Arbitrum | WETH, WBTC | Native USDC |
-| Sepolia (testnet) | WETH | USDC (test) |
+| Chain             | Sell tokens     | Buy token   |
+| ----------------- | --------------- | ----------- |
+| Ethereum          | WETH, LINK, UNI | Native USDC |
+| Gnosis            | GNO             | USDT        |
+| Arbitrum          | WETH            | Native USDC |
+| Base              | VIRTUAL         | Native USDC |
+| Polygon           | WPOL            | Native USDC |
+| Avalanche         | WAVAX           | Native USDC |
+| BNB Chain         | WBNB            | USDT        |
+| Linea             | WETH            | Native USDC |
+| Plasma            | WXPL            | Native USDC |
+| Sepolia (testnet) | WETH            | USDC (test) |
 
-Production feeds quote prices in USD. Sepolia keeps its two fixed test feeds. Tokens and feeds are kept in the app repository and change with an app release. Viewing historical orders does not require their tokens to be in this configuration.
+Production feeds quote prices in USD. Sepolia keeps its two fixed test feeds. Tokens and feeds change with a reviewed app release. Historical token metadata does not make a token eligible for new orders. Arbitrary token imports, manual feed overrides, and exact-buy orders are not supported. See the [token catalog](https://github.com/bleu/cow-stop-loss/blob/main/docs/token-catalog.md) for the approved routes and accepted oracle limits.
+
+## Create and cancel orders
+
+Select the sell token, exact sell amount, trigger price, and slippage. Review the order and approval requests before signing. Creation and cancellation require wallet transactions. Cancellation is available only when the order's ownership and state permit it. Connecting and viewing orders does not submit a transaction.
 
 ## Order data
 
 The app reads all pages from the [programmatic orders API](https://programmatic-orders.cow.fi/graphql), including parents that have not triggered. It filters by chain, connected account or CowShed ownership, and the configured StopLoss handler: `0x412c36e5011cd2517016d243a2dfb37f73a242e7`.
+
+Checks on 2026-10-19 returned no sample orders for Polygon, Avalanche, BNB Chain, Linea, or Plasma. Order indexing on those five chains is not proven. See [supported networks](https://github.com/bleu/cow-stop-loss/blob/main/docs/supported-networks.md) for the dated service checks and deployment limits.
 
 State uses execution data and absolute expiry. Partially filled orders that were cancelled have a different label from partially filled orders that expired. Parent `Active` alone does not mean an order is still open.
 
@@ -40,7 +52,7 @@ Set `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` and `NEXT_PUBLIC_APP_URL` before buil
 ## FAQ
 
 :::details[Can I create or cancel an order?]
-This version only displays orders. It does not create, review, or cancel them.
+Yes. Review a new exact-sell order before signing, or use cancellation on an eligible existing order. Both actions require a connected wallet and transaction confirmation.
 :::
 
 :::details[Do I need to switch chains to view orders?]
@@ -52,5 +64,5 @@ No. Connecting and viewing orders does not submit a transaction or move tokens.
 :::
 
 :::details[Where can I learn about CoW hooks?]
-See the [CoW Hooks documentation](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/hooks-trampoline). This read-only app does not configure hooks.
+See the [CoW Hooks documentation](https://docs.cow.fi/cow-protocol/reference/contracts/periphery/hooks-trampoline). This app does not offer custom hook configuration.
 :::

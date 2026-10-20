@@ -20,9 +20,6 @@
     "format": "prettier --write \"**/*.{md,html,mjml,json,yml,css,scss,ts,tsx,js,jsx}\"",
     "lint": "eslint '**/*.{ts,tsx}'",
     "lint:fix": "eslint '**/*.{ts,tsx}' --fix",
-    "link:bleu-ui": "npx yalc link @bleu-fi/ui",
-    "codegen:check": "graphql-codegen --config codegen.ts --check",
-    "codegen": "graphql-codegen --config codegen.ts",
     "test:jest": "pnpm exec jest --passWithNoTests",
     "test:watch": "pnpm exec jest --watchAll --verbose"
   },

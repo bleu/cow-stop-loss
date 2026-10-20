@@ -7,7 +7,10 @@ module.exports = {
   setupFiles: ["<rootDir>/jest.polyfills.ts"],
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   transform: {
-    "^.+\\.tsx?$": ["ts-jest", { tsconfig: { jsx: "react-jsx" } }],
+    "^.+\\.tsx?$": [
+      "ts-jest",
+      { isolatedModules: true, tsconfig: { jsx: "react-jsx" } },
+    ],
     "^.+\\.jsx?$": [
       require.resolve("next/dist/build/swc/jest-transformer"),
       {},
