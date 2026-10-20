@@ -443,6 +443,150 @@ it("keeps applied form settings in memory without saving browser data", async ()
   );
 });
 
+it("resets percentage entry when the sell token changes", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  await selectWeth(user);
+  await screen.findByRole("button", {
+    name: /Set trigger to current market price/,
+  });
+  await user.click(screen.getByRole("button", { name: "% drop" }));
+  await user.type(
+    screen.getByRole("textbox", { name: "Price drop (%)" }),
+    "10",
+  );
+  await user.click(screen.getByRole("button", { name: "Token Logo WETH" }));
+  await user.click(await screen.findByRole("option", { name: /cbBTC/ }));
+  expect(screen.getByRole("button", { name: "Price" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  expect(screen.getByRole("textbox", { name: "Trigger price" })).toHaveValue(
+    "",
+  );
+  expect(screen.getByRole("textbox", { name: "Receive at least" })).toHaveValue(
+    "",
+  );
+  expect(
+    screen.queryByRole("textbox", { name: "Price drop (%)" }),
+  ).not.toBeInTheDocument();
+});
+
+it("reviews a price-based draft from a percentage drop and shows the derived minimum received", async () => {
+  const user = userEvent.setup();
+  const onReviewOrder = jest.fn();
+  renderForm(onReviewOrder);
+  await selectWeth(user);
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  await screen.findByRole("button", {
+    name: /Set trigger to current market price/,
+  });
+  await user.click(screen.getByRole("button", { name: "% drop" }));
+  await user.type(
+    screen.getByRole("textbox", { name: "Price drop (%)" }),
+    "10",
+  );
+  await waitFor(() =>
+    expect(
+      screen.getByRole("textbox", { name: "Receive at least" }),
+    ).toHaveValue("1798.2"),
+  );
+  await user.click(
+    await screen.findByRole("button", { name: "Review Stop Loss order" }),
+  );
+  await waitFor(() =>
+    expect(onReviewOrder).toHaveBeenCalledWith(
+      expect.objectContaining({
+        strikePrice: "1800",
+        amountSell: "1",
+        amountBuy: "1798.2",
+        slippagePercent: "0.1",
+      }),
+      1,
+      safe.safeAddress,
+    ),
+  );
+  expect(onReviewOrder.mock.calls[0][0]).not.toHaveProperty("percent");
+});
+
+it("blocks review and clears minimum received after an invalid percentage edit", async () => {
+  const user = userEvent.setup();
+  const onReviewOrder = jest.fn();
+  renderForm(onReviewOrder);
+  await selectWeth(user);
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  await screen.findByRole("button", {
+    name: /Set trigger to current market price/,
+  });
+  await user.click(screen.getByRole("button", { name: "% drop" }));
+  const input = screen.getByRole("textbox", { name: "Price drop (%)" });
+  await user.type(input, "10");
+  expect(
+    await screen.findByRole("button", { name: "Review Stop Loss order" }),
+  ).toBeEnabled();
+  await user.clear(input);
+  await user.type(input, "100");
+  await waitFor(() =>
+    expect(
+      screen.getByRole("textbox", { name: "Receive at least" }),
+    ).toHaveValue(""),
+  );
+  const submit = screen.getByRole("button", { name: "Set the trigger price" });
+  expect(submit).toBeDisabled();
+  await user.click(submit);
+  expect(onReviewOrder).not.toHaveBeenCalled();
+});
+
+it.each(["wallet", "chain"] as const)(
+  "resets percentage state when the %s changes",
+  async (scope) => {
+    const user = userEvent.setup();
+    const onReviewOrder = jest.fn();
+    const { rerender } = renderForm(onReviewOrder);
+    await selectWeth(user);
+    await screen.findByRole("button", {
+      name: /Set trigger to current market price/,
+    });
+    await user.click(screen.getByRole("button", { name: "% drop" }));
+    await user.type(
+      screen.getByRole("textbox", { name: "Price drop (%)" }),
+      "10",
+    );
+    if (scope === "wallet")
+      safe = {
+        ...safe,
+        safeAddress: "0x2222222222222222222222222222222222222222",
+      };
+    else {
+      jest
+        .spyOn(publicClientsFromIds[100], "readContract")
+        .mockResolvedValue(BigInt(0));
+      safe = { ...safe, chainId: 100 };
+    }
+    rerender(
+      <SWRConfig
+        value={{ provider: () => new Map(), revalidateOnFocus: false }}
+      >
+        <SwapForm onReviewOrder={onReviewOrder} />
+      </SWRConfig>,
+    );
+    expect(screen.getByRole("button", { name: "Price" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    expect(screen.getByRole("textbox", { name: "Trigger price" })).toHaveValue(
+      "",
+    );
+    expect(
+      screen.getByRole("textbox", { name: "Receive at least" }),
+    ).toHaveValue("");
+    expect(
+      screen.queryByRole("textbox", { name: "Price drop (%)" }),
+    ).not.toBeInTheDocument();
+    expect(onReviewOrder).not.toHaveBeenCalled();
+  },
+);
+
 it("omits the market amount summary but keeps Market and minimum received", async () => {
   const user = userEvent.setup();
   renderForm();

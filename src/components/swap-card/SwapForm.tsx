@@ -232,7 +232,9 @@ function WalletSwapForm({
                 </p>
               )}
               <TokenInputCard side="Sell" />
-              <PriceInputCard />
+              <PriceInputCard
+                key={`${tokenSell?.address.toLowerCase()}:${tokenBuy?.address.toLowerCase()}`}
+              />
               <TokenInputCard side="Buy" />
               <AdvancedSettingsAlert slippagePercent={slippagePercent} />
               {form.formState.errors.root?.message && (
