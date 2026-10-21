@@ -108,7 +108,7 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
     initialColumnVisibility: { chainId: false },
     filterFields,
     defaultSort: "chainId.asc",
-    defaultPerPage: 3,
+    defaultPerPage: 5,
     enableRowSelection: false,
   });
 

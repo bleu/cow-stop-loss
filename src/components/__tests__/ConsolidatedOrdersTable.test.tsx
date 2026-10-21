@@ -685,15 +685,15 @@ test("restores and combines chain and status filters from the URL without changi
     expect(params.get("view")).toBe("compact");
     expect(params.get("sort")).toBe("chainId.asc");
   });
-  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(3);
-  expect(screen.getByRole("button", { name: "Go to next page" })).toBeEnabled();
-  fireEvent.click(screen.getByRole("button", { name: "Go to next page" }));
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(4);
+  expect(
+    screen.queryByRole("button", { name: "Go to next page" }),
+  ).not.toBeInTheDocument();
   expect(
     await screen.findByRole("row", {
       name: "View order arbitrum-open on Arbitrum",
     }),
   ).toBeVisible();
-  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(1);
   expect(screen.getByLabelText("Selected filters")).toHaveTextContent(
     "Chain: All / Status: All",
   );
@@ -1027,14 +1027,14 @@ test("keeps pagination and availability warnings outside the stationary frame", 
   expect(frame).not.toContainElement(next);
   expect(panel.lastElementChild).toHaveClass("shrink-0");
   expect(panel.lastElementChild).toContainElement(next);
-  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(3);
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(5);
   expect(screen.getByText("Page 1 of 2")).toBeInTheDocument();
 
   fireEvent.click(next);
   await screen.findByText("Page 2 of 2");
-  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(3);
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(1);
   expect(
-    screen.getByRole("row", { name: "View order paged-3 on Ethereum" }),
+    screen.getByRole("row", { name: "View order paged-5 on Ethereum" }),
   ).toBeInTheDocument();
   expect(
     screen.queryByRole("row", { name: "View order paged-0 on Ethereum" }),
@@ -1173,12 +1173,13 @@ test("distinguishes tiny positive amounts from zero and preserves exact integer 
   render(<TableView />);
   await connectWallet();
 
-  for (const [index, example] of examples.entries()) {
-    if (index === 3)
-      fireEvent.click(screen.getByRole("button", { name: "Go to next page" }));
+  for (const example of examples) {
     const cell = await screen.findByRole("cell", { name: example.display });
     expect(within(cell).getByTitle(example.full)).toBeInTheDocument();
   }
+  expect(
+    screen.queryByRole("button", { name: "Go to next page" }),
+  ).not.toBeInTheDocument();
 });
 
 test("shows a pending setup stage and its RPC error on the unindexed row", async () => {
@@ -1536,29 +1537,26 @@ test("shows confirmed local Open rows on all supported chains without detail lin
     screen.getByRole("row", { name: "View order indexed-order on Ethereum" }),
   ).toBeInTheDocument();
   const seen = new Set<string>();
-  const expectLocalRows = () => {
-    const amounts = screen.getAllByRole("cell", {
-      name: "1 WETH for 1980 USDC",
-    });
-    expect(amounts).toHaveLength(2);
-    for (const amount of amounts) {
-      const row = amount.closest("tr")!;
-      expect(within(row).getByText("Open")).toBeInTheDocument();
-      expect(within(row).queryByRole("link")).not.toBeInTheDocument();
-      for (const chain of [
-        "Ethereum",
-        "Gnosis",
-        "Arbitrum",
-        "Sepolia (testnet)",
-      ]) {
-        if (within(row).queryByText(chain)) seen.add(chain);
-      }
+  const amounts = screen.getAllByRole("cell", {
+    name: "1 WETH for 1980 USDC",
+  });
+  expect(amounts).toHaveLength(4);
+  for (const amount of amounts) {
+    const row = amount.closest("tr")!;
+    expect(within(row).getByText("Open")).toBeInTheDocument();
+    expect(within(row).queryByRole("link")).not.toBeInTheDocument();
+    for (const chain of [
+      "Ethereum",
+      "Gnosis",
+      "Arbitrum",
+      "Sepolia (testnet)",
+    ]) {
+      if (within(row).queryByText(chain)) seen.add(chain);
     }
-  };
-  expectLocalRows();
-  fireEvent.click(screen.getByRole("button", { name: "Go to next page" }));
-  await screen.findByText("Page 2 of 2");
-  expectLocalRows();
+  }
+  expect(
+    screen.queryByRole("button", { name: "Go to next page" }),
+  ).not.toBeInTheDocument();
   expect([...seen].sort()).toEqual([
     "Arbitrum",
     "Ethereum",

@@ -1355,13 +1355,12 @@ test("combines all supported chains and filters Sepolia as a testnet without swi
   );
   await connectBrowserWallet();
 
-  expect(
-    await screen.findByText(
-      `Page 1 of ${Math.ceil(supportedChainIds.length / 3)}`,
+  await waitFor(() =>
+    expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(
+      Math.min(supportedChainIds.length, 5),
     ),
-  ).toBeVisible();
+  );
   expect(screen.queryByText(/row\(s\) selected\./)).not.toBeInTheDocument();
-  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(3);
   fireEvent.click(screen.getByRole("button", { name: "Filters" }));
   const dialog = await screen.findByRole("dialog", {
     name: "Filter your orders",
@@ -1400,11 +1399,11 @@ test("switches the wallet network only through the header and keeps all chains v
   );
   await connectBrowserWallet();
   await screen.findByTitle(wallet);
-  expect(
-    await screen.findByText(
-      `Page 1 of ${Math.ceil(supportedChainIds.length / 3)}`,
+  await waitFor(() =>
+    expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(
+      Math.min(supportedChainIds.length, 5),
     ),
-  ).toBeVisible();
+  );
   expect(screen.queryByText(/row\(s\) selected\./)).not.toBeInTheDocument();
   expect(request).not.toHaveBeenCalledWith(
     expect.objectContaining({ method: "wallet_switchEthereumChain" }),
@@ -1454,11 +1453,10 @@ test("switches the wallet network only through the header and keeps all chains v
       params: [{ chainId: "0xaa36a7" }],
     }),
   );
-  expect(
-    screen.getByText(`Page 1 of ${Math.ceil(supportedChainIds.length / 3)}`),
-  ).toBeVisible();
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(
+    Math.min(supportedChainIds.length, 5),
+  );
   expect(screen.queryByText(/row\(s\) selected\./)).not.toBeInTheDocument();
-  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(3);
 });
 
 test("keeps account access and orders when a wallet network switch is rejected", async () => {
