@@ -1092,6 +1092,22 @@
     gap: 8px;
   }
 }
+@media (max-width: 1023px) and (prefers-reduced-motion: reduce) {
+  .rescue-shell {
+    background-image: url("/assets/air-rescue/ground-dark.svg#still");
+  }
+  .light .rescue-shell {
+    background-image: url("/assets/air-rescue/ground-light.svg#still");
+  }
+}
+@media (max-width: 639px) and (prefers-reduced-motion: reduce) {
+  .rescue-shell {
+    background-image: url("/assets/air-rescue/ground-mobile-dark.svg#still");
+  }
+  .light .rescue-shell {
+    background-image: url("/assets/air-rescue/ground-mobile-light.svg#still");
+  }
+}
 @media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
   .rescue-shell {
     background-image: url("/assets/air-rescue/ground-desktop-dark.svg#still");
