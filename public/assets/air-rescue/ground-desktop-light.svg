@@ -1565,7 +1565,7 @@
       <use href="#cow" />
     </g>
     <rect x="435" y="102" width="36" height="2" fill="#8daa60" />
-    <g transform="translate(430 76)" style="--graze-delay: -4s; --tail-delay: -4s">
+    <g transform="translate(474 76) scale(-1 1)" style="--graze-delay: -4s; --tail-delay: -4s">
       <use href="#cow" />
     </g>
     <rect x="605" y="98" width="36" height="2" fill="#8daa60" />
