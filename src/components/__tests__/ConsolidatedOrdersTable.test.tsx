@@ -12,6 +12,7 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { randomUUID } from "crypto";
 import { EventEmitter } from "events";
 import { AppRouterContext } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -684,7 +685,15 @@ test("restores and combines chain and status filters from the URL without changi
     expect(params.get("view")).toBe("compact");
     expect(params.get("sort")).toBe("chainId.asc");
   });
-  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(4);
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(3);
+  expect(screen.getByRole("button", { name: "Go to next page" })).toBeEnabled();
+  fireEvent.click(screen.getByRole("button", { name: "Go to next page" }));
+  expect(
+    await screen.findByRole("row", {
+      name: "View order arbitrum-open on Arbitrum",
+    }),
+  ).toBeVisible();
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(1);
   expect(screen.getByLabelText("Selected filters")).toHaveTextContent(
     "Chain: All / Status: All",
   );
@@ -776,6 +785,41 @@ test("keeps long selected values in a separate bounded summary and in the filter
   expect(dialog).toHaveClass("rescue-portfolio-filter-panel");
 });
 
+test("shows no availability warning for a healthy account and clears it after Refresh orders recovers", async () => {
+  const unavailable = new Set<number>();
+  serveOrders([apiParent()], unavailable);
+  render(<TableView />);
+  await connectWallet();
+  await screen.findByRole("row", {
+    name: "View order indexed-order on Ethereum",
+  });
+  expect(
+    screen.queryByRole("button", { name: "Order availability warnings" }),
+  ).not.toBeInTheDocument();
+
+  unavailable.add(1);
+  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
+  const warning = await screen.findByRole("button", {
+    name: "Order availability warnings",
+  });
+  fireEvent.focus(warning);
+  expect(await screen.findByRole("tooltip")).toHaveTextContent(
+    "Previously loaded Ethereum orders may be out of date.",
+  );
+  fireEvent.keyDown(warning, { key: "Escape" });
+  unavailable.clear();
+  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("button", { name: "Order availability warnings" }),
+    ).not.toBeInTheDocument(),
+  );
+  expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+  expect(
+    screen.getByRole("row", { name: "View order indexed-order on Ethereum" }),
+  ).toBeInTheDocument();
+});
+
 test("keeps the expanding table shell while the connected account's first orders are loading", async () => {
   const fetchOrders = global.fetch;
   let release!: () => void;
@@ -842,9 +886,9 @@ test("keeps an expanding unavailable viewport and retries into the same table wi
   serveOrders([apiParent()], unavailable);
   render(<TableView />);
   await connectWallet();
-  await waitFor(() =>
-    expect(screen.getAllByRole("alert")).toHaveLength(supportedChainIds.length),
-  );
+  await screen.findByRole("cell", {
+    name: "Orders are unavailable on all supported chains.",
+  });
 
   const table = screen.getByRole("table");
   expect(table).toContainElement(
@@ -869,22 +913,28 @@ test("keeps an expanding unavailable viewport and retries into the same table wi
   ).not.toBeInTheDocument();
 
   unavailable.delete(1);
-  fireEvent.click(screen.getByRole("button", { name: "Retry Ethereum" }));
+  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
   expect(
     await screen.findByRole("row", {
       name: "View order indexed-order on Ethereum",
     }),
   ).toBeVisible();
   expect(screen.getByRole("table")).toBe(table);
-  expect(screen.getAllByRole("alert")).toHaveLength(
-    supportedChainIds.length - 1,
-  );
+  const warning = screen.getByRole("button", {
+    name: "Order availability warnings",
+  });
+  fireEvent.focus(warning);
+  const tooltip = await screen.findByRole("tooltip");
+  expect(tooltip).not.toHaveTextContent("Ethereum orders are unavailable.");
+  expect(tooltip).toHaveTextContent("Gnosis orders are unavailable.");
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   expect(
     screen.queryByText("Orders are unavailable on all supported chains."),
   ).not.toBeInTheDocument();
 });
 
-test("keeps chain and placement warnings inside the scroll area so pagination remains outside", async () => {
+test("keeps chain and placement warnings in a toolbar tooltip with hover, focus and Escape access", async () => {
+  const user = userEvent.setup();
   const getItem = Storage.prototype.getItem;
   jest.spyOn(Storage.prototype, "getItem").mockImplementation(function (
     this: Storage,
@@ -897,29 +947,61 @@ test("keeps chain and placement warnings inside the scroll area so pagination re
   serveOrders([], new Set(supportedChainIds));
   render(<TableView />);
   await connectWallet();
-  await waitFor(() =>
-    expect(screen.getAllByRole("alert")).toHaveLength(
-      supportedChainIds.length + 1,
-    ),
-  );
+  await screen.findByRole("cell", {
+    name: "Orders are unavailable on all supported chains.",
+  });
 
+  const warning = await screen.findByRole("button", {
+    name: "Order availability warnings",
+  });
   const viewport = screen.getByRole("region", { name: "Table rows" });
+  const refresh = screen.getByRole("button", { name: "Refresh orders" });
+  expect(refresh.closest(".rescue-portfolio-toolbar")).toContainElement(
+    warning,
+  );
+  expect(viewport).not.toContainElement(warning);
   expect(viewport).not.toHaveClass("pixel-frame");
   expect(viewport.parentElement).toHaveClass("pixel-frame");
-  for (const warning of screen.getAllByRole("alert")) {
-    expect(viewport).toContainElement(warning);
-  }
-  expect(viewport).not.toContainElement(
-    screen.getByRole("button", { name: "Refresh orders" }),
+  expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+
+  await user.hover(warning);
+  const tooltip = await screen.findByRole("tooltip");
+  expect(tooltip).toHaveTextContent(
+    "Placement tracking is unavailable. Unsupported placement storage version",
   );
+  expect(within(tooltip).getAllByText(/orders are unavailable\./)).toHaveLength(
+    supportedChainIds.length,
+  );
+  expect(tooltip).toHaveTextContent("Use Refresh orders to retry.");
+  expect(viewport).not.toContainElement(tooltip);
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: /^Retry / }),
+  ).not.toBeInTheDocument();
+  await user.keyboard("{Escape}");
+  await waitFor(() =>
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument(),
+  );
+  await user.unhover(warning);
+  act(() => warning.focus());
+  expect(await screen.findByRole("tooltip")).toHaveTextContent(
+    "Use Refresh orders to retry.",
+  );
+  expect(warning).toHaveFocus();
+  await user.keyboard("{Escape}");
+  await waitFor(() =>
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument(),
+  );
+  expect(warning).toHaveFocus();
+  expect(viewport).not.toContainElement(refresh);
   expect(viewport).not.toContainElement(
     screen.getByRole("button", { name: "Filters" }),
   );
-  expect(screen.getByRole("button", { name: "Retry Ethereum" })).toBeEnabled();
+  expect(refresh).toBeEnabled();
   expect(screen.queryByText("No results.")).not.toBeInTheDocument();
 });
 
-test("keeps pagination outside the stationary frame and warnings inside the scroll viewport", async () => {
+test("keeps pagination and availability warnings outside the stationary frame", async () => {
   serveOrders(
     Array.from({ length: 6 }, (_, index) =>
       apiParent(1, `paged-${index}`, `0x${String(index).repeat(64)}`),
@@ -937,17 +1019,26 @@ test("keeps pagination outside the stationary frame and warnings inside the scro
   expect(panel.querySelectorAll(".pixel-frame")).toHaveLength(1);
   expect(viewport).not.toHaveClass("pixel-frame");
   expect(viewport).not.toHaveClass("[&>div]:h-full");
-  expect(viewport).toContainElement(await screen.findByRole("alert"));
+  expect(viewport).not.toContainElement(
+    await screen.findByRole("button", { name: "Order availability warnings" }),
+  );
+  expect(within(viewport).queryByRole("alert")).not.toBeInTheDocument();
   expect(panel).toContainElement(next);
   expect(frame).not.toContainElement(next);
   expect(panel.lastElementChild).toHaveClass("shrink-0");
   expect(panel.lastElementChild).toContainElement(next);
-  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(5);
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(3);
+  expect(screen.getByText("Page 1 of 2")).toBeInTheDocument();
 
   fireEvent.click(next);
-  await waitFor(() =>
-    expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(1),
-  );
+  await screen.findByText("Page 2 of 2");
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(3);
+  expect(
+    screen.getByRole("row", { name: "View order paged-3 on Ethereum" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole("row", { name: "View order paged-0 on Ethereum" }),
+  ).not.toBeInTheDocument();
   expect(screen.getByRole("region", { name: "Table rows" })).toBe(viewport);
   expect(viewport.parentElement).toBe(frame);
 });
@@ -966,9 +1057,13 @@ test("keeps indexed API orders visible with a tracking error when saved placemen
   render(<TableView />);
   await connectWallet();
 
-  expect(await screen.findByRole("alert")).toHaveTextContent(
+  fireEvent.focus(
+    await screen.findByRole("button", { name: "Order availability warnings" }),
+  );
+  expect(await screen.findByRole("tooltip")).toHaveTextContent(
     "Placement tracking is unavailable. Unsupported placement storage version",
   );
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   expect(
     await screen.findByRole("row", {
       name: "View order indexed-order on Ethereum",
@@ -1078,7 +1173,9 @@ test("distinguishes tiny positive amounts from zero and preserves exact integer 
   render(<TableView />);
   await connectWallet();
 
-  for (const example of examples) {
+  for (const [index, example] of examples.entries()) {
+    if (index === 3)
+      fireEvent.click(screen.getByRole("button", { name: "Go to next page" }));
     const cell = await screen.findByRole("cell", { name: example.display });
     expect(within(cell).getByTitle(example.full)).toBeInTheDocument();
   }
@@ -1335,11 +1432,12 @@ test("keeps last-good failed-chain orders beside a local Open row and clears its
   await act(async () => {
     await jest.advanceTimersByTimeAsync(300000);
   });
-  expect(
-    await screen.findByText(
-      "Previously loaded Ethereum orders may be out of date.",
-    ),
-  ).toBeInTheDocument();
+  fireEvent.focus(
+    await screen.findByRole("button", { name: "Order availability warnings" }),
+  );
+  expect(await screen.findByRole("tooltip")).toHaveTextContent(
+    "Previously loaded Ethereum orders may be out of date.",
+  );
   expect(
     screen.getByRole("row", { name: "View order indexed-order on Ethereum" }),
   ).toBeInTheDocument();
@@ -1353,7 +1451,7 @@ test("keeps last-good failed-chain orders beside a local Open row and clears its
 
   unavailable.delete(100);
   orders.push(apiParent(100, "late-indexed-order", `0x${"bb".repeat(32)}`));
-  fireEvent.click(screen.getByRole("button", { name: "Retry Gnosis" }));
+  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
   expect(
     await screen.findByRole("row", {
       name: "View order late-indexed-order on Gnosis",
@@ -1433,18 +1531,38 @@ test("shows confirmed local Open rows on all supported chains without detail lin
   render(<TableView />);
   await connectWallet();
 
-  const amounts = await screen.findAllByRole("cell", {
-    name: "1 WETH for 1980 USDC",
-  });
-  expect(amounts).toHaveLength(4);
-  for (const chain of ["Ethereum", "Gnosis", "Arbitrum", "Sepolia (testnet)"]) {
-    const row = amounts
-      .map((amount) => amount.closest("tr")!)
-      .find((candidate) => within(candidate).queryByText(chain))!;
-    expect(within(row).getByText("Open")).toBeInTheDocument();
-    expect(within(row).queryByRole("link")).not.toBeInTheDocument();
-  }
+  await screen.findAllByRole("cell", { name: "1 WETH for 1980 USDC" });
   expect(
     screen.getByRole("row", { name: "View order indexed-order on Ethereum" }),
   ).toBeInTheDocument();
+  const seen = new Set<string>();
+  const expectLocalRows = () => {
+    const amounts = screen.getAllByRole("cell", {
+      name: "1 WETH for 1980 USDC",
+    });
+    expect(amounts).toHaveLength(2);
+    for (const amount of amounts) {
+      const row = amount.closest("tr")!;
+      expect(within(row).getByText("Open")).toBeInTheDocument();
+      expect(within(row).queryByRole("link")).not.toBeInTheDocument();
+      for (const chain of [
+        "Ethereum",
+        "Gnosis",
+        "Arbitrum",
+        "Sepolia (testnet)",
+      ]) {
+        if (within(row).queryByText(chain)) seen.add(chain);
+      }
+    }
+  };
+  expectLocalRows();
+  fireEvent.click(screen.getByRole("button", { name: "Go to next page" }));
+  await screen.findByText("Page 2 of 2");
+  expectLocalRows();
+  expect([...seen].sort()).toEqual([
+    "Arbitrum",
+    "Ethereum",
+    "Gnosis",
+    "Sepolia (testnet)",
+  ]);
 });

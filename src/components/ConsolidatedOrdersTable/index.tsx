@@ -108,6 +108,7 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
     initialColumnVisibility: { chainId: false },
     filterFields,
     defaultSort: "chainId.asc",
+    defaultPerPage: 3,
     enableRowSelection: false,
   });
 
@@ -123,19 +124,13 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
   );
 
   const failedChains = chains.filter((chain) => chain.status === "error");
-  const notice = (trackingError || failedChains.length > 0) && (
-    <div className="space-y-4 text-left">
+  const warnings = (trackingError || failedChains.length > 0) && (
+    <div className="space-y-2 text-left">
       {trackingError && (
-        <p role="alert" className="rounded border border-destructive p-3">
-          Placement tracking is unavailable. {trackingError}
-        </p>
+        <p>Placement tracking is unavailable. {trackingError}</p>
       )}
       {failedChains.map((chain) => (
-        <div
-          key={chain.chainId}
-          role="alert"
-          className="rounded border border-destructive p-3"
-        >
+        <div key={chain.chainId}>
           <p>{chainNames[chain.chainId]} orders are unavailable.</p>
           <p>{chain.error}</p>
           {chain.orders.length > 0 && (
@@ -144,15 +139,9 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
               date.
             </p>
           )}
-          <button
-            disabled={isLoading}
-            onClick={() => mutate()}
-            className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-primary underline"
-          >
-            Retry {chainNames[chain.chainId]}
-          </button>
         </div>
       ))}
+      <p>Use Refresh orders to retry.</p>
     </div>
   );
 
@@ -161,6 +150,29 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
       <OrdersHeading>
         <PortfolioFilters table={table} filterFields={filterFields}>
           <TooltipProvider>
+            {warnings && (
+              <TooltipRoot delayDuration={100}>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Order availability warnings"
+                    className="rescue-secondary-control pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring size-11 shrink-0 rounded-none text-warning hover:text-warning"
+                  >
+                    <PixelIcon name="warning" className="size-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent
+                  side="bottom"
+                  align="end"
+                  collisionPadding={12}
+                  className="rescue-info-tooltip pixel-frame rounded-none text-popover-foreground"
+                >
+                  {warnings}
+                </TooltipContent>
+              </TooltipRoot>
+            )}
             <TooltipRoot>
               <TooltipTrigger asChild>
                 <Button
@@ -201,7 +213,6 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
               : undefined
           }
           emptyMessage={emptyMessage}
-          notice={notice}
         />
       </div>
     </>

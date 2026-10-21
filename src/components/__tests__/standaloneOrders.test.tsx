@@ -1360,7 +1360,7 @@ test("combines all supported chains and filters Sepolia as a testnet without swi
       `0 of ${supportedChainIds.length} row(s) selected.`,
     ),
   ).toBeInTheDocument();
-  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(5);
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(3);
   fireEvent.click(screen.getByRole("button", { name: "Filters" }));
   const dialog = await screen.findByRole("dialog", {
     name: "Filter your orders",
@@ -1455,7 +1455,7 @@ test("switches the wallet network only through the header and keeps all chains v
   expect(
     screen.getByText(`0 of ${supportedChainIds.length} row(s) selected.`),
   ).toBeInTheDocument();
-  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(5);
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(3);
 });
 
 test("keeps account access and orders when a wallet network switch is rejected", async () => {
@@ -1641,11 +1641,20 @@ test("keeps successful chains visible and retries a failed chain", async () => {
   const ordersPanel = screen.getByRole("region", {
     name: "Your stop-loss orders",
   });
-  expect(within(ordersPanel).getByRole("alert")).toHaveTextContent(
+  const warning = within(ordersPanel).getByRole("button", {
+    name: "Order availability warnings",
+  });
+  fireEvent.focus(warning);
+  expect(await screen.findByRole("tooltip")).toHaveTextContent(
     "Gnosis orders are unavailable.",
   );
+  expect(within(ordersPanel).queryByRole("alert")).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Retry Gnosis" }),
+  ).not.toBeInTheDocument();
+  fireEvent.keyDown(warning, { key: "Escape" });
   unavailable.delete(100);
-  fireEvent.click(screen.getByRole("button", { name: "Retry Gnosis" }));
+  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
   expect(
     screen.getByRole("row", { name: "View order stop-loss-1 on Ethereum" }),
   ).toBeInTheDocument();
@@ -1656,6 +1665,11 @@ test("keeps successful chains visible and retries a failed chain", async () => {
     }),
   ).toBeInTheDocument();
   expect(within(ordersPanel).queryByRole("alert")).not.toBeInTheDocument();
+  expect(
+    within(ordersPanel).queryByRole("button", {
+      name: "Order availability warnings",
+    }),
+  ).not.toBeInTheDocument();
   expect(
     within(
       screen.getByRole("region", { name: "Create stop-loss order" }),
@@ -1679,11 +1693,18 @@ test("does not show an API outage as an empty order list", async () => {
   const ordersPanel = screen.getByRole("region", {
     name: "Your stop-loss orders",
   });
-  await waitFor(() =>
-    expect(within(ordersPanel).getAllByRole("alert")).toHaveLength(
-      supportedChainIds.length,
-    ),
+  const warning = await within(ordersPanel).findByRole("button", {
+    name: "Order availability warnings",
+  });
+  await screen.findByRole("cell", {
+    name: "Orders are unavailable on all supported chains.",
+  });
+  fireEvent.focus(warning);
+  const tooltip = await screen.findByRole("tooltip");
+  expect(within(tooltip).getAllByText(/orders are unavailable\./)).toHaveLength(
+    supportedChainIds.length,
   );
+  expect(within(ordersPanel).queryByRole("alert")).not.toBeInTheDocument();
   expect(screen.queryByText("No results.")).not.toBeInTheDocument();
   expect(
     screen.getByText("Orders are unavailable on all supported chains."),
@@ -1793,11 +1814,12 @@ test("keeps this account's last loaded orders with a warning when refresh fails"
   supportedChainIds.forEach((chain) => unavailable.add(chain));
   fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
 
-  expect(
-    await screen.findByText(
-      "Previously loaded Ethereum orders may be out of date.",
-    ),
-  ).toBeInTheDocument();
+  fireEvent.focus(
+    await screen.findByRole("button", { name: "Order availability warnings" }),
+  );
+  expect(await screen.findByRole("tooltip")).toHaveTextContent(
+    "Previously loaded Ethereum orders may be out of date.",
+  );
   expect(
     screen.getByRole("row", { name: "View order stop-loss-1 on Ethereum" }),
   ).toBeInTheDocument();
