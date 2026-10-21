@@ -44,7 +44,7 @@ Use a WalletConnect project ID and allow the app's origin in that project's sett
 
 Without a project ID, WalletConnect is hidden. Browser wallet connection remains available in the connect modal. Enable testnets in the wallet when needed; Sepolia orders remain visible regardless of the connected wallet chain.
 
-RainbowKit 2.2.0 is pinned with a pnpm patch in `patches/`. The patch removes its automatic chain switch during connection. Keep this behavior when upgrading RainbowKit: only an explicit selection in the header can request a chain switch. See [Dependency security](docs/dependency-security.md) for version constraints, overrides, and remaining audit findings.
+RainbowKit 2.2.0 is pinned with a pnpm patch in `patches/`. The patch removes its automatic chain switch during connection. Keep this behavior when upgrading RainbowKit: only an explicit selection in the header can request a chain switch.
 
 ## Order data
 
