@@ -189,8 +189,10 @@ class BrowserWallet extends EventEmitter {
   }
 }
 
-function TableView() {
-  const [url, setUrl] = React.useState(new URL("http://localhost/app"));
+function TableView({ search = "" }: { search?: string }) {
+  const [url, setUrl] = React.useState(
+    new URL(`http://localhost/app${search}`),
+  );
   const router = React.useMemo(
     () => ({
       push: (href: string) => {
@@ -514,10 +516,7 @@ test("shows the portfolio heading without table controls when the wallet is disc
     screen.getByRole("button", { name: "Connect wallet to view orders" }),
   ).toBeVisible();
   expect(
-    screen.queryByRole("button", { name: "Chain" }),
-  ).not.toBeInTheDocument();
-  expect(
-    screen.queryByRole("button", { name: "Status" }),
+    screen.queryByRole("button", { name: "Filters" }),
   ).not.toBeInTheDocument();
   expect(
     screen.queryByRole("button", { name: "Refresh orders" }),
@@ -565,11 +564,13 @@ test("fills the empty orders viewport with heading controls outside its scroll a
   const toolbar = refresh.closest<HTMLDivElement>(".rescue-portfolio-toolbar")!;
   expect(heading).toContainElement(toolbar);
   expect(toolbar).toContainElement(
-    screen.getByRole("button", { name: "Chain" }),
+    screen.getByRole("button", { name: "Filters" }),
   );
   expect(toolbar).toContainElement(
-    screen.getByRole("button", { name: "Status" }),
+    screen.getByRole("button", { name: "Reset filters" }),
   );
+  expect(screen.getByRole("button", { name: "Reset filters" })).toBeDisabled();
+  expect(heading).toContainElement(screen.getByLabelText("Selected filters"));
   expect(refresh).toBeEnabled();
   expect(panel).not.toContainElement(heading);
   expect(panel.firstElementChild).toBe(viewport);
@@ -579,6 +580,171 @@ test("fills the empty orders viewport with heading controls outside its scroll a
   ).not.toBeInTheDocument();
   expect(viewport).not.toContainElement(toolbar);
   expect(screen.queryByText("Rows per page")).not.toBeInTheDocument();
+});
+
+test("restores and combines chain and status filters from the URL without changing refresh", async () => {
+  const canceled = {
+    ...apiParent(1, "canceled-order", `0x${"cd".repeat(32)}`),
+    status: "Cancelled",
+  };
+  serveOrders([
+    apiParent(1, "ethereum-open"),
+    apiParent(100, "gnosis-open"),
+    apiParent(42161, "arbitrum-open"),
+    canceled,
+  ]);
+  render(
+    <TableView search="?chainId=1.100&status=Open.Canceled&view=compact" />,
+  );
+  await connectWallet();
+  await screen.findByRole("row", { name: "View order gnosis-open on Gnosis" });
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(3);
+  const trigger = screen.getByRole("button", { name: "Filters" });
+  expect(trigger).toHaveAccessibleDescription("4 selected filters");
+  expect(screen.getByLabelText("Selected filters")).toHaveTextContent(
+    "Chain: Ethereum, Gnosis / Status: Open, Canceled",
+  );
+
+  fireEvent.click(trigger);
+  const dialog = await screen.findByRole("dialog", {
+    name: "Filter your orders",
+  });
+  const chains = within(dialog).getByRole("group", { name: "Chain" });
+  const statuses = within(dialog).getByRole("group", { name: "Status" });
+  expect(
+    within(chains).getByRole("checkbox", { name: "Ethereum" }),
+  ).toBeChecked();
+  expect(
+    within(statuses).getByRole("checkbox", { name: "Canceled" }),
+  ).toBeChecked();
+  fireEvent.click(within(chains).getByRole("checkbox", { name: "Gnosis" }));
+  fireEvent.click(within(statuses).getByRole("checkbox", { name: "Open" }));
+  await waitFor(() => {
+    const params = new URLSearchParams(window.location.search);
+    expect(params.get("chainId")).toBe("1");
+    expect(params.get("status")).toBe("Canceled");
+    expect(params.get("page")).toBe("1");
+    expect(params.get("view")).toBe("compact");
+  });
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(1);
+  expect(
+    screen.getByRole("row", { name: "View order canceled-order on Ethereum" }),
+  ).toBeVisible();
+  expect(trigger).toHaveAccessibleDescription("2 selected filters");
+  fireEvent.keyDown(dialog, { key: "Escape" });
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("dialog", { name: "Filter your orders" }),
+    ).not.toBeInTheDocument(),
+  );
+  await waitFor(() => expect(trigger).toHaveFocus());
+
+  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Refresh orders" }),
+    ).toBeEnabled(),
+  );
+  expect(trigger).toHaveAccessibleDescription("2 selected filters");
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(1);
+  fireEvent.click(screen.getByRole("button", { name: "Reset filters" }));
+  await waitFor(() => {
+    const params = new URLSearchParams(window.location.search);
+    expect(params.has("chainId")).toBe(false);
+    expect(params.has("status")).toBe(false);
+    expect(params.get("view")).toBe("compact");
+    expect(params.get("sort")).toBe("chainId.asc");
+  });
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(4);
+  expect(screen.getByLabelText("Selected filters")).toHaveTextContent(
+    "Chain: All / Status: All",
+  );
+  expect(screen.getByRole("button", { name: "Reset filters" })).toBeDisabled();
+});
+
+test("clears each filter group without clearing the other and restores All after the last selection", async () => {
+  serveOrders([apiParent()]);
+  render(<TableView search="?chainId=1.100&status=Open.Expired" />);
+  await connectWallet();
+  fireEvent.click(screen.getByRole("button", { name: "Filters" }));
+  const dialog = await screen.findByRole("dialog", {
+    name: "Filter your orders",
+  });
+  const chains = within(dialog).getByRole("group", { name: "Chain" });
+  const statuses = within(dialog).getByRole("group", { name: "Status" });
+  fireEvent.click(within(chains).getByRole("checkbox", { name: "All chains" }));
+  expect(
+    within(chains).getByRole("checkbox", { name: "All chains" }),
+  ).toBeChecked();
+  expect(
+    within(statuses).getByRole("checkbox", { name: "Open" }),
+  ).toBeChecked();
+  expect(
+    within(statuses).getByRole("checkbox", { name: "Expired" }),
+  ).toBeChecked();
+  await waitFor(() => {
+    const params = new URLSearchParams(window.location.search);
+    expect(params.has("chainId")).toBe(false);
+    expect(params.get("status")).toBe("Open.Expired");
+  });
+  fireEvent.click(within(chains).getByRole("checkbox", { name: "Gnosis" }));
+  fireEvent.click(
+    within(statuses).getByRole("checkbox", { name: "All statuses" }),
+  );
+  await waitFor(() => {
+    const params = new URLSearchParams(window.location.search);
+    expect(params.get("chainId")).toBe("100");
+    expect(params.has("status")).toBe(false);
+  });
+  expect(
+    within(statuses).getByRole("checkbox", { name: "All statuses" }),
+  ).toBeChecked();
+  expect(screen.getByLabelText("Selected filters")).toHaveTextContent(
+    "Chain: Gnosis / Status: All",
+  );
+  fireEvent.click(within(chains).getByRole("checkbox", { name: "Gnosis" }));
+  expect(
+    within(chains).getByRole("checkbox", { name: "All chains" }),
+  ).toBeChecked();
+  expect(
+    screen.getByRole("button", { name: "Filters" }),
+  ).toHaveAccessibleDescription("All chains and statuses");
+  expect(screen.getByRole("button", { name: "Reset filters" })).toBeDisabled();
+});
+
+test("keeps long selected values in a separate bounded summary and in the filter panel", async () => {
+  const statuses = [
+    "Open",
+    "Filled",
+    "Canceled",
+    "Expired",
+    "Partially filled, cancelled",
+    "Partially filled, expired",
+  ];
+  render(
+    <TableView
+      search={`?chainId=${supportedChainIds.join(".")}&status=${encodeURIComponent(statuses.join("."))}`}
+    />,
+  );
+  await connectWallet();
+  const summary = screen.getByLabelText("Selected filters");
+  expect(summary).toHaveClass("rescue-portfolio-filter-summary");
+  expect(summary).toHaveTextContent(statuses.join(", "));
+  expect(summary).toHaveAttribute("title", summary.textContent);
+  const trigger = screen.getByRole("button", { name: "Filters" });
+  expect(trigger).toHaveAccessibleDescription(
+    `${supportedChainIds.length + statuses.length} selected filters`,
+  );
+  expect(trigger).not.toContainElement(summary);
+  fireEvent.click(trigger);
+  const dialog = await screen.findByRole("dialog", {
+    name: "Filter your orders",
+  });
+  for (const status of statuses)
+    expect(
+      within(dialog).getByRole("checkbox", { name: status }),
+    ).toBeChecked();
+  expect(dialog).toHaveClass("rescue-portfolio-filter-panel");
 });
 
 test("keeps the expanding table shell while the connected account's first orders are loading", async () => {
@@ -695,7 +861,7 @@ test("keeps chain and placement warnings inside the scroll area so pagination re
     screen.getByRole("button", { name: "Refresh orders" }),
   );
   expect(viewport).not.toContainElement(
-    screen.getByRole("button", { name: "Chain" }),
+    screen.getByRole("button", { name: "Filters" }),
   );
   expect(screen.getByRole("button", { name: "Retry Ethereum" })).toBeEnabled();
   expect(screen.queryByText("No results.")).not.toBeInTheDocument();
@@ -1046,12 +1212,15 @@ test("groups pending placements and active API orders under the Open filter", as
   await screen.findByRole("row", {
     name: "View order indexed-order on Ethereum",
   });
-  fireEvent.click(screen.getByRole("button", { name: "Status" }));
-  fireEvent.click(await screen.findByRole("option", { name: "Open" }));
-  fireEvent.keyDown(screen.getByPlaceholderText("Status"), { key: "Escape" });
+  fireEvent.click(screen.getByRole("button", { name: "Filters" }));
+  const filterPanel = await screen.findByRole("dialog", {
+    name: "Filter your orders",
+  });
+  fireEvent.click(within(filterPanel).getByRole("checkbox", { name: "Open" }));
+  fireEvent.keyDown(filterPanel, { key: "Escape" });
   await waitFor(() =>
     expect(
-      screen.queryByRole("option", { name: "Open" }),
+      screen.queryByRole("dialog", { name: "Filter your orders" }),
     ).not.toBeInTheDocument(),
   );
   expect(

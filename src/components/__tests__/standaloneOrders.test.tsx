@@ -1361,9 +1361,12 @@ test("combines all supported chains and filters Sepolia as a testnet without swi
     ),
   ).toBeInTheDocument();
   expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(5);
-  fireEvent.click(screen.getByRole("button", { name: "Chain" }));
+  fireEvent.click(screen.getByRole("button", { name: "Filters" }));
+  const dialog = await screen.findByRole("dialog", {
+    name: "Filter your orders",
+  });
   fireEvent.click(
-    await screen.findByRole("option", { name: "Sepolia (testnet)" }),
+    within(dialog).getByRole("checkbox", { name: "Sepolia (testnet)" }),
   );
 
   await waitFor(() =>
@@ -1513,41 +1516,26 @@ test("selects All by default and clears each filter without clearing the other",
   await connectBrowserWallet();
   await screen.findByRole("row", { name: "View order stop-loss-1 on Gnosis" });
 
-  fireEvent.click(screen.getByRole("button", { name: /^Status/ }));
-  expect(await screen.findByRole("option", { name: "All" })).toHaveAttribute(
-    "aria-checked",
-    "true",
-  );
-  fireEvent.click(screen.getByRole("option", { name: "Open" }));
-  expect(screen.getByRole("option", { name: "All" })).toHaveAttribute(
-    "aria-checked",
-    "false",
-  );
-  fireEvent.keyDown(screen.getByPlaceholderText("Status"), { key: "Escape" });
-  await waitFor(() =>
-    expect(
-      screen.queryByRole("option", { name: "All" }),
-    ).not.toBeInTheDocument(),
-  );
+  fireEvent.click(screen.getByRole("button", { name: "Filters" }));
+  const dialog = await screen.findByRole("dialog", {
+    name: "Filter your orders",
+  });
+  const status = within(within(dialog).getByRole("group", { name: "Status" }));
+  const chain = within(within(dialog).getByRole("group", { name: "Chain" }));
+  expect(status.getByRole("checkbox", { name: "All statuses" })).toBeChecked();
+  fireEvent.click(status.getByRole("checkbox", { name: "Open" }));
+  expect(
+    status.getByRole("checkbox", { name: "All statuses" }),
+  ).not.toBeChecked();
 
-  fireEvent.click(screen.getByRole("button", { name: /^Chain/ }));
-  expect(await screen.findByRole("option", { name: "All" })).toHaveAttribute(
-    "aria-checked",
-    "true",
-  );
-  fireEvent.click(screen.getByRole("option", { name: "Ethereum" }));
-  expect(screen.getByRole("option", { name: "All" })).toHaveAttribute(
-    "aria-checked",
-    "false",
-  );
+  expect(chain.getByRole("checkbox", { name: "All chains" })).toBeChecked();
+  fireEvent.click(chain.getByRole("checkbox", { name: "Ethereum" }));
+  expect(chain.getByRole("checkbox", { name: "All chains" })).not.toBeChecked();
   await waitFor(() =>
     expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(1),
   );
-  fireEvent.click(screen.getByRole("option", { name: "All" }));
-  expect(screen.getByRole("option", { name: "All" })).toHaveAttribute(
-    "aria-checked",
-    "true",
-  );
+  fireEvent.click(chain.getByRole("checkbox", { name: "All chains" }));
+  expect(chain.getByRole("checkbox", { name: "All chains" })).toBeChecked();
   await waitFor(() => {
     expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(2);
     expect(new URLSearchParams(window.location.search).has("chainId")).toBe(
@@ -1557,20 +1545,9 @@ test("selects All by default and clears each filter without clearing the other",
       "Open",
     );
   });
-  fireEvent.click(screen.getByRole("option", { name: "Ethereum" }));
-  fireEvent.keyDown(screen.getByPlaceholderText("Chain"), { key: "Escape" });
-  await waitFor(() =>
-    expect(
-      screen.queryByRole("option", { name: "All" }),
-    ).not.toBeInTheDocument(),
-  );
-
-  fireEvent.click(screen.getByRole("button", { name: /^Status/ }));
-  fireEvent.click(await screen.findByRole("option", { name: "All" }));
-  expect(screen.getByRole("option", { name: "All" })).toHaveAttribute(
-    "aria-checked",
-    "true",
-  );
+  fireEvent.click(chain.getByRole("checkbox", { name: "Ethereum" }));
+  fireEvent.click(status.getByRole("checkbox", { name: "All statuses" }));
+  expect(status.getByRole("checkbox", { name: "All statuses" })).toBeChecked();
   await waitFor(() => {
     expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(2);
     expect(new URLSearchParams(window.location.search).has("status")).toBe(
@@ -1624,9 +1601,12 @@ test("shows distinct partial terminal states and filters them separately", async
     screen.getByRole("cell", { name: "Partially filled, expired" }),
   ).toBeInTheDocument();
   expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(3);
-  fireEvent.click(screen.getByRole("button", { name: "Status" }));
+  fireEvent.click(screen.getByRole("button", { name: "Filters" }));
+  const dialog = await screen.findByRole("dialog", {
+    name: "Filter your orders",
+  });
   fireEvent.click(
-    await screen.findByRole("option", { name: "Partially filled, expired" }),
+    within(dialog).getByRole("checkbox", { name: "Partially filled, expired" }),
   );
 
   await waitFor(() =>

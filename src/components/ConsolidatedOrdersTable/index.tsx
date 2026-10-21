@@ -14,16 +14,16 @@ import { Address } from "viem";
 import { useAccount } from "wagmi";
 
 import { DataTable } from "#/components/data-table/data-table";
-import { DataTableToolbar } from "#/components/data-table/data-table-toolbar";
 import { PixelIcon } from "#/components/ui/pixel-icon";
-import { DataTableFilterField, useDataTable } from "#/hooks/useDataTable";
+import { useDataTable } from "#/hooks/useDataTable";
 import { useOrderList } from "#/hooks/useOrderList";
 import { chainNames } from "#/lib/publicClients";
 import { PlacementRow } from "#/lib/stopLossPlacement";
 
 import { getColumns } from "./columns";
+import { PortfolioFilterField, PortfolioFilters } from "./filters";
 
-const filterFields: DataTableFilterField<PlacementRow>[] = [
+const filterFields: PortfolioFilterField[] = [
   {
     label: "Chain",
     value: "chainId",
@@ -159,34 +159,29 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
   return (
     <>
       <OrdersHeading>
-        <DataTableToolbar
-          className="rescue-portfolio-toolbar"
-          table={table}
-          filterFields={filterFields}
-          afterFilters={
-            <TooltipProvider>
-              <TooltipRoot>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="rescue-secondary-control pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring size-11 shrink-0 rounded-none text-muted-foreground hover:text-primary"
-                    aria-label="Refresh orders"
-                    aria-busy={isLoading}
-                    disabled={isLoading}
-                    onClick={() => mutate()}
-                  >
-                    <PixelIcon
-                      name="reload"
-                      className={`size-4 ${isLoading ? "motion-safe:animate-spin" : ""}`}
-                    />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Refresh orders</TooltipContent>
-              </TooltipRoot>
-            </TooltipProvider>
-          }
-        />
+        <PortfolioFilters table={table} filterFields={filterFields}>
+          <TooltipProvider>
+            <TooltipRoot>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="rescue-secondary-control pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring size-11 shrink-0 rounded-none text-muted-foreground hover:text-primary"
+                  aria-label="Refresh orders"
+                  aria-busy={isLoading}
+                  disabled={isLoading}
+                  onClick={() => mutate()}
+                >
+                  <PixelIcon
+                    name="reload"
+                    className={`size-4 ${isLoading ? "motion-safe:animate-spin" : ""}`}
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Refresh orders</TooltipContent>
+            </TooltipRoot>
+          </TooltipProvider>
+        </PortfolioFilters>
       </OrdersHeading>
       <div className="flex min-h-0 flex-1 flex-col gap-4">
         <DataTable
