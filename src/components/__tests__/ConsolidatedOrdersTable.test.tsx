@@ -372,7 +372,16 @@ test("reviews cancellation of a confirmed local order before API indexing", asyn
   await confirm(prepared(1));
   render(<TableView />);
   await connectWallet();
-  await screen.findByText("Waiting for API indexing");
+  const amount = await screen.findByRole("cell", {
+    name: "1 WETH for 1980 USDC",
+  });
+  const row = amount.closest("tr")!;
+  const status = within(row).getByRole("cell", { name: "Open" });
+  expect(within(status).getByText("Open")).toBeInTheDocument();
+  expect(status.querySelector("p")).not.toBeInTheDocument();
+  expect(
+    screen.queryByText("Waiting for API indexing"),
+  ).not.toBeInTheDocument();
   expect(
     screen.queryByRole("row", { name: /^View order/ }),
   ).not.toBeInTheDocument();
