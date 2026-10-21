@@ -1,17 +1,12 @@
 import { MetadataApi } from "@cowprotocol/app-data";
 import {
   Address,
-  concatHex,
-  encodeAbiParameters,
   encodeFunctionData,
   encodePacked,
   erc20Abi,
   Hex,
-  keccak256,
   maxUint256,
-  parseAbiParameters,
   PublicClient,
-  stringToHex,
   zeroAddress,
 } from "viem";
 
@@ -37,6 +32,11 @@ import { getPlacementReads, type PlacementReads } from "./placementReads";
 import { ChainId, publicClientsFromIds } from "./publicClients";
 import { decodeStopLossStaticInput } from "./staticInputDecoder";
 import { encodeStopLossStaticInput } from "./staticInputEncoder";
+import {
+  conditionalOrderHash,
+  cowOrderDigest,
+  stopLossScheduleId,
+} from "./stopLossOrderIdentity";
 import {
   FundingParent,
   loadStopLossFundingParents,
@@ -130,11 +130,11 @@ export async function preparePlacement({
     functionName: "proxyOf",
     args: [account],
   });
-  const scheduleId = keccak256(
-    encodeAbiParameters(
-      parseAbiParameters("address, address, address, bytes32"),
-      [account, STOP_LOSS_ADDRESS, owner, reviewed.salt],
-    ),
+  const scheduleId = stopLossScheduleId(
+    account,
+    STOP_LOSS_ADDRESS,
+    owner,
+    reviewed.salt,
   );
   const metadataApi = new MetadataApi();
   const document = await metadataApi.generateAppDataDoc({
@@ -289,11 +289,11 @@ export async function prefetchPlacementChecks({
         ]);
         await Promise.allSettled(
           parents.map(async (parent) => {
-            const id = keccak256(
-              encodeAbiParameters(
-                parseAbiParameters("address, address, address, bytes32"),
-                [account, parent.handler, parent.owner, parent.salt],
-              ),
+            const id = stopLossScheduleId(
+              account,
+              parent.handler,
+              parent.owner,
+              parent.salt,
             );
             await Promise.allSettled([
               client.readContract({
@@ -524,11 +524,11 @@ async function refreshFundingChecks(
         order.validTo < block.timestamp
       )
         continue;
-      const id = keccak256(
-        encodeAbiParameters(
-          parseAbiParameters("address, address, address, bytes32"),
-          [prepared.account, parent.handler, parent.owner, parent.salt],
-        ),
+      const id = stopLossScheduleId(
+        prepared.account,
+        parent.handler,
+        parent.owner,
+        parent.salt,
       );
       const schedule = await client.readContract({
         address: prepared.poller,
@@ -751,11 +751,11 @@ export async function refreshApprovalRepair(
       paramsHash: parent.hash,
       domainSeparator,
       orderDigest: cowOrderDigest(parent.staticInput, domainSeparator),
-      scheduleId: keccak256(
-        encodeAbiParameters(
-          parseAbiParameters("address, address, address, bytes32"),
-          [selection.account, parent.handler, owner, parent.salt],
-        ),
+      scheduleId: stopLossScheduleId(
+        selection.account,
+        parent.handler,
+        owner,
+        parent.salt,
       ),
       draft: {
         tokenSell,
@@ -1042,46 +1042,4 @@ export async function verifyPlacementConfirmation(
     trustedExecutor.toLowerCase() === prepared.factory.toLowerCase() &&
     settlementAllowance >= requiredSettlementAllowance
   );
-}
-
-function conditionalOrderHash(handler: Address, salt: Hex, staticInput: Hex) {
-  return keccak256(
-    encodeAbiParameters(
-      parseAbiParameters("(address handler, bytes32 salt, bytes staticInput)"),
-      [{ handler, salt, staticInput }],
-    ),
-  );
-}
-
-function cowOrderDigest(staticInput: Hex, domainSeparator: Hex) {
-  const order = decodeStopLossStaticInput(staticInput);
-  const typeHash = keccak256(
-    stringToHex(
-      "Order(address sellToken,address buyToken,address receiver,uint256 sellAmount,uint256 buyAmount,uint32 validTo,bytes32 appData,uint256 feeAmount,string kind,bool partiallyFillable,string sellTokenBalance,string buyTokenBalance)",
-    ),
-  );
-  const erc20Balance = keccak256(stringToHex("erc20"));
-  const structHash = keccak256(
-    encodeAbiParameters(
-      parseAbiParameters(
-        "bytes32,address,address,address,uint256,uint256,uint32,bytes32,uint256,bytes32,bool,bytes32,bytes32",
-      ),
-      [
-        typeHash,
-        order.sellToken,
-        order.buyToken,
-        order.receiver,
-        order.sellAmount,
-        order.buyAmount,
-        Number(order.validTo),
-        order.appData,
-        BigInt(0),
-        keccak256(stringToHex(order.isSellOrder ? "sell" : "buy")),
-        order.isPartiallyFillable,
-        erc20Balance,
-        erc20Balance,
-      ],
-    ),
-  );
-  return keccak256(concatHex(["0x1901", domainSeparator, structHash]));
 }

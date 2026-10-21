@@ -3,6 +3,7 @@ import { InsufficientFundsError } from "viem";
 import { createJSONStorage } from "zustand/middleware";
 import { createStore } from "zustand/vanilla";
 
+import { STOP_LOSS_ADDRESS } from "./contracts";
 import type { PreparedPlacement } from "./pollerStopLoss";
 import type { ChainId } from "./publicClients";
 import { decodeStopLossStaticInput } from "./staticInputDecoder";
@@ -706,6 +707,13 @@ export function createStopLossPlacement({
           parentId: record.id,
           chainId: prepared.chainId,
           owner: prepared.owner,
+          funding: {
+            kind: "scheduled",
+            funder: prepared.account,
+            handler: STOP_LOSS_ADDRESS,
+            salt: prepared.draft.salt,
+            staticInput: prepared.staticInput,
+          },
           hash: prepared.paramsHash,
           status:
             record.status === "confirmed"

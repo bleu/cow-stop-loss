@@ -14,11 +14,23 @@ import { type IToken, OrderStatus } from "./types";
 
 export type OrderToken = Omit<IToken, "decimals"> & { decimals: number | null };
 
+export type OrderFundingIdentity =
+  | { kind: "direct" }
+  | {
+      kind: "scheduled";
+      funder: Address;
+      handler: Address;
+      salt: Hex;
+      staticInput: Hex;
+    }
+  | { kind: "unknown" };
+
 export interface StopLossOrder {
   id: string;
   parentId: string;
   chainId: ChainId;
   owner: Address;
+  funding?: OrderFundingIdentity;
   status: OrderStatus;
   receiver: Address;
   sellAmount: bigint;
@@ -56,6 +68,8 @@ interface Generator {
   owner: Address;
   resolvedOwner: Address | null;
   handler: Address;
+  salt?: Hex | null;
+  staticInput?: Hex | null;
   orderType: string;
   status: string;
   hash: string;
@@ -108,7 +122,7 @@ const ordersQuery = `
       limit: 50, after: $after
     ) {
       items {
-        eventId chainId owner resolvedOwner handler orderType status hash decodedParams
+        eventId chainId owner resolvedOwner handler orderType status hash salt staticInput decodedParams
         transaction { hash blockTimestamp }
         discreteOrders(limit: 1) {
           items { orderUid status validTo executedSellAmount executedBuyAmount executedFee }
@@ -300,6 +314,44 @@ function priceForAmounts(
   );
 }
 
+function fundingIdentity(
+  parent: Generator,
+  account: Address,
+  mappings: { address: Address; owner: Address }[],
+): OrderFundingIdentity {
+  const owner = parent.owner.toLowerCase();
+  const mappedOwner = mappings.find(
+    (mapping) => mapping.address.toLowerCase() === owner,
+  )?.owner;
+  const resolvedFunder =
+    parent.resolvedOwner && parent.resolvedOwner.toLowerCase() !== owner
+      ? parent.resolvedOwner
+      : undefined;
+  if (owner === account.toLowerCase() && !resolvedFunder && !mappedOwner)
+    return { kind: "direct" };
+
+  const funder = resolvedFunder ?? mappedOwner;
+  if (
+    !isAddress(parent.owner) ||
+    !funder ||
+    !isAddress(funder) ||
+    !isAddress(parent.handler) ||
+    !isHex(parent.salt) ||
+    parent.salt.length !== 66 ||
+    !isHex(parent.staticInput) ||
+    parent.staticInput.length % 2 !== 0
+  )
+    return { kind: "unknown" };
+
+  return {
+    kind: "scheduled",
+    funder,
+    handler: parent.handler,
+    salt: parent.salt,
+    staticInput: parent.staticInput,
+  };
+}
+
 export async function loadStopLossOrders({
   account,
   signal,
@@ -324,16 +376,15 @@ export async function loadStopLossOrders({
           { chain: chainId, wallet: account.toLowerCase() },
           signal,
         );
+        const cowShedMappings = mappings.filter(
+          (mapping) =>
+            mapping.chainId === chainId &&
+            mapping.owner.toLowerCase() === account.toLowerCase() &&
+            mapping.addressType === "cowshed_proxy",
+        );
         const owners = [
           account.toLowerCase(),
-          ...mappings
-            .filter(
-              (mapping) =>
-                mapping.chainId === chainId &&
-                mapping.owner.toLowerCase() === account.toLowerCase() &&
-                mapping.addressType === "cowshed_proxy",
-            )
-            .map((mapping) => mapping.address.toLowerCase()),
+          ...cowShedMappings.map((mapping) => mapping.address.toLowerCase()),
         ];
         const parents = await fetchPages<Generator>(
           ordersQuery,
@@ -419,6 +470,7 @@ export async function loadStopLossOrders({
                 parentId: parent.eventId,
                 chainId,
                 owner: parent.owner,
+                funding: fundingIdentity(parent, account, cowShedMappings),
                 status,
                 receiver: params.receiver,
                 sellAmount,
