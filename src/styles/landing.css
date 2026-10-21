@@ -20,7 +20,7 @@
 
 .landing-hero h1 {
   margin-block: 24px;
-  font-family: var(--font-family-pixel-display), monospace;
+  font-family: var(--font-family-serif), sans-serif;
   font-size: clamp(56px, 6.5vw, 88px);
   font-weight: 600;
   line-height: 0.98;
@@ -95,7 +95,7 @@
   bottom: -8px;
   width: 100%;
   text-align: center;
-  font-family: var(--font-family-pixel-display), monospace;
+  font-family: var(--font-family-serif), sans-serif;
   font-size: 17px;
   color: hsl(var(--muted-foreground));
 }
@@ -176,7 +176,7 @@
   position: absolute;
   top: 0;
   left: 0;
-  font-family: var(--font-family-pixel-display), monospace;
+  font-family: var(--font-family-serif), sans-serif;
   font-size: 24px;
   line-height: 1;
   color: hsl(var(--primary));
