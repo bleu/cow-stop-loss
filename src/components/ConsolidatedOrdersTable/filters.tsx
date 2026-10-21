@@ -60,7 +60,7 @@ export function PortfolioFilters({
               aria-description={
                 count ? `${count} selected filters` : "All chains and statuses"
               }
-              className="rescue-secondary-control pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 gap-2 rounded-none px-2 text-muted-foreground hover:text-primary"
+              className="rescue-secondary-control pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 gap-2 rounded-none px-2 text-muted-foreground hover:text-primary lg:h-7 lg:min-h-7 lg:gap-1.5 lg:text-xs"
             >
               <PixelIcon name="filter" className="size-4" />
               Filters

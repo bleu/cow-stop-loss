@@ -1357,9 +1357,10 @@ test("combines all supported chains and filters Sepolia as a testnet without swi
 
   expect(
     await screen.findByText(
-      `0 of ${supportedChainIds.length} row(s) selected.`,
+      `Page 1 of ${Math.ceil(supportedChainIds.length / 3)}`,
     ),
-  ).toBeInTheDocument();
+  ).toBeVisible();
+  expect(screen.queryByText(/row\(s\) selected\./)).not.toBeInTheDocument();
   expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(3);
   fireEvent.click(screen.getByRole("button", { name: "Filters" }));
   const dialog = await screen.findByRole("dialog", {
@@ -1401,9 +1402,10 @@ test("switches the wallet network only through the header and keeps all chains v
   await screen.findByTitle(wallet);
   expect(
     await screen.findByText(
-      `0 of ${supportedChainIds.length} row(s) selected.`,
+      `Page 1 of ${Math.ceil(supportedChainIds.length / 3)}`,
     ),
-  ).toBeInTheDocument();
+  ).toBeVisible();
+  expect(screen.queryByText(/row\(s\) selected\./)).not.toBeInTheDocument();
   expect(request).not.toHaveBeenCalledWith(
     expect.objectContaining({ method: "wallet_switchEthereumChain" }),
   );
@@ -1453,8 +1455,9 @@ test("switches the wallet network only through the header and keeps all chains v
     }),
   );
   expect(
-    screen.getByText(`0 of ${supportedChainIds.length} row(s) selected.`),
-  ).toBeInTheDocument();
+    screen.getByText(`Page 1 of ${Math.ceil(supportedChainIds.length / 3)}`),
+  ).toBeVisible();
+  expect(screen.queryByText(/row\(s\) selected\./)).not.toBeInTheDocument();
   expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(3);
 });
 
@@ -1644,6 +1647,24 @@ test("keeps successful chains visible and retries a failed chain", async () => {
   const warning = within(ordersPanel).getByRole("button", {
     name: "Order availability warnings",
   });
+  const filters = within(ordersPanel).getByRole("button", { name: "Filters" });
+  const refresh = within(ordersPanel).getByRole("button", {
+    name: "Refresh orders",
+  });
+  expect(filters).toHaveClass("h-11", "min-h-11", "lg:h-7", "lg:min-h-7");
+  for (const button of [warning, refresh]) {
+    expect(button).toHaveClass(
+      "size-11",
+      "min-h-11",
+      "min-w-11",
+      "lg:size-7",
+      "lg:min-h-7",
+      "lg:min-w-7",
+    );
+  }
+  expect(
+    within(ordersPanel).getByRole("button", { name: "Reset filters" }),
+  ).toHaveClass("h-11", "lg:h-7");
   fireEvent.focus(warning);
   expect(await screen.findByRole("tooltip")).toHaveTextContent(
     "Gnosis orders are unavailable.",

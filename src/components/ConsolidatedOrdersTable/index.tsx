@@ -158,7 +158,7 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
                     variant="ghost"
                     size="icon"
                     aria-label="Order availability warnings"
-                    className="rescue-secondary-control pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring size-11 shrink-0 rounded-none text-warning hover:text-warning"
+                    className="rescue-secondary-control pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring size-11 shrink-0 rounded-none lg:size-7 lg:min-h-7 lg:min-w-7 text-warning hover:text-warning"
                   >
                     <PixelIcon name="warning" className="size-4" />
                   </Button>
@@ -178,7 +178,7 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="rescue-secondary-control pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring size-11 shrink-0 rounded-none text-muted-foreground hover:text-primary"
+                  className="rescue-secondary-control pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring size-11 shrink-0 rounded-none lg:size-7 lg:min-h-7 lg:min-w-7 text-muted-foreground hover:text-primary"
                   aria-label="Refresh orders"
                   aria-busy={isLoading}
                   disabled={isLoading}

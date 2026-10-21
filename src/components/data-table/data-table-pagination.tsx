@@ -13,6 +13,10 @@ export function DataTablePagination<TData>({
   fillPanel = false,
 }: DataTablePaginationProps<TData>) {
   if (table.getPageCount() <= 1) return null;
+  const pageButtonClassName = cn(
+    "pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring flex size-11 p-0",
+    fillPanel && "lg:size-7 lg:min-h-7 lg:min-w-7",
+  );
   return (
     <div
       className={cn(
@@ -20,10 +24,12 @@ export function DataTablePagination<TData>({
         fillPanel ? "gap-2" : "gap-4 overflow-auto sm:flex-row sm:gap-8",
       )}
     >
-      <div className="flex-1 whitespace-nowrap text-sm text-muted-foreground">
-        {table.getFilteredSelectedRowModel().rows.length} of{" "}
-        {table.getFilteredRowModel().rows.length} row(s) selected.
-      </div>
+      {table.options.enableRowSelection !== false && (
+        <div className="flex-1 whitespace-nowrap text-sm text-muted-foreground">
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
+        </div>
+      )}
       <div
         className={cn(
           "flex items-center",
@@ -40,7 +46,7 @@ export function DataTablePagination<TData>({
           <Button
             aria-label="Go to first page"
             variant="outline"
-            className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring flex size-11 p-0"
+            className={pageButtonClassName}
             onClick={() => table.setPageIndex(0)}
             disabled={!table.getCanPreviousPage()}
           >
@@ -50,7 +56,7 @@ export function DataTablePagination<TData>({
             aria-label="Go to previous page"
             variant="outline"
             size="icon"
-            className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring size-11"
+            className={pageButtonClassName}
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
@@ -60,7 +66,7 @@ export function DataTablePagination<TData>({
             aria-label="Go to next page"
             variant="outline"
             size="icon"
-            className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring size-11"
+            className={pageButtonClassName}
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
@@ -70,7 +76,7 @@ export function DataTablePagination<TData>({
             aria-label="Go to last page"
             variant="outline"
             size="icon"
-            className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring flex size-11"
+            className={pageButtonClassName}
             onClick={() => table.setPageIndex(table.getPageCount() - 1)}
             disabled={!table.getCanNextPage()}
           >
