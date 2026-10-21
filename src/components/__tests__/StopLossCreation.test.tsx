@@ -1119,6 +1119,8 @@ it("opens a wallet-scoped review with checked permissions and separate approval 
   expect(
     screen.queryByRole("button", { name: "Place order" }),
   ).not.toBeInTheDocument();
-  expect(within(dialog).getByText("Trigger price")).toBeInTheDocument();
+  expect(
+    within(dialog).getByText("Trigger price (USDC/WETH)"),
+  ).toBeInTheDocument();
   expect(sendTransactionAsync).not.toHaveBeenCalled();
 });

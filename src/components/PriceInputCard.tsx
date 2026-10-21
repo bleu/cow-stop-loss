@@ -147,13 +147,13 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
               ? `${tokenBuy.symbol} per ${tokenSell.symbol}`
               : ""}
         </span>
-        <div className="rescue-market-price col-span-2 flex h-5 w-full min-w-0 items-center justify-between gap-2 text-[13px] text-muted-foreground empty:hidden [&:has(button)]:h-11">
+        <div className="rescue-market-price col-span-2 flex h-5 w-full min-w-0 items-center justify-between gap-2 text-[13px] text-muted-foreground empty:hidden">
           {tokenBuy && tokenSell && marketPrice && (
             <Button
               type="button"
               variant="link"
               disabled={disabled}
-              className="rescue-secondary-control min-h-11 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 max-w-full justify-start p-0 text-left text-xs font-medium text-primary underline-offset-4 hover:underline"
+              className="rescue-secondary-control min-h-0 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-auto max-w-full justify-start p-0 text-left text-xs font-medium text-primary underline-offset-4 hover:underline"
               aria-label={`Set trigger to current market price ${formatMarketPrice(marketPrice)} ${tokenBuy.symbol} per ${tokenSell.symbol}`}
               onClick={() => {
                 setMode("price");
