@@ -281,6 +281,7 @@ function placementReader(chainId: ChainId): PlacementReader {
         abi: erc20Abi,
         functionName: "allowance",
         args: [record.prepared.account, record.prepared.poller],
+        blockNumber: record.transactions[record.stage]?.blockNumber,
       });
       if (record.stage === "approval-reset") return allowance === BigInt(0);
       return (

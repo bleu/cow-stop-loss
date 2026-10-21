@@ -180,7 +180,7 @@ export function createStopLossApprovalRepair({
         reference = receipt.reference ?? reference;
         const confirmed =
           receipt.status === "success" &&
-          (await reader.checkPermission(record));
+          (await reader.checkPermission({ ...record, reference }));
         await locked(() =>
           save(
             read().map((entry) =>

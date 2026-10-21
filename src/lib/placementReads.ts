@@ -12,7 +12,7 @@ export const PLACEMENT_READ_MAX_AGE = 15_000;
 
 const snapshots = new Map<
   string,
-  { expiresAt: number; reads: PlacementReads }
+  { expiresAt: number; minimumBlockNumber: bigint; reads: PlacementReads }
 >();
 
 function scopeKey({ account, chainId }: Scope) {
@@ -27,13 +27,23 @@ export function getPlacementReads({
   account,
   chainId,
   client,
-}: Scope & { client?: PublicClient }): PlacementReads {
+  minimumBlockNumber = BigInt(0),
+}: Scope & {
+  client?: PublicClient;
+  minimumBlockNumber?: bigint;
+}): PlacementReads {
   const scope = { account, chainId };
-  if (client) return createPlacementReads(scope, client, false);
+  if (client)
+    return createPlacementReads(scope, client, false, minimumBlockNumber);
   const key = scopeKey(scope);
   const now = Date.now();
   const current = snapshots.get(key);
-  if (current && current.expiresAt > now) return current.reads;
+  if (
+    current &&
+    current.expiresAt > now &&
+    current.minimumBlockNumber >= minimumBlockNumber
+  )
+    return current.reads;
   for (const [key, snapshot] of snapshots) {
     if (snapshot.expiresAt <= now) snapshots.delete(key);
   }
@@ -41,8 +51,13 @@ export function getPlacementReads({
     scope,
     publicClientsFromIds[chainId],
     true,
+    minimumBlockNumber,
   );
-  snapshots.set(key, { expiresAt: now + PLACEMENT_READ_MAX_AGE, reads });
+  snapshots.set(key, {
+    expiresAt: now + PLACEMENT_READ_MAX_AGE,
+    minimumBlockNumber,
+    reads,
+  });
   return reads;
 }
 
@@ -52,6 +67,7 @@ function createPlacementReads(
   scope: Scope,
   source: PublicClient,
   cache: boolean,
+  minimumBlockNumber: bigint,
 ) {
   const pending = new Map<string, Promise<unknown>>();
   function once<T>(key: string, read: () => Promise<T>): Promise<T> {
@@ -70,41 +86,60 @@ function createPlacementReads(
       [method, Object.entries(args).sort(([a], [b]) => a.localeCompare(b))],
       (_key, value) => (typeof value === "bigint" ? value.toString() : value),
     );
-  const blockNumber = () => once("blockNumber", () => source.getBlockNumber());
-  const client = cache
-    ? ({
-        ...source,
-        getBlockNumber: blockNumber,
-        getBlock: () =>
-          once("block", async () =>
-            source.getBlock({ blockNumber: await blockNumber() }),
-          ),
-        readContract: async (
-          args: Parameters<PublicClient["readContract"]>[0],
-        ) => {
-          const pinned = {
-            ...args,
-            blockTag: undefined,
-            blockNumber: args.blockNumber ?? (await blockNumber()),
-          };
-          return once(keyFor("readContract", pinned), () =>
-            source.readContract(pinned),
-          );
-        },
-        getBytecode: async (
-          args: Parameters<PublicClient["getBytecode"]>[0],
-        ) => {
-          const pinned = {
-            ...args,
-            blockTag: undefined,
-            blockNumber: args.blockNumber ?? (await blockNumber()),
-          };
-          return once(keyFor("getBytecode", pinned), () =>
-            source.getBytecode(pinned),
-          );
-        },
-      } as PublicClient)
-    : source;
+  const blockNumber = () =>
+    once("blockNumber", async () => {
+      const latest = await source.getBlockNumber({ cacheTime: 0 });
+      // A receipt can arrive before the RPC's latest block catches up.
+      return latest < minimumBlockNumber ? minimumBlockNumber : latest;
+    });
+  const client =
+    cache || minimumBlockNumber > BigInt(0)
+      ? ({
+          ...source,
+          getBlockNumber: blockNumber,
+          getBlock: async (
+            args: Parameters<PublicClient["getBlock"]>[0] = {},
+          ) => {
+            if (args.blockHash)
+              return once(keyFor("getBlock", args), () =>
+                source.getBlock(args),
+              );
+            const pinned = {
+              ...args,
+              blockHash: undefined,
+              blockTag: undefined,
+              blockNumber: args.blockNumber ?? (await blockNumber()),
+            };
+            return once(keyFor("getBlock", pinned), () =>
+              source.getBlock(pinned),
+            );
+          },
+          readContract: async (
+            args: Parameters<PublicClient["readContract"]>[0],
+          ) => {
+            const pinned = {
+              ...args,
+              blockTag: undefined,
+              blockNumber: args.blockNumber ?? (await blockNumber()),
+            };
+            return once(keyFor("readContract", pinned), () =>
+              source.readContract(pinned),
+            );
+          },
+          getBytecode: async (
+            args: Parameters<PublicClient["getBytecode"]>[0],
+          ) => {
+            const pinned = {
+              ...args,
+              blockTag: undefined,
+              blockNumber: args.blockNumber ?? (await blockNumber()),
+            };
+            return once(keyFor("getBytecode", pinned), () =>
+              source.getBytecode(pinned),
+            );
+          },
+        } as PublicClient)
+      : source;
   return {
     client,
     fundingParents: (cowShed: Address) =>

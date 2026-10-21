@@ -19,7 +19,13 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SWRConfig } from "swr";
-import { decodeFunctionData, parseAbi, zeroAddress } from "viem";
+import {
+  decodeFunctionData,
+  maxUint256,
+  parseAbi,
+  WaitForTransactionReceiptTimeoutError,
+  zeroAddress,
+} from "viem";
 import { WagmiProvider } from "wagmi";
 
 import {
@@ -295,6 +301,153 @@ it("confirms approval before enabling Place and does not send setup automaticall
     }),
   );
   expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
+});
+
+it.each(
+  ["block head", "latest allowance"].flatMap((lagging) =>
+    ["Limited", "Unlimited"].map((mode) => ({ lagging, mode })),
+  ),
+)(
+  "does not return to Approve when the $lagging lags behind the approval receipt ($mode)",
+  async ({ lagging, mode }) => {
+    const user = userEvent.setup();
+    let approved = false;
+    const readContract = jest.mocked(publicClientsFromIds[1].readContract);
+    const read = readContract.getMockImplementation()!;
+    readContract.mockImplementation(async (args) => {
+      if (args.functionName === "allowance")
+        return approved &&
+          ((args.blockNumber === undefined && lagging === "block head") ||
+            (args.blockNumber !== undefined && args.blockNumber >= BigInt(101)))
+          ? mode === "Unlimited"
+            ? maxUint256
+            : BigInt("1000000000000000000")
+          : BigInt(0);
+      return read(args);
+    });
+    sendTransactionAsync.mockResolvedValue(`0x${"ab".repeat(32)}`);
+    jest
+      .spyOn(publicClientsFromIds[1], "waitForTransactionReceipt")
+      .mockImplementation(async () => {
+        approved = true;
+        return {
+          status: "success",
+          transactionHash: `0x${"ab".repeat(32)}`,
+          blockNumber: BigInt(101),
+        } as never;
+      });
+    showCreation();
+    await reviewOneOrder(user);
+    await user.click(screen.getByRole("radio", { name: mode }));
+    await user.click(screen.getByRole("button", { name: "Approve WETH" }));
+
+    await waitFor(() =>
+      expect(
+        getStopLossPlacement().getRecords({ account, chainId: 1 })[0].status,
+      ).toBe("ready"),
+    );
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Place order" })).toBeEnabled(),
+    );
+    expect(
+      screen.queryByRole("button", { name: "Approve WETH" }),
+    ).not.toBeInTheDocument();
+    expect(toast).not.toHaveBeenCalled();
+    expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
+  },
+);
+
+it("updates the review after an approval receipt timeout without another wallet request", async () => {
+  jest.useFakeTimers();
+  try {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    let approved = false;
+    const rpc = jest.mocked(publicClientsFromIds[1].readContract);
+    const read = rpc.getMockImplementation()!;
+    rpc.mockImplementation(async (args) =>
+      args.functionName === "allowance"
+        ? approved
+          ? BigInt("1000000000000000000")
+          : BigInt(0)
+        : read(args),
+    );
+    const hash = `0x${"ab".repeat(32)}` as const;
+    sendTransactionAsync.mockResolvedValue(hash);
+    const receipt = jest
+      .spyOn(publicClientsFromIds[1], "waitForTransactionReceipt")
+      .mockRejectedValue(new WaitForTransactionReceiptTimeoutError({ hash }));
+    showCreation();
+    await reviewOneOrder(user);
+    await user.click(screen.getByRole("button", { name: "Approve WETH" }));
+    await waitFor(() => expect(receipt).toHaveBeenCalled());
+    expect(screen.getByRole("button", { name: "Approving…" })).toBeDisabled();
+    expect(toast).not.toHaveBeenCalled();
+
+    approved = true;
+    receipt.mockResolvedValue({
+      status: "success",
+      transactionHash: hash,
+      blockNumber: BigInt(101),
+    } as never);
+    await act(async () => {
+      await jest.advanceTimersByTimeAsync(10000);
+    });
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Place order" })).toBeEnabled(),
+    );
+    expect(toast).not.toHaveBeenCalled();
+    expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
+  } finally {
+    jest.useRealTimers();
+  }
+});
+
+it("keeps approval pending while the receipt block is unavailable from the RPC", async () => {
+  jest.useFakeTimers();
+  try {
+    const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
+    let approved = false;
+    let available = false;
+    const rpc = jest.mocked(publicClientsFromIds[1].readContract);
+    const read = rpc.getMockImplementation()!;
+    rpc.mockImplementation(async (args) => {
+      if (args.functionName === "allowance") {
+        if (approved && !available) throw new Error("Block not found");
+        return approved ? BigInt("1000000000000000000") : BigInt(0);
+      }
+      return read(args);
+    });
+    const hash = `0x${"ab".repeat(32)}` as const;
+    sendTransactionAsync.mockResolvedValue(hash);
+    const receipt = jest
+      .spyOn(publicClientsFromIds[1], "waitForTransactionReceipt")
+      .mockImplementation(async () => {
+        approved = true;
+        return {
+          status: "success",
+          transactionHash: hash,
+          blockNumber: BigInt(101),
+        } as never;
+      });
+    showCreation();
+    await reviewOneOrder(user);
+    await user.click(screen.getByRole("button", { name: "Approve WETH" }));
+    await waitFor(() => expect(receipt).toHaveBeenCalled());
+    expect(screen.getByRole("button", { name: "Approving…" })).toBeDisabled();
+    expect(toast).not.toHaveBeenCalled();
+
+    available = true;
+    await act(async () => {
+      await jest.advanceTimersByTimeAsync(10000);
+    });
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: "Place order" })).toBeEnabled(),
+    );
+    expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
+  } finally {
+    jest.useRealTimers();
+  }
 });
 
 it("places only on request, closes after on-chain checks, and keeps the form values", async () => {

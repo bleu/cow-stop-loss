@@ -376,6 +376,7 @@ export async function refreshPlacementChecks(
   options: {
     client?: PublicClient;
     localOrders?: readonly PreparedPlacement[];
+    minimumBlockNumber?: bigint;
   } = {},
 ): Promise<FundingSnapshot> {
   try {
@@ -394,8 +395,12 @@ export async function refreshPlacementChecks(
     };
   }
   return refreshFundingChecks(prepared, {
-    ...options,
-    reads: getPlacementReads({ ...prepared, client: options.client }),
+    localOrders: options.localOrders,
+    reads: getPlacementReads({
+      ...prepared,
+      client: options.client,
+      minimumBlockNumber: options.minimumBlockNumber,
+    }),
   });
 }
 

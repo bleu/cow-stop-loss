@@ -354,8 +354,8 @@ export function createStopLossPlacement({
         continue;
       let reference = record.transactions[record.stage];
       if (record.stage !== "setup" && record.status === "prompting") continue;
+      let transactionSucceeded = false;
       try {
-        let transactionSucceeded = false;
         let created = false;
         if (
           record.status !== "prompting" &&
@@ -414,7 +414,13 @@ export function createStopLossPlacement({
         const confirmed =
           created ||
           ((record.stage === "setup" || transactionSucceeded) &&
-            (await adapter.checkState(record)));
+            (await adapter.checkState({
+              ...record,
+              transactions: {
+                ...record.transactions,
+                [record.stage]: reference,
+              },
+            })));
         const allowanceChanged =
           record.stage !== "setup" && transactionSucceeded && !confirmed;
         await locked(() =>
@@ -455,8 +461,12 @@ export function createStopLossPlacement({
                 ? {
                     ...entry,
                     revision: entry.revision + 1,
-                    error:
-                      error instanceof Error ? error.message : String(error),
+                    // A successful receipt can precede availability of its state reads.
+                    error: transactionSucceeded
+                      ? undefined
+                      : error instanceof Error
+                        ? error.message
+                        : String(error),
                     transactions: {
                       ...entry.transactions,
                       [record.stage]: reference,

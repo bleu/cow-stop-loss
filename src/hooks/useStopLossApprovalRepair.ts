@@ -32,7 +32,7 @@ export function resumeStopLossApprovalRepair(
       {
         readTransaction: (reference, saveReference) =>
           readStopLossTransaction(reference, client, saveReference),
-        async checkPermission({ prepared, work }) {
+        async checkPermission({ prepared, work, reference }) {
           const allowance = await client.readContract({
             address: prepared.draft.tokenSell.address,
             abi: erc20Abi,
@@ -41,6 +41,7 @@ export function resumeStopLossApprovalRepair(
               work.stage === "wallet"
                 ? [prepared.account, prepared.poller]
                 : [prepared.owner, GPV2_VAULT_RELAYER_ADDRESS],
+            blockNumber: reference?.blockNumber,
           });
           return allowance >= work.target;
         },
