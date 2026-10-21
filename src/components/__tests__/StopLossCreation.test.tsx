@@ -19,7 +19,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SWRConfig } from "swr";
-import { decodeFunctionData, parseAbi, zeroAddress } from "viem";
+import {
+  decodeFunctionData,
+  parseAbi,
+  type ReadContractParameters,
+  zeroAddress,
+} from "viem";
 import { WagmiProvider } from "wagmi";
 
 import {
@@ -151,6 +156,24 @@ beforeEach(() => {
       }
       throw new Error(`Unexpected RPC read: ${functionName}`);
     });
+  jest
+    .spyOn(publicClientsFromIds[1], "multicall")
+    .mockImplementation(async ({ contracts }) =>
+      Promise.all(
+        contracts.map(async (contract) => {
+          try {
+            return {
+              status: "success" as const,
+              result: await publicClientsFromIds[1].readContract(
+                contract as ReadContractParameters,
+              ),
+            };
+          } catch (error) {
+            return { status: "failure" as const, error };
+          }
+        }),
+      ),
+    );
 });
 afterEach(() => {
   global.fetch = originalFetch;

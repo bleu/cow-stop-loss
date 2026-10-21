@@ -11,14 +11,27 @@ import {
   PopoverTrigger,
 } from "@bleu/ui";
 import React, { useState } from "react";
+import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
 import { PixelIcon } from "#/components/ui/pixel-icon";
+import { useWalletTokenValues } from "#/hooks/useWalletTokenValues";
 import { ChainId } from "#/lib/publicClients";
 import { getSupportedTokens } from "#/lib/supportedTokens";
 import { IToken } from "#/lib/types";
 
 import { TokenInfo } from "./TokenInfo";
+
+const balanceFormat = new Intl.NumberFormat("en-US", {
+  maximumFractionDigits: 4,
+});
+
+function formatBalance(balance: bigint, decimals: number) {
+  const amount = Number(formatUnits(balance, decimals));
+  return balance > BigInt(0) && amount < 0.0001
+    ? "<0.0001"
+    : balanceFormat.format(amount);
+}
 
 export function TokenSelect({
   onSelectToken,
@@ -31,10 +44,29 @@ export function TokenSelect({
   disabled?: boolean;
   errorMessage?: string;
 }) {
-  const { chainId: accountChainId } = useAccount();
+  const { address, chainId: accountChainId } = useAccount();
   const chainId = (accountChainId ?? 1) as ChainId;
   const [open, setOpen] = useState(false);
   const { sellTokens } = getSupportedTokens(chainId);
+  const { data, isLoading, error, mutate } = useWalletTokenValues(
+    chainId,
+    address,
+    open,
+  );
+  const rows = sellTokens
+    .map(({ token }) => ({
+      token,
+      holding: data?.tokens.find(
+        (row) =>
+          row.token.address.toLowerCase() === token.address.toLowerCase(),
+      ),
+    }))
+    .sort(
+      (a, b) =>
+        (b.holding?.usdValue ?? -1) - (a.holding?.usdValue ?? -1) ||
+        a.token.symbol.localeCompare(b.token.symbol) ||
+        a.token.address.localeCompare(b.token.address),
+    );
 
   function handleSelectToken(token: IToken) {
     onSelectToken(token);
@@ -72,12 +104,20 @@ export function TokenSelect({
           )}
         </div>
       </PopoverTrigger>
-      <PopoverContent className="pixel-frame rescue-popover w-[min(22rem,calc(100vw-2rem))] rounded-none border border-border bg-popover p-0 text-popover-foreground shadow-2xl">
+      <PopoverContent
+        collisionPadding={16}
+        className="pixel-frame rescue-popover w-[min(18rem,calc(100vw-2rem))] rounded-none border border-border bg-popover p-0 text-popover-foreground shadow-2xl"
+      >
         <p className="border-b border-border/60 px-4 py-3 font-sans text-[10px] uppercase tracking-[0.16em] text-secondary">
           Choose your passenger
         </p>
         {/* @ts-ignore */}
-        <Command className="rounded-none bg-transparent text-popover-foreground">
+        <Command
+          className="rounded-none bg-transparent text-popover-foreground"
+          filter={(value, search) =>
+            value.toLowerCase().includes(search.toLowerCase()) ? 1 : 0
+          }
+        >
           <CommandInput
             placeholder="Search supported tokens"
             className="rounded-none h-12 border-0 bg-transparent px-4"
@@ -86,20 +126,65 @@ export function TokenSelect({
           <CommandList className="max-h-72 p-1.5">
             {/* @ts-ignore */}
             <CommandEmpty>No results found</CommandEmpty>
-            {sellTokens.map(({ token }) => (
+            {rows.map(({ token, holding }) => (
               // @ts-ignore
               <CommandItem
                 key={token.address}
                 value={token.symbol + token.address}
                 disabled={disabled}
                 onSelect={() => handleSelectToken(token)}
-                className="rounded-none py-2.5 hover:bg-primary/15 hover:text-foreground"
+                className="rescue-token-option rounded-none py-2.5 hover:bg-primary/15 hover:text-foreground"
               >
                 <TokenInfo token={token} showExplorerLink={false} />
+                {address && (
+                  <span className="rescue-token-option-values">
+                    <span>
+                      {holding?.balance !== undefined
+                        ? formatBalance(holding.balance, token.decimals)
+                        : isLoading
+                          ? "Loading…"
+                          : "Unavailable"}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {holding?.usdValue !== undefined
+                        ? new Intl.NumberFormat("en-US", {
+                            style: "currency",
+                            currency: "USD",
+                          }).format(holding.usdValue)
+                        : "-"}
+                    </span>
+                  </span>
+                )}
+                <PixelIcon
+                  name="check"
+                  className={cn(
+                    "size-3 shrink-0 text-primary",
+                    selectedToken?.address.toLowerCase() !==
+                      token.address.toLowerCase() && "invisible",
+                  )}
+                />
               </CommandItem>
             ))}
           </CommandList>
         </Command>
+        {address &&
+          (error || data?.tokens.some((row) => row.balance === undefined)) && (
+            <div
+              role="status"
+              className="flex items-center justify-between border-t border-border/60 px-4 py-2 text-xs text-muted-foreground"
+            >
+              <span>
+                {error ? "Balances unavailable" : "Some balances unavailable"}
+              </span>
+              <button
+                type="button"
+                className="min-h-9 px-2 text-primary"
+                onClick={() => void mutate()}
+              >
+                Retry
+              </button>
+            </div>
+          )}
       </PopoverContent>
     </Popover>
   );
