@@ -38,12 +38,76 @@ export type PlacementRecord = {
     | "rejected"
     | "confirmed"
     | "ready";
+  uncertain?: boolean;
   confirmedAt?: number;
   approvalAmount?: bigint;
   settlementAmount?: bigint;
   error?: string;
   transactions: Partial<Record<PlacementStage, TransactionReference>>;
 };
+export type PendingPlacementTransaction = PlacementScope & {
+  id: string;
+  revision: number;
+  stage: PlacementStage;
+  status: "pending";
+  setup?: { owner: Address; paramsHash: Hex };
+  token: Address;
+  poller: Address;
+  approvalAmount?: bigint;
+  error?: string;
+  uncertain?: boolean;
+  transactions: Partial<Record<PlacementStage, TransactionReference>>;
+};
+type TrackedPlacement = PlacementRecord | PendingPlacementTransaction;
+
+function scopeOf(record: TrackedPlacement): PlacementScope {
+  return "prepared" in record ? record.prepared : record;
+}
+
+function pending(record: TrackedPlacement) {
+  return record.status === "pending" || record.status === "prompting";
+}
+
+function persisted(record: TrackedPlacement): TrackedPlacement | undefined {
+  if (!("prepared" in record)) return record;
+  if (
+    record.status === "confirmed" ||
+    (record.stage === "setup" &&
+      record.status !== "prompting" &&
+      record.transactions.setup)
+  )
+    return record;
+  if (
+    !pending(record) ||
+    (record.status === "prompting" && !record.uncertain) ||
+    (!record.transactions[record.stage] && !record.uncertain)
+  )
+    return undefined;
+  return {
+    account: record.prepared.account,
+    chainId: record.prepared.chainId,
+    id: record.id,
+    revision: record.revision,
+    stage: record.stage,
+    status: "pending",
+    setup:
+      record.stage === "setup"
+        ? {
+            owner: record.prepared.owner,
+            paramsHash: record.prepared.paramsHash,
+          }
+        : undefined,
+    token: record.prepared.draft.tokenSell.address,
+    poller: record.prepared.poller,
+    approvalAmount: record.approvalAmount,
+    error: record.error,
+    uncertain: record.uncertain,
+    transactions: record.transactions[record.stage]
+      ? { [record.stage]: record.transactions[record.stage] }
+      : {},
+  };
+}
+
 export type PlacementLocks = {
   request<T>(name: string, action: () => Promise<T> | T): Promise<T>;
 };
@@ -60,7 +124,7 @@ export type PlacementSender = {
 };
 export type PlacementReader = {
   readTransaction?(
-    record: PlacementRecord,
+    record: TrackedPlacement,
     reference: TransactionReference,
     saveReference?: (reference: TransactionReference) => Promise<void>,
   ): Promise<{
@@ -68,7 +132,7 @@ export type PlacementReader = {
     error?: string;
     reference?: TransactionReference;
   }>;
-  checkState(record: PlacementRecord): Promise<boolean>;
+  checkState(record: TrackedPlacement): Promise<boolean>;
 };
 
 export type PlacementRow = StopLossOrder &
@@ -127,7 +191,8 @@ export function withStopLossSubmission<T>(
     );
   return options.locks.request(
     `stop-loss-submission:${scope.chainId}:${scope.account.toLowerCase()}`,
-    () => {
+    async () => {
+      if (flow === "repair") await createStopLossPlacement(options).cleanup();
       const otherKey =
         flow === "placement" ? "stop-loss-approval-repair" : storageName;
       const raw = options.storage.getItem(otherKey);
@@ -136,22 +201,28 @@ export function withStopLossSubmission<T>(
           version: number;
           state: {
             records: {
-              prepared: PlacementScope;
+              prepared?: PlacementScope;
+              account?: Address;
+              chainId?: ChainId;
               status: PlacementRecord["status"];
             }[];
+            pendingTransactions?: PendingPlacementTransaction[];
           };
         };
-        if (saved.version !== 1)
+        if (saved.version !== 1 && (flow !== "repair" || saved.version !== 2))
           throw new Error("Unsupported stop-loss submission storage version");
         if (
-          saved.state.records.some(
-            ({ prepared, status }) =>
-              prepared.chainId === scope.chainId &&
-              prepared.account.toLowerCase() === scope.account.toLowerCase() &&
-              (flow === "repair"
-                ? status !== "confirmed"
-                : status === "pending" || status === "prompting"),
-          )
+          [
+            ...saved.state.records,
+            ...(saved.state.pendingTransactions ?? []),
+          ].some((record) => {
+            const identity = "prepared" in record ? record.prepared! : record;
+            return (
+              identity.chainId === scope.chainId &&
+              identity.account?.toLowerCase() === scope.account.toLowerCase() &&
+              (record.status === "pending" || record.status === "prompting")
+            );
+          })
         )
           throw new Error(
             "A stop-loss transaction is already active for this wallet and chain",
@@ -168,22 +239,23 @@ export function createStopLossPlacement({
   now = Date.now,
   events = typeof window === "undefined" ? undefined : window,
 }: PlacementOptions = {}) {
-  const jsonStorage = createJSONStorage<{ records: PlacementRecord[] }>(
-    () => storage,
-    {
-      replacer: (_key, value) =>
-        typeof value === "bigint" ? { __bigint: value.toString() } : value,
-      reviver: (_key, value) =>
-        value &&
-        typeof value === "object" &&
-        "__bigint" in value &&
-        typeof value.__bigint === "string"
-          ? BigInt(value.__bigint)
-          : value,
-    },
-  )!;
-  const state = createStore(() => ({ records: [] as PlacementRecord[] }));
+  const jsonStorage = createJSONStorage<{
+    records: PlacementRecord[];
+    pendingTransactions?: PendingPlacementTransaction[];
+  }>(() => storage, {
+    replacer: (_key, value) =>
+      typeof value === "bigint" ? { __bigint: value.toString() } : value,
+    reviver: (_key, value) =>
+      value &&
+      typeof value === "object" &&
+      "__bigint" in value &&
+      typeof value.__bigint === "string"
+        ? BigInt(value.__bigint)
+        : value,
+  })!;
+  const state = createStore(() => ({ records: [] as TrackedPlacement[] }));
   let snapshot: string | null | undefined;
+  let needsCleanup = false;
 
   function read() {
     const raw = storage.getItem(storageName);
@@ -191,25 +263,113 @@ export function createStopLossPlacement({
     const saved = jsonStorage.getItem(storageName);
     if (saved instanceof Promise)
       throw new Error("Placement storage must be synchronous");
-    if (saved && saved.version !== 1)
+    if (saved && saved.version !== 1 && saved.version !== 2)
       throw new Error("Unsupported placement storage version");
+    const previous = raw === null ? [] : state.getState().records;
+    const records = [
+      ...(saved?.state.records ?? []),
+      ...(saved?.state.pendingTransactions ?? []),
+    ].flatMap((record) => {
+      // Old approval drafts and unsigned setup prompts are not recoverable orders.
+      if (
+        "prepared" in record &&
+        record.status === "prompting" &&
+        !record.uncertain
+      )
+        return [];
+      const stored = persisted(record);
+      return stored ? [stored] : [];
+    });
+    const normalized = {
+      state: {
+        records: records.filter(
+          (record): record is PlacementRecord => "prepared" in record,
+        ),
+        pendingTransactions: records.filter(
+          (record): record is PendingPlacementTransaction =>
+            !("prepared" in record),
+        ),
+      },
+      version: 2,
+    };
+    needsCleanup = Boolean(
+      saved &&
+        JSON.stringify(saved, (_key, value) =>
+          typeof value === "bigint" ? value.toString() : value,
+        ) !==
+          JSON.stringify(normalized, (_key, value) =>
+            typeof value === "bigint" ? value.toString() : value,
+          ),
+    );
     snapshot = raw;
-    state.setState({ records: saved?.state.records ?? [] });
+    const merged = records.map((record) => {
+      const live = previous.find(
+        (entry): entry is PlacementRecord =>
+          entry.id === record.id && "prepared" in entry,
+      );
+      return live && !("prepared" in record)
+        ? { ...live, ...record, prepared: live.prepared }
+        : record;
+    });
+    for (const record of previous) {
+      if (
+        "prepared" in record &&
+        !persisted(record) &&
+        !merged.some((entry) => entry.id === record.id)
+      )
+        merged.push(record);
+    }
+    state.setState({ records: merged });
     return state.getState().records;
   }
 
-  function save(records: PlacementRecord[]) {
-    jsonStorage.setItem(storageName, { state: { records }, version: 1 });
+  function save(records: TrackedPlacement[]) {
+    const saved = records.flatMap((record) => {
+      const value = persisted(record);
+      return value ? [value] : [];
+    });
+    jsonStorage.setItem(storageName, {
+      state: {
+        records: saved.filter(
+          (record): record is PlacementRecord => "prepared" in record,
+        ),
+        pendingTransactions: saved.filter(
+          (record): record is PendingPlacementTransaction =>
+            !("prepared" in record),
+        ),
+      },
+      version: 2,
+    });
     snapshot = storage.getItem(storageName);
+    needsCleanup = false;
     state.setState({ records });
   }
 
-  function getRecords(scope: PlacementScope) {
+  function scoped(scope: PlacementScope) {
+    return read().filter((record) => {
+      const identity = scopeOf(record);
+      return (
+        identity.chainId === scope.chainId &&
+        identity.account.toLowerCase() === scope.account.toLowerCase()
+      );
+    });
+  }
+
+  function getRecords(scope: PlacementScope): PlacementRecord[] {
     return structuredClone(
-      read().filter(
-        (record) =>
-          record.prepared.chainId === scope.chainId &&
-          record.prepared.account.toLowerCase() === scope.account.toLowerCase(),
+      scoped(scope).filter(
+        (record): record is PlacementRecord => "prepared" in record,
+      ),
+    );
+  }
+
+  function getPendingTransactions(
+    scope: PlacementScope,
+  ): PendingPlacementTransaction[] {
+    return structuredClone(
+      scoped(scope).filter(
+        (record): record is PendingPlacementTransaction =>
+          !("prepared" in record),
       ),
     );
   }
@@ -220,6 +380,14 @@ export function createStopLossPlacement({
         "This browser does not support Web Locks. Placement is unavailable.",
       );
     return locks.request(storageName, action);
+  }
+
+  async function cleanup() {
+    if (!locks) return;
+    await locked(() => {
+      const records = read();
+      if (needsCleanup) save(records);
+    });
   }
 
   async function submit(
@@ -234,16 +402,26 @@ export function createStopLossPlacement({
       throw new Error("Only exact-sell orders are supported.");
     prepared = structuredClone(prepared);
     getRecords(prepared);
-    const record = await withStopLossSubmission(
+    await cleanup();
+    return withStopLossSubmission(
       prepared,
       "placement",
       { storage, locks },
-      () =>
-        locked(() => {
-          const active = getRecords(prepared).find(
-            (entry) => entry.status !== "confirmed",
-          );
+      async () => {
+        const record = await locked(() => {
+          const active =
+            scoped(prepared).find(pending) ??
+            getRecords(prepared).find(
+              (entry) =>
+                ["ready", "failed", "rejected"].includes(entry.status) &&
+                entry.prepared.paramsHash.toLowerCase() ===
+                  prepared.paramsHash.toLowerCase(),
+            );
           if (active) {
+            if (!("prepared" in active))
+              throw new Error(
+                "A placement is already active for this wallet and chain",
+              );
             if (
               (active.status !== "ready" &&
                 active.status !== "failed" &&
@@ -263,6 +441,8 @@ export function createStopLossPlacement({
               attempt: crypto.randomUUID(),
               stage,
               status: "prompting",
+              uncertain: undefined,
+              transactions: { ...active.transactions, [stage]: undefined },
               error: undefined,
               settlementAmount:
                 stage === "setup"
@@ -293,67 +473,79 @@ export function createStopLossPlacement({
           };
           save([...read(), entry]);
           return entry;
-        }),
+        });
+        const isCurrentAttempt = (entry: TrackedPlacement) =>
+          "prepared" in entry &&
+          entry.id === record.id &&
+          entry.stage === record.stage &&
+          entry.attempt === record.attempt;
+        let reference: TransactionReference;
+        try {
+          reference = await adapter.send(structuredClone(record));
+        } catch (error) {
+          const rejected = isRejected(error);
+          await locked(() =>
+            save(
+              read().flatMap((entry) => {
+                if (!isCurrentAttempt(entry) || entry.status === "confirmed")
+                  return [entry];
+                if (rejected || isDefiniteFailure(error)) return [];
+                return [
+                  {
+                    ...entry,
+                    revision: entry.revision + 1,
+                    uncertain: true,
+                    error:
+                      error instanceof Error ? error.message : String(error),
+                  },
+                ];
+              }),
+            ),
+          );
+          throw error;
+        }
+        await locked(() =>
+          save(
+            read().map<TrackedPlacement>((entry) =>
+              "prepared" in entry && isCurrentAttempt(entry)
+                ? {
+                    ...entry,
+                    revision: entry.revision + 1,
+                    status:
+                      entry.status === "prompting" ? "pending" : entry.status,
+                    transactions: { ...entry.transactions, [stage]: reference },
+                  }
+                : entry,
+            ),
+          ),
+        );
+        return getRecords(prepared).find((entry) => entry.id === record.id);
+      },
     );
-    const isCurrentAttempt = (entry: PlacementRecord) =>
-      entry.id === record.id &&
-      entry.stage === record.stage &&
-      entry.attempt === record.attempt;
-    let reference: TransactionReference;
-    try {
-      reference = await adapter.send(structuredClone(record));
-    } catch (error) {
-      const rejected = isRejected(error);
-      await locked(() =>
-        save(
-          read().flatMap((entry) => {
-            if (!isCurrentAttempt(entry) || entry.status === "confirmed")
-              return [entry];
-            if (
-              (rejected || isDefiniteFailure(error)) &&
-              !Object.values(entry.transactions).some(Boolean)
-            )
-              return [];
-            return [
-              {
-                ...entry,
-                revision: entry.revision + 1,
-                status: rejected
-                  ? ("rejected" as const)
-                  : isDefiniteFailure(error)
-                    ? ("failed" as const)
-                    : entry.status,
-                error: error instanceof Error ? error.message : String(error),
-              },
-            ];
-          }),
-        ),
-      );
-      throw error;
-    }
-    await locked(() =>
-      save(
-        read().map((entry) =>
-          isCurrentAttempt(entry)
-            ? {
-                ...entry,
-                revision: entry.revision + 1,
-                status: entry.status === "prompting" ? "pending" : entry.status,
-                transactions: { ...entry.transactions, [stage]: reference },
-              }
-            : entry,
-        ),
-      ),
-    );
-    return getRecords(prepared).find((entry) => entry.id === record.id);
   }
 
   async function resume(scope: PlacementScope, adapter: PlacementReader) {
-    for (const record of getRecords(scope)) {
-      if (record.status !== "pending" && record.status !== "prompting")
+    await cleanup();
+    for (const record of structuredClone(scoped(scope))) {
+      if (
+        !pending(record) ||
+        (record.status === "prompting" && !record.uncertain)
+      )
         continue;
       let reference = record.transactions[record.stage];
-      if (record.stage !== "setup" && record.status === "prompting") continue;
+      const update = (
+        change: (entry: TrackedPlacement) => TrackedPlacement | undefined,
+      ) =>
+        locked(() =>
+          save(
+            read().flatMap((entry) => {
+              if (entry.id !== record.id || entry.revision !== record.revision)
+                return [entry];
+              const next = change(entry);
+              return next ? [next] : [];
+            }),
+          ),
+        );
       try {
         let transactionSucceeded = false;
         let created = false;
@@ -366,47 +558,36 @@ export function createStopLossPlacement({
             record,
             reference,
             async (next) => {
-              await locked(() =>
-                save(
-                  read().map((entry) =>
-                    entry.id === record.id && entry.revision === record.revision
-                      ? {
-                          ...entry,
-                          transactions: {
-                            ...entry.transactions,
-                            [record.stage]: next,
-                          },
-                        }
-                      : entry,
-                  ),
-                ),
-              );
+              await update((entry) => ({
+                ...entry,
+                transactions: { ...entry.transactions, [record.stage]: next },
+              }));
             },
           );
           transactionSucceeded = receipt.status === "success";
           reference = receipt.reference ?? reference;
           if (receipt.status === "pending" && receipt.error)
             throw new Error(receipt.error);
-          if (receipt.status === "failed" && record.stage === "setup")
+          if (
+            receipt.status === "failed" &&
+            record.stage === "setup" &&
+            "prepared" in record
+          )
             created = await adapter.checkState(record);
           if (receipt.status === "failed" && !created) {
-            await locked(() =>
-              save(
-                read().map((entry) =>
-                  entry.id === record.id && entry.revision === record.revision
-                    ? {
-                        ...entry,
-                        revision: entry.revision + 1,
-                        status: "failed",
-                        error: receipt.error ?? "Transaction failed",
-                        transactions: {
-                          ...entry.transactions,
-                          [record.stage]: reference,
-                        },
-                      }
-                    : entry,
-                ),
-              ),
+            await update((entry) =>
+              "prepared" in entry
+                ? {
+                    ...entry,
+                    revision: entry.revision + 1,
+                    status: "failed",
+                    error: receipt.error ?? "Transaction failed",
+                    transactions: {
+                      ...entry.transactions,
+                      [record.stage]: reference,
+                    },
+                  }
+                : undefined,
             );
             continue;
           }
@@ -417,109 +598,48 @@ export function createStopLossPlacement({
             (await adapter.checkState(record)));
         const allowanceChanged =
           record.stage !== "setup" && transactionSucceeded && !confirmed;
-        await locked(() =>
-          save(
-            read().map((entry) =>
-              entry.id === record.id && entry.revision === record.revision
-                ? {
-                    ...entry,
-                    revision: entry.revision + 1,
-                    status: confirmed
-                      ? record.stage === "setup"
-                        ? "confirmed"
-                        : "ready"
-                      : allowanceChanged
-                        ? "failed"
-                        : entry.status,
-                    confirmedAt:
-                      confirmed && record.stage === "setup" ? now() : undefined,
-                    transactions: {
-                      ...entry.transactions,
-                      [record.stage]: reference,
-                    },
-                    error: allowanceChanged
-                      ? "Approval completed, but allowance changed. Review the order again."
-                      : !confirmed && entry.status === "prompting"
-                        ? entry.error
-                        : undefined,
-                  }
-                : entry,
-            ),
-          ),
-        );
+        await update((entry) => {
+          if (!("prepared" in entry)) {
+            if (confirmed || allowanceChanged) return undefined;
+            return {
+              ...entry,
+              revision: entry.revision + 1,
+              transactions: {
+                ...entry.transactions,
+                [record.stage]: reference,
+              },
+            };
+          }
+          return {
+            ...entry,
+            revision: entry.revision + 1,
+            status: confirmed
+              ? record.stage === "setup"
+                ? "confirmed"
+                : "ready"
+              : allowanceChanged
+                ? "failed"
+                : entry.status,
+            confirmedAt:
+              confirmed && record.stage === "setup" ? now() : undefined,
+            transactions: { ...entry.transactions, [record.stage]: reference },
+            error: allowanceChanged
+              ? "Approval completed, but allowance changed. Review the order again."
+              : !confirmed && entry.status === "prompting"
+                ? entry.error
+                : undefined,
+          };
+        });
       } catch (error) {
-        await locked(() =>
-          save(
-            read().map((entry) =>
-              entry.id === record.id && entry.revision === record.revision
-                ? {
-                    ...entry,
-                    revision: entry.revision + 1,
-                    error:
-                      error instanceof Error ? error.message : String(error),
-                    transactions: {
-                      ...entry.transactions,
-                      [record.stage]: reference,
-                    },
-                  }
-                : entry,
-            ),
-          ),
-        );
+        await update((entry) => ({
+          ...entry,
+          revision: entry.revision + 1,
+          error: error instanceof Error ? error.message : String(error),
+          transactions: { ...entry.transactions, [record.stage]: reference },
+        }));
       }
     }
     return getRecords(scope);
-  }
-
-  async function abandon(
-    scope: PlacementScope,
-    id: string,
-    adapter: PlacementReader,
-  ) {
-    await resume(scope, adapter);
-    const record = getRecords(scope).find((entry) => entry.id === id);
-    if (!record || record.status === "confirmed") return;
-    if (record.status === "prompting" || record.status === "pending")
-      throw new Error(
-        "Transaction outcome is unknown. Placement cannot be abandoned.",
-      );
-    const created = await adapter.checkState({ ...record, stage: "setup" });
-    if (!created) {
-      for (const [stage, reference] of Object.entries(record.transactions)) {
-        if (!reference) continue;
-        const receipt = await adapter.readTransaction?.(
-          { ...record, stage: stage as PlacementStage },
-          reference,
-        );
-        if (!receipt || receipt.status === "pending")
-          throw new Error(
-            "Transaction outcome is unknown. Placement cannot be abandoned.",
-          );
-      }
-    }
-    await locked(() => {
-      const current = getRecords(scope).find((entry) => entry.id === id);
-      if (!current) return;
-      if (current.revision !== record.revision)
-        throw new Error("Placement changed. Check it again.");
-      save(
-        read().flatMap((entry) =>
-          entry.id !== id
-            ? [entry]
-            : created
-              ? [
-                  {
-                    ...entry,
-                    revision: entry.revision + 1,
-                    status: "confirmed" as const,
-                    confirmedAt: now(),
-                    error: undefined,
-                  },
-                ]
-              : [],
-        ),
-      );
-    });
   }
 
   function getConfirmedPlacements(scope: PlacementScope) {
@@ -546,6 +666,7 @@ export function createStopLossPlacement({
         const remaining = records.filter(
           (record) =>
             !(
+              "prepared" in record &&
               record.status === "confirmed" &&
               record.prepared.chainId === scope.chainId &&
               record.prepared.account.toLowerCase() ===
@@ -559,7 +680,8 @@ export function createStopLossPlacement({
               )
             ),
         );
-        if (remaining.length !== records.length) save(remaining);
+        if (remaining.length !== records.length || needsCleanup)
+          save(remaining);
       });
     const local: PlacementRow[] = getRecords(scope)
       .filter(
@@ -659,7 +781,8 @@ export function createStopLossPlacement({
     getConfirmedPlacements,
     submit,
     resume,
-    abandon,
+    getPendingTransactions,
+    cleanup,
     mergeRows,
     subscribe,
   };

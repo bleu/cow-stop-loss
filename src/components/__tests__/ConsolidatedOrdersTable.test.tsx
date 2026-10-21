@@ -941,7 +941,7 @@ test("keeps chain and placement warnings in a toolbar tooltip with hover, focus 
     key,
   ) {
     return key === "stop-loss-placement"
-      ? '{"version":2,"state":{"records":[]}}'
+      ? '{"version":99,"state":{"records":[]}}'
       : getItem.call(this, key);
   });
   serveOrders([], new Set(supportedChainIds));
@@ -1050,7 +1050,7 @@ test("keeps indexed API orders visible with a tracking error when saved placemen
     key,
   ) {
     return key === "stop-loss-placement"
-      ? '{"version":2,"state":{"records":[]}}'
+      ? '{"version":99,"state":{"records":[]}}'
       : getItem.call(this, key);
   });
   serveOrders([apiParent(), apiParent(1, "duplicate-event")]);
