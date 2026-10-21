@@ -2198,7 +2198,6 @@ test.each(["0", "1000000000000000000"])(
         executedSellAmount === "0" ? "0 WETH" : "1 WETH",
       ],
       ["Executed buy amount", "0 USDC"],
-      ["Executed fee", "0 base units (fee token not supplied)"],
       ["Maximum oracle age", "0 seconds"],
     ]) {
       expect(screen.getByRole("definition", { name: field })).toHaveTextContent(
@@ -2215,14 +2214,10 @@ test.each(["0", "1000000000000000000"])(
     expect(
       screen.getByRole("link", { name: "View CoW order" }),
     ).toBeInTheDocument();
-    if (executedSellAmount === "0") {
+    for (const label of ["Executed fee", "Execution price"]) {
       expect(
-        screen.queryByRole("definition", { name: "Execution price" }),
+        screen.queryByRole("definition", { name: label }),
       ).not.toBeInTheDocument();
-    } else {
-      expect(
-        screen.getByRole("definition", { name: "Execution price" }),
-      ).toHaveTextContent("0 USDC per WETH");
     }
   },
 );
@@ -2320,8 +2315,8 @@ test("shows owned order details, prices and partial execution and allows cancell
     screen.getByRole("definition", { name: "Limit price" }),
   ).toHaveTextContent("2000 USDC per WETH");
   expect(
-    screen.getByRole("definition", { name: "Execution price" }),
-  ).toHaveTextContent("2100 USDC per WETH");
+    screen.queryByRole("definition", { name: "Execution price" }),
+  ).not.toBeInTheDocument();
   expect(
     screen.getByRole("definition", { name: "Executed sell amount" }),
   ).toHaveTextContent("0.4 WETH");
@@ -2454,7 +2449,7 @@ test("links the creation transaction to the order's chain explorer", async () =>
   ).toHaveAttribute("href", `https://arbiscan.io/tx/${hash}`);
 });
 
-test("shows the reported fee in base units without assuming its token", async () => {
+test("omits executed fee and execution price from filled order details", async () => {
   serveOrders([
     {
       ...parent,
@@ -2486,8 +2481,16 @@ test("shows the reported fee in base units without assuming its token", async ()
   await connectBrowserWallet();
 
   expect(
-    await screen.findByRole("definition", { name: "Executed fee" }),
-  ).toHaveTextContent("10000000000000000 base units (fee token not supplied)");
+    await screen.findByRole("definition", { name: "Executed sell amount" }),
+  ).toHaveTextContent("1 WETH");
+  expect(
+    screen.getByRole("definition", { name: "Executed buy amount" }),
+  ).toHaveTextContent("2100 USDC");
+  for (const label of ["Executed fee", "Execution price"]) {
+    expect(
+      screen.queryByRole("definition", { name: label }),
+    ).not.toBeInTheDocument();
+  }
 });
 
 test("directs a missing order back to the table for refresh before reopening its details", async () => {

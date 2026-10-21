@@ -686,7 +686,7 @@ export function OrderDetails({
         {hasExecution && (
           <DetailSection
             title="Execution"
-            description="Amounts and prices filled for this order."
+            description="Amounts filled for this order."
           >
             {order.executedSellAmount !== null && (
               <Field label="Executed sell amount">
@@ -696,17 +696,6 @@ export function OrderDetails({
             {order.executedBuyAmount !== null && (
               <Field label="Executed buy amount">
                 {amount(order.executedBuyAmount, order.buyToken)}
-              </Field>
-            )}
-            {order.executedFee !== null && (
-              <Field label="Executed fee">
-                {order.executedFee.toString()} base units (fee token not
-                supplied)
-              </Field>
-            )}
-            {order.executionPrice !== undefined && (
-              <Field label="Execution price">
-                {price(order.executionPrice)}
               </Field>
             )}
             {order.cowOrder?.uid && (
