@@ -23,7 +23,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SWRConfig } from "swr";
-import type { Address } from "viem";
+import type { Address, ReadContractParameters } from "viem";
 import { WagmiProvider } from "wagmi";
 
 import {
@@ -70,6 +70,30 @@ beforeEach(() => {
     safeAddress: "0x1111111111111111111111111111111111111111",
   };
   invalidatePlacementReads({ account: safe.safeAddress, chainId: 1 });
+  for (const chainId of supportedChainIds) {
+    const client = publicClientsFromIds[chainId];
+    if (chainId !== 1)
+      jest.spyOn(client, "getBlock").mockResolvedValue({
+        number: BigInt(1),
+        timestamp: BigInt(1),
+      } as Awaited<ReturnType<typeof client.getBlock>>);
+    jest.spyOn(client, "multicall").mockImplementation(async ({ contracts }) =>
+      Promise.all(
+        contracts.map(async (contract) => {
+          try {
+            return {
+              status: "success" as const,
+              result: await client.readContract(
+                contract as ReadContractParameters,
+              ),
+            };
+          } catch (error) {
+            return { status: "failure" as const, error };
+          }
+        }),
+      ),
+    );
+  }
   jest
     .spyOn(publicClientsFromIds[1], "getBlockNumber")
     .mockResolvedValue(BigInt(1));
@@ -123,7 +147,7 @@ it.each(supportedChainIds)(
     for (const { token } of sellTokens)
       expect(
         screen.getByRole("option", {
-          name: `Token Logo ${token.symbol}`,
+          name: new RegExp(`^Token Logo ${token.symbol}\\b`),
         }),
       ).toBeInTheDocument();
   },
@@ -141,7 +165,7 @@ it.each([
     renderForm(onReviewOrder);
     await user.click(screen.getByRole("button", { name: "Select token" }));
     expect(
-      screen.queryByRole("option", { name: "Token Logo USDC" }),
+      screen.queryByRole("option", { name: /^Token Logo USDC\b/ }),
     ).not.toBeInTheDocument();
     await user.type(
       screen.getByPlaceholderText("Search supported tokens"),
@@ -149,7 +173,9 @@ it.each([
     );
     expect(screen.getAllByRole("option")).toHaveLength(1);
     await user.click(
-      screen.getByRole("option", { name: `Token Logo ${symbol}` }),
+      screen.getByRole("option", {
+        name: new RegExp(`^Token Logo ${symbol}\\b`),
+      }),
     );
     await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
     await user.type(
@@ -214,7 +240,9 @@ it.each([
     renderForm(onReviewOrder);
     await user.click(screen.getByRole("button", { name: "Select token" }));
     await user.click(
-      screen.getByRole("option", { name: `Token Logo ${symbol}` }),
+      screen.getByRole("option", {
+        name: new RegExp(`^Token Logo ${symbol}\\b`),
+      }),
     );
     await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
     await user.type(
@@ -1086,7 +1114,7 @@ it("filters the expanded sell catalog by address and resets prices when selectio
   expect(screen.getAllByRole("option")).toHaveLength(sellTokens.length);
   expect(
     screen.queryByRole("option", {
-      name: `Token Logo ${buyToken.token.symbol}`,
+      name: new RegExp(`^Token Logo ${buyToken.token.symbol}\\b`),
     }),
   ).not.toBeInTheDocument();
   const cbBtc = sellTokens.find(({ token }) => token.symbol === "cbBTC")!;
@@ -1221,9 +1249,13 @@ it("hands one wallet-scoped exact-sell draft to review and keeps form values for
 });
 
 it("blocks review when the market price is not positive and available", async () => {
-  jest
-    .mocked(publicClientsFromIds[1].getBlock)
-    .mockRejectedValue(new Error("RPC unavailable"));
+  const readContract = jest.mocked(publicClientsFromIds[1].readContract);
+  const read = readContract.getMockImplementation()!;
+  readContract.mockImplementation(async (args) => {
+    if (args.functionName === "latestRoundData")
+      throw new Error("RPC unavailable");
+    return read(args);
+  });
   const user = userEvent.setup();
   renderForm();
   await selectWeth(user);

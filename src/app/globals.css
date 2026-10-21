@@ -306,6 +306,27 @@
   min-height: 48px;
   border-radius: 0;
 }
+.rescue-token-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 58px;
+}
+.rescue-token-option > :first-child {
+  min-width: 0;
+  flex: 1;
+}
+.rescue-token-option-values {
+  display: grid;
+  flex-shrink: 0;
+  gap: 3px;
+  text-align: right;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.rescue-token-option-values > :last-child {
+  font-size: 11px;
+}
 .rescue-dialog,
 .rescue-popover {
   --pixel-surface: hsl(var(--popover));

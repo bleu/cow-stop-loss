@@ -9,6 +9,35 @@ import {
 import { getSupportedTokens } from "./supportedTokens";
 import { IToken } from "./types";
 
+export type OracleRound = readonly [bigint, bigint, bigint, bigint, bigint];
+
+export function validateOracleRound({
+  round,
+  timestamp,
+  maxAge,
+}: {
+  round: OracleRound;
+  timestamp: bigint;
+  maxAge: number;
+}) {
+  if (!Number.isFinite(maxAge) || maxAge <= 0)
+    throw new Error("Oracle time limit must be a positive finite number");
+  if (
+    round[0] <= BigInt(0) ||
+    round[1] <= BigInt(0) ||
+    round[3] <= BigInt(0) ||
+    round[3] > timestamp ||
+    round[4] < round[0]
+  ) {
+    throw new Error("Required price feed is invalid");
+  }
+  if (timestamp - round[3] > BigInt(Math.floor(maxAge))) {
+    throw new Error(
+      "Oracle price data is stale. Try again later, or increase the oracle time limit in Advanced Settings.",
+    );
+  }
+}
+
 export async function readOraclePrice({
   client,
   oracle,
@@ -29,21 +58,8 @@ export async function readOraclePrice({
     abi: oracleMinimalAbi,
     functionName: "latestRoundData",
     blockNumber,
-  })) as readonly [bigint, bigint, bigint, bigint, bigint];
-  if (
-    round[0] <= BigInt(0) ||
-    round[1] <= BigInt(0) ||
-    round[3] <= BigInt(0) ||
-    round[3] > timestamp ||
-    round[4] < round[0]
-  ) {
-    throw new Error("Required price feed is invalid");
-  }
-  if (timestamp - round[3] > BigInt(Math.floor(maxAge))) {
-    throw new Error(
-      "Oracle price data is stale. Try again later, or increase the oracle time limit in Advanced Settings.",
-    );
-  }
+  })) as OracleRound;
+  validateOracleRound({ round, timestamp, maxAge });
   const decimals = (await client.readContract({
     address: oracle,
     abi: oracleMinimalAbi,

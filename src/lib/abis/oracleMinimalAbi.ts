@@ -77,4 +77,4 @@ export const oracleMinimalAbi = [
     stateMutability: "view",
     type: "function",
   },
-];
+] as const;

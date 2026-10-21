@@ -1,13 +1,13 @@
 import { Button, formatNumber, Input } from "@bleu/ui";
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
+import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
 import { PixelIcon } from "#/components/ui/pixel-icon";
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
-import { useTokenPrice } from "#/hooks/useTokenPrice";
+import { useWalletTokenValues } from "#/hooks/useWalletTokenValues";
 import { ChainId } from "#/lib/publicClients";
-import { fetchFormattedBalanceOf } from "#/lib/tokenUtils";
 import { SwapData } from "#/lib/types";
 
 import { TokenInfo } from "./TokenInfo";
@@ -30,73 +30,34 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     control,
     name: [tokenFieldName, amountFieldName],
   });
-  const tokenAddress = token?.address;
-  const tokenDecimals = token?.decimals;
-  const tokenSymbol = token?.symbol;
-  const { data: usdPrice } = useTokenPrice(token);
-
-  const [tokenSellBalance, setTokenSellBalance] = useSwapTokenBalances(
-    (state) => [state.tokenSellBalance, state.setTokenSellBalance],
-  );
-  const storedBalance = tokenSellBalance;
-  const setTokenBalance = setTokenSellBalance;
-
-  const isAmountDisabled = side === "Buy";
-  const [balanceFailed, setBalanceError] = useState(false);
-  const [balanceScope, setBalanceScope] = useState<string>();
-  const [balanceAttempt, retryBalance] = useState(0);
-  const currentBalanceScope = `${walletAddress?.toLowerCase()}:${chainId}:${tokenAddress?.toLowerCase()}:${tokenDecimals}`;
-  const balanceError = balanceScope === currentBalanceScope && balanceFailed;
-  const tokenBalance =
-    balanceScope === currentBalanceScope ? storedBalance : undefined;
-
-  useEffect(() => {
-    let active = true;
-    setBalanceError(false);
-    setBalanceScope(undefined);
-    setTokenBalance(undefined);
-    if (
-      tokenAddress &&
-      tokenDecimals !== undefined &&
-      tokenSymbol !== undefined &&
-      walletAddress
-    ) {
-      fetchFormattedBalanceOf({
-        token: {
-          address: tokenAddress,
-          decimals: tokenDecimals,
-          symbol: tokenSymbol,
-        },
-        address: walletAddress,
-        chainId,
-      })
-        .then((balance) => {
-          if (active) {
-            setTokenBalance(balance);
-            setBalanceScope(currentBalanceScope);
-          }
-        })
-        .catch(() => {
-          if (active) {
-            setTokenBalance(undefined);
-            setBalanceScope(currentBalanceScope);
-            setBalanceError(true);
-          }
-        });
-    }
-    return () => {
-      active = false;
-    };
-  }, [
-    tokenAddress,
-    tokenDecimals,
-    tokenSymbol,
+  const { data, error, isLoading, mutate } = useWalletTokenValues(
     chainId,
     walletAddress,
-    setTokenBalance,
-    balanceAttempt,
-    currentBalanceScope,
-  ]);
+    Boolean(token),
+  );
+  const holding = data?.tokens.find(
+    ({ token: row }) =>
+      row.address.toLowerCase() === token?.address.toLowerCase(),
+  );
+  const usdPrice = holding?.usdPrice;
+  const tokenBalance =
+    walletAddress && holding?.balance !== undefined && token
+      ? formatUnits(holding.balance, token.decimals)
+      : undefined;
+  const balanceError = Boolean(
+    walletAddress &&
+      token &&
+      !isLoading &&
+      (error || (data && holding?.balance === undefined)),
+  );
+  const setTokenSellBalance = useSwapTokenBalances(
+    (state) => state.setTokenSellBalance,
+  );
+  const isAmountDisabled = side === "Buy";
+
+  useEffect(() => {
+    if (side === "Sell") setTokenSellBalance(tokenBalance);
+  }, [side, tokenBalance, setTokenSellBalance]);
 
   return (
     <div className="rescue-token-group" data-side={side.toLowerCase()}>
@@ -183,7 +144,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                     variant="ghost"
                     aria-label={`Retry ${token.symbol} balance`}
                     className="rescue-secondary-control min-h-0 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-auto p-0 text-xs text-primary underline-offset-4 hover:underline"
-                    onClick={() => retryBalance((attempt) => attempt + 1)}
+                    onClick={() => void mutate()}
                   >
                     Retry
                   </Button>
