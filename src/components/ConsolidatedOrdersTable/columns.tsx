@@ -160,7 +160,7 @@ export function getColumns(): ColumnDef<PlacementRow>[] {
             {formatPrice(Number(formatUnits(order.strike, 18)))}{" "}
             {order.buyToken.symbol}
           </p>
-          <MarketDistance order={order} />
+          {order.status === OrderStatus.OPEN && <MarketDistance order={order} />}
         </div>
       ),
     },
