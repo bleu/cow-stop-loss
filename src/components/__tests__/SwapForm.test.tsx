@@ -646,7 +646,7 @@ async function selectExpiry(
   await user.click(await screen.findByRole("option", { name: expiry }));
 }
 
-it("reviews with the six-month expiry without opening settings", async () => {
+it("reviews with the one-year expiry without opening settings", async () => {
   const user = userEvent.setup();
   const onReviewOrder = jest.fn();
   renderForm(onReviewOrder);
@@ -661,7 +661,34 @@ it("reviews with the six-month expiry without opening settings", async () => {
     await screen.findByRole("button", { name: "Review Stop Loss order" }),
   );
   await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(1));
-  const duration = VALID_TO_VALUES_MAP[VALID_TO_OPTIONS.MONTHS_6];
+  const duration = VALID_TO_VALUES_MAP[VALID_TO_OPTIONS.YEAR];
+  expect(onReviewOrder.mock.calls[0][0].validTo).toBeGreaterThanOrEqual(
+    beforeReview + duration,
+  );
+  expect(onReviewOrder.mock.calls[0][0].validTo).toBeLessThanOrEqual(
+    Math.floor(Date.now() / 1000) + duration,
+  );
+});
+
+it.each([
+  [VALID_TO_OPTIONS.MONTHS_3, 90 * 24 * 60 * 60],
+  [VALID_TO_OPTIONS.MONTHS_6, 180 * 24 * 60 * 60],
+  [VALID_TO_OPTIONS.YEAR, 365 * 24 * 60 * 60],
+] as const)("reviews with a selected %s expiry", async (expiry, duration) => {
+  const user = userEvent.setup();
+  const onReviewOrder = jest.fn();
+  renderForm(onReviewOrder);
+  await selectWeth(user);
+  await setTriggerPrice(user);
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  await user.click(screen.getByRole("button", { name: "Order settings" }));
+  await selectExpiry(user, expiry);
+  await user.click(screen.getByRole("button", { name: "Return to order" }));
+  const beforeReview = Math.floor(Date.now() / 1000);
+  await user.click(
+    await screen.findByRole("button", { name: "Review Stop Loss order" }),
+  );
+  await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(1));
   expect(onReviewOrder.mock.calls[0][0].validTo).toBeGreaterThanOrEqual(
     beforeReview + duration,
   );
@@ -682,7 +709,7 @@ it("keeps expiry across settings close, reopen, edits and advanced reset", async
     screen.getByRole("combobox", { name: "Expires" }),
   );
   expect(screen.getByRole("combobox", { name: "Expires" })).toHaveTextContent(
-    VALID_TO_OPTIONS.MONTHS_6,
+    VALID_TO_OPTIONS.YEAR,
   );
   await selectExpiry(user, VALID_TO_OPTIONS.MINUTES_30);
   await user.click(screen.getByRole("button", { name: "Return to order" }));
@@ -1374,7 +1401,7 @@ it("resets committed slippage, expiry and exact-sell inputs when the chain chang
     "Fill or kill",
   );
   expect(screen.getByRole("combobox", { name: "Expires" })).toHaveTextContent(
-    VALID_TO_OPTIONS.MONTHS_6,
+    VALID_TO_OPTIONS.YEAR,
   );
 });
 
@@ -1404,7 +1431,7 @@ it("closes unapplied settings and resets expiry when the wallet changes", async 
   ).not.toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "Order settings" }));
   expect(screen.getByRole("combobox", { name: "Expires" })).toHaveTextContent(
-    VALID_TO_OPTIONS.MONTHS_6,
+    VALID_TO_OPTIONS.YEAR,
   );
   expect(screen.getByRole("textbox", { name: "Slippage (%)" })).toHaveValue(
     "0.1",

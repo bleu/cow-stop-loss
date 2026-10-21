@@ -29,7 +29,9 @@ export enum VALID_TO_OPTIONS {
   DAYS_3 = "3 days",
   DAYS_7 = "7 days",
   MONTH_1 = "1 month",
-  MONTHS_6 = "6 months (max)",
+  MONTHS_3 = "3 months",
+  MONTHS_6 = "6 months",
+  YEAR = "1 year (max)",
 }
 export enum VALID_TO_VALUES_MAP {
   "30 minutes" = 30 * 60,
@@ -38,7 +40,9 @@ export enum VALID_TO_VALUES_MAP {
   "3 days" = 3 * 24 * 60 * 60,
   "7 days" = 7 * 24 * 60 * 60,
   "1 month" = 30 * 24 * 60 * 60,
-  "6 months (max)" = 6 * 30 * 24 * 60 * 60,
+  "3 months" = 3 * 30 * 24 * 60 * 60,
+  "6 months" = 6 * 30 * 24 * 60 * 60,
+  "1 year (max)" = 365 * 24 * 60 * 60,
 }
 
 const generateEnsSchema = (chainId: number) => {

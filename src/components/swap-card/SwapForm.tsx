@@ -59,7 +59,7 @@ function WalletSwapForm({
     defaultValues: {
       isSellOrder: true,
       slippagePercent: "0.1",
-      validTo: VALID_TO_OPTIONS.MONTHS_6,
+      validTo: VALID_TO_OPTIONS.YEAR,
       amountSell: "",
       amountBuy: "",
       strikePrice: "",
@@ -128,7 +128,7 @@ function WalletSwapForm({
     reset({
       isSellOrder: true,
       slippagePercent: "0.1",
-      validTo: VALID_TO_OPTIONS.MONTHS_6,
+      validTo: VALID_TO_OPTIONS.YEAR,
       amountSell: "",
       amountBuy: "",
       strikePrice: "",

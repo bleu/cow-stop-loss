@@ -80,7 +80,7 @@ const questions = [
     id: "fees-expiry",
     question: "Are there fees, and when does an order expire?",
     answer:
-      "Approval, setup, and cancellation transactions can cost network gas. CoW Protocol execution fees can also apply. Review the transaction and order terms rather than assuming the trade is free. You choose an expiry during setup; the current choices range from 30 minutes to 180 days. An order that expires before a fill will not complete that trade.",
+      "Approval, setup, and cancellation transactions can cost network gas. CoW Protocol execution fees can also apply. Review the transaction and order terms rather than assuming the trade is free. You choose an expiry during setup; the current choices range from 30 minutes to 1 year, with 1 year selected by default. An order that expires before a fill will not complete that trade.",
   },
   {
     id: "risks",
