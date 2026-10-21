@@ -4,14 +4,15 @@ import { formatNumber } from "@bleu/ui";
 import Link from "next/link";
 import React, { useId, useState } from "react";
 import useSWR from "swr";
-import { erc20Abi, formatUnits } from "viem";
+import { formatUnits } from "viem";
+import { useAccount } from "wagmi";
 
 import { NetworkLogo } from "#/components/NetworkLogo";
 import { TokenLogo } from "#/components/TokenLogo";
 import { PixelIcon } from "#/components/ui/pixel-icon";
 import { useOrderList } from "#/hooks/useOrderList";
 import { oracleMinimalAbi } from "#/lib/abis/oracleMinimalAbi";
-import { GPV2_VAULT_RELAYER_ADDRESS } from "#/lib/contracts";
+import { loadOrderFundingHealth } from "#/lib/orderFundingHealth";
 import { ChainId, chainNames, publicClientsFromIds } from "#/lib/publicClients";
 import { OrderToken, StopLossOrder } from "#/lib/stopLossOrders";
 import { OrderStatus } from "#/lib/types";
@@ -25,65 +26,41 @@ import { CancelOrderDialog } from "./CancelOrderDialog";
 import { BlockExplorerLink } from "./ExplorerLink";
 import { OracleTokenPrice } from "./OracleTokenPrice";
 
-type OrderHealthInput = {
-  chainId: ChainId;
-  sellAmount: bigint;
-  executedSellAmount: bigint | null;
-  owner: `0x${string}`;
-  sellToken: OrderToken;
-  sellTokenPriceOracle: `0x${string}`;
-  buyTokenPriceOracle: `0x${string}`;
-  maxTimeSinceLastOracleUpdate: number;
-  strike: bigint;
-};
-
-async function loadOrderHealth(order: OrderHealthInput) {
+async function loadOrderHealth(order: StopLossOrder) {
   const client = publicClientsFromIds[order.chainId];
-  const remainingSell =
-    order.sellAmount > (order.executedSellAmount ?? BigInt(0))
-      ? order.sellAmount - (order.executedSellAmount ?? BigInt(0))
-      : BigInt(0);
+  const [funding, oracleData] = await Promise.all([
+    loadOrderFundingHealth(order, client),
+    Promise.all([
+      client.readContract({
+        address: order.sellTokenPriceOracle,
+        abi: oracleMinimalAbi,
+        functionName: "latestRoundData",
+      }),
+      client.readContract({
+        address: order.buyTokenPriceOracle,
+        abi: oracleMinimalAbi,
+        functionName: "latestRoundData",
+      }),
+      client.readContract({
+        address: order.sellTokenPriceOracle,
+        abi: oracleMinimalAbi,
+        functionName: "decimals",
+      }),
+      client.readContract({
+        address: order.buyTokenPriceOracle,
+        abi: oracleMinimalAbi,
+        functionName: "decimals",
+      }),
+    ]).catch(() => null),
+  ]);
+  if (!oracleData)
+    return { funding, belowTrigger: false, currentPrice: Number.NaN };
   const [
-    balance,
-    allowance,
     sellRoundResult,
     buyRoundResult,
     sellDecimalsResult,
     buyDecimalsResult,
-  ] = await Promise.all([
-    client.readContract({
-      address: order.sellToken.address,
-      abi: erc20Abi,
-      functionName: "balanceOf",
-      args: [order.owner],
-    }),
-    client.readContract({
-      address: order.sellToken.address,
-      abi: erc20Abi,
-      functionName: "allowance",
-      args: [order.owner, GPV2_VAULT_RELAYER_ADDRESS],
-    }),
-    client.readContract({
-      address: order.sellTokenPriceOracle,
-      abi: oracleMinimalAbi,
-      functionName: "latestRoundData",
-    }),
-    client.readContract({
-      address: order.buyTokenPriceOracle,
-      abi: oracleMinimalAbi,
-      functionName: "latestRoundData",
-    }),
-    client.readContract({
-      address: order.sellTokenPriceOracle,
-      abi: oracleMinimalAbi,
-      functionName: "decimals",
-    }),
-    client.readContract({
-      address: order.buyTokenPriceOracle,
-      abi: oracleMinimalAbi,
-      functionName: "decimals",
-    }),
-  ]);
+  ] = oracleData;
   const sellRound = sellRoundResult as readonly [
     bigint,
     bigint,
@@ -113,8 +90,7 @@ async function loadOrderHealth(order: OrderHealthInput) {
   const buyPrice = Number(formatUnits(buyRound[1], buyDecimals));
   const currentPrice = buyPrice > 0 ? sellPrice / buyPrice : Number.NaN;
   return {
-    insufficientBalance: balance < remainingSell,
-    insufficientApproval: allowance < remainingSell,
+    funding,
     belowTrigger:
       fresh &&
       Number.isFinite(currentPrice) &&
@@ -124,6 +100,7 @@ async function loadOrderHealth(order: OrderHealthInput) {
 }
 
 function OrderHealth({ order }: { order: StopLossOrder }) {
+  const { address } = useAccount();
   const { data } = useSWR(
     [
       OrderStatus.OPEN,
@@ -133,9 +110,12 @@ function OrderHealth({ order }: { order: StopLossOrder }) {
     ].includes(order.status)
       ? [
           "orderHealth",
+          address?.toLowerCase(),
           order.chainId,
           order.owner,
           order.hash,
+          order.funding,
+          order.sellAmount.toString(),
           order.executedSellAmount?.toString(),
         ]
       : null,
@@ -144,12 +124,22 @@ function OrderHealth({ order }: { order: StopLossOrder }) {
   );
   if (!data) return null;
 
-  const messages = [
-    data.insufficientBalance &&
-      "The Safe does not have enough sell tokens to fill this order.",
-    data.insufficientApproval &&
-      "The sell token allowance is too low. Approve the token for this order.",
-  ].filter((message): message is string => Boolean(message));
+  const funding = data.funding;
+  const messages =
+    funding.status === "unknown"
+      ? ["Unable to verify order funding. Please try again."]
+      : [
+          funding.insufficientBalance &&
+            (funding.source === "wallet"
+              ? "The funding wallet does not have enough sell tokens to fund this order."
+              : funding.source === "cowshed"
+                ? "The CowShed does not have enough sell tokens to fill this order."
+                : "The Safe does not have enough sell tokens to fill this order."),
+          funding.insufficientFundingApproval &&
+            "The funding wallet's sell token allowance to the Poller is too low.",
+          funding.insufficientSettlementApproval &&
+            "The sell token allowance is too low. Approve the token for this order.",
+        ].filter((message): message is string => Boolean(message));
   if (!messages.length) return null;
 
   return (

@@ -3,13 +3,9 @@
  * @jest-environment-options {"customExportConditions": ["node", "node-addons"]}
  */
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { render, screen } from "@testing-library/react";
-import {
-  encodeAbiParameters,
-  Hex,
-  keccak256,
-  parseAbiParameters,
-} from "viem";
+import { act, render, screen, waitFor } from "@testing-library/react";
+import { SWRConfig } from "swr";
+import { encodeAbiParameters, Hex, keccak256, parseAbiParameters } from "viem";
 import { WagmiProvider } from "wagmi";
 
 import { OrderDetails } from "#/components/OrderDetails";
@@ -29,7 +25,7 @@ const staticInput = encodeAbiParameters(
   [
     sellToken,
     "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-    BigInt("1000000000000000000"),
+    BigInt("100000000000000"),
     BigInt("1980000000"),
     `0x${"aa".repeat(32)}`,
     account,
@@ -64,7 +60,7 @@ const parent = {
     receiver: account,
     sellToken,
     buyToken: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-    sellAmount: "1000000000000000000",
+    sellAmount: "100000000000000",
     buyAmount: "1980000000",
     validTo: 1800003600,
     strike: "2000000000000000000000",
@@ -77,6 +73,8 @@ const parent = {
   discreteOrders: { items: [] },
 };
 let walletAllowance: bigint;
+let walletBalance: bigint;
+let shedBalance: bigint;
 let extraParent: typeof parent | undefined;
 let funded: boolean;
 let child:
@@ -109,6 +107,8 @@ beforeEach(() => {
   connectedAccount = account;
   connectedChain = 1;
   walletAllowance = BigInt(1);
+  walletBalance = BigInt("5000000000000000000");
+  shedBalance = BigInt("5000000000000000000");
   extraParent = undefined;
   funded = false;
   child = undefined;
@@ -130,12 +130,10 @@ beforeEach(() => {
   jest
     .spyOn(publicClientsFromIds[1], "getBlockNumber")
     .mockResolvedValue(BigInt(100));
-  jest
-    .spyOn(publicClientsFromIds[1], "getBlock")
-    .mockResolvedValue({
-      timestamp: BigInt(1800000000),
-      transactions: [],
-    } as never);
+  jest.spyOn(publicClientsFromIds[1], "getBlock").mockResolvedValue({
+    timestamp: BigInt(1800000000),
+    transactions: [],
+  } as never);
   jest.spyOn(publicClientsFromIds[1], "getTransaction").mockImplementation(
     async ({ hash }) =>
       ({
@@ -191,7 +189,19 @@ beforeEach(() => {
       }
       if (functionName === "singleOrders") return true;
       if (functionName === "funded") return funded;
-      if (functionName === "balanceOf") return BigInt("5000000000000000000");
+      if (functionName === "balanceOf")
+        return Array.isArray(args) && args[0] === owner
+          ? shedBalance
+          : walletBalance;
+      if (functionName === "latestRoundData")
+        return [
+          BigInt(1),
+          BigInt("200000000000"),
+          BigInt(0),
+          BigInt(Math.floor(Date.now() / 1000)),
+          BigInt(1),
+        ];
+      if (functionName === "decimals") return 8;
       if (functionName === "allowance")
         return Array.isArray(args) && args[0] === owner
           ? settlementAllowance
@@ -237,13 +247,16 @@ function showDetails(showOtherOrder = false) {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
+  const healthCache = new Map();
   const content = () => (
-    <WagmiProvider config={config} reconnectOnMount={false}>
-      <QueryClientProvider client={queryClient}>
-        <OrderDetails chainId={1} orderId="existing" />
-        {showOtherOrder && <OrderDetails chainId={1} orderId="other" />}
-      </QueryClientProvider>
-    </WagmiProvider>
+    <SWRConfig value={{ provider: () => healthCache, dedupingInterval: 0 }}>
+      <WagmiProvider config={config} reconnectOnMount={false}>
+        <QueryClientProvider client={queryClient}>
+          <OrderDetails chainId={1} orderId="existing" />
+          {showOtherOrder && <OrderDetails chainId={1} orderId="other" />}
+        </QueryClientProvider>
+      </WagmiProvider>
+    </SWRConfig>
   );
   const view = render(content());
   return {
@@ -252,6 +265,87 @@ function showDetails(showOtherOrder = false) {
     refreshWallet: () => view.rerender(content()),
   };
 }
+
+test("does not warn about an empty CowShed before wallet funding", async () => {
+  walletBalance = BigInt("1000000000000000");
+  walletAllowance = BigInt("200000000000000");
+  shedBalance = BigInt(0);
+  showDetails();
+  await screen.findByRole("heading", { name: "Order details" });
+  await waitFor(() =>
+    expect(publicClientsFromIds[1].readContract).toHaveBeenCalledWith(
+      expect.objectContaining({ functionName: "balanceOf", args: [account] }),
+    ),
+  );
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  });
+  expect(
+    screen.queryByText(
+      "The Safe does not have enough sell tokens to fill this order.",
+    ),
+  ).not.toBeInTheDocument();
+  expect(screen.queryByText("Order needs attention")).not.toBeInTheDocument();
+});
+
+test("shows wallet-specific balance and funding approval warnings", async () => {
+  walletBalance = BigInt(0);
+  walletAllowance = BigInt(0);
+  shedBalance = BigInt(0);
+  showDetails();
+  expect(
+    await screen.findByText(
+      "The funding wallet does not have enough sell tokens to fund this order.",
+    ),
+  ).toBeInTheDocument();
+  expect(
+    screen.getByText(
+      "The funding wallet's sell token allowance to the Poller is too low.",
+    ),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByText(
+      "The Safe does not have enough sell tokens to fill this order.",
+    ),
+  ).not.toBeInTheDocument();
+});
+
+test("does not require wallet funds after the order has been funded", async () => {
+  funded = true;
+  walletBalance = BigInt(0);
+  walletAllowance = BigInt(0);
+  showDetails();
+  await screen.findByRole("heading", { name: "Order details" });
+  await waitFor(() =>
+    expect(publicClientsFromIds[1].readContract).toHaveBeenCalledWith(
+      expect.objectContaining({ functionName: "balanceOf", args: [owner] }),
+    ),
+  );
+  await act(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  });
+  expect(screen.queryByText("Order needs attention")).not.toBeInTheDocument();
+});
+
+test("keeps verified funding warnings when an oracle read fails", async () => {
+  walletBalance = BigInt(0);
+  const read = jest
+    .mocked(publicClientsFromIds[1].readContract)
+    .getMockImplementation()!;
+  jest
+    .mocked(publicClientsFromIds[1].readContract)
+    .mockImplementation(async (args) => {
+      if (args.functionName === "latestRoundData")
+        throw new Error("Oracle unavailable");
+      return read(args);
+    });
+  showDetails();
+  expect(
+    await screen.findByText(
+      "The funding wallet does not have enough sell tokens to fund this order.",
+    ),
+  ).toBeInTheDocument();
+});
 
 test("does not show approval repair controls in order details", async () => {
   showDetails();

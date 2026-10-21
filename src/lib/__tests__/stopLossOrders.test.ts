@@ -12,6 +12,8 @@ const parent = {
   orderType: "StopLoss",
   handler: "0x412c36e5011cd2517016d243a2dfb37f73a242e7",
   hash: `0x${"ab".repeat(32)}`,
+  salt: `0x${"cd".repeat(32)}`,
+  staticInput: "0x1234",
   transaction: { blockTimestamp: "1700000000" },
   decodedParams: {
     sellToken: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
@@ -68,6 +70,7 @@ test("shows an untriggered stop-loss for the connected wallet", async () => {
         parentId: "stop-loss-1",
         chainId: 1,
         owner: wallet,
+        funding: { kind: "direct" },
         status: OrderStatus.OPEN,
         receiver,
         sellAmount: BigInt("1000000000000000000"),
@@ -123,6 +126,19 @@ test("includes CowShed orders even when the parent has no resolved owner", async
       .find((chain) => chain.chainId === 1)
       ?.orders.map((order) => order.owner),
   ).toEqual([wallet, shed]);
+  expect(
+    result.chains.find((chain) => chain.chainId === 1)?.orders[1],
+  ).toMatchObject({
+    owner: shed,
+    receiver,
+    funding: {
+      kind: "scheduled",
+      funder: wallet,
+      handler: parent.handler,
+      salt: parent.salt,
+      staticInput: parent.staticInput,
+    },
+  });
 });
 
 test("includes orders from every parent and CowShed ownership page", async () => {
@@ -396,6 +412,91 @@ test("keeps partial fills attached to the stop-loss's single CoW order", async (
       cowOrder: { uid: "0xexecuted-order", status: "open" },
     },
   ]);
+});
+
+test("propagates resolved funding identity without changing owner or using receiver", async () => {
+  const shed = "0x3333333333333333333333333333333333333333";
+  serveOrders([{ ...parent, owner: shed, resolvedOwner: wallet }]);
+
+  const result = await loadStopLossOrders({ account: wallet, chainIds: [1] });
+
+  expect(result.chains[0].orders[0]).toMatchObject({
+    owner: shed,
+    receiver,
+    funding: {
+      kind: "scheduled",
+      funder: wallet,
+      handler: parent.handler,
+      salt: parent.salt,
+      staticInput: parent.staticInput,
+    },
+  });
+  const request = (global.fetch as jest.Mock).mock.calls.find(([, init]) =>
+    JSON.parse(String(init?.body)).query.includes("conditionalOrderGenerators"),
+  );
+  expect(JSON.parse(String(request?.[1]?.body)).query).toContain(
+    "salt staticInput",
+  );
+});
+
+test.each([null, undefined])(
+  "classifies direct owners with resolvedOwner %s and a different receiver",
+  async (resolvedOwner) => {
+    serveOrders([{ ...parent, resolvedOwner }]);
+
+    const result = await loadStopLossOrders({ account: wallet, chainIds: [1] });
+
+    expect(result.chains[0].orders[0]).toMatchObject({
+      owner: wallet,
+      receiver,
+      funding: { kind: "direct" },
+    });
+  },
+);
+
+test.each([
+  { salt: undefined },
+  { salt: null },
+  { salt: "0x12" },
+  { salt: `0x${"zz".repeat(32)}` },
+  { staticInput: undefined },
+  { staticInput: null },
+  { staticInput: "0xzz" },
+  { staticInput: "0x123" },
+  { resolvedOwner: "invalid-address", owner: wallet },
+])(
+  "keeps incomplete scheduled funding identity unknown: %j",
+  async (overrides) => {
+    serveOrders([
+      {
+        ...parent,
+        owner: "0x3333333333333333333333333333333333333333",
+        resolvedOwner: wallet,
+        ...overrides,
+      },
+    ]);
+
+    const result = await loadStopLossOrders({ account: wallet, chainIds: [1] });
+
+    expect(result.chains[0]).toMatchObject({
+      status: "success",
+      orders: [{ funding: { kind: "unknown" } }],
+    });
+  },
+);
+
+test("does not classify an account owner as direct when a different resolved funder exists", async () => {
+  serveOrders([{ ...parent, resolvedOwner: receiver }]);
+
+  const result = await loadStopLossOrders({ account: wallet, chainIds: [1] });
+
+  expect(result.chains[0].orders[0].funding).toEqual({
+    kind: "scheduled",
+    funder: receiver,
+    handler: parent.handler,
+    salt: parent.salt,
+    staticInput: parent.staticInput,
+  });
 });
 
 function serveOrders(orders: unknown[]) {

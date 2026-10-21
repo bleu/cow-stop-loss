@@ -1,6 +1,7 @@
 import { InsufficientFundsError } from "viem";
 
 import { readStopLossTransaction } from "#/hooks/useStopLossPlacement";
+import { STOP_LOSS_ADDRESS } from "#/lib/contracts";
 import type { PreparedPlacement } from "#/lib/pollerStopLoss";
 import { publicClientsFromIds } from "#/lib/publicClients";
 import { encodeStopLossStaticInput } from "#/lib/staticInputEncoder";
@@ -171,6 +172,37 @@ test("rejects unsupported kinds before opening a wallet prompt", async () => {
   ).rejects.toThrow("Only exact-sell orders are supported.");
   expect(prompted).toBe(false);
   expect(placement.getRecords(scope)).toEqual([]);
+});
+
+test("projects scheduled funding identity from the prepared placement account", async () => {
+  const placement = createStopLossPlacement(environment());
+  const receiver = "0x2222222222222222222222222222222222222222";
+  const draft = { ...prepared.draft, receiver } as const;
+  const reviewed = {
+    ...prepared,
+    draft,
+    staticInput: encodeStopLossStaticInput(draft, prepared.appDataHash),
+  };
+  await placement.submit(reviewed, "setup", {
+    send: async () => ({ id: "setup-transaction" }),
+  });
+
+  const rows = await placement.mergeRows(scope, []);
+
+  expect(rows).toMatchObject([
+    {
+      source: "local",
+      owner: prepared.owner,
+      receiver,
+      funding: {
+        kind: "scheduled",
+        funder: account,
+        handler: STOP_LOSS_ADDRESS,
+        salt: prepared.draft.salt,
+        staticInput: reviewed.staticInput,
+      },
+    },
+  ]);
 });
 
 function apiOrder(overrides: Partial<StopLossOrder> = {}): StopLossOrder {
