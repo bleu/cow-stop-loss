@@ -5,7 +5,6 @@ import { Address, maxUint256 } from "viem";
 import { useAccount, useSendTransaction } from "wagmi";
 
 import {
-  abandonStopLossPlacement,
   getStopLossPlacement,
   resumeStopLossPlacement,
   useStopLossPlacement,
@@ -38,9 +37,17 @@ type Review = {
   chainId: ChainId;
   prepared?: PreparedPlacement;
   checks?: FundingSnapshot;
+  fundingOrders?: string;
   busy: boolean;
   refreshRequired?: boolean;
 };
+
+function fundingOrdersKey(orders: readonly PreparedPlacement[]) {
+  return orders
+    .map((order) => order.paramsHash.toLowerCase())
+    .sort()
+    .join(":");
+}
 
 function showPlacementError(
   prepared: PreparedPlacement,
@@ -182,23 +189,7 @@ export function StopLossCreation() {
     }));
     try {
       const placement = getStopLossPlacement();
-      if (!existing) {
-        await resumeStopLossPlacement(account, selectedChain);
-        if (
-          placement
-            .getRecords({ account, chainId: selectedChain })
-            .some((record) => record.status !== "confirmed")
-        ) {
-          if (
-            currentScope.current === selectedScope &&
-            request.current === revision
-          ) {
-            setOpen(false);
-            setReview(undefined);
-          }
-          return;
-        }
-      }
+      await resumeStopLossPlacement(account, selectedChain);
       await prefetchPlacementChecks({
         account,
         chainId: selectedChain,
@@ -221,8 +212,9 @@ export function StopLossCreation() {
             minimumBlockNumber = reference.blockNumber;
         }
       }
+      const localOrders = placement.getConfirmedPlacements(prepared);
       const checks = await refreshPlacementChecks(prepared, {
-        localOrders: placement.getConfirmedPlacements(prepared),
+        localOrders,
         minimumBlockNumber,
       });
       if (
@@ -237,6 +229,7 @@ export function StopLossCreation() {
         chainId: selectedChain,
         prepared,
         checks,
+        fundingOrders: fundingOrdersKey(localOrders),
         busy: false,
       });
       setOpen(true);
@@ -256,8 +249,26 @@ export function StopLossCreation() {
     }
   }
 
+  function fundingChanged() {
+    if (!review?.prepared) return false;
+    try {
+      return (
+        review.fundingOrders !==
+        fundingOrdersKey(
+          getStopLossPlacement().getConfirmedPlacements(review.prepared),
+        )
+      );
+    } catch {
+      return true;
+    }
+  }
+
   async function approve(mode: ApprovalMode) {
-    if (review?.refreshRequired || (pending && active?.error)) {
+    if (
+      review?.refreshRequired ||
+      (pending && active?.error) ||
+      fundingChanged()
+    ) {
       await refreshReview();
       return;
     }
@@ -287,6 +298,10 @@ export function StopLossCreation() {
             if (currentScope.current !== selectedScope)
               throw new PlacementNotSubmittedError(
                 "Wallet or chain changed. Review the order again.",
+              );
+            if (fundingChanged())
+              throw new PlacementNotSubmittedError(
+                "Funding changed. Review the order again.",
               );
             const hash = await sendTransactionAsync(transaction);
             return {
@@ -341,7 +356,11 @@ export function StopLossCreation() {
   }
 
   async function place() {
-    if (review?.refreshRequired || (pending && active?.error)) {
+    if (
+      review?.refreshRequired ||
+      (pending && active?.error) ||
+      fundingChanged()
+    ) {
       await refreshReview();
       return;
     }
@@ -367,6 +386,10 @@ export function StopLossCreation() {
           if (currentScope.current !== selectedScope)
             throw new PlacementNotSubmittedError(
               "Wallet or chain changed. Review the order again.",
+            );
+          if (fundingChanged())
+            throw new PlacementNotSubmittedError(
+              "Funding changed. Review the order again.",
             );
           const hash = await sendTransactionAsync(transaction);
           return {
@@ -447,84 +470,15 @@ export function StopLossCreation() {
     }
   }
 
-  async function abandon() {
-    if (review?.busy) return;
-    const prepared =
-      review?.prepared ??
-      records.find((record) => record.status !== "confirmed")?.prepared;
-    if (!prepared) return;
-    const selectedScope = `${prepared.account.toLowerCase()}:${prepared.chainId}`;
-    const revision = request.current;
-    const record = getStopLossPlacement()
-      .getRecords(prepared)
-      .find((entry) => entry.prepared.paramsHash === prepared.paramsHash);
-    if (!record) return;
-    setReview((current) => current && { ...current, busy: true });
-    try {
-      await abandonStopLossPlacement(
-        prepared.account,
-        prepared.chainId,
-        record.id,
-      );
-      if (
-        currentScope.current !== selectedScope ||
-        request.current !== revision
-      )
-        return;
-      request.current += 1;
-      setOpen(false);
-      setReview(undefined);
-    } catch (error) {
-      if (
-        currentScope.current !== selectedScope ||
-        request.current !== revision
-      )
-        return;
-      showPlacementError(prepared, "check", error);
-      setReview((current) => current && { ...current, busy: false });
-    }
-  }
-
-  const active = records.find((record) => record.status !== "confirmed");
+  const active = records.find(
+    (record) =>
+      record.status !== "confirmed" &&
+      record.prepared.paramsHash === review?.prepared?.paramsHash,
+  );
   const pending =
     active?.status === "prompting" || active?.status === "pending";
   return (
     <>
-      {!open && active && (
-        <div className="mb-4 rounded border p-3">
-          <p>
-            {active.status === "ready"
-              ? "Token approved. Continue your order."
-              : pending
-                ? "Your transaction is in progress."
-                : "Continue your order."}
-          </p>
-          <button
-            className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-primary underline"
-            onClick={() => {
-              invalidatePlacementReads(active.prepared);
-              void loadReview(
-                active.prepared.draft,
-                active.prepared.chainId,
-                active.prepared.account,
-                active.prepared,
-              );
-            }}
-          >
-            Continue placement
-          </button>
-          {!pending && (
-            <button
-              className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ml-4 text-primary underline"
-              onClick={() => {
-                void abandon();
-              }}
-            >
-              Abandon placement
-            </button>
-          )}
-        </div>
-      )}
       {review && open ? (
         <ReviewOrderPanel
           chainId={review.chainId}
@@ -552,7 +506,7 @@ export function StopLossCreation() {
           review && open ? "hidden" : "rescue-order-form flex min-w-0 flex-col"
         }
       >
-        <SwapCard reviewDisabled={Boolean(active)} onReviewOrder={loadReview} />
+        <SwapCard onReviewOrder={loadReview} />
       </div>
     </>
   );

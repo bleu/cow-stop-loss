@@ -28,6 +28,7 @@ import OrderPage from "#/app/[chainId]/[safeAddress]/[orderId]/page";
 import { ConsolidatedOrdersTable } from "#/components/ConsolidatedOrdersTable";
 import { RootLayout } from "#/components/RootLayout";
 import { getStopLossPlacement } from "#/hooks/useStopLossPlacement";
+import * as tokenPairPrice from "#/hooks/useTokenPairPrice";
 import type { PreparedPlacement } from "#/lib/pollerStopLoss";
 import { publicClientsFromIds, supportedChainIds } from "#/lib/publicClients";
 import { encodeStopLossStaticInput } from "#/lib/staticInputEncoder";
@@ -941,7 +942,7 @@ test("keeps chain and placement warnings in a toolbar tooltip with hover, focus 
     key,
   ) {
     return key === "stop-loss-placement"
-      ? '{"version":2,"state":{"records":[]}}'
+      ? '{"version":99,"state":{"records":[]}}'
       : getItem.call(this, key);
   });
   serveOrders([], new Set(supportedChainIds));
@@ -1050,7 +1051,7 @@ test("keeps indexed API orders visible with a tracking error when saved placemen
     key,
   ) {
     return key === "stop-loss-placement"
-      ? '{"version":2,"state":{"records":[]}}'
+      ? '{"version":99,"state":{"records":[]}}'
       : getItem.call(this, key);
   });
   serveOrders([apiParent(), apiParent(1, "duplicate-event")]);
@@ -1114,6 +1115,46 @@ test("shortens API and local amounts without rounding up and retains the full am
     ),
   ).toBeInTheDocument();
 });
+
+test.each([
+  { status: "Active", validTo: 4102444800, label: "Open", showHint: true },
+  {
+    status: "Cancelled",
+    validTo: 4102444800,
+    label: "Cancelled",
+    showHint: false,
+  },
+  { status: "Active", validTo: 1700000000, label: "Expired", showHint: false },
+])(
+  "shows the market distance hint only for Open orders: $label",
+  async ({ status, validTo, label, showHint }) => {
+    jest.spyOn(tokenPairPrice, "useTokenPairPrice").mockReturnValue({
+      data: 2500,
+      error: undefined,
+      isLoading: false,
+    });
+    const order = apiParent();
+    serveOrders([
+      { ...order, status, decodedParams: { ...order.decodedParams, validTo } },
+    ]);
+    render(<TableView />);
+    await connectWallet();
+
+    const row = await screen.findByRole("row", {
+      name: "View order indexed-order on Ethereum",
+    });
+    expect(within(row).getByRole("cell", { name: label })).toBeInTheDocument();
+    expect(within(row).getByText("2,100 USDC")).toBeVisible();
+    if (showHint)
+      expect(within(row).getByText("16.00% below market")).toBeVisible();
+    else {
+      expect(
+        within(row).queryByText(/(At market|% (below|above) market)/),
+      ).not.toBeInTheDocument();
+      expect(tokenPairPrice.useTokenPairPrice).not.toHaveBeenCalled();
+    }
+  },
+);
 
 test("distinguishes tiny positive amounts from zero and preserves exact integer and base-unit amounts", async () => {
   const examples = [

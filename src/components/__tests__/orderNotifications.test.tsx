@@ -28,7 +28,16 @@ test("success toasts contain a usable order-details link and are not repeated", 
     showOrderSuccess("place", order);
     showOrderSuccess("place", order);
   });
-  expect(await screen.findByText("Order placed.")).toBeInTheDocument();
+  const title = await screen.findByText("Order placed.");
+  const link = screen.getByRole("link", { name: "View order" });
+  expect(title).toBeInTheDocument();
+  expect(title.parentElement).toHaveClass("flex", "items-center");
+  expect(link.parentElement).toBe(title.parentElement);
+  expect(link).toHaveClass(
+    "border-transparent",
+    "bg-transparent",
+    "text-muted-foreground",
+  );
   expect(screen.getAllByRole("link", { name: "View order" })).toHaveLength(1);
   expect(screen.getByRole("link", { name: "View order" })).toHaveAttribute(
     "href",

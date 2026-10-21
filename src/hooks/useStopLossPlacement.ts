@@ -10,6 +10,8 @@ import {
   WaitForTransactionReceiptTimeoutError,
 } from "viem";
 
+import { composableCowAbi } from "#/lib/abis/composableCow";
+import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 import { invalidatePlacementReads } from "#/lib/placementReads";
 import { verifyPlacementConfirmation } from "#/lib/pollerStopLoss";
 import {
@@ -19,6 +21,7 @@ import {
 } from "#/lib/publicClients";
 import {
   createStopLossPlacement,
+  PendingPlacementTransaction,
   PlacementReader,
   PlacementRecord,
   TransactionReference,
@@ -33,10 +36,14 @@ export function getStopLossPlacement() {
 
 export function useStopLossPlacement(account?: Address, chainId?: ChainId) {
   const [records, setRecords] = useState<PlacementRecord[]>([]);
+  const [pendingTransactions, setPendingTransactions] = useState<
+    PendingPlacementTransaction[]
+  >([]);
   const [error, setError] = useState<string>();
   useEffect(() => {
     if (!account) {
       setRecords([]);
+      setPendingTransactions([]);
       setError(undefined);
       return;
     }
@@ -46,6 +53,7 @@ export function useStopLossPlacement(account?: Address, chainId?: ChainId) {
     const fail = (cause: unknown) => {
       if (!stopped) {
         setRecords([]);
+        setPendingTransactions([]);
         setError(
           cause instanceof Error
             ? cause.message
@@ -62,14 +70,24 @@ export function useStopLossPlacement(account?: Address, chainId?: ChainId) {
           const records = chains.flatMap((selectedChain) =>
             placement.getRecords({ account, chainId: selectedChain }),
           );
+          const pendingTransactions = chains.flatMap((selectedChain) =>
+            placement.getPendingTransactions({
+              account,
+              chainId: selectedChain,
+            }),
+          );
           const revision = JSON.stringify(
-            records.map(({ id, revision }) => [id, revision]),
+            [...records, ...pendingTransactions].map(({ id, revision }) => [
+              id,
+              revision,
+            ]),
           );
           if (previousRevision !== undefined && revision !== previousRevision)
             for (const chainId of chains)
               invalidatePlacementReads({ account, chainId });
           previousRevision = revision;
           setRecords(records);
+          setPendingTransactions(pendingTransactions);
           setError(undefined);
         } catch (cause) {
           fail(cause);
@@ -79,14 +97,19 @@ export function useStopLossPlacement(account?: Address, chainId?: ChainId) {
       unsubscribe = placement.subscribe(update);
       const poll = async () => {
         try {
+          await placement.cleanup();
           for (const selectedChain of chains) {
             if (stopped) return;
-            const pending = placement
-              .getRecords({ account, chainId: selectedChain })
-              .some(
-                (record) =>
-                  record.status === "pending" || record.status === "prompting",
-              );
+            const pending = [
+              ...placement.getRecords({ account, chainId: selectedChain }),
+              ...placement.getPendingTransactions({
+                account,
+                chainId: selectedChain,
+              }),
+            ].some(
+              (record) =>
+                record.status === "pending" || record.status === "prompting",
+            );
             if (pending) await resumeStopLossPlacement(account, selectedChain);
           }
         } catch (cause) {
@@ -105,7 +128,7 @@ export function useStopLossPlacement(account?: Address, chainId?: ChainId) {
       unsubscribe?.();
     };
   }, [account, chainId]);
-  return { records, error };
+  return { records, pendingTransactions, error };
 }
 
 const resumptions = new Map<string, Promise<PlacementRecord[]>>();
@@ -124,27 +147,15 @@ export function resumeStopLossPlacement(account: Address, chainId: ChainId) {
 async function readSavedPlacement(account: Address, chainId: ChainId) {
   const placement = getStopLossPlacement();
   const scope = { account, chainId };
-  const pending = placement
-    .getRecords(scope)
-    .some(
-      (record) => record.status === "pending" || record.status === "prompting",
-    );
+  const pending = [
+    ...placement.getRecords(scope),
+    ...placement.getPendingTransactions(scope),
+  ].some(
+    (record) => record.status === "pending" || record.status === "prompting",
+  );
   const records = await placement.resume(scope, placementReader(chainId));
   if (pending) invalidatePlacementReads(scope);
   return records;
-}
-
-export async function abandonStopLossPlacement(
-  account: Address,
-  chainId: ChainId,
-  id: string,
-) {
-  await resumeStopLossPlacement(account, chainId);
-  return getStopLossPlacement().abandon(
-    { account, chainId },
-    id,
-    placementReader(chainId),
-  );
 }
 
 export async function readStopLossTransaction(
@@ -271,16 +282,31 @@ function placementReader(chainId: ChainId): PlacementReader {
     readTransaction: (_record, reference, saveReference) =>
       readStopLossTransaction(reference, client, saveReference),
     async checkState(record) {
-      if (record.stage === "setup")
-        return verifyPlacementConfirmation(record.prepared, {
-          client,
-          requiredSettlementAllowance: record.settlementAmount,
+      if (record.stage === "setup") {
+        if ("prepared" in record)
+          return verifyPlacementConfirmation(record.prepared, {
+            client,
+            requiredSettlementAllowance: record.settlementAmount,
+          });
+        if (!record.setup) return false;
+        return client.readContract({
+          address: COMPOSABLE_COW_ADDRESS,
+          abi: composableCowAbi,
+          functionName: "singleOrders",
+          args: [record.setup.owner, record.setup.paramsHash],
         });
+      }
       const allowance = await client.readContract({
-        address: record.prepared.draft.tokenSell.address,
+        address:
+          "prepared" in record
+            ? record.prepared.draft.tokenSell.address
+            : record.token,
         abi: erc20Abi,
         functionName: "allowance",
-        args: [record.prepared.account, record.prepared.poller],
+        args:
+          "prepared" in record
+            ? [record.prepared.account, record.prepared.poller]
+            : [record.account, record.poller],
         blockNumber: record.transactions[record.stage]?.blockNumber,
       });
       if (record.stage === "approval-reset") return allowance === BigInt(0);

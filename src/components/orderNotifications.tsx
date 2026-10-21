@@ -38,17 +38,19 @@ export function OrderToaster() {
               <PixelIcon name={iconName} className="size-[18px]" />
             </div>
             <div className="min-w-0 flex-1 space-y-2 pt-1.5">
-              {title && (
-                <ToastTitle className="text-sm font-medium leading-5 [text-wrap:pretty]">
-                  {title}
-                </ToastTitle>
-              )}
+              <div className="flex items-center justify-between gap-2">
+                {title && (
+                  <ToastTitle className="text-sm font-medium leading-5 [text-wrap:pretty]">
+                    {title}
+                  </ToastTitle>
+                )}
+                {action}
+              </div>
               {description && (
                 <ToastDescription className="text-sm leading-5 text-muted-foreground opacity-100">
                   {description}
                 </ToastDescription>
               )}
-              {action}
             </div>
             <ToastClose
               aria-label="Dismiss notification"
@@ -110,7 +112,7 @@ export function showOrderSuccess(
       <ToastAction
         asChild
         altText="View order details"
-        className="pixel-inset h-10 gap-1.5 rounded-none border-primary/20 bg-primary/10 px-3 text-xs font-semibold text-primary hover:border-primary/30 hover:bg-primary/20 focus-visible:ring-2 focus-visible:ring-ring"
+        className="h-7 gap-1.5 rounded-none border-transparent bg-transparent px-1 text-xs font-normal text-muted-foreground shadow-none hover:bg-muted hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
       >
         <Link
           href={`/${order.chainId}/${order.account}/${encodeURIComponent(orderId)}`}

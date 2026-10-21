@@ -84,30 +84,6 @@ test("blocks a smaller repair while a persisted placement approval is unresolved
   expect(send).not.toHaveBeenCalled();
 });
 
-test("keeps a stale smaller repair blocked after placement approval is ready for setup", async () => {
-  const env = environment();
-  const placement = createStopLossPlacement(env);
-  await placement.submit(prepared, "approval", {
-    approvalAmount: BigInt(3),
-    send: async () => ({ id: "larger-approval" }),
-  });
-  await placement.resume(scope, {
-    readTransaction: async () => ({ status: "success" }),
-    checkState: async () => true,
-  });
-  expect(placement.getRecords(scope)[0].status).toBe("ready");
-  const send = jest.fn(async () => ({ id: "smaller-approval" }));
-  await expect(
-    createStopLossApprovalRepair(env).submit(repairPrepared, repairWork, send),
-  ).rejects.toThrow("already active");
-  expect(send).not.toHaveBeenCalled();
-  await expect(
-    placement.submit(prepared, "setup", {
-      send: async () => ({ id: "setup" }),
-    }),
-  ).resolves.toMatchObject({ status: "pending", stage: "setup" });
-});
-
 test("blocks placement while a persisted repair approval is unresolved", async () => {
   const env = environment();
   await createStopLossApprovalRepair(env).submit(
@@ -168,8 +144,8 @@ test("persists placement transaction identity before its receipt wait finishes",
     while (!receipt.mock.calls.length)
       await new Promise((resolve) => setTimeout(resolve, 0));
     expect(
-      createStopLossPlacement(env).getRecords(scope)[0].transactions.approval
-        ?.submitted?.nonce,
+      createStopLossPlacement(env).getPendingTransactions(scope)[0].transactions
+        .approval?.submitted?.nonce,
     ).toBe(7);
   } finally {
     release();
@@ -266,24 +242,24 @@ function environment() {
   return { storage: memoryStorage(), locks: sharedLocks(), now: () => 1000 };
 }
 
-test("persists the prepared snapshot and setup prompt before the wallet opens", async () => {
+test("keeps the reviewed setup in memory until the wallet returns a reference", async () => {
   const options = environment();
   const placement = createStopLossPlacement(options);
   await placement.submit(prepared, "setup", {
     send: async () => {
-      const reloaded = createStopLossPlacement(options);
-      expect(reloaded.getRecords(scope)).toEqual([
-        expect.objectContaining({
-          prepared,
-          stage: "setup",
-          status: "prompting",
-          transactions: {},
-        }),
-      ]);
+      expect(placement.getRecords(scope)[0]).toMatchObject({
+        prepared,
+        status: "prompting",
+      });
+      expect(createStopLossPlacement(options).getRecords(scope)).toEqual([]);
+      expect(options.storage.getItem("stop-loss-placement")).not.toContain(
+        "draft",
+      );
       return { id: "wallet-request-1" };
     },
   });
-  expect(placement.getRecords(scope)[0]).toMatchObject({
+  expect(createStopLossPlacement(options).getRecords(scope)[0]).toMatchObject({
+    prepared,
     status: "pending",
     transactions: { setup: { id: "wallet-request-1" } },
   });
@@ -362,7 +338,7 @@ test("a rejected first wallet prompt leaves no saved order after reload", async 
   ]);
 });
 
-test("a rejected creation keeps its confirmed approval and blocks another order", async () => {
+test("a rejected setup after approval releases the scope for a new review", async () => {
   const options = environment();
   const placement = createStopLossPlacement(options);
   await placement.submit(prepared, "approval", {
@@ -379,199 +355,17 @@ test("a rejected creation keeps its confirmed approval and blocks another order"
       },
     }),
   ).rejects.toThrow("Rejected");
-  await expect(
-    placement.submit(
-      { ...prepared, paramsHash: `0x${"01".repeat(32)}` },
-      "setup",
-      {
-        send: async () => ({ id: "wrong-order" }),
-      },
-    ),
-  ).rejects.toThrow("already active");
-  await createStopLossPlacement(options).submit(prepared, "setup", {
-    send: async () => ({ id: "retry" }),
-  });
-  expect(placement.getRecords(scope)).toEqual([
-    expect.objectContaining({
-      prepared,
-      transactions: { approval: { id: "approved" }, setup: { id: "retry" } },
-    }),
-  ]);
-});
-
-test("an expired approval-only placement can be abandoned without a wallet request", async () => {
-  const placement = createStopLossPlacement(environment());
-  const expired = { ...prepared, draft: { ...prepared.draft, validTo: 0 } };
-  let requests = 0;
-  await placement.submit(expired, "approval", {
-    send: async () => {
-      requests += 1;
-      return { id: "approved" };
+  expect(createStopLossPlacement(options).getRecords(scope)).toEqual([]);
+  await placement.submit(
+    { ...prepared, paramsHash: `0x${"01".repeat(32)}` },
+    "setup",
+    {
+      send: async () => ({ id: "new-order" }),
     },
-  });
-  const reader = {
-    readTransaction: async () => ({ status: "success" as const }),
-    checkState: async (record: { stage: string }) => record.stage !== "setup",
-  };
-  await placement.resume(scope, reader);
-  await placement.abandon(scope, placement.getRecords(scope)[0].id, reader);
-  expect(placement.getRecords(scope)).toEqual([]);
-  expect(requests).toBe(1);
-});
-
-test("abandonment cannot remove a retry started in another controller", async () => {
-  const options = environment();
-  const placement = createStopLossPlacement(options);
-  const otherTab = createStopLossPlacement(options);
-  await placement.submit(prepared, "setup", {
-    send: async () => ({ id: "failed-setup" }),
-  });
-  await placement.resume(scope, {
-    readTransaction: async () => ({ status: "failed" }),
-    checkState: async () => false,
-  });
-  const id = placement.getRecords(scope)[0].id;
-  let stateReadStarted!: () => void;
-  let finishStateRead!: (created: boolean) => void;
-  const stateRead = new Promise<void>((resolve) => {
-    stateReadStarted = resolve;
-  });
-  const created = new Promise<boolean>((resolve) => {
-    finishStateRead = resolve;
-  });
-  const abandonment = placement.abandon(scope, id, {
-    readTransaction: async () => ({ status: "failed" }),
-    checkState: async () => {
-      stateReadStarted();
-      return created;
-    },
-  });
-  const rejectedAbandonment = expect(abandonment).rejects.toThrow(
-    "Placement changed. Check it again.",
   );
-  await stateRead;
-  await otherTab.submit(prepared, "setup", {
-    send: async () => ({ id: "new-setup", transactionHash: "0x1234" }),
-  });
-  finishStateRead(false);
-  await rejectedAbandonment;
-  expect(createStopLossPlacement(options).getRecords(scope)).toEqual([
-    expect.objectContaining({
-      id,
-      prepared,
-      stage: "setup",
-      status: "pending",
-      transactions: {
-        setup: { id: "new-setup", transactionHash: "0x1234" },
-      },
-    }),
-  ]);
-  expect(placement.getConfirmedPlacements(scope)).toEqual([]);
-});
-
-test("a receipt read error prevents abandonment and preserves the placement", async () => {
-  const options = environment();
-  const placement = createStopLossPlacement(options);
-  const send = jest.fn(async () => ({ id: "approved" }));
-  await placement.submit(prepared, "approval", { send });
-  await placement.resume(scope, {
-    readTransaction: async () => ({ status: "success" }),
-    checkState: async () => true,
-  });
-  const records = placement.getRecords(scope);
-  const id = records[0].id;
-  await expect(
-    placement.abandon(scope, id, {
-      readTransaction: async () => {
-        throw new Error("Receipt RPC unavailable");
-      },
-      checkState: async () => false,
-    }),
-  ).rejects.toThrow("Receipt RPC unavailable");
-  expect(createStopLossPlacement(options).getRecords(scope)).toEqual(records);
-  await expect(
-    placement.submit(
-      { ...prepared, paramsHash: `0x${"01".repeat(32)}` },
-      "setup",
-      { send },
-    ),
-  ).rejects.toThrow("already active");
-  await placement.abandon(scope, id, {
-    readTransaction: async () => ({ status: "success" }),
-    checkState: async () => false,
-  });
-  expect(createStopLossPlacement(options).getRecords(scope)).toEqual([]);
-  expect(send).toHaveBeenCalledTimes(1);
-});
-
-test("a created-state read error prevents abandonment and preserves the placement", async () => {
-  const options = environment();
-  const placement = createStopLossPlacement(options);
-  const send = jest.fn(async () => ({ id: "approved" }));
-  await placement.submit(prepared, "approval", { send });
-  await placement.resume(scope, {
-    readTransaction: async () => ({ status: "success" }),
-    checkState: async () => true,
-  });
-  const records = placement.getRecords(scope);
-  const id = records[0].id;
-  const readTransaction = jest.fn(async () => ({ status: "success" as const }));
-  await expect(
-    placement.abandon(scope, id, {
-      readTransaction,
-      checkState: async () => {
-        throw new Error("Created-state RPC unavailable");
-      },
-    }),
-  ).rejects.toThrow("Created-state RPC unavailable");
-  expect(readTransaction).not.toHaveBeenCalled();
-  expect(createStopLossPlacement(options).getRecords(scope)).toEqual(records);
-  await expect(
-    placement.submit(
-      { ...prepared, paramsHash: `0x${"01".repeat(32)}` },
-      "setup",
-      { send },
-    ),
-  ).rejects.toThrow("already active");
-  await placement.abandon(scope, id, {
-    readTransaction,
-    checkState: async () => false,
-  });
-  expect(createStopLossPlacement(options).getRecords(scope)).toEqual([]);
-  expect(send).toHaveBeenCalledTimes(1);
-});
-
-test("a completed approval can be abandoned after its allowance changes", async () => {
-  const options = environment();
-  const placement = createStopLossPlacement(options);
-  const send = jest.fn(async () => ({ id: "completed-approval" }));
-  await placement.submit(prepared, "approval", { send });
-  const reader = {
-    readTransaction: async () => ({ status: "success" as const }),
-    checkState: async () => false,
-  };
-  await placement.abandon(scope, placement.getRecords(scope)[0].id, reader);
-  expect(createStopLossPlacement(options).getRecords(scope)).toEqual([]);
-  expect(send).toHaveBeenCalledTimes(1);
-});
-
-test("unknown creation cannot be abandoned after expiry", async () => {
-  const options = environment();
-  const placement = createStopLossPlacement(options);
-  const expired = { ...prepared, draft: { ...prepared.draft, validTo: 0 } };
-  await placement.submit(expired, "setup", {
-    send: async () => ({ id: "unknown-creation" }),
-  });
-  const id = placement.getRecords(scope)[0].id;
-  await expect(
-    placement.abandon(scope, id, {
-      readTransaction: async () => ({ status: "pending" }),
-      checkState: async () => false,
-    }),
-  ).rejects.toThrow("Transaction outcome is unknown");
-  expect(createStopLossPlacement(options).getRecords(scope)).toEqual([
-    expect.objectContaining({ id, prepared: expired, status: "pending" }),
-  ]);
+  expect(placement.getRecords(scope)[0].transactions.setup?.id).toBe(
+    "new-order",
+  );
 });
 
 test("a failed allowance reset can retry the reset without changing the order", async () => {
@@ -774,7 +568,7 @@ test("created postconditions confirm the order despite a failed setup receipt", 
   expect(send).toHaveBeenCalledTimes(1);
 });
 
-test("a confirmed transaction failure permits a retry of the same placement", async () => {
+test("a confirmed transaction failure permits a new explicit submission", async () => {
   const placement = createStopLossPlacement(environment());
   await placement.submit(prepared, "setup", {
     send: async () => ({ id: "failed-tx" }),
@@ -795,54 +589,6 @@ test("a confirmed transaction failure permits a retry of the same placement", as
   });
   expect(placement.getRecords(scope).map((record) => record.status)).toEqual([
     "pending",
-  ]);
-});
-
-test("an old failed receipt cannot resolve a same-stage retry prompt", async () => {
-  const options = environment();
-  const placement = createStopLossPlacement(options);
-  const otherTab = createStopLossPlacement(options);
-  await placement.submit(prepared, "setup", {
-    send: async () => ({ id: "old-failed-setup" }),
-  });
-  await placement.resume(scope, {
-    readTransaction: async () => ({ status: "failed" }),
-    checkState: async () => false,
-  });
-  const id = placement.getRecords(scope)[0].id;
-  const reader = {
-    readTransaction: jest.fn(async () => ({ status: "failed" as const })),
-    checkState: async () => false,
-  };
-  await otherTab.submit(prepared, "setup", {
-    send: async () => {
-      await placement.resume(scope, reader);
-      expect(placement.getRecords(scope)).toEqual([
-        expect.objectContaining({
-          id,
-          prepared,
-          stage: "setup",
-          status: "prompting",
-          transactions: { setup: { id: "old-failed-setup" } },
-        }),
-      ]);
-      await expect(placement.abandon(scope, id, reader)).rejects.toThrow(
-        "Transaction outcome is unknown",
-      );
-      expect(reader.readTransaction).not.toHaveBeenCalled();
-      return { id: "retried-setup", transactionHash: "0x1234" };
-    },
-  });
-  expect(createStopLossPlacement(options).getRecords(scope)).toEqual([
-    expect.objectContaining({
-      id,
-      prepared,
-      stage: "setup",
-      status: "pending",
-      transactions: {
-        setup: { id: "retried-setup", transactionHash: "0x1234" },
-      },
-    }),
   ]);
 });
 
@@ -1114,28 +860,38 @@ test("subscribers can read placement updates without loops and receive other-tab
   expect(remoteUpdates).toEqual(["pending"]);
 });
 
-test("the requested approval amount is persisted before prompting and remains available after reload", async () => {
+test("persists approval metadata only after submission and drops it after completion", async () => {
   const options = environment();
   const placement = createStopLossPlacement(options);
   await placement.submit(prepared, "approval", {
-    approvalAmount: BigInt("3000000000000000000"),
+    approvalAmount: BigInt(3),
     send: async () => {
       expect(
-        createStopLossPlacement(options).getRecords(scope)[0].approvalAmount,
-      ).toBe(BigInt("3000000000000000000"));
+        createStopLossPlacement(options).getPendingTransactions(scope),
+      ).toEqual([]);
       return { id: "approval-tx" };
     },
   });
-  await createStopLossPlacement(options).resume(scope, {
+  const reloaded = createStopLossPlacement(options);
+  expect(reloaded.getRecords(scope)).toEqual([]);
+  expect(reloaded.getPendingTransactions(scope)[0]).toMatchObject({
+    token: prepared.draft.tokenSell.address,
+    poller: prepared.poller,
+    approvalAmount: BigInt(3),
+  });
+  expect(options.storage.getItem("stop-loss-placement")).not.toContain("draft");
+  await reloaded.resume(scope, {
     readTransaction: async () => ({ status: "success" }),
-    checkState: async (record) =>
-      record.approvalAmount === BigInt("3000000000000000000"),
+    checkState: async () => true,
   });
-  expect(placement.getRecords(scope)[0]).toMatchObject({
-    stage: "approval",
-    status: "ready",
-    approvalAmount: BigInt("3000000000000000000"),
-  });
+  expect(reloaded.getPendingTransactions(scope)).toEqual([]);
+  await reloaded.submit(
+    { ...prepared, paramsHash: `0x${"01".repeat(32)}` },
+    "setup",
+    {
+      send: async () => ({ id: "new-setup" }),
+    },
+  );
 });
 
 test("a wallet rejection nested inside an adapter error releases the scope", async () => {
@@ -1262,7 +1018,7 @@ test("an unsupported persisted version blocks placement instead of clearing the 
   const placement = createStopLossPlacement({
     ...environment(),
     storage: {
-      getItem: () => '{"version":2,"state":{"records":[]}}',
+      getItem: () => '{"version":99,"state":{"records":[]}}',
       setItem: () => {
         throw new Error("Must not overwrite unknown data");
       },
@@ -1282,68 +1038,217 @@ test("an unsupported persisted version blocks placement instead of clearing the 
   expect(walletRequests).toBe(0);
 });
 
-test("a late wallet response cannot update a new attempt after the original was indexed", async () => {
-  const placement = createStopLossPlacement(environment());
-  let oldResult!: (reference: { id: string }) => void;
-  let oldOpened!: () => void;
-  const oldPrompt = new Promise<void>((resolve) => {
-    oldOpened = resolve;
+test("cleans legacy drafts, converts pending approvals, and preserves submitted setups", async () => {
+  const options = environment();
+  const record = (
+    id: string,
+    stage: string,
+    status: string,
+    transactions = {},
+  ) => ({
+    id,
+    revision: 0,
+    prepared,
+    stage,
+    status,
+    transactions,
   });
-  const oldReference = new Promise<{ id: string }>((resolve) => {
-    oldResult = resolve;
+  options.storage.setItem(
+    "stop-loss-placement",
+    JSON.stringify({
+      version: 1,
+      state: {
+        records: [
+          record("unsigned", "setup", "prompting"),
+          record("ready", "approval", "ready", {
+            approval: { id: "approved" },
+          }),
+          record("failed", "approval-reset", "failed", {
+            "approval-reset": { id: "failed" },
+          }),
+          record("rejected", "approval", "rejected"),
+          record("pending", "approval", "pending", {
+            approval: { id: "pending-approval" },
+          }),
+          record("submitted", "setup", "pending", { setup: { id: "setup" } }),
+          record("confirmed", "setup", "confirmed", {
+            setup: { id: "confirmed" },
+          }),
+        ],
+      },
+    }),
+  );
+  const placement = createStopLossPlacement(options);
+  expect(placement.getRecords(scope).map(({ id }) => id)).toEqual([
+    "submitted",
+    "confirmed",
+  ]);
+  expect(placement.getPendingTransactions(scope)).toEqual([
+    expect.objectContaining({
+      id: "pending",
+      token: prepared.draft.tokenSell.address,
+    }),
+  ]);
+  await placement.cleanup();
+  const saved = JSON.parse(options.storage.getItem("stop-loss-placement")!);
+  expect(saved.state.records.map(({ id }: { id: string }) => id)).toEqual([
+    "submitted",
+    "confirmed",
+  ]);
+  expect(saved.state.pendingTransactions[0]).not.toHaveProperty("prepared");
+  expect(saved.state.pendingTransactions[0]).not.toHaveProperty("draft");
+  expect(saved.state.pendingTransactions[0]).not.toHaveProperty("staticInput");
+});
+
+test("holds the scope lock through wallet submission and saving its reference", async () => {
+  const options = environment();
+  const first = createStopLossPlacement(options);
+  const second = createStopLossPlacement(options);
+  let finish!: (reference: { id: string }) => void;
+  const submission = first.submit(prepared, "approval", {
+    send: async () =>
+      new Promise((resolve) => {
+        finish = resolve;
+      }),
   });
-  const oldSubmission = placement.submit(prepared, "setup", {
-    send: async () => {
-      oldOpened();
-      return oldReference;
-    },
+  while (!finish) await Promise.resolve();
+  const send = jest.fn(async () => ({ id: "duplicate" }));
+  const duplicate = second.submit(prepared, "setup", { send });
+  const rejected = expect(duplicate).rejects.toThrow("already active");
+  await Promise.resolve();
+  expect(send).not.toHaveBeenCalled();
+  expect(options.storage.getItem("stop-loss-placement")).not.toContain("draft");
+  finish({ id: "approval" });
+  await submission;
+  await rejected;
+  expect(send).not.toHaveBeenCalled();
+  expect(
+    second.getPendingTransactions(scope)[0].transactions.approval?.id,
+  ).toBe("approval");
+});
+
+test("uncertain setup outcomes persist only a guard and resolve without a recovered order", async () => {
+  const options = environment();
+  const placement = createStopLossPlacement(options);
+  await expect(
+    placement.submit(prepared, "setup", {
+      send: async () => {
+        throw new Error("Wallet response lost");
+      },
+    }),
+  ).rejects.toThrow("Wallet response lost");
+  const raw = options.storage.getItem("stop-loss-placement")!;
+  for (const field of [
+    "draft",
+    "prepared",
+    "staticInput",
+    "fullAppData",
+    "amountSell",
+  ])
+    expect(raw).not.toContain(field);
+  const reloaded = createStopLossPlacement(options);
+  expect(reloaded.getRecords(scope)).toEqual([]);
+  expect(reloaded.getPendingTransactions(scope)[0]).toMatchObject({
+    uncertain: true,
+    setup: { owner: prepared.owner, paramsHash: prepared.paramsHash },
   });
-  await oldPrompt;
+  const send = jest.fn(async () => ({ id: "duplicate" }));
+  await expect(reloaded.submit(prepared, "setup", { send })).rejects.toThrow(
+    "already active",
+  );
+  expect(send).not.toHaveBeenCalled();
+  await reloaded.resume(scope, { checkState: async () => false });
+  expect(reloaded.getPendingTransactions(scope)).toHaveLength(1);
+  await reloaded.resume(scope, { checkState: async () => true });
+  expect(reloaded.getPendingTransactions(scope)).toEqual([]);
+  expect(reloaded.getRecords(scope)).toEqual([]);
+  expect(await reloaded.mergeRows(scope, [])).toEqual([]);
+});
+
+test("failed approval metadata releases the scope after reload", async () => {
+  const options = environment();
+  await createStopLossPlacement(options).submit(prepared, "approval", {
+    send: async () => ({ id: "approval" }),
+  });
+  const reloaded = createStopLossPlacement(options);
+  await reloaded.resume(scope, {
+    readTransaction: async () => ({ status: "failed" }),
+    checkState: async () => false,
+  });
+  expect(reloaded.getPendingTransactions(scope)).toEqual([]);
+  await reloaded.submit(prepared, "setup", {
+    send: async () => ({ id: "fresh" }),
+  });
+  expect(reloaded.getRecords(scope)[0].transactions.setup?.id).toBe("fresh");
+});
+
+test("a completed live approval does not block a different reviewed order", async () => {
+  const options = environment();
+  const placement = createStopLossPlacement(options);
+  await placement.submit(prepared, "approval", {
+    send: async () => ({ id: "approval" }),
+  });
   await placement.resume(scope, {
     readTransaction: async () => ({ status: "success" }),
     checkState: async () => true,
   });
-  await placement.mergeRows(scope, [apiOrder()]);
-  let newResult!: (reference: { id: string }) => void;
-  let newOpened!: () => void;
-  const newPrompt = new Promise<void>((resolve) => {
-    newOpened = resolve;
-  });
-  const newReference = new Promise<{ id: string }>((resolve) => {
-    newResult = resolve;
-  });
-  const newSubmission = placement.submit(prepared, "setup", {
-    send: async () => {
-      newOpened();
-      return newReference;
+  expect(placement.getRecords(scope)[0].status).toBe("ready");
+  expect(createStopLossPlacement(options).getRecords(scope)).toEqual([]);
+  await placement.submit(
+    { ...prepared, paramsHash: `0x${"01".repeat(32)}` },
+    "setup",
+    {
+      send: async () => ({ id: "different-order" }),
     },
-  });
-  await newPrompt;
-  oldResult({ id: "old-tx" });
-  await oldSubmission;
-  expect(placement.getRecords(scope)[0]).toMatchObject({
-    status: "prompting",
-    transactions: {},
-  });
-  newResult({ id: "new-tx" });
-  await newSubmission;
-  expect(placement.getRecords(scope)[0].transactions.setup).toEqual({
-    id: "new-tx",
-  });
+  );
+  expect(
+    placement
+      .getRecords(scope)
+      .some((record) => record.transactions.setup?.id === "different-order"),
+  ).toBe(true);
 });
 
-test("submit returns the current detached record when state was confirmed before the wallet response", async () => {
-  const placement = createStopLossPlacement(environment());
-  const result = await placement.submit(prepared, "setup", {
-    send: async () => {
-      await placement.resume(scope, {
-        readTransaction: async () => ({ status: "success" }),
-        checkState: async () => true,
-      });
-      return { id: "late-wallet-reference" };
+test("legacy reads are read-only and durable cleanup holds the storage lock", async () => {
+  const storage = memoryStorage();
+  storage.setItem(
+    "stop-loss-placement",
+    JSON.stringify({
+      version: 1,
+      state: {
+        records: [
+          {
+            id: "old-review",
+            revision: 0,
+            prepared,
+            stage: "approval",
+            status: "ready",
+            transactions: {},
+          },
+        ],
+      },
+    }),
+  );
+  let held = false;
+  const setItem = jest.fn((key: string, value: string) => {
+    expect(held).toBe(true);
+    storage.setItem(key, value);
+  });
+  const placement = createStopLossPlacement({
+    storage: { ...storage, setItem },
+    locks: {
+      request: async (_name, action) => {
+        held = true;
+        try {
+          return await action();
+        } finally {
+          held = false;
+        }
+      },
     },
   });
-  expect(result).toMatchObject({ status: "confirmed", confirmedAt: 1000 });
-  if (result) result.prepared.draft.amountSell = "500";
-  expect(placement.getRecords(scope)[0].prepared.draft.amountSell).toBe("1");
+  expect(placement.getRecords(scope)).toEqual([]);
+  expect(setItem).not.toHaveBeenCalled();
+  await placement.cleanup();
+  expect(setItem).toHaveBeenCalledTimes(1);
+  expect(JSON.parse(storage.getItem("stop-loss-placement")!).version).toBe(2);
 });
