@@ -192,9 +192,9 @@ export function getColumns(): ColumnDef<PlacementRow>[] {
             ) : (
               <StatusBadge status={order.status} />
             )}
-            {(progress || order.source === "local") && (
+            {progress && (
               <p className="mt-0.5 max-w-48 text-xs text-muted-foreground">
-                {progress ?? "Waiting for API indexing"}
+                {progress}
               </p>
             )}
             {order.source === "local" && order.error && (

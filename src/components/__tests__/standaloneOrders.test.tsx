@@ -1355,15 +1355,18 @@ test("combines all supported chains and filters Sepolia as a testnet without swi
   );
   await connectBrowserWallet();
 
-  expect(
-    await screen.findByText(
-      `0 of ${supportedChainIds.length} row(s) selected.`,
+  await waitFor(() =>
+    expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(
+      Math.min(supportedChainIds.length, 5),
     ),
-  ).toBeInTheDocument();
-  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(5);
-  fireEvent.click(screen.getByRole("button", { name: "Chain" }));
+  );
+  expect(screen.queryByText(/row\(s\) selected\./)).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Filters" }));
+  const dialog = await screen.findByRole("dialog", {
+    name: "Filter your orders",
+  });
   fireEvent.click(
-    await screen.findByRole("option", { name: "Sepolia (testnet)" }),
+    within(dialog).getByRole("checkbox", { name: "Sepolia (testnet)" }),
   );
 
   await waitFor(() =>
@@ -1396,11 +1399,12 @@ test("switches the wallet network only through the header and keeps all chains v
   );
   await connectBrowserWallet();
   await screen.findByTitle(wallet);
-  expect(
-    await screen.findByText(
-      `0 of ${supportedChainIds.length} row(s) selected.`,
+  await waitFor(() =>
+    expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(
+      Math.min(supportedChainIds.length, 5),
     ),
-  ).toBeInTheDocument();
+  );
+  expect(screen.queryByText(/row\(s\) selected\./)).not.toBeInTheDocument();
   expect(request).not.toHaveBeenCalledWith(
     expect.objectContaining({ method: "wallet_switchEthereumChain" }),
   );
@@ -1449,10 +1453,10 @@ test("switches the wallet network only through the header and keeps all chains v
       params: [{ chainId: "0xaa36a7" }],
     }),
   );
-  expect(
-    screen.getByText(`0 of ${supportedChainIds.length} row(s) selected.`),
-  ).toBeInTheDocument();
-  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(5);
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(
+    Math.min(supportedChainIds.length, 5),
+  );
+  expect(screen.queryByText(/row\(s\) selected\./)).not.toBeInTheDocument();
 });
 
 test("keeps account access and orders when a wallet network switch is rejected", async () => {
@@ -1513,41 +1517,26 @@ test("selects All by default and clears each filter without clearing the other",
   await connectBrowserWallet();
   await screen.findByRole("row", { name: "View order stop-loss-1 on Gnosis" });
 
-  fireEvent.click(screen.getByRole("button", { name: /^Status/ }));
-  expect(await screen.findByRole("option", { name: "All" })).toHaveAttribute(
-    "aria-checked",
-    "true",
-  );
-  fireEvent.click(screen.getByRole("option", { name: "Open" }));
-  expect(screen.getByRole("option", { name: "All" })).toHaveAttribute(
-    "aria-checked",
-    "false",
-  );
-  fireEvent.keyDown(screen.getByPlaceholderText("Status"), { key: "Escape" });
-  await waitFor(() =>
-    expect(
-      screen.queryByRole("option", { name: "All" }),
-    ).not.toBeInTheDocument(),
-  );
+  fireEvent.click(screen.getByRole("button", { name: "Filters" }));
+  const dialog = await screen.findByRole("dialog", {
+    name: "Filter your orders",
+  });
+  const status = within(within(dialog).getByRole("group", { name: "Status" }));
+  const chain = within(within(dialog).getByRole("group", { name: "Chain" }));
+  expect(status.getByRole("checkbox", { name: "All statuses" })).toBeChecked();
+  fireEvent.click(status.getByRole("checkbox", { name: "Open" }));
+  expect(
+    status.getByRole("checkbox", { name: "All statuses" }),
+  ).not.toBeChecked();
 
-  fireEvent.click(screen.getByRole("button", { name: /^Chain/ }));
-  expect(await screen.findByRole("option", { name: "All" })).toHaveAttribute(
-    "aria-checked",
-    "true",
-  );
-  fireEvent.click(screen.getByRole("option", { name: "Ethereum" }));
-  expect(screen.getByRole("option", { name: "All" })).toHaveAttribute(
-    "aria-checked",
-    "false",
-  );
+  expect(chain.getByRole("checkbox", { name: "All chains" })).toBeChecked();
+  fireEvent.click(chain.getByRole("checkbox", { name: "Ethereum" }));
+  expect(chain.getByRole("checkbox", { name: "All chains" })).not.toBeChecked();
   await waitFor(() =>
     expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(1),
   );
-  fireEvent.click(screen.getByRole("option", { name: "All" }));
-  expect(screen.getByRole("option", { name: "All" })).toHaveAttribute(
-    "aria-checked",
-    "true",
-  );
+  fireEvent.click(chain.getByRole("checkbox", { name: "All chains" }));
+  expect(chain.getByRole("checkbox", { name: "All chains" })).toBeChecked();
   await waitFor(() => {
     expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(2);
     expect(new URLSearchParams(window.location.search).has("chainId")).toBe(
@@ -1557,20 +1546,9 @@ test("selects All by default and clears each filter without clearing the other",
       "Open",
     );
   });
-  fireEvent.click(screen.getByRole("option", { name: "Ethereum" }));
-  fireEvent.keyDown(screen.getByPlaceholderText("Chain"), { key: "Escape" });
-  await waitFor(() =>
-    expect(
-      screen.queryByRole("option", { name: "All" }),
-    ).not.toBeInTheDocument(),
-  );
-
-  fireEvent.click(screen.getByRole("button", { name: /^Status/ }));
-  fireEvent.click(await screen.findByRole("option", { name: "All" }));
-  expect(screen.getByRole("option", { name: "All" })).toHaveAttribute(
-    "aria-checked",
-    "true",
-  );
+  fireEvent.click(chain.getByRole("checkbox", { name: "Ethereum" }));
+  fireEvent.click(status.getByRole("checkbox", { name: "All statuses" }));
+  expect(status.getByRole("checkbox", { name: "All statuses" })).toBeChecked();
   await waitFor(() => {
     expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(2);
     expect(new URLSearchParams(window.location.search).has("status")).toBe(
@@ -1624,9 +1602,12 @@ test("shows distinct partial terminal states and filters them separately", async
     screen.getByRole("cell", { name: "Partially filled, expired" }),
   ).toBeInTheDocument();
   expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(3);
-  fireEvent.click(screen.getByRole("button", { name: "Status" }));
+  fireEvent.click(screen.getByRole("button", { name: "Filters" }));
+  const dialog = await screen.findByRole("dialog", {
+    name: "Filter your orders",
+  });
   fireEvent.click(
-    await screen.findByRole("option", { name: "Partially filled, expired" }),
+    within(dialog).getByRole("checkbox", { name: "Partially filled, expired" }),
   );
 
   await waitFor(() =>
@@ -1661,11 +1642,38 @@ test("keeps successful chains visible and retries a failed chain", async () => {
   const ordersPanel = screen.getByRole("region", {
     name: "Your stop-loss orders",
   });
-  expect(within(ordersPanel).getByRole("alert")).toHaveTextContent(
+  const warning = within(ordersPanel).getByRole("button", {
+    name: "Order availability warnings",
+  });
+  const filters = within(ordersPanel).getByRole("button", { name: "Filters" });
+  const refresh = within(ordersPanel).getByRole("button", {
+    name: "Refresh orders",
+  });
+  expect(filters).toHaveClass("h-11", "min-h-11", "lg:h-7", "lg:min-h-7");
+  for (const button of [warning, refresh]) {
+    expect(button).toHaveClass(
+      "size-11",
+      "min-h-11",
+      "min-w-11",
+      "lg:size-7",
+      "lg:min-h-7",
+      "lg:min-w-7",
+    );
+  }
+  expect(
+    within(ordersPanel).getByRole("button", { name: "Reset filters" }),
+  ).toHaveClass("h-11", "lg:h-7");
+  fireEvent.focus(warning);
+  expect(await screen.findByRole("tooltip")).toHaveTextContent(
     "Gnosis orders are unavailable.",
   );
+  expect(within(ordersPanel).queryByRole("alert")).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: "Retry Gnosis" }),
+  ).not.toBeInTheDocument();
+  fireEvent.keyDown(warning, { key: "Escape" });
   unavailable.delete(100);
-  fireEvent.click(screen.getByRole("button", { name: "Retry Gnosis" }));
+  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
   expect(
     screen.getByRole("row", { name: "View order stop-loss-1 on Ethereum" }),
   ).toBeInTheDocument();
@@ -1676,6 +1684,11 @@ test("keeps successful chains visible and retries a failed chain", async () => {
     }),
   ).toBeInTheDocument();
   expect(within(ordersPanel).queryByRole("alert")).not.toBeInTheDocument();
+  expect(
+    within(ordersPanel).queryByRole("button", {
+      name: "Order availability warnings",
+    }),
+  ).not.toBeInTheDocument();
   expect(
     within(
       screen.getByRole("region", { name: "Create stop-loss order" }),
@@ -1699,11 +1712,18 @@ test("does not show an API outage as an empty order list", async () => {
   const ordersPanel = screen.getByRole("region", {
     name: "Your stop-loss orders",
   });
-  await waitFor(() =>
-    expect(within(ordersPanel).getAllByRole("alert")).toHaveLength(
-      supportedChainIds.length,
-    ),
+  const warning = await within(ordersPanel).findByRole("button", {
+    name: "Order availability warnings",
+  });
+  await screen.findByRole("cell", {
+    name: "Orders are unavailable on all supported chains.",
+  });
+  fireEvent.focus(warning);
+  const tooltip = await screen.findByRole("tooltip");
+  expect(within(tooltip).getAllByText(/orders are unavailable\./)).toHaveLength(
+    supportedChainIds.length,
   );
+  expect(within(ordersPanel).queryByRole("alert")).not.toBeInTheDocument();
   expect(screen.queryByText("No results.")).not.toBeInTheDocument();
   expect(
     screen.getByText("Orders are unavailable on all supported chains."),
@@ -1813,11 +1833,12 @@ test("keeps this account's last loaded orders with a warning when refresh fails"
   supportedChainIds.forEach((chain) => unavailable.add(chain));
   fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
 
-  expect(
-    await screen.findByText(
-      "Previously loaded Ethereum orders may be out of date.",
-    ),
-  ).toBeInTheDocument();
+  fireEvent.focus(
+    await screen.findByRole("button", { name: "Order availability warnings" }),
+  );
+  expect(await screen.findByRole("tooltip")).toHaveTextContent(
+    "Previously loaded Ethereum orders may be out of date.",
+  );
   expect(
     screen.getByRole("row", { name: "View order stop-loss-1 on Ethereum" }),
   ).toBeInTheDocument();

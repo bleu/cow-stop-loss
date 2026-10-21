@@ -12,6 +12,7 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { randomUUID } from "crypto";
 import { EventEmitter } from "events";
 import { AppRouterContext } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -189,8 +190,10 @@ class BrowserWallet extends EventEmitter {
   }
 }
 
-function TableView() {
-  const [url, setUrl] = React.useState(new URL("http://localhost/app"));
+function TableView({ search = "" }: { search?: string }) {
+  const [url, setUrl] = React.useState(
+    new URL(`http://localhost/app${search}`),
+  );
   const router = React.useMemo(
     () => ({
       push: (href: string) => {
@@ -370,7 +373,16 @@ test("reviews cancellation of a confirmed local order before API indexing", asyn
   await confirm(prepared(1));
   render(<TableView />);
   await connectWallet();
-  await screen.findByText("Waiting for API indexing");
+  const amount = await screen.findByRole("cell", {
+    name: "1 WETH for 1980 USDC",
+  });
+  const row = amount.closest("tr")!;
+  const status = within(row).getByRole("cell", { name: "Open" });
+  expect(within(status).getByText("Open")).toBeInTheDocument();
+  expect(status.querySelector("p")).not.toBeInTheDocument();
+  expect(
+    screen.queryByText("Waiting for API indexing"),
+  ).not.toBeInTheDocument();
   expect(
     screen.queryByRole("row", { name: /^View order/ }),
   ).not.toBeInTheDocument();
@@ -514,10 +526,7 @@ test("shows the portfolio heading without table controls when the wallet is disc
     screen.getByRole("button", { name: "Connect wallet to view orders" }),
   ).toBeVisible();
   expect(
-    screen.queryByRole("button", { name: "Chain" }),
-  ).not.toBeInTheDocument();
-  expect(
-    screen.queryByRole("button", { name: "Status" }),
+    screen.queryByRole("button", { name: "Filters" }),
   ).not.toBeInTheDocument();
   expect(
     screen.queryByRole("button", { name: "Refresh orders" }),
@@ -531,11 +540,30 @@ test("fills the empty orders viewport with heading controls outside its scroll a
   await screen.findByRole("cell", { name: "No results." });
 
   const table = screen.getByRole("table");
-  const viewport = table.parentElement!.parentElement!;
-  const panel = viewport.parentElement!;
+  const viewport = screen.getByRole("region", { name: "Table rows" });
+  const frame = viewport.parentElement!;
+  const panel = frame.parentElement!;
   expect(panel).toHaveClass("flex", "h-full", "min-h-0", "flex-1", "flex-col");
+  expect(frame).toHaveClass(
+    "pixel-frame",
+    "flex",
+    "min-h-0",
+    "min-w-0",
+    "flex-1",
+    "flex-col",
+    "rounded-none",
+    "border",
+    "border-border/70",
+    "bg-background/35",
+    "p-0.5",
+  );
+  expect(panel.querySelectorAll(".pixel-frame")).toHaveLength(1);
+  expect(frame).not.toHaveClass("overflow-auto");
+  expect(viewport).toHaveAttribute("tabindex", "0");
+  expect(viewport).toContainElement(table);
   expect(viewport).toHaveClass(
     "min-h-0",
+    "min-w-0",
     "flex-1",
     "max-h-none",
     "overflow-auto",
@@ -543,6 +571,7 @@ test("fills the empty orders viewport with heading controls outside its scroll a
     "[&>div]:h-full",
   );
   expect(viewport).not.toHaveClass("max-h-96");
+  expect(viewport).not.toHaveClass("pixel-frame");
   expect(table).toHaveClass("h-full");
   expect(table.querySelector("thead")).toHaveClass(
     "sticky",
@@ -565,20 +594,230 @@ test("fills the empty orders viewport with heading controls outside its scroll a
   const toolbar = refresh.closest<HTMLDivElement>(".rescue-portfolio-toolbar")!;
   expect(heading).toContainElement(toolbar);
   expect(toolbar).toContainElement(
-    screen.getByRole("button", { name: "Chain" }),
+    screen.getByRole("button", { name: "Filters" }),
   );
   expect(toolbar).toContainElement(
-    screen.getByRole("button", { name: "Status" }),
+    screen.getByRole("button", { name: "Reset filters" }),
   );
+  expect(screen.getByRole("button", { name: "Reset filters" })).toBeDisabled();
+  expect(heading).toContainElement(screen.getByLabelText("Selected filters"));
   expect(refresh).toBeEnabled();
   expect(panel).not.toContainElement(heading);
-  expect(panel.firstElementChild).toBe(viewport);
-  expect(panel.lastElementChild).toBe(viewport);
+  expect(panel.firstElementChild).toBe(frame);
+  expect(panel.lastElementChild).toBe(frame);
   expect(
     screen.queryByRole("button", { name: "Go to next page" }),
   ).not.toBeInTheDocument();
   expect(viewport).not.toContainElement(toolbar);
   expect(screen.queryByText("Rows per page")).not.toBeInTheDocument();
+});
+
+test("restores and combines chain and status filters from the URL without changing refresh", async () => {
+  const canceled = {
+    ...apiParent(1, "canceled-order", `0x${"cd".repeat(32)}`),
+    status: "Cancelled",
+  };
+  serveOrders([
+    apiParent(1, "ethereum-open"),
+    apiParent(100, "gnosis-open"),
+    apiParent(42161, "arbitrum-open"),
+    canceled,
+  ]);
+  render(
+    <TableView search="?chainId=1.100&status=Open.Canceled&view=compact" />,
+  );
+  await connectWallet();
+  await screen.findByRole("row", { name: "View order gnosis-open on Gnosis" });
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(3);
+  const trigger = screen.getByRole("button", { name: "Filters" });
+  expect(trigger).toHaveAccessibleDescription("4 selected filters");
+  expect(screen.getByLabelText("Selected filters")).toHaveTextContent(
+    "Chain: Ethereum, Gnosis / Status: Open, Canceled",
+  );
+
+  fireEvent.click(trigger);
+  const dialog = await screen.findByRole("dialog", {
+    name: "Filter your orders",
+  });
+  const chains = within(dialog).getByRole("group", { name: "Chain" });
+  const statuses = within(dialog).getByRole("group", { name: "Status" });
+  expect(
+    within(chains).getByRole("checkbox", { name: "Ethereum" }),
+  ).toBeChecked();
+  expect(
+    within(statuses).getByRole("checkbox", { name: "Canceled" }),
+  ).toBeChecked();
+  fireEvent.click(within(chains).getByRole("checkbox", { name: "Gnosis" }));
+  fireEvent.click(within(statuses).getByRole("checkbox", { name: "Open" }));
+  await waitFor(() => {
+    const params = new URLSearchParams(window.location.search);
+    expect(params.get("chainId")).toBe("1");
+    expect(params.get("status")).toBe("Canceled");
+    expect(params.get("page")).toBe("1");
+    expect(params.get("view")).toBe("compact");
+  });
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(1);
+  expect(
+    screen.getByRole("row", { name: "View order canceled-order on Ethereum" }),
+  ).toBeVisible();
+  expect(trigger).toHaveAccessibleDescription("2 selected filters");
+  fireEvent.keyDown(dialog, { key: "Escape" });
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("dialog", { name: "Filter your orders" }),
+    ).not.toBeInTheDocument(),
+  );
+  await waitFor(() => expect(trigger).toHaveFocus());
+
+  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Refresh orders" }),
+    ).toBeEnabled(),
+  );
+  expect(trigger).toHaveAccessibleDescription("2 selected filters");
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(1);
+  fireEvent.click(screen.getByRole("button", { name: "Reset filters" }));
+  await waitFor(() => {
+    const params = new URLSearchParams(window.location.search);
+    expect(params.has("chainId")).toBe(false);
+    expect(params.has("status")).toBe(false);
+    expect(params.get("view")).toBe("compact");
+    expect(params.get("sort")).toBe("chainId.asc");
+  });
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(4);
+  expect(
+    screen.queryByRole("button", { name: "Go to next page" }),
+  ).not.toBeInTheDocument();
+  expect(
+    await screen.findByRole("row", {
+      name: "View order arbitrum-open on Arbitrum",
+    }),
+  ).toBeVisible();
+  expect(screen.getByLabelText("Selected filters")).toHaveTextContent(
+    "Chain: All / Status: All",
+  );
+  expect(screen.getByRole("button", { name: "Reset filters" })).toBeDisabled();
+});
+
+test("clears each filter group without clearing the other and restores All after the last selection", async () => {
+  serveOrders([apiParent()]);
+  render(<TableView search="?chainId=1.100&status=Open.Expired" />);
+  await connectWallet();
+  fireEvent.click(screen.getByRole("button", { name: "Filters" }));
+  const dialog = await screen.findByRole("dialog", {
+    name: "Filter your orders",
+  });
+  const chains = within(dialog).getByRole("group", { name: "Chain" });
+  const statuses = within(dialog).getByRole("group", { name: "Status" });
+  fireEvent.click(within(chains).getByRole("checkbox", { name: "All chains" }));
+  expect(
+    within(chains).getByRole("checkbox", { name: "All chains" }),
+  ).toBeChecked();
+  expect(
+    within(statuses).getByRole("checkbox", { name: "Open" }),
+  ).toBeChecked();
+  expect(
+    within(statuses).getByRole("checkbox", { name: "Expired" }),
+  ).toBeChecked();
+  await waitFor(() => {
+    const params = new URLSearchParams(window.location.search);
+    expect(params.has("chainId")).toBe(false);
+    expect(params.get("status")).toBe("Open.Expired");
+  });
+  fireEvent.click(within(chains).getByRole("checkbox", { name: "Gnosis" }));
+  fireEvent.click(
+    within(statuses).getByRole("checkbox", { name: "All statuses" }),
+  );
+  await waitFor(() => {
+    const params = new URLSearchParams(window.location.search);
+    expect(params.get("chainId")).toBe("100");
+    expect(params.has("status")).toBe(false);
+  });
+  expect(
+    within(statuses).getByRole("checkbox", { name: "All statuses" }),
+  ).toBeChecked();
+  expect(screen.getByLabelText("Selected filters")).toHaveTextContent(
+    "Chain: Gnosis / Status: All",
+  );
+  fireEvent.click(within(chains).getByRole("checkbox", { name: "Gnosis" }));
+  expect(
+    within(chains).getByRole("checkbox", { name: "All chains" }),
+  ).toBeChecked();
+  expect(
+    screen.getByRole("button", { name: "Filters" }),
+  ).toHaveAccessibleDescription("All chains and statuses");
+  expect(screen.getByRole("button", { name: "Reset filters" })).toBeDisabled();
+});
+
+test("keeps long selected values in a separate bounded summary and in the filter panel", async () => {
+  const statuses = [
+    "Open",
+    "Filled",
+    "Canceled",
+    "Expired",
+    "Partially filled, cancelled",
+    "Partially filled, expired",
+  ];
+  render(
+    <TableView
+      search={`?chainId=${supportedChainIds.join(".")}&status=${encodeURIComponent(statuses.join("."))}`}
+    />,
+  );
+  await connectWallet();
+  const summary = screen.getByLabelText("Selected filters");
+  expect(summary).toHaveClass("rescue-portfolio-filter-summary");
+  expect(summary).toHaveTextContent(statuses.join(", "));
+  expect(summary).toHaveAttribute("title", summary.textContent);
+  const trigger = screen.getByRole("button", { name: "Filters" });
+  expect(trigger).toHaveAccessibleDescription(
+    `${supportedChainIds.length + statuses.length} selected filters`,
+  );
+  expect(trigger).not.toContainElement(summary);
+  fireEvent.click(trigger);
+  const dialog = await screen.findByRole("dialog", {
+    name: "Filter your orders",
+  });
+  for (const status of statuses)
+    expect(
+      within(dialog).getByRole("checkbox", { name: status }),
+    ).toBeChecked();
+  expect(dialog).toHaveClass("rescue-portfolio-filter-panel");
+});
+
+test("shows no availability warning for a healthy account and clears it after Refresh orders recovers", async () => {
+  const unavailable = new Set<number>();
+  serveOrders([apiParent()], unavailable);
+  render(<TableView />);
+  await connectWallet();
+  await screen.findByRole("row", {
+    name: "View order indexed-order on Ethereum",
+  });
+  expect(
+    screen.queryByRole("button", { name: "Order availability warnings" }),
+  ).not.toBeInTheDocument();
+
+  unavailable.add(1);
+  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
+  const warning = await screen.findByRole("button", {
+    name: "Order availability warnings",
+  });
+  fireEvent.focus(warning);
+  expect(await screen.findByRole("tooltip")).toHaveTextContent(
+    "Previously loaded Ethereum orders may be out of date.",
+  );
+  fireEvent.keyDown(warning, { key: "Escape" });
+  unavailable.clear();
+  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
+  await waitFor(() =>
+    expect(
+      screen.queryByRole("button", { name: "Order availability warnings" }),
+    ).not.toBeInTheDocument(),
+  );
+  expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+  expect(
+    screen.getByRole("row", { name: "View order indexed-order on Ethereum" }),
+  ).toBeInTheDocument();
 });
 
 test("keeps the expanding table shell while the connected account's first orders are loading", async () => {
@@ -607,9 +846,23 @@ test("keeps the expanding table shell while the connected account's first orders
     expect(
       screen.getByRole("button", { name: "Refresh orders" }),
     ).toHaveAttribute("aria-busy", "true");
-    const viewport = table.parentElement!.parentElement!;
-    expect(viewport).toHaveClass("min-h-0", "flex-1", "max-h-none");
-    expect(viewport.parentElement!.parentElement).toHaveClass(
+    const viewport = screen.getByRole("region", { name: "Table rows" });
+    const frame = viewport.parentElement!;
+    expect(viewport).toContainElement(table);
+    expect(viewport).toHaveClass(
+      "min-h-0",
+      "min-w-0",
+      "flex-1",
+      "max-h-none",
+      "[&>div]:overflow-visible",
+      "[&>div]:h-full",
+    );
+    expect(viewport).not.toHaveClass("pixel-frame");
+    expect(frame).toHaveClass("pixel-frame", "min-h-0", "min-w-0", "flex-1");
+    expect(frame.parentElement!.querySelectorAll(".pixel-frame")).toHaveLength(
+      1,
+    );
+    expect(frame.parentElement).toHaveClass(
       "flex",
       "min-h-0",
       "flex-1",
@@ -633,42 +886,55 @@ test("keeps an expanding unavailable viewport and retries into the same table wi
   serveOrders([apiParent()], unavailable);
   render(<TableView />);
   await connectWallet();
-  await waitFor(() =>
-    expect(screen.getAllByRole("alert")).toHaveLength(supportedChainIds.length),
-  );
+  await screen.findByRole("cell", {
+    name: "Orders are unavailable on all supported chains.",
+  });
 
   const table = screen.getByRole("table");
   expect(table).toContainElement(
     screen.getByText("Orders are unavailable on all supported chains."),
   );
   expect(screen.queryByText("No results.")).not.toBeInTheDocument();
-  expect(table.parentElement!.parentElement).toHaveClass(
+  const viewport = screen.getByRole("region", { name: "Table rows" });
+  expect(viewport).toContainElement(table);
+  expect(viewport).toHaveClass(
     "min-h-0",
+    "min-w-0",
     "flex-1",
     "max-h-none",
+    "[&>div]:overflow-visible",
+    "[&>div]:h-full",
   );
+  expect(viewport).not.toHaveClass("pixel-frame");
+  expect(viewport.parentElement).toHaveClass("pixel-frame");
   expect(screen.getByRole("button", { name: "Refresh orders" })).toBeEnabled();
   expect(
     screen.queryByRole("button", { name: "Go to next page" }),
   ).not.toBeInTheDocument();
 
   unavailable.delete(1);
-  fireEvent.click(screen.getByRole("button", { name: "Retry Ethereum" }));
+  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
   expect(
     await screen.findByRole("row", {
       name: "View order indexed-order on Ethereum",
     }),
   ).toBeVisible();
   expect(screen.getByRole("table")).toBe(table);
-  expect(screen.getAllByRole("alert")).toHaveLength(
-    supportedChainIds.length - 1,
-  );
+  const warning = screen.getByRole("button", {
+    name: "Order availability warnings",
+  });
+  fireEvent.focus(warning);
+  const tooltip = await screen.findByRole("tooltip");
+  expect(tooltip).not.toHaveTextContent("Ethereum orders are unavailable.");
+  expect(tooltip).toHaveTextContent("Gnosis orders are unavailable.");
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   expect(
     screen.queryByText("Orders are unavailable on all supported chains."),
   ).not.toBeInTheDocument();
 });
 
-test("keeps chain and placement warnings inside the scroll area so pagination remains outside", async () => {
+test("keeps chain and placement warnings in a toolbar tooltip with hover, focus and Escape access", async () => {
+  const user = userEvent.setup();
   const getItem = Storage.prototype.getItem;
   jest.spyOn(Storage.prototype, "getItem").mockImplementation(function (
     this: Storage,
@@ -681,24 +947,100 @@ test("keeps chain and placement warnings inside the scroll area so pagination re
   serveOrders([], new Set(supportedChainIds));
   render(<TableView />);
   await connectWallet();
-  await waitFor(() =>
-    expect(screen.getAllByRole("alert")).toHaveLength(
-      supportedChainIds.length + 1,
-    ),
-  );
+  await screen.findByRole("cell", {
+    name: "Orders are unavailable on all supported chains.",
+  });
 
-  const viewport = screen.getByRole("table").parentElement!.parentElement!;
-  for (const warning of screen.getAllByRole("alert")) {
-    expect(viewport).toContainElement(warning);
-  }
-  expect(viewport).not.toContainElement(
-    screen.getByRole("button", { name: "Refresh orders" }),
+  const warning = await screen.findByRole("button", {
+    name: "Order availability warnings",
+  });
+  const viewport = screen.getByRole("region", { name: "Table rows" });
+  const refresh = screen.getByRole("button", { name: "Refresh orders" });
+  expect(refresh.closest(".rescue-portfolio-toolbar")).toContainElement(
+    warning,
   );
-  expect(viewport).not.toContainElement(
-    screen.getByRole("button", { name: "Chain" }),
+  expect(viewport).not.toContainElement(warning);
+  expect(viewport).not.toHaveClass("pixel-frame");
+  expect(viewport.parentElement).toHaveClass("pixel-frame");
+  expect(screen.queryByRole("tooltip")).not.toBeInTheDocument();
+
+  await user.hover(warning);
+  const tooltip = await screen.findByRole("tooltip");
+  expect(tooltip).toHaveTextContent(
+    "Placement tracking is unavailable. Unsupported placement storage version",
   );
-  expect(screen.getByRole("button", { name: "Retry Ethereum" })).toBeEnabled();
+  expect(within(tooltip).getAllByText(/orders are unavailable\./)).toHaveLength(
+    supportedChainIds.length,
+  );
+  expect(tooltip).toHaveTextContent("Use Refresh orders to retry.");
+  expect(viewport).not.toContainElement(tooltip);
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("button", { name: /^Retry / }),
+  ).not.toBeInTheDocument();
+  await user.keyboard("{Escape}");
+  await waitFor(() =>
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument(),
+  );
+  await user.unhover(warning);
+  act(() => warning.focus());
+  expect(await screen.findByRole("tooltip")).toHaveTextContent(
+    "Use Refresh orders to retry.",
+  );
+  expect(warning).toHaveFocus();
+  await user.keyboard("{Escape}");
+  await waitFor(() =>
+    expect(screen.queryByRole("tooltip")).not.toBeInTheDocument(),
+  );
+  expect(warning).toHaveFocus();
+  expect(viewport).not.toContainElement(refresh);
+  expect(viewport).not.toContainElement(
+    screen.getByRole("button", { name: "Filters" }),
+  );
+  expect(refresh).toBeEnabled();
   expect(screen.queryByText("No results.")).not.toBeInTheDocument();
+});
+
+test("keeps pagination and availability warnings outside the stationary frame", async () => {
+  serveOrders(
+    Array.from({ length: 6 }, (_, index) =>
+      apiParent(1, `paged-${index}`, `0x${String(index).repeat(64)}`),
+    ),
+    new Set([100]),
+  );
+  render(<TableView />);
+  await connectWallet();
+
+  const next = await screen.findByRole("button", { name: "Go to next page" });
+  const viewport = screen.getByRole("region", { name: "Table rows" });
+  const frame = viewport.parentElement!;
+  const panel = frame.parentElement!;
+  expect(frame).toHaveClass("pixel-frame");
+  expect(panel.querySelectorAll(".pixel-frame")).toHaveLength(1);
+  expect(viewport).not.toHaveClass("pixel-frame");
+  expect(viewport).not.toHaveClass("[&>div]:h-full");
+  expect(viewport).not.toContainElement(
+    await screen.findByRole("button", { name: "Order availability warnings" }),
+  );
+  expect(within(viewport).queryByRole("alert")).not.toBeInTheDocument();
+  expect(panel).toContainElement(next);
+  expect(frame).not.toContainElement(next);
+  expect(panel.lastElementChild).toHaveClass("shrink-0");
+  expect(panel.lastElementChild).toContainElement(next);
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(5);
+  expect(screen.getByText("Page 1 of 2")).toBeInTheDocument();
+
+  fireEvent.click(next);
+  await screen.findByText("Page 2 of 2");
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(1);
+  expect(
+    screen.getByRole("row", { name: "View order paged-5 on Ethereum" }),
+  ).toBeInTheDocument();
+  expect(
+    screen.queryByRole("row", { name: "View order paged-0 on Ethereum" }),
+  ).not.toBeInTheDocument();
+  expect(screen.getByRole("region", { name: "Table rows" })).toBe(viewport);
+  expect(viewport.parentElement).toBe(frame);
 });
 
 test("keeps indexed API orders visible with a tracking error when saved placement storage is unreadable", async () => {
@@ -715,9 +1057,13 @@ test("keeps indexed API orders visible with a tracking error when saved placemen
   render(<TableView />);
   await connectWallet();
 
-  expect(await screen.findByRole("alert")).toHaveTextContent(
+  fireEvent.focus(
+    await screen.findByRole("button", { name: "Order availability warnings" }),
+  );
+  expect(await screen.findByRole("tooltip")).toHaveTextContent(
     "Placement tracking is unavailable. Unsupported placement storage version",
   );
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   expect(
     await screen.findByRole("row", {
       name: "View order indexed-order on Ethereum",
@@ -831,6 +1177,9 @@ test("distinguishes tiny positive amounts from zero and preserves exact integer 
     const cell = await screen.findByRole("cell", { name: example.display });
     expect(within(cell).getByTitle(example.full)).toBeInTheDocument();
   }
+  expect(
+    screen.queryByRole("button", { name: "Go to next page" }),
+  ).not.toBeInTheDocument();
 });
 
 test("shows a pending setup stage and its RPC error on the unindexed row", async () => {
@@ -1046,12 +1395,15 @@ test("groups pending placements and active API orders under the Open filter", as
   await screen.findByRole("row", {
     name: "View order indexed-order on Ethereum",
   });
-  fireEvent.click(screen.getByRole("button", { name: "Status" }));
-  fireEvent.click(await screen.findByRole("option", { name: "Open" }));
-  fireEvent.keyDown(screen.getByPlaceholderText("Status"), { key: "Escape" });
+  fireEvent.click(screen.getByRole("button", { name: "Filters" }));
+  const filterPanel = await screen.findByRole("dialog", {
+    name: "Filter your orders",
+  });
+  fireEvent.click(within(filterPanel).getByRole("checkbox", { name: "Open" }));
+  fireEvent.keyDown(filterPanel, { key: "Escape" });
   await waitFor(() =>
     expect(
-      screen.queryByRole("option", { name: "Open" }),
+      screen.queryByRole("dialog", { name: "Filter your orders" }),
     ).not.toBeInTheDocument(),
   );
   expect(
@@ -1081,11 +1433,12 @@ test("keeps last-good failed-chain orders beside a local Open row and clears its
   await act(async () => {
     await jest.advanceTimersByTimeAsync(300000);
   });
-  expect(
-    await screen.findByText(
-      "Previously loaded Ethereum orders may be out of date.",
-    ),
-  ).toBeInTheDocument();
+  fireEvent.focus(
+    await screen.findByRole("button", { name: "Order availability warnings" }),
+  );
+  expect(await screen.findByRole("tooltip")).toHaveTextContent(
+    "Previously loaded Ethereum orders may be out of date.",
+  );
   expect(
     screen.getByRole("row", { name: "View order indexed-order on Ethereum" }),
   ).toBeInTheDocument();
@@ -1099,7 +1452,7 @@ test("keeps last-good failed-chain orders beside a local Open row and clears its
 
   unavailable.delete(100);
   orders.push(apiParent(100, "late-indexed-order", `0x${"bb".repeat(32)}`));
-  fireEvent.click(screen.getByRole("button", { name: "Retry Gnosis" }));
+  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
   expect(
     await screen.findByRole("row", {
       name: "View order late-indexed-order on Gnosis",
@@ -1179,18 +1532,35 @@ test("shows confirmed local Open rows on all supported chains without detail lin
   render(<TableView />);
   await connectWallet();
 
-  const amounts = await screen.findAllByRole("cell", {
-    name: "1 WETH for 1980 USDC",
-  });
-  expect(amounts).toHaveLength(4);
-  for (const chain of ["Ethereum", "Gnosis", "Arbitrum", "Sepolia (testnet)"]) {
-    const row = amounts
-      .map((amount) => amount.closest("tr")!)
-      .find((candidate) => within(candidate).queryByText(chain))!;
-    expect(within(row).getByText("Open")).toBeInTheDocument();
-    expect(within(row).queryByRole("link")).not.toBeInTheDocument();
-  }
+  await screen.findAllByRole("cell", { name: "1 WETH for 1980 USDC" });
   expect(
     screen.getByRole("row", { name: "View order indexed-order on Ethereum" }),
   ).toBeInTheDocument();
+  const seen = new Set<string>();
+  const amounts = screen.getAllByRole("cell", {
+    name: "1 WETH for 1980 USDC",
+  });
+  expect(amounts).toHaveLength(4);
+  for (const amount of amounts) {
+    const row = amount.closest("tr")!;
+    expect(within(row).getByText("Open")).toBeInTheDocument();
+    expect(within(row).queryByRole("link")).not.toBeInTheDocument();
+    for (const chain of [
+      "Ethereum",
+      "Gnosis",
+      "Arbitrum",
+      "Sepolia (testnet)",
+    ]) {
+      if (within(row).queryByText(chain)) seen.add(chain);
+    }
+  }
+  expect(
+    screen.queryByRole("button", { name: "Go to next page" }),
+  ).not.toBeInTheDocument();
+  expect([...seen].sort()).toEqual([
+    "Arbitrum",
+    "Ethereum",
+    "Gnosis",
+    "Sepolia (testnet)",
+  ]);
 });

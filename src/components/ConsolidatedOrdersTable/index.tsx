@@ -14,16 +14,16 @@ import { Address } from "viem";
 import { useAccount } from "wagmi";
 
 import { DataTable } from "#/components/data-table/data-table";
-import { DataTableToolbar } from "#/components/data-table/data-table-toolbar";
 import { PixelIcon } from "#/components/ui/pixel-icon";
-import { DataTableFilterField, useDataTable } from "#/hooks/useDataTable";
+import { useDataTable } from "#/hooks/useDataTable";
 import { useOrderList } from "#/hooks/useOrderList";
 import { chainNames } from "#/lib/publicClients";
 import { PlacementRow } from "#/lib/stopLossPlacement";
 
 import { getColumns } from "./columns";
+import { PortfolioFilterField, PortfolioFilters } from "./filters";
 
-const filterFields: DataTableFilterField<PlacementRow>[] = [
+const filterFields: PortfolioFilterField[] = [
   {
     label: "Chain",
     value: "chainId",
@@ -108,6 +108,7 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
     initialColumnVisibility: { chainId: false },
     filterFields,
     defaultSort: "chainId.asc",
+    defaultPerPage: 5,
     enableRowSelection: false,
   });
 
@@ -123,19 +124,13 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
   );
 
   const failedChains = chains.filter((chain) => chain.status === "error");
-  const notice = (trackingError || failedChains.length > 0) && (
-    <div className="space-y-4 text-left">
+  const warnings = (trackingError || failedChains.length > 0) && (
+    <div className="space-y-2 text-left">
       {trackingError && (
-        <p role="alert" className="rounded border border-destructive p-3">
-          Placement tracking is unavailable. {trackingError}
-        </p>
+        <p>Placement tracking is unavailable. {trackingError}</p>
       )}
       {failedChains.map((chain) => (
-        <div
-          key={chain.chainId}
-          role="alert"
-          className="rounded border border-destructive p-3"
-        >
+        <div key={chain.chainId}>
           <p>{chainNames[chain.chainId]} orders are unavailable.</p>
           <p>{chain.error}</p>
           {chain.orders.length > 0 && (
@@ -144,49 +139,61 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
               date.
             </p>
           )}
-          <button
-            disabled={isLoading}
-            onClick={() => mutate()}
-            className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring text-primary underline"
-          >
-            Retry {chainNames[chain.chainId]}
-          </button>
         </div>
       ))}
+      <p>Use Refresh orders to retry.</p>
     </div>
   );
 
   return (
     <>
       <OrdersHeading>
-        <DataTableToolbar
-          className="rescue-portfolio-toolbar"
-          table={table}
-          filterFields={filterFields}
-          afterFilters={
-            <TooltipProvider>
-              <TooltipRoot>
+        <PortfolioFilters table={table} filterFields={filterFields}>
+          <TooltipProvider>
+            {warnings && (
+              <TooltipRoot delayDuration={100}>
                 <TooltipTrigger asChild>
                   <Button
-                    variant="outline"
+                    type="button"
+                    variant="ghost"
                     size="icon"
-                    className="rescue-secondary-control pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring size-11 shrink-0 rounded-none text-muted-foreground hover:text-primary"
-                    aria-label="Refresh orders"
-                    aria-busy={isLoading}
-                    disabled={isLoading}
-                    onClick={() => mutate()}
+                    aria-label="Order availability warnings"
+                    className="rescue-secondary-control pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring size-11 shrink-0 rounded-none lg:size-7 lg:min-h-7 lg:min-w-7 text-warning hover:text-warning"
                   >
-                    <PixelIcon
-                      name="reload"
-                      className={`size-4 ${isLoading ? "motion-safe:animate-spin" : ""}`}
-                    />
+                    <PixelIcon name="warning" className="size-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>Refresh orders</TooltipContent>
+                <TooltipContent
+                  side="bottom"
+                  align="end"
+                  collisionPadding={12}
+                  className="rescue-info-tooltip pixel-frame rounded-none text-popover-foreground"
+                >
+                  {warnings}
+                </TooltipContent>
               </TooltipRoot>
-            </TooltipProvider>
-          }
-        />
+            )}
+            <TooltipRoot>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="rescue-secondary-control pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring size-11 shrink-0 rounded-none lg:size-7 lg:min-h-7 lg:min-w-7 text-muted-foreground hover:text-primary"
+                  aria-label="Refresh orders"
+                  aria-busy={isLoading}
+                  disabled={isLoading}
+                  onClick={() => mutate()}
+                >
+                  <PixelIcon
+                    name="reload"
+                    className={`size-4 ${isLoading ? "motion-safe:animate-spin" : ""}`}
+                  />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Refresh orders</TooltipContent>
+            </TooltipRoot>
+          </TooltipProvider>
+        </PortfolioFilters>
       </OrdersHeading>
       <div className="flex min-h-0 flex-1 flex-col gap-4">
         <DataTable
@@ -206,7 +213,6 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
               : undefined
           }
           emptyMessage={emptyMessage}
-          notice={notice}
         />
       </div>
     </>
