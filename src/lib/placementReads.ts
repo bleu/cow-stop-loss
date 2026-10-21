@@ -129,8 +129,14 @@ function createPlacementReads(
           getBytecode: async (
             args: Parameters<PublicClient["getBytecode"]>[0],
           ) => {
+            if (args.blockHash)
+              return once(keyFor("getBytecode", args), () =>
+                source.getBytecode(args),
+              );
             const pinned = {
               ...args,
+              blockHash: undefined,
+              requireCanonical: undefined,
               blockTag: undefined,
               blockNumber: args.blockNumber ?? (await blockNumber()),
             };

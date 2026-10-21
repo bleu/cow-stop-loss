@@ -10,7 +10,7 @@ Approved routes use an exact sell amount, trigger price, slippage, and one fixed
 
 ## Local setup
 
-Use Node.js 20.9 or later, pnpm 9, and Python 3. The private `@bleu/ui` package requires a package-read `NPM_TOKEN` in the install environment.
+Use Node.js 24.22 or later in the Node 24 LTS line, pnpm 9, and Python 3. The private `@bleu/ui` package requires a package-read `NPM_TOKEN` in the install environment.
 
 ```bash
 corepack pnpm@9 install
@@ -44,7 +44,7 @@ Use a WalletConnect project ID and allow the app's origin in that project's sett
 
 Without a project ID, WalletConnect is hidden. Browser wallet connection remains available in the connect modal. Enable testnets in the wallet when needed; Sepolia orders remain visible regardless of the connected wallet chain.
 
-RainbowKit 2.2.0 is pinned with a pnpm patch in `patches/`. The patch removes its automatic chain switch during connection. Keep this behavior when upgrading RainbowKit: only an explicit selection in the header can request a chain switch.
+RainbowKit 2.2.0 is pinned with a pnpm patch in `patches/`. The patch removes its automatic chain switch during connection. Keep this behavior when upgrading RainbowKit: only an explicit selection in the header can request a chain switch. See [Dependency security](docs/dependency-security.md) for version constraints, overrides, and remaining audit findings.
 
 ## Order data
 
@@ -70,7 +70,7 @@ corepack pnpm@9 build:next
 corepack pnpm@9 build
 ```
 
-The app uses the checked-in runtime catalog and local images. Ordinary Jest tests do not fetch token lists or images; they check the reviewed image manifest. CI prepares metadata and images, checks image hashes and the runtime snapshot, runs the Python catalog tests, checks TypeScript, then runs Jest. TypeScript checks the whole project, including tests. Jest transforms and runs tests without a second type-check pass, which avoids a React Native global type collision in ts-jest. The browser loads local images and does not depend on list-server CORS settings. Detailed reports are optional ignored outputs: `python3 scripts/catalog.py --reports .cache/token-catalog/reports` regenerates the runtime snapshot and writes `catalog-audit.json` and `catalog-metadata-report.json` there. Normal generation and checks do not require these reports.
+The app uses the checked-in runtime catalog and local images. Ordinary Jest tests do not fetch token lists or images; they check the reviewed image manifest. CI prepares metadata and images, checks image hashes and the runtime snapshot, runs the Python catalog tests, checks TypeScript, runs Jest and lint, then builds the app and documentation. TypeScript checks the whole project, including tests. Jest transforms and runs tests without a second type-check pass, which avoids a React Native global type collision in ts-jest. The browser loads local images and does not depend on list-server CORS settings. Detailed reports are optional ignored outputs: `python3 scripts/catalog.py --reports .cache/token-catalog/reports` regenerates the runtime snapshot and writes `catalog-audit.json` and `catalog-metadata-report.json` there. Normal generation and checks do not require these reports.
 
 Tests replace external HTTP, wallet providers, and time. Policy tests use the real small allowlists and require usable routes on all nine mainnets. Rejection tests cover tokens outside those lists and unavailable-policy fixtures. Some order-math and EOA-flow suites opt into synthetic approved routes; those fixtures are not production approval evidence. A real WalletConnect session also needs a configured project and an external wallet.
 

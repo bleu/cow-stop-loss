@@ -338,15 +338,17 @@ test.each([
       });
     render(
       <RootLayout config={config}>
-        <OrderPage
-          params={{
-            chainId: "1",
-            safeAddress: account,
-            orderId: encoded
-              ? encodeURIComponent(`${order.owner}:${order.paramsHash}`)
-              : `${order.owner}:${order.paramsHash}`,
-          }}
-        />
+        <React.Suspense fallback={null}>
+          <OrderPage
+            params={Promise.resolve({
+              chainId: "1",
+              safeAddress: account,
+              orderId: encoded
+                ? encodeURIComponent(`${order.owner}:${order.paramsHash}`)
+                : `${order.owner}:${order.paramsHash}`,
+            })}
+          />
+        </React.Suspense>
       </RootLayout>,
     );
     await connectWallet();

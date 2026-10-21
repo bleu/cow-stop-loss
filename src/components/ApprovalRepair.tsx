@@ -48,7 +48,7 @@ export function ApprovalRepair({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
   const [reconciled, setReconciled] = useState(false);
-  const refreshed = useRef<string>();
+  const refreshed = useRef<string | undefined>(undefined);
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState<ApprovalMode>("limited");
   const supported =

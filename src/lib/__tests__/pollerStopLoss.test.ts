@@ -196,6 +196,10 @@ test("uploads a funding pre-hook for the reviewed order's schedule", async () =>
   const document = JSON.parse(prepared.fullAppData);
   const hook = document.metadata.hooks.pre[0];
 
+  expect(document.version).toBe("1.1.0");
+  expect(prepared.appDataHash).toBe(
+    "0x9cc2758400d8a259798ab3e558ff74ecaa53c8b83d6eae132022e08b6d34e2ae",
+  );
   expect(hook).toMatchObject({
     target: "0xd8088f0d57dB91AC6404FB3a9723A890100a6bB3",
     gasLimit: "350000",

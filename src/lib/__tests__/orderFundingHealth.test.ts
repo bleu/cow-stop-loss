@@ -39,7 +39,7 @@ const poller = POLLER_ADDRESS_BY_CHAIN_ID[1];
 const domain = {
   name: "ComposableCoW",
   version: "1",
-  chainId: 1,
+  chainId: BigInt(1),
   verifyingContract: COMPOSABLE_COW_ADDRESS,
 } as const;
 const domainSeparator = hashDomain({
