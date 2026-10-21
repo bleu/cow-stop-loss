@@ -83,7 +83,7 @@ export function StopLossCreation() {
   const currentScope = useRef(scope);
   currentScope.current = scope;
   const request = useRef(0);
-  const refreshedApproval = useRef<string>();
+  const refreshedApproval = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     if (!address || !supportedChainIds.includes(chainId as ChainId)) return;

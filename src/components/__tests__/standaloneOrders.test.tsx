@@ -19,12 +19,14 @@ import {
   PathnameContext,
   SearchParamsContext,
 } from "next/dist/shared/lib/hooks-client-context.shared-runtime";
+import { RouterContext } from "next/dist/shared/lib/router-context.shared-runtime";
+import type { NextRouter } from "next/router";
 import React from "react";
 import { hydrateRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
 import { disconnect } from "wagmi/actions";
 
-import OrderPage from "#/app/[chainId]/[safeAddress]/[orderId]/page";
+import OrderRoute from "#/app/[chainId]/[safeAddress]/[orderId]/page";
 import LegacyListPage from "#/app/[chainId]/[safeAddress]/page";
 import HomePage from "#/app/app/page";
 import { RootLayout as AppRootLayout } from "#/components/RootLayout";
@@ -35,6 +37,22 @@ import { createWagmiConfig } from "#/utils/wagmi";
 let config: ReturnType<typeof createWagmiConfig>;
 function RootLayout({ children }: React.PropsWithChildren) {
   return <AppRootLayout config={config}>{children}</AppRootLayout>;
+}
+
+function OrderPage({
+  params: { safeAddress, chainId, orderId },
+}: {
+  params: { safeAddress: string; chainId: number | string; orderId: string };
+}) {
+  const params = React.useMemo(
+    () => Promise.resolve({ safeAddress, chainId: String(chainId), orderId }),
+    [safeAddress, chainId, orderId],
+  );
+  return (
+    <React.Suspense fallback={null}>
+      <OrderRoute params={params} />
+    </React.Suspense>
+  );
 }
 
 const wallet = "0x1111111111111111111111111111111111111111";
@@ -138,14 +156,41 @@ function Router({
     }),
     [],
   );
+  // Jest resolves next/link to the Pages Router entry without Next's app aliases.
+  const linkRouter: NextRouter = {
+    ...router,
+    route: url.pathname,
+    pathname: url.pathname,
+    query: Object.fromEntries(url.searchParams),
+    asPath: `${url.pathname}${url.search}${url.hash}`,
+    basePath: "",
+    isFallback: false,
+    isReady: true,
+    isPreview: false,
+    isLocaleDomain: false,
+    push: async (href) => {
+      router.push(String(href));
+      return true;
+    },
+    replace: async (href) => {
+      router.replace(String(href));
+      return true;
+    },
+    reload: () => {},
+    beforePopState: () => {},
+    prefetch: async () => {},
+    events: { on: () => {}, off: () => {}, emit: () => {} },
+  };
   return (
-    <AppRouterContext.Provider value={router}>
-      <PathnameContext.Provider value={url.pathname}>
-        <SearchParamsContext.Provider value={url.searchParams}>
-          {children}
-        </SearchParamsContext.Provider>
-      </PathnameContext.Provider>
-    </AppRouterContext.Provider>
+    <RouterContext.Provider value={linkRouter}>
+      <AppRouterContext.Provider value={router}>
+        <PathnameContext.Provider value={url.pathname}>
+          <SearchParamsContext.Provider value={url.searchParams}>
+            {children}
+          </SearchParamsContext.Provider>
+        </PathnameContext.Provider>
+      </AppRouterContext.Provider>
+    </RouterContext.Provider>
   );
 }
 
@@ -1309,15 +1354,12 @@ test("keeps the legacy list route scoped to the connected account", async () => 
     configurable: true,
     value: new BrowserWallet(),
   });
-  render(
-    <RootLayout>
-      <LegacyListPage
-        params={{
-          chainId: 100,
-          safeAddress: "0x2222222222222222222222222222222222222222",
-        }}
-      />
-    </RootLayout>,
+  renderView(
+    <Router initialPath="/100/0x2222222222222222222222222222222222222222">
+      <RootLayout>
+        <LegacyListPage />
+      </RootLayout>
+    </Router>,
   );
   await connectBrowserWallet();
 

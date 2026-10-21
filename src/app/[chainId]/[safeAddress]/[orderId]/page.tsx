@@ -1,15 +1,17 @@
 "use client";
 
+import { use } from "react";
 import { useAccount } from "wagmi";
 
 import { OrderDetails } from "#/components/OrderDetails";
 import { ChainId, supportedChainIds } from "#/lib/publicClients";
 
 export default function OrderPage({
-  params,
+  params: paramsPromise,
 }: {
-  params: { safeAddress: string; chainId: string | number; orderId: string };
+  params: Promise<{ safeAddress: string; chainId: string; orderId: string }>;
 }) {
+  const params = use(paramsPromise);
   const { address } = useAccount();
   const chainId = Number(params.chainId) as ChainId;
   if (!supportedChainIds.includes(chainId))

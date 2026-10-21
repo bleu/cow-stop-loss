@@ -1,4 +1,5 @@
-import { MetadataApi } from "@cowprotocol/app-data";
+import { AppDataSdk } from "@cowprotocol/sdk-app-data";
+import { ViemAdapter } from "@cowprotocol/sdk-viem-adapter";
 import {
   Address,
   encodeFunctionData,
@@ -136,7 +137,7 @@ export async function preparePlacement({
     owner,
     reviewed.salt,
   );
-  const metadataApi = new MetadataApi();
+  const metadataApi = new AppDataSdk(new ViemAdapter({ provider: client }));
   const document = await metadataApi.generateAppDataDoc({
     metadata: {
       widget: { appCode: "Stop Loss" },
@@ -156,8 +157,10 @@ export async function preparePlacement({
       },
     },
   });
+  // Keep order identities stable when the SDK changes its default schema.
+  document.version = "1.1.0";
   const { appDataHex, appDataContent } =
-    await metadataApi.appDataToCid(document);
+    await metadataApi.getAppDataInfo(document);
   await uploadAppData({ appDataHex, fullAppData: appDataContent, chainId });
   const staticInput = encodeStopLossStaticInput(reviewed, appDataHex as Hex);
   const paramsHash = conditionalOrderHash(

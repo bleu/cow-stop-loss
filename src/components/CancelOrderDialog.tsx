@@ -93,8 +93,8 @@ function CancellationReview({
   const [status, setStatus] = useState<"review" | "loading">("review");
   const [walletPrompt, setWalletPrompt] = useState(false);
   const stopped = useRef(false);
-  const timer = useRef<ReturnType<typeof setTimeout>>();
-  const retryObservation = useRef<() => Promise<void>>();
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const retryObservation = useRef<(() => Promise<void>) | undefined>(undefined);
   useEffect(() => {
     stopped.current = false;
     return () => {

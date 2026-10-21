@@ -1,5 +1,4 @@
 import {
-  type Abi,
   type Address,
   createPublicClient,
   custom,
@@ -99,9 +98,9 @@ export function walletTokenRpc() {
             return { success: false, returnData: "0x" as Hex };
           });
           return encodeFunctionResult({
-            abi: multicall3Abi as Abi,
+            abi: multicall3Abi,
             functionName: "aggregate3",
-            result: [results],
+            result: results,
           });
         },
       },

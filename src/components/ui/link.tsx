@@ -13,7 +13,10 @@ export function LinkComponent({
 }: {
   href: Url;
   backToLastPage?: boolean;
-  children: React.ReactElement;
+  children: React.ReactElement<{
+    children?: React.ReactNode;
+    disabled?: boolean;
+  }>;
   className?: string;
 }) {
   const [isLoading, setIsLoading] = React.useState(false);

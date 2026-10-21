@@ -130,6 +130,41 @@ test("keeps an explicit block when an injected client's head advances", async ()
   );
 });
 
+test("pins bytecode reads to the snapshot block", async () => {
+  const read = jest
+    .spyOn(publicClientsFromIds[1], "getBytecode")
+    .mockResolvedValue("0x1234");
+  const { client } = getPlacementReads(scope);
+  await expect(client.getBytecode({ address: scope.account })).resolves.toBe(
+    "0x1234",
+  );
+  expect(read).toHaveBeenCalledWith({
+    address: scope.account,
+    blockHash: undefined,
+    requireCanonical: undefined,
+    blockTag: undefined,
+    blockNumber: BigInt(100),
+  });
+});
+
+test("preserves explicit bytecode block hashes and shares matching reads", async () => {
+  const read = jest
+    .spyOn(publicClientsFromIds[1], "getBytecode")
+    .mockResolvedValue("0x1234");
+  const { client } = getPlacementReads(scope);
+  const args = {
+    address: scope.account,
+    blockHash: `0x${"ab".repeat(32)}` as const,
+    requireCanonical: true,
+  };
+  await expect(
+    Promise.all([client.getBytecode(args), client.getBytecode(args)]),
+  ).resolves.toEqual(["0x1234", "0x1234"]);
+  expect(read).toHaveBeenCalledTimes(1);
+  expect(read).toHaveBeenCalledWith(args);
+  expect(publicClientsFromIds[1].getBlockNumber).not.toHaveBeenCalled();
+});
+
 test("retries a failed read instead of caching a missing balance", async () => {
   const read = jest
     .spyOn(publicClientsFromIds[1], "readContract")

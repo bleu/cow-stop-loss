@@ -40,3 +40,9 @@ jobs:
 
       - name: Run tests
         run: pnpm test:jest --runInBand
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Build app and documentation
+        run: pnpm build

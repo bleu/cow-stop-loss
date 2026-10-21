@@ -968,30 +968,39 @@ test("browsers without Web Locks can merge read-only rows but cannot open a wall
     readTransaction: async () => ({ status: "success" }),
     checkState: async () => true,
   });
-  const reader = createStopLossPlacement({ storage: options.storage });
-  expect((await reader.mergeRows(scope, []))[0]).toMatchObject({
-    source: "local",
-    status: OrderStatus.OPEN,
-  });
-  const indexed = apiOrder();
-  expect(await reader.mergeRows(scope, [indexed])).toEqual([
-    { ...indexed, source: "api", canLink: true },
-  ]);
-  expect(reader.getConfirmedPlacements(scope)).toEqual([prepared]);
-  let prompted = false;
-  await expect(
-    reader.submit(
-      { ...prepared, paramsHash: `0x${"04".repeat(32)}` },
-      "setup",
-      {
-        send: async () => {
-          prompted = true;
-          return { id: "must-not-send" };
+  const navigatorMock = jest.replaceProperty(
+    globalThis,
+    "navigator",
+    {} as Navigator,
+  );
+  try {
+    const reader = createStopLossPlacement({ storage: options.storage });
+    expect((await reader.mergeRows(scope, []))[0]).toMatchObject({
+      source: "local",
+      status: OrderStatus.OPEN,
+    });
+    const indexed = apiOrder();
+    expect(await reader.mergeRows(scope, [indexed])).toEqual([
+      { ...indexed, source: "api", canLink: true },
+    ]);
+    expect(reader.getConfirmedPlacements(scope)).toEqual([prepared]);
+    let prompted = false;
+    await expect(
+      reader.submit(
+        { ...prepared, paramsHash: `0x${"04".repeat(32)}` },
+        "setup",
+        {
+          send: async () => {
+            prompted = true;
+            return { id: "must-not-send" };
+          },
         },
-      },
-    ),
-  ).rejects.toThrow("This browser does not support Web Locks");
-  expect(prompted).toBe(false);
+      ),
+    ).rejects.toThrow("This browser does not support Web Locks");
+    expect(prompted).toBe(false);
+  } finally {
+    navigatorMock.restore();
+  }
 });
 
 test("a ready approval can be explicitly reset and increased after funding checks change", async () => {

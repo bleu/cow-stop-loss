@@ -1,7 +1,6 @@
 /** @type {import('next').NextConfig} */
 const moduleExports = {
   experimental: {
-    ppr: true,
     reactCompiler: {
       compilationMode: "annotation",
     },
