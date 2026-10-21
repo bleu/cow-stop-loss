@@ -539,11 +539,30 @@ test("fills the empty orders viewport with heading controls outside its scroll a
   await screen.findByRole("cell", { name: "No results." });
 
   const table = screen.getByRole("table");
-  const viewport = table.parentElement!.parentElement!;
-  const panel = viewport.parentElement!;
+  const viewport = screen.getByRole("region", { name: "Table rows" });
+  const frame = viewport.parentElement!;
+  const panel = frame.parentElement!;
   expect(panel).toHaveClass("flex", "h-full", "min-h-0", "flex-1", "flex-col");
+  expect(frame).toHaveClass(
+    "pixel-frame",
+    "flex",
+    "min-h-0",
+    "min-w-0",
+    "flex-1",
+    "flex-col",
+    "rounded-none",
+    "border",
+    "border-border/70",
+    "bg-background/35",
+    "p-0.5",
+  );
+  expect(panel.querySelectorAll(".pixel-frame")).toHaveLength(1);
+  expect(frame).not.toHaveClass("overflow-auto");
+  expect(viewport).toHaveAttribute("tabindex", "0");
+  expect(viewport).toContainElement(table);
   expect(viewport).toHaveClass(
     "min-h-0",
+    "min-w-0",
     "flex-1",
     "max-h-none",
     "overflow-auto",
@@ -551,6 +570,7 @@ test("fills the empty orders viewport with heading controls outside its scroll a
     "[&>div]:h-full",
   );
   expect(viewport).not.toHaveClass("max-h-96");
+  expect(viewport).not.toHaveClass("pixel-frame");
   expect(table).toHaveClass("h-full");
   expect(table.querySelector("thead")).toHaveClass(
     "sticky",
@@ -582,8 +602,8 @@ test("fills the empty orders viewport with heading controls outside its scroll a
   expect(heading).toContainElement(screen.getByLabelText("Selected filters"));
   expect(refresh).toBeEnabled();
   expect(panel).not.toContainElement(heading);
-  expect(panel.firstElementChild).toBe(viewport);
-  expect(panel.lastElementChild).toBe(viewport);
+  expect(panel.firstElementChild).toBe(frame);
+  expect(panel.lastElementChild).toBe(frame);
   expect(
     screen.queryByRole("button", { name: "Go to next page" }),
   ).not.toBeInTheDocument();
@@ -782,9 +802,23 @@ test("keeps the expanding table shell while the connected account's first orders
     expect(
       screen.getByRole("button", { name: "Refresh orders" }),
     ).toHaveAttribute("aria-busy", "true");
-    const viewport = table.parentElement!.parentElement!;
-    expect(viewport).toHaveClass("min-h-0", "flex-1", "max-h-none");
-    expect(viewport.parentElement!.parentElement).toHaveClass(
+    const viewport = screen.getByRole("region", { name: "Table rows" });
+    const frame = viewport.parentElement!;
+    expect(viewport).toContainElement(table);
+    expect(viewport).toHaveClass(
+      "min-h-0",
+      "min-w-0",
+      "flex-1",
+      "max-h-none",
+      "[&>div]:overflow-visible",
+      "[&>div]:h-full",
+    );
+    expect(viewport).not.toHaveClass("pixel-frame");
+    expect(frame).toHaveClass("pixel-frame", "min-h-0", "min-w-0", "flex-1");
+    expect(frame.parentElement!.querySelectorAll(".pixel-frame")).toHaveLength(
+      1,
+    );
+    expect(frame.parentElement).toHaveClass(
       "flex",
       "min-h-0",
       "flex-1",
@@ -817,11 +851,18 @@ test("keeps an expanding unavailable viewport and retries into the same table wi
     screen.getByText("Orders are unavailable on all supported chains."),
   );
   expect(screen.queryByText("No results.")).not.toBeInTheDocument();
-  expect(table.parentElement!.parentElement).toHaveClass(
+  const viewport = screen.getByRole("region", { name: "Table rows" });
+  expect(viewport).toContainElement(table);
+  expect(viewport).toHaveClass(
     "min-h-0",
+    "min-w-0",
     "flex-1",
     "max-h-none",
+    "[&>div]:overflow-visible",
+    "[&>div]:h-full",
   );
+  expect(viewport).not.toHaveClass("pixel-frame");
+  expect(viewport.parentElement).toHaveClass("pixel-frame");
   expect(screen.getByRole("button", { name: "Refresh orders" })).toBeEnabled();
   expect(
     screen.queryByRole("button", { name: "Go to next page" }),
@@ -862,7 +903,9 @@ test("keeps chain and placement warnings inside the scroll area so pagination re
     ),
   );
 
-  const viewport = screen.getByRole("table").parentElement!.parentElement!;
+  const viewport = screen.getByRole("region", { name: "Table rows" });
+  expect(viewport).not.toHaveClass("pixel-frame");
+  expect(viewport.parentElement).toHaveClass("pixel-frame");
   for (const warning of screen.getAllByRole("alert")) {
     expect(viewport).toContainElement(warning);
   }
@@ -874,6 +917,39 @@ test("keeps chain and placement warnings inside the scroll area so pagination re
   );
   expect(screen.getByRole("button", { name: "Retry Ethereum" })).toBeEnabled();
   expect(screen.queryByText("No results.")).not.toBeInTheDocument();
+});
+
+test("keeps pagination outside the stationary frame and warnings inside the scroll viewport", async () => {
+  serveOrders(
+    Array.from({ length: 6 }, (_, index) =>
+      apiParent(1, `paged-${index}`, `0x${String(index).repeat(64)}`),
+    ),
+    new Set([100]),
+  );
+  render(<TableView />);
+  await connectWallet();
+
+  const next = await screen.findByRole("button", { name: "Go to next page" });
+  const viewport = screen.getByRole("region", { name: "Table rows" });
+  const frame = viewport.parentElement!;
+  const panel = frame.parentElement!;
+  expect(frame).toHaveClass("pixel-frame");
+  expect(panel.querySelectorAll(".pixel-frame")).toHaveLength(1);
+  expect(viewport).not.toHaveClass("pixel-frame");
+  expect(viewport).not.toHaveClass("[&>div]:h-full");
+  expect(viewport).toContainElement(await screen.findByRole("alert"));
+  expect(panel).toContainElement(next);
+  expect(frame).not.toContainElement(next);
+  expect(panel.lastElementChild).toHaveClass("shrink-0");
+  expect(panel.lastElementChild).toContainElement(next);
+  expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(5);
+
+  fireEvent.click(next);
+  await waitFor(() =>
+    expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(1),
+  );
+  expect(screen.getByRole("region", { name: "Table rows" })).toBe(viewport);
+  expect(viewport.parentElement).toBe(frame);
 });
 
 test("keeps indexed API orders visible with a tracking error when saved placement storage is unreadable", async () => {
