@@ -949,6 +949,7 @@
   }
   .rescue-distant-cow {
     display: block;
+    scale: -1 1;
     top: -76px;
     left: calc(50% - 21px);
     width: 42px;

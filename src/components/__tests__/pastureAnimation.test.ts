@@ -29,6 +29,20 @@ describe.each(assets)("pasture animation in %s", (asset) => {
     expect(svg.querySelector("use[href='#cow']")).not.toBeNull();
   });
 
+  if (asset.startsWith("ground-desktop-")) {
+    it("mirrors the middle cow within its original pasture position", () => {
+      const cows = Array.from(svg.querySelectorAll("use[href='#cow']"));
+
+      expect(
+        cows.map((cow) => cow.parentElement?.getAttribute("transform")),
+      ).toEqual([
+        "translate(250 73)",
+        "translate(474 76) scale(-1 1)",
+        "translate(600 72)",
+      ]);
+    });
+  }
+
   it("uses a repeating stepped graze, chew, and bite cycle", () => {
     for (const [part, animation] of [
       ["head", "graze"],
