@@ -307,6 +307,7 @@ function placementReader(chainId: ChainId): PlacementReader {
           "prepared" in record
             ? [record.prepared.account, record.prepared.poller]
             : [record.account, record.poller],
+        blockNumber: record.transactions[record.stage]?.blockNumber,
       });
       if (record.stage === "approval-reset") return allowance === BigInt(0);
       return (

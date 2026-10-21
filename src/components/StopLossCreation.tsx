@@ -83,6 +83,7 @@ export function StopLossCreation() {
   const currentScope = useRef(scope);
   currentScope.current = scope;
   const request = useRef(0);
+  const refreshedApproval = useRef<string>();
 
   useEffect(() => {
     if (!address || !supportedChainIds.includes(chainId as ChainId)) return;
@@ -136,6 +137,33 @@ export function StopLossCreation() {
   }, [review?.prepared]);
 
   useEffect(() => {
+    if (
+      !open ||
+      !review?.prepared ||
+      review.busy ||
+      review.checks?.status !== "known" ||
+      !review.checks.approvalRequired
+    )
+      return;
+    const record = records.find(
+      (record) =>
+        record.status === "ready" &&
+        record.stage === "approval" &&
+        record.prepared.paramsHash === review.prepared?.paramsHash,
+    );
+    if (!record) return;
+    const key = `${record.id}:${record.attempt}`;
+    if (refreshedApproval.current === key) return;
+    refreshedApproval.current = key;
+    void loadReview(
+      review.order,
+      review.chainId,
+      review.account,
+      review.prepared,
+    );
+  }, [open, records, review]);
+
+  useEffect(() => {
     if (trackingError) showOrderError("check", trackingError);
   }, [trackingError]);
 
@@ -174,8 +202,21 @@ export function StopLossCreation() {
           account,
           chainId: selectedChain,
         }));
+      let minimumBlockNumber = BigInt(0);
+      for (const record of placement.getRecords(prepared)) {
+        for (const reference of Object.values(record.transactions)) {
+          if (
+            reference?.blockNumber !== undefined &&
+            reference.blockNumber > minimumBlockNumber
+          )
+            minimumBlockNumber = reference.blockNumber;
+        }
+      }
       const localOrders = placement.getConfirmedPlacements(prepared);
-      const checks = await refreshPlacementChecks(prepared, { localOrders });
+      const checks = await refreshPlacementChecks(prepared, {
+        localOrders,
+        minimumBlockNumber,
+      });
       if (
         currentScope.current !== selectedScope ||
         request.current !== revision
@@ -275,10 +316,18 @@ export function StopLossCreation() {
           prepared.account,
           prepared.chainId,
         );
-        const failure = saved.find(
+        const record = saved.find(
           (record) => record.prepared.paramsHash === prepared.paramsHash,
-        )?.error;
-        if (failure) throw new Error(failure);
+        );
+        if (record?.error) throw new Error(record.error);
+        if (record?.status === "pending" || record?.status === "prompting") {
+          if (
+            currentScope.current === selectedScope &&
+            request.current === revision
+          )
+            setReview((current) => current && { ...current, busy: false });
+          return;
+        }
       }
       if (
         currentScope.current === selectedScope &&
