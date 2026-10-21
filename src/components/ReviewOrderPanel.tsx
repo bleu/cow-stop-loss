@@ -116,12 +116,15 @@ export function ReviewOrderPanel({
       <section aria-label="Order terms" className="rescue-review-terms">
         <dl className="rescue-review-price-row">
           <div>
-            <dt>Trigger price</dt>
+            <dt>
+              Trigger price ({order.tokenBuy.symbol}/{order.tokenSell.symbol})
+            </dt>
             <dd className="rescue-review-strike">
-              {order.strikePrice}{" "}
-              <span>
-                {order.tokenBuy.symbol} / {order.tokenSell.symbol}
-              </span>
+              <PreciseAmount
+                value={order.strikePrice}
+                symbol={`${order.tokenBuy.symbol} / ${order.tokenSell.symbol}`}
+                kind="price"
+              />
             </dd>
           </div>
           <div>
@@ -255,26 +258,51 @@ function compactAmount(value: string) {
   return `${whole}${decimalPlaces ? `.${fraction.slice(0, decimalPlaces)}` : ""}…`;
 }
 
-function PreciseAmount({ value, symbol }: { value: string; symbol: string }) {
+function compactPrice(value: string) {
+  const [whole, fraction = ""] = value.split(".");
+  const decimalPlaces = Math.max(0, fraction.search(/[1-9]/)) + 4;
+  if (fraction.length <= decimalPlaces) return value;
+  return `${whole}.${fraction.slice(0, decimalPlaces)}…`;
+}
+
+function PreciseAmount({
+  value,
+  symbol,
+  kind = "amount",
+}: {
+  value: string;
+  symbol: string;
+  kind?: "amount" | "price";
+}) {
+  const label = kind === "price" ? "trigger price" : "amount";
   return (
     <Popover>
       <PopoverTrigger asChild>
         <button
           type="button"
           title={`${value} ${symbol}`}
-          aria-label={`Show exact amount: ${value} ${symbol}`}
+          aria-label={`Show exact ${label}: ${value} ${symbol}`}
           className="rescue-review-inline-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rescue-review-number max-w-full rounded-none text-left underline decoration-dotted decoration-muted-foreground/50 underline-offset-4"
         >
-          <span>{compactAmount(value)}</span>{" "}
-          <span className="rescue-review-symbol">{symbol}</span>
+          <span>
+            {kind === "price" ? compactPrice(value) : compactAmount(value)}
+          </span>
+          {kind === "amount" && (
+            <>
+              {" "}
+              <span className="rescue-review-symbol">{symbol}</span>
+            </>
+          )}
         </button>
       </PopoverTrigger>
       <PopoverContent
-        aria-label="Exact token amount"
+        aria-label={
+          kind === "price" ? "Exact trigger price" : "Exact token amount"
+        }
         className="pixel-frame rescue-popover w-fit max-w-[calc(100vw-2rem)] rounded-none border border-border bg-popover p-4 text-popover-foreground"
       >
         <p className="mb-1 font-serif text-xs text-muted-foreground">
-          Exact amount
+          Exact {label}
         </p>
         <p className="break-all font-sans text-sm font-medium tabular-nums">
           {value} {symbol}

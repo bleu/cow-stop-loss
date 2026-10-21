@@ -137,6 +137,7 @@
 }
 .rescue-review-symbol {
   flex-shrink: 0;
+  white-space: nowrap;
   font-size: 12px;
   font-weight: 500;
   color: hsl(var(--muted-foreground));
@@ -149,12 +150,9 @@
 }
 .rescue-review-price-row {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr));
   align-items: start;
   gap: 12px;
-}
-.rescue-review-price-row > div:nth-child(2) {
-  text-align: center;
 }
 .rescue-review-price-row dt {
   color: hsl(var(--muted-foreground));
@@ -168,14 +166,9 @@
   font-variant-numeric: tabular-nums;
 }
 .rescue-review-price-row .rescue-review-strike {
-  overflow-wrap: anywhere;
   font-size: 19px;
   font-weight: 600;
   color: hsl(var(--primary));
-}
-.rescue-review-strike span {
-  font-size: 12px;
-  font-weight: 500;
 }
 .rescue-review-expiry {
   text-align: right;
@@ -301,7 +294,6 @@
     grid-template-columns: minmax(0, 1fr);
     gap: 10px;
   }
-  .rescue-review-price-row > div:nth-child(2),
   .rescue-review-expiry {
     text-align: left;
   }

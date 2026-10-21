@@ -245,6 +245,47 @@ it("keeps small nonzero amounts visible and reveals the full amount by touch", a
   ).toHaveTextContent("0.000000000123456789 WETH");
 });
 
+it.each([
+  ["2000.123456789012345678", "2000.1234…"],
+  ["0.000000000123456789", "0.0000000001234…"],
+  ["123456789.123456789", "123456789.1234…"],
+  ["2000.000012345678", "2000.00001234…"],
+  ["0.00001234", "0.00001234"],
+  ["2000", "2000"],
+])(
+  "reveals the exact trigger price %s on click",
+  async (strikePrice, compact) => {
+    const user = userEvent.setup();
+    render(<ReviewOrderPanel {...props()} order={{ ...order, strikePrice }} />);
+    const price = screen.getByRole("button", {
+      name: `Show exact trigger price: ${strikePrice} USDC / WETH`,
+    });
+    expect(screen.getByText("Trigger price (USDC/WETH)")).toBeInTheDocument();
+    expect(price.textContent).toBe(compact);
+    expect(price).toHaveAttribute("title", `${strikePrice} USDC / WETH`);
+    await user.click(price);
+    expect(
+      screen.getByRole("dialog", { name: "Exact trigger price" }),
+    ).toHaveTextContent(`${strikePrice} USDC / WETH`);
+  },
+);
+
+it("reveals the exact trigger price with the keyboard and restores focus on close", async () => {
+  const user = userEvent.setup();
+  render(<ReviewOrderPanel {...props()} />);
+  const price = screen.getByRole("button", {
+    name: "Show exact trigger price: 2000 USDC / WETH",
+  });
+  price.focus();
+  await user.keyboard("{Enter}");
+  expect(
+    screen.getByRole("dialog", { name: "Exact trigger price" }),
+  ).toHaveTextContent("2000 USDC / WETH");
+  await user.keyboard("{Escape}");
+  expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  expect(price).toHaveFocus();
+});
+
 it("reveals high-precision amounts with the keyboard and restores focus on close", async () => {
   const user = userEvent.setup();
   render(<ReviewOrderPanel {...props()} />);
