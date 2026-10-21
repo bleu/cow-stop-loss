@@ -115,7 +115,7 @@
     min-width: 320px;
   }
   body {
-    --font-family-serif: var(--font-family-pixel-display);
+    --font-family-serif: var(--font-family-display);
     --font-family-sans: var(--font-family-serif);
     margin: 0;
     font-synthesis-weight: none;
@@ -879,9 +879,6 @@
 }
 
 @media (min-width: 1024px) {
-  body {
-    --font-family-serif: var(--font-family-desktop-display);
-  }
   .rescue-shell {
     --footer-height: 56px;
     --scene-clearance: 128px;

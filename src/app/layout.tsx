@@ -10,14 +10,7 @@ import type { ReactNode } from "react";
 import { RootLayout } from "#/components/RootLayout";
 import { getWagmiInitialState } from "#/utils/wagmiServer";
 
-const pixelDisplay = localFont({
-  src: "../fonts/PixelifySans-Variable.ttf",
-  weight: "400 700",
-  variable: "--font-family-pixel-display",
-  display: "swap",
-});
-
-const desktopDisplay = localFont({
+const displayFont = localFont({
   src: [
     { path: "../fonts/ChakraPetch-Medium.ttf", weight: "500", style: "normal" },
     {
@@ -26,7 +19,7 @@ const desktopDisplay = localFont({
       style: "normal",
     },
   ],
-  variable: "--font-family-desktop-display",
+  variable: "--font-family-display",
   display: "swap",
 });
 
@@ -56,7 +49,7 @@ export default async function Layout({
   return (
     <html lang="en" className={initialTheme === "light" ? "light" : undefined}>
       <body
-        className={`${pixelDisplay.variable} ${desktopDisplay.variable} min-h-full border-border bg-background font-sans font-normal`}
+        className={`${displayFont.variable} min-h-full border-border bg-background font-sans font-normal`}
       >
         <RootLayout initialState={initialState} initialTheme={initialTheme}>
           {children}
