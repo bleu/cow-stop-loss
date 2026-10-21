@@ -182,7 +182,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                     type="button"
                     variant="ghost"
                     aria-label={`Retry ${token.symbol} balance`}
-                    className="rescue-secondary-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 p-0 text-xs text-primary underline-offset-4 hover:underline"
+                    className="rescue-secondary-control min-h-0 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-auto p-0 text-xs text-primary underline-offset-4 hover:underline"
                     onClick={() => retryBalance((attempt) => attempt + 1)}
                   >
                     Retry
@@ -192,7 +192,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                   <Button
                     type="button"
                     variant="ghost"
-                    className="rescue-secondary-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 p-0 text-xs text-primary underline-offset-4 hover:underline"
+                    className="rescue-secondary-control min-h-0 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-auto p-0 text-xs text-primary underline-offset-4 hover:underline"
                     onClick={() => {
                       setValue(amountFieldName, tokenBalance, {
                         shouldValidate: true,
