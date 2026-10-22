@@ -290,7 +290,7 @@ function WalletSwapForm({
                 >
                   {quote.isCapped
                     ? "The suggested slippage is above the 10% maximum. This trade might fail."
-                    : "Price slippage is high."}
+                    : "Price slippage is above 1%"}
                 </WarningNotice>
               )}
               <AdvancedSettingsAlert

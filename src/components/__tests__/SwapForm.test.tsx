@@ -230,10 +230,8 @@ it("shows one Auto slippage warning without hiding the oracle-age warning", asyn
   await selectWeth(user);
   await setTriggerPrice(user);
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
-  expect(await screen.findByText("Price slippage is high.")).toBeVisible();
-  expect(
-    screen.queryByText(/Price slippage is above 1%/),
-  ).not.toBeInTheDocument();
+  expect(await screen.findByText("Price slippage is above 1%")).toBeVisible();
+  expect(screen.getAllByText(/Price slippage is above 1%/)).toHaveLength(1);
   expect(screen.getByRole("note")).toHaveTextContent(
     "The order accepts oracle prices older than 24 hours.",
   );
