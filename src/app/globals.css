@@ -407,10 +407,9 @@
 }
 .rescue-home-cards {
   display: grid;
-  grid-template-columns: minmax(0, min(450px, calc((100% - 20px) * 5 / 11))) minmax(
-      0,
-      1fr
-    );
+  grid-template-columns:
+    minmax(0, min(450px, calc((100% - 20px) * 5 / 11)))
+    minmax(0, 1fr);
   align-items: stretch;
   gap: 24px;
 }
@@ -633,6 +632,71 @@
 .rescue-dialog {
   gap: 16px;
 }
+.rescue-orders-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 0;
+  color: hsl(var(--muted-foreground));
+  font-size: 13px;
+}
+.rescue-orders-loading-cow {
+  width: 80px;
+  height: 96px;
+  background: url("/assets/air-rescue/passenger-dark.svg") center / contain
+    no-repeat;
+  image-rendering: pixelated;
+  animation: rescue-orders-float 3s steps(8, end) infinite alternate;
+}
+.light .rescue-orders-loading-cow {
+  background-image: url("/assets/air-rescue/passenger-light.svg");
+}
+.rescue-orders-loading-dots {
+  display: flex;
+  gap: 6px;
+}
+.rescue-orders-loading-dots span {
+  width: 4px;
+  height: 4px;
+  background: hsl(var(--primary));
+  opacity: 0.35;
+  animation: rescue-orders-pulse 1.5s steps(2, end) infinite;
+}
+.rescue-orders-loading-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.rescue-orders-loading-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes rescue-orders-float {
+  from {
+    transform: translateY(-4px);
+  }
+  to {
+    transform: translateY(4px);
+  }
+}
+@keyframes rescue-orders-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+[data-scene-paused="true"] .rescue-orders-loading-cow,
+[data-scene-paused="true"] .rescue-orders-loading-dots span {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rescue-orders-loading-cow,
+  .rescue-orders-loading-dots span {
+    animation: none !important;
+  }
+}
+
 .rescue-orders-table {
   container-type: inline-size;
 }

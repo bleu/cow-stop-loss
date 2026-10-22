@@ -837,9 +837,16 @@ test("keeps the expanding table shell while the connected account's first orders
   await connectWallet();
 
   try {
-    expect(await screen.findByRole("status")).toHaveTextContent(
-      "Loading stop-loss orders...",
+    const status = await screen.findByRole("status");
+    expect(status).toHaveTextContent("Loading stop-loss orders...");
+    expect(status).toHaveClass("rescue-orders-loading");
+    expect(status.querySelector(".rescue-orders-loading-cow")).toHaveAttribute(
+      "aria-hidden",
+      "true",
     );
+    const dots = status.querySelector(".rescue-orders-loading-dots");
+    expect(dots).toHaveAttribute("aria-hidden", "true");
+    expect(dots?.children).toHaveLength(3);
     const table = screen.getByRole("table");
     expect(table).toContainElement(screen.getByRole("status"));
     expect(screen.queryByText("No results.")).not.toBeInTheDocument();
@@ -879,6 +886,46 @@ test("keeps the expanding table shell while the connected account's first orders
     expect(
       screen.getByRole("button", { name: "Refresh orders" }),
     ).toBeEnabled();
+  } finally {
+    await act(async () => release());
+  }
+});
+
+test("keeps loaded orders visible instead of the loading scene during refresh", async () => {
+  serveOrders([apiParent()]);
+  render(<TableView />);
+  await connectWallet();
+  const row = await screen.findByRole("row", {
+    name: "View order indexed-order on Ethereum",
+  });
+  const refresh = screen.getByRole("button", { name: "Refresh orders" });
+  await waitFor(() => expect(refresh).toBeEnabled());
+
+  const fetchOrders = global.fetch;
+  let release!: () => void;
+  const pending = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  global.fetch = jest.fn(async (...args) => {
+    await pending;
+    return fetchOrders(...args);
+  });
+
+  try {
+    fireEvent.click(refresh);
+    await waitFor(() => expect(refresh).toBeDisabled());
+    expect(refresh).toHaveAttribute("aria-busy", "true");
+    expect(row).toBeVisible();
+    expect(
+      screen.queryByText("Loading stop-loss orders..."),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("table").querySelector(".rescue-orders-loading"),
+    ).not.toBeInTheDocument();
+
+    await act(async () => release());
+    await waitFor(() => expect(refresh).toBeEnabled());
+    expect(row).toBeVisible();
   } finally {
     await act(async () => release());
   }
