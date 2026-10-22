@@ -249,8 +249,13 @@ it.each([true, false])(
       "2000",
     );
     await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Review Stop Loss order" }),
+      ).toBeEnabled(),
+    );
     await user.click(
-      await screen.findByRole("button", { name: "Review Stop Loss order" }),
+      screen.getByRole("button", { name: "Review Stop Loss order" }),
     );
     try {
       await waitFor(() => expect(uploadStarted).toBe(true));
@@ -330,6 +335,11 @@ it("confirms approval before enabling Place and does not send setup automaticall
   const amount = screen.getByRole("textbox", { name: "Sell amount" });
   await user.clear(amount);
   await user.type(amount, "2");
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Review Stop Loss order" }),
+    ).toBeEnabled(),
+  );
   await user.click(
     screen.getByRole("button", { name: "Review Stop Loss order" }),
   );
@@ -724,6 +734,11 @@ it("includes orders confirmed during preparation in the next review funding tota
   );
   await user.click(screen.getByRole("button", { name: "Edit order" }));
   confirmDuringPreparation = true;
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Review Stop Loss order" }),
+    ).toBeEnabled(),
+  );
   await user.click(
     screen.getByRole("button", { name: "Review Stop Loss order" }),
   );
@@ -792,6 +807,11 @@ it("refreshes funding when an earlier setup confirms after review opens", async 
     });
   });
   await user.click(screen.getByRole("button", { name: "Edit order" }));
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Review Stop Loss order" }),
+    ).toBeEnabled(),
+  );
   await user.click(
     screen.getByRole("button", { name: "Review Stop Loss order" }),
   );
@@ -882,6 +902,11 @@ it("permits a fresh review after closing an unfinished order", async () => {
   const amount = screen.getByRole("textbox", { name: "Sell amount" });
   await user.clear(amount);
   await user.type(amount, "2");
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Review Stop Loss order" }),
+    ).toBeEnabled(),
+  );
   await user.click(
     screen.getByRole("button", { name: "Review Stop Loss order" }),
   );
@@ -1161,8 +1186,13 @@ it("shows a saved-storage error without crashing or sending a wallet request", a
     "2000",
   );
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Review Stop Loss order" }),
+    ).toBeEnabled(),
+  );
   await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
+    screen.getByRole("button", { name: "Review Stop Loss order" }),
   );
   expect(
     screen.queryByRole("region", { name: "Review stop-loss order" }),
@@ -1346,6 +1376,11 @@ it("does not close a new review when the earlier wallet response arrives late", 
     });
     await user.click(screen.getByRole("button", { name: "Edit order" }));
 
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Review Stop Loss order" }),
+      ).toBeEnabled(),
+    );
     await user.click(
       screen.getByRole("button", { name: "Review Stop Loss order" }),
     );
@@ -1400,8 +1435,13 @@ async function reviewOneOrder(
     "2000",
   );
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Review Stop Loss order" }),
+    ).toBeEnabled(),
+  );
   await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
+    screen.getByRole("button", { name: "Review Stop Loss order" }),
   );
   const review = await screen.findByRole("region", {
     name: "Review stop-loss order",
@@ -1427,8 +1467,13 @@ it("opens a wallet-scoped review with checked permissions and separate approval 
     "2000",
   );
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  await waitFor(() =>
+    expect(
+      screen.getByRole("button", { name: "Review Stop Loss order" }),
+    ).toBeEnabled(),
+  );
   await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
+    screen.getByRole("button", { name: "Review Stop Loss order" }),
   );
 
   const dialog = await screen.findByRole("region", {

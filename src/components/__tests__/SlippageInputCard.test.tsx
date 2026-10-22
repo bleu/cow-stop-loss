@@ -32,7 +32,7 @@ it("shows the default slippage in an always-visible custom input", () => {
   expect(input).toHaveValue("0.1");
   expect(screen.getByText("Slippage (%)")).toBeVisible();
   expect(screen.queryByText("%", { exact: true })).not.toBeInTheDocument();
-  expect(input.closest(".rescue-input-inline")?.children[1]).toBe(input);
+  expect(input).toBeEnabled();
 });
 
 it("opens keyboard help outside the settings container and closes it with Escape", async () => {

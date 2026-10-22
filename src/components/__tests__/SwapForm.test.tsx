@@ -63,7 +63,30 @@ beforeAll(() => {
   Element.prototype.scrollIntoView = jest.fn();
 });
 
+const originalFetch = global.fetch;
+const fetchMock = jest.fn();
+
 beforeEach(() => {
+  global.fetch = fetchMock;
+  fetchMock
+    .mockReset()
+    .mockImplementation(async (url: string, options?: RequestInit) => {
+      if (url.includes("slippageTolerance"))
+        return { ok: true, json: async () => ({ slippageBps: 10 }) };
+      const body = JSON.parse(options!.body as string);
+      const sellAmount = BigInt(body.sellAmountBeforeFee);
+      const isWeth =
+        body.sellToken.toLowerCase() ===
+        "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+      const buyAmount = isWeth
+        ? (sellAmount * BigInt(2000) + BigInt("999999999999")) /
+          BigInt("1000000000000")
+        : (sellAmount * BigInt(60000)) / BigInt(100);
+      return {
+        ok: true,
+        json: async () => ({ quote: { buyAmount: buyAmount.toString() } }),
+      };
+    });
   mockUseRealSupportedTokens = false;
   safe = {
     chainId: 1,
@@ -106,6 +129,8 @@ beforeEach(() => {
   jest
     .spyOn(publicClientsFromIds[1], "readContract")
     .mockImplementation(async ({ functionName, address }) => {
+      if (functionName === "COW_SHED_FACTORY" || functionName === "proxyOf")
+        return safe.safeAddress;
       if (functionName === "balanceOf") return BigInt("1123456789012345678");
       if (functionName === "domainSeparator") return `0x${"1".repeat(64)}`;
       if (functionName === "domainVerifiers") return COMPOSABLE_COW_ADDRESS;
@@ -124,7 +149,217 @@ beforeEach(() => {
       ];
     });
 });
-afterEach(() => jest.restoreAllMocks());
+afterEach(() => {
+  jest.restoreAllMocks();
+  global.fetch = originalFetch;
+});
+
+it("shows the 1% fallback when the pair recommendation is unavailable", async () => {
+  fetchMock.mockImplementation(async (url: string) => ({
+    ok: !url.includes("slippageTolerance"),
+    json: async () => ({ quote: { buyAmount: "2000000000" } }),
+  }));
+  const user = userEvent.setup();
+  renderForm();
+  await selectWeth(user);
+  await setTriggerPrice(user);
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  expect(
+    await screen.findByText(
+      "The pair recommendation is unavailable. Auto uses a 1% fallback plus any estimated execution price gap.",
+    ),
+  ).toBeVisible();
+  expect(screen.getByRole("textbox", { name: "Receive at least" })).toHaveValue(
+    "1980",
+  );
+});
+
+it("disables review while slippage is calculated without a loading message", async () => {
+  let finish!: (value: unknown) => void;
+  fetchMock.mockImplementation(async (url: string) =>
+    url.includes("slippageTolerance")
+      ? { ok: true, json: async () => ({ slippageBps: 50 }) }
+      : new Promise((resolve) => {
+          finish = resolve;
+        }),
+  );
+  const user = userEvent.setup();
+  const onReviewOrder = jest.fn();
+  renderForm(onReviewOrder);
+  await selectWeth(user);
+  await setTriggerPrice(user);
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  const review = screen.getByRole("button", { name: "Review Stop Loss order" });
+  expect(review).toBeDisabled();
+  await waitFor(() => expect(finish).toBeDefined());
+  expect(review).toBeDisabled();
+  expect(
+    screen.queryByText(/Checking the current execution estimate/),
+  ).not.toBeInTheDocument();
+  await user.click(review);
+  expect(onReviewOrder).not.toHaveBeenCalled();
+  await act(async () => {
+    finish({
+      ok: true,
+      json: async () => ({ quote: { buyAmount: "1800000000" } }),
+    });
+  });
+  await waitFor(() => expect(review).toBeEnabled());
+  await user.click(review);
+  await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(1));
+  expect(onReviewOrder.mock.calls[0][0]).toMatchObject({
+    slippagePercent: "10",
+    amountBuy: "1800",
+  });
+});
+
+it("shows one Auto slippage warning without hiding the oracle-age warning", async () => {
+  useAdvancedSettingsStore.getState().setAdvancedSettings({
+    ...defaultAdvancedSettings,
+    maxHoursSinceOracleUpdates: 25,
+  });
+  fetchMock.mockImplementation(async (url: string) => ({
+    ok: true,
+    json: async () =>
+      url.includes("slippageTolerance")
+        ? { slippageBps: 250 }
+        : { quote: { buyAmount: "2000000000" } },
+  }));
+  const user = userEvent.setup();
+  renderForm();
+  await selectWeth(user);
+  await setTriggerPrice(user);
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  expect(await screen.findByText("Price slippage is above 1%")).toBeVisible();
+  expect(screen.getAllByText(/Price slippage is above 1%/)).toHaveLength(1);
+  expect(screen.getByRole("note")).toHaveTextContent(
+    "The order accepts oracle prices older than 24 hours.",
+  );
+});
+
+it("warns when the estimate exceeds the Auto cap and reviews with 10%", async () => {
+  fetchMock.mockImplementation(async (url: string) => ({
+    ok: true,
+    json: async () =>
+      url.includes("slippageTolerance")
+        ? { slippageBps: 50 }
+        : { quote: { buyAmount: "1800000000" } },
+  }));
+  const user = userEvent.setup();
+  const onReviewOrder = jest.fn();
+  renderForm(onReviewOrder);
+  await selectWeth(user);
+  await setTriggerPrice(user);
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  expect(
+    await screen.findByText(/The suggested slippage is above the 10% maximum/),
+  ).toHaveTextContent(
+    "The suggested slippage is above the 10% maximum. This trade might fail.",
+  );
+  expect(
+    screen.queryByText("Price slippage is above 1%."),
+  ).not.toBeInTheDocument();
+  const warning = screen
+    .getByText(
+      "The suggested slippage is above the 10% maximum. This trade might fail.",
+    )
+    .closest("aside")!;
+  await user.hover(
+    within(warning).getByRole("button", { name: "More information" }),
+  );
+  expect(await screen.findByRole("tooltip")).toHaveTextContent(
+    "Auto slippage has reached 10%. The current estimate is higher, so the order might not execute. You can adjust slippage in Order settings.",
+  );
+  expect(screen.queryByText(/split/i)).not.toBeInTheDocument();
+  await waitFor(() =>
+    expect(
+      screen.getByRole("textbox", { name: "Receive at least" }),
+    ).toHaveValue("1800"),
+  );
+  await user.click(
+    screen.getByRole("button", { name: "Review Stop Loss order" }),
+  );
+  await waitFor(() =>
+    expect(onReviewOrder).toHaveBeenCalledWith(
+      expect.objectContaining({ slippagePercent: "10", amountBuy: "1800" }),
+      1,
+      safe.safeAddress,
+    ),
+  );
+});
+
+it("defaults to Auto and preserves manual slippage across amount changes", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  await selectWeth(user);
+  await setTriggerPrice(user);
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  await waitFor(() =>
+    expect(
+      screen.getByRole("textbox", { name: "Receive at least" }),
+    ).toHaveValue("1998"),
+  );
+  await user.click(screen.getByRole("button", { name: "Order settings" }));
+  expect(screen.getByRole("button", { name: "Auto slippage" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  const slippage = screen.getByRole("textbox", { name: "Slippage (%)" });
+  await user.clear(slippage);
+  await user.type(slippage, "3");
+  expect(screen.getByRole("button", { name: "Auto slippage" })).toHaveAttribute(
+    "aria-pressed",
+    "false",
+  );
+  await user.click(screen.getByRole("button", { name: "Return to order" }));
+  const amount = screen.getByRole("textbox", { name: "Sell amount" });
+  await user.clear(amount);
+  await user.type(amount, "0.5");
+  await waitFor(() =>
+    expect(
+      screen.getByRole("textbox", { name: "Receive at least" }),
+    ).toHaveValue("970"),
+  );
+  await user.click(screen.getByRole("button", { name: "Order settings" }));
+  expect(screen.getByRole("textbox", { name: "Slippage (%)" })).toHaveValue(
+    "3",
+  );
+  await user.click(screen.getByRole("button", { name: "Auto slippage" }));
+  await user.click(screen.getByRole("button", { name: "Return to order" }));
+  await waitFor(() =>
+    expect(
+      screen.getByRole("textbox", { name: "Receive at least" }),
+    ).toHaveValue("999"),
+  );
+});
+
+it("warns about an amount below current fees but still lets the user review", async () => {
+  fetchMock.mockResolvedValue({
+    ok: false,
+    json: async () => ({ errorType: "SellAmountDoesNotCoverFee" }),
+  });
+  const user = userEvent.setup();
+  const onReviewOrder = jest.fn();
+  renderForm(onReviewOrder);
+  await selectWeth(user);
+  await setTriggerPrice(user);
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  expect(
+    await screen.findByText(
+      "The sell amount does not cover current estimated fees. This order might not execute.",
+    ),
+  ).toBeVisible();
+  const review = screen.getByRole("button", { name: "Review Stop Loss order" });
+  expect(review).toBeEnabled();
+  await user.click(review);
+  await waitFor(() =>
+    expect(onReviewOrder).toHaveBeenCalledWith(
+      expect.objectContaining({ slippagePercent: "1", amountBuy: "1980" }),
+      1,
+      safe.safeAddress,
+    ),
+  );
+});
 
 it.each(supportedChainIds)(
   "offers the real approved sell tokens on chain %s without an unavailable alert",
@@ -182,9 +417,7 @@ it.each([
       screen.getByRole("textbox", { name: "Trigger price" }),
       "0.95",
     );
-    await user.click(
-      await screen.findByRole("button", { name: "Review Stop Loss order" }),
-    );
+    await user.click(await findReadyReviewButton());
     await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(1));
     expect(onReviewOrder.mock.calls[0][0]).toMatchObject({
       tokenSell: { symbol, address },
@@ -260,9 +493,7 @@ it.each([
     expect(oracleAge).toHaveAttribute("step", "any");
     expect((oracleAge as HTMLInputElement).checkValidity()).toBe(true);
     await user.click(screen.getByRole("button", { name: "Return to order" }));
-    await user.click(
-      await screen.findByRole("button", { name: "Review Stop Loss order" }),
-    );
+    await user.click(await findReadyReviewButton());
     await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(1));
     expect(
       onReviewOrder.mock.calls[0][0].maxHoursSinceOracleUpdates * 3600,
@@ -519,9 +750,7 @@ it("reviews a price-based draft from a percentage drop and shows the derived min
       screen.getByRole("textbox", { name: "Receive at least" }),
     ).toHaveValue("1798.2"),
   );
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
   await waitFor(() =>
     expect(onReviewOrder).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -549,9 +778,7 @@ it("blocks review and clears minimum received after an invalid percentage edit",
   await user.click(screen.getByRole("button", { name: "% drop" }));
   const input = screen.getByRole("textbox", { name: "Price drop (%)" });
   await user.type(input, "10");
-  expect(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  ).toBeEnabled();
+  expect(await findReadyReviewButton()).toBeEnabled();
   await user.clear(input);
   await user.type(input, "100");
   await waitFor(() =>
@@ -650,9 +877,17 @@ it("shows default slippage only inside Advanced Settings and no limit input", as
     screen.getByRole("group", { name: "Advanced order settings" }),
   ).toBeInTheDocument();
   expect(screen.getByRole("textbox", { name: "Slippage (%)" })).toHaveValue(
-    "0.1",
+    "1",
   );
 });
+
+async function findReadyReviewButton() {
+  const button = await screen.findByRole("button", {
+    name: "Review Stop Loss order",
+  });
+  await waitFor(() => expect(button).toBeEnabled());
+  return button;
+}
 
 async function selectWeth(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByRole("button", { name: "Select token" }));
@@ -685,9 +920,7 @@ it("reviews with the one-year expiry without opening settings", async () => {
   await setTriggerPrice(user);
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
   const beforeReview = Math.floor(Date.now() / 1000);
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
   await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(1));
   const duration = VALID_TO_VALUES_MAP[VALID_TO_OPTIONS.YEAR];
   expect(onReviewOrder.mock.calls[0][0].validTo).toBeGreaterThanOrEqual(
@@ -713,9 +946,7 @@ it.each([
   await selectExpiry(user, expiry);
   await user.click(screen.getByRole("button", { name: "Return to order" }));
   const beforeReview = Math.floor(Date.now() / 1000);
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
   await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(1));
   expect(onReviewOrder.mock.calls[0][0].validTo).toBeGreaterThanOrEqual(
     beforeReview + duration,
@@ -760,9 +991,7 @@ it("keeps expiry across settings close, reopen, edits and advanced reset", async
   );
   await user.click(screen.getByRole("button", { name: "Order settings" }));
   const beforeReview = Math.floor(Date.now() / 1000);
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
   await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(1));
   const duration = VALID_TO_VALUES_MAP[VALID_TO_OPTIONS.DAY];
   expect(onReviewOrder.mock.calls[0][0].validTo).toBeGreaterThanOrEqual(
@@ -810,9 +1039,7 @@ it("applies valid slippage edits immediately and reviews the recalculated minimu
   expect(minimumBuy).toBeDisabled();
   expect(onReviewOrder).not.toHaveBeenCalled();
 
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
   await waitFor(() =>
     expect(onReviewOrder).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -855,9 +1082,7 @@ it("blocks return for invalid slippage without changing the saved amount", async
   expect(minimumBuy.closest("[data-inactive]")).toHaveAttribute("inert", "");
   expect(onReviewOrder).not.toHaveBeenCalled();
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
   await waitFor(() =>
     expect(onReviewOrder).toHaveBeenCalledWith(
       expect.objectContaining({ amountBuy: "1998", slippagePercent: "0.1" }),
@@ -911,9 +1136,7 @@ it("keeps valid slippage and receiver edits when returning with the settings arr
     "0x3333333333333333333333333333333333333333",
   );
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
   await waitFor(() =>
     expect(onReviewOrder).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -979,9 +1202,7 @@ it("Reset immediately restores default slippage and the 24-hour oracle limit wit
   );
   await waitFor(() => expect(minimumBuy).toHaveValue("1998"));
   await user.keyboard("{Escape}");
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
   await waitFor(() =>
     expect(onReviewOrder).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -1008,9 +1229,7 @@ it("uses a 24-hour oracle limit in fresh settings and the reviewed draft", async
   await selectWeth(user);
   await setTriggerPrice(user);
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
 
   await waitFor(() =>
     expect(onReviewOrder).toHaveBeenCalledWith(
@@ -1050,9 +1269,7 @@ it.each([1, 2.5])(
       "2000",
     );
     await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
-    await user.click(
-      await screen.findByRole("button", { name: "Review Stop Loss order" }),
-    );
+    await user.click(await findReadyReviewButton());
 
     await waitFor(() =>
       expect(onReviewOrder).toHaveBeenCalledWith(
@@ -1192,9 +1409,7 @@ it("accepts a trigger at market and rejects one atomic price unit above it", asy
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
   const trigger = screen.getByRole("textbox", { name: "Trigger price" });
   await user.type(trigger, "2000");
-  expect(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  ).toBeEnabled();
+  expect(await findReadyReviewButton()).toBeEnabled();
   await user.type(trigger, ".000000000000000001");
 
   expect(
@@ -1217,9 +1432,12 @@ it("hands one wallet-scoped exact-sell draft to review and keeps form values for
     screen.getByRole("textbox", { name: "Sell amount" }),
     "0.123456789012345678",
   );
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
+  await waitFor(() =>
+    expect(
+      screen.getByRole("textbox", { name: "Receive at least" }),
+    ).toHaveValue("246.666665"),
   );
+  await user.click(await findReadyReviewButton());
 
   await waitFor(() =>
     expect(onReviewOrder).toHaveBeenCalledWith(
@@ -1294,9 +1512,7 @@ it("resolves a saved custom receiver and preserves expiry, oracle age and partia
   await selectExpiry(user, VALID_TO_OPTIONS.MINUTES_30);
   await user.click(screen.getByRole("button", { name: "Order settings" }));
   const beforeReview = Math.floor(Date.now() / 1000);
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
   await waitFor(() =>
     expect(onReviewOrder).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -1355,9 +1571,7 @@ it("rejects a zero receiver without clearing the editable form", async () => {
     "2000",
   );
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
   expect(
     await screen.findByText("Receiver must not be the zero address."),
   ).toHaveAttribute("role", "alert");
@@ -1425,7 +1639,7 @@ it("resets committed slippage, expiry and exact-sell inputs when the chain chang
   ).not.toHaveClass("text-primary");
   await user.click(screen.getByRole("button", { name: "Order settings" }));
   expect(screen.getByRole("textbox", { name: "Slippage (%)" })).toHaveValue(
-    "0.1",
+    "1",
   );
   expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue("");
   expect(screen.getByRole("spinbutton")).toHaveValue(24);
@@ -1466,7 +1680,7 @@ it("closes unapplied settings and resets expiry when the wallet changes", async 
     VALID_TO_OPTIONS.YEAR,
   );
   expect(screen.getByRole("textbox", { name: "Slippage (%)" })).toHaveValue(
-    "0.1",
+    "1",
   );
   expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue("");
 });
@@ -1500,7 +1714,7 @@ it("ignores settings validation that finishes after a wallet change", async () =
   await user.click(screen.getByRole("button", { name: "Order settings" }));
   expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue("");
   expect(screen.getByRole("textbox", { name: "Slippage (%)" })).toHaveValue(
-    "0.1",
+    "1",
   );
 });
 
@@ -1539,7 +1753,7 @@ it("resets the exact-sell form when the wallet changes", async () => {
   ).toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "Order settings" }));
   expect(screen.getByRole("textbox", { name: "Slippage (%)" })).toHaveValue(
-    "0.1",
+    "1",
   );
   expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue("");
   expect(screen.getByRole("spinbutton")).toHaveValue(24);
