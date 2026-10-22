@@ -294,14 +294,10 @@ test("shows wallet-specific balance and funding approval warnings", async () => 
   shedBalance = BigInt(0);
   showDetails();
   expect(
-    await screen.findByText(
-      "The funding wallet does not have enough sell tokens to fund this order.",
-    ),
+    await screen.findByText("Not enough sell tokens in your wallet."),
   ).toBeInTheDocument();
   expect(
-    screen.getByText(
-      "The funding wallet's sell token allowance to the Poller is too low.",
-    ),
+    screen.getByText("Token approval is missing or too low."),
   ).toBeInTheDocument();
   expect(
     screen.queryByText(
@@ -314,16 +310,23 @@ test("does not require wallet funds after the order has been funded", async () =
   funded = true;
   walletBalance = BigInt(0);
   walletAllowance = BigInt(0);
+  shedBalance = BigInt(0);
   showDetails();
   await screen.findByRole("heading", { name: "Order details" });
   await waitFor(() =>
     expect(publicClientsFromIds[1].readContract).toHaveBeenCalledWith(
-      expect.objectContaining({ functionName: "balanceOf", args: [owner] }),
+      expect.objectContaining({
+        functionName: "allowance",
+        args: [owner, expect.any(String)],
+      }),
     ),
   );
   await act(async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
   });
+  expect(publicClientsFromIds[1].readContract).not.toHaveBeenCalledWith(
+    expect.objectContaining({ functionName: "balanceOf" }),
+  );
   expect(screen.queryByText("Order needs attention")).not.toBeInTheDocument();
 });
 
@@ -341,9 +344,7 @@ test("keeps verified funding warnings when an oracle read fails", async () => {
     });
   showDetails();
   expect(
-    await screen.findByText(
-      "The funding wallet does not have enough sell tokens to fund this order.",
-    ),
+    await screen.findByText("Not enough sell tokens in your wallet."),
   ).toBeInTheDocument();
 });
 

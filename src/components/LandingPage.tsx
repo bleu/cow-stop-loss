@@ -50,7 +50,7 @@ const questions = [
     id: "trigger-price",
     question: "Is the trigger price my sale price?",
     answer:
-      "No. The trigger price is checked against the configured oracle prices. It is separate from the minimum buy amount, which also depends on your slippage setting. The displayed market price is an oracle-derived reference, not a firm execution quote. A price drop can trigger an order while leaving no trade available within its limit. An order can remain unfilled, fill partially if allowed, or expire.",
+      "No. The trigger price is the oracle condition that makes an order eligible to execute. The limit price is the minimum sale price set by your minimum buy amount. If the price falls below the limit before execution, the order waits for recovery to at least the limit while the oracle price is below the trigger. Within that range, execution is expected soon, subject to sufficient funds, approvals, and liquidity. Open a support ticket if the order stays unfilled for a prolonged time. Higher slippage lowers the minimum price and improves the chance of execution, but does not guarantee a fill. Placed order terms are fixed; cancel and replace the order to change them. The displayed market price is an oracle reference, not a firm quote. Orders can fill partially if allowed or expire.",
   },
   {
     id: "oracles",

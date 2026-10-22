@@ -314,23 +314,34 @@ describe("loadOrderFundingHealth", () => {
     });
   });
 
+  test("a funded order with an empty CowShed does not read balances or demand wallet approval", async () => {
+    const { health, reads } = await checkHealth(order, {
+      funded: true,
+      balance: BigInt(0),
+      fundingAllowance: BigInt(0),
+      schedule: revokedSchedule,
+      reject: "balanceOf",
+    });
+    expect(health).toEqual({ ...healthyWallet, source: "cowshed" });
+    expect(reads.map(({ functionName }) => functionName)).toEqual([
+      "domainSeparator",
+      "funded",
+      "allowance",
+    ]);
+  });
+
   test.each([
-    [BigInt(60), BigInt(60), false, false],
-    [BigInt(59), BigInt(60), true, false],
-    [BigInt(60), BigInt(59), false, true],
+    [BigInt(60), false],
+    [BigInt(59), true],
+    [BigInt(0), true],
   ])(
-    "funded orders check remaining CowShed funds (%s, %s)",
-    async (
-      balance,
-      settlementAllowance,
-      insufficientBalance,
-      insufficientSettlementApproval,
-    ) => {
+    "funded orders check remaining settlement allowance (%s)",
+    async (settlementAllowance, insufficientSettlementApproval) => {
       const { health, reads } = await checkHealth(
         { ...order, executedSellAmount: BigInt(40) },
         {
           funded: true,
-          balance,
+          balance: BigInt(0),
           settlementAllowance,
           fundingAllowance: BigInt(0),
           schedule: revokedSchedule,
@@ -339,18 +350,25 @@ describe("loadOrderFundingHealth", () => {
       expect(health).toEqual({
         status: "known",
         source: "cowshed",
-        insufficientBalance,
+        insufficientBalance: false,
         insufficientFundingApproval: false,
         insufficientSettlementApproval,
       });
       expect(reads.map(({ functionName }) => functionName)).toEqual([
         "domainSeparator",
         "funded",
-        "balanceOf",
         "allowance",
       ]);
     },
   );
+
+  test("returns unknown if a funded order's settlement allowance cannot be read", async () => {
+    const { health } = await checkHealth(order, {
+      funded: true,
+      reject: "allowance",
+    });
+    expect(health).toEqual({ status: "unknown" });
+  });
 
   test.each([
     ["revoked", revokedSchedule],

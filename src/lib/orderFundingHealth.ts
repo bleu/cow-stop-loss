@@ -109,13 +109,15 @@ export async function loadOrderFundingHealth(
     const walletFunding =
       source === "wallet" && funding.kind === "scheduled" ? funding : null;
     const [balance, settlementAllowance, fundingAllowance] = await Promise.all([
-      client.readContract({
-        address: order.sellToken.address,
-        abi: erc20Abi,
-        functionName: "balanceOf",
-        args: [walletFunding ? walletFunding.funder : order.owner],
-        blockNumber,
-      }),
+      source === "cowshed"
+        ? Promise.resolve(null)
+        : client.readContract({
+            address: order.sellToken.address,
+            abi: erc20Abi,
+            functionName: "balanceOf",
+            args: [walletFunding ? walletFunding.funder : order.owner],
+            blockNumber,
+          }),
       client.readContract({
         address: order.sellToken.address,
         abi: erc20Abi,
@@ -140,6 +142,7 @@ export async function loadOrderFundingHealth(
       status: "known",
       source,
       insufficientBalance:
+        balance !== null &&
         balance < (walletFunding ? order.sellAmount : remainingSell),
       insufficientFundingApproval:
         fundingAllowance !== null && fundingAllowance < order.sellAmount,

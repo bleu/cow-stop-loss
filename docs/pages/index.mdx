@@ -55,6 +55,10 @@ Set `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` and `NEXT_PUBLIC_APP_URL` before buil
 
 ## FAQ
 
+:::details[Is the trigger price my sale price?]
+No. The trigger price is the oracle condition that makes an order eligible to execute. The limit price is the minimum sale price set by your minimum buy amount. If the price falls below the limit before execution, the order waits for recovery to at least the limit while the oracle price is below the trigger. Within that range, execution is expected soon, subject to sufficient funds, approvals, and liquidity. Open a support ticket if the order stays unfilled for a prolonged time. Higher slippage lowers the minimum price and improves the chance of execution, but does not guarantee a fill. Placed order terms are fixed; cancel and replace the order to change them. The displayed market price is an oracle reference, not a firm quote. Orders can fill partially if allowed or expire.
+:::
+
 :::details[Can I create or cancel an order?]
 Yes. Review a new exact-sell order before signing, or use cancellation on an eligible existing order. Both actions require a connected wallet and transaction confirmation.
 :::
