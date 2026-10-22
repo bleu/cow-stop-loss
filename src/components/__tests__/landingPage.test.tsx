@@ -102,6 +102,43 @@ it("provides an addressable FAQ with expandable technical answers", () => {
   ).toBeVisible();
 });
 
+it("explains trigger and limit prices, delayed fills, and fixed order terms", () => {
+  render(<LandingPageRoute />);
+
+  const question = screen.getByRole("button", {
+    name: "Is the trigger price my sale price?",
+  });
+  expect(question).toHaveAttribute("aria-expanded", "false");
+  fireEvent.click(question);
+  expect(question).toHaveAttribute("aria-expanded", "true");
+
+  const answer = screen.getByRole("region", {
+    name: "Is the trigger price my sale price?",
+  });
+  expect(answer).toBeVisible();
+  expect(answer).toHaveTextContent(
+    "The trigger price is the oracle condition that makes an order eligible to execute.",
+  );
+  expect(answer).toHaveTextContent(
+    "The limit price is the minimum sale price set by your minimum buy amount.",
+  );
+  expect(answer).toHaveTextContent(
+    "If the price falls below the limit before execution, the order waits for recovery to at least the limit while the oracle price is below the trigger.",
+  );
+  expect(answer).toHaveTextContent(
+    "Within that range, execution is expected soon, subject to sufficient funds, approvals, and liquidity.",
+  );
+  expect(answer).toHaveTextContent(
+    "Open a support ticket if the order stays unfilled for a prolonged time.",
+  );
+  expect(answer).toHaveTextContent(
+    "Higher slippage lowers the minimum price and improves the chance of execution, but does not guarantee a fill.",
+  );
+  expect(answer).toHaveTextContent(
+    "Placed order terms are fixed; cancel and replace the order to change them.",
+  );
+});
+
 it("keeps execution details without a separate disclosures section", () => {
   render(<LandingPageRoute />);
 

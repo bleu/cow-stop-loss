@@ -1,6 +1,5 @@
 "use client";
 
-import { formatNumber } from "@bleu/ui";
 import Link from "next/link";
 import React, { useId, useState } from "react";
 import useSWR from "swr";
@@ -11,7 +10,7 @@ import { NetworkLogo } from "#/components/NetworkLogo";
 import { TokenLogo } from "#/components/TokenLogo";
 import { PixelIcon } from "#/components/ui/pixel-icon";
 import { useOrderList } from "#/hooks/useOrderList";
-import { oracleMinimalAbi } from "#/lib/abis/oracleMinimalAbi";
+import { fetchOraclePairPrice } from "#/lib/oraclePrice";
 import { loadOrderFundingHealth } from "#/lib/orderFundingHealth";
 import { ChainId, chainNames, publicClientsFromIds } from "#/lib/publicClients";
 import { OrderToken, StopLossOrder } from "#/lib/stopLossOrders";
@@ -28,75 +27,18 @@ import { OracleTokenPrice } from "./OracleTokenPrice";
 
 async function loadOrderHealth(order: StopLossOrder) {
   const client = publicClientsFromIds[order.chainId];
-  const [funding, oracleData] = await Promise.all([
+  const [funding, currentPrice] = await Promise.all([
     loadOrderFundingHealth(order, client),
-    Promise.all([
-      client.readContract({
-        address: order.sellTokenPriceOracle,
-        abi: oracleMinimalAbi,
-        functionName: "latestRoundData",
-      }),
-      client.readContract({
-        address: order.buyTokenPriceOracle,
-        abi: oracleMinimalAbi,
-        functionName: "latestRoundData",
-      }),
-      client.readContract({
-        address: order.sellTokenPriceOracle,
-        abi: oracleMinimalAbi,
-        functionName: "decimals",
-      }),
-      client.readContract({
-        address: order.buyTokenPriceOracle,
-        abi: oracleMinimalAbi,
-        functionName: "decimals",
-      }),
-    ]).catch(() => null),
+    fetchOraclePairPrice({
+      chainId: order.chainId,
+      route: {
+        tokenSellOracle: order.sellTokenPriceOracle,
+        tokenBuyOracle: order.buyTokenPriceOracle,
+      },
+      maxAge: order.maxTimeSinceLastOracleUpdate,
+    }).catch(() => Number.NaN),
   ]);
-  if (!oracleData)
-    return { funding, belowTrigger: false, currentPrice: Number.NaN };
-  const [
-    sellRoundResult,
-    buyRoundResult,
-    sellDecimalsResult,
-    buyDecimalsResult,
-  ] = oracleData;
-  const sellRound = sellRoundResult as readonly [
-    bigint,
-    bigint,
-    bigint,
-    bigint,
-    bigint,
-  ];
-  const buyRound = buyRoundResult as typeof sellRound;
-  const sellDecimals = sellDecimalsResult as number;
-  const buyDecimals = buyDecimalsResult as number;
-  const now = Math.floor(Date.now() / 1000);
-  const maxAge = order.maxTimeSinceLastOracleUpdate;
-  const sellUpdatedAt = Number(sellRound[3]);
-  const buyUpdatedAt = Number(buyRound[3]);
-  const validOracleData =
-    sellRound[1] > BigInt(0) &&
-    buyRound[1] > BigInt(0) &&
-    sellUpdatedAt > 0 &&
-    buyUpdatedAt > 0 &&
-    sellUpdatedAt <= now &&
-    buyUpdatedAt <= now;
-  const fresh =
-    validOracleData &&
-    now - sellUpdatedAt <= maxAge &&
-    now - buyUpdatedAt <= maxAge;
-  const sellPrice = Number(formatUnits(sellRound[1], sellDecimals));
-  const buyPrice = Number(formatUnits(buyRound[1], buyDecimals));
-  const currentPrice = buyPrice > 0 ? sellPrice / buyPrice : Number.NaN;
-  return {
-    funding,
-    belowTrigger:
-      fresh &&
-      Number.isFinite(currentPrice) &&
-      currentPrice < Number(formatUnits(order.strike, 18)),
-    currentPrice,
-  };
+  return { funding, currentPrice };
 }
 
 function OrderHealth({ order }: { order: StopLossOrder }) {
@@ -130,45 +72,74 @@ function OrderHealth({ order }: { order: StopLossOrder }) {
       ? ["Unable to verify order funding. Please try again."]
       : [
           funding.insufficientBalance &&
-            (funding.source === "wallet"
-              ? "The funding wallet does not have enough sell tokens to fund this order."
-              : funding.source === "cowshed"
-                ? "The CowShed does not have enough sell tokens to fill this order."
-                : "The Safe does not have enough sell tokens to fill this order."),
-          funding.insufficientFundingApproval &&
-            "The funding wallet's sell token allowance to the Poller is too low.",
-          funding.insufficientSettlementApproval &&
-            "The sell token allowance is too low. Approve the token for this order.",
+            funding.source !== "cowshed" &&
+            "Not enough sell tokens in your wallet.",
+          (funding.insufficientFundingApproval ||
+            funding.insufficientSettlementApproval) &&
+            "Token approval is missing or too low.",
         ].filter((message): message is string => Boolean(message));
-  if (!messages.length) return null;
+  const trigger = Number(formatUnits(order.strike, 18));
+  const limit = Number(order.limitPrice);
+  const showPrice =
+    Number.isFinite(data.currentPrice) &&
+    Number.isFinite(trigger) &&
+    Number.isFinite(limit) &&
+    limit > 0 &&
+    data.currentPrice < trigger;
+  const belowLimit = data.currentPrice < limit;
+  if (!messages.length && !showPrice) return null;
 
   return (
-    <aside
-      role="alert"
-      className="pixel-inset mb-5 rounded-none border border-destructive/35 bg-destructive/8 p-4 text-sm"
-    >
-      <p className="font-semibold text-destructive">Order needs attention</p>
-      <ul className="mt-1 list-disc space-y-1 pl-5 text-muted-foreground">
-        {messages.map((message) => (
-          <li key={message}>{message}</li>
-        ))}
-        {data.belowTrigger && (
-          <li>
-            The oracle price is {formatNumber(data.currentPrice, 4)}{" "}
-            {order.buyToken.symbol} per {order.sellToken.symbol}, below the
-            trigger, but the order is still open. Please open a{" "}
-            <Link
-              href="https://github.com/bleu/cow-stop-loss/issues/new"
-              target="_blank"
-              rel="noreferrer noopener"
-              className="text-primary underline underline-offset-4"
-            >
-              GitHub ticket.
-            </Link>
-          </li>
-        )}
-      </ul>
-    </aside>
+    <>
+      {messages.length > 0 && (
+        <aside
+          role="alert"
+          className="pixel-inset mb-5 rounded-none border border-destructive/35 bg-destructive/8 p-4 text-sm"
+        >
+          <p className="font-semibold text-destructive">
+            Order needs attention
+          </p>
+          <ul className="mt-1 list-disc space-y-1 pl-5 text-muted-foreground">
+            {messages.map((message) => (
+              <li key={message}>{message}</li>
+            ))}
+          </ul>
+        </aside>
+      )}
+      {showPrice && (
+        <aside
+          role="status"
+          className="pixel-inset mb-5 rounded-none border border-primary/20 bg-primary/5 p-4 text-sm"
+        >
+          <p className="font-semibold">
+            {belowLimit
+              ? "Waiting for price recovery"
+              : "Waiting for execution"}
+          </p>
+          <p className="mt-1 text-muted-foreground">
+            {belowLimit ? (
+              <>
+                The price is below your limit. The order can execute when the
+                price recovers. Higher slippage on a new order can help it fill,
+                but allows a lower sale price.
+              </>
+            ) : (
+              <>
+                Your order should execute soon. If it stays open, please open a{" "}
+                <Link
+                  href="https://github.com/bleu/cow-stop-loss/issues/new"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="text-primary underline underline-offset-4"
+                >
+                  GitHub ticket.
+                </Link>
+              </>
+            )}
+          </p>
+        </aside>
+      )}
+    </>
   );
 }
 
@@ -644,12 +615,10 @@ export function OrderDetails({
           {order.transactionHash !== undefined && (
             <Field label="Creation transaction">
               <Link
-                href={
-                  buildBlockExplorerTxUrl({
-                    chainId,
-                    txHash: order.transactionHash,
-                  })!
-                }
+                href={buildBlockExplorerTxUrl({
+                  chainId,
+                  txHash: order.transactionHash,
+                })!}
                 target="_blank"
                 rel="noreferrer noopener"
                 title={order.transactionHash}
