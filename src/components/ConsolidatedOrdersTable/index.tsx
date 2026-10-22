@@ -22,6 +22,7 @@ import { PlacementRow } from "#/lib/stopLossPlacement";
 
 import { getColumns } from "./columns";
 import { PortfolioFilterField, PortfolioFilters } from "./filters";
+import { OrdersLoadingState } from "./OrdersLoadingState";
 
 const filterFields: PortfolioFilterField[] = [
   {
@@ -83,7 +84,8 @@ function WalletRequiredOrders() {
             Your herd, all in one place
           </h3>
           <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
-            Connect your wallet to see stop-loss orders across supported networks.
+            Connect your wallet to see stop-loss orders across supported
+            networks.
           </p>
           <Button
             type="button"
@@ -116,7 +118,7 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
   const hasAvailableOrders =
     orders.length > 0 || chains.some((chain) => chain.status === "success");
   const emptyMessage = isInitialLoading ? (
-    <p role="status">Loading stop-loss orders...</p>
+    <OrdersLoadingState />
   ) : hasAvailableOrders ? (
     "No results."
   ) : (
