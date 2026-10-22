@@ -33,9 +33,9 @@ export function estimateOrderSlippage({ slippageBps, quote }: SlippageInput) {
   const requiredBps = allowance + gapBps;
   return {
     requiredBps,
-    appliedBps: Math.min(requiredBps, 500),
+    appliedBps: Math.min(requiredBps, 1000),
     isHigh: requiredBps >= 200,
-    isCapped: requiredBps > 500,
+    isCapped: requiredBps > 1000,
     usedFallback,
   };
 }

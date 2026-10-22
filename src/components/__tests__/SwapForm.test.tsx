@@ -174,7 +174,7 @@ it("shows the 1% fallback when the pair recommendation is unavailable", async ()
   );
 });
 
-it("keeps the reviewed slippage when a pending quote finishes", async () => {
+it("disables review while slippage is calculated without a loading message", async () => {
   let finish!: (value: unknown) => void;
   fetchMock.mockImplementation(async (url: string) =>
     url.includes("slippageTolerance")
@@ -185,51 +185,61 @@ it("keeps the reviewed slippage when a pending quote finishes", async () => {
   );
   const user = userEvent.setup();
   const onReviewOrder = jest.fn();
-  const { rerender } = renderForm(onReviewOrder);
+  renderForm(onReviewOrder);
   await selectWeth(user);
   await setTriggerPrice(user);
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  const review = screen.getByRole("button", { name: "Review Stop Loss order" });
+  expect(review).toBeDisabled();
   await waitFor(() => expect(finish).toBeDefined());
-  await waitFor(() =>
-    expect(
-      screen.getByRole("textbox", { name: "Receive at least" }),
-    ).toHaveValue("1990"),
-  );
-  await user.click(
-    screen.getByRole("button", { name: "Review Stop Loss order" }),
-  );
-  await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(1));
-  rerender(
-    <SWRConfig value={{ provider: () => new Map(), revalidateOnFocus: false }}>
-      <SwapForm onReviewOrder={onReviewOrder} reviewDisabled />
-    </SWRConfig>,
-  );
+  expect(review).toBeDisabled();
+  expect(
+    screen.queryByText(/Checking the current execution estimate/),
+  ).not.toBeInTheDocument();
+  await user.click(review);
+  expect(onReviewOrder).not.toHaveBeenCalled();
   await act(async () => {
     finish({
       ok: true,
       json: async () => ({ quote: { buyAmount: "1800000000" } }),
     });
   });
-  expect(screen.getByRole("textbox", { name: "Receive at least" })).toHaveValue(
-    "1990",
-  );
+  await waitFor(() => expect(review).toBeEnabled());
+  await user.click(review);
+  await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(1));
   expect(onReviewOrder.mock.calls[0][0]).toMatchObject({
-    slippagePercent: "0.5",
-    amountBuy: "1990",
+    slippagePercent: "10",
+    amountBuy: "1800",
   });
-  rerender(
-    <SWRConfig value={{ provider: () => new Map(), revalidateOnFocus: false }}>
-      <SwapForm onReviewOrder={onReviewOrder} />
-    </SWRConfig>,
-  );
-  await waitFor(() =>
-    expect(
-      screen.getByRole("textbox", { name: "Receive at least" }),
-    ).toHaveValue("1900"),
+});
+
+it("shows one Auto slippage warning without hiding the oracle-age warning", async () => {
+  useAdvancedSettingsStore.getState().setAdvancedSettings({
+    ...defaultAdvancedSettings,
+    maxHoursSinceOracleUpdates: 25,
+  });
+  fetchMock.mockImplementation(async (url: string) => ({
+    ok: true,
+    json: async () =>
+      url.includes("slippageTolerance")
+        ? { slippageBps: 250 }
+        : { quote: { buyAmount: "2000000000" } },
+  }));
+  const user = userEvent.setup();
+  renderForm();
+  await selectWeth(user);
+  await setTriggerPrice(user);
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  expect(await screen.findByText("Price slippage is high.")).toBeVisible();
+  expect(
+    screen.queryByText(/Price slippage is above 1%/),
+  ).not.toBeInTheDocument();
+  expect(screen.getByRole("note")).toHaveTextContent(
+    "The order accepts oracle prices older than 24 hours.",
   );
 });
 
-it("warns when the estimate exceeds the Auto cap and reviews with 5%", async () => {
+it("warns when the estimate exceeds the Auto cap and reviews with 10%", async () => {
   fetchMock.mockImplementation(async (url: string) => ({
     ok: true,
     json: async () =>
@@ -244,22 +254,36 @@ it("warns when the estimate exceeds the Auto cap and reviews with 5%", async () 
   await setTriggerPrice(user);
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
   expect(
-    await screen.findByText(/Slippage is too high for this amount/),
+    await screen.findByText(/The suggested slippage is above the 10% maximum/),
   ).toHaveTextContent(
-    "Estimated requirement: 10.5%. Auto is capped at 5%. This order might not execute. You can set slippage manually.",
+    "The suggested slippage is above the 10% maximum. This trade might fail.",
+  );
+  expect(
+    screen.queryByText("Price slippage is above 1%."),
+  ).not.toBeInTheDocument();
+  const warning = screen
+    .getByText(
+      "The suggested slippage is above the 10% maximum. This trade might fail.",
+    )
+    .closest("aside")!;
+  await user.hover(
+    within(warning).getByRole("button", { name: "More information" }),
+  );
+  expect(await screen.findByRole("tooltip")).toHaveTextContent(
+    "Auto slippage has reached 10%. The current estimate is higher, so the order might not execute. You can adjust slippage in Order settings.",
   );
   expect(screen.queryByText(/split/i)).not.toBeInTheDocument();
   await waitFor(() =>
     expect(
       screen.getByRole("textbox", { name: "Receive at least" }),
-    ).toHaveValue("1900"),
+    ).toHaveValue("1800"),
   );
   await user.click(
     screen.getByRole("button", { name: "Review Stop Loss order" }),
   );
   await waitFor(() =>
     expect(onReviewOrder).toHaveBeenCalledWith(
-      expect.objectContaining({ slippagePercent: "5", amountBuy: "1900" }),
+      expect.objectContaining({ slippagePercent: "10", amountBuy: "1800" }),
       1,
       safe.safeAddress,
     ),
@@ -395,9 +419,7 @@ it.each([
       screen.getByRole("textbox", { name: "Trigger price" }),
       "0.95",
     );
-    await user.click(
-      await screen.findByRole("button", { name: "Review Stop Loss order" }),
-    );
+    await user.click(await findReadyReviewButton());
     await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(1));
     expect(onReviewOrder.mock.calls[0][0]).toMatchObject({
       tokenSell: { symbol, address },
@@ -473,9 +495,7 @@ it.each([
     expect(oracleAge).toHaveAttribute("step", "any");
     expect((oracleAge as HTMLInputElement).checkValidity()).toBe(true);
     await user.click(screen.getByRole("button", { name: "Return to order" }));
-    await user.click(
-      await screen.findByRole("button", { name: "Review Stop Loss order" }),
-    );
+    await user.click(await findReadyReviewButton());
     await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(1));
     expect(
       onReviewOrder.mock.calls[0][0].maxHoursSinceOracleUpdates * 3600,
@@ -732,9 +752,7 @@ it("reviews a price-based draft from a percentage drop and shows the derived min
       screen.getByRole("textbox", { name: "Receive at least" }),
     ).toHaveValue("1798.2"),
   );
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
   await waitFor(() =>
     expect(onReviewOrder).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -762,9 +780,7 @@ it("blocks review and clears minimum received after an invalid percentage edit",
   await user.click(screen.getByRole("button", { name: "% drop" }));
   const input = screen.getByRole("textbox", { name: "Price drop (%)" });
   await user.type(input, "10");
-  expect(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  ).toBeEnabled();
+  expect(await findReadyReviewButton()).toBeEnabled();
   await user.clear(input);
   await user.type(input, "100");
   await waitFor(() =>
@@ -867,6 +883,14 @@ it("shows default slippage only inside Advanced Settings and no limit input", as
   );
 });
 
+async function findReadyReviewButton() {
+  const button = await screen.findByRole("button", {
+    name: "Review Stop Loss order",
+  });
+  await waitFor(() => expect(button).toBeEnabled());
+  return button;
+}
+
 async function selectWeth(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByRole("button", { name: "Select token" }));
   await user.click(await screen.findByRole("option", { name: /WETH/ }));
@@ -898,9 +922,7 @@ it("reviews with the one-year expiry without opening settings", async () => {
   await setTriggerPrice(user);
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
   const beforeReview = Math.floor(Date.now() / 1000);
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
   await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(1));
   const duration = VALID_TO_VALUES_MAP[VALID_TO_OPTIONS.YEAR];
   expect(onReviewOrder.mock.calls[0][0].validTo).toBeGreaterThanOrEqual(
@@ -926,9 +948,7 @@ it.each([
   await selectExpiry(user, expiry);
   await user.click(screen.getByRole("button", { name: "Return to order" }));
   const beforeReview = Math.floor(Date.now() / 1000);
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
   await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(1));
   expect(onReviewOrder.mock.calls[0][0].validTo).toBeGreaterThanOrEqual(
     beforeReview + duration,
@@ -973,9 +993,7 @@ it("keeps expiry across settings close, reopen, edits and advanced reset", async
   );
   await user.click(screen.getByRole("button", { name: "Order settings" }));
   const beforeReview = Math.floor(Date.now() / 1000);
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
   await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(1));
   const duration = VALID_TO_VALUES_MAP[VALID_TO_OPTIONS.DAY];
   expect(onReviewOrder.mock.calls[0][0].validTo).toBeGreaterThanOrEqual(
@@ -1023,9 +1041,7 @@ it("applies valid slippage edits immediately and reviews the recalculated minimu
   expect(minimumBuy).toBeDisabled();
   expect(onReviewOrder).not.toHaveBeenCalled();
 
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
   await waitFor(() =>
     expect(onReviewOrder).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -1068,9 +1084,7 @@ it("blocks return for invalid slippage without changing the saved amount", async
   expect(minimumBuy.closest("[data-inactive]")).toHaveAttribute("inert", "");
   expect(onReviewOrder).not.toHaveBeenCalled();
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
   await waitFor(() =>
     expect(onReviewOrder).toHaveBeenCalledWith(
       expect.objectContaining({ amountBuy: "1998", slippagePercent: "0.1" }),
@@ -1124,9 +1138,7 @@ it("keeps valid slippage and receiver edits when returning with the settings arr
     "0x3333333333333333333333333333333333333333",
   );
   await user.click(screen.getByRole("button", { name: "Order settings" }));
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
   await waitFor(() =>
     expect(onReviewOrder).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -1192,9 +1204,7 @@ it("Reset immediately restores default slippage and the 24-hour oracle limit wit
   );
   await waitFor(() => expect(minimumBuy).toHaveValue("1998"));
   await user.keyboard("{Escape}");
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
   await waitFor(() =>
     expect(onReviewOrder).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -1221,9 +1231,7 @@ it("uses a 24-hour oracle limit in fresh settings and the reviewed draft", async
   await selectWeth(user);
   await setTriggerPrice(user);
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
 
   await waitFor(() =>
     expect(onReviewOrder).toHaveBeenCalledWith(
@@ -1263,9 +1271,7 @@ it.each([1, 2.5])(
       "2000",
     );
     await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
-    await user.click(
-      await screen.findByRole("button", { name: "Review Stop Loss order" }),
-    );
+    await user.click(await findReadyReviewButton());
 
     await waitFor(() =>
       expect(onReviewOrder).toHaveBeenCalledWith(
@@ -1405,9 +1411,7 @@ it("accepts a trigger at market and rejects one atomic price unit above it", asy
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
   const trigger = screen.getByRole("textbox", { name: "Trigger price" });
   await user.type(trigger, "2000");
-  expect(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  ).toBeEnabled();
+  expect(await findReadyReviewButton()).toBeEnabled();
   await user.type(trigger, ".000000000000000001");
 
   expect(
@@ -1435,9 +1439,7 @@ it("hands one wallet-scoped exact-sell draft to review and keeps form values for
       screen.getByRole("textbox", { name: "Receive at least" }),
     ).toHaveValue("246.666665"),
   );
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
 
   await waitFor(() =>
     expect(onReviewOrder).toHaveBeenCalledWith(
@@ -1512,9 +1514,7 @@ it("resolves a saved custom receiver and preserves expiry, oracle age and partia
   await selectExpiry(user, VALID_TO_OPTIONS.MINUTES_30);
   await user.click(screen.getByRole("button", { name: "Order settings" }));
   const beforeReview = Math.floor(Date.now() / 1000);
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
   await waitFor(() =>
     expect(onReviewOrder).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -1573,9 +1573,7 @@ it("rejects a zero receiver without clearing the editable form", async () => {
     "2000",
   );
   await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
-  await user.click(
-    await screen.findByRole("button", { name: "Review Stop Loss order" }),
-  );
+  await user.click(await findReadyReviewButton());
   expect(
     await screen.findByText("Receiver must not be the zero address."),
   ).toHaveAttribute("role", "alert");

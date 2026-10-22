@@ -13,7 +13,7 @@ it.each([undefined, 0, -1, Number.NaN, Number.POSITIVE_INFINITY])(
 it.each([
   [199, false],
   [200, true],
-  [500, true],
+  [1000, true],
 ])("warns at the 2% boundary (%s bps)", (slippageBps, isHigh) => {
   expect(
     estimateOrderSlippage({ slippageBps: slippageBps as number }),
@@ -71,10 +71,10 @@ it("adds the fee-inclusive quote gap to the pair allowance", () => {
   });
 });
 
-it("caps Auto at 5% while keeping the estimated requirement", () => {
-  expect(estimateOrderSlippage({ slippageBps: 650 })).toMatchObject({
-    requiredBps: 650,
-    appliedBps: 500,
+it("caps Auto at 10% while keeping the estimated requirement", () => {
+  expect(estimateOrderSlippage({ slippageBps: 1050 })).toMatchObject({
+    requiredBps: 1050,
+    appliedBps: 1000,
     isHigh: true,
     isCapped: true,
   });
