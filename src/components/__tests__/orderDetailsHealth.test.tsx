@@ -93,8 +93,12 @@ test("shows recovery guidance without a funding error when below the limit", asy
   expect(
     await screen.findByText("Waiting for price recovery"),
   ).toBeInTheDocument();
-  const notice = screen.getByText(/The price is below your limit/);
-  expect(notice).toHaveTextContent(/Higher slippage on a new order/);
+  const notice = screen.getByText(
+    /Even though the price is below the strike price/,
+  );
+  expect(notice).toHaveTextContent(
+    "Even though the price is below the strike price, it is also below your limit execution price. The order can execute when the price recovers. Higher slippage on a new order can help it fill, but allows a lower sale price.",
+  );
   expect(notice).not.toHaveTextContent(/89|90|100|WETH|USDC/);
   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   expect(

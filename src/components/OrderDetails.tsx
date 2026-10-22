@@ -119,7 +119,8 @@ function OrderHealth({ order }: { order: StopLossOrder }) {
           <p className="mt-1 text-muted-foreground">
             {belowLimit ? (
               <>
-                The price is below your limit. The order can execute when the
+                Even though the price is below the strike price, it is also
+                below your limit execution price. The order can execute when the
                 price recovers. Higher slippage on a new order can help it fill,
                 but allows a lower sale price.
               </>
