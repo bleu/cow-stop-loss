@@ -506,7 +506,7 @@ export function StopLossCreation() {
           review && open ? "hidden" : "rescue-order-form flex min-w-0 flex-col"
         }
       >
-        <SwapCard onReviewOrder={loadReview} />
+        <SwapCard onReviewOrder={loadReview} reviewDisabled={open} />
       </div>
     </>
   );

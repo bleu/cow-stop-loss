@@ -39,6 +39,8 @@ type AdvancedSettingsDraft = AdvancedSwapSettings & { slippagePercent: string };
 
 interface AdvancedSettingsPanelProps {
   slippagePercent: string;
+  autoSlippage?: boolean;
+  onAutoSlippageChange?: (automatic: boolean) => void;
   onApplySlippage: (value: string) => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -49,6 +51,8 @@ interface AdvancedSettingsPanelProps {
 
 export function AdvancedSettingsPanel({
   slippagePercent,
+  autoSlippage = false,
+  onAutoSlippageChange,
   onApplySlippage,
   open,
   onOpenChange,
@@ -116,9 +120,15 @@ export function AdvancedSettingsPanel({
     onOpenChange(false);
   }, [accountScope, advancedSettings, onOpenChange, reset, slippagePercent]);
 
+  const automatic = React.useRef(autoSlippage);
+  automatic.current = autoSlippage;
+  React.useEffect(() => {
+    if (autoSlippage) form.setValue("slippagePercent", slippagePercent);
+  }, [autoSlippage, form, slippagePercent]);
+
   const areSavedSettingsDifferentFromDefault =
     haveSettingsChanged(advancedSettings, routeDefaults) ||
-    Number(slippagePercent) !== 0.1;
+    (onAutoSlippageChange ? !autoSlippage : Number(slippagePercent) !== 0.1);
 
   const receiver = useWatch({ control, name: "receiver" });
 
@@ -139,7 +149,7 @@ export function AdvancedSettingsPanel({
             ? "explicit"
             : oracleAgeMode,
         );
-        onApplySlippage(savedSlippage);
+        if (!automatic.current) onApplySlippage(savedSlippage);
       });
     });
     return () => {
@@ -222,7 +232,10 @@ export function AdvancedSettingsPanel({
                 }
               }}
             >
-              <SlippageInputCard />
+              <SlippageInputCard
+                autoSlippage={autoSlippage}
+                onAutoSlippageChange={onAutoSlippageChange}
+              />
               <Input
                 name="maxHoursSinceOracleUpdates"
                 layout="inline"
@@ -305,7 +318,8 @@ export function AdvancedSettingsPanel({
                       slippagePercent: "0.1",
                     });
                     resetAdvancedSettings();
-                    onApplySlippage("0.1");
+                    onAutoSlippageChange?.(true);
+                    if (!onAutoSlippageChange) onApplySlippage("0.1");
                     onOpenChange(false);
                   }}
                 >

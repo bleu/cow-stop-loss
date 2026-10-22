@@ -63,7 +63,30 @@ beforeAll(() => {
   Element.prototype.scrollIntoView = jest.fn();
 });
 
+const originalFetch = global.fetch;
+const fetchMock = jest.fn();
+
 beforeEach(() => {
+  global.fetch = fetchMock;
+  fetchMock
+    .mockReset()
+    .mockImplementation(async (url: string, options?: RequestInit) => {
+      if (url.includes("slippageTolerance"))
+        return { ok: true, json: async () => ({ slippageBps: 10 }) };
+      const body = JSON.parse(options!.body as string);
+      const sellAmount = BigInt(body.sellAmountBeforeFee);
+      const isWeth =
+        body.sellToken.toLowerCase() ===
+        "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
+      const buyAmount = isWeth
+        ? (sellAmount * BigInt(2000) + BigInt("999999999999")) /
+          BigInt("1000000000000")
+        : (sellAmount * BigInt(60000)) / BigInt(100);
+      return {
+        ok: true,
+        json: async () => ({ quote: { buyAmount: buyAmount.toString() } }),
+      };
+    });
   mockUseRealSupportedTokens = false;
   safe = {
     chainId: 1,
@@ -106,6 +129,8 @@ beforeEach(() => {
   jest
     .spyOn(publicClientsFromIds[1], "readContract")
     .mockImplementation(async ({ functionName, address }) => {
+      if (functionName === "COW_SHED_FACTORY" || functionName === "proxyOf")
+        return safe.safeAddress;
       if (functionName === "balanceOf") return BigInt("1123456789012345678");
       if (functionName === "domainSeparator") return `0x${"1".repeat(64)}`;
       if (functionName === "domainVerifiers") return COMPOSABLE_COW_ADDRESS;
@@ -124,7 +149,195 @@ beforeEach(() => {
       ];
     });
 });
-afterEach(() => jest.restoreAllMocks());
+afterEach(() => {
+  jest.restoreAllMocks();
+  global.fetch = originalFetch;
+});
+
+it("shows the 1% fallback when the pair recommendation is unavailable", async () => {
+  fetchMock.mockImplementation(async (url: string) => ({
+    ok: !url.includes("slippageTolerance"),
+    json: async () => ({ quote: { buyAmount: "2000000000" } }),
+  }));
+  const user = userEvent.setup();
+  renderForm();
+  await selectWeth(user);
+  await setTriggerPrice(user);
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  expect(
+    await screen.findByText(
+      "The pair recommendation is unavailable. Auto uses a 1% fallback plus any estimated execution price gap.",
+    ),
+  ).toBeVisible();
+  expect(screen.getByRole("textbox", { name: "Receive at least" })).toHaveValue(
+    "1980",
+  );
+});
+
+it("keeps the reviewed slippage when a pending quote finishes", async () => {
+  let finish!: (value: unknown) => void;
+  fetchMock.mockImplementation(async (url: string) =>
+    url.includes("slippageTolerance")
+      ? { ok: true, json: async () => ({ slippageBps: 50 }) }
+      : new Promise((resolve) => {
+          finish = resolve;
+        }),
+  );
+  const user = userEvent.setup();
+  const onReviewOrder = jest.fn();
+  const { rerender } = renderForm(onReviewOrder);
+  await selectWeth(user);
+  await setTriggerPrice(user);
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  await waitFor(() => expect(finish).toBeDefined());
+  await waitFor(() =>
+    expect(
+      screen.getByRole("textbox", { name: "Receive at least" }),
+    ).toHaveValue("1990"),
+  );
+  await user.click(
+    screen.getByRole("button", { name: "Review Stop Loss order" }),
+  );
+  await waitFor(() => expect(onReviewOrder).toHaveBeenCalledTimes(1));
+  rerender(
+    <SWRConfig value={{ provider: () => new Map(), revalidateOnFocus: false }}>
+      <SwapForm onReviewOrder={onReviewOrder} reviewDisabled />
+    </SWRConfig>,
+  );
+  await act(async () => {
+    finish({
+      ok: true,
+      json: async () => ({ quote: { buyAmount: "1800000000" } }),
+    });
+  });
+  expect(screen.getByRole("textbox", { name: "Receive at least" })).toHaveValue(
+    "1990",
+  );
+  expect(onReviewOrder.mock.calls[0][0]).toMatchObject({
+    slippagePercent: "0.5",
+    amountBuy: "1990",
+  });
+  rerender(
+    <SWRConfig value={{ provider: () => new Map(), revalidateOnFocus: false }}>
+      <SwapForm onReviewOrder={onReviewOrder} />
+    </SWRConfig>,
+  );
+  await waitFor(() =>
+    expect(
+      screen.getByRole("textbox", { name: "Receive at least" }),
+    ).toHaveValue("1900"),
+  );
+});
+
+it("warns when the estimate exceeds the Auto cap and reviews with 5%", async () => {
+  fetchMock.mockImplementation(async (url: string) => ({
+    ok: true,
+    json: async () =>
+      url.includes("slippageTolerance")
+        ? { slippageBps: 50 }
+        : { quote: { buyAmount: "1800000000" } },
+  }));
+  const user = userEvent.setup();
+  const onReviewOrder = jest.fn();
+  renderForm(onReviewOrder);
+  await selectWeth(user);
+  await setTriggerPrice(user);
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  expect(
+    await screen.findByText(/Slippage is too high for this amount/),
+  ).toHaveTextContent(
+    "Estimated requirement: 10.5%. Auto is capped at 5%. This order might not execute. You can set slippage manually.",
+  );
+  expect(screen.queryByText(/split/i)).not.toBeInTheDocument();
+  await waitFor(() =>
+    expect(
+      screen.getByRole("textbox", { name: "Receive at least" }),
+    ).toHaveValue("1900"),
+  );
+  await user.click(
+    screen.getByRole("button", { name: "Review Stop Loss order" }),
+  );
+  await waitFor(() =>
+    expect(onReviewOrder).toHaveBeenCalledWith(
+      expect.objectContaining({ slippagePercent: "5", amountBuy: "1900" }),
+      1,
+      safe.safeAddress,
+    ),
+  );
+});
+
+it("defaults to Auto and preserves manual slippage across amount changes", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  await selectWeth(user);
+  await setTriggerPrice(user);
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  await waitFor(() =>
+    expect(
+      screen.getByRole("textbox", { name: "Receive at least" }),
+    ).toHaveValue("1998"),
+  );
+  await user.click(screen.getByRole("button", { name: "Order settings" }));
+  expect(screen.getByRole("button", { name: "Auto slippage" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  const slippage = screen.getByRole("textbox", { name: "Slippage (%)" });
+  await user.clear(slippage);
+  await user.type(slippage, "3");
+  expect(screen.getByRole("button", { name: "Auto slippage" })).toHaveAttribute(
+    "aria-pressed",
+    "false",
+  );
+  await user.click(screen.getByRole("button", { name: "Return to order" }));
+  const amount = screen.getByRole("textbox", { name: "Sell amount" });
+  await user.clear(amount);
+  await user.type(amount, "0.5");
+  await waitFor(() =>
+    expect(
+      screen.getByRole("textbox", { name: "Receive at least" }),
+    ).toHaveValue("970"),
+  );
+  await user.click(screen.getByRole("button", { name: "Order settings" }));
+  expect(screen.getByRole("textbox", { name: "Slippage (%)" })).toHaveValue(
+    "3",
+  );
+  await user.click(screen.getByRole("button", { name: "Auto slippage" }));
+  await user.click(screen.getByRole("button", { name: "Return to order" }));
+  await waitFor(() =>
+    expect(
+      screen.getByRole("textbox", { name: "Receive at least" }),
+    ).toHaveValue("999"),
+  );
+});
+
+it("warns about an amount below current fees but still lets the user review", async () => {
+  fetchMock.mockResolvedValue({
+    ok: false,
+    json: async () => ({ errorType: "SellAmountDoesNotCoverFee" }),
+  });
+  const user = userEvent.setup();
+  const onReviewOrder = jest.fn();
+  renderForm(onReviewOrder);
+  await selectWeth(user);
+  await setTriggerPrice(user);
+  await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+  expect(
+    await screen.findByText(
+      "The sell amount does not cover current estimated fees. This order might not execute.",
+    ),
+  ).toBeVisible();
+  const review = screen.getByRole("button", { name: "Review Stop Loss order" });
+  expect(review).toBeEnabled();
+  await user.click(review);
+  await waitFor(() =>
+    expect(onReviewOrder).toHaveBeenCalledWith(
+      expect.objectContaining({ slippagePercent: "1", amountBuy: "1980" }),
+      1,
+      safe.safeAddress,
+    ),
+  );
+});
 
 it.each(supportedChainIds)(
   "offers the real approved sell tokens on chain %s without an unavailable alert",
@@ -650,7 +863,7 @@ it("shows default slippage only inside Advanced Settings and no limit input", as
     screen.getByRole("group", { name: "Advanced order settings" }),
   ).toBeInTheDocument();
   expect(screen.getByRole("textbox", { name: "Slippage (%)" })).toHaveValue(
-    "0.1",
+    "1",
   );
 });
 
@@ -1217,6 +1430,11 @@ it("hands one wallet-scoped exact-sell draft to review and keeps form values for
     screen.getByRole("textbox", { name: "Sell amount" }),
     "0.123456789012345678",
   );
+  await waitFor(() =>
+    expect(
+      screen.getByRole("textbox", { name: "Receive at least" }),
+    ).toHaveValue("246.666665"),
+  );
   await user.click(
     await screen.findByRole("button", { name: "Review Stop Loss order" }),
   );
@@ -1425,7 +1643,7 @@ it("resets committed slippage, expiry and exact-sell inputs when the chain chang
   ).not.toHaveClass("text-primary");
   await user.click(screen.getByRole("button", { name: "Order settings" }));
   expect(screen.getByRole("textbox", { name: "Slippage (%)" })).toHaveValue(
-    "0.1",
+    "1",
   );
   expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue("");
   expect(screen.getByRole("spinbutton")).toHaveValue(24);
@@ -1466,7 +1684,7 @@ it("closes unapplied settings and resets expiry when the wallet changes", async 
     VALID_TO_OPTIONS.YEAR,
   );
   expect(screen.getByRole("textbox", { name: "Slippage (%)" })).toHaveValue(
-    "0.1",
+    "1",
   );
   expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue("");
 });
@@ -1500,7 +1718,7 @@ it("ignores settings validation that finishes after a wallet change", async () =
   await user.click(screen.getByRole("button", { name: "Order settings" }));
   expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue("");
   expect(screen.getByRole("textbox", { name: "Slippage (%)" })).toHaveValue(
-    "0.1",
+    "1",
   );
 });
 
@@ -1539,7 +1757,7 @@ it("resets the exact-sell form when the wallet changes", async () => {
   ).toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "Order settings" }));
   expect(screen.getByRole("textbox", { name: "Slippage (%)" })).toHaveValue(
-    "0.1",
+    "1",
   );
   expect(screen.getByPlaceholderText("0xabc...123")).toHaveValue("");
   expect(screen.getByRole("spinbutton")).toHaveValue(24);

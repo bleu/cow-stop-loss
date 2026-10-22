@@ -35,7 +35,11 @@ Production feeds quote prices in USD. Sepolia keeps its two fixed test feeds. To
 
 ## Create and cancel orders
 
-Select the sell token, exact sell amount, trigger price, and slippage. Review the order and approval requests before signing. Creation and cancellation require wallet transactions. Cancellation is available only when the order's ownership and state permit it. Connecting and viewing orders does not submit a transaction.
+Select the sell token, exact sell amount, and trigger price. Slippage defaults to Auto. Auto adds the BFF pair allowance to any unfavorable gap between the oracle price and a current quote for your sell amount, including quoted fees. It uses a 1% allowance if the pair recommendation is unavailable, warns at 2%, and applies a maximum of 5%. You can enter a manual value in Order settings.
+
+Estimates update after input changes, with a short delay while you type. They do not refresh on a timer. Slippage is fixed during review and stays fixed after placement. A quote failure shows a warning but does not block creation. Current quotes cannot guarantee future execution.
+
+Review the order and approval requests before signing. Creation and cancellation require wallet transactions. Cancellation is available only when the order's ownership and state permit it. Connecting and viewing orders does not submit a transaction.
 
 ## Order data
 

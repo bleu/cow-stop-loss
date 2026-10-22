@@ -9,7 +9,9 @@ import { useAccount } from "wagmi";
 
 import { useAdvancedSettingsStore } from "#/hooks/useAdvancedSettings";
 import { useDraftOrder } from "#/hooks/useDraftOrder";
+import { useOrderQuote } from "#/hooks/useOrderQuote";
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
+import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { ChainId } from "#/lib/publicClients";
 import { generateSwapSchema, VALID_TO_OPTIONS } from "#/lib/schema";
@@ -58,7 +60,7 @@ function WalletSwapForm({
     mode: "onChange",
     defaultValues: {
       isSellOrder: true,
-      slippagePercent: "0.1",
+      slippagePercent: "1",
       validTo: VALID_TO_OPTIONS.YEAR,
       amountSell: "",
       amountBuy: "",
@@ -87,6 +89,34 @@ function WalletSwapForm({
         "slippagePercent",
       ],
     });
+  const [autoSlippage, setAutoSlippage] = React.useState(true);
+  const { data: oraclePrice } = useTokenPairPrice(tokenSell, tokenBuy);
+  const editing = !reviewDisabled && !form.formState.isSubmitting;
+  const quote = useOrderQuote({
+    chainId,
+    account: walletAddress,
+    tokenSell,
+    tokenBuy,
+    amountSell,
+    oraclePrice,
+    enabled: editing,
+  });
+  React.useEffect(() => {
+    if (autoSlippage && editing)
+      setValue("slippagePercent", quote.slippagePercent, {
+        shouldValidate: true,
+      });
+  }, [autoSlippage, editing, quote.slippagePercent, setValue]);
+  const applySlippage = React.useCallback(
+    (value: string) => {
+      setValue("slippagePercent", value, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    },
+    [setValue],
+  );
+
   React.useEffect(() => {
     let derivedAmount = "";
     if (tokenSell && tokenBuy) {
@@ -127,7 +157,7 @@ function WalletSwapForm({
   React.useEffect(() => {
     reset({
       isSellOrder: true,
-      slippagePercent: "0.1",
+      slippagePercent: "1",
       validTo: VALID_TO_OPTIONS.YEAR,
       amountSell: "",
       amountBuy: "",
@@ -192,6 +222,8 @@ function WalletSwapForm({
           <CardContent className="rescue-swap-content flex flex-col gap-3 p-0">
             <AdvancedSettingsPanel
               slippagePercent={slippagePercent}
+              autoSlippage={autoSlippage}
+              onAutoSlippageChange={setAutoSlippage}
               tokenPair={
                 tokenSell && tokenBuy ? { tokenSell, tokenBuy } : undefined
               }
@@ -211,12 +243,7 @@ function WalletSwapForm({
                   </h2>
                 </div>
               }
-              onApplySlippage={(value) =>
-                setValue("slippagePercent", value, {
-                  shouldValidate: true,
-                  shouldDirty: true,
-                })
-              }
+              onApplySlippage={applySlippage}
             />
             <div
               aria-hidden={settingsOpen}
@@ -236,6 +263,36 @@ function WalletSwapForm({
                 key={`${tokenSell?.address.toLowerCase()}:${tokenBuy?.address.toLowerCase()}`}
               />
               <TokenInputCard side="Buy" />
+              {quote.hasInput && quote.isLoading && (
+                <p role="status" className="text-sm text-muted-foreground">
+                  Checking the current execution estimate. You can continue to
+                  review.
+                </p>
+              )}
+              {autoSlippage &&
+                quote.hasInput &&
+                !quote.isLoading &&
+                quote.usedFallback && (
+                  <p role="status" className="text-sm text-secondary">
+                    The pair recommendation is unavailable. Auto uses a 1%
+                    fallback plus any estimated execution price gap.
+                  </p>
+                )}
+              {quote.quoteError && (
+                <p role="status" className="text-sm text-secondary">
+                  {quote.quoteError.message.startsWith("The sell amount")
+                    ? quote.quoteError.message
+                    : "A current execution quote is unavailable. This order might not execute."}
+                </p>
+              )}
+              {autoSlippage && quote.isHigh && (
+                <p role="status" className="text-sm text-secondary">
+                  Slippage is too high for this amount.{" "}
+                  {quote.isCapped
+                    ? `Estimated requirement: ${quote.requiredBps / 100}%. Auto is capped at 5%. This order might not execute. You can set slippage manually.`
+                    : `Auto slippage is ${quote.slippagePercent}%. A higher tolerance permits a lower execution price.`}
+                </p>
+              )}
               <AdvancedSettingsAlert slippagePercent={slippagePercent} />
               {form.formState.errors.root?.message && (
                 <p role="alert" className="text-sm text-destructive">
