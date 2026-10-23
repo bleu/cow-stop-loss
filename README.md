@@ -10,7 +10,7 @@ Approved routes use an exact sell amount, trigger price, slippage, and one fixed
 
 ## Local setup
 
-Use Node.js 24.22 or later in the Node 24 LTS line, pnpm 9, and Python 3. The private `@bleu/ui` package requires a package-read `NPM_TOKEN` in the install environment.
+Use Node.js 24.22.1 or later in the Node 24 LTS line, pnpm 9, and Python 3. The private `@bleu/ui` package requires a package-read `NPM_TOKEN` in the install environment.
 
 ```bash
 corepack pnpm@9 install
