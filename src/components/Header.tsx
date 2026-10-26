@@ -6,6 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { NetworkLogo } from "#/components/NetworkLogo";
+import { PublicTestingNotice } from "#/components/PublicTestingNotice";
 import { PixelIcon } from "#/components/ui/pixel-icon";
 import { ChainId, supportedChainIds } from "#/lib/publicClients";
 
@@ -54,6 +55,7 @@ export function Header({
         </span>
       </Link>
       <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+        <PublicTestingNotice />
         <Button
           variant="outline"
           size="icon"

@@ -1,4 +1,4 @@
-import type { Address } from "viem";
+import type { Address, PublicClient } from "viem";
 
 import {
   type IRoute,
@@ -42,14 +42,16 @@ export async function fetchOraclePairPrice({
   });
 }
 
-export async function fetchOracleUsdPrice({
+export async function fetchOracleUsdPriceSnapshot({
   chainId,
   oracle,
   maxAge = 24 * 60 * 60,
+  client = publicClientsFromIds[chainId],
 }: {
   chainId: ChainId;
   oracle: Address;
   maxAge?: number;
+  client?: PublicClient;
 }) {
   const { sellTokens, buyToken } = getSupportedTokens(chainId);
   const configured = [...sellTokens, buyToken].filter(
@@ -67,15 +69,20 @@ export async function fetchOracleUsdPrice({
     throw new Error("No configured USD price feed");
   }
   const approvedMaxAge = Math.min(maxAge, ...(ceilings as number[]));
-  const client = publicClientsFromIds[chainId];
   const block = await client.getBlock();
-  const { price } = await readOraclePrice({
+  return readOraclePrice({
     client,
     oracle,
     blockNumber: block.number,
     timestamp: block.timestamp,
     maxAge: approvedMaxAge,
   });
+}
+
+export async function fetchOracleUsdPrice(
+  args: Parameters<typeof fetchOracleUsdPriceSnapshot>[0],
+) {
+  const { price } = await fetchOracleUsdPriceSnapshot(args);
   if (!Number.isFinite(price) || price <= 0)
     throw new Error("Oracle price is unavailable");
   return price;

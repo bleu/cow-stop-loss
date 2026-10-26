@@ -2,6 +2,8 @@
 
 A standalone app to create, review, and cancel exact-sell stop-loss orders on CoW Protocol. Use `Connect wallet` to open RainbowKit and select a browser wallet or WalletConnect. The app does not require a Safe frame or Safe gateway.
 
+The app is in public testing. Bugs can cause orders to fail or result in loss of funds. New orders are limited to $10,000 USD each, based on the current value of the sell amount. This is an app-side check when creating an order, not a cap on total orders or execution value. Please report problems through [GitHub issues](https://github.com/bleu/cow-stop-loss/issues/new).
+
 Orders for the connected account and its CowShed proxies appear in one list across Ethereum, Gnosis, Arbitrum, Base, Polygon, Avalanche, BNB Chain, Linea, Plasma, and Sepolia. Sepolia is marked as a testnet. Connection and browsing do not switch the wallet chain. The header's network control requests a wallet chain switch only when you select a network. Use the list's chain and status filters to narrow the list; both default to `All`. Open the header account button to disconnect.
 
 All nine mainnets support new stop-loss orders with small sell allowlists: Ethereum WETH, LINK, and UNI; Gnosis GNO; Arbitrum WETH; Base VIRTUAL; Polygon WPOL; Avalanche WAVAX; BNB Chain WBNB; Linea WETH; and Plasma WXPL. Gnosis and BNB Chain buy USDT; the other mainnets buy native USDC. Sepolia offers WETH into the existing USDC test token with fixed test feeds. Existing orders support approval repair and cancellation when their ownership and state permit it. See [Supported networks](docs/supported-networks.md) and [Token catalog](docs/token-catalog.md) for the exact allowlist, feed checks, and accepted oracle limits.

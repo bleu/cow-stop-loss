@@ -15,6 +15,7 @@ import {
 } from "#/lib/placementReads";
 import {
   ApprovalMode,
+  assertPlacementOrderSize,
   buildPlacementApproval,
   buildPlacementSetup,
   FundingSnapshot,
@@ -67,6 +68,16 @@ function showPlacementError(
     );
   } catch {
     showOrderError(action, cause);
+  }
+}
+
+async function checkSizeBeforeSend(prepared: PreparedPlacement) {
+  try {
+    await assertPlacementOrderSize(prepared);
+  } catch (cause) {
+    throw new PlacementNotSubmittedError(
+      cause instanceof Error ? cause.message : "Unable to verify the order size.",
+    );
   }
 }
 
@@ -202,6 +213,7 @@ export function StopLossCreation() {
           account,
           chainId: selectedChain,
         }));
+      if (existing) await assertPlacementOrderSize(prepared);
       let minimumBlockNumber = BigInt(0);
       for (const record of placement.getRecords(prepared)) {
         for (const reference of Object.values(record.transactions)) {
@@ -295,7 +307,11 @@ export function StopLossCreation() {
           approvalAmount:
             mode === "unlimited" ? maxUint256 : review.checks.requiredAllowance,
           send: async () => {
-            if (currentScope.current !== selectedScope)
+            await checkSizeBeforeSend(prepared);
+            if (
+              currentScope.current !== selectedScope ||
+              request.current !== revision
+            )
               throw new PlacementNotSubmittedError(
                 "Wallet or chain changed. Review the order again.",
               );
@@ -383,7 +399,11 @@ export function StopLossCreation() {
       await placement.submit(prepared, "setup", {
         settlementAmount: review.checks.requiredSettlementAllowance,
         send: async () => {
-          if (currentScope.current !== selectedScope)
+          await checkSizeBeforeSend(prepared);
+          if (
+            currentScope.current !== selectedScope ||
+            request.current !== revision
+          )
             throw new PlacementNotSubmittedError(
               "Wallet or chain changed. Review the order again.",
             );

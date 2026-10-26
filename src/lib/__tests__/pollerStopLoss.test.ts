@@ -9,6 +9,11 @@ jest.mock("#/lib/supportedTokens", () => {
   };
 });
 
+jest.mock("#/lib/orderSizeLimit", () => ({
+  ...jest.requireActual("#/lib/orderSizeLimit"),
+  assertOrderSizeLimit: jest.fn(),
+}));
+
 import {
   decodeAbiParameters,
   decodeFunctionData,
@@ -22,8 +27,14 @@ import {
 
 import { defaultAdvancedSettings } from "#/hooks/useAdvancedSettings";
 import { configuredTokenRoute } from "#/lib/oracleRouter";
+import {
+  assertOrderSizeLimit,
+  ORDER_SIZE_LIMIT_EXCEEDED_ERROR,
+  ORDER_SIZE_PRICE_UNAVAILABLE_ERROR,
+} from "#/lib/orderSizeLimit";
 import { invalidatePlacementReads } from "#/lib/placementReads";
 import {
+  assertPlacementOrderSize,
   buildApprovalRepair,
   buildPlacementApproval,
   buildPlacementSetup,
@@ -73,6 +84,7 @@ const draft: DraftOrder = {
 };
 
 beforeEach(() => {
+  jest.mocked(assertOrderSizeLimit).mockReset().mockResolvedValue(undefined);
   jest
     .spyOn(global, "fetch")
     .mockImplementation(
@@ -82,6 +94,119 @@ beforeEach(() => {
 afterEach(() => {
   invalidatePlacementReads({ account, chainId: 1 });
   jest.restoreAllMocks();
+});
+
+test("checks the sell amount in atoms with the preparation client", async () => {
+  const client = checkingClient();
+  await preparePlacement({ draft, account, chainId: 1, client });
+
+  expect(assertOrderSizeLimit).toHaveBeenCalledTimes(1);
+  expect(assertOrderSizeLimit).toHaveBeenCalledWith({
+    chainId: 1,
+    tokenSell,
+    sellAmount: BigInt("1000000000000000000"),
+    client,
+  });
+});
+
+test.each([
+  ORDER_SIZE_LIMIT_EXCEEDED_ERROR,
+  ORDER_SIZE_PRICE_UNAVAILABLE_ERROR,
+])(
+  "rejects preparation before contract reads or app-data upload: %s",
+  async (message) => {
+    const client = checkingClient();
+    jest.mocked(assertOrderSizeLimit).mockRejectedValueOnce(new Error(message));
+
+    await expect(
+      preparePlacement({ draft, account, chainId: 1, client }),
+    ).rejects.toThrow(message);
+    expect(client.readContract).not.toHaveBeenCalled();
+    expect(global.fetch).not.toHaveBeenCalled();
+  },
+);
+
+test("rechecks the encoded sell amount instead of the draft amount", async () => {
+  const client = checkingClient();
+  const prepared = await preparePlacement({
+    draft,
+    account,
+    chainId: 1,
+    client,
+  });
+  prepared.draft.amountSell = "99";
+  jest.mocked(assertOrderSizeLimit).mockClear();
+
+  await assertPlacementOrderSize(prepared, client);
+
+  expect(assertOrderSizeLimit).toHaveBeenCalledTimes(1);
+  expect(assertOrderSizeLimit).toHaveBeenCalledWith({
+    chainId: 1,
+    tokenSell,
+    sellAmount: BigInt("1000000000000000000"),
+    client,
+  });
+  await assertPlacementOrderSize(prepared);
+  expect(assertOrderSizeLimit).toHaveBeenLastCalledWith(
+    expect.objectContaining({ client: publicClientsFromIds[1] }),
+  );
+});
+
+test.each([buildPlacementApproval, buildPlacementSetup])(
+  "%p rejects a price increase before building a wallet transaction",
+  async (build) => {
+    const client = checkingClient({ allowance: BigInt(0) });
+    const prepared = await preparePlacement({
+      draft,
+      account,
+      chainId: 1,
+      client,
+    });
+    emptyFundingApi();
+    const checks = await refreshPlacementChecks(prepared, { client });
+    jest.mocked(client.readContract).mockClear();
+    jest.mocked(global.fetch).mockClear();
+    jest
+      .mocked(assertOrderSizeLimit)
+      .mockClear()
+      .mockRejectedValueOnce(new Error(ORDER_SIZE_LIMIT_EXCEEDED_ERROR));
+
+    await expect(build(prepared, { client, checks })).rejects.toThrow(
+      ORDER_SIZE_LIMIT_EXCEEDED_ERROR,
+    );
+    expect(assertOrderSizeLimit).toHaveBeenCalledWith({
+      chainId: 1,
+      tokenSell,
+      sellAmount: BigInt("1000000000000000000"),
+      client,
+    });
+    expect(client.readContract).not.toHaveBeenCalled();
+    expect(global.fetch).not.toHaveBeenCalled();
+  },
+);
+
+test("does not apply the new-order size limit to historical approval repair", async () => {
+  const client = checkingClient({ allowance: BigInt(0) });
+  const prepared = await preparePlacement({
+    draft,
+    account,
+    chainId: 1,
+    client,
+  });
+  emptyFundingApi();
+  const checks = await refreshPlacementChecks(prepared, { client });
+  jest
+    .mocked(assertOrderSizeLimit)
+    .mockClear()
+    .mockRejectedValue(new Error(ORDER_SIZE_LIMIT_EXCEEDED_ERROR));
+
+  await expect(
+    buildApprovalRepair({ ...prepared, kind: "repair" }, { checks }),
+  ).resolves.toEqual([
+    expect.objectContaining({ stage: "wallet" }),
+    expect.objectContaining({ stage: "settlement" }),
+  ]);
+  expect(assertOrderSizeLimit).not.toHaveBeenCalled();
 });
 
 test("reuses prefetched balances, allowances, contracts and oracles in order review", async () => {

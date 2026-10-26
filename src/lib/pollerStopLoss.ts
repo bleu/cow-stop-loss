@@ -29,6 +29,7 @@ import {
   configuredTokenRoute,
   readOraclePrice,
 } from "./oracleRouter";
+import { assertOrderSizeLimit } from "./orderSizeLimit";
 import { getPlacementReads, type PlacementReads } from "./placementReads";
 import { ChainId, publicClientsFromIds } from "./publicClients";
 import { decodeStopLossStaticInput } from "./staticInputDecoder";
@@ -112,13 +113,19 @@ export async function preparePlacement({
   if (draft.receiver === zeroAddress) {
     throw new Error("Receiver cannot be the zero address");
   }
-  getOrderAmounts(draft);
+  const { sellAtoms } = getOrderAmounts(draft);
   assertPlacementRoute(draft, chainId);
   const reviewed = {
     ...draft,
     tokenSell: { ...draft.tokenSell },
     tokenBuy: { ...draft.tokenBuy },
   };
+  await assertOrderSizeLimit({
+    chainId,
+    tokenSell: reviewed.tokenSell,
+    sellAmount: sellAtoms,
+    client,
+  });
   const poller = POLLER_ADDRESS_BY_CHAIN_ID[chainId];
   const factory = await client.readContract({
     address: poller,
@@ -860,12 +867,25 @@ export interface PlacementTransaction {
 
 export type ApprovalMode = "limited" | "unlimited";
 
+export async function assertPlacementOrderSize(
+  prepared: PreparedPlacement,
+  client = publicClientsFromIds[prepared.chainId],
+) {
+  await assertOrderSizeLimit({
+    chainId: prepared.chainId,
+    tokenSell: prepared.draft.tokenSell,
+    sellAmount: decodeStopLossStaticInput(prepared.staticInput).sellAmount,
+    client,
+  });
+}
+
 export async function buildPlacementApproval(
   prepared: PreparedPlacement | PreparedApprovalRepair,
   {
     checks,
     mode = "limited",
-  }: { checks: FundingSnapshot; mode?: ApprovalMode },
+    client = publicClientsFromIds[prepared.chainId],
+  }: { checks: FundingSnapshot; mode?: ApprovalMode; client?: PublicClient },
 ): Promise<{
   kind: "approval" | "none";
   transaction: PlacementTransaction | null;
@@ -875,12 +895,14 @@ export async function buildPlacementApproval(
     !decodeStopLossStaticInput(prepared.staticInput).isSellOrder
   )
     throw new Error("Only exact-sell orders are supported.");
-  if (!("kind" in prepared))
+  if (!("kind" in prepared)) {
     assertPlacementRoute(
       prepared.draft,
       prepared.chainId,
       prepared.staticInput,
     );
+    await assertPlacementOrderSize(prepared, client);
+  }
   if (checks.status === "unknown") throw new Error(checks.error);
   if (!checks.approvalRequired) return { kind: "none", transaction: null };
   return {
@@ -915,6 +937,7 @@ export async function buildPlacementSetup(
   )
     throw new Error("Only exact-sell orders are supported.");
   assertPlacementRoute(prepared.draft, prepared.chainId, prepared.staticInput);
+  await assertPlacementOrderSize(prepared, client);
   if (checks.status === "unknown") throw new Error(checks.error);
   if (checks.approvalRequired) {
     throw new Error("Approve the funding amount before placing this order");

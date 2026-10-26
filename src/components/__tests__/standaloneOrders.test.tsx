@@ -12,6 +12,7 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { EthereumProvider } from "@walletconnect/ethereum-provider";
 import { EventEmitter } from "events";
 import { AppRouterContext } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -1081,6 +1082,154 @@ afterEach(async () => {
   localStorage.clear();
   jest.restoreAllMocks();
 });
+
+describe.each(["dark", "light"] as const)(
+  "public testing notice in %s mode",
+  (theme) => {
+    test.each(["/", "/app", `/1/${wallet}`, `/1/${wallet}/stop-loss-1`])(
+      "opens the header warning on %s and keeps the issue link clickable",
+      async (initialPath) => {
+        const user = userEvent.setup();
+        renderView(
+          <Router initialPath={initialPath}>
+            <AppRootLayout config={config} initialTheme={theme}>
+              <main>Page content</main>
+            </AppRootLayout>
+          </Router>,
+        );
+
+        try {
+          const warning = within(screen.getByRole("banner")).getByRole(
+            "button",
+            { name: "Public testing warning" },
+          );
+          expect(warning).toBeVisible();
+          expect(warning.textContent).toBe("");
+          expect(warning.querySelector("svg")).toHaveAttribute(
+            "aria-hidden",
+            "true",
+          );
+          expect(screen.queryByRole("note")).not.toBeInTheDocument();
+          expect(
+            screen.queryByRole("dialog", { name: "Public testing" }),
+          ).not.toBeInTheDocument();
+
+          await user.click(warning);
+          const dialog = await screen.findByRole("dialog", {
+            name: "Public testing",
+          });
+          expect(dialog).toBeVisible();
+          const notice = within(dialog).getByRole("note");
+          expect(notice).toHaveTextContent(
+            "Public testing. Funds are at risk. $10,000 max per order. Report problems on GitHub issues.",
+          );
+          const issues = within(notice).getByRole("link", {
+            name: "GitHub issues",
+          });
+          expect(issues).toHaveAttribute(
+            "href",
+            "https://github.com/bleu/cow-stop-loss/issues/new",
+          );
+          expect(issues).toHaveAttribute("target", "_blank");
+          expect(issues.getAttribute("rel")?.split(/\s+/)).toEqual(
+            expect.arrayContaining(["noreferrer", "noopener"]),
+          );
+          const pathname = window.location.pathname;
+          await user.click(issues);
+          expect(dialog).toBeVisible();
+          expect(window.location.pathname).toBe(pathname);
+
+          await user.keyboard("{Escape}");
+          await waitFor(() =>
+            expect(
+              screen.queryByRole("dialog", { name: "Public testing" }),
+            ).not.toBeInTheDocument(),
+          );
+          expect(screen.queryByRole("note")).not.toBeInTheDocument();
+
+          await user.click(
+            screen.getByRole("button", {
+              name: `Switch to ${theme === "dark" ? "light" : "dark"} mode`,
+            }),
+          );
+          await user.click(warning);
+          expect(
+            await screen.findByRole("dialog", { name: "Public testing" }),
+          ).toHaveTextContent("Public testing. Funds are at risk.");
+          await user.click(screen.getByRole("main"));
+          await waitFor(() =>
+            expect(
+              screen.queryByRole("dialog", { name: "Public testing" }),
+            ).not.toBeInTheDocument(),
+          );
+        } finally {
+          document.documentElement.classList.remove("light");
+        }
+      },
+    );
+
+    test.each([
+      { initialPath: "/", interaction: "focus" },
+      { initialPath: "/", interaction: "hover" },
+      { initialPath: "/", interaction: "tap" },
+      { initialPath: "/app", interaction: "focus" },
+      { initialPath: "/app", interaction: "hover" },
+      { initialPath: "/app", interaction: "tap" },
+    ])(
+      "opens on $interaction on $initialPath",
+      async ({ initialPath, interaction }) => {
+        const user = userEvent.setup();
+        renderView(
+          <Router initialPath={initialPath}>
+            <AppRootLayout config={config} initialTheme={theme}>
+              <main>Page content</main>
+            </AppRootLayout>
+          </Router>,
+        );
+
+        try {
+          const warning = within(screen.getByRole("banner")).getByRole(
+            "button",
+            {
+              name: "Public testing warning",
+            },
+          );
+          expect(
+            screen.queryByRole("dialog", { name: "Public testing" }),
+          ).not.toBeInTheDocument();
+          if (interaction === "focus") {
+            act(() => warning.focus());
+            expect(warning).toHaveFocus();
+          } else if (interaction === "hover") {
+            await user.hover(warning);
+          } else {
+            await user.pointer({ target: warning, keys: "[TouchA]" });
+          }
+          const dialog = await screen.findByRole("dialog", {
+            name: "Public testing",
+          });
+          expect(within(dialog).getByRole("note")).toBeVisible();
+          if (interaction === "focus") {
+            await user.tab();
+            expect(
+              within(dialog).getByRole("link", { name: "GitHub issues" }),
+            ).toHaveFocus();
+            await user.tab({ shift: true });
+            expect(warning).toHaveFocus();
+          }
+          await user.keyboard("{Escape}");
+          await waitFor(() =>
+            expect(
+              screen.queryByRole("dialog", { name: "Public testing" }),
+            ).not.toBeInTheDocument(),
+          );
+        } finally {
+          document.documentElement.classList.remove("light");
+        }
+      },
+    );
+  },
+);
 
 test("shows the app link in the header and FAQ in the footer without wallet controls", async () => {
   renderView(

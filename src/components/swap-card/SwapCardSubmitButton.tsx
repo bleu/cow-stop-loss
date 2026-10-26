@@ -7,15 +7,19 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { parseUnits } from "viem";
 import { useAccount } from "wagmi";
 
+import type { OrderSizeLimitStatus } from "#/hooks/useOrderSizeLimit";
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { calculateAmounts } from "#/lib/calculateAmounts";
+import { ORDER_SIZE_LIMIT_LABEL } from "#/lib/orderSizeLimit";
 import { SwapData } from "#/lib/types";
 
 export function SwapCardSubmitButton({
   disabled: reviewDisabled = false,
+  orderSizeLimit,
 }: {
   disabled?: boolean;
+  orderSizeLimit: OrderSizeLimitStatus;
 }) {
   const { address } = useAccount();
   const { openConnectModal } = useConnectModal();
@@ -94,6 +98,18 @@ export function SwapCardSubmitButton({
       };
     }
 
+    if (orderSizeLimit !== "allowed") {
+      return {
+        disabled: true,
+        text:
+          orderSizeLimit === "over"
+            ? `Order exceeds ${ORDER_SIZE_LIMIT_LABEL} limit`
+            : orderSizeLimit === "checking"
+              ? "Checking order size..."
+              : "USD price unavailable",
+      };
+    }
+
     if (!marketPrice || !Number.isFinite(marketPrice) || marketPrice <= 0) {
       return {
         disabled: true,
@@ -123,6 +139,7 @@ export function SwapCardSubmitButton({
     };
   }, [
     errors,
+    orderSizeLimit,
     slippagePercent,
     marketPrice,
     sellAmount,
