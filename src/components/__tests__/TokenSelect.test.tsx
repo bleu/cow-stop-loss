@@ -162,6 +162,36 @@ it("shares list balances and prices with the amount cards and keeps Max exact", 
   expect(read).not.toHaveBeenCalled();
 });
 
+it.each([
+  ["1000000000000000", "0.001"],
+  ["1500000000000000000", "1.5"],
+  ["1000000000000000000", "1"],
+  ["1000000000000000000000", "1,000"],
+  ["1234567890000000000", "1.2346"],
+  ["0", "0"],
+  ["1", "< 0.0001"],
+])("formats the card balance %s as %s", async (balance, displayed) => {
+  const { rpc, weth, unmount } = renderSelector();
+  unmount();
+  rpc.setBalance(weth.token.address, BigInt(balance));
+  function Card() {
+    const form = useForm<SwapData>({
+      defaultValues: { tokenSell: weth.token },
+    });
+    return (
+      <FormProvider {...form}>
+        <TokenInputCard side="Sell" />
+      </FormProvider>
+    );
+  }
+  render(
+    <SWRConfig value={{ provider: () => new Map(), dedupingInterval: 30_000 }}>
+      <Card />
+    </SWRConfig>,
+  );
+  expect(await screen.findByText(`Balance: ${displayed}`)).toBeVisible();
+});
+
 it("ignores late balances from a previous wallet", async () => {
   const user = userEvent.setup();
   const { rpc, rerender, onSelectToken } = renderSelector();

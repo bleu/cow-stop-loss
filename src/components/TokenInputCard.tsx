@@ -46,9 +46,9 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
       : undefined;
   const balanceError = Boolean(
     walletAddress &&
-      token &&
-      !isLoading &&
-      (error || (data && holding?.balance === undefined)),
+    token &&
+    !isLoading &&
+    (error || (data && holding?.balance === undefined)),
   );
   const setTokenSellBalance = useSwapTokenBalances(
     (state) => state.setTokenSellBalance,
@@ -136,7 +136,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                     ? "Connect wallet to view balance"
                     : balanceError
                       ? "Balance unavailable"
-                      : `Balance: ${tokenBalance === undefined ? "Loading…" : formatNumber(tokenBalance, 4, "decimal", "standard", 0.0001)}`}
+                      : `Balance: ${tokenBalance === undefined ? "Loading…" : formatNumber(tokenBalance, 4, "decimal", "standard", 0.0001).replace(/(\.\d*?[1-9])0+$|\.0+$/, "$1")}`}
                 </span>
                 {balanceError && (
                   <Button
