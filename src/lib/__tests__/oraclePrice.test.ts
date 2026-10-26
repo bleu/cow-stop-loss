@@ -9,7 +9,11 @@ jest.mock("#/lib/supportedTokens", () => {
   };
 });
 
-import { configuredTokenOracle, fetchOracleUsdPrice } from "../oraclePrice";
+import {
+  configuredTokenOracle,
+  fetchOracleUsdPrice,
+  fetchOracleUsdPriceSnapshot,
+} from "../oraclePrice";
 import { type ChainId, publicClientsFromIds } from "../publicClients";
 import { getSupportedTokens } from "../supportedTokens";
 
@@ -79,6 +83,48 @@ it.each([
   await expect(fetchOracleUsdPrice({ chainId: 1, oracle })).rejects.toThrow(
     "Required price feed is invalid",
   );
+});
+
+it("returns the exact validated USD answer and feed decimals", async () => {
+  await expect(
+    fetchOracleUsdPriceSnapshot({ chainId: 1, oracle }),
+  ).resolves.toEqual({
+    answer: BigInt("250050000000"),
+    decimals: 8,
+    updatedAt: timestamp,
+    price: 2500.5,
+  });
+});
+
+it.each([-1, 0.5, 256, NaN])(
+  "rejects invalid feed decimals %s",
+  async (decimals) => {
+    jest
+      .mocked(client.readContract)
+      .mockImplementation(async ({ functionName }) =>
+        functionName === "decimals"
+          ? decimals
+          : [BigInt(1), BigInt(1), BigInt(1), timestamp, BigInt(1)],
+      );
+    await expect(
+      fetchOracleUsdPriceSnapshot({ chainId: 1, oracle }),
+    ).rejects.toThrow("Required price feed decimals are invalid");
+  },
+);
+
+it("caps snapshot age at the approved ceiling even when the caller allows more", async () => {
+  jest
+    .mocked(client.readContract)
+    .mockResolvedValueOnce([
+      BigInt(1),
+      BigInt(1),
+      BigInt(1),
+      timestamp - BigInt(86401),
+      BigInt(1),
+    ]);
+  await expect(
+    fetchOracleUsdPriceSnapshot({ chainId: 1, oracle, maxAge: 172800 }),
+  ).rejects.toThrow("Oracle price data is stale");
 });
 
 it("uses the configured maximum age against the selected block timestamp", async () => {

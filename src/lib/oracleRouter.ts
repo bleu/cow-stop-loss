@@ -66,8 +66,11 @@ export async function readOraclePrice({
     functionName: "decimals",
     blockNumber,
   })) as number;
+  if (!Number.isInteger(decimals) || decimals < 0 || decimals > 255)
+    throw new Error("Required price feed decimals are invalid");
   return {
     answer: round[1],
+    decimals,
     updatedAt: round[3],
     price: Number(formatUnits(round[1], decimals)),
   };

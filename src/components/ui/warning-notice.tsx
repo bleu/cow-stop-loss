@@ -15,7 +15,7 @@ export function WarningNotice({
   return (
     <aside
       role={role}
-      className="flex items-start gap-3 rounded-none border border-amber-500/60 bg-amber-500/15 px-4 py-3 text-sm text-amber-900 dark:text-amber-200"
+      className="flex items-start gap-3 rounded-none border border-amber-500/60 bg-amber-500/15 px-4 py-3 text-sm text-warning"
     >
       <PixelIcon name="warning" className="mt-0.5 size-5 shrink-0" />
       <p className="min-w-0 flex-1 font-medium">{children}</p>

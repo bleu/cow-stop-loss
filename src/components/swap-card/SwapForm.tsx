@@ -4,15 +4,22 @@ import { Card, CardContent } from "@bleu/ui";
 import { zodResolver } from "@hookform/resolvers/zod/dist/zod";
 import React from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { Address } from "viem";
+import { Address, parseUnits } from "viem";
 import { useAccount } from "wagmi";
 
 import { useAdvancedSettingsStore } from "#/hooks/useAdvancedSettings";
 import { useDraftOrder } from "#/hooks/useDraftOrder";
 import { useOrderQuote } from "#/hooks/useOrderQuote";
+import { useOrderSizeLimit } from "#/hooks/useOrderSizeLimit";
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { calculateAmounts } from "#/lib/calculateAmounts";
+import {
+  assertOrderSizeLimit,
+  ORDER_SIZE_LIMIT_EXCEEDED_ERROR,
+  ORDER_SIZE_LIMIT_LABEL,
+  ORDER_SIZE_PRICE_UNAVAILABLE_ERROR,
+} from "#/lib/orderSizeLimit";
 import { ChainId } from "#/lib/publicClients";
 import { generateSwapSchema, VALID_TO_OPTIONS } from "#/lib/schema";
 import { getSupportedTokens } from "#/lib/supportedTokens";
@@ -90,6 +97,11 @@ function WalletSwapForm({
         "slippagePercent",
       ],
     });
+  const orderSizeLimit = useOrderSizeLimit({
+    chainId,
+    tokenSell,
+    sellAmount: amountSell,
+  });
   const [autoSlippage, setAutoSlippage] = React.useState(true);
   const { data: oraclePrice } = useTokenPairPrice(tokenSell, tokenBuy);
   const editing = !reviewDisabled && !form.formState.isSubmitting;
@@ -190,7 +202,13 @@ function WalletSwapForm({
     <Form
       {...form}
       onSubmit={async (data) => {
-        if (reviewDisabled || unavailableReason || quote.isLoading) return;
+        if (
+          reviewDisabled ||
+          unavailableReason ||
+          quote.isLoading ||
+          orderSizeLimit !== "allowed"
+        )
+          return;
         const requestId = ++submissionId.current;
         clearErrors("root");
         try {
@@ -198,6 +216,12 @@ function WalletSwapForm({
             throw new Error("Connect a wallet to prepare an order.");
           if (!data.isSellOrder)
             throw new Error("Only exact-sell orders are supported.");
+          await assertOrderSizeLimit({
+            chainId,
+            tokenSell: data.tokenSell,
+            sellAmount: parseUnits(data.amountSell, data.tokenSell.decimals),
+          });
+          if (requestId !== submissionId.current) return;
           const newOrder = await createDraftOrder(data, chainId, walletAddress);
           if (requestId !== submissionId.current) return;
           setCurrentDraftOrder(newOrder);
@@ -260,6 +284,22 @@ function WalletSwapForm({
                 </p>
               )}
               <TokenInputCard side="Sell" />
+              <p className="text-xs text-muted-foreground">
+                Maximum order size: {ORDER_SIZE_LIMIT_LABEL}, based on the
+                current USD value of the sell amount.
+              </p>
+              {tokenSell && amountSell && orderSizeLimit !== "allowed" && (
+                <p
+                  role={orderSizeLimit === "checking" ? "status" : "alert"}
+                  className={`text-sm ${orderSizeLimit === "checking" ? "text-muted-foreground" : "text-destructive"}`}
+                >
+                  {orderSizeLimit === "checking"
+                    ? `Checking the ${ORDER_SIZE_LIMIT_LABEL} order size limit...`
+                    : orderSizeLimit === "over"
+                      ? ORDER_SIZE_LIMIT_EXCEEDED_ERROR
+                      : ORDER_SIZE_PRICE_UNAVAILABLE_ERROR}
+                </p>
+              )}
               <PriceInputCard
                 key={`${tokenSell?.address.toLowerCase()}:${tokenBuy?.address.toLowerCase()}`}
               />
@@ -306,7 +346,8 @@ function WalletSwapForm({
                 disabled={
                   reviewDisabled ||
                   Boolean(unavailableReason) ||
-                  quote.isLoading
+                  quote.isLoading ||
+                  orderSizeLimit !== "allowed"
                 }
               />
             </div>

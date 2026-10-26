@@ -14,6 +14,15 @@ jest.mock("#/lib/supportedTokens", () => {
   };
 });
 
+jest.mock("#/lib/orderSizeLimit", () => ({
+  ...jest.requireActual("#/lib/orderSizeLimit"),
+  assertOrderSizeLimit: jest.fn(),
+}));
+jest.mock("#/lib/pollerStopLoss", () => ({
+  ...jest.requireActual("#/lib/pollerStopLoss"),
+  assertPlacementOrderSize: jest.fn(),
+}));
+
 import { toast } from "@bleu/ui";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, render, screen, waitFor, within } from "@testing-library/react";
@@ -38,7 +47,14 @@ import {
   resumeStopLossPlacement,
 } from "#/hooks/useStopLossPlacement";
 import { STOP_LOSS_ADDRESS } from "#/lib/contracts";
-import type { PreparedPlacement } from "#/lib/pollerStopLoss";
+import {
+  assertOrderSizeLimit,
+  ORDER_SIZE_LIMIT_EXCEEDED_ERROR,
+} from "#/lib/orderSizeLimit";
+import {
+  assertPlacementOrderSize,
+  type PreparedPlacement,
+} from "#/lib/pollerStopLoss";
 import { publicClientsFromIds } from "#/lib/publicClients";
 import { createStopLossPlacement } from "#/lib/stopLossPlacement";
 import { createWagmiConfig } from "#/utils/wagmi";
@@ -66,6 +82,11 @@ jest.mock("wagmi", () => ({
 }));
 
 beforeEach(() => {
+  jest.mocked(assertOrderSizeLimit).mockReset().mockResolvedValue(undefined);
+  jest
+    .mocked(assertPlacementOrderSize)
+    .mockReset()
+    .mockResolvedValue(undefined);
   requestLock = async (action) => action();
   connectedAccount = account;
   chainTime = BigInt(Math.floor(Date.now() / 1000));
@@ -282,6 +303,180 @@ it.each([true, false])(
     expect(sendTransactionAsync).not.toHaveBeenCalled();
   },
 );
+
+it.each(["approval", "setup"] as const)(
+  "does not send %s when the USD price crosses the limit after transaction build",
+  async (stage) => {
+    const user = userEvent.setup();
+    if (stage === "setup") {
+      const rpc = jest.mocked(publicClientsFromIds[1].readContract);
+      const read = rpc.getMockImplementation()!;
+      rpc.mockImplementation(async (args) => {
+        if (args.functionName === "allowance")
+          return BigInt("5000000000000000000");
+        if (args.functionName === "schedules")
+          return [
+            zeroAddress,
+            BigInt(0),
+            zeroAddress,
+            zeroAddress,
+            `0x${"00".repeat(32)}`,
+            "0x",
+          ];
+        return read(args);
+      });
+    }
+    showCreation();
+    await reviewOneOrder(user, stage === "approval");
+    requestLock = async (action) => {
+      jest
+        .mocked(assertPlacementOrderSize)
+        .mockRejectedValue(new Error(ORDER_SIZE_LIMIT_EXCEEDED_ERROR));
+      return action();
+    };
+
+    await user.click(
+      screen.getByRole("button", {
+        name: stage === "approval" ? "Approve WETH" : "Place order",
+      }),
+    );
+
+    await waitFor(() =>
+      expect(assertPlacementOrderSize).toHaveBeenCalledTimes(1),
+    );
+    await waitFor(() =>
+      expect(toast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title:
+            stage === "approval"
+              ? "Could not approve the token. Please try again."
+              : "Could not place the order. Please try again.",
+        }),
+      ),
+    );
+    expect(sendTransactionAsync).not.toHaveBeenCalled();
+    expect(
+      getStopLossPlacement().getPendingTransactions({ account, chainId: 1 }),
+    ).toEqual([]);
+    expect(getStopLossPlacement().getRecords({ account, chainId: 1 })).toEqual(
+      [],
+    );
+    expect(
+      screen.getByRole("region", { name: "Review stop-loss order" }),
+    ).toBeInTheDocument();
+  },
+);
+
+it.each(["approval", "setup"] as const)(
+  "does not send %s if the wallet changes during the final size check",
+  async (stage) => {
+    const user = userEvent.setup();
+    const rpc = jest.mocked(publicClientsFromIds[1].readContract);
+    const read = rpc.getMockImplementation()!;
+    rpc.mockImplementation(async (args) => {
+      if (args.functionName === "allowance")
+        return stage === "setup" ? maxUint256 : BigInt(0);
+      if (args.functionName === "schedules")
+        return [
+          zeroAddress,
+          BigInt(0),
+          zeroAddress,
+          zeroAddress,
+          `0x${"00".repeat(32)}`,
+          "0x",
+        ];
+      return read(args);
+    });
+    const view = showCreation();
+    await reviewOneOrder(user, stage === "approval");
+    let finish!: () => void;
+    jest.mocked(assertPlacementOrderSize).mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          finish = resolve;
+        }),
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: stage === "approval" ? "Approve WETH" : "Place order",
+      }),
+    );
+    await waitFor(() =>
+      expect(assertPlacementOrderSize).toHaveBeenCalledTimes(1),
+    );
+    connectedAccount = "0x2222222222222222222222222222222222222222";
+    view.refreshWallet();
+    await act(async () => {
+      finish();
+    });
+
+    expect(sendTransactionAsync).not.toHaveBeenCalled();
+    expect(
+      screen.queryByRole("region", { name: "Review stop-loss order" }),
+    ).not.toBeInTheDocument();
+    expect(
+      getStopLossPlacement().getPendingTransactions({ account, chainId: 1 }),
+    ).toEqual([]);
+    expect(getStopLossPlacement().getRecords({ account, chainId: 1 })).toEqual(
+      [],
+    );
+  },
+);
+
+it("rechecks the existing review size after approval and blocks placement when it fails", async () => {
+  const user = userEvent.setup();
+  let allowance = BigInt(0);
+  const rpc = jest.mocked(publicClientsFromIds[1].readContract);
+  const read = rpc.getMockImplementation()!;
+  rpc.mockImplementation(async (args) =>
+    args.functionName === "allowance" ? allowance : read(args),
+  );
+  sendTransactionAsync.mockImplementation(async () => {
+    allowance = BigInt("1000000000000000000");
+    return `0x${"ab".repeat(32)}`;
+  });
+  jest
+    .spyOn(publicClientsFromIds[1], "waitForTransactionReceipt")
+    .mockResolvedValue({
+      status: "success",
+      transactionHash: `0x${"ab".repeat(32)}`,
+      blockNumber: BigInt(101),
+    } as never);
+  jest
+    .mocked(assertPlacementOrderSize)
+    .mockResolvedValueOnce(undefined)
+    .mockRejectedValue(new Error(ORDER_SIZE_LIMIT_EXCEEDED_ERROR));
+  showCreation();
+  await reviewOneOrder(user);
+
+  await user.click(screen.getByRole("button", { name: "Approve WETH" }));
+
+  await waitFor(() =>
+    expect(assertPlacementOrderSize).toHaveBeenCalledTimes(2),
+  );
+  await waitFor(() =>
+    expect(toast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: "Could not check the transaction. Please try again.",
+      }),
+    ),
+  );
+  expect(assertPlacementOrderSize).toHaveBeenNthCalledWith(
+    2,
+    jest.mocked(assertPlacementOrderSize).mock.calls[0][0],
+  );
+  expect(
+    screen.queryByRole("button", { name: "Place order" }),
+  ).not.toBeInTheDocument();
+  await waitFor(() =>
+    expect(screen.getByRole("button", { name: "Approve WETH" })).toBeEnabled(),
+  );
+  jest.mocked(assertPlacementOrderSize).mockClear();
+  await user.click(screen.getByRole("button", { name: "Approve WETH" }));
+  await waitFor(() => expect(assertPlacementOrderSize).toHaveBeenCalled());
+  expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
+});
 
 it("confirms approval before enabling Place and does not send setup automatically", async () => {
   const user = userEvent.setup();

@@ -13,6 +13,7 @@ import { formatUnits } from "viem";
 import { NetworkLogo } from "#/components/NetworkLogo";
 import { TokenLogo } from "#/components/TokenLogo";
 import { PixelIcon } from "#/components/ui/pixel-icon";
+import { ORDER_SIZE_LIMIT_LABEL } from "#/lib/orderSizeLimit";
 import type {
   ApprovalMode,
   FundingSnapshot,
@@ -112,6 +113,11 @@ export function ReviewOrderPanel({
           chainId={chainId}
         />
       </div>
+
+      <p className="text-xs text-muted-foreground">
+        The {ORDER_SIZE_LIMIT_LABEL} limit uses the current USD value of the
+        sell amount, not the trigger price.
+      </p>
 
       <section aria-label="Order terms" className="rescue-review-terms">
         <dl className="rescue-review-price-row">

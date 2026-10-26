@@ -20,7 +20,14 @@ jest.mock("#/lib/supportedTokens", () => {
 });
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, render, screen, waitFor, within } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { SWRConfig } from "swr";
 import type { Address, ReadContractParameters } from "viem";
@@ -31,7 +38,13 @@ import {
   useAdvancedSettingsStore,
 } from "#/hooks/useAdvancedSettings";
 import { useDraftOrder } from "#/hooks/useDraftOrder";
+import { useOrderSizeLimit } from "#/hooks/useOrderSizeLimit";
 import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
+import {
+  assertOrderSizeLimit,
+  ORDER_SIZE_LIMIT_EXCEEDED_ERROR,
+  ORDER_SIZE_PRICE_UNAVAILABLE_ERROR,
+} from "#/lib/orderSizeLimit";
 import { invalidatePlacementReads } from "#/lib/placementReads";
 import { publicClientsFromIds, supportedChainIds } from "#/lib/publicClients";
 import { VALID_TO_OPTIONS, VALID_TO_VALUES_MAP } from "#/lib/schema";
@@ -40,6 +53,12 @@ import * as catalog from "#/lib/tokenCatalog";
 import { createWagmiConfig } from "#/utils/wagmi";
 
 import { SwapForm } from "../swap-card/SwapForm";
+
+jest.mock("#/hooks/useOrderSizeLimit");
+jest.mock("#/lib/orderSizeLimit", () => ({
+  ...jest.requireActual("#/lib/orderSizeLimit"),
+  assertOrderSizeLimit: jest.fn(),
+}));
 
 let safe: { chainId: number; safeAddress: Address } = {
   chainId: 1,
@@ -67,6 +86,8 @@ const originalFetch = global.fetch;
 const fetchMock = jest.fn();
 
 beforeEach(() => {
+  jest.mocked(useOrderSizeLimit).mockReset().mockReturnValue("allowed");
+  jest.mocked(assertOrderSizeLimit).mockReset().mockResolvedValue(undefined);
   global.fetch = fetchMock;
   fetchMock
     .mockReset()
@@ -152,6 +173,62 @@ beforeEach(() => {
 afterEach(() => {
   jest.restoreAllMocks();
   global.fetch = originalFetch;
+});
+
+it.each([
+  ["checking", "Checking the $10,000 order size limit..."],
+  ["over", ORDER_SIZE_LIMIT_EXCEEDED_ERROR],
+  ["unavailable", ORDER_SIZE_PRICE_UNAVAILABLE_ERROR],
+] as const)(
+  "blocks review when the order size check is %s",
+  async (status, message) => {
+    jest.mocked(useOrderSizeLimit).mockReturnValue(status);
+    const user = userEvent.setup();
+    const onReviewOrder = jest.fn();
+    renderForm(onReviewOrder);
+    await selectWeth(user);
+    await setTriggerPrice(user);
+    await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+    expect(await screen.findByText(message)).toBeVisible();
+    const review = screen.getByRole("button", {
+      name: "Review Stop Loss order",
+    });
+    await waitFor(() => expect(fetchMock).toHaveBeenCalled());
+    expect(review).toBeDisabled();
+    fireEvent.submit(review.closest("form")!);
+    await act(async () => {});
+    expect(assertOrderSizeLimit).not.toHaveBeenCalled();
+    expect(onReviewOrder).not.toHaveBeenCalled();
+  },
+);
+
+it.each([ORDER_SIZE_LIMIT_EXCEEDED_ERROR, ORDER_SIZE_PRICE_UNAVAILABLE_ERROR])(
+  "checks the submitted sell amount again and blocks review: %s",
+  async (message) => {
+    jest.mocked(assertOrderSizeLimit).mockRejectedValue(new Error(message));
+    const user = userEvent.setup();
+    const onReviewOrder = jest.fn();
+    renderForm(onReviewOrder);
+    await selectWeth(user);
+    await setTriggerPrice(user);
+    await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+    await user.click(await findReadyReviewButton());
+    expect(await screen.findByRole("alert")).toHaveTextContent(message);
+    expect(assertOrderSizeLimit).toHaveBeenCalledWith({
+      chainId: 1,
+      tokenSell: expect.objectContaining({ symbol: "WETH", decimals: 18 }),
+      sellAmount: BigInt("1000000000000000000"),
+    });
+    expect(onReviewOrder).not.toHaveBeenCalled();
+    expect(useDraftOrder.getState().currentDraftOrder).toBeUndefined();
+  },
+);
+
+it("shows the current USD sell-value cap before an amount is entered", () => {
+  renderForm();
+  expect(screen.getByText(/Maximum order size: \$10,000/)).toHaveTextContent(
+    "Maximum order size: $10,000, based on the current USD value of the sell amount.",
+  );
 });
 
 it("shows the 1% fallback when the pair recommendation is unavailable", async () => {

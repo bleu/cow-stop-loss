@@ -1082,6 +1082,55 @@ afterEach(async () => {
   jest.restoreAllMocks();
 });
 
+describe.each(["dark", "light"] as const)(
+  "public testing notice in %s mode",
+  (theme) => {
+    test.each(["/", "/app", `/1/${wallet}`, `/1/${wallet}/stop-loss-1`])(
+      "stays below the header on %s without a dismiss control",
+      (initialPath) => {
+        renderView(
+          <Router initialPath={initialPath}>
+            <AppRootLayout config={config} initialTheme={theme}>
+              <main>Page content</main>
+            </AppRootLayout>
+          </Router>,
+        );
+
+        const notice = screen.getByRole("note");
+        expect(notice).toBeVisible();
+        expect(notice).toHaveTextContent(
+          "This app is in public testing. Bugs can cause orders to fail or result in loss of funds. New orders are limited to $10,000 USD each, based on the current value of the sell amount. Please report problems through GitHub issues.",
+        );
+        expect(notice.parentElement?.previousElementSibling).toBe(
+          screen.getByRole("banner"),
+        );
+        expect(notice.parentElement?.nextElementSibling).toContainElement(
+          screen.getByRole("main"),
+        );
+        expect(within(notice).queryByRole("button")).not.toBeInTheDocument();
+        const issues = within(notice).getByRole("link", {
+          name: "GitHub issues",
+        });
+        expect(issues).toHaveAttribute(
+          "href",
+          "https://github.com/bleu/cow-stop-loss/issues/new",
+        );
+        expect(issues).toHaveAttribute("target", "_blank");
+        expect(issues).toHaveAttribute("rel", "noreferrer noopener");
+
+        fireEvent.click(
+          screen.getByRole("button", {
+            name: `Switch to ${theme === "dark" ? "light" : "dark"} mode`,
+          }),
+        );
+        expect(screen.getByRole("note")).toBe(notice);
+        expect(notice).toBeVisible();
+        document.documentElement.classList.remove("light");
+      },
+    );
+  },
+);
+
 test("shows the app link in the header and FAQ in the footer without wallet controls", async () => {
   renderView(
     <Router initialPath="/">
