@@ -8,6 +8,8 @@ All nine mainnets support new stop-loss orders with small sell allowlists: Ether
 
 Approved routes use an exact sell amount, trigger price, slippage, and one fixed USD buy token per chain. Dollar-pegged and dollar-linked tokens are excluded from sells. Arbitrary token imports, manual feed overrides, and exact-buy mode are not supported.
 
+See [First-use EOA stop loss](docs/first-use-stop-loss.md) for approval, setup, execution, and the pinned mainnet fork check.
+
 ## Local setup
 
 Use Node.js 24.22.1 or later in the Node 24 LTS line, pnpm 9, and Python 3. The private `@bleu/ui` package requires a package-read `NPM_TOKEN` in the install environment.
