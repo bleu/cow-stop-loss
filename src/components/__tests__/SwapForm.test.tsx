@@ -176,9 +176,9 @@ afterEach(() => {
 });
 
 it.each([
-  ["checking", "Checking the $10,000 order size limit..."],
-  ["over", ORDER_SIZE_LIMIT_EXCEEDED_ERROR],
-  ["unavailable", ORDER_SIZE_PRICE_UNAVAILABLE_ERROR],
+  ["checking", "Checking order size..."],
+  ["over", "Order exceeds $10,000 limit"],
+  ["unavailable", "USD price unavailable"],
 ] as const)(
   "blocks review when the order size check is %s",
   async (status, message) => {
@@ -189,10 +189,9 @@ it.each([
     await selectWeth(user);
     await setTriggerPrice(user);
     await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
-    expect(await screen.findByText(message)).toBeVisible();
-    const review = screen.getByRole("button", {
-      name: "Review Stop Loss order",
-    });
+    const review = await screen.findByRole("button", { name: message });
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.queryByText(/Maximum order size:/)).not.toBeInTheDocument();
     await waitFor(() => expect(fetchMock).toHaveBeenCalled());
     expect(review).toBeDisabled();
     fireEvent.submit(review.closest("form")!);
@@ -224,11 +223,10 @@ it.each([ORDER_SIZE_LIMIT_EXCEEDED_ERROR, ORDER_SIZE_PRICE_UNAVAILABLE_ERROR])(
   },
 );
 
-it("shows the current USD sell-value cap before an amount is entered", () => {
+it("does not show order size text below the sell amount", () => {
   renderForm();
-  expect(screen.getByText(/Maximum order size: \$10,000/)).toHaveTextContent(
-    "Maximum order size: $10,000, based on the current USD value of the sell amount.",
-  );
+  expect(screen.queryByText(/Maximum order size:/)).not.toBeInTheDocument();
+  expect(screen.queryByRole("alert")).not.toBeInTheDocument();
 });
 
 it("shows the 1% fallback when the pair recommendation is unavailable", async () => {
@@ -1461,23 +1459,24 @@ it("offers one exact-sell order without buy mode or draft-basket actions", () =>
   ).not.toBeInTheDocument();
 });
 
-it("blocks a sell amount one atomic unit above the wallet balance", async () => {
-  const user = userEvent.setup();
-  renderForm();
-  await selectWeth(user);
-  await user.type(
-    screen.getByRole("textbox", { name: "Trigger price" }),
-    "2000",
-  );
-  await user.type(
-    screen.getByRole("textbox", { name: "Sell amount" }),
-    "1.123456789012345679",
-  );
+it.each(["allowed", "over"] as const)(
+  "blocks a sell amount one atomic unit above the wallet balance when order size is %s",
+  async (status) => {
+    jest.mocked(useOrderSizeLimit).mockReturnValue(status);
+    const user = userEvent.setup();
+    renderForm();
+    await selectWeth(user);
+    await setTriggerPrice(user);
+    await user.type(
+      screen.getByRole("textbox", { name: "Sell amount" }),
+      "1.123456789012345679",
+    );
 
-  expect(
-    await screen.findByRole("button", { name: "Insufficient balance" }),
-  ).toBeDisabled();
-});
+    expect(
+      await screen.findByRole("button", { name: "Insufficient balance" }),
+    ).toBeDisabled();
+  },
+);
 
 it("accepts a trigger at market and rejects one atomic price unit above it", async () => {
   const user = userEvent.setup();

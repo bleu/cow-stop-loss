@@ -12,7 +12,6 @@ import { wagmiConfig } from "#/utils/wagmi";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { OrderToaster } from "./orderNotifications";
-import { WarningNotice } from "./ui/warning-notice";
 import { ColorTheme, createWalletTheme } from "./walletTheme";
 
 export const swrConfig: SWRConfiguration = {
@@ -71,23 +70,6 @@ export function RootLayout({
                 theme={theme}
                 onToggleTheme={toggleTheme}
               />
-              <div className="mx-auto mt-3 w-[calc(100%-28px)] max-w-[1800px] shrink-0 sm:w-[calc(100%-64px)]">
-                <WarningNotice role="note">
-                  This app is in public testing. Bugs can cause orders to fail
-                  or result in loss of funds. New orders are limited to $10,000
-                  USD each, based on the current value of the sell amount.
-                  Please report problems through{" "}
-                  <a
-                    href="https://github.com/bleu/cow-stop-loss/issues/new"
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="underline underline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-                  >
-                    GitHub issues
-                  </a>
-                  .
-                </WarningNotice>
-              </div>
               <div className="app-scroll-area bg-transparent">{children}</div>
               <Footer
                 githubLink="https://github.com/bleu/cow-stop-loss"

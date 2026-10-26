@@ -14,12 +14,7 @@ import { useOrderSizeLimit } from "#/hooks/useOrderSizeLimit";
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { calculateAmounts } from "#/lib/calculateAmounts";
-import {
-  assertOrderSizeLimit,
-  ORDER_SIZE_LIMIT_EXCEEDED_ERROR,
-  ORDER_SIZE_LIMIT_LABEL,
-  ORDER_SIZE_PRICE_UNAVAILABLE_ERROR,
-} from "#/lib/orderSizeLimit";
+import { assertOrderSizeLimit } from "#/lib/orderSizeLimit";
 import { ChainId } from "#/lib/publicClients";
 import { generateSwapSchema, VALID_TO_OPTIONS } from "#/lib/schema";
 import { getSupportedTokens } from "#/lib/supportedTokens";
@@ -284,22 +279,6 @@ function WalletSwapForm({
                 </p>
               )}
               <TokenInputCard side="Sell" />
-              <p className="text-xs text-muted-foreground">
-                Maximum order size: {ORDER_SIZE_LIMIT_LABEL}, based on the
-                current USD value of the sell amount.
-              </p>
-              {tokenSell && amountSell && orderSizeLimit !== "allowed" && (
-                <p
-                  role={orderSizeLimit === "checking" ? "status" : "alert"}
-                  className={`text-sm ${orderSizeLimit === "checking" ? "text-muted-foreground" : "text-destructive"}`}
-                >
-                  {orderSizeLimit === "checking"
-                    ? `Checking the ${ORDER_SIZE_LIMIT_LABEL} order size limit...`
-                    : orderSizeLimit === "over"
-                      ? ORDER_SIZE_LIMIT_EXCEEDED_ERROR
-                      : ORDER_SIZE_PRICE_UNAVAILABLE_ERROR}
-                </p>
-              )}
               <PriceInputCard
                 key={`${tokenSell?.address.toLowerCase()}:${tokenBuy?.address.toLowerCase()}`}
               />
@@ -343,11 +322,11 @@ function WalletSwapForm({
                 </p>
               )}
               <SwapCardSubmitButton
+                orderSizeLimit={orderSizeLimit}
                 disabled={
                   reviewDisabled ||
                   Boolean(unavailableReason) ||
-                  quote.isLoading ||
-                  orderSizeLimit !== "allowed"
+                  quote.isLoading
                 }
               />
             </div>
