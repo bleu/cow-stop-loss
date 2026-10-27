@@ -10,7 +10,7 @@ Meet CoW Air Rescue 🐮🪂
 
 Set your amount and trigger price. CoW Protocol handles execution.
 
-The beta is live in CoW Discord. Try it and share your feedback!
+The beta is live! Try it and share your feedback: [app link]
 
 ## Discord
 
