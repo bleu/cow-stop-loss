@@ -1102,7 +1102,7 @@ describe.each(["dark", "light"] as const)(
           const notice = screen.getByRole("note", { name: "Public testing" });
           expect(notice).toBeVisible();
           expect(notice).toHaveTextContent(
-            "This experimental software is provided 'as is', use it at your own risk, without warranty. We can’t cover losses, and trades are capped at $10k for now. Report problems on GitHub issues.",
+            "This experimental software is provided 'as is', use it at your own risk. We can’t cover losses, and trades are capped at $10k for now. Report problems on GitHub issues.",
           );
           expect(notice).toHaveClass("bg-yellow-300", "text-yellow-950");
           expect(
