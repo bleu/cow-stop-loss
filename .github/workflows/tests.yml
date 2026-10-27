@@ -38,6 +38,9 @@ jobs:
       - name: Check TypeScript
         run: pnpm exec tsc --noEmit
 
+      - name: Check dependency compatibility
+        run: pnpm test:security-dependencies
+
       - name: Run tests
         run: pnpm test:jest --runInBand
 

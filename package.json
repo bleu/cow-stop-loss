@@ -24,6 +24,7 @@
     "format": "prettier --write \"**/*.{md,html,mjml,json,yml,css,scss,ts,tsx,js,jsx}\"",
     "lint": "eslint '**/*.{ts,tsx}'",
     "lint:fix": "eslint '**/*.{ts,tsx}' --fix",
+    "test:security-dependencies": "node --test scripts/test_security_dependencies.cjs",
     "test:jest": "pnpm exec jest --passWithNoTests",
     "test:watch": "pnpm exec jest --watchAll --verbose"
   },
@@ -84,7 +85,7 @@
     "react-day-picker": "^8.10.2",
     "react-dom": "19.1.10",
     "react-hook-form": "^7.90.0",
-    "react-router-dom": "^6.30.6",
+    "react-router-dom": "7.18.4",
     "react-resizable-panels": "^2.1.9",
     "reactflow": "^11.11.4",
     "sonner": "^1.7.4",
@@ -141,7 +142,26 @@
       "ws@>=8.0.0 <8.21.0": "^8.21.0",
       "minimatch@>=9.0.0 <9.0.7": "^9.0.9",
       "postcss@>=8.0.0 <8.5.23": "^8.5.31",
-      "@metamask/sdk@0.32.0": "0.33.1"
+      "@metamask/sdk@0.32.0": "0.33.1",
+      "vocs@1.0.13>toml": "5.0.1",
+      "remark-mdx-frontmatter@5.2.0>toml": "5.0.1",
+      "mermaid-isomorphic@3.1.0>mermaid": "12.2.0",
+      "mermaid-isomorphic@3.1.0>katex": "0.18.2",
+      "mermaid@12.2.0>katex": "0.18.2",
+      "@bleu/ui@0.1.133>plotly.js": "4.1.2",
+      "@bleu/ui@0.1.133>react-router": "7.18.4",
+      "@bleu/ui@0.1.133>react-router-dom": "7.18.4",
+      "@walletconnect/utils@2.21.0": "2.21.9",
+      "@walletconnect/utils@2.21.1": "2.21.9",
+      "@metamask/sdk@0.33.1>uuid": "11.1.1",
+      "@metamask/sdk-communication-layer@0.33.1>uuid": "11.1.1",
+      "@metamask/utils@8.5.0>uuid": "11.1.1",
+      "@metamask/utils@9.3.0>uuid": "11.1.1"
+    },
+    "peerDependencyRules": {
+      "allowedVersions": {
+        "@bleu/ui@0.1.133>react-router-dom": "7.18.4"
+      }
     },
     "patchedDependencies": {
       "@rainbow-me/rainbowkit@2.2.0": "patches/@rainbow-me__rainbowkit@2.2.0.patch"
