@@ -384,10 +384,8 @@ export const RescueOpening = () => {
         from={4 * fps}
         durationInFrames={4 * fps}
       >
-        <Headline style={{ color: brand.foreground }}>
-          Set your
-          <br />
-          <span style={{ color: brand.primary }}>stop-loss.</span>
+        <Headline style={{ color: brand.foreground, whiteSpace: "nowrap" }}>
+          Set your <span style={{ color: brand.primary }}>stop-loss.</span>
         </Headline>
       </Sequence>
     </AbsoluteFill>

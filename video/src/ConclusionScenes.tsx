@@ -46,10 +46,8 @@ export const ConclusionScene = () => {
     <AbsoluteFill>
       <Landscape quiet />
       <BrandMark />
-      <Headline style={{ fontSize: 86 }}>
-        Your stop-loss
-        <br />
-        <span style={{ color: brand.primary }}>is set.</span>
+      <Headline style={{ fontSize: 86, whiteSpace: "nowrap" }}>
+        Your stop-loss <span style={{ color: brand.primary }}>is set.</span>
       </Headline>
       <OrderShot
         file="open-order.png"
