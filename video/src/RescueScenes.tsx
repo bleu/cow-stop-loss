@@ -434,7 +434,7 @@ export const ClosingCard = () => {
           opacity: interpolate(frame, [0.2 * fps, 0.45 * fps], [0, 1], clamp),
         }}
       >
-        Find it in
+        Find it on
         <br />
         CoW Discord
       </div>
