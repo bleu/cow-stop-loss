@@ -1102,7 +1102,7 @@ describe.each(["dark", "light"] as const)(
           const notice = screen.getByRole("note", { name: "Public testing" });
           expect(notice).toBeVisible();
           expect(notice).toHaveTextContent(
-            "This experimental software is provided 'as is', use it at your own risk. We can’t cover losses, and trades are capped at $10k for now. Report problems on GitHub issues.",
+            "All trades are executed through CoW Protocol. CoW Air Rescue is experimental software provided ‘as is’, without warranty. Execution is not guaranteed, and we cannot cover any losses. Trades are currently capped at $10k. Report issues on GitHub.",
           );
           expect(notice).toHaveClass("bg-yellow-300", "text-yellow-950");
           expect(
@@ -1114,11 +1114,11 @@ describe.each(["dark", "light"] as const)(
           ).not.toBeInTheDocument();
 
           const issues = within(notice).getByRole("link", {
-            name: "GitHub issues",
+            name: "GitHub",
           });
           expect(issues).toHaveAttribute(
             "href",
-            "https://github.com/bleu/cow-stop-loss/issues/new",
+            "https://github.com/bleu/cow-stop-loss/issues/new?template=problem-report.yml",
           );
           expect(issues).toHaveAttribute("target", "_blank");
           expect(issues.getAttribute("rel")?.split(/\s+/)).toEqual(

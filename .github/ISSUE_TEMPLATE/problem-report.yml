@@ -1,0 +1,62 @@
+name: Problem report
+description: Report a problem with CoW Air Rescue.
+title: "[Problem]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form to report a problem with CoW Air Rescue. Execution is not guaranteed, and we cannot cover losses.
+
+        GitHub issues are public. Never share a seed phrase, private key, wallet password, API key, or signed transaction data. Remove sensitive information from screenshots and logs. Share wallet addresses and transaction links only if you are comfortable making them public.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the problem and any error message you saw.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the steps that led to the problem. If it happened only once, describe what you were doing.
+      placeholder: |
+        1. Open the app
+        2. ...
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: network
+    attributes:
+      label: Network
+      description: Which network were you using? Leave blank if the problem is not related to a network.
+      placeholder: Ethereum, Gnosis, Base, etc.
+  - type: input
+    id: wallet
+    attributes:
+      label: Wallet app
+      description: Name the wallet app and its version, if known. Do not enter a private key or seed phrase.
+      placeholder: MetaMask, Rabby, Safe, etc.
+  - type: input
+    id: environment
+    attributes:
+      label: Browser and device
+      description: Include the browser version and operating system, if known.
+      placeholder: Chrome on macOS, Safari on iPhone, etc.
+  - type: textarea
+    id: order
+    attributes:
+      label: Order or transaction details
+      description: If relevant, add the order page URL, transaction link, token pair, and approximate time of the problem. These details can reveal your wallet address and trading activity.
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots or logs
+      description: Add any useful screenshots or error logs. Remove sensitive information before you submit.
