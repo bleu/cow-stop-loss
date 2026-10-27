@@ -161,6 +161,26 @@ print(json.dumps({"mooDuration": duration}))
   }
   assert.ok(endingPeak > 0.1, `Missing tonic ending: ${endingPeak}`);
 
+  const composition = await readFile(
+    new URL("../src/Composition.tsx", import.meta.url),
+    "utf8",
+  );
+  assert.match(composition, /volume=\{4\}/);
+  const mooPcm = run(
+    "ffmpeg",
+    ["-v", "error", "-i", asset("cowswap-moo.mp3"), "-af", "volume=4", "-ar", "44100", "-ac", "2", "-f", "f32le", "pipe:1"],
+    { encoding: null, maxBuffer: 2 * 1024 * 1024 },
+  );
+  let mooEnergy = 0;
+  for (let offset = 0; offset < mooPcm.length; offset += 4)
+    mooEnergy += mooPcm.readFloatLE(offset) ** 2;
+  const mooRms = Math.sqrt(mooEnergy / (mooPcm.length / 4));
+  const differenceDb = 20 * Math.log10(mooRms / windowRms(0, 3));
+  assert.ok(
+    differenceDb >= 2 && differenceDb <= 4,
+    `Moo must be 2-4 dB above the opening music: ${differenceDb.toFixed(2)} dB`,
+  );
+
   const inputs = [
     "music.wav",
     "danger.wav",
@@ -174,7 +194,7 @@ print(json.dumps({"mooDuration": duration}))
     `[1:a]adelay=${timeline.sounds.danger * 1000}:all=1[danger]`,
     `[2:a]adelay=${timeline.sounds.whistle * 1000}:all=1[whistle]`,
     `[3:a]adelay=${timeline.sounds.pop * 1000}:all=1[pop]`,
-    `[4:a]volume=0.65,adelay=${timeline.sounds.moo * 1000}:all=1[moo]`,
+    `[4:a]volume=4,adelay=${timeline.sounds.moo * 1000}:all=1[moo]`,
     `[5:a]asplit=${timeline.sounds.clicks.length}${timeline.sounds.clicks.map((_, index) => `[c${index + 1}]`).join("")}`,
     ...timeline.sounds.clicks.map(
       (time, index) =>

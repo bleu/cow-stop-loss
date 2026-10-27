@@ -1,6 +1,6 @@
 # CoW Air Rescue beta-launch video
 
-Two 23-second cuts compare an open-order conclusion with an execution example. They use the product's pixel artwork, Chakra Petch fonts, and real application screenshots. The green price line draws from left to right, then night falls before the line breaks beneath the cow. The parachute rescue follows, and "Set your stop-loss" stays on screen through the full moo. Both cuts are 1080 x 1350 at 30 fps, with an original 150 BPM chiptune score, the exact CoW Swap success moo, and no voiceover. The story works when muted.
+The 23-second video ends with an open order. It uses the product's pixel artwork, Chakra Petch fonts, and real application screenshots. The green price line draws from left to right, then night falls before the line breaks beneath the cow. The parachute rescue follows, and "Set your stop-loss" stays on screen through the full moo. The video is 1080 x 1350 at 30 fps, with an original 150 BPM chiptune score, the exact CoW Swap success moo, and no voiceover. The moo is mixed about 3 dB above the opening music. The story works when muted.
 
 ## Setup
 
@@ -32,9 +32,9 @@ In another terminal, capture the approved flow:
 npm --prefix video run capture
 ```
 
-The browser uses a synthetic wallet, fixed prices and balances, and intercepted service responses. It does not use a wallet extension. Signing and transaction methods throw, and unknown service requests fail closed. The form, portfolio, and execution detail are captured from the real local app. Open and filled orders come from read-only fixture responses; no order is placed, signed, or executed on a real service. The video does not include a simulation label.
+The browser uses a synthetic wallet, fixed prices and balances, and intercepted service responses. It does not use a wallet extension. Signing and transaction methods throw, and unknown service requests fail closed. The form and portfolio are captured from the real local app. The capture fixtures also retain unused execution screenshots. Open and filled orders come from read-only fixture responses; no order is placed, signed, or executed on a real service. The video does not include a simulation label.
 
-The example sells 0.1 WETH for USDC on Ethereum, with a trigger of 3000 USDC per WETH and a one-month expiry. The app calculates the 297 USDC minimum receive amount. The execution example reaches a synthetic 3000 market price and shows 300 USDC received. Prices, balances, orders, and account data are synthetic. The form is captured at 640 x 1600 CSS pixels and DPR 2; conclusion pages use 480 x 1600 for larger text. The camera zooms only during token selection. Amount and trigger share one steady form view with a short headline fade. Conclusion captures have separate metadata in `public/captures/conclusions.json`, so their dimensions cannot change the form camera.
+The example sells 0.1 WETH for USDC on Ethereum, with a trigger of 3000 USDC per WETH and a one-month expiry. The app calculates the 297 USDC minimum receive amount. Prices, balances, orders, and account data are synthetic. The form is captured at 640 x 1600 CSS pixels and DPR 2; conclusion pages use 480 x 1600 for larger text. The camera zooms only during token selection. Amount and trigger share one steady form view with a short headline fade. Conclusion captures have separate metadata in `public/captures/conclusions.json`, so their dimensions cannot change the form camera.
 
 ## Preview and render
 
@@ -42,7 +42,7 @@ The example sells 0.1 WETH for USDC on Ethereum, with a trigger of 3000 USDC per
 npm --prefix video run dev
 ```
 
-Studio opens at `http://localhost:3158`. Select `BetaLaunchOpenOrder` or `BetaLaunchExecution`. Keep Studio open while editing.
+Studio opens at `http://localhost:3158`. Select `BetaLaunchOpenOrder`. Keep Studio open while editing.
 
 ```sh
 npm --prefix video run lint
@@ -52,7 +52,7 @@ npm --prefix video run render
 npm --prefix video run verify:render
 ```
 
-`render` exports both alternatives to `video/output/beta-launch-open-order.mp4` and `video/output/beta-launch-execution.mp4`. Use `render:open-order` or `render:execution` to export one. Each render command prepares its audio and artwork. The previous `video/output/beta-launch.mp4` is left unchanged for comparison. Both new files use H.264, yuv420p, and AAC stereo. `verify:render` checks both files for dimensions, frame count, duration, codecs, audio headroom, and a full decode.
+`render` exports `video/output/beta-launch-open-order.mp4` and prepares its audio and artwork. The file uses H.264, yuv420p, and AAC stereo. `verify:render` checks dimensions, frame count, duration, codecs, audio headroom, and a full decode. The execution variant is removed.
 
 The Zod override uses the patched 4.6.6 release. Remotion 4.0.539 reports that it expects 4.5.4; keep the patched version and check the preview and render when updating dependencies.
 
@@ -64,7 +64,7 @@ The Zod override uses the patched 4.6.6 release. Remotion 4.0.539 reports that i
 | 4-8s     | Parachute opens. "Set your stop-loss" stays visible through the full CoW Swap moo.                                                           |
 | 8-10.5s  | Real token selection with a brief zoom, then amount entry                                                                                    |
 | 10.5-13s | Change the headline and enter the trigger without moving the form                                                                            |
-| 13-17s   | Open-order cut: real order list and "Your stop-loss is set." Execution cut: trigger reached, then real execution amounts and "Order filled." |
+| 13-17s   | Real order list and "Your stop-loss is set." |
 | 17-23s   | Product name, live-beta call to action, and builder attribution. Return to day during 18-20s.                                                |
 
 `timeline.json` sets the duration, scene boundaries, and sound cues. The composition and export check use the same schedule.

@@ -9,10 +9,10 @@ import {
 import timeline from "../timeline.json";
 import { brand } from "./brand";
 import { ProductSetupScene } from "./ProductScenes";
-import { ConclusionScene, type ConclusionVariant } from "./ConclusionScenes";
+import { ConclusionScene } from "./ConclusionScenes";
 import { ClosingCard, RescueOpening } from "./RescueScenes";
 
-export const BetaLaunch = ({ variant }: { variant: ConclusionVariant }) => {
+export const BetaLaunch = () => {
   const { fps } = useVideoConfig();
   return (
     <AbsoluteFill
@@ -45,11 +45,11 @@ export const BetaLaunch = ({ variant }: { variant: ConclusionVariant }) => {
           <ProductSetupScene />
         </Sequence>
         <Sequence
-          name={variant === "open-order" ? "Open order" : "Execution example"}
+          name="Open order"
           from={timeline.scenes.conclusion.from * fps}
           durationInFrames={timeline.scenes.conclusion.duration * fps}
         >
-          <ConclusionScene variant={variant} />
+          <ConclusionScene />
         </Sequence>
         <Sequence
           name="Live beta"
@@ -92,7 +92,7 @@ export const BetaLaunch = ({ variant }: { variant: ConclusionVariant }) => {
           name="Original CoW Swap moo"
           src={staticFile("audio/cowswap-moo.mp3")}
           from={timeline.sounds.moo * fps}
-          volume={0.65}
+          volume={4}
         />
       </Track>
       <Track name="UI clicks">

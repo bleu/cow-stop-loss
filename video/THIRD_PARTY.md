@@ -8,6 +8,6 @@ The moo is the unchanged default success sound from [CoW Swap](https://github.co
 - SHA-256: `fb1bc32dcba9ba7996d150bef795cbfdde15eb75aab914332ef2d36ab3bdb032`.
 - Local path: `public/audio/cowswap-moo.mp3`, ignored by Git.
 
-`scripts/fetch-moo.mjs` downloads and verifies the original bytes. Playback uses the full clip at normal speed, with its level reduced in the mix. The original score, danger cue, falling whistle, parachute pop, and UI click are generated separately by `scripts/audio.py`.
+`scripts/fetch-moo.mjs` downloads and verifies the original bytes. Playback uses the full clip at normal speed, with its level raised in the mix. The original score, danger cue, falling whistle, parachute pop, and UI click are generated separately by `scripts/audio.py`.
 
 Keep the source and license information with the project. Check the applicable license terms or separate permission from CoW Protocol before publishing a video that includes this recording.
