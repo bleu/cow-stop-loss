@@ -50,7 +50,7 @@ export function Header({
             CoW Air Rescue
           </span>
           <span className="rescue-brand-subtitle mt-2 block font-serif text-xs text-muted-foreground">
-            A plan for the way down
+            Your exit plan. On your terms.
           </span>
         </span>
       </Link>
