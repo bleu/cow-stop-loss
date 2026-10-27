@@ -6,3 +6,6 @@ scripts/catalog-metadata-report.json
 
 # Preserve the dated execution evidence snapshot.
 scripts/oracle-execution-verification.json
+
+# The video package has its own tools and generated media.
+/video/

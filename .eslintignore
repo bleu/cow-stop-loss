@@ -9,3 +9,4 @@ next-env.d.ts
 !.eslintrc.js
 node_modules/
 lib/
+video/

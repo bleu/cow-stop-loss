@@ -1,0 +1,54 @@
+{
+  "name": "cow-air-rescue-video",
+  "version": "1.0.0",
+  "description": "CoW Air Rescue beta-launch teaser",
+  "repository": {},
+  "license": "UNLICENSED",
+  "engines": {
+    "node": "^20.19.0 || ^22.13.0 || >=24"
+  },
+  "private": true,
+  "dependencies": {
+    "@remotion/cli": "4.0.539",
+    "@remotion/fonts": "4.0.539",
+    "@remotion/media": "4.0.539",
+    "@remotion/transitions": "4.0.539",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
+    "remotion": "4.0.539"
+  },
+  "devDependencies": {
+    "@remotion/eslint-config-flat": "4.0.539",
+    "@types/react": "19.2.7",
+    "@types/web": "0.0.166",
+    "eslint": "10.12.0",
+    "playwright": "^1.64.1",
+    "prettier": "3.8.1",
+    "typescript": "5.9.3"
+  },
+  "scripts": {
+    "browser:install": "playwright install chromium",
+    "assets": "python3 scripts/prepare.py && node scripts/fetch-moo.mjs && python3 scripts/audio.py",
+    "app": "node scripts/start-app.cjs",
+    "capture": "node scripts/capture.cjs",
+    "predev": "npm run assets",
+    "dev": "remotion studio --port=3158",
+    "build": "remotion bundle",
+    "render": "npm run render:open-order && npm run render:execution",
+    "frames": "npm run frames:open-order && npm run frames:execution",
+    "verify:render": "node scripts/verify-render.mjs output/beta-launch-open-order.mp4 && node scripts/verify-render.mjs output/beta-launch-execution.mp4",
+    "test": "node --test scripts/*.test.mjs && python3 scripts/audio.py --check",
+    "upgrade": "remotion upgrade",
+    "lint": "eslint src && tsc",
+    "render:open-order": "npm run assets && remotion render src/index.ts BetaLaunchOpenOrder output/beta-launch-open-order.mp4 --codec=h264 --crf=16 --pixel-format=yuv420p --audio-codec=aac --audio-bitrate=192k --concurrency=4",
+    "frames:open-order": "remotion render src/index.ts BetaLaunchOpenOrder output/frames-open-order --frames=0,6,12,18,24,45,75,132,195,225,240,258,285,312,315,318,326,345,387,396,414,429,450,480,507,525,570,615,675,689 --image-format=png",
+    "render:execution": "npm run assets && remotion render src/index.ts BetaLaunchExecution output/beta-launch-execution.mp4 --codec=h264 --crf=16 --pixel-format=yuv420p --audio-codec=aac --audio-bitrate=192k --concurrency=4",
+    "frames:execution": "remotion render src/index.ts BetaLaunchExecution output/frames-execution --frames=0,6,12,18,24,45,75,132,195,225,240,258,285,312,315,318,326,345,387,396,414,429,450,480,507,525,570,615,675,689 --image-format=png"
+  },
+  "overrides": {
+    "zod": "4.6.6"
+  },
+  "allowScripts": {
+    "esbuild": false
+  }
+}
