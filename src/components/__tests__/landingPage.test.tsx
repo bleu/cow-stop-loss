@@ -12,7 +12,10 @@ it("shows the landing page and links to the trading app without a wallet", () =>
   render(<LandingPageRoute />);
 
   expect(
-    screen.getByRole("heading", { level: 1, name: /a plan for the way down/i }),
+    screen.getByRole("heading", {
+      level: 1,
+      name: /a safety net for your tokens/i,
+    }),
   ).toBeVisible();
   const links = screen.getAllByRole("link", { name: "Open app" });
   expect(links).toHaveLength(2);
@@ -24,10 +27,79 @@ it("shows the landing page and links to the trading app without a wallet", () =>
   expect(screen.queryByRole("button", { name: /connect wallet/i })).toBeNull();
 });
 
+it("presents preparation and control throughout the landing page", () => {
+  render(<LandingPageRoute />);
+
+  expect(
+    screen.getByText(
+      /Set your exit plan on your terms: define stop-loss conditions/,
+    ),
+  ).toBeVisible();
+  expect(screen.getByText("Set your safety net")).toBeVisible();
+  expect(
+    screen.getByText(
+      "Choose your trigger, minimum amount to receive, and expiry. Review everything before you sign.",
+    ),
+  ).toBeVisible();
+  expect(
+    screen.getByText("Understand your order and stay in control."),
+  ).toBeVisible();
+  expect(
+    screen.getByRole("heading", { name: "Make a plan before you need it." }),
+  ).toBeVisible();
+  expect(
+    screen.getByText(
+      "Set your conditions now, so you're prepared when the market moves.",
+    ),
+  ).toBeVisible();
+});
+
+it.each([
+  {
+    question: "What is CoW Air Rescue?",
+    opening:
+      "CoW Air Rescue helps you prepare for market drops without worrying about watching prices around the clock.",
+    warning: "Execution and price are not guaranteed.",
+  },
+  {
+    question: "Can I cancel an order?",
+    opening: "You can request cancellation while your order is still open.",
+    warning:
+      "The order may still execute before that transaction is confirmed. Completed fills cannot be undone.",
+  },
+  {
+    question: "Is the trigger price my sale price?",
+    opening:
+      "Your minimum buy amount sets the lowest amount you agree to receive.",
+    warning:
+      "The displayed market price is an oracle reference, not a firm quote.",
+  },
+  {
+    question: "Does a stop-loss order guarantee protection?",
+    opening:
+      "A stop-loss helps you plan your response to a price drop, but it cannot guarantee protection.",
+    warning:
+      "Oracle faults or delays, sharp price changes, a token depeg, low liquidity, network failures, and smart-contract faults can cause unexpected triggers, failed execution, or losses.",
+  },
+])(
+  "starts '$question' with its benefit or available control",
+  ({ question, opening, warning }) => {
+    render(<LandingPageRoute />);
+
+    fireEvent.click(screen.getByRole("button", { name: question }));
+
+    const answer = screen.getByRole("region", { name: question });
+    expect(answer.textContent?.startsWith(opening)).toBe(true);
+    expect(answer).toHaveTextContent(warning);
+  },
+);
+
 it("keeps one decorative cow beside the hero copy", () => {
   render(<LandingPageRoute />);
 
-  const hero = screen.getByRole("region", { name: /a plan for the way down/i });
+  const hero = screen.getByRole("region", {
+    name: /a safety net for your tokens/i,
+  });
   const scene = hero.querySelector(".landing-scene");
   expect(scene).toHaveAttribute("aria-hidden", "true");
   expect(scene?.querySelectorAll(".landing-passenger")).toHaveLength(1);
