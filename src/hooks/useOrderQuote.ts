@@ -1,9 +1,9 @@
 import { useEffect, useId, useState } from "react";
 import useSWR from "swr";
-import { type Address, formatUnits, parseUnits } from "viem";
+import { type Address, parseUnits } from "viem";
 
-import { fetchPairSlippage, fetchSellQuote } from "#/lib/cowApi/quote";
-import { estimateOrderSlippage } from "#/lib/orderSlippage";
+import { fetchSellQuote } from "#/lib/cowApi/quote";
+import { DEFAULT_SLIPPAGE_PERCENT } from "#/lib/orderSlippage";
 import type { ChainId } from "#/lib/publicClients";
 import type { IToken } from "#/lib/types";
 
@@ -87,21 +87,6 @@ export function useOrderQuote({
     revalidateIfStale: false,
     shouldRetryOnError: false,
   };
-  const pair = useSWR(
-    ready
-      ? ([
-          "pair-slippage",
-          session,
-          revision.number,
-          chainId,
-          tokenSell!.address.toLowerCase(),
-          tokenBuy!.address.toLowerCase(),
-        ] as const)
-      : null,
-    ([, , , chain, sell, buy]) =>
-      fetchPairSlippage(chain, sell as Address, buy as Address),
-    options,
-  );
   const quote = useSWR(
     ready
       ? (["order-quote", session, revision.number, request] as const)
@@ -125,15 +110,9 @@ export function useOrderQuote({
     },
     options,
   );
-  const estimate = estimateOrderSlippage({
-    slippageBps: pair.error ? undefined : pair.data,
-    quote: quote.error ? undefined : quote.data,
-  });
   return {
-    ...estimate,
-    slippagePercent: formatUnits(BigInt(estimate.appliedBps), 2),
-    isLoading:
-      Boolean(request) && (!ready || pair.isLoading || quote.isLoading),
+    slippagePercent: DEFAULT_SLIPPAGE_PERCENT,
+    isLoading: Boolean(request) && (!ready || quote.isLoading),
     quoteError: quote.error as Error | undefined,
     hasQuote: Boolean(quote.data) && !quote.error,
     hasInput: Boolean(request),

@@ -47,13 +47,13 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
         <div
           role="group"
           aria-label="Trigger input mode"
-          className="flex shrink-0 border border-border/60 p-0.5 normal-case tracking-normal"
+          className="flex shrink-0 border border-border/60 p-px normal-case tracking-normal"
         >
           {(["price", "percent"] as const).map((value) => (
             <button
               key={value}
               type="button"
-              disabled={disabled || (value === "percent" && !hasMarketPrice)}
+              disabled={disabled}
               aria-pressed={mode === value}
               onClick={() => {
                 if (value === mode) return;
@@ -73,7 +73,7 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
                   );
                 setMode(value);
               }}
-              className={`min-h-7 px-2 text-[11px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 ${mode === value ? "bg-accent text-foreground" : "text-muted-foreground hover:bg-accent/50"}`}
+              className={`min-h-0 px-1 py-0.5 text-[11px] leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 ${mode === value ? "bg-accent text-foreground" : "text-muted-foreground hover:bg-accent/50"}`}
             >
               {value === "price" ? "Price" : "% drop"}
             </button>
@@ -87,13 +87,7 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
             id="trigger-drop"
             aria-label="Price drop (%)"
             aria-invalid={percentInvalid}
-            aria-describedby={
-              percentInvalid
-                ? "trigger-drop-error"
-                : !hasMarketPrice
-                  ? "trigger-drop-help"
-                  : undefined
-            }
+            aria-describedby={percentInvalid ? "trigger-drop-error" : undefined}
             type="text"
             inputMode="decimal"
             disabled={disabled || !hasMarketPrice}
@@ -127,7 +121,7 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
               });
             }}
             placeholder="0.0"
-            className="h-11 w-full min-w-0 rounded-none border-none bg-transparent px-0 text-left text-[28px] font-semibold tracking-tight tabular-nums shadow-none focus-visible:ring-2 focus-visible:ring-ring sm:text-[32px]"
+            className="h-11 w-full min-w-0 rounded-none border-none bg-transparent px-0 text-left text-[28px] font-medium tracking-tight tabular-nums shadow-none placeholder:text-muted-foreground/80 focus-visible:ring-2 focus-visible:ring-ring sm:text-[28px]"
           />
         ) : (
           <Input
@@ -143,7 +137,7 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
             inputMode="decimal"
             disabled={disabled}
             placeholder="0.0"
-            className="h-11 w-full min-w-0 rounded-none border-none bg-transparent px-0 text-left text-[28px] font-semibold tracking-tight tabular-nums shadow-none focus-visible:ring-2 focus-visible:ring-ring sm:text-[32px]"
+            className="h-11 w-full min-w-0 rounded-none border-none bg-transparent px-0 text-left text-[28px] font-medium tracking-tight tabular-nums shadow-none placeholder:text-muted-foreground/80 focus-visible:ring-2 focus-visible:ring-ring sm:text-[28px]"
           />
         )}
         <span
@@ -156,7 +150,7 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
               ? `${tokenBuy.symbol} per ${tokenSell.symbol}`
               : ""}
         </span>
-        <div className="rescue-market-price col-span-2 flex h-5 w-full min-w-0 items-center justify-between gap-2 text-[13px] text-muted-foreground empty:hidden">
+        <div className="rescue-market-price col-span-2 flex h-5 w-full min-w-0 items-center justify-between gap-2 text-[13px] text-muted-foreground">
           {tokenBuy && tokenSell && marketPrice && (
             <Button
               type="button"
@@ -204,11 +198,6 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
               )}
         </div>
       </div>
-      {mode === "percent" && !hasMarketPrice && (
-        <p id="trigger-drop-help" className="text-xs text-muted-foreground">
-          Percentage entry needs a current market price. Use Price to continue.
-        </p>
-      )}
       {mode === "percent" && percentInvalid && (
         <p
           id="trigger-drop-error"

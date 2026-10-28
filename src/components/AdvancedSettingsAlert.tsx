@@ -3,13 +3,7 @@
 import { WarningNotice } from "#/components/ui/warning-notice";
 import { useAdvancedSettingsStore } from "#/hooks/useAdvancedSettings";
 
-export function AdvancedSettingsAlert({
-  slippagePercent,
-  showSlippageWarning = true,
-}: {
-  slippagePercent: string;
-  showSlippageWarning?: boolean;
-}) {
+export function AdvancedSettingsAlert() {
   const advancedSettings = useAdvancedSettingsStore(
     (state) => state.advancedSettings,
   );
@@ -17,9 +11,6 @@ export function AdvancedSettingsAlert({
   const warnings = [
     advancedSettings.maxHoursSinceOracleUpdates > 24 &&
       "The order accepts oracle prices older than 24 hours.",
-    showSlippageWarning &&
-      Number(slippagePercent) > 1 &&
-      "Price slippage is above 1%.",
   ].filter(Boolean);
 
   if (!warnings.length) return null;

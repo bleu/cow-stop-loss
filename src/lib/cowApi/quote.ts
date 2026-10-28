@@ -68,6 +68,7 @@ export async function fetchSellQuote({
   return BigInt(quoteSchema.parse(await response.json()).quote.buyAmount);
 }
 
+// Pair recommendation helper; disabled for order creation, which uses fixed slippage.
 export async function fetchPairSlippage(
   chainId: ChainId,
   sellToken: Address,

@@ -33,12 +33,12 @@ export function SlippageInputCard({
         {onAutoSlippageChange && (
           <button
             type="button"
-            aria-label="Auto slippage"
+            aria-label="Default slippage"
             aria-pressed={autoSlippage}
             onClick={() => onAutoSlippageChange(!autoSlippage)}
             className="pixel-control min-h-11 px-3 text-sm aria-pressed:text-primary"
           >
-            Auto
+            Default
           </button>
         )}
         <Input

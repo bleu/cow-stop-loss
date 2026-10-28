@@ -13,7 +13,6 @@ import {
   haveSettingsChanged,
   useAdvancedSettingsStore,
 } from "#/hooks/useAdvancedSettings";
-import { slippagePercentSchema } from "#/lib/calculateAmounts";
 import {
   configuredChainMaxAgeSeconds,
   configuredRouteMaxAgeSeconds,
@@ -24,7 +23,6 @@ import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { AdvancedSwapSettings, IToken } from "#/lib/types";
 
 import { BlockExplorerLink } from "./ExplorerLink";
-import { SlippageInputCard } from "./SlippageInputCard";
 import { Input } from "./ui/input";
 import {
   Select,
@@ -35,13 +33,7 @@ import {
 } from "./ui/select";
 import { InfoTooltip } from "./ui/tooltip";
 
-type AdvancedSettingsDraft = AdvancedSwapSettings & { slippagePercent: string };
-
 interface AdvancedSettingsPanelProps {
-  slippagePercent: string;
-  autoSlippage?: boolean;
-  onAutoSlippageChange?: (automatic: boolean) => void;
-  onApplySlippage: (value: string) => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: React.ReactNode;
@@ -50,10 +42,6 @@ interface AdvancedSettingsPanelProps {
 }
 
 export function AdvancedSettingsPanel({
-  slippagePercent,
-  autoSlippage = false,
-  onAutoSlippageChange,
-  onApplySlippage,
   open,
   onOpenChange,
   title,
@@ -97,14 +85,10 @@ export function AdvancedSettingsPanel({
     "automatic",
     maxAgeSeconds,
   );
-  const form = useForm<AdvancedSettingsDraft>({
+  const form = useForm<AdvancedSwapSettings>({
     mode: "onChange",
-    resolver: zodResolver(
-      generateAdvancedSettingsSchema(chainId, tokenPair).extend({
-        slippagePercent: slippagePercentSchema,
-      }),
-    ),
-    defaultValues: { ...advancedSettings, slippagePercent },
+    resolver: zodResolver(generateAdvancedSettingsSchema(chainId, tokenPair)),
+    defaultValues: advancedSettings,
   });
 
   const {
@@ -116,19 +100,14 @@ export function AdvancedSettingsPanel({
   React.useEffect(() => {
     if (previousScope.current === accountScope) return;
     previousScope.current = accountScope;
-    reset({ ...advancedSettings, slippagePercent });
+    reset(advancedSettings);
     onOpenChange(false);
-  }, [accountScope, advancedSettings, onOpenChange, reset, slippagePercent]);
+  }, [accountScope, advancedSettings, onOpenChange, reset]);
 
-  const automatic = React.useRef(autoSlippage);
-  automatic.current = autoSlippage;
-  React.useEffect(() => {
-    if (autoSlippage) form.setValue("slippagePercent", slippagePercent);
-  }, [autoSlippage, form, slippagePercent]);
-
-  const areSavedSettingsDifferentFromDefault =
-    haveSettingsChanged(advancedSettings, routeDefaults) ||
-    (onAutoSlippageChange ? !autoSlippage : Number(slippagePercent) !== 0.1);
+  const areSavedSettingsDifferentFromDefault = haveSettingsChanged(
+    advancedSettings,
+    routeDefaults,
+  );
 
   const receiver = useWatch({ control, name: "receiver" });
 
@@ -141,26 +120,23 @@ export function AdvancedSettingsPanel({
       void form.trigger().then((valid) => {
         if (!active || !valid || currentSequence !== validationSequence) return;
         if (!mounted.current) return;
-        const { slippagePercent: savedSlippage, ...settings } =
-          form.getValues();
         setAdvancedSettings(
-          settings,
+          form.getValues(),
           form.getFieldState("maxHoursSinceOracleUpdates").isDirty
             ? "explicit"
             : oracleAgeMode,
         );
-        if (!automatic.current) onApplySlippage(savedSlippage);
       });
     });
     return () => {
       active = false;
       subscription.unsubscribe();
     };
-  }, [form, onApplySlippage, open, oracleAgeMode, setAdvancedSettings]);
+  }, [form, open, oracleAgeMode, setAdvancedSettings]);
 
   return (
     <div className="rescue-settings w-full">
-      <div className="rescue-settings-heading flex items-start justify-between gap-3">
+      <div className="rescue-settings-heading flex min-h-11 items-center justify-between gap-2 lg:min-h-7">
         {open ? (
           <div className="min-w-0">
             <p className="rescue-display-eyebrow font-sans text-[10px] uppercase tracking-[0.18em] text-secondary">
@@ -179,11 +155,11 @@ export function AdvancedSettingsPanel({
             if (open) {
               onOpenChange(false);
             } else {
-              reset({ ...advancedSettings, slippagePercent });
+              reset(advancedSettings);
               onOpenChange(true);
             }
           }}
-          className={`rescue-secondary-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring relative inline-flex size-11 shrink-0 items-center justify-center transition-colors ${areSavedSettingsDifferentFromDefault ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
+          className={`rescue-secondary-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring relative inline-flex size-11 shrink-0 items-center justify-center p-0 transition-colors lg:size-7 lg:min-h-7 lg:min-w-7 ${areSavedSettingsDifferentFromDefault ? "text-primary" : "text-muted-foreground hover:text-foreground"}`}
           aria-label="Order settings"
           aria-expanded={open}
           aria-controls="order-settings-panel"
@@ -206,7 +182,7 @@ export function AdvancedSettingsPanel({
         <section
           id="order-settings-panel"
           aria-label="Order settings"
-          className="rescue-settings-panel grid gap-3"
+          className="rescue-settings-panel flex flex-col gap-4"
           onKeyDown={(event) => {
             if (event.key === "Escape") onOpenChange(false);
           }}
@@ -221,7 +197,7 @@ export function AdvancedSettingsPanel({
             <div
               role="group"
               aria-label="Advanced order settings"
-              className="rescue-settings-fields grid w-full gap-3"
+              className="rescue-settings-fields flex w-full flex-1 flex-col gap-4"
               onKeyDown={(event) => {
                 if (
                   event.key === "Enter" &&
@@ -232,10 +208,6 @@ export function AdvancedSettingsPanel({
                 }
               }}
             >
-              <SlippageInputCard
-                autoSlippage={autoSlippage}
-                onAutoSlippageChange={onAutoSlippageChange}
-              />
               <Input
                 name="maxHoursSinceOracleUpdates"
                 layout="inline"
@@ -272,7 +244,7 @@ export function AdvancedSettingsPanel({
                     >
                       <SelectTrigger
                         id="execution-mode"
-                        className="pixel-control min-h-11 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 rounded-none border-border bg-card"
+                        className="pixel-control rescue-square-control min-h-11 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 rounded-none border-border bg-card"
                       >
                         <SelectValue />
                       </SelectTrigger>
@@ -306,20 +278,15 @@ export function AdvancedSettingsPanel({
                 }
                 className="min-h-11 h-11 rounded-none border-border bg-card"
               />
-              <div className="rescue-settings-actions grid w-full gap-2 sm:grid-cols-[1fr_1.5fr] sm:items-center">
+              <div className="rescue-settings-actions mt-auto grid w-full grid-cols-1 gap-3">
                 <Button
                   variant="ghost"
                   type="button"
                   aria-label="Reset to default settings"
-                  className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 w-full rounded-none text-xs text-muted-foreground hover:text-foreground"
+                  className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 w-full whitespace-normal rounded-none px-2 text-xs text-muted-foreground hover:text-foreground"
                   onClick={() => {
-                    reset({
-                      ...routeDefaults,
-                      slippagePercent: "0.1",
-                    });
+                    reset(routeDefaults);
                     resetAdvancedSettings();
-                    onAutoSlippageChange?.(true);
-                    if (!onAutoSlippageChange) onApplySlippage("0.1");
                     onOpenChange(false);
                   }}
                 >

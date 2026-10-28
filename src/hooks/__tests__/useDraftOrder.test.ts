@@ -104,6 +104,85 @@ describe("Supported stop loss draft creation", () => {
     });
   });
 
+  it("preserves direct price authority and ignores stale buy amounts and percent", async () => {
+    await expect(
+      useDraftOrder.getState().createDraftOrder(
+        {
+          ...orderInput,
+          strikePrice: "95",
+          limitPriceSource: "price",
+          limitPrice: "94",
+          slippagePercent: "1.052631578947368421",
+          amountBuy: "1",
+        },
+        1,
+        safeAddress,
+      ),
+    ).resolves.toMatchObject({
+      amountSell: "1",
+      amountBuy: "94",
+      limitPriceSource: "price",
+      limitPrice: "94",
+    });
+  });
+
+  it("preserves a 22-decimal direct limit and rounds the buy amount up", async () => {
+    await expect(
+      useDraftOrder.getState().createDraftOrder(
+        {
+          ...orderInput,
+          strikePrice: "95",
+          limitPriceSource: "price",
+          limitPrice: "94.0000000000000000000001",
+        },
+        1,
+        safeAddress,
+      ),
+    ).resolves.toMatchObject({
+      amountBuy: "94.000001",
+      limitPriceSource: "price",
+      limitPrice: "94.0000000000000000000001",
+    });
+  });
+
+  it.each([undefined, "slippage"] as const)(
+    "derives the draft limit from slippage for source %j",
+    async (limitPriceSource) => {
+      const draft = await useDraftOrder.getState().createDraftOrder(
+        {
+          ...orderInput,
+          strikePrice: "95",
+          slippagePercent: "2",
+          limitPriceSource,
+          limitPrice: "94",
+        },
+        1,
+        safeAddress,
+      );
+      expect(draft).toMatchObject({ amountBuy: "93.1", limitPrice: "93.1" });
+      expect(draft.limitPriceSource).toBe(limitPriceSource);
+    },
+  );
+
+  it.each([undefined, "96", "0"])(
+    "rejects direct price %j before reading price feeds",
+    async (limitPrice) => {
+      await expect(
+        useDraftOrder.getState().createDraftOrder(
+          {
+            ...orderInput,
+            strikePrice: "95",
+            limitPriceSource: "price",
+            limitPrice,
+          },
+          1,
+          safeAddress,
+        ),
+      ).rejects.toThrow("Limit price");
+      expect(publicClientsFromIds[1].readContract).not.toHaveBeenCalled();
+    },
+  );
+
   it("prepares rounded quantities and absolute expiry without number conversion", async () => {
     jest.spyOn(Date, "now").mockReturnValue(1700000000000);
     const draft = await useDraftOrder.getState().createDraftOrder(

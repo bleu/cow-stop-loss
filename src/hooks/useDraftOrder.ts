@@ -41,6 +41,8 @@ export const useDraftOrder = create<DraftOrderState>()((set) => ({
       amount: swapData.amountSell,
       strikePrice: swapData.strikePrice,
       slippagePercent: swapData.slippagePercent,
+      limitPriceSource: swapData.limitPriceSource,
+      limitPrice: swapData.limitPrice,
       sellDecimals: swapData.tokenSell.decimals,
       buyDecimals: swapData.tokenBuy.decimals,
     });

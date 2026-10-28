@@ -1240,6 +1240,76 @@ test("keeps the footer FAQ and header theme controls on trading and legacy route
   ).not.toBeInTheDocument();
 });
 
+test("keeps header controls compact below desktop with accessible wallet actions", async () => {
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: new BrowserWallet(),
+  });
+  render(
+    <RootLayout>
+      <main>Trading page</main>
+    </RootLayout>,
+  );
+
+  const header = screen.getByRole("banner");
+  expect(header).toHaveClass("flex-nowrap");
+  const brand = within(header).getByRole("link", { name: "CoW Air Rescue" });
+  expect(brand).toHaveAttribute("href", "/");
+  expect(within(brand).getByText("CoW Air Rescue").parentElement).toHaveClass(
+    "hidden",
+    "sm:block",
+  );
+  expect(within(brand).getByText("Your exit plan. On your terms.")).toHaveClass(
+    "hidden",
+    "lg:block",
+  );
+  expect(brand.querySelector("img")).toBeInTheDocument();
+  const theme = within(header).getByRole("button", {
+    name: "Switch to light mode",
+  });
+  expect(theme.parentElement).toHaveClass("flex-nowrap");
+  expect(theme).toHaveClass("size-11");
+  const connect = await within(header).findByRole("button", {
+    name: "Connect wallet",
+  });
+  expect(within(connect).getByText("Connect", { exact: true })).toHaveClass(
+    "sm:hidden",
+  );
+  expect(within(connect).getByText("Connect wallet")).toHaveClass(
+    "hidden",
+    "sm:inline",
+  );
+
+  await connectBrowserWallet();
+  const network = within(header).getByRole("button", {
+    name: "Switch wallet network",
+  });
+  const account = within(header).getByRole("button", {
+    name: /^Wallet account /,
+  });
+  expect(network).toHaveAttribute("title", "Ethereum");
+  expect(account).toHaveAttribute("title", wallet);
+  expect(within(network).getByText("Ethereum")).toHaveClass(
+    "hidden",
+    "lg:inline",
+  );
+  for (const button of [network, account]) {
+    expect(button).toHaveClass("size-11", "px-0", "lg:w-auto", "lg:px-4");
+    expect(button.querySelector(":scope > span")).toHaveClass(
+      "hidden",
+      "lg:inline",
+    );
+    expect(
+      button.querySelector('[data-pixel-icon="chevron-down"]'),
+    ).toHaveClass("hidden", "lg:block");
+    expect(button).toBeEnabled();
+  }
+  fireEvent.click(account);
+  expect(
+    await screen.findByRole("button", { name: /Disconnect/ }),
+  ).toBeEnabled();
+});
+
 test("hydrates the wallet header before showing browser-discovered wallets", async () => {
   const container = document.createElement("div");
   document.body.appendChild(container);
@@ -1251,6 +1321,15 @@ test("hydrates the wallet header before showing browser-discovered wallets", asy
     </Router>
   );
   container.innerHTML = renderToString(view(config));
+  const loading = within(container).getByRole("button", {
+    name: "Loading wallet",
+  });
+  expect(loading).toBeDisabled();
+  expect(loading).toHaveClass("size-11", "px-0", "lg:w-auto", "lg:px-4");
+  expect(within(loading).getByText("Loading wallet…")).toHaveClass(
+    "hidden",
+    "lg:inline",
+  );
 
   const provider = new BrowserWallet();
   provider.accounts = [];
@@ -1356,7 +1435,7 @@ test("keeps the order builder and orders panel in normal flow on mobile", async 
     name: "Create stop-loss order",
   });
   const ordersPanel = screen.getByRole("region", {
-    name: "Your stop-loss orders",
+    name: "Portolio · Your orders",
   });
   expect(formPanel).toContainElement(
     screen.getByRole("textbox", { name: "Sell amount" }),
@@ -1440,7 +1519,7 @@ test("keeps the legacy list route scoped to the connected account", async () => 
     `/1/${wallet}/stop-loss-1`,
   );
   expect(
-    screen.getByRole("heading", { name: "Your stop-loss orders" }),
+    screen.getByRole("heading", { name: "Portolio · Your orders" }),
   ).toBeInTheDocument();
   expect(
     screen.getByRole("button", {
@@ -1752,7 +1831,7 @@ test("keeps successful chains visible and retries a failed chain", async () => {
     }),
   ).toBeInTheDocument();
   const ordersPanel = screen.getByRole("region", {
-    name: "Your stop-loss orders",
+    name: "Portolio · Your orders",
   });
   const warning = within(ordersPanel).getByRole("button", {
     name: "Order availability warnings",
@@ -1822,7 +1901,7 @@ test("does not show an API outage as an empty order list", async () => {
   await connectBrowserWallet();
 
   const ordersPanel = screen.getByRole("region", {
-    name: "Your stop-loss orders",
+    name: "Portolio · Your orders",
   });
   const warning = await within(ordersPanel).findByRole("button", {
     name: "Order availability warnings",

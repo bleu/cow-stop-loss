@@ -33,6 +33,91 @@ const ethereumSwap = {
 };
 
 describe("Supported stop loss order input", () => {
+  it("accepts a direct price with a derived percent that has more than two decimals", () => {
+    const result = generateSwapSchema(1).safeParse({
+      ...ethereumSwap,
+      strikePrice: "95",
+      limitPriceSource: "price",
+      limitPrice: "94",
+      slippagePercent: "1.052631578947368421",
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.limitPriceSource).toBe("price");
+      expect(result.data.limitPrice).toBe("94");
+    }
+  });
+
+  it("does not validate a stale display percent in price authority", () => {
+    expect(
+      generateSwapSchema(1).safeParse({
+        ...ethereumSwap,
+        limitPriceSource: "price",
+        limitPrice: "1898.1",
+        slippagePercent: "invalid",
+      }).success,
+    ).toBe(true);
+  });
+
+  it.each([
+    undefined,
+    "",
+    "0",
+    "-1",
+    "1900.0000000000000000000001",
+    "1.00000000000000000000001",
+    "NaN",
+    "1e3",
+  ])(
+    "maps invalid price %j to the limit field without clamping it",
+    (limitPrice) => {
+      const result = generateSwapSchema(1).safeParse({
+        ...ethereumSwap,
+        limitPriceSource: "price",
+        limitPrice,
+      });
+      expect(result.success).toBe(false);
+      if (!result.success)
+        expect(result.error.issues[0].path).toEqual(["limitPrice"]);
+    },
+  );
+
+  it.each([undefined, "slippage"])(
+    "maps invalid slippage to its field for source %j",
+    (limitPriceSource) => {
+      const result = generateSwapSchema(1).safeParse({
+        ...ethereumSwap,
+        limitPriceSource,
+        slippagePercent: "0.001",
+        limitPrice: "1898.1",
+      });
+      expect(result.success).toBe(false);
+      if (!result.success)
+        expect(result.error.issues[0].path).toEqual(["slippagePercent"]);
+    },
+  );
+
+  it("maps an invalid trigger to the trigger field in price authority", () => {
+    const result = generateSwapSchema(1).safeParse({
+      ...ethereumSwap,
+      limitPriceSource: "price",
+      limitPrice: "94",
+      strikePrice: "0",
+    });
+    expect(result.success).toBe(false);
+    if (!result.success)
+      expect(result.error.issues[0].path).toEqual(["strikePrice"]);
+  });
+
+  it("maps unknown authority to its field", () => {
+    const result = generateSwapSchema(1).safeParse({
+      ...ethereumSwap,
+      limitPriceSource: "unknown",
+    });
+    expect(result.success).toBe(false);
+    if (!result.success)
+      expect(result.error.issues[0].path).toEqual(["limitPriceSource"]);
+  });
   it("rejects exact-buy configuration even when its amounts are valid", () => {
     expect(
       generateSwapSchema(1).safeParse({ ...ethereumSwap, isSellOrder: false })

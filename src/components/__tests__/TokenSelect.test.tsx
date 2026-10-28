@@ -166,6 +166,154 @@ it("shares list balances and prices with the amount cards and keeps Max exact", 
   expect(read).not.toHaveBeenCalled();
 });
 
+it.each([false, true])(
+  "reserves the sell balance row with a selected token: %s",
+  (selected) => {
+    wallet = { chainId: 1 };
+    function Card() {
+      const form = useForm<SwapData>({
+        defaultValues: {
+          tokenSell: selected
+            ? getSupportedTokens(1).sellTokens[0].token
+            : undefined,
+        },
+      });
+      return (
+        <FormProvider {...form}>
+          <TokenInputCard side="Sell" />
+        </FormProvider>
+      );
+    }
+    render(<Card />);
+    const card = screen
+      .getByRole("textbox", { name: "Sell amount" })
+      .closest("section");
+    const balanceRow = card?.lastElementChild;
+    expect(balanceRow).toHaveClass(
+      "rescue-token-balance",
+      "min-h-5",
+      "text-xs",
+    );
+    if (selected) {
+      expect(balanceRow).toHaveTextContent("Connect wallet to view balance");
+    } else {
+      expect(balanceRow).toBeEmptyDOMElement();
+      expect(screen.queryByText(/balance/i)).not.toBeInTheDocument();
+    }
+  },
+);
+
+it("keeps the receive title, amount, and token inline without a selector", () => {
+  wallet = { chainId: 1 };
+  const { buyToken } = getSupportedTokens(1);
+  function ReceiveCard() {
+    const form = useForm<SwapData>({
+      defaultValues: { tokenBuy: buyToken.token },
+    });
+    return (
+      <FormProvider {...form}>
+        <TokenInputCard side="Buy" />
+      </FormProvider>
+    );
+  }
+  render(<ReceiveCard />);
+
+  const receive = screen.getByRole("status", { name: "Receive at least" });
+  const card = receive.closest("section")!;
+  const title = within(card).getByText("Receive at least", { exact: true });
+  expect(card).toHaveClass("flex", "items-center", "gap-2");
+  expect(title).toHaveClass("shrink-0", "whitespace-nowrap");
+  expect(title.parentElement).toHaveClass("contents");
+  const amountRow = card.lastElementChild;
+  expect(amountRow).toHaveClass(
+    "flex",
+    "min-w-0",
+    "flex-1",
+    "items-center",
+    "justify-between",
+    "gap-2",
+  );
+  expect(amountRow).toContainElement(receive);
+  expect(receive).toHaveClass("min-w-0", "truncate");
+  expect(
+    title.compareDocumentPosition(receive) & Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeTruthy();
+  const logo = within(card).getByRole("img", {
+    name: `${buyToken.token.symbol} token`,
+  });
+  expect(logo).toBeVisible();
+  const token = within(card).getByTitle(buyToken.token.symbol);
+  expect(amountRow).toContainElement(token);
+  expect(token.parentElement).toHaveClass("shrink-0");
+  const symbol = within(token).getByText(buyToken.token.symbol, {
+    exact: true,
+  });
+  expect(token).toContainElement(logo);
+  expect(symbol).toBeVisible();
+  expect(
+    receive.compareDocumentPosition(token) & Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeTruthy();
+  expect(
+    logo.compareDocumentPosition(symbol) & Node.DOCUMENT_POSITION_FOLLOWING,
+  ).toBeTruthy();
+  expect(within(card).queryByRole("button")).not.toBeInTheDocument();
+  expect(within(card).queryByRole("combobox")).not.toBeInTheDocument();
+  expect(card.querySelector('[aria-disabled="true"]')).not.toBeInTheDocument();
+  expect(
+    card.querySelector(".pixel-inset, .border, .bg-muted\\/50"),
+  ).not.toBeInTheDocument();
+  expect(
+    card.querySelector('[data-pixel-icon="chevron-down"]'),
+  ).not.toBeInTheDocument();
+});
+
+it("shows a fiat estimate only for Sell when both tokens have USD prices", async () => {
+  const { link, unmount } = renderSelector();
+  unmount();
+  const { buyToken } = getSupportedTokens(1);
+  const onSuccess = jest.fn();
+  function Cards() {
+    const form = useForm<SwapData>({
+      defaultValues: {
+        tokenSell: link.token,
+        tokenBuy: buyToken.token,
+        amountSell: "1",
+        amountBuy: "94.5",
+      },
+    });
+    return (
+      <FormProvider {...form}>
+        <TokenInputCard side="Sell" />
+        <TokenInputCard side="Buy" />
+      </FormProvider>
+    );
+  }
+  render(
+    <SWRConfig value={{ provider: () => new Map(), onSuccess }}>
+      <Cards />
+    </SWRConfig>,
+  );
+
+  const sellCard = screen
+    .getByRole("textbox", { name: "Sell amount" })
+    .closest("section")!;
+  expect(await within(sellCard).findByText("≈ $14.2")).toBeVisible();
+  expect(onSuccess).toHaveBeenCalledWith(
+    expect.objectContaining({
+      tokens: expect.arrayContaining([
+        expect.objectContaining({ token: buyToken.token, usdPrice: 1 }),
+      ]),
+    }),
+    expect.anything(),
+    expect.anything(),
+  );
+  const receive = screen.getByRole("status", { name: "Receive at least" });
+  const buyCard = receive.closest("section")!;
+  expect(receive).toHaveTextContent("≈ 94.5");
+  expect(within(buyCard).getByText(buyToken.token.symbol)).toBeVisible();
+  expect(within(buyCard).queryByText(/\$/)).not.toBeInTheDocument();
+});
+
 it("rounds the calculated buy display without changing submitted or typed amounts", async () => {
   const user = userEvent.setup();
   wallet = { chainId: 1 };
@@ -190,8 +338,8 @@ it("rounds the calculated buy display without changing submitted or typed amount
     );
   }
   render(<Cards />);
-  const buy = screen.getByRole("textbox", { name: "Receive at least" });
-  expect(buy).toHaveValue("94.5443");
+  const buy = screen.getByRole("status", { name: "Receive at least" });
+  expect(buy).toHaveTextContent("≈ 94.5443");
   expect(buy).toHaveAttribute("title", "94.544269912");
   const sell = screen.getByRole("textbox", { name: "Sell amount" });
   await user.type(sell, "1.");

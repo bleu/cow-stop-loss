@@ -73,7 +73,9 @@ export const swapSchema = z
     amountSell: z.string(),
     amountBuy: z.string(),
     strikePrice: z.string(),
-    slippagePercent: slippagePercentSchema,
+    slippagePercent: z.string(),
+    limitPriceSource: z.enum(["price", "slippage"]).optional(),
+    limitPrice: z.string().optional(),
     isSellOrder: z.literal(true),
     validTo: z.nativeEnum(VALID_TO_OPTIONS),
   })
@@ -87,13 +89,25 @@ export const swapSchema = z
     },
   )
   .superRefine((data, context) => {
-    if (!slippagePercentSchema.safeParse(data.slippagePercent).success) return;
+    if (data.limitPriceSource !== "price") {
+      const slippage = slippagePercentSchema.safeParse(data.slippagePercent);
+      if (!slippage.success) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["slippagePercent"],
+          message: slippage.error.issues[0].message,
+        });
+        return;
+      }
+    }
     try {
       calculateAmounts({
         isSellOrder: data.isSellOrder,
         amount: data.amountSell,
         strikePrice: data.strikePrice,
         slippagePercent: data.slippagePercent,
+        limitPriceSource: data.limitPriceSource,
+        limitPrice: data.limitPrice,
         sellDecimals: data.tokenSell.decimals,
         buyDecimals: data.tokenBuy.decimals,
       });
@@ -103,7 +117,15 @@ export const swapSchema = z
       context.addIssue({
         code: z.ZodIssueCode.custom,
         path: [
-          message.startsWith("Trigger price") ? "strikePrice" : "amountSell",
+          message.startsWith("Trigger price")
+            ? "strikePrice"
+            : message.startsWith("Limit price source")
+              ? "limitPriceSource"
+              : message.startsWith("Limit price")
+                ? "limitPrice"
+                : message.startsWith("Slippage")
+                  ? "slippagePercent"
+                  : "amountSell",
         ],
         message,
       });
