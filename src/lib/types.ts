@@ -33,9 +33,10 @@ export interface ITokenWithValue extends IToken {
 export type AdvancedSwapSettings = z.input<
   ReturnType<typeof generateAdvancedSettingsSchema>
 >;
+export type LimitPriceSource = "price" | "slippage";
 export type SwapData = z.output<typeof swapSchema>;
 
-export type DraftOrder = Omit<SwapData, "validTo"> &
+export type DraftOrder = Omit<SwapData, "validTo" | "limitPrice"> &
   AdvancedSwapSettings &
   IRoute & {
     id: string;

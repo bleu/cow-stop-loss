@@ -110,7 +110,7 @@ it("submits a fixed trigger price from a percentage drop", async () => {
     ),
   );
   expect(screen.getByLabelText("Trigger price")).toBe(input);
-  const hint = screen.getByText("Trigger: $1,800");
+  const hint = screen.getByText("Trigger: ≈ 1,800 USDC per WETH");
   const market = screen.getByRole("button", {
     name: /Set trigger to current market price/,
   });
@@ -174,7 +174,7 @@ it("submits small percentage-derived prices without exponent notation", async ()
   );
 });
 
-it.each(["", "-1", "100", "101", "1e1", "Infinity", "NaN", "1.2.3", " "])(
+it.each(["", ".", "100", "101"])(
   "clears the stored price for invalid percentage %j",
   async (value) => {
     const user = userEvent.setup();
@@ -204,6 +204,34 @@ it.each(["", "-1", "100", "101", "1e1", "Infinity", "NaN", "1.2.3", " "])(
   },
 );
 
+it("rejects non-decimal percentage edits without changing the stored price", async () => {
+  const user = userEvent.setup();
+  const onSubmit = jest.fn();
+  render(
+    <SWRConfig value={{ provider: () => new Map() }}>
+      <PriceForm onSubmit={onSubmit} />
+    </SWRConfig>,
+  );
+  await screen.findByRole("button", {
+    name: /Set trigger to current market price/,
+  });
+  await user.click(screen.getByRole("button", { name: "% drop" }));
+  const input = screen.getByRole("textbox", { name: "Price drop (%)" });
+  await user.clear(input);
+  await user.type(input, "10.5");
+  await user.type(input, "abcEe+-., ");
+  expect(input).toHaveValue("10.5");
+  for (const value of ["-1", "1e1", "Infinity", "NaN", "1.2.3", " "]) {
+    await user.paste(value);
+    expect(input).toHaveValue("10.5");
+  }
+  await user.click(screen.getByRole("button", { name: "Submit" }));
+  await waitFor(() =>
+    expect(onSubmit.mock.calls[0]?.[0].strikePrice).toBe("1790"),
+  );
+  expect(input).toHaveAttribute("aria-invalid", "false");
+});
+
 it("keeps the trigger fixed when the market changes and uses the latest quote on a new edit", async () => {
   const user = userEvent.setup();
   const onSubmit = jest.fn();
@@ -225,7 +253,9 @@ it("keeps the trigger fixed when the market changes and uses the latest quote on
     name: "Set trigger to current market price 2,200 USDC per WETH",
   });
   expect(input).toHaveValue("10");
-  expect(screen.getByText("Trigger: $1,800")).toBeInTheDocument();
+  expect(
+    screen.getByText("Trigger: ≈ 1,800 USDC per WETH"),
+  ).toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "Submit" }));
   await waitFor(() =>
     expect(onSubmit.mock.calls[0]?.[0].strikePrice).toBe("1800"),
@@ -236,7 +266,9 @@ it("keeps the trigger fixed when the market changes and uses the latest quote on
   await waitFor(() =>
     expect(onSubmit.mock.calls[1]?.[0].strikePrice).toBe("1980"),
   );
-  expect(screen.getByText("Trigger: $1,980")).toBeInTheDocument();
+  expect(
+    screen.getByText("Trigger: ≈ 1,980 USDC per WETH"),
+  ).toBeInTheDocument();
 });
 
 it("returns to price entry when the market-price shortcut is selected", async () => {
@@ -264,7 +296,7 @@ it("returns to price entry when the market-price shortcut is selected", async ()
   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
 });
 
-it("keeps percentage entry disabled until a market quote is available", async () => {
+it("allows percentage mode without a market quote but keeps its input disabled", async () => {
   marketPrice = undefined;
   const user = userEvent.setup();
   render(
@@ -275,11 +307,25 @@ it("keeps percentage entry disabled until a market quote is available", async ()
   const percentMode = screen.getByRole("button", {
     name: "% drop",
   });
-  expect(percentMode).toBeDisabled();
+  expect(percentMode).toBeEnabled();
   expect(screen.getByRole("textbox", { name: "Trigger price" })).toBeEnabled();
+  await user.click(percentMode);
+  expect(percentMode).toHaveAttribute("aria-pressed", "true");
+  expect(
+    screen.getByRole("textbox", { name: "Price drop (%)" }),
+  ).toBeDisabled();
+  await user.click(screen.getByRole("button", { name: "Price" }));
+  expect(screen.getByRole("textbox", { name: "Trigger price" })).toHaveValue(
+    "2000",
+  );
   marketPrice = 2000;
   await user.click(screen.getByRole("button", { name: "Refresh market" }));
-  await waitFor(() => expect(percentMode).toBeEnabled());
+  await screen.findByRole("button", {
+    name: /Set trigger to current market price/,
+  });
+  await user.click(percentMode);
+  expect(screen.getByRole("textbox", { name: "Price drop (%)" })).toBeEnabled();
+  await user.click(screen.getByRole("button", { name: "Price" }));
   expect(screen.getByRole("textbox", { name: "Trigger price" })).toHaveValue(
     "2000",
   );
@@ -329,7 +375,9 @@ it("does not change percentage intent when the selected mode is clicked again", 
   });
   await user.click(percentMode);
   expect(input).toHaveValue("10");
-  expect(screen.getByText("Trigger: $1,800")).toBeInTheDocument();
+  expect(
+    screen.getByText("Trigger: ≈ 1,800 USDC per WETH"),
+  ).toBeInTheDocument();
 });
 
 it("clears percentage errors after correcting the trigger in price mode", async () => {
@@ -388,7 +436,7 @@ it.each([
   expect(input).toHaveAttribute("aria-invalid", "false");
 });
 
-it("explains why percentage entry stops when the market quote is lost", async () => {
+it("keeps the trigger fixed when the market quote is lost and percentage entry stops", async () => {
   const user = userEvent.setup();
   const onSubmit = jest.fn();
   render(
@@ -406,11 +454,7 @@ it("explains why percentage entry stops when the market quote is lost", async ()
   marketPrice = undefined;
   await user.click(screen.getByRole("button", { name: "Refresh market" }));
   await waitFor(() => expect(input).toBeDisabled());
-  expect(
-    screen.getByText(
-      "Percentage entry needs a current market price. Use Price to continue.",
-    ),
-  ).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "% drop" })).toBeEnabled();
   await user.click(screen.getByRole("button", { name: "Price" }));
   expect(screen.getByRole("textbox", { name: "Trigger price" })).toHaveValue(
     "1800",
@@ -464,7 +508,8 @@ it.each([
   },
 );
 
-it("shows a dollar market quote and keeps the full pair in its accessible label", async () => {
+it("shows an adaptive token-pair market quote with its units", async () => {
+  marketPrice = 94.544269912;
   render(
     <SWRConfig value={{ provider: () => new Map() }}>
       <PriceForm />
@@ -472,9 +517,9 @@ it("shows a dollar market quote and keeps the full pair in its accessible label"
   );
 
   const market = await screen.findByRole("button", {
-    name: "Set trigger to current market price 2,000 USDC per WETH",
+    name: "Set trigger to current market price 94.5443 USDC per WETH",
   });
-  expect(market).toHaveTextContent(/^Market: \$2,000$/);
+  expect(market).toHaveTextContent(/^Market: ≈ 94.5443 USDC per WETH$/);
   expect(screen.queryByText("1 USDC")).not.toBeInTheDocument();
 });
 
@@ -494,7 +539,7 @@ it("places the market-distance hint beside Market and replaces it with the trigg
   await user.click(screen.getByRole("button", { name: "% drop" }));
   expect(screen.queryByText("At market")).not.toBeInTheDocument();
   expect(market.parentElement).toContainElement(
-    screen.getByText("Trigger: $2,000"),
+    screen.getByText("Trigger: ≈ 2,000 USDC per WETH"),
   );
   await user.click(screen.getByRole("button", { name: "Price" }));
   expect(screen.queryByText(/Trigger:/)).not.toBeInTheDocument();
@@ -512,6 +557,7 @@ it("reserves the market quote row while no oracle price is available", async () 
   const input = screen.getByRole("textbox", { name: "Trigger price" });
   const quoteRow = input.parentElement?.lastElementChild;
   expect(quoteRow).toHaveClass("h-5");
+  expect(quoteRow).not.toHaveClass("empty:hidden");
   expect(quoteRow).toBeEmptyDOMElement();
   expect(screen.queryByText(/loading|unavailable/i)).not.toBeInTheDocument();
   marketPrice = 2000;

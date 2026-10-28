@@ -99,9 +99,41 @@ it("shows a compact order summary with edit beside the heading", () => {
   expect(screen.queryByText("Wallet balance")).not.toBeInTheDocument();
   expect(screen.queryByText("Allowance needed")).not.toBeInTheDocument();
   expect(screen.queryByText("Settlement approval")).not.toBeInTheDocument();
+  expect(
+    screen.queryByText(/limit uses the current USD value/i),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByText(/sell amount, not the trigger price/i),
+  ).not.toBeInTheDocument();
   for (const [label, address] of [
     ["WETH oracle (2h max age)", order.tokenSellOracle],
     ["USDC oracle (2h max age)", order.tokenBuyOracle],
+  ]) {
+    expect(
+      screen
+        .getByText(label)
+        .closest(".rescue-review-address")
+        ?.querySelector("a"),
+    ).toHaveAttribute("href", `https://etherscan.io/address/${address}`);
+  }
+});
+
+it("groups destination and oracle addresses in one shared wrapper", () => {
+  const { container } = render(
+    <ReviewOrderPanel {...props()} prepared={prepared} checks={checks} />,
+  );
+  const destination = screen.getByRole("region", { name: "Order destination" });
+  const oracles = screen.getByRole("region", { name: "Price oracles" });
+  const addresses = destination.parentElement;
+  expect(addresses).toHaveClass("rescue-review-addresses");
+  expect(container.querySelectorAll(".rescue-review-addresses")).toHaveLength(
+    1,
+  );
+  expect(oracles.parentElement).toBe(addresses);
+  expect(addresses?.children).toHaveLength(2);
+  for (const [label, address] of [
+    ["Custom recipient", order.receiver],
+    ["Execution account", prepared.owner],
   ]) {
     expect(
       screen
@@ -144,6 +176,30 @@ it("keeps exact amounts and oracle help as inline keyboard controls", async () =
     "href",
     `https://etherscan.io/token/${order.tokenSell.address}`,
   );
+});
+
+it("keeps approval choices and actions without an approval-needed badge", async () => {
+  const user = userEvent.setup();
+  const input = props();
+  const { container } = render(
+    <ReviewOrderPanel {...input} prepared={prepared} checks={checks} />,
+  );
+  expect(screen.getByRole("group", { name: "Token approval" })).toBeEnabled();
+  expect(screen.queryByText("Approval needed")).not.toBeInTheDocument();
+  expect(container.querySelector(".rescue-review-badge")).toBeNull();
+  const limited = screen.getByRole("radio", { name: "Limited" });
+  const unlimited = screen.getByRole("radio", { name: "Unlimited" });
+  expect(limited).toBeChecked();
+  expect(unlimited).not.toBeChecked();
+  await user.click(screen.getByRole("button", { name: "Approve WETH" }));
+  expect(input.onApprove).toHaveBeenLastCalledWith("limited");
+  await user.click(unlimited);
+  expect(unlimited).toBeChecked();
+  expect(limited).not.toBeChecked();
+  await user.click(screen.getByRole("button", { name: "Approve WETH" }));
+  expect(input.onApprove).toHaveBeenLastCalledWith("unlimited");
+  expect(input.onApprove).toHaveBeenCalledTimes(2);
+  expect(input.onPlace).not.toHaveBeenCalled();
 });
 
 it("shows one approval action until approval is sufficient, then one placement action", () => {
@@ -238,7 +294,7 @@ it("keeps small nonzero amounts visible and reveals the full amount by touch", a
   const amount = screen.getByRole("button", {
     name: "Show exact amount: 0.000000000123456789 WETH",
   });
-  expect(amount).toHaveTextContent("0.00000000012345678…");
+  expect(amount).toHaveTextContent("0.000000000123456789");
   await user.click(amount);
   expect(
     screen.getByRole("dialog", { name: "Exact token amount" }),
@@ -246,12 +302,13 @@ it("keeps small nonzero amounts visible and reveals the full amount by touch", a
 });
 
 it.each([
-  ["2000.123456789012345678", "2000.1234…"],
-  ["0.000000000123456789", "0.0000000001234…"],
-  ["123456789.123456789", "123456789.1234…"],
-  ["2000.000012345678", "2000.00001234…"],
-  ["0.00001234", "0.00001234"],
-  ["2000", "2000"],
+  ["2000.123456789012345678", "2,000.1235"],
+  ["0.000000000123456789", "0.000000000123456789"],
+  ["123456789.123456789", "123,456,789.123"],
+  ["2000.000012345678", "2,000"],
+  ["0.00001234", "0.000012"],
+  ["2000", "2,000"],
+  ["94.544269912", "94.5443"],
 ])(
   "reveals the exact trigger price %s on click",
   async (strikePrice, compact) => {

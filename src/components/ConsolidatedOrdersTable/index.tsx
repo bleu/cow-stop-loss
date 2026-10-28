@@ -59,9 +59,8 @@ function OrdersHeading({ children }: { children?: React.ReactNode }) {
   return (
     <div className="rescue-panel-heading rescue-portfolio-heading">
       <div className="rescue-portfolio-title">
-        <p className="rescue-eyebrow">Portfolio</p>
-        <h2 id="orders-title" className="rescue-panel-title">
-          Your stop-loss orders
+        <h2 id="orders-title" className="rescue-card-title text-primary">
+          Portolio · Your orders
         </h2>
       </div>
       {children}

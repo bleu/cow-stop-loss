@@ -15,6 +15,7 @@ import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { assertOrderSizeLimit } from "#/lib/orderSizeLimit";
+import { DEFAULT_SLIPPAGE_PERCENT } from "#/lib/orderSlippage";
 import { ChainId } from "#/lib/publicClients";
 import { generateSwapSchema, VALID_TO_OPTIONS } from "#/lib/schema";
 import { getSupportedTokens } from "#/lib/supportedTokens";
@@ -22,6 +23,7 @@ import { DraftOrder, SwapData } from "#/lib/types";
 
 import { AdvancedSettingsAlert } from "../AdvancedSettingsAlert";
 import { AdvancedSettingsPanel } from "../AdvancedSettingsPanel";
+import { LimitPriceInputCard } from "../LimitPriceInputCard";
 import { PriceInputCard } from "../PriceInputCard";
 import { TokenInputCard } from "../TokenInputCard";
 import { Form } from "../ui/form";
@@ -63,7 +65,9 @@ function WalletSwapForm({
     mode: "onChange",
     defaultValues: {
       isSellOrder: true,
-      slippagePercent: "1",
+      slippagePercent: DEFAULT_SLIPPAGE_PERCENT,
+      limitPriceSource: "slippage",
+      limitPrice: "",
       validTo: VALID_TO_OPTIONS.YEAR,
       amountSell: "",
       amountBuy: "",
@@ -80,24 +84,49 @@ function WalletSwapForm({
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
   }, [settingsOpen]);
-  const { reset, clearErrors, setValue, getValues } = form;
-  const [tokenSell, tokenBuy, amountSell, strikePrice, slippagePercent] =
-    useWatch({
-      control: form.control,
-      name: [
-        "tokenSell",
-        "tokenBuy",
-        "amountSell",
-        "strikePrice",
-        "slippagePercent",
-      ],
-    });
+  const { reset, clearErrors, setValue, getValues, trigger } = form;
+  const [
+    tokenSell,
+    tokenBuy,
+    amountSell,
+    strikePrice,
+    slippagePercent,
+    limitPriceSource,
+    limitPrice,
+  ] = useWatch({
+    control: form.control,
+    name: [
+      "tokenSell",
+      "tokenBuy",
+      "amountSell",
+      "strikePrice",
+      "slippagePercent",
+      "limitPriceSource",
+      "limitPrice",
+    ],
+  });
+  React.useEffect(() => {
+    void trigger(["limitPrice", "slippagePercent"]);
+  }, [strikePrice, limitPriceSource, limitPrice, slippagePercent, trigger]);
   const orderSizeLimit = useOrderSizeLimit({
     chainId,
     tokenSell,
     sellAmount: amountSell,
   });
-  const [autoSlippage, setAutoSlippage] = React.useState(true);
+  const [defaultSlippage, setDefaultSlippage] = React.useState(true);
+  const pairKey = `${tokenSell?.address.toLowerCase()}:${tokenBuy?.address.toLowerCase()}`;
+  const previousPair = React.useRef(pairKey);
+  React.useEffect(() => {
+    if (previousPair.current === pairKey) return;
+    previousPair.current = pairKey;
+    setDefaultSlippage(true);
+    clearErrors(["limitPrice", "slippagePercent"]);
+    setValue("limitPriceSource", "slippage");
+    setValue("limitPrice", "");
+    setValue("slippagePercent", DEFAULT_SLIPPAGE_PERCENT, {
+      shouldValidate: true,
+    });
+  }, [pairKey, clearErrors, setValue]);
   const { data: oraclePrice } = useTokenPairPrice(tokenSell, tokenBuy);
   const editing = !reviewDisabled && !form.formState.isSubmitting;
   const quote = useOrderQuote({
@@ -109,21 +138,15 @@ function WalletSwapForm({
     oraclePrice,
     enabled: editing,
   });
-  React.useEffect(() => {
-    if (autoSlippage && editing)
-      setValue("slippagePercent", quote.slippagePercent, {
-        shouldValidate: true,
-      });
-  }, [autoSlippage, editing, quote.slippagePercent, setValue]);
-  const applySlippage = React.useCallback(
-    (value: string) => {
-      setValue("slippagePercent", value, {
-        shouldValidate: true,
-        shouldDirty: true,
-      });
-    },
-    [setValue],
-  );
+  const resetToDefault = React.useCallback(() => {
+    setDefaultSlippage(true);
+    clearErrors(["limitPrice", "slippagePercent"]);
+    setValue("limitPriceSource", "slippage", { shouldDirty: true });
+    setValue("slippagePercent", DEFAULT_SLIPPAGE_PERCENT, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
+  }, [clearErrors, setValue]);
 
   React.useEffect(() => {
     let derivedAmount = "";
@@ -134,6 +157,8 @@ function WalletSwapForm({
           amount: amountSell,
           strikePrice,
           slippagePercent,
+          limitPriceSource,
+          limitPrice,
           sellDecimals: tokenSell.decimals,
           buyDecimals: tokenBuy.decimals,
         }).amountBuy;
@@ -148,6 +173,8 @@ function WalletSwapForm({
     amountSell,
     strikePrice,
     slippagePercent,
+    limitPriceSource,
+    limitPrice,
     tokenSell,
     tokenBuy,
     getValues,
@@ -165,7 +192,9 @@ function WalletSwapForm({
   React.useEffect(() => {
     reset({
       isSellOrder: true,
-      slippagePercent: "1",
+      slippagePercent: DEFAULT_SLIPPAGE_PERCENT,
+      limitPriceSource: "slippage",
+      limitPrice: "",
       validTo: VALID_TO_OPTIONS.YEAR,
       amountSell: "",
       amountBuy: "",
@@ -232,18 +261,12 @@ function WalletSwapForm({
           });
         }
       }}
-      className="rescue-swap-form w-full"
+      className="rescue-swap-form flex w-full flex-1 flex-col"
     >
-      <fieldset
-        disabled={form.formState.isSubmitting}
-        className="flex w-full min-w-0 flex-col"
-      >
-        <Card className="flex w-full min-w-0 flex-col rounded-none border-0 bg-transparent p-0 shadow-none">
-          <CardContent className="rescue-swap-content flex flex-col gap-3 p-0">
+      <fieldset disabled={form.formState.isSubmitting} className="contents">
+        <Card className="flex w-full min-w-0 flex-1 flex-col rounded-none border-0 bg-transparent p-0 shadow-none">
+          <CardContent className="rescue-swap-content grid flex-1 gap-3 p-0">
             <AdvancedSettingsPanel
-              slippagePercent={slippagePercent}
-              autoSlippage={autoSlippage}
-              onAutoSlippageChange={setAutoSlippage}
               tokenPair={
                 tokenSell && tokenBuy ? { tokenSell, tokenBuy } : undefined
               }
@@ -251,19 +274,13 @@ function WalletSwapForm({
               onOpenChange={setSettingsOpen}
               orderTiming={<ValidToInput />}
               title={
-                <div className="min-w-0">
-                  <p className="rescue-display-eyebrow font-sans text-[10px] uppercase tracking-[0.18em] text-secondary">
-                    Create · Your flight plan
-                  </p>
-                  <h2
-                    id="place-order-title"
-                    className="mt-2 text-balance font-serif text-[28px] leading-tight tracking-tight sm:text-[32px]"
-                  >
-                    Place a stop-loss order
-                  </h2>
-                </div>
+                <h2
+                  id="place-order-title"
+                  className="rescue-card-title text-secondary"
+                >
+                  New Parachute · Define your order
+                </h2>
               }
-              onApplySlippage={applySlippage}
             />
             <div
               aria-hidden={settingsOpen}
@@ -282,16 +299,13 @@ function WalletSwapForm({
               <PriceInputCard
                 key={`${tokenSell?.address.toLowerCase()}:${tokenBuy?.address.toLowerCase()}`}
               />
+              <LimitPriceInputCard
+                key={`limit:${pairKey}`}
+                defaultSlippage={defaultSlippage}
+                onManualEdit={() => setDefaultSlippage(false)}
+                onResetToDefault={resetToDefault}
+              />
               <TokenInputCard side="Buy" />
-              {autoSlippage &&
-                quote.hasInput &&
-                !quote.isLoading &&
-                quote.usedFallback && (
-                  <WarningNotice>
-                    The pair recommendation is unavailable. Auto uses a 1%
-                    fallback plus any estimated execution price gap.
-                  </WarningNotice>
-                )}
               {quote.quoteError && (
                 <WarningNotice>
                   {quote.quoteError.message.startsWith("The sell amount")
@@ -299,23 +313,7 @@ function WalletSwapForm({
                     : "A current execution quote is unavailable. This order might not execute."}
                 </WarningNotice>
               )}
-              {autoSlippage && !quote.isLoading && quote.isHigh && (
-                <WarningNotice
-                  tooltip={
-                    quote.isCapped
-                      ? "Auto slippage has reached 10%. The current estimate is higher, so the order might not execute. You can adjust slippage in Order settings."
-                      : `Auto uses ${quote.slippagePercent}% slippage for this amount. A higher slippage allows a lower execution price. You can adjust slippage in Order settings.`
-                  }
-                >
-                  {quote.isCapped
-                    ? "The suggested slippage is above the 10% maximum. This trade might fail."
-                    : "Price slippage is above 1%"}
-                </WarningNotice>
-              )}
-              <AdvancedSettingsAlert
-                slippagePercent={slippagePercent}
-                showSlippageWarning={!autoSlippage}
-              />
+              <AdvancedSettingsAlert />
               {form.formState.errors.root?.message && (
                 <p role="alert" className="text-sm text-destructive">
                   {form.formState.errors.root.message}

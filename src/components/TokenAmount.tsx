@@ -1,6 +1,5 @@
-import { formatNumber } from "@bleu/ui";
-
 import { IToken } from "#/lib/types";
+import { formatFiatAmount, formatTokenAmount } from "#/utils/amountFormatting";
 
 export function TokenAmount({
   token,
@@ -13,12 +12,14 @@ export function TokenAmount({
 }) {
   return (
     <div className="flex flex-col items-end">
-      <span>
-        {typeof balance === "string" ? balance : formatNumber(balance, 4)}{" "}
-        {token.symbol}
+      <span title={`${balance} ${token.symbol}`}>
+        {formatTokenAmount(balance, token.decimals)} {token.symbol}
       </span>
-      <i className="text-xs h-5">
-        ≈ {usdPrice > 0 && `$${formatNumber(Number(balance) * usdPrice, 2)}`}
+      <i
+        title={usdPrice > 0 ? `$${Number(balance) * usdPrice}` : undefined}
+        className="text-xs h-5"
+      >
+        ≈ {usdPrice > 0 && `$${formatFiatAmount(Number(balance) * usdPrice)}`}
       </i>
     </div>
   );

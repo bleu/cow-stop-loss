@@ -431,6 +431,53 @@ test("encodes the reviewed receiver, amounts and advanced settings with the uplo
   ]);
 });
 
+test("encodes the direct limit without using the stale slippage percent", async () => {
+  const prepared = await preparePlacement({
+    draft: {
+      ...draft,
+      amountSell: "10",
+      amountBuy: "940",
+      strikePrice: "95",
+      limitPriceSource: "price",
+      limitPrice: "94",
+      slippagePercent: "1",
+    },
+    account,
+    chainId: 1,
+    client: checkingClient(),
+  });
+  const encoded = decodeAbiParameters(
+    parseAbiParameters(
+      "address,address,uint256,uint256,bytes32,address,bool,bool,uint32,address,address,int256,uint32",
+    ),
+    prepared.staticInput,
+  );
+
+  expect(encoded[2]).toBe(BigInt("10000000000000000000"));
+  expect(encoded[3]).toBe(BigInt("940000000"));
+  expect(encoded[11]).toBe(BigInt("95000000000000000000"));
+});
+
+test("rejects saved buy amounts derived from stale slippage in price authority", async () => {
+  await expect(
+    preparePlacement({
+      draft: {
+        ...draft,
+        amountSell: "10",
+        amountBuy: "940.5",
+        strikePrice: "95",
+        limitPriceSource: "price",
+        limitPrice: "94",
+        slippagePercent: "1",
+      },
+      account,
+      chainId: 1,
+      client: checkingClient(),
+    }),
+  ).rejects.toThrow("Draft amounts do not match");
+  expect(global.fetch).not.toHaveBeenCalled();
+});
+
 test("encodes a new default draft's oracle limit as 86400 seconds", async () => {
   const prepared = await preparePlacement({
     draft: { ...draft, ...defaultAdvancedSettings, receiver: account },

@@ -38,7 +38,7 @@ const questions = [
     id: "what-is-it",
     question: "What is CoW Air Rescue?",
     answer:
-      "CoW Air Rescue is an interface for creating and managing conditional stop-loss orders. You set an oracle-based trigger to sell a supported token for the configured buy token. The app creates the order; CoW Protocol handles matching and settlement. A stop-loss order does not guarantee that you will avoid a loss.",
+      "CoW Air Rescue helps you prepare for market drops without worrying about watching prices around the clock. Create and manage conditional stop-loss orders with triggers you choose. CoW Protocol handles matching and settlement when execution requirements are met. Execution and price are not guaranteed.",
   },
   {
     id: "execution",
@@ -50,7 +50,7 @@ const questions = [
     id: "trigger-price",
     question: "Is the trigger price my sale price?",
     answer:
-      "No. The trigger price is the oracle condition that makes an order eligible to execute. The limit price is the minimum sale price set by your minimum buy amount. If the price falls below the limit before execution, the order waits for recovery to at least the limit while the oracle price is below the trigger. Within that range, execution is expected soon, subject to sufficient funds, approvals, and liquidity. Open a support ticket if the order stays unfilled for a prolonged time. Higher slippage lowers the minimum price and improves the chance of execution, but does not guarantee a fill. Placed order terms are fixed; cancel and replace the order to change them. The displayed market price is an oracle reference, not a firm quote. Orders can fill partially if allowed or expire.",
+      "Your minimum buy amount sets the lowest amount you agree to receive. The trigger price is the oracle condition that makes an order eligible to execute. The limit price is the minimum sale price set by your minimum buy amount. If the price falls below the limit before execution, the order waits for recovery to at least the limit while the oracle price is below the trigger. Within that range, execution is expected soon, subject to sufficient funds, approvals, and liquidity. Open a support ticket if the order stays unfilled for a prolonged time. Higher slippage lowers the minimum price and improves the chance of execution, but does not guarantee a fill. Placed order terms are fixed; cancel and replace the order to change them. The displayed market price is an oracle reference, not a firm quote. Orders can fill partially if allowed or expire.",
   },
   {
     id: "oracles",
@@ -74,7 +74,7 @@ const questions = [
     id: "cancel",
     question: "Can I cancel an order?",
     answer:
-      "You can request cancellation of a supported open or partially filled order from its details page. Connect the order's wallet on the order's network and confirm the cancellation transaction. The order may still execute before that transaction is confirmed. Completed fills cannot be undone.",
+      "You can request cancellation while your order is still open. Supported open or partially filled orders can be cancelled from their details page. Connect the order's wallet on the order's network and confirm the cancellation transaction. The order may still execute before that transaction is confirmed. Completed fills cannot be undone.",
   },
   {
     id: "fees-expiry",
@@ -86,7 +86,7 @@ const questions = [
     id: "risks",
     question: "Does a stop-loss order guarantee protection?",
     answer:
-      "No. Oracle faults or delays, sharp price changes, a token depeg, low liquidity, network failures, and smart-contract faults can cause unexpected triggers, failed execution, or losses. This interface and CoW Protocol are separate parts of the process. Assess whether the order and its dependencies are suitable for you.",
+      "A stop-loss helps you plan your response to a price drop, but it cannot guarantee protection. Oracle faults or delays, sharp price changes, a token depeg, low liquidity, network failures, and smart-contract faults can cause unexpected triggers, failed execution, or losses. This interface and CoW Protocol are separate parts of the process. Assess whether the order and its dependencies are suitable for you.",
   },
 ];
 
@@ -126,14 +126,15 @@ export function LandingPage() {
           <div className="landing-hero-copy">
             <p className="rescue-eyebrow">CoW Air Rescue / Stop-loss orders</p>
             <h1 id="landing-title">
-              A plan for
+              A safety net
               <br />
-              <span>the way down.</span>
+              <span>for your tokens.</span>
             </h1>
             <p className="landing-intro">
-              Set a stop-loss before the market moves. Create conditional token
-              orders with oracle-based triggers and execution through CoW
-              Protocol.
+              Set your exit plan on your terms: define stop-loss conditions
+              ahead of time, so you don&apos;t have to watch every market move.
+              Orders execute through CoW Protocol when your conditions and
+              execution requirements are met.
             </p>
             <div className="landing-actions">
               <OpenAppLink />
@@ -160,9 +161,12 @@ export function LandingPage() {
           aria-labelledby="how-it-works-title"
         >
           <div className="landing-section-heading">
-            <p className="rescue-eyebrow">Before the way down</p>
+            <p className="rescue-eyebrow">Set your safety net</p>
             <h2 id="how-it-works-title">How it works</h2>
-            <p>You choose the conditions. Check the details before you sign.</p>
+            <p>
+              Choose your trigger, minimum amount to receive, and expiry. Review
+              everything before you sign.
+            </p>
           </div>
           <ol className="landing-steps">
             {steps.map((step, index) => (
@@ -238,7 +242,7 @@ export function LandingPage() {
           <div className="landing-section-heading">
             <p className="rescue-eyebrow">Before you take off</p>
             <h2 id="faq-title">Frequently asked questions</h2>
-            <p>The order flow, the technical details, and the limits.</p>
+            <p>Understand your order and stay in control.</p>
           </div>
           <div className="rescue-panel landing-faq-panel">
             <Accordion type="single" collapsible>
@@ -259,7 +263,8 @@ export function LandingPage() {
         <section className="landing-closing" aria-labelledby="closing-title">
           <h2 id="closing-title">Make a plan before you need it.</h2>
           <p>
-            Review your conditions. Verify your feeds. Then create your order.
+            Set your conditions now, so you&apos;re prepared when the market
+            moves.
           </p>
           <OpenAppLink />
         </section>

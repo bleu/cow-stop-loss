@@ -5,6 +5,8 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { SwapData } from "#/lib/types";
+import { formatTokenAmount } from "#/utils/amountFormatting";
+import { isDecimalInput } from "#/utils/inputs";
 import { formatMarketPriceForInput } from "#/utils/priceFormatting";
 
 import { InfoTooltip } from "./ui/tooltip";
@@ -25,6 +27,7 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
     marketPrice !== undefined &&
     Number.isFinite(marketPrice) &&
     marketPrice > 0;
+  const priceInput = register("strikePrice");
   const triggerPrice = useWatch({ control, name: "strikePrice" });
   const distance =
     marketPrice && Number(triggerPrice)
@@ -44,13 +47,13 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
         <div
           role="group"
           aria-label="Trigger input mode"
-          className="flex shrink-0 border border-border/60 p-0.5 normal-case tracking-normal"
+          className="flex shrink-0 border border-border/60 p-px normal-case tracking-normal"
         >
           {(["price", "percent"] as const).map((value) => (
             <button
               key={value}
               type="button"
-              disabled={disabled || (value === "percent" && !hasMarketPrice)}
+              disabled={disabled}
               aria-pressed={mode === value}
               onClick={() => {
                 if (value === mode) return;
@@ -70,7 +73,7 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
                   );
                 setMode(value);
               }}
-              className={`min-h-7 px-2 text-[11px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 ${mode === value ? "bg-accent text-foreground" : "text-muted-foreground hover:bg-accent/50"}`}
+              className={`min-h-0 px-1 py-0.5 text-[11px] leading-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 ${mode === value ? "bg-accent text-foreground" : "text-muted-foreground hover:bg-accent/50"}`}
             >
               {value === "price" ? "Price" : "% drop"}
             </button>
@@ -84,19 +87,14 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
             id="trigger-drop"
             aria-label="Price drop (%)"
             aria-invalid={percentInvalid}
-            aria-describedby={
-              percentInvalid
-                ? "trigger-drop-error"
-                : !hasMarketPrice
-                  ? "trigger-drop-help"
-                  : undefined
-            }
+            aria-describedby={percentInvalid ? "trigger-drop-error" : undefined}
             type="text"
             inputMode="decimal"
             disabled={disabled || !hasMarketPrice}
             value={percent}
             onChange={(event) => {
               const value = event.target.value;
+              if (!isDecimalInput(value)) return;
               setPercent(value);
               const validPercent =
                 /^(?:\d+(?:\.\d*)?|\.\d+)$/.test(value) &&
@@ -123,18 +121,23 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
               });
             }}
             placeholder="0.0"
-            className="h-11 w-full min-w-0 rounded-none border-none bg-transparent px-0 text-left text-[28px] font-semibold tracking-tight tabular-nums shadow-none focus-visible:ring-2 focus-visible:ring-ring sm:text-[32px]"
+            className="h-11 w-full min-w-0 rounded-none border-none bg-transparent px-0 text-left text-[28px] font-medium tracking-tight tabular-nums shadow-none placeholder:text-muted-foreground/80 focus-visible:ring-2 focus-visible:ring-ring sm:text-[28px]"
           />
         ) : (
           <Input
             key="price"
-            {...register("strikePrice")}
+            {...priceInput}
+            value={triggerPrice ?? ""}
+            onChange={(event) => {
+              if (isDecimalInput(event.target.value))
+                void priceInput.onChange(event);
+            }}
             id="trigger-price"
             type="text"
             inputMode="decimal"
             disabled={disabled}
             placeholder="0.0"
-            className="h-11 w-full min-w-0 rounded-none border-none bg-transparent px-0 text-left text-[28px] font-semibold tracking-tight tabular-nums shadow-none focus-visible:ring-2 focus-visible:ring-ring sm:text-[32px]"
+            className="h-11 w-full min-w-0 rounded-none border-none bg-transparent px-0 text-left text-[28px] font-medium tracking-tight tabular-nums shadow-none placeholder:text-muted-foreground/80 focus-visible:ring-2 focus-visible:ring-ring sm:text-[28px]"
           />
         )}
         <span
@@ -147,14 +150,14 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
               ? `${tokenBuy.symbol} per ${tokenSell.symbol}`
               : ""}
         </span>
-        <div className="rescue-market-price col-span-2 flex h-5 w-full min-w-0 items-center justify-between gap-2 text-[13px] text-muted-foreground empty:hidden">
+        <div className="rescue-market-price col-span-2 flex h-5 w-full min-w-0 items-center justify-between gap-2 text-[13px] text-muted-foreground">
           {tokenBuy && tokenSell && marketPrice && (
             <Button
               type="button"
               variant="link"
               disabled={disabled}
               className="rescue-secondary-control min-h-0 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-auto max-w-full justify-start p-0 text-left text-xs font-medium text-primary underline-offset-4 hover:underline"
-              aria-label={`Set trigger to current market price ${formatMarketPrice(marketPrice)} ${tokenBuy.symbol} per ${tokenSell.symbol}`}
+              aria-label={`Set trigger to current market price ${formatTokenAmount(marketPrice)} ${tokenBuy.symbol} per ${tokenSell.symbol}`}
               onClick={() => {
                 setMode("price");
                 setPercentInvalid(false);
@@ -166,7 +169,8 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
               }}
             >
               <span className="truncate">
-                Market: ${formatMarketPrice(marketPrice)}
+                Market: ≈ {formatTokenAmount(marketPrice)} {tokenBuy.symbol} per{" "}
+                {tokenSell.symbol}
               </span>
             </Button>
           )}
@@ -179,7 +183,8 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
                   title={`${triggerPrice} ${tokenBuy.symbol} per ${tokenSell.symbol}`}
                   aria-live="polite"
                 >
-                  Trigger: ${formatMarketPrice(Number(triggerPrice))}
+                  Trigger: ≈ {formatTokenAmount(triggerPrice)} {tokenBuy.symbol}{" "}
+                  per {tokenSell.symbol}
                 </span>
               )
             : distance !== undefined && (
@@ -193,11 +198,6 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
               )}
         </div>
       </div>
-      {mode === "percent" && !hasMarketPrice && (
-        <p id="trigger-drop-help" className="text-xs text-muted-foreground">
-          Percentage entry needs a current market price. Use Price to continue.
-        </p>
-      )}
       {mode === "percent" && percentInvalid && (
         <p
           id="trigger-drop-error"
@@ -208,11 +208,5 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
         </p>
       )}
     </section>
-  );
-}
-
-function formatMarketPrice(price: number) {
-  return new Intl.NumberFormat("en-US", { maximumSignificantDigits: 7 }).format(
-    price,
   );
 }

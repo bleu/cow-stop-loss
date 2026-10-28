@@ -13,7 +13,6 @@ import { formatUnits } from "viem";
 import { NetworkLogo } from "#/components/NetworkLogo";
 import { TokenLogo } from "#/components/TokenLogo";
 import { PixelIcon } from "#/components/ui/pixel-icon";
-import { ORDER_SIZE_LIMIT_LABEL } from "#/lib/orderSizeLimit";
 import type {
   ApprovalMode,
   FundingSnapshot,
@@ -22,6 +21,7 @@ import type {
 import type { ChainId } from "#/lib/publicClients";
 import { chainNames } from "#/lib/publicClients";
 import type { DraftOrder } from "#/lib/types";
+import { formatTokenAmount } from "#/utils/amountFormatting";
 
 import { BlockExplorerLink } from "./ExplorerLink";
 
@@ -114,11 +114,6 @@ export function ReviewOrderPanel({
         />
       </div>
 
-      <p className="text-xs text-muted-foreground">
-        The {ORDER_SIZE_LIMIT_LABEL} limit uses the current USD value of the
-        sell amount, not the trigger price.
-      </p>
-
       <section aria-label="Order terms" className="rescue-review-terms">
         <dl className="rescue-review-price-row">
           <div>
@@ -150,43 +145,45 @@ export function ReviewOrderPanel({
         </dl>
       </section>
 
-      <section
-        aria-label="Order destination"
-        className="rescue-review-destination"
-      >
-        <AddressLine
-          label={
-            prepared &&
-            order.receiver.toLowerCase() !== prepared.account.toLowerCase()
-              ? "Custom recipient"
-              : "Receive address"
-          }
-          address={order.receiver}
-          chainId={chainId}
-        />
-        {prepared && (
+      <div className="rescue-review-addresses">
+        <section
+          aria-label="Order destination"
+          className="rescue-review-destination"
+        >
           <AddressLine
-            label="Execution account"
-            address={prepared.owner}
+            label={
+              prepared &&
+              order.receiver.toLowerCase() !== prepared.account.toLowerCase()
+                ? "Custom recipient"
+                : "Receive address"
+            }
+            address={order.receiver}
             chainId={chainId}
           />
-        )}
-      </section>
+          {prepared && (
+            <AddressLine
+              label="Execution account"
+              address={prepared.owner}
+              chainId={chainId}
+            />
+          )}
+        </section>
 
-      <section aria-label="Price oracles" className="rescue-review-oracles">
-        <AddressLine
-          label={`${order.tokenSell.symbol} oracle (${order.maxHoursSinceOracleUpdates}h max age)`}
-          tooltip={`${order.tokenSell.symbol} price feed used to check the trigger price. The order cannot execute if the price update is more than ${order.maxHoursSinceOracleUpdates}h old.`}
-          address={order.tokenSellOracle}
-          chainId={chainId}
-        />
-        <AddressLine
-          label={`${order.tokenBuy.symbol} oracle (${order.maxHoursSinceOracleUpdates}h max age)`}
-          tooltip={`${order.tokenBuy.symbol} price feed used to check the trigger price. The order cannot execute if the price update is more than ${order.maxHoursSinceOracleUpdates}h old.`}
-          address={order.tokenBuyOracle}
-          chainId={chainId}
-        />
-      </section>
+        <section aria-label="Price oracles" className="rescue-review-oracles">
+          <AddressLine
+            label={`${order.tokenSell.symbol} oracle (${order.maxHoursSinceOracleUpdates}h max age)`}
+            tooltip={`${order.tokenSell.symbol} price feed used to check the trigger price. The order cannot execute if the price update is more than ${order.maxHoursSinceOracleUpdates}h old.`}
+            address={order.tokenSellOracle}
+            chainId={chainId}
+          />
+          <AddressLine
+            label={`${order.tokenBuy.symbol} oracle (${order.maxHoursSinceOracleUpdates}h max age)`}
+            tooltip={`${order.tokenBuy.symbol} price feed used to check the trigger price. The order cannot execute if the price update is more than ${order.maxHoursSinceOracleUpdates}h old.`}
+            address={order.tokenBuyOracle}
+            chainId={chainId}
+          />
+        </section>
+      </div>
 
       {funding?.combinedCommitmentsExceedBalance && (
         <p
@@ -199,18 +196,13 @@ export function ReviewOrderPanel({
       )}
       {needsApproval && (
         <fieldset disabled={actionsBlocked} className="rescue-review-approvals">
-          <legend>
-            Token approval{" "}
-            <span className="rescue-review-badge pixel-badge">
-              Approval needed
-            </span>
-          </legend>
+          <legend>Token approval</legend>
           <div className="rescue-review-choices">
             <ApprovalChoice
               checked={mode === "limited"}
               onChange={() => setMode("limited")}
               label="Limited"
-              description={`${compactAmount(formatUnits(funding!.requiredAllowance, order.tokenSell.decimals))} ${order.tokenSell.symbol}`}
+              description={`${formatTokenAmount(formatUnits(funding!.requiredAllowance, order.tokenSell.decimals), order.tokenSell.decimals)} ${order.tokenSell.symbol}`}
             />
             <ApprovalChoice
               checked={mode === "unlimited"}
@@ -253,32 +245,16 @@ export function ReviewOrderPanel({
   );
 }
 
-function compactAmount(value: string) {
-  const [whole, fraction = ""] = value.split(".");
-  const leadingZeros = fraction.search(/[1-9]/);
-  const decimalPlaces =
-    whole === "0"
-      ? Math.max(8, leadingZeros + 8)
-      : Math.max(0, 8 - whole.length);
-  if (fraction.length <= decimalPlaces) return value;
-  return `${whole}${decimalPlaces ? `.${fraction.slice(0, decimalPlaces)}` : ""}…`;
-}
-
-function compactPrice(value: string) {
-  const [whole, fraction = ""] = value.split(".");
-  const decimalPlaces = Math.max(0, fraction.search(/[1-9]/)) + 4;
-  if (fraction.length <= decimalPlaces) return value;
-  return `${whole}.${fraction.slice(0, decimalPlaces)}…`;
-}
-
 function PreciseAmount({
   value,
   symbol,
   kind = "amount",
+  decimals,
 }: {
   value: string;
   symbol: string;
   kind?: "amount" | "price";
+  decimals?: number;
 }) {
   const label = kind === "price" ? "trigger price" : "amount";
   return (
@@ -290,9 +266,7 @@ function PreciseAmount({
           aria-label={`Show exact ${label}: ${value} ${symbol}`}
           className="rescue-review-inline-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rescue-review-number max-w-full rounded-none text-left underline decoration-dotted decoration-muted-foreground/50 underline-offset-4"
         >
-          <span>
-            {kind === "price" ? compactPrice(value) : compactAmount(value)}
-          </span>
+          <span>{formatTokenAmount(value, decimals)}</span>
           {kind === "amount" && (
             <>
               {" "}
@@ -344,7 +318,11 @@ function AmountSummary({
           height={24}
           className="size-6 shrink-0 rounded-full"
         />
-        <PreciseAmount value={amount} symbol={token.symbol} />
+        <PreciseAmount
+          value={amount}
+          symbol={token.symbol}
+          decimals={token.decimals}
+        />
         <BlockExplorerLink
           type="token"
           identifier={token.address}

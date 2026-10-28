@@ -1,16 +1,21 @@
-import { Button, formatNumber, Input } from "@bleu/ui";
+import { Button, Input } from "@bleu/ui";
 import { memo, useEffect } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
-import { PixelIcon } from "#/components/ui/pixel-icon";
+import { TokenLogo } from "#/components/TokenLogo";
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { useWalletTokenValues } from "#/hooks/useWalletTokenValues";
 import { ChainId } from "#/lib/publicClients";
 import { SwapData } from "#/lib/types";
+import {
+  formatFiatAmount,
+  formatInputAmount,
+  formatTokenAmount,
+} from "#/utils/amountFormatting";
+import { isDecimalInput } from "#/utils/inputs";
 
-import { TokenInfo } from "./TokenInfo";
 import { TokenSelect } from "./TokenSelect";
 
 function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
@@ -26,10 +31,12 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   const tokenFieldName = `token${side}` as const;
   const amountFieldName = `amount${side}` as const;
 
-  const [token, amount] = useWatch({
+  const amountInput = register(amountFieldName);
+  const [token, amount, tokenSell] = useWatch({
     control,
-    name: [tokenFieldName, amountFieldName],
+    name: [tokenFieldName, amountFieldName, "tokenSell"],
   });
+  const receiveAmount = token && tokenSell ? amount : "";
   const { data, error, isLoading, mutate } = useWalletTokenValues(
     chainId,
     walletAddress,
@@ -63,56 +70,99 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
     <div className="rescue-token-group" data-side={side.toLowerCase()}>
       <section
         className={
-          "rescue-token-card pixel-inset w-full rounded-none border border-border/80 bg-muted/35 p-3 transition-colors focus-within:border-primary/70"
+          side === "Buy"
+            ? "rescue-receive-summary flex w-full items-center gap-2 border-t border-border/60 px-1 pt-2"
+            : "rescue-token-card pixel-inset w-full rounded-none border border-border/80 bg-muted/35 p-3 transition-colors focus-within:border-primary/70"
         }
       >
-        <div className="rescue-token-heading mb-1 flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+        <div
+          className={
+            side === "Buy"
+              ? "contents"
+              : "rescue-token-heading mb-1 flex flex-wrap items-center justify-between gap-x-3 gap-y-1"
+          }
+        >
           <label
             htmlFor={`amount-${side.toLowerCase()}`}
-            className={`font-semibold uppercase text-muted-foreground ${side === "Buy" ? "whitespace-nowrap text-[12px] tracking-[0.08em] sm:text-[13px] sm:tracking-[0.12em]" : "text-[13px] tracking-[0.12em]"}`}
+            className={`font-semibold uppercase text-muted-foreground ${side === "Buy" ? "shrink-0 whitespace-nowrap text-[11px] tracking-[0.04em] sm:text-xs" : "text-[13px] tracking-[0.12em]"}`}
           >
             {getCardTitle(side)}
           </label>
         </div>
-        <div className="rescue-token-amount flex min-w-0 items-center justify-between gap-3">
+        <div
+          className={
+            side === "Buy"
+              ? "flex min-w-0 flex-1 items-center justify-between gap-2"
+              : "rescue-token-amount flex min-w-0 items-center justify-between gap-3"
+          }
+        >
           <div className="min-w-0 flex-1">
-            <div className="rescue-token-value mt-0.5 flex min-w-0 items-center gap-2">
-              <Input
-                id={`amount-${side.toLowerCase()}`}
-                {...register(amountFieldName)}
-                type="text"
-                inputMode="decimal"
-                aria-label={getCardTitle(side)}
-                placeholder="0.0"
-                className="h-11 min-w-0 flex-1 rounded-none border-none bg-transparent px-0 text-left text-[28px] font-medium tracking-tight tabular-nums shadow-none placeholder:text-muted-foreground/80 focus-visible:ring-2 focus-visible:ring-ring sm:text-[28px]"
-                disabled={isAmountDisabled}
-              />
-              {amount && Number(amount) > 0 && usdPrice && (
+            <div
+              className={
+                side === "Buy"
+                  ? "flex min-w-0 items-center gap-2"
+                  : "rescue-token-value mt-0.5 flex min-w-0 items-center gap-2"
+              }
+            >
+              {side === "Buy" ? (
+                <output
+                  id="amount-buy"
+                  aria-label="Receive at least"
+                  title={receiveAmount}
+                  className="min-w-0 cursor-default truncate py-0 text-[18px] font-medium tracking-tight text-muted-foreground opacity-50 tabular-nums"
+                >
+                  {receiveAmount
+                    ? `≈ ${formatTokenAmount(receiveAmount, token?.decimals)}`
+                    : "0.0"}
+                </output>
+              ) : (
+                <Input
+                  id={`amount-${side.toLowerCase()}`}
+                  {...amountInput}
+                  value={
+                    isAmountDisabled
+                      ? formatInputAmount(amount ?? "", token?.decimals)
+                      : (amount ?? "")
+                  }
+                  title={isAmountDisabled ? amount : undefined}
+                  onChange={(event) => {
+                    if (isDecimalInput(event.target.value))
+                      void amountInput.onChange(event);
+                  }}
+                  type="text"
+                  inputMode="decimal"
+                  aria-label={getCardTitle(side)}
+                  placeholder="0.0"
+                  className="h-11 min-w-0 flex-1 rounded-none border-none bg-transparent px-0 text-left text-[28px] font-medium tracking-tight tabular-nums shadow-none placeholder:text-muted-foreground/80 focus-visible:ring-2 focus-visible:ring-ring sm:text-[28px]"
+                  disabled={isAmountDisabled}
+                />
+              )}
+              {side === "Sell" && amount && Number(amount) > 0 && usdPrice && (
                 <span className="shrink-0 text-[13px] text-muted-foreground tabular-nums sm:text-sm">
-                  ≈{" "}
-                  {formatNumber(
-                    usdPrice ? Number(amount) * usdPrice : 0,
-                    2,
-                    "currency",
-                    "standard",
-                  )}
+                  ≈ ${formatFiatAmount(Number(amount) * usdPrice)}
                 </span>
               )}
             </div>
           </div>
-          <div className="w-32 shrink-0 sm:w-40">
+          <div
+            className={side === "Buy" ? "shrink-0" : "w-32 shrink-0 sm:w-40"}
+          >
             {side === "Buy" ? (
               token && (
-                <div
-                  aria-disabled="true"
-                  className="pixel-inset flex h-11 w-full min-w-0 items-center justify-between gap-2 rounded-none border border-border/70 bg-muted/50 px-3 text-muted-foreground"
+                <span
+                  title={token.symbol}
+                  className="flex h-8 items-center gap-2 whitespace-nowrap text-sm text-muted-foreground"
                 >
-                  <TokenInfo token={token} showExplorerLink={false} />
-                  <PixelIcon
-                    name="chevron-down"
-                    className="size-4 shrink-0 opacity-45"
+                  <TokenLogo
+                    tokenAddress={token.address}
+                    chainId={chainId}
+                    alt={`${token.symbol} token`}
+                    width={22}
+                    height={22}
+                    className="rounded-full"
                   />
-                </div>
+                  <span>{token.symbol}</span>
+                </span>
               )
             ) : (
               <TokenSelect
@@ -128,7 +178,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
           </div>
         </div>
         {side === "Sell" && (
-          <div className="rescue-token-balance mt-1 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+          <div className="rescue-token-balance mt-1 flex min-h-5 flex-wrap items-center gap-2 text-xs text-muted-foreground">
             {token && (
               <>
                 <span className="whitespace-nowrap">
@@ -136,7 +186,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                     ? "Connect wallet to view balance"
                     : balanceError
                       ? "Balance unavailable"
-                      : `Balance: ${tokenBalance === undefined ? "Loading…" : formatNumber(tokenBalance, 4, "decimal", "standard", 0.0001).replace(/(\.\d*?[1-9])0+$|\.0+$/, "$1")}`}
+                      : `Balance: ${tokenBalance === undefined ? "Loading…" : formatTokenAmount(tokenBalance, token.decimals)}`}
                 </span>
                 {balanceError && (
                   <Button

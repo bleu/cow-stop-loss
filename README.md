@@ -8,7 +8,11 @@ Orders for the connected account and its CowShed proxies appear in one list acro
 
 All nine mainnets support new stop-loss orders with small sell allowlists: Ethereum WETH, LINK, and UNI; Gnosis GNO; Arbitrum WETH; Base VIRTUAL; Polygon WPOL; Avalanche WAVAX; BNB Chain WBNB; Linea WETH; and Plasma WXPL. Gnosis and BNB Chain buy USDT; the other mainnets buy native USDC. Sepolia offers WETH into the existing USDC test token with fixed test feeds. Existing orders support approval repair and cancellation when their ownership and state permit it. See [Supported networks](docs/supported-networks.md) and [Token catalog](docs/token-catalog.md) for the exact allowlist, feed checks, and accepted oracle limits.
 
-Approved routes use an exact sell amount, trigger price, slippage, and one fixed USD buy token per chain. Dollar-pegged and dollar-linked tokens are excluded from sells. Arbitrary token imports, manual feed overrides, and exact-buy mode are not supported.
+Approved routes use an exact sell amount, trigger price, limit price, and one fixed USD buy token per chain. Dollar-pegged and dollar-linked tokens are excluded from sells. Arbitrary token imports, manual feed overrides, and exact-buy mode are not supported.
+
+The Limit price field starts in Price view with Default slippage fixed at 10%. Edit the price or switch to Slippage and edit the percentage to select Custom. Switching views does not change the order. `Reset to default` restores 10% and keeps the selected view. Receive at least shows the minimum buy amount. Expiry remains in Advanced settings.
+
+The former quote-based slippage recommendation algorithm and pair-recommendation helper are disabled for order creation, but their code and tests are retained. Execution quotes still load for execution checks and warnings; they do not change Default slippage.
 
 ## Local setup
 

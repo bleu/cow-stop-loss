@@ -4,6 +4,12 @@ The standalone app provides wallet selection and historical order access for Eth
 
 Connection and browsing do not switch the wallet chain. Only an explicit network selection requests a switch. Order creation uses exact-sell amounts, a trigger price, slippage, and one fixed USD buy token per chain. Gnosis and BNB Chain use USDT; the other mainnets use native USDC. Sepolia offers only WETH into the existing 18-decimal USDC test token, with fixed test feeds. See [Token catalog](token-catalog.md) for token eligibility and oracle limits.
 
+## Limit price and slippage
+
+On every supported network, Default slippage is fixed at 10%. The Limit price field starts in Price view. Edit the price or percentage to select Custom; switching between Price and Slippage does not change the order. `Reset to default` restores 10% without changing the selected view. With a trigger price of 95 and a sell amount of 10, Default gives a limit price of 85.5 and a minimum buy amount of 855, subject to buy-token rounding.
+
+The former quote-based slippage recommendation algorithm and pair-recommendation helper are disabled for order creation. Their code and tests remain for later use. Execution quotes still load for execution checks and warnings, but do not set slippage. Default 10% is not a cap on Custom slippage.
+
 ## RPC configuration
 
 Set `NEXT_PUBLIC_DRPC_KEY` in `.env.local` or the build environment to use one dRPC key for all ten chains, including Sepolia. Each chain uses its own network endpoint at `https://lb.drpc.live/<network>/<key>`. Wagmi and read clients share these RPC settings. The old per-chain RPC URL settings are no longer read.

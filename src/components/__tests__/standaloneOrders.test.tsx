@@ -25,14 +25,19 @@ import type { NextRouter } from "next/router";
 import React from "react";
 import { hydrateRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
+import { SWRConfig } from "swr";
 import { disconnect } from "wagmi/actions";
 
 import OrderRoute from "#/app/[chainId]/[safeAddress]/[orderId]/page";
 import LegacyListPage from "#/app/[chainId]/[safeAddress]/page";
 import HomePage from "#/app/app/page";
+import { OracleTokenPrice } from "#/components/OracleTokenPrice";
 import { RootLayout as AppRootLayout } from "#/components/RootLayout";
+import { TokenAmount } from "#/components/TokenAmount";
 import { useOrderList } from "#/hooks/useOrderList";
+import * as oraclePrice from "#/lib/oraclePrice";
 import { publicClientsFromIds, supportedChainIds } from "#/lib/publicClients";
+import { getSupportedTokens } from "#/lib/supportedTokens";
 import { createWagmiConfig } from "#/utils/wagmi";
 
 let config: ReturnType<typeof createWagmiConfig>;
@@ -238,7 +243,7 @@ test("reviews one sell order before asking the wallet to cancel", async () => {
   expect(within(dialog).getByText("Remaining sell")).toBeInTheDocument();
   expect(within(dialog).getByText("1 WETH")).toBeInTheDocument();
   expect(within(dialog).getByText("Minimum buy")).toBeInTheDocument();
-  expect(within(dialog).getByText("2000 USDC")).toBeInTheDocument();
+  expect(within(dialog).getByText("2,000 USDC")).toBeInTheDocument();
   expect(
     within(dialog).getByRole("button", { name: "Confirm cancellation" }),
   ).toBeInTheDocument();
@@ -419,7 +424,7 @@ test("reviews the remaining amounts when cancelling a partially filled order fro
   expect(within(dialog).getByText("Remaining sell")).toBeInTheDocument();
   expect(within(dialog).getByText("0.6 WETH")).toBeInTheDocument();
   expect(within(dialog).getByText("Minimum buy")).toBeInTheDocument();
-  expect(within(dialog).getByText("1200 USDC")).toBeInTheDocument();
+  expect(within(dialog).getByText("1,200 USDC")).toBeInTheDocument();
   expect(within(dialog).getByText("Trigger price")).toBeInTheDocument();
   expect(within(dialog).getByText("2,100 USDC per WETH")).toBeInTheDocument();
   expect(within(dialog).getByText("Expires")).toBeInTheDocument();
@@ -1087,7 +1092,7 @@ describe.each(["dark", "light"] as const)(
   "public testing notice in %s mode",
   (theme) => {
     test.each(["/", "/app", `/1/${wallet}`, `/1/${wallet}/stop-loss-1`])(
-      "opens the header warning on %s and keeps the issue link clickable",
+      "shows a permanent notice above the header on %s",
       async (initialPath) => {
         const user = userEvent.setup();
         renderView(
@@ -1099,130 +1104,46 @@ describe.each(["dark", "light"] as const)(
         );
 
         try {
-          const warning = within(screen.getByRole("banner")).getByRole(
-            "button",
-            { name: "Public testing warning" },
+          const notice = screen.getByRole("note", { name: "Public testing" });
+          expect(notice).toBeVisible();
+          expect(notice).toHaveTextContent(
+            "All trades are executed through CoW Protocol. CoW Air Rescue is experimental software provided ‘as is’, without warranty. Execution is not guaranteed, and we cannot cover any losses. Trades are currently capped at $10k. Report issues on GitHub.",
           );
-          expect(warning).toBeVisible();
-          expect(warning.textContent).toBe("");
-          expect(warning.querySelector("svg")).toHaveAttribute(
-            "aria-hidden",
-            "true",
-          );
-          expect(screen.queryByRole("note")).not.toBeInTheDocument();
+          expect(notice).toHaveClass("bg-yellow-300", "text-yellow-950");
           expect(
-            screen.queryByRole("dialog", { name: "Public testing" }),
+            notice.compareDocumentPosition(screen.getByRole("banner")) &
+              Node.DOCUMENT_POSITION_FOLLOWING,
+          ).toBeTruthy();
+          expect(
+            screen.queryByRole("button", { name: "Public testing warning" }),
           ).not.toBeInTheDocument();
 
-          await user.click(warning);
-          const dialog = await screen.findByRole("dialog", {
-            name: "Public testing",
-          });
-          expect(dialog).toBeVisible();
-          const notice = within(dialog).getByRole("note");
-          expect(notice).toHaveTextContent(
-            "Public testing. Funds are at risk. $10,000 max per order. Report problems on GitHub issues.",
-          );
           const issues = within(notice).getByRole("link", {
-            name: "GitHub issues",
+            name: "GitHub",
           });
           expect(issues).toHaveAttribute(
             "href",
-            "https://github.com/bleu/cow-stop-loss/issues/new",
+            "https://github.com/bleu/cow-stop-loss/issues/new?template=problem-report.yml",
           );
           expect(issues).toHaveAttribute("target", "_blank");
           expect(issues.getAttribute("rel")?.split(/\s+/)).toEqual(
             expect.arrayContaining(["noreferrer", "noopener"]),
           );
+          act(() => issues.focus());
+          expect(issues).toHaveFocus();
           const pathname = window.location.pathname;
           await user.click(issues);
-          expect(dialog).toBeVisible();
           expect(window.location.pathname).toBe(pathname);
 
           await user.keyboard("{Escape}");
-          await waitFor(() =>
-            expect(
-              screen.queryByRole("dialog", { name: "Public testing" }),
-            ).not.toBeInTheDocument(),
-          );
-          expect(screen.queryByRole("note")).not.toBeInTheDocument();
-
+          await user.click(screen.getByRole("main"));
+          expect(notice).toBeVisible();
           await user.click(
             screen.getByRole("button", {
               name: `Switch to ${theme === "dark" ? "light" : "dark"} mode`,
             }),
           );
-          await user.click(warning);
-          expect(
-            await screen.findByRole("dialog", { name: "Public testing" }),
-          ).toHaveTextContent("Public testing. Funds are at risk.");
-          await user.click(screen.getByRole("main"));
-          await waitFor(() =>
-            expect(
-              screen.queryByRole("dialog", { name: "Public testing" }),
-            ).not.toBeInTheDocument(),
-          );
-        } finally {
-          document.documentElement.classList.remove("light");
-        }
-      },
-    );
-
-    test.each([
-      { initialPath: "/", interaction: "focus" },
-      { initialPath: "/", interaction: "hover" },
-      { initialPath: "/", interaction: "tap" },
-      { initialPath: "/app", interaction: "focus" },
-      { initialPath: "/app", interaction: "hover" },
-      { initialPath: "/app", interaction: "tap" },
-    ])(
-      "opens on $interaction on $initialPath",
-      async ({ initialPath, interaction }) => {
-        const user = userEvent.setup();
-        renderView(
-          <Router initialPath={initialPath}>
-            <AppRootLayout config={config} initialTheme={theme}>
-              <main>Page content</main>
-            </AppRootLayout>
-          </Router>,
-        );
-
-        try {
-          const warning = within(screen.getByRole("banner")).getByRole(
-            "button",
-            {
-              name: "Public testing warning",
-            },
-          );
-          expect(
-            screen.queryByRole("dialog", { name: "Public testing" }),
-          ).not.toBeInTheDocument();
-          if (interaction === "focus") {
-            act(() => warning.focus());
-            expect(warning).toHaveFocus();
-          } else if (interaction === "hover") {
-            await user.hover(warning);
-          } else {
-            await user.pointer({ target: warning, keys: "[TouchA]" });
-          }
-          const dialog = await screen.findByRole("dialog", {
-            name: "Public testing",
-          });
-          expect(within(dialog).getByRole("note")).toBeVisible();
-          if (interaction === "focus") {
-            await user.tab();
-            expect(
-              within(dialog).getByRole("link", { name: "GitHub issues" }),
-            ).toHaveFocus();
-            await user.tab({ shift: true });
-            expect(warning).toHaveFocus();
-          }
-          await user.keyboard("{Escape}");
-          await waitFor(() =>
-            expect(
-              screen.queryByRole("dialog", { name: "Public testing" }),
-            ).not.toBeInTheDocument(),
-          );
+          expect(notice).toBeVisible();
         } finally {
           document.documentElement.classList.remove("light");
         }
@@ -1319,6 +1240,76 @@ test("keeps the footer FAQ and header theme controls on trading and legacy route
   ).not.toBeInTheDocument();
 });
 
+test("keeps header controls compact below desktop with accessible wallet actions", async () => {
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: new BrowserWallet(),
+  });
+  render(
+    <RootLayout>
+      <main>Trading page</main>
+    </RootLayout>,
+  );
+
+  const header = screen.getByRole("banner");
+  expect(header).toHaveClass("flex-nowrap");
+  const brand = within(header).getByRole("link", { name: "CoW Air Rescue" });
+  expect(brand).toHaveAttribute("href", "/");
+  expect(within(brand).getByText("CoW Air Rescue").parentElement).toHaveClass(
+    "hidden",
+    "sm:block",
+  );
+  expect(within(brand).getByText("Your exit plan. On your terms.")).toHaveClass(
+    "hidden",
+    "lg:block",
+  );
+  expect(brand.querySelector("img")).toBeInTheDocument();
+  const theme = within(header).getByRole("button", {
+    name: "Switch to light mode",
+  });
+  expect(theme.parentElement).toHaveClass("flex-nowrap");
+  expect(theme).toHaveClass("size-11");
+  const connect = await within(header).findByRole("button", {
+    name: "Connect wallet",
+  });
+  expect(within(connect).getByText("Connect", { exact: true })).toHaveClass(
+    "sm:hidden",
+  );
+  expect(within(connect).getByText("Connect wallet")).toHaveClass(
+    "hidden",
+    "sm:inline",
+  );
+
+  await connectBrowserWallet();
+  const network = within(header).getByRole("button", {
+    name: "Switch wallet network",
+  });
+  const account = within(header).getByRole("button", {
+    name: /^Wallet account /,
+  });
+  expect(network).toHaveAttribute("title", "Ethereum");
+  expect(account).toHaveAttribute("title", wallet);
+  expect(within(network).getByText("Ethereum")).toHaveClass(
+    "hidden",
+    "lg:inline",
+  );
+  for (const button of [network, account]) {
+    expect(button).toHaveClass("size-11", "px-0", "lg:w-auto", "lg:px-4");
+    expect(button.querySelector(":scope > span")).toHaveClass(
+      "hidden",
+      "lg:inline",
+    );
+    expect(
+      button.querySelector('[data-pixel-icon="chevron-down"]'),
+    ).toHaveClass("hidden", "lg:block");
+    expect(button).toBeEnabled();
+  }
+  fireEvent.click(account);
+  expect(
+    await screen.findByRole("button", { name: /Disconnect/ }),
+  ).toBeEnabled();
+});
+
 test("hydrates the wallet header before showing browser-discovered wallets", async () => {
   const container = document.createElement("div");
   document.body.appendChild(container);
@@ -1330,6 +1321,15 @@ test("hydrates the wallet header before showing browser-discovered wallets", asy
     </Router>
   );
   container.innerHTML = renderToString(view(config));
+  const loading = within(container).getByRole("button", {
+    name: "Loading wallet",
+  });
+  expect(loading).toBeDisabled();
+  expect(loading).toHaveClass("size-11", "px-0", "lg:w-auto", "lg:px-4");
+  expect(within(loading).getByText("Loading wallet…")).toHaveClass(
+    "hidden",
+    "lg:inline",
+  );
 
   const provider = new BrowserWallet();
   provider.accounts = [];
@@ -1435,7 +1435,7 @@ test("keeps the order builder and orders panel in normal flow on mobile", async 
     name: "Create stop-loss order",
   });
   const ordersPanel = screen.getByRole("region", {
-    name: "Your stop-loss orders",
+    name: "Portolio · Your orders",
   });
   expect(formPanel).toContainElement(
     screen.getByRole("textbox", { name: "Sell amount" }),
@@ -1519,7 +1519,7 @@ test("keeps the legacy list route scoped to the connected account", async () => 
     `/1/${wallet}/stop-loss-1`,
   );
   expect(
-    screen.getByRole("heading", { name: "Your stop-loss orders" }),
+    screen.getByRole("heading", { name: "Portolio · Your orders" }),
   ).toBeInTheDocument();
   expect(
     screen.getByRole("button", {
@@ -1831,7 +1831,7 @@ test("keeps successful chains visible and retries a failed chain", async () => {
     }),
   ).toBeInTheDocument();
   const ordersPanel = screen.getByRole("region", {
-    name: "Your stop-loss orders",
+    name: "Portolio · Your orders",
   });
   const warning = within(ordersPanel).getByRole("button", {
     name: "Order availability warnings",
@@ -1901,7 +1901,7 @@ test("does not show an API outage as an empty order list", async () => {
   await connectBrowserWallet();
 
   const ordersPanel = screen.getByRole("region", {
-    name: "Your stop-loss orders",
+    name: "Portolio · Your orders",
   });
   const warning = await within(ordersPanel).findByRole("button", {
     name: "Order availability warnings",
@@ -2401,7 +2401,7 @@ test.each(["0", "1000000000000000000"])(
       ["Created", "1970-01-01 00:00:00 UTC"],
       ["Valid until", "1970-01-01 00:00:00 UTC"],
       ["Partial fills", "All or nothing"],
-      ["Sell amount", "1.234567890123456789 WETH"],
+      ["Sell amount", "1.2346 WETH"],
       ["Minimum buy amount", "0 USDC"],
       ["Trigger price", "0 USDC per WETH"],
       ["Limit price", "0 USDC per WETH"],
@@ -2416,6 +2416,11 @@ test.each(["0", "1000000000000000000"])(
         value,
       );
     }
+    expect(
+      within(
+        screen.getByRole("definition", { name: "Sell amount" }),
+      ).getByTitle("1.234567890123456789 WETH"),
+    ).toBeVisible();
     expect(
       screen.getByRole("definition", { name: "Limit price" }).parentElement
         ?.parentElement,
@@ -2519,13 +2524,13 @@ test("shows owned order details, prices and partial execution and allows cancell
   ).toHaveTextContent("1 WETH");
   expect(
     screen.getByRole("definition", { name: "Minimum buy amount" }),
-  ).toHaveTextContent("2000 USDC");
+  ).toHaveTextContent("2,000 USDC");
   expect(
     screen.getByRole("definition", { name: "Trigger price" }),
-  ).toHaveTextContent("2100 USDC per WETH");
+  ).toHaveTextContent("2,100 USDC per WETH");
   expect(
     screen.getByRole("definition", { name: "Limit price" }),
-  ).toHaveTextContent("2000 USDC per WETH");
+  ).toHaveTextContent("2,000 USDC per WETH");
   expect(
     screen.queryByRole("definition", { name: "Execution price" }),
   ).not.toBeInTheDocument();
@@ -2697,7 +2702,7 @@ test("omits executed fee and execution price from filled order details", async (
   ).toHaveTextContent("1 WETH");
   expect(
     screen.getByRole("definition", { name: "Executed buy amount" }),
-  ).toHaveTextContent("2100 USDC");
+  ).toHaveTextContent("2,100 USDC");
   for (const label of ["Executed fee", "Execution price"]) {
     expect(
       screen.queryByRole("definition", { name: label }),
@@ -2960,3 +2965,40 @@ test("connects and disconnects a browser wallet without a chain switch", async (
     screen.queryByRole("button", { name: "Browser wallet" }),
   ).not.toBeInTheDocument();
 });
+
+test.each<[number, string]>([
+  [2634.1, "2,634.1"],
+  [1.235, "1.24"],
+  [0.004, "< 0.01"],
+])(
+  "formats the oracle USD price %s and keeps its full value on hover",
+  async (value, display) => {
+    jest.spyOn(oraclePrice, "fetchOracleUsdPrice").mockResolvedValue(value);
+    renderView(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <OracleTokenPrice chainId={1} oracle={wallet} tokenSymbol="WETH" />
+      </SWRConfig>,
+    );
+    expect(
+      await screen.findByText(`Current price: $${display} per WETH`),
+    ).toHaveAttribute("title", `$${value} per WETH`);
+  },
+);
+
+test.each(["1.23455", 1.23455])(
+  "formats the token amount %s half-up and keeps its full value on hover",
+  (balance) => {
+    renderView(
+      <TokenAmount
+        token={getSupportedTokens(1).buyToken.token}
+        balance={balance}
+        usdPrice={1}
+      />,
+    );
+    expect(screen.getByText("1.2346 USDC")).toHaveAttribute(
+      "title",
+      "1.23455 USDC",
+    );
+    expect(screen.getByText("≈ $1.23")).toHaveAttribute("title", "$1.23455");
+  },
+);

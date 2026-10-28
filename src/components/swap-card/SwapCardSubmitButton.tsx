@@ -32,17 +32,26 @@ export function SwapCardSubmitButton({
     (state) => state.tokenSellBalance,
   );
 
-  const [tokenBuy, tokenSell, sellAmount, strikePrice, slippagePercent] =
-    useWatch({
-      control,
-      name: [
-        "tokenBuy",
-        "tokenSell",
-        "amountSell",
-        "strikePrice",
-        "slippagePercent",
-      ],
-    });
+  const [
+    tokenBuy,
+    tokenSell,
+    sellAmount,
+    strikePrice,
+    slippagePercent,
+    limitPriceSource,
+    limitPrice,
+  ] = useWatch({
+    control,
+    name: [
+      "tokenBuy",
+      "tokenSell",
+      "amountSell",
+      "strikePrice",
+      "slippagePercent",
+      "limitPriceSource",
+      "limitPrice",
+    ],
+  });
 
   const { data: marketPrice } = useTokenPairPrice(tokenSell, tokenBuy);
 
@@ -73,6 +82,8 @@ export function SwapCardSubmitButton({
         amount: sellAmount,
         strikePrice,
         slippagePercent,
+        limitPriceSource,
+        limitPrice,
         sellDecimals: tokenSell.decimals,
         buyDecimals: tokenBuy.decimals,
       }).amountSell;
@@ -141,6 +152,8 @@ export function SwapCardSubmitButton({
     errors,
     orderSizeLimit,
     slippagePercent,
+    limitPriceSource,
+    limitPrice,
     marketPrice,
     sellAmount,
     strikePrice,

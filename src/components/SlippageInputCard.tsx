@@ -1,7 +1,8 @@
 import { Input } from "@bleu/ui";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
+import { isDecimalInput } from "#/utils/inputs";
 
 import { InfoTooltip } from "./ui/tooltip";
 
@@ -14,8 +15,11 @@ export function SlippageInputCard({
 }) {
   const {
     register,
+    control,
     formState: { errors },
   } = useFormContext<{ slippagePercent: string }>();
+  const slippageInput = register("slippagePercent");
+  const slippagePercent = useWatch({ control, name: "slippagePercent" });
 
   return (
     <div className="rescue-input-inline min-w-0">
@@ -29,19 +33,21 @@ export function SlippageInputCard({
         {onAutoSlippageChange && (
           <button
             type="button"
-            aria-label="Auto slippage"
+            aria-label="Default slippage"
             aria-pressed={autoSlippage}
             onClick={() => onAutoSlippageChange(!autoSlippage)}
             className="pixel-control min-h-11 px-3 text-sm aria-pressed:text-primary"
           >
-            Auto
+            Default
           </button>
         )}
         <Input
-          {...register("slippagePercent")}
+          {...slippageInput}
+          value={slippagePercent ?? ""}
           onChange={(event) => {
+            if (!isDecimalInput(event.target.value)) return;
             onAutoSlippageChange?.(false);
-            void register("slippagePercent").onChange(event);
+            void slippageInput.onChange(event);
           }}
           id="slippage-percent"
           type="text"

@@ -1,5 +1,7 @@
 import { parseUnits } from "viem";
 
+export const DEFAULT_SLIPPAGE_PERCENT = "10";
+
 interface SlippageInput {
   slippageBps?: number;
   quote?: {
@@ -11,6 +13,7 @@ interface SlippageInput {
   };
 }
 
+// Disabled for order creation, which uses DEFAULT_SLIPPAGE_PERCENT.
 export function estimateOrderSlippage({ slippageBps, quote }: SlippageInput) {
   const usedFallback =
     !slippageBps || !Number.isFinite(slippageBps) || slippageBps < 0;

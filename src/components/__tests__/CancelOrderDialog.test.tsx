@@ -102,6 +102,31 @@ async function openReview() {
   );
   return screen.findByRole("dialog");
 }
+test("rounds review amounts half-up and keeps exact amounts and sub-base-unit rates on hover", async () => {
+  const reviewedOrder = {
+    ...order,
+    sellAmount: BigInt("1234550000000000000"),
+    buyAmount: BigInt("2000123450"),
+    strike: BigInt("123456789"),
+  };
+  render(<CancelOrderDialog order={reviewedOrder} />);
+  fireEvent.click(
+    screen.getByRole("button", { name: "Cancel order order-1 on Ethereum" }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  expect(within(dialog).getByText("1.2346 WETH")).toHaveAttribute(
+    "title",
+    "1.23455 WETH",
+  );
+  expect(within(dialog).getByText("2,000.1235 USDC")).toHaveAttribute(
+    "title",
+    "2000.12345 USDC",
+  );
+  expect(
+    within(dialog).getByText("0.000000000123456789 USDC per WETH"),
+  ).toHaveAttribute("title", "0.000000000123456789 USDC per WETH");
+});
+
 test("keeps the card stable while signing and pending, then closes with an order link toast", async () => {
   let sign!: (hash: string) => void;
   let mined!: (confirmed: boolean) => void;

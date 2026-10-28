@@ -20,6 +20,7 @@ import {
   buildOrderCowExplorerUrl,
   truncateAddress,
 } from "#/utils";
+import { formatTokenAmount } from "#/utils/amountFormatting";
 
 import { CancelOrderDialog } from "./CancelOrderDialog";
 import { BlockExplorerLink } from "./ExplorerLink";
@@ -212,10 +213,16 @@ function TokenAmount({
             height={36}
             width={36}
           />
-          <p className="min-w-0 break-words text-xl font-medium leading-tight tracking-tight tabular-nums sm:text-2xl">
+          <p
+            title={amount(value, token)}
+            className="min-w-0 break-words text-xl font-medium leading-tight tracking-tight tabular-nums sm:text-2xl"
+          >
             {token.decimals === null
               ? `${value} base units`
-              : formatUnits(value, token.decimals)}{" "}
+              : formatTokenAmount(
+                  formatUnits(value, token.decimals),
+                  token.decimals,
+                )}{" "}
             <span className="text-base text-muted-foreground">
               {token.symbol}
             </span>
@@ -259,6 +266,26 @@ function OrderDetailsHeading({ children }: React.PropsWithChildren) {
 
 function amount(value: bigint, token: OrderToken) {
   return `${token.decimals === null ? `${value} base units` : formatUnits(value, token.decimals)} ${token.symbol}`;
+}
+
+function ExecutedAmount({
+  value,
+  token,
+}: {
+  value: bigint;
+  token: OrderToken;
+}) {
+  return (
+    <span title={amount(value, token)}>
+      {token.decimals === null
+        ? `${value} base units`
+        : formatTokenAmount(
+            formatUnits(value, token.decimals),
+            token.decimals,
+          )}{" "}
+      {token.symbol}
+    </span>
+  );
 }
 
 function date(timestamp: number) {
@@ -562,9 +589,10 @@ export function OrderDetails({
             </dt>
             <dd
               aria-label="Trigger price"
+              title={price(formatUnits(order.strike, 18))}
               className="mt-2 text-lg font-semibold tabular-nums sm:text-xl"
             >
-              {price(formatUnits(order.strike, 18))}
+              {price(formatTokenAmount(formatUnits(order.strike, 18)))}
             </dd>
           </dl>
           {order.limitPrice !== undefined && (
@@ -574,9 +602,10 @@ export function OrderDetails({
               </dt>
               <dd
                 aria-label="Limit price"
+                title={price(order.limitPrice)}
                 className="mt-2 text-lg font-semibold tabular-nums sm:text-xl"
               >
-                {price(order.limitPrice)}
+                {price(formatTokenAmount(order.limitPrice))}
               </dd>
             </dl>
           )}
@@ -650,12 +679,18 @@ export function OrderDetails({
           >
             {order.executedSellAmount !== null && (
               <Field label="Executed sell amount">
-                {amount(order.executedSellAmount, order.sellToken)}
+                <ExecutedAmount
+                  value={order.executedSellAmount}
+                  token={order.sellToken}
+                />
               </Field>
             )}
             {order.executedBuyAmount !== null && (
               <Field label="Executed buy amount">
-                {amount(order.executedBuyAmount, order.buyToken)}
+                <ExecutedAmount
+                  value={order.executedBuyAmount}
+                  token={order.buyToken}
+                />
               </Field>
             )}
             {order.cowOrder?.uid && (
