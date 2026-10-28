@@ -223,6 +223,37 @@ it.each([ORDER_SIZE_LIMIT_EXCEEDED_ERROR, ORDER_SIZE_PRICE_UNAVAILABLE_ERROR])(
   },
 );
 
+it.each(["Sell amount", "Trigger price", "Slippage (%)"])(
+  "limits %s to digits and one decimal point",
+  async (name) => {
+    const user = userEvent.setup();
+    renderForm();
+    if (name === "Slippage (%)")
+      await user.click(screen.getByRole("button", { name: "Order settings" }));
+    const input = screen.getByRole("textbox", { name });
+    await user.clear(input);
+    await user.type(input, ".");
+    expect(input).toHaveValue(".");
+    await user.type(input, "5");
+    expect(input).toHaveValue(".5");
+    await user.clear(input);
+    await user.type(input, "1.25");
+    await user.type(input, "abcEe+-., ");
+    expect(input).toHaveValue("1.25");
+
+    for (const value of ["abc", "1e3", "-2", "+2", "1.2.3", "1,000", " 2 "]) {
+      await user.paste(value);
+      expect(input).toHaveValue("1.25");
+    }
+
+    await user.clear(input);
+    await user.paste("0.123456789012345678");
+    expect(input).toHaveValue("0.123456789012345678");
+    await user.clear(input);
+    expect(input).toHaveValue("");
+  },
+);
+
 it("does not show order size text below the sell amount", () => {
   renderForm();
   expect(screen.queryByText(/Maximum order size:/)).not.toBeInTheDocument();

@@ -5,6 +5,7 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { SwapData } from "#/lib/types";
+import { isDecimalInput } from "#/utils/inputs";
 import { formatMarketPriceForInput } from "#/utils/priceFormatting";
 
 import { InfoTooltip } from "./ui/tooltip";
@@ -25,6 +26,7 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
     marketPrice !== undefined &&
     Number.isFinite(marketPrice) &&
     marketPrice > 0;
+  const priceInput = register("strikePrice");
   const triggerPrice = useWatch({ control, name: "strikePrice" });
   const distance =
     marketPrice && Number(triggerPrice)
@@ -97,6 +99,7 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
             value={percent}
             onChange={(event) => {
               const value = event.target.value;
+              if (!isDecimalInput(value)) return;
               setPercent(value);
               const validPercent =
                 /^(?:\d+(?:\.\d*)?|\.\d+)$/.test(value) &&
@@ -128,7 +131,12 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
         ) : (
           <Input
             key="price"
-            {...register("strikePrice")}
+            {...priceInput}
+            value={triggerPrice ?? ""}
+            onChange={(event) => {
+              if (isDecimalInput(event.target.value))
+                void priceInput.onChange(event);
+            }}
             id="trigger-price"
             type="text"
             inputMode="decimal"

@@ -174,7 +174,7 @@ it("submits small percentage-derived prices without exponent notation", async ()
   );
 });
 
-it.each(["", "-1", "100", "101", "1e1", "Infinity", "NaN", "1.2.3", " "])(
+it.each(["", ".", "100", "101"])(
   "clears the stored price for invalid percentage %j",
   async (value) => {
     const user = userEvent.setup();
@@ -203,6 +203,34 @@ it.each(["", "-1", "100", "101", "1e1", "Infinity", "NaN", "1.2.3", " "])(
     );
   },
 );
+
+it("rejects non-decimal percentage edits without changing the stored price", async () => {
+  const user = userEvent.setup();
+  const onSubmit = jest.fn();
+  render(
+    <SWRConfig value={{ provider: () => new Map() }}>
+      <PriceForm onSubmit={onSubmit} />
+    </SWRConfig>,
+  );
+  await screen.findByRole("button", {
+    name: /Set trigger to current market price/,
+  });
+  await user.click(screen.getByRole("button", { name: "% drop" }));
+  const input = screen.getByRole("textbox", { name: "Price drop (%)" });
+  await user.clear(input);
+  await user.type(input, "10.5");
+  await user.type(input, "abcEe+-., ");
+  expect(input).toHaveValue("10.5");
+  for (const value of ["-1", "1e1", "Infinity", "NaN", "1.2.3", " "]) {
+    await user.paste(value);
+    expect(input).toHaveValue("10.5");
+  }
+  await user.click(screen.getByRole("button", { name: "Submit" }));
+  await waitFor(() =>
+    expect(onSubmit.mock.calls[0]?.[0].strikePrice).toBe("1790"),
+  );
+  expect(input).toHaveAttribute("aria-invalid", "false");
+});
 
 it("keeps the trigger fixed when the market changes and uses the latest quote on a new edit", async () => {
   const user = userEvent.setup();
