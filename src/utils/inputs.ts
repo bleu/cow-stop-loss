@@ -1,3 +1,7 @@
+export function isDecimalInput(value: string) {
+  return /^\d*(?:\.\d*)?$/.test(value);
+}
+
 export function preventNegativeKeyDown(
   e: React.KeyboardEvent<HTMLInputElement>,
 ) {

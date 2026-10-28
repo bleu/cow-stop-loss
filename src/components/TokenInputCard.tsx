@@ -9,6 +9,7 @@ import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { useWalletTokenValues } from "#/hooks/useWalletTokenValues";
 import { ChainId } from "#/lib/publicClients";
 import { SwapData } from "#/lib/types";
+import { isDecimalInput } from "#/utils/inputs";
 
 import { TokenInfo } from "./TokenInfo";
 import { TokenSelect } from "./TokenSelect";
@@ -26,6 +27,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
   const tokenFieldName = `token${side}` as const;
   const amountFieldName = `amount${side}` as const;
 
+  const amountInput = register(amountFieldName);
   const [token, amount] = useWatch({
     control,
     name: [tokenFieldName, amountFieldName],
@@ -79,7 +81,12 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
             <div className="rescue-token-value mt-0.5 flex min-w-0 items-center gap-2">
               <Input
                 id={`amount-${side.toLowerCase()}`}
-                {...register(amountFieldName)}
+                {...amountInput}
+                value={amount ?? ""}
+                onChange={(event) => {
+                  if (isDecimalInput(event.target.value))
+                    void amountInput.onChange(event);
+                }}
                 type="text"
                 inputMode="decimal"
                 aria-label={getCardTitle(side)}
