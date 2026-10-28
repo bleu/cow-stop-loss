@@ -99,9 +99,41 @@ it("shows a compact order summary with edit beside the heading", () => {
   expect(screen.queryByText("Wallet balance")).not.toBeInTheDocument();
   expect(screen.queryByText("Allowance needed")).not.toBeInTheDocument();
   expect(screen.queryByText("Settlement approval")).not.toBeInTheDocument();
+  expect(
+    screen.queryByText(/limit uses the current USD value/i),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByText(/sell amount, not the trigger price/i),
+  ).not.toBeInTheDocument();
   for (const [label, address] of [
     ["WETH oracle (2h max age)", order.tokenSellOracle],
     ["USDC oracle (2h max age)", order.tokenBuyOracle],
+  ]) {
+    expect(
+      screen
+        .getByText(label)
+        .closest(".rescue-review-address")
+        ?.querySelector("a"),
+    ).toHaveAttribute("href", `https://etherscan.io/address/${address}`);
+  }
+});
+
+it("groups destination and oracle addresses in one shared wrapper", () => {
+  const { container } = render(
+    <ReviewOrderPanel {...props()} prepared={prepared} checks={checks} />,
+  );
+  const destination = screen.getByRole("region", { name: "Order destination" });
+  const oracles = screen.getByRole("region", { name: "Price oracles" });
+  const addresses = destination.parentElement;
+  expect(addresses).toHaveClass("rescue-review-addresses");
+  expect(container.querySelectorAll(".rescue-review-addresses")).toHaveLength(
+    1,
+  );
+  expect(oracles.parentElement).toBe(addresses);
+  expect(addresses?.children).toHaveLength(2);
+  for (const [label, address] of [
+    ["Custom recipient", order.receiver],
+    ["Execution account", prepared.owner],
   ]) {
     expect(
       screen
@@ -144,6 +176,30 @@ it("keeps exact amounts and oracle help as inline keyboard controls", async () =
     "href",
     `https://etherscan.io/token/${order.tokenSell.address}`,
   );
+});
+
+it("keeps approval choices and actions without an approval-needed badge", async () => {
+  const user = userEvent.setup();
+  const input = props();
+  const { container } = render(
+    <ReviewOrderPanel {...input} prepared={prepared} checks={checks} />,
+  );
+  expect(screen.getByRole("group", { name: "Token approval" })).toBeEnabled();
+  expect(screen.queryByText("Approval needed")).not.toBeInTheDocument();
+  expect(container.querySelector(".rescue-review-badge")).toBeNull();
+  const limited = screen.getByRole("radio", { name: "Limited" });
+  const unlimited = screen.getByRole("radio", { name: "Unlimited" });
+  expect(limited).toBeChecked();
+  expect(unlimited).not.toBeChecked();
+  await user.click(screen.getByRole("button", { name: "Approve WETH" }));
+  expect(input.onApprove).toHaveBeenLastCalledWith("limited");
+  await user.click(unlimited);
+  expect(unlimited).toBeChecked();
+  expect(limited).not.toBeChecked();
+  await user.click(screen.getByRole("button", { name: "Approve WETH" }));
+  expect(input.onApprove).toHaveBeenLastCalledWith("unlimited");
+  expect(input.onApprove).toHaveBeenCalledTimes(2);
+  expect(input.onPlace).not.toHaveBeenCalled();
 });
 
 it("shows one approval action until approval is sufficient, then one placement action", () => {

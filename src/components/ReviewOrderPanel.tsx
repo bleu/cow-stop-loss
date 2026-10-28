@@ -13,7 +13,6 @@ import { formatUnits } from "viem";
 import { NetworkLogo } from "#/components/NetworkLogo";
 import { TokenLogo } from "#/components/TokenLogo";
 import { PixelIcon } from "#/components/ui/pixel-icon";
-import { ORDER_SIZE_LIMIT_LABEL } from "#/lib/orderSizeLimit";
 import type {
   ApprovalMode,
   FundingSnapshot,
@@ -115,11 +114,6 @@ export function ReviewOrderPanel({
         />
       </div>
 
-      <p className="text-xs text-muted-foreground">
-        The {ORDER_SIZE_LIMIT_LABEL} limit uses the current USD value of the
-        sell amount, not the trigger price.
-      </p>
-
       <section aria-label="Order terms" className="rescue-review-terms">
         <dl className="rescue-review-price-row">
           <div>
@@ -151,43 +145,45 @@ export function ReviewOrderPanel({
         </dl>
       </section>
 
-      <section
-        aria-label="Order destination"
-        className="rescue-review-destination"
-      >
-        <AddressLine
-          label={
-            prepared &&
-            order.receiver.toLowerCase() !== prepared.account.toLowerCase()
-              ? "Custom recipient"
-              : "Receive address"
-          }
-          address={order.receiver}
-          chainId={chainId}
-        />
-        {prepared && (
+      <div className="rescue-review-addresses">
+        <section
+          aria-label="Order destination"
+          className="rescue-review-destination"
+        >
           <AddressLine
-            label="Execution account"
-            address={prepared.owner}
+            label={
+              prepared &&
+              order.receiver.toLowerCase() !== prepared.account.toLowerCase()
+                ? "Custom recipient"
+                : "Receive address"
+            }
+            address={order.receiver}
             chainId={chainId}
           />
-        )}
-      </section>
+          {prepared && (
+            <AddressLine
+              label="Execution account"
+              address={prepared.owner}
+              chainId={chainId}
+            />
+          )}
+        </section>
 
-      <section aria-label="Price oracles" className="rescue-review-oracles">
-        <AddressLine
-          label={`${order.tokenSell.symbol} oracle (${order.maxHoursSinceOracleUpdates}h max age)`}
-          tooltip={`${order.tokenSell.symbol} price feed used to check the trigger price. The order cannot execute if the price update is more than ${order.maxHoursSinceOracleUpdates}h old.`}
-          address={order.tokenSellOracle}
-          chainId={chainId}
-        />
-        <AddressLine
-          label={`${order.tokenBuy.symbol} oracle (${order.maxHoursSinceOracleUpdates}h max age)`}
-          tooltip={`${order.tokenBuy.symbol} price feed used to check the trigger price. The order cannot execute if the price update is more than ${order.maxHoursSinceOracleUpdates}h old.`}
-          address={order.tokenBuyOracle}
-          chainId={chainId}
-        />
-      </section>
+        <section aria-label="Price oracles" className="rescue-review-oracles">
+          <AddressLine
+            label={`${order.tokenSell.symbol} oracle (${order.maxHoursSinceOracleUpdates}h max age)`}
+            tooltip={`${order.tokenSell.symbol} price feed used to check the trigger price. The order cannot execute if the price update is more than ${order.maxHoursSinceOracleUpdates}h old.`}
+            address={order.tokenSellOracle}
+            chainId={chainId}
+          />
+          <AddressLine
+            label={`${order.tokenBuy.symbol} oracle (${order.maxHoursSinceOracleUpdates}h max age)`}
+            tooltip={`${order.tokenBuy.symbol} price feed used to check the trigger price. The order cannot execute if the price update is more than ${order.maxHoursSinceOracleUpdates}h old.`}
+            address={order.tokenBuyOracle}
+            chainId={chainId}
+          />
+        </section>
+      </div>
 
       {funding?.combinedCommitmentsExceedBalance && (
         <p
@@ -200,12 +196,7 @@ export function ReviewOrderPanel({
       )}
       {needsApproval && (
         <fieldset disabled={actionsBlocked} className="rescue-review-approvals">
-          <legend>
-            Token approval{" "}
-            <span className="rescue-review-badge pixel-badge">
-              Approval needed
-            </span>
-          </legend>
+          <legend>Token approval</legend>
           <div className="rescue-review-choices">
             <ApprovalChoice
               checked={mode === "limited"}
