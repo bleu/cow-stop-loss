@@ -30,7 +30,7 @@ export function Header({
   return (
     <>
       <PublicTestingNotice />
-      <header className="rescue-header pixel-frame relative z-20 flex shrink-0 flex-wrap items-center gap-3">
+      <header className="rescue-header pixel-frame relative z-20 flex shrink-0 flex-nowrap items-center gap-3">
         <Link
           href={linkUrl}
           onClick={onLinkClick}
@@ -47,16 +47,16 @@ export function Header({
               priority
             />
           )}
-          <span>
+          <span className="hidden sm:block">
             <span className="rescue-brand block text-foreground">
               CoW Air Rescue
             </span>
-            <span className="rescue-brand-subtitle mt-2 block font-serif text-xs text-muted-foreground">
+            <span className="rescue-brand-subtitle mt-2 hidden font-serif text-xs text-muted-foreground lg:block">
               Your exit plan. On your terms.
             </span>
           </span>
         </Link>
-        <div className="ml-auto flex flex-wrap items-center justify-end gap-2">
+        <div className="ml-auto flex shrink-0 flex-nowrap items-center justify-end gap-2">
           <Button
             variant="outline"
             size="icon"
@@ -94,8 +94,13 @@ export function Header({
                       <Button
                         variant="outline"
                         aria-label="Switch wallet network"
+                        title={
+                          chain?.unsupported
+                            ? "Unsupported network"
+                            : (chain?.name ?? "Select network")
+                        }
                         onClick={openChainModal}
-                        className="pixel-control rescue-header-control h-11 gap-2 bg-card px-4 font-medium text-foreground"
+                        className="pixel-control rescue-header-control size-11 gap-2 bg-card px-0 font-medium text-foreground lg:w-auto lg:px-4"
                       >
                         {chain &&
                         supportedChainIds.includes(chain.id as ChainId) ? (
@@ -110,12 +115,14 @@ export function Header({
                             className={`size-2 shrink-0 rounded-full ${chain?.unsupported ? "bg-destructive" : "bg-primary"}`}
                           />
                         )}
-                        {chain?.unsupported
-                          ? "Unsupported network"
-                          : (chain?.name ?? "Select network")}
+                        <span className="hidden lg:inline">
+                          {chain?.unsupported
+                            ? "Unsupported network"
+                            : (chain?.name ?? "Select network")}
+                        </span>
                         <PixelIcon
                           name="chevron-down"
-                          className="size-4 opacity-70"
+                          className="hidden size-4 opacity-70 lg:block"
                         />
                       </Button>
                       <Button
@@ -123,13 +130,15 @@ export function Header({
                         title={account.address}
                         onClick={openAccountModal}
                         aria-label={`Wallet account ${account.displayName}`}
-                        className="pixel-control rescue-header-control rescue-wallet-button h-11 gap-2 px-4 font-medium text-primary"
+                        className="pixel-control rescue-header-control rescue-wallet-button size-11 gap-2 px-0 font-medium text-primary lg:w-auto lg:px-4"
                       >
                         <PixelIcon name="wallet" className="size-4" />
-                        {account.displayName}
+                        <span className="hidden lg:inline">
+                          {account.displayName}
+                        </span>
                         <PixelIcon
                           name="chevron-down"
-                          className="size-4 opacity-70"
+                          className="hidden size-4 opacity-70 lg:block"
                         />
                       </Button>
                     </>
@@ -138,13 +147,13 @@ export function Header({
                       variant="outline"
                       disabled
                       aria-label="Loading wallet"
-                      className="pixel-control rescue-header-control h-11 gap-2 px-4 text-muted-foreground"
+                      className="pixel-control rescue-header-control size-11 gap-2 px-0 text-muted-foreground lg:w-auto lg:px-4"
                     >
                       <span
                         aria-hidden="true"
                         className="size-2 animate-pulse rounded-full bg-primary"
                       />
-                      Loading wallet…
+                      <span className="hidden lg:inline">Loading wallet…</span>
                     </Button>
                   ) : (
                     <Button

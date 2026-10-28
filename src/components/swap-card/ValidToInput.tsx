@@ -34,7 +34,7 @@ export function ValidToInput() {
           <Select onValueChange={onChange} value={value} name="validTo">
             <SelectTrigger
               id="order-expiry"
-              className="pixel-control min-h-11 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 w-full border-border bg-card text-sm text-foreground"
+              className="pixel-control rescue-square-control min-h-11 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 w-full border-border bg-card text-sm text-foreground"
             >
               <SelectValue placeholder="Select order expiry" />
             </SelectTrigger>

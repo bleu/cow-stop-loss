@@ -76,12 +76,14 @@ async function checkSizeBeforeSend(prepared: PreparedPlacement) {
     await assertPlacementOrderSize(prepared);
   } catch (cause) {
     throw new PlacementNotSubmittedError(
-      cause instanceof Error ? cause.message : "Unable to verify the order size.",
+      cause instanceof Error
+        ? cause.message
+        : "Unable to verify the order size.",
     );
   }
 }
 
-export function StopLossCreation() {
+export function StopLossCreation({ onReview }: { onReview?: () => void }) {
   const { address, chainId } = useAccount();
   const { sendTransactionAsync } = useSendTransaction();
   const { records, error: trackingError } = useStopLossPlacement(
@@ -244,6 +246,7 @@ export function StopLossCreation() {
         fundingOrders: fundingOrdersKey(localOrders),
         busy: false,
       });
+      if (!open) onReview?.();
       setOpen(true);
     } catch (error) {
       if (

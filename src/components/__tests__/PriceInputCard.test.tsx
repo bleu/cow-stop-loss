@@ -296,7 +296,7 @@ it("returns to price entry when the market-price shortcut is selected", async ()
   expect(screen.queryByRole("alert")).not.toBeInTheDocument();
 });
 
-it("keeps percentage entry disabled until a market quote is available", async () => {
+it("allows percentage mode without a market quote but keeps its input disabled", async () => {
   marketPrice = undefined;
   const user = userEvent.setup();
   render(
@@ -307,11 +307,25 @@ it("keeps percentage entry disabled until a market quote is available", async ()
   const percentMode = screen.getByRole("button", {
     name: "% drop",
   });
-  expect(percentMode).toBeDisabled();
+  expect(percentMode).toBeEnabled();
   expect(screen.getByRole("textbox", { name: "Trigger price" })).toBeEnabled();
+  await user.click(percentMode);
+  expect(percentMode).toHaveAttribute("aria-pressed", "true");
+  expect(
+    screen.getByRole("textbox", { name: "Price drop (%)" }),
+  ).toBeDisabled();
+  await user.click(screen.getByRole("button", { name: "Price" }));
+  expect(screen.getByRole("textbox", { name: "Trigger price" })).toHaveValue(
+    "2000",
+  );
   marketPrice = 2000;
   await user.click(screen.getByRole("button", { name: "Refresh market" }));
-  await waitFor(() => expect(percentMode).toBeEnabled());
+  await screen.findByRole("button", {
+    name: /Set trigger to current market price/,
+  });
+  await user.click(percentMode);
+  expect(screen.getByRole("textbox", { name: "Price drop (%)" })).toBeEnabled();
+  await user.click(screen.getByRole("button", { name: "Price" }));
   expect(screen.getByRole("textbox", { name: "Trigger price" })).toHaveValue(
     "2000",
   );
@@ -422,7 +436,7 @@ it.each([
   expect(input).toHaveAttribute("aria-invalid", "false");
 });
 
-it("explains why percentage entry stops when the market quote is lost", async () => {
+it("keeps the trigger fixed when the market quote is lost and percentage entry stops", async () => {
   const user = userEvent.setup();
   const onSubmit = jest.fn();
   render(
@@ -440,11 +454,7 @@ it("explains why percentage entry stops when the market quote is lost", async ()
   marketPrice = undefined;
   await user.click(screen.getByRole("button", { name: "Refresh market" }));
   await waitFor(() => expect(input).toBeDisabled());
-  expect(
-    screen.getByText(
-      "Percentage entry needs a current market price. Use Price to continue.",
-    ),
-  ).toBeInTheDocument();
+  expect(screen.getByRole("button", { name: "% drop" })).toBeEnabled();
   await user.click(screen.getByRole("button", { name: "Price" }));
   expect(screen.getByRole("textbox", { name: "Trigger price" })).toHaveValue(
     "1800",
@@ -547,6 +557,7 @@ it("reserves the market quote row while no oracle price is available", async () 
   const input = screen.getByRole("textbox", { name: "Trigger price" });
   const quoteRow = input.parentElement?.lastElementChild;
   expect(quoteRow).toHaveClass("h-5");
+  expect(quoteRow).not.toHaveClass("empty:hidden");
   expect(quoteRow).toBeEmptyDOMElement();
   expect(screen.queryByText(/loading|unavailable/i)).not.toBeInTheDocument();
   marketPrice = 2000;

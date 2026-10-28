@@ -1,6 +1,8 @@
 export enum TOOLTIP_DESCRIPTIONS {
   TRIGGER_PRICE = "If the oracle price drop below this threshold the order will be executed by the limit price.",
   LIMIT_PRICE = "The limit price is the price at which this order shall be (partially) filled.",
+  LIMIT_PRICE_INPUT = "The lowest price you accept per token sold after the order triggers. Default uses 10% slippage. Edit the price to set a custom limit.",
+  LIMIT_SLIPPAGE_INPUT = "The allowed price drop from the trigger price to the limit price. Default uses 10% slippage. Edit the percentage to set a custom limit.",
   CURRENT_ORACLE_PRICE = "The price that will be monitored to trigger the order posting.",
   CURRENT_MARKET_PRICE = "The current price of the token pair in the market.",
   ORDER_CREATION = "The transaction that created this stop loss order.",

@@ -211,6 +211,10 @@
   clip-path: var(--pixel-inner-shape);
   background: var(--pixel-surface);
 }
+.rescue-square-control::before,
+.rescue-square-control::after {
+  clip-path: none;
+}
 .pixel-control {
   min-height: 44px;
   transition: color 0.15s;
@@ -415,10 +419,41 @@
 }
 .rescue-home-cards > .rescue-panel {
   min-width: 0;
-  padding: 28px;
+  padding: 16px;
 }
 .rescue-home-cards .rescue-create-panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 450px;
+  min-height: 500px;
+  justify-self: center;
   overflow: visible;
+}
+.rescue-home-cards .rescue-create-panel:has(.rescue-review) {
+  align-self: start;
+  min-height: 0;
+}
+.rescue-order-form {
+  flex: 1;
+}
+.rescue-swap-content {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
+}
+.rescue-settings {
+  display: contents;
+}
+.rescue-settings-heading {
+  grid-area: 1 / 1;
+}
+.rescue-settings-panel,
+.rescue-order-fields {
+  grid-area: 2 / 1;
+  align-self: stretch;
+}
+.rescue-order-fields > button:last-child {
+  margin-top: auto !important;
 }
 .rescue-portfolio-panel {
   display: flex;
@@ -426,6 +461,7 @@
   min-height: 510px;
 }
 .rescue-portfolio-content {
+  container-type: inline-size;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -445,6 +481,14 @@
   text-transform: uppercase;
   color: hsl(var(--primary));
 }
+.rescue-card-title {
+  font-family: var(--font-family-serif), sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
 .rescue-panel-title {
   font-family: var(--font-family-serif), monospace;
   font-size: clamp(28px, 2.6vw, 40px);
@@ -460,8 +504,6 @@
 }
 .rescue-settings-panel {
   container-type: inline-size;
-  margin-top: 12px;
-  align-content: start;
 }
 .rescue-settings-panel .rescue-input-inline {
   grid-template-columns: minmax(0, 1fr) 180px;
@@ -491,9 +533,6 @@
 .rescue-input-error {
   grid-column: 1 / -1;
 }
-.rescue-settings-actions {
-  margin-top: 8px;
-}
 .rescue-order-fields[data-inactive="true"] {
   display: none !important;
 }
@@ -502,30 +541,40 @@
 }
 @container (max-width: 340px) {
   .rescue-settings-panel .rescue-input-inline {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 128px);
+  }
+  .rescue-settings-panel .rescue-input-inline:has(> #receiver) {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .rescue-settings-panel [role="combobox"] > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 .rescue-portfolio-heading {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
   gap: 8px 16px;
 }
 .rescue-portfolio-title {
-  flex: 1 1 200px;
+  display: flex;
+  min-height: 44px;
   min-width: 0;
+  align-items: center;
 }
 .rescue-portfolio-toolbar {
   display: flex;
-  flex-shrink: 0;
+  min-height: 44px;
+  flex-wrap: wrap;
   align-items: center;
   gap: 6px;
   max-width: 100%;
 }
 .rescue-portfolio-filter-summary {
   display: -webkit-box;
-  flex-basis: 100%;
+  grid-column: 1 / -1;
   min-width: 0;
   overflow: hidden;
   overflow-wrap: anywhere;
@@ -534,6 +583,11 @@
   font-size: 11px;
   line-height: 1.6;
   color: hsl(var(--muted-foreground));
+}
+@container (max-width: 500px) {
+  .rescue-portfolio-heading {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 .rescue-portfolio-filter-panel {
   width: min(480px, calc(100vw - 32px));
@@ -565,6 +619,10 @@
   flex-shrink: 0;
 }
 @media (min-width: 1024px) {
+  .rescue-portfolio-title,
+  .rescue-portfolio-toolbar {
+    min-height: 28px;
+  }
   .rescue-portfolio-filter-reset {
     height: 28px;
     min-height: 28px;
@@ -577,6 +635,11 @@
   .rescue-portfolio-filter-groups {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+.rescue-price-card .rescue-info-control,
+.rescue-limit-card .rescue-info-control {
+  min-height: 20px !important;
+  min-width: 20px !important;
 }
 .rescue-info-tooltip {
   display: block;
@@ -702,7 +765,7 @@
 }
 .rescue-orders-table th,
 .rescue-orders-table td {
-  padding: 16px 12px;
+  padding: 18px 14px !important;
 }
 .rescue-orders-table th {
   font-size: 11px;
@@ -744,13 +807,13 @@
     grid-template-columns: minmax(0, 1fr) auto auto;
     grid-template-areas: "order status actions" "trigger expiry expiry";
     gap: 12px;
-    padding: 16px 12px;
+    padding: 18px 14px;
   }
   .rescue-orders-table tbody td[data-column],
   .rescue-orders-table tbody td[colspan] {
     display: block;
     width: auto;
-    padding: 0;
+    padding: 0 !important;
   }
   .rescue-orders-table tbody td[data-column="order"] {
     grid-area: order;
@@ -851,9 +914,6 @@
   .rescue-home-cards {
     gap: 20px;
   }
-  .rescue-home-cards > .rescue-panel {
-    padding: 22px;
-  }
 }
 @media (max-width: 1023px) {
   .rescue-home-cards {
@@ -928,9 +988,6 @@
   }
   .rescue-home-cards {
     gap: 20px;
-  }
-  .rescue-home-cards > .rescue-panel {
-    padding: 22px 18px;
   }
   .rescue-panel-title {
     font-size: 30px;
@@ -1028,14 +1085,17 @@
     align-items: start;
     gap: 20px;
   }
-  .rescue-home-cards > .rescue-panel {
-    padding: 20px;
-  }
   .rescue-home-cards > .rescue-portfolio-panel {
     width: 100%;
     max-width: 700px;
-    height: 460px;
+    align-self: stretch;
+    height: auto;
     min-height: 0;
+    /* Let the creation panel set the height while orders scroll inside. */
+    contain: size;
+  }
+  .rescue-home-cards:has(.rescue-review) > .rescue-portfolio-panel {
+    height: max(500px, var(--rescue-review-table-height, 500px));
   }
   .rescue-portfolio-content {
     min-height: 0;
@@ -1056,7 +1116,6 @@
     font-weight: 600;
     letter-spacing: 0.12em !important;
   }
-  .rescue-swap-form #place-order-title,
   .rescue-swap-form .rescue-settings-title {
     margin-top: 4px !important;
     font-size: 28px !important;
@@ -1064,30 +1123,6 @@
   .rescue-swap-content,
   .rescue-order-fields {
     gap: 10px !important;
-  }
-  .rescue-swap-content {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto auto;
-  }
-  .rescue-settings {
-    display: contents;
-  }
-  .rescue-settings-heading {
-    grid-area: 1 / 1;
-  }
-  .rescue-settings-panel,
-  .rescue-order-fields {
-    grid-area: 2 / 1;
-    align-self: start;
-  }
-  .rescue-settings-panel {
-    margin-top: 0;
-  }
-  .rescue-order-fields[data-inactive="true"] {
-    display: flex !important;
-    visibility: hidden;
-    pointer-events: none;
   }
   .rescue-token-card,
   .rescue-price-card {
@@ -1112,9 +1147,6 @@
     justify-content: flex-start;
     margin-top: 0 !important;
     font-size: 11px !important;
-  }
-  .rescue-token-balance:empty {
-    display: none;
   }
   .rescue-market-price button {
     font-size: 11px !important;
@@ -1191,9 +1223,6 @@
     width: 32px;
     height: 38px;
   }
-  .rescue-home-cards > .rescue-panel {
-    padding: 14px 16px;
-  }
   .rescue-portfolio-panel {
     min-height: 0;
   }
@@ -1201,13 +1230,12 @@
   .rescue-order-fields {
     gap: 8px !important;
   }
-  .rescue-swap-form #place-order-title,
   .rescue-swap-form .rescue-settings-title {
     font-size: 26px !important;
   }
   .rescue-orders-table th,
   .rescue-orders-table td {
-    padding-block: 10px;
+    padding-block: 12px !important;
   }
 }
 @media (min-width: 1024px) and (max-height: 700px) {

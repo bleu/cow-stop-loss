@@ -70,7 +70,7 @@ export function TokenSelect({
           <Button
             type="button"
             className={cn(
-              "pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 w-full min-w-0 justify-between gap-2 rounded-none border border-primary/25 bg-primary/10 px-3 text-foreground shadow-sm transition-colors hover:border-primary/40 hover:bg-primary/15 hover:text-foreground",
+              "pixel-control rescue-square-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 w-full min-w-0 justify-between gap-2 rounded-none border border-primary/25 bg-primary/10 px-3 text-foreground shadow-sm transition-colors hover:border-primary/40 hover:bg-primary/15 hover:text-foreground",
               selectedToken
                 ? "bg-muted/70 text-foreground hover:text-foreground"
                 : "",

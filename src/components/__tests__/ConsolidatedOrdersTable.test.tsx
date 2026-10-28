@@ -514,13 +514,19 @@ test("shows the portfolio heading without table controls when the wallet is disc
 
   const title = screen.getByRole("heading", {
     level: 2,
-    name: "Your stop-loss orders",
+    name: "Portolio · Your orders",
   });
   expect(title).toHaveAttribute("id", "orders-title");
   expect(title.parentElement).toHaveClass("rescue-portfolio-title");
-  expect(within(title.parentElement!).getByText("Portfolio")).toHaveClass(
-    "rescue-eyebrow",
-  );
+  expect(title).toHaveClass("rescue-card-title", "text-primary");
+  expect(title).not.toHaveClass("rescue-eyebrow");
+  expect(title).not.toHaveClass("rescue-display-eyebrow");
+  expect(
+    screen.queryByText("Portfolio", { exact: true }),
+  ).not.toBeInTheDocument();
+  expect(
+    screen.queryByRole("heading", { name: "Your stop-loss orders" }),
+  ).not.toBeInTheDocument();
   expect(title.parentElement!.parentElement).toHaveClass(
     "rescue-panel-heading",
     "rescue-portfolio-heading",
@@ -584,9 +590,10 @@ test("fills the empty orders viewport with heading controls outside its scroll a
   );
   const title = screen.getByRole("heading", {
     level: 2,
-    name: "Your stop-loss orders",
+    name: "Portolio · Your orders",
   });
   expect(title).toHaveAttribute("id", "orders-title");
+  expect(title).toHaveClass("rescue-card-title", "text-primary");
   expect(title.parentElement).toHaveClass("rescue-portfolio-title");
   const heading = title.parentElement!.parentElement!;
   expect(heading).toHaveClass(
@@ -603,7 +610,10 @@ test("fills the empty orders viewport with heading controls outside its scroll a
     screen.getByRole("button", { name: "Reset filters" }),
   );
   expect(screen.getByRole("button", { name: "Reset filters" })).toBeDisabled();
-  expect(heading).toContainElement(screen.getByLabelText("Selected filters"));
+  const summary = screen.getByLabelText("Selected filters");
+  expect(summary).toHaveClass("rescue-portfolio-filter-summary");
+  expect(summary.parentElement).toBe(heading);
+  expect(toolbar.nextElementSibling).toBe(summary);
   expect(refresh).toBeEnabled();
   expect(panel).not.toContainElement(heading);
   expect(panel.firstElementChild).toBe(frame);
