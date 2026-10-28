@@ -253,7 +253,7 @@ function WalletSwapForm({
               title={
                 <div className="min-w-0">
                   <p className="rescue-display-eyebrow font-sans text-[10px] uppercase tracking-[0.18em] text-secondary">
-                    Create · Your flight plan
+                    Define · Your parachute
                   </p>
                   <h2
                     id="place-order-title"
