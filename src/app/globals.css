@@ -430,6 +430,10 @@
   justify-self: center;
   overflow: visible;
 }
+.rescue-home-cards .rescue-create-panel:has(.rescue-review) {
+  align-self: start;
+  min-height: 0;
+}
 .rescue-order-form {
   flex: 1;
 }
@@ -1089,6 +1093,9 @@
     min-height: 0;
     /* Let the creation panel set the height while orders scroll inside. */
     contain: size;
+  }
+  .rescue-home-cards:has(.rescue-review) > .rescue-portfolio-panel {
+    height: max(500px, var(--rescue-review-table-height, 500px));
   }
   .rescue-portfolio-content {
     min-height: 0;

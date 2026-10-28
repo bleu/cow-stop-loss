@@ -203,7 +203,7 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 
-function showCreation() {
+function showCreation(onReview?: () => void) {
   const config = createWagmiConfig();
   const queryClient = new QueryClient();
   const content = () => (
@@ -212,7 +212,7 @@ function showCreation() {
         <SWRConfig
           value={{ provider: () => new Map(), revalidateOnFocus: false }}
         >
-          <StopLossCreation />
+          <StopLossCreation onReview={onReview} />
         </SWRConfig>
       </QueryClientProvider>
     </WagmiProvider>
@@ -262,7 +262,12 @@ it.each([true, false])(
       }
       return fetch(input, init);
     });
-    showCreation();
+    const onReview = jest.fn(() => {
+      expect(
+        screen.queryByRole("region", { name: "Review stop-loss order" }),
+      ).not.toBeInTheDocument();
+    });
+    showCreation(onReview);
     await user.click(screen.getByRole("button", { name: "Select token" }));
     await user.click(await screen.findByRole("option", { name: /WETH/ }));
     await user.type(
@@ -284,6 +289,7 @@ it.each([true, false])(
         screen.queryByRole("region", { name: "Review stop-loss order" }),
       ).not.toBeInTheDocument();
       expect(screen.getByRole("button", { name: /Validating/ })).toBeDisabled();
+      expect(onReview).not.toHaveBeenCalled();
     } finally {
       await act(async () => {
         releaseUpload();
@@ -292,6 +298,7 @@ it.each([true, false])(
     const review = await screen.findByRole("region", {
       name: "Review stop-loss order",
     });
+    expect(onReview).toHaveBeenCalledTimes(1);
     expect(
       within(review).getByRole("button", {
         name: approvalRequired ? "Approve WETH" : "Place order",
@@ -301,6 +308,52 @@ it.each([true, false])(
       Boolean(within(review).queryByRole("radio", { name: "Limited" })),
     ).toBe(approvalRequired);
     expect(sendTransactionAsync).not.toHaveBeenCalled();
+  },
+);
+
+it.each(["preparation", "permission checks"])(
+  "does not call onReview when %s fails",
+  async (stage) => {
+    const user = userEvent.setup();
+    const onReview = jest.fn();
+    if (stage === "preparation") {
+      const fetch = global.fetch;
+      global.fetch = jest.fn(async (input, init) => {
+        if (String(input).includes("/app_data/"))
+          throw new Error("Upload unavailable");
+        return fetch(input, init);
+      });
+    } else {
+      const rpc = jest.mocked(publicClientsFromIds[1].readContract);
+      const read = rpc.getMockImplementation()!;
+      rpc.mockImplementation(async (args) => {
+        if (args.functionName === "allowance")
+          throw new Error("Allowance unavailable");
+        return read(args);
+      });
+    }
+    showCreation(onReview);
+    await user.click(screen.getByRole("button", { name: "Select token" }));
+    await user.click(await screen.findByRole("option", { name: /WETH/ }));
+    await user.type(
+      screen.getByRole("textbox", { name: "Trigger price" }),
+      "2000",
+    );
+    await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Review Stop Loss order" }),
+      ).toBeEnabled(),
+    );
+    await user.click(
+      screen.getByRole("button", { name: "Review Stop Loss order" }),
+    );
+
+    await waitFor(() => expect(toast).toHaveBeenCalled());
+    expect(
+      screen.queryByRole("region", { name: "Review stop-loss order" }),
+    ).not.toBeInTheDocument();
+    expect(onReview).not.toHaveBeenCalled();
   },
 );
 
@@ -984,8 +1037,10 @@ it("refreshes funding when an earlier setup confirms after review opens", async 
       .prepared;
     throw Object.assign(new Error("User rejected the request"), { code: 4001 });
   });
-  showCreation();
+  const onReview = jest.fn();
+  showCreation(onReview);
   await reviewOneOrder(user, false);
+  expect(onReview).toHaveBeenCalledTimes(1);
   await user.click(screen.getByRole("button", { name: "Place order" }));
   await waitFor(() =>
     expect(toast).toHaveBeenCalledWith(
@@ -1011,6 +1066,7 @@ it("refreshes funding when an earlier setup confirms after review opens", async 
     screen.getByRole("button", { name: "Review Stop Loss order" }),
   );
   await screen.findByRole("region", { name: "Review stop-loss order" });
+  expect(onReview).toHaveBeenCalledTimes(2);
   expect(screen.getByRole("button", { name: "Place order" })).toBeEnabled();
   await act(async () => {
     created = true;
@@ -1028,6 +1084,7 @@ it("refreshes funding when an earlier setup confirms after review opens", async 
       .getByRole("radio", { name: "Limited" })
       .closest("label"),
   ).toHaveTextContent("2 WETH");
+  expect(onReview).toHaveBeenCalledTimes(2);
   expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
 });
 
