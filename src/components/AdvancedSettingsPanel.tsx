@@ -182,7 +182,7 @@ export function AdvancedSettingsPanel({
         <section
           id="order-settings-panel"
           aria-label="Order settings"
-          className="rescue-settings-panel flex flex-col gap-4"
+          className="rescue-settings-panel flex flex-col justify-between gap-4"
           onKeyDown={(event) => {
             if (event.key === "Escape") onOpenChange(false);
           }}
@@ -197,7 +197,7 @@ export function AdvancedSettingsPanel({
             <div
               role="group"
               aria-label="Advanced order settings"
-              className="rescue-settings-fields flex w-full flex-1 flex-col gap-4"
+              className="rescue-settings-fields contents"
               onKeyDown={(event) => {
                 if (
                   event.key === "Enter" &&
@@ -278,7 +278,7 @@ export function AdvancedSettingsPanel({
                 }
                 className="min-h-11 h-11 rounded-none border-border bg-card"
               />
-              <div className="rescue-settings-actions mt-auto grid w-full grid-cols-1 gap-3">
+              <div className="rescue-settings-actions grid w-full grid-cols-1 gap-3">
                 <Button
                   variant="ghost"
                   type="button"

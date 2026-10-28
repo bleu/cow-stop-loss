@@ -95,6 +95,24 @@ it("shows expiry and advanced fields without slippage controls", async () => {
   ).not.toBeInTheDocument();
 });
 
+it("spreads free space between settings fields and actions", async () => {
+  const user = userEvent.setup();
+  render(<SettingsForm />);
+
+  await user.click(screen.getByRole("button", { name: "Order settings" }));
+
+  expect(screen.getByRole("region", { name: "Order settings" })).toHaveClass(
+    "justify-between",
+    "gap-4",
+  );
+  expect(
+    screen.getByRole("group", { name: "Advanced order settings" }),
+  ).toHaveClass("contents");
+  expect(
+    screen.getByRole("button", { name: "Return to order" }).parentElement,
+  ).not.toHaveClass("mt-auto");
+});
+
 it("keeps expiry when the panel closes and opens again", async () => {
   const user = userEvent.setup();
   render(<SettingsForm />);
