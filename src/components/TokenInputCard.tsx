@@ -1,4 +1,4 @@
-import { Button, formatNumber, Input } from "@bleu/ui";
+import { Button, Input } from "@bleu/ui";
 import { memo, useEffect } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import { formatUnits } from "viem";
@@ -9,6 +9,11 @@ import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { useWalletTokenValues } from "#/hooks/useWalletTokenValues";
 import { ChainId } from "#/lib/publicClients";
 import { SwapData } from "#/lib/types";
+import {
+  formatFiatAmount,
+  formatInputAmount,
+  formatTokenAmount,
+} from "#/utils/amountFormatting";
 import { isDecimalInput } from "#/utils/inputs";
 
 import { TokenInfo } from "./TokenInfo";
@@ -82,7 +87,12 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
               <Input
                 id={`amount-${side.toLowerCase()}`}
                 {...amountInput}
-                value={amount ?? ""}
+                value={
+                  isAmountDisabled
+                    ? formatInputAmount(amount ?? "", token?.decimals)
+                    : (amount ?? "")
+                }
+                title={isAmountDisabled ? amount : undefined}
                 onChange={(event) => {
                   if (isDecimalInput(event.target.value))
                     void amountInput.onChange(event);
@@ -96,13 +106,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
               />
               {amount && Number(amount) > 0 && usdPrice && (
                 <span className="shrink-0 text-[13px] text-muted-foreground tabular-nums sm:text-sm">
-                  ≈{" "}
-                  {formatNumber(
-                    usdPrice ? Number(amount) * usdPrice : 0,
-                    2,
-                    "currency",
-                    "standard",
-                  )}
+                  ≈ ${formatFiatAmount(Number(amount) * usdPrice)}
                 </span>
               )}
             </div>
@@ -143,7 +147,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                     ? "Connect wallet to view balance"
                     : balanceError
                       ? "Balance unavailable"
-                      : `Balance: ${tokenBalance === undefined ? "Loading…" : formatNumber(tokenBalance, 4, "decimal", "standard", 0.0001).replace(/(\.\d*?[1-9])0+$|\.0+$/, "$1")}`}
+                      : `Balance: ${tokenBalance === undefined ? "Loading…" : formatTokenAmount(tokenBalance, token.decimals)}`}
                 </span>
                 {balanceError && (
                   <Button

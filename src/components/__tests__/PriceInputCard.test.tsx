@@ -110,7 +110,7 @@ it("submits a fixed trigger price from a percentage drop", async () => {
     ),
   );
   expect(screen.getByLabelText("Trigger price")).toBe(input);
-  const hint = screen.getByText("Trigger: $1,800");
+  const hint = screen.getByText("Trigger: ≈ 1,800 USDC per WETH");
   const market = screen.getByRole("button", {
     name: /Set trigger to current market price/,
   });
@@ -253,7 +253,9 @@ it("keeps the trigger fixed when the market changes and uses the latest quote on
     name: "Set trigger to current market price 2,200 USDC per WETH",
   });
   expect(input).toHaveValue("10");
-  expect(screen.getByText("Trigger: $1,800")).toBeInTheDocument();
+  expect(
+    screen.getByText("Trigger: ≈ 1,800 USDC per WETH"),
+  ).toBeInTheDocument();
   await user.click(screen.getByRole("button", { name: "Submit" }));
   await waitFor(() =>
     expect(onSubmit.mock.calls[0]?.[0].strikePrice).toBe("1800"),
@@ -264,7 +266,9 @@ it("keeps the trigger fixed when the market changes and uses the latest quote on
   await waitFor(() =>
     expect(onSubmit.mock.calls[1]?.[0].strikePrice).toBe("1980"),
   );
-  expect(screen.getByText("Trigger: $1,980")).toBeInTheDocument();
+  expect(
+    screen.getByText("Trigger: ≈ 1,980 USDC per WETH"),
+  ).toBeInTheDocument();
 });
 
 it("returns to price entry when the market-price shortcut is selected", async () => {
@@ -357,7 +361,9 @@ it("does not change percentage intent when the selected mode is clicked again", 
   });
   await user.click(percentMode);
   expect(input).toHaveValue("10");
-  expect(screen.getByText("Trigger: $1,800")).toBeInTheDocument();
+  expect(
+    screen.getByText("Trigger: ≈ 1,800 USDC per WETH"),
+  ).toBeInTheDocument();
 });
 
 it("clears percentage errors after correcting the trigger in price mode", async () => {
@@ -492,7 +498,8 @@ it.each([
   },
 );
 
-it("shows a dollar market quote and keeps the full pair in its accessible label", async () => {
+it("shows an adaptive token-pair market quote with its units", async () => {
+  marketPrice = 94.544269912;
   render(
     <SWRConfig value={{ provider: () => new Map() }}>
       <PriceForm />
@@ -500,9 +507,9 @@ it("shows a dollar market quote and keeps the full pair in its accessible label"
   );
 
   const market = await screen.findByRole("button", {
-    name: "Set trigger to current market price 2,000 USDC per WETH",
+    name: "Set trigger to current market price 94.5443 USDC per WETH",
   });
-  expect(market).toHaveTextContent(/^Market: \$2,000$/);
+  expect(market).toHaveTextContent(/^Market: ≈ 94.5443 USDC per WETH$/);
   expect(screen.queryByText("1 USDC")).not.toBeInTheDocument();
 });
 
@@ -522,7 +529,7 @@ it("places the market-distance hint beside Market and replaces it with the trigg
   await user.click(screen.getByRole("button", { name: "% drop" }));
   expect(screen.queryByText("At market")).not.toBeInTheDocument();
   expect(market.parentElement).toContainElement(
-    screen.getByText("Trigger: $2,000"),
+    screen.getByText("Trigger: ≈ 2,000 USDC per WETH"),
   );
   await user.click(screen.getByRole("button", { name: "Price" }));
   expect(screen.queryByText(/Trigger:/)).not.toBeInTheDocument();

@@ -23,6 +23,7 @@ import {
 import type { StopLossOrder } from "#/lib/stopLossOrders";
 import { isDefiniteFailure, isRejected } from "#/lib/stopLossPlacement";
 import { OrderStatus } from "#/lib/types";
+import { formatTokenAmount } from "#/utils/amountFormatting";
 
 import { showOrderError, showOrderSuccess } from "./orderNotifications";
 
@@ -49,8 +50,8 @@ function OrderCancellation({
   const { address } = useAccount();
   const canCancel = Boolean(
     address &&
-      order.isSellOrder &&
-      [OrderStatus.OPEN, OrderStatus.PARTIALLY_FILLED].includes(order.status),
+    order.isSellOrder &&
+    [OrderStatus.OPEN, OrderStatus.PARTIALLY_FILLED].includes(order.status),
   );
   if (!canCancel && !open) return null;
   return (
@@ -168,13 +169,22 @@ function CancellationReview({
       }
     }
   };
-  const amount = (value: bigint, token: StopLossOrder["sellToken"]) =>
-    `${token.decimals === null ? `${value} base units` : formatUnits(value, token.decimals)} ${token.symbol}`;
-  const triggerPrice = `${new Intl.NumberFormat(undefined, {
-    maximumSignificantDigits: 8,
-  }).format(
-    Number(formatUnits(order.strike, 18)),
-  )} ${order.buyToken.symbol} per ${order.sellToken.symbol}`;
+  const amount = (value: bigint, token: StopLossOrder["sellToken"]) => {
+    const full =
+      token.decimals === null
+        ? `${value} base units`
+        : formatUnits(value, token.decimals);
+    return (
+      <span title={`${full} ${token.symbol}`}>
+        {token.decimals === null
+          ? full
+          : formatTokenAmount(full, token.decimals)}{" "}
+        {token.symbol}
+      </span>
+    );
+  };
+  const fullTriggerPrice = `${formatUnits(order.strike, 18)} ${order.buyToken.symbol} per ${order.sellToken.symbol}`;
+  const triggerPrice = `${formatTokenAmount(formatUnits(order.strike, 18))} ${order.buyToken.symbol} per ${order.sellToken.symbol}`;
   const expires = new Date(order.validTo * 1000).toLocaleString(undefined, {
     dateStyle: "medium",
     timeStyle: "short",
@@ -234,7 +244,10 @@ function CancellationReview({
           <p className="text-xs font-medium text-muted-foreground">
             Trigger price
           </p>
-          <p className="mt-1 break-words text-sm font-semibold tabular-nums">
+          <p
+            title={fullTriggerPrice}
+            className="mt-1 break-words text-sm font-semibold tabular-nums"
+          >
             {triggerPrice}
           </p>
         </div>
