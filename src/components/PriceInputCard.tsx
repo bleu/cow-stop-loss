@@ -5,6 +5,7 @@ import { useFormContext, useWatch } from "react-hook-form";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { TOOLTIP_DESCRIPTIONS } from "#/lib/tooltipDescriptions";
 import { SwapData } from "#/lib/types";
+import { formatTokenAmount } from "#/utils/amountFormatting";
 import { isDecimalInput } from "#/utils/inputs";
 import { formatMarketPriceForInput } from "#/utils/priceFormatting";
 
@@ -162,7 +163,7 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
               variant="link"
               disabled={disabled}
               className="rescue-secondary-control min-h-0 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-auto max-w-full justify-start p-0 text-left text-xs font-medium text-primary underline-offset-4 hover:underline"
-              aria-label={`Set trigger to current market price ${formatMarketPrice(marketPrice)} ${tokenBuy.symbol} per ${tokenSell.symbol}`}
+              aria-label={`Set trigger to current market price ${formatTokenAmount(marketPrice)} ${tokenBuy.symbol} per ${tokenSell.symbol}`}
               onClick={() => {
                 setMode("price");
                 setPercentInvalid(false);
@@ -174,7 +175,8 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
               }}
             >
               <span className="truncate">
-                Market: ${formatMarketPrice(marketPrice)}
+                Market: ≈ {formatTokenAmount(marketPrice)} {tokenBuy.symbol} per{" "}
+                {tokenSell.symbol}
               </span>
             </Button>
           )}
@@ -187,7 +189,8 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
                   title={`${triggerPrice} ${tokenBuy.symbol} per ${tokenSell.symbol}`}
                   aria-live="polite"
                 >
-                  Trigger: ${formatMarketPrice(Number(triggerPrice))}
+                  Trigger: ≈ {formatTokenAmount(triggerPrice)} {tokenBuy.symbol}{" "}
+                  per {tokenSell.symbol}
                 </span>
               )
             : distance !== undefined && (
@@ -216,11 +219,5 @@ function PriceInputCardComponent({ disabled }: { disabled?: boolean }) {
         </p>
       )}
     </section>
-  );
-}
-
-function formatMarketPrice(price: number) {
-  return new Intl.NumberFormat("en-US", { maximumSignificantDigits: 7 }).format(
-    price,
   );
 }

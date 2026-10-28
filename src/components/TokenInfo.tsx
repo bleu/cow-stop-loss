@@ -1,11 +1,11 @@
 "use client";
-import { formatNumber } from "@bleu/ui";
 import { useAccount } from "wagmi";
 
 import { TokenLogo } from "#/components/TokenLogo";
 import { PixelIcon } from "#/components/ui/pixel-icon";
 import { ChainId } from "#/lib/publicClients";
 import { IToken, ITokenWithValue } from "#/lib/types";
+import { formatTokenAmount } from "#/utils/amountFormatting";
 
 import { BlockExplorerLink } from "./ExplorerLink";
 
@@ -51,7 +51,7 @@ export function TokenInfo({
       <div>
         {"balance" in token &&
           showBalance &&
-          `(${formatNumber(token.balance, 4, "decimal", "compact", 0.001)})`}
+          `(${formatTokenAmount(token.balance, token.decimals)})`}
       </div>
     </div>
   );

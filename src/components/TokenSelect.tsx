@@ -19,19 +19,9 @@ import { useWalletTokenValues } from "#/hooks/useWalletTokenValues";
 import { ChainId } from "#/lib/publicClients";
 import { getSupportedTokens } from "#/lib/supportedTokens";
 import { IToken } from "#/lib/types";
+import { formatFiatAmount, formatTokenAmount } from "#/utils/amountFormatting";
 
 import { TokenInfo } from "./TokenInfo";
-
-const balanceFormat = new Intl.NumberFormat("en-US", {
-  maximumFractionDigits: 4,
-});
-
-function formatBalance(balance: bigint, decimals: number) {
-  const amount = Number(formatUnits(balance, decimals));
-  return balance > BigInt(0) && amount < 0.0001
-    ? "<0.0001"
-    : balanceFormat.format(amount);
-}
 
 export function TokenSelect({
   onSelectToken,
@@ -138,19 +128,32 @@ export function TokenSelect({
                 <TokenInfo token={token} showExplorerLink={false} />
                 {address && (
                   <span className="rescue-token-option-values">
-                    <span>
+                    <span
+                      title={
+                        holding?.balance !== undefined
+                          ? formatUnits(holding.balance, token.decimals)
+                          : undefined
+                      }
+                    >
                       {holding?.balance !== undefined
-                        ? formatBalance(holding.balance, token.decimals)
+                        ? formatTokenAmount(
+                            formatUnits(holding.balance, token.decimals),
+                            token.decimals,
+                          )
                         : isLoading
                           ? "Loading…"
                           : "Unavailable"}
                     </span>
-                    <span className="text-muted-foreground">
+                    <span
+                      title={
+                        holding?.usdValue !== undefined
+                          ? `$${holding.usdValue}`
+                          : undefined
+                      }
+                      className="text-muted-foreground"
+                    >
                       {holding?.usdValue !== undefined
-                        ? new Intl.NumberFormat("en-US", {
-                            style: "currency",
-                            currency: "USD",
-                          }).format(holding.usdValue)
+                        ? `$${formatFiatAmount(holding.usdValue)}`
                         : "-"}
                     </span>
                   </span>

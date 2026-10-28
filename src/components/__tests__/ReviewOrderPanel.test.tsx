@@ -238,7 +238,7 @@ it("keeps small nonzero amounts visible and reveals the full amount by touch", a
   const amount = screen.getByRole("button", {
     name: "Show exact amount: 0.000000000123456789 WETH",
   });
-  expect(amount).toHaveTextContent("0.00000000012345678…");
+  expect(amount).toHaveTextContent("0.000000000123456789");
   await user.click(amount);
   expect(
     screen.getByRole("dialog", { name: "Exact token amount" }),
@@ -246,12 +246,13 @@ it("keeps small nonzero amounts visible and reveals the full amount by touch", a
 });
 
 it.each([
-  ["2000.123456789012345678", "2000.1234…"],
-  ["0.000000000123456789", "0.0000000001234…"],
-  ["123456789.123456789", "123456789.1234…"],
-  ["2000.000012345678", "2000.00001234…"],
-  ["0.00001234", "0.00001234"],
-  ["2000", "2000"],
+  ["2000.123456789012345678", "2,000.1235"],
+  ["0.000000000123456789", "0.000000000123456789"],
+  ["123456789.123456789", "123,456,789.123"],
+  ["2000.000012345678", "2,000"],
+  ["0.00001234", "0.000012"],
+  ["2000", "2,000"],
+  ["94.544269912", "94.5443"],
 ])(
   "reveals the exact trigger price %s on click",
   async (strikePrice, compact) => {

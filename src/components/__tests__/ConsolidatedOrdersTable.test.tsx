@@ -377,7 +377,7 @@ test("reviews cancellation of a confirmed local order before API indexing", asyn
   render(<TableView />);
   await connectWallet();
   const amount = await screen.findByRole("cell", {
-    name: "1 WETH for 1980 USDC",
+    name: "1 WETH for 1,980 USDC",
   });
   const row = amount.closest("tr")!;
   const status = within(row).getByRole("cell", { name: "Open" });
@@ -394,7 +394,7 @@ test("reviews cancellation of a confirmed local order before API indexing", asyn
   expect(within(dialog).getByText("Remaining sell")).toBeInTheDocument();
   expect(within(dialog).getByText("1 WETH")).toBeInTheDocument();
   expect(within(dialog).getByText("Minimum buy")).toBeInTheDocument();
-  expect(within(dialog).getByText("1980 USDC")).toBeInTheDocument();
+  expect(within(dialog).getByText("1,980 USDC")).toBeInTheDocument();
   expect(
     within(dialog).getByRole("button", { name: "Confirm cancellation" }),
   ).toBeInTheDocument();
@@ -1124,7 +1124,7 @@ test("keeps indexed API orders visible with a tracking error when saved placemen
   ).not.toBeInTheDocument();
 });
 
-test("shortens API and local amounts without rounding up and retains the full amounts on hover", async () => {
+test("rounds API and local amounts half-up and retains the full amounts on hover", async () => {
   const indexed = apiParent();
   indexed.decodedParams.sellAmount = "1234567890123456789";
   indexed.decodedParams.buyAmount = "4000123456";
@@ -1138,7 +1138,7 @@ test("shortens API and local amounts without rounding up and retains the full am
   await connectWallet();
 
   const apiAmount = await screen.findByRole("cell", {
-    name: "1.2345 WETH for 4000.1234 USDC",
+    name: "1.2346 WETH for 4,000.1235 USDC",
   });
   expect(screen.getByRole("columnheader", { name: "Trigger" })).toBeVisible();
   expect(
@@ -1156,7 +1156,7 @@ test("shortens API and local amounts without rounding up and retains the full am
     ),
   ).toBeInTheDocument();
   const localAmount = screen.getByRole("cell", {
-    name: "2.1001 WETH for 4158.2444 USDC",
+    name: "2.1001 WETH for 4,158.2444 USDC",
   });
   expect(
     within(localAmount).getByTitle(
@@ -1210,7 +1210,7 @@ test("distinguishes tiny positive amounts from zero and preserves exact integer 
     {
       sellAmount: "1",
       buyAmount: "1",
-      display: "<0.0001 WETH for <0.0001 USDC",
+      display: "0.000000000000000001 WETH for 0.000001 USDC",
       full: "0.000000000000000001 WETH for 0.000001 USDC",
     },
     {
@@ -1228,7 +1228,7 @@ test("distinguishes tiny positive amounts from zero and preserves exact integer 
     {
       sellAmount: "9007199254740993123400000000000000",
       buyAmount: "2100000001",
-      display: "9007199254740993.1234 WETH for 2100 USDC",
+      display: "9,007.199T WETH for 2,100 USDC",
       full: "9007199254740993.1234 WETH for 2100.000001 USDC",
     },
     {
@@ -1286,7 +1286,7 @@ test("shows a pending setup stage and its RPC error on the unindexed row", async
   await connectWallet();
 
   const row = (
-    await screen.findByRole("cell", { name: "1 WETH for 1980 USDC" })
+    await screen.findByRole("cell", { name: "1 WETH for 1,980 USDC" })
   ).closest("tr")!;
   expect(within(row).getByText("Pending")).toBeInTheDocument();
   expect(within(row).getByText("Setup pending")).toBeInTheDocument();
@@ -1303,7 +1303,7 @@ test("keeps approvals and the setup wallet prompt out of the table until setup i
   await connectWallet();
   const expectNoOrder = () => {
     expect(
-      screen.queryByRole("cell", { name: "1 WETH for 1980 USDC" }),
+      screen.queryByRole("cell", { name: "1 WETH for 1,980 USDC" }),
     ).not.toBeInTheDocument();
   };
   expectNoOrder();
@@ -1346,7 +1346,7 @@ test("keeps approvals and the setup wallet prompt out of the table until setup i
     });
   }
   const cell = await screen.findByRole("cell", {
-    name: "1 WETH for 1980 USDC",
+    name: "1 WETH for 1,980 USDC",
   });
   const row = cell.closest("tr")!;
   expect(within(row).getByText("Pending")).toBeInTheDocument();
@@ -1361,7 +1361,7 @@ test("refreshes every fifteen seconds until a canonical API replacement is shown
   serveOrders(orders);
   render(<TableView />);
   await connectWallet();
-  await screen.findByRole("cell", { name: "1 WETH for 1980 USDC" });
+  await screen.findByRole("cell", { name: "1 WETH for 1,980 USDC" });
 
   orders.push(apiParent(100, "indexed-replacement", `0x${"BB".repeat(32)}`));
   orders.push(apiParent(100, "duplicate-event", `0x${"bb".repeat(32)}`));
@@ -1380,7 +1380,7 @@ test("refreshes every fifteen seconds until a canonical API replacement is shown
     }),
   ).toBeInTheDocument();
   expect(
-    screen.queryByRole("cell", { name: "1 WETH for 1980 USDC" }),
+    screen.queryByRole("cell", { name: "1 WETH for 1,980 USDC" }),
   ).not.toBeInTheDocument();
   expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(1);
 
@@ -1405,7 +1405,7 @@ test("shows the five-minute API error on an Open row even while an API request i
   await confirm();
   render(<TableView />);
   await connectWallet();
-  await screen.findByRole("cell", { name: "1 WETH for 1980 USDC" });
+  await screen.findByRole("cell", { name: "1 WETH for 1,980 USDC" });
 
   const fetchOrders = global.fetch;
   let release!: () => void;
@@ -1428,7 +1428,7 @@ test("shows the five-minute API error on an Open row even while an API request i
       await jest.advanceTimersByTimeAsync(1);
     });
     const row = screen
-      .getByRole("cell", { name: "1 WETH for 1980 USDC" })
+      .getByRole("cell", { name: "1 WETH for 1,980 USDC" })
       .closest("tr")!;
     expect(within(row).getByRole("alert")).toHaveTextContent(
       "API error: confirmed order not found.",
@@ -1459,7 +1459,7 @@ test("restores an old confirmed Open row and its API error before the first API 
   await connectWallet();
   try {
     const amount = await screen.findByRole("cell", {
-      name: "1 WETH for 1980 USDC",
+      name: "1 WETH for 1,980 USDC",
     });
     const row = amount.closest("tr")!;
     expect(within(row).getByText("Open")).toBeInTheDocument();
@@ -1481,7 +1481,7 @@ test("groups pending placements and active API orders under the Open filter", as
   serveOrders([apiParent()]);
   render(<TableView />);
   await connectWallet();
-  await screen.findByRole("cell", { name: "1 WETH for 1980 USDC" });
+  await screen.findByRole("cell", { name: "1 WETH for 1,980 USDC" });
   await screen.findByRole("row", {
     name: "View order indexed-order on Ethereum",
   });
@@ -1497,7 +1497,7 @@ test("groups pending placements and active API orders under the Open filter", as
     ).not.toBeInTheDocument(),
   );
   expect(
-    screen.getByRole("cell", { name: "1 WETH for 1980 USDC" }),
+    screen.getByRole("cell", { name: "1 WETH for 1,980 USDC" }),
   ).toBeInTheDocument();
   expect(
     screen.getByRole("row", { name: "View order indexed-order on Ethereum" }),
@@ -1533,7 +1533,7 @@ test("keeps last-good failed-chain orders beside a local Open row and clears its
     screen.getByRole("row", { name: "View order indexed-order on Ethereum" }),
   ).toBeInTheDocument();
   const row = screen
-    .getByRole("cell", { name: "1 WETH for 1980 USDC" })
+    .getByRole("cell", { name: "1 WETH for 1,980 USDC" })
     .closest("tr")!;
   expect(within(row).getByText("Open")).toBeInTheDocument();
   expect(within(row).getByRole("alert")).toHaveTextContent(
@@ -1581,7 +1581,7 @@ test("clears local rows on account changes and ignores the old account's late AP
   });
   render(<TableView />);
   await connectWallet();
-  await screen.findByRole("cell", { name: "1 WETH for 1980 USDC" });
+  await screen.findByRole("cell", { name: "1 WETH for 1,980 USDC" });
   try {
     await act(async () => {
       provider.accounts = [otherAccount];
@@ -1589,10 +1589,10 @@ test("clears local rows on account changes and ignores the old account's late AP
     });
     await screen.findByTitle(otherAccount);
     expect(
-      screen.queryByRole("cell", { name: "1 WETH for 1980 USDC" }),
+      screen.queryByRole("cell", { name: "1 WETH for 1,980 USDC" }),
     ).not.toBeInTheDocument();
     const amount = await screen.findByRole("cell", {
-      name: "3 WETH for 5940 USDC",
+      name: "3 WETH for 5,940 USDC",
     });
     expect(
       within(amount.closest("tr")!).getByText("Arbitrum"),
@@ -1601,10 +1601,10 @@ test("clears local rows on account changes and ignores the old account's late AP
       release();
     });
     expect(
-      screen.queryByRole("cell", { name: "1 WETH for 1980 USDC" }),
+      screen.queryByRole("cell", { name: "1 WETH for 1,980 USDC" }),
     ).not.toBeInTheDocument();
     expect(
-      screen.getByRole("cell", { name: "3 WETH for 5940 USDC" }),
+      screen.getByRole("cell", { name: "3 WETH for 5,940 USDC" }),
     ).toBeInTheDocument();
   } finally {
     await act(async () => {
@@ -1622,13 +1622,13 @@ test("shows confirmed local Open rows on all supported chains without detail lin
   render(<TableView />);
   await connectWallet();
 
-  await screen.findAllByRole("cell", { name: "1 WETH for 1980 USDC" });
+  await screen.findAllByRole("cell", { name: "1 WETH for 1,980 USDC" });
   expect(
     screen.getByRole("row", { name: "View order indexed-order on Ethereum" }),
   ).toBeInTheDocument();
   const seen = new Set<string>();
   const amounts = screen.getAllByRole("cell", {
-    name: "1 WETH for 1980 USDC",
+    name: "1 WETH for 1,980 USDC",
   });
   expect(amounts).toHaveLength(4);
   for (const amount of amounts) {

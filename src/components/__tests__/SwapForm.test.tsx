@@ -1130,18 +1130,18 @@ it("applies valid slippage edits immediately and reviews the recalculated minimu
   );
 
   const minimumBuy = screen.getByRole("textbox", { name: "Receive at least" });
-  await waitFor(() => expect(minimumBuy).toHaveValue("246.666665"));
+  await waitFor(() => expect(minimumBuy).toHaveValue("246.6667"));
   await user.click(screen.getByRole("button", { name: "Order settings" }));
   await user.clear(screen.getByRole("textbox", { name: "Slippage (%)" }));
   await user.type(screen.getByRole("textbox", { name: "Slippage (%)" }), "0.5");
-  await waitFor(() => expect(minimumBuy).toHaveValue("245.679011"));
+  await waitFor(() => expect(minimumBuy).toHaveValue("245.679"));
   await user.click(screen.getByRole("button", { name: "Return to order" }));
   await waitFor(() =>
     expect(
       screen.queryByRole("group", { name: "Advanced order settings" }),
     ).not.toBeInTheDocument(),
   );
-  await waitFor(() => expect(minimumBuy).toHaveValue("245.679011"));
+  await waitFor(() => expect(minimumBuy).toHaveValue("245.679"));
   expect(minimumBuy).toBeDisabled();
   expect(onReviewOrder).not.toHaveBeenCalled();
 
@@ -1542,7 +1542,7 @@ it("hands one wallet-scoped exact-sell draft to review and keeps form values for
   await waitFor(() =>
     expect(
       screen.getByRole("textbox", { name: "Receive at least" }),
-    ).toHaveValue("246.666665"),
+    ).toHaveValue("246.6667"),
   );
   await user.click(await findReadyReviewButton());
 

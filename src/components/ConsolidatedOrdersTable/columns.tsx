@@ -7,17 +7,10 @@ import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
 import { chainNames } from "#/lib/publicClients";
 import { PlacementRow } from "#/lib/stopLossPlacement";
 import { OrderStatus } from "#/lib/types";
+import { formatTokenAmount } from "#/utils/amountFormatting";
 
 import { CancelOrderDialog } from "../CancelOrderDialog";
 import { StatusBadge } from "../StatusBadge";
-
-function shortAmount(value: string) {
-  const [whole, fraction = ""] = value.split(".");
-  const visibleFraction = fraction.slice(0, 4).replace(/0+$/, "");
-  if (whole === "0" && !visibleFraction && /[1-9]/.test(fraction))
-    return "<0.0001";
-  return `${whole}${visibleFraction ? `.${visibleFraction}` : ""}`;
-}
 
 function placementLabel(row: PlacementRow) {
   if (row.source !== "local" || row.placement.status === "confirmed")
@@ -34,12 +27,6 @@ function placementLabel(row: PlacementRow) {
       ? "Approval reset confirmed. Approval required."
       : "Approval confirmed. Ready to place.";
   return `${stage} pending`;
-}
-
-function formatPrice(value: number) {
-  return new Intl.NumberFormat("en-US", {
-    maximumSignificantDigits: 8,
-  }).format(value);
 }
 
 function MarketDistance({ order }: { order: PlacementRow }) {
@@ -109,9 +96,17 @@ export function getColumns(): ColumnDef<PlacementRow>[] {
           order.buyToken.decimals === null
             ? `${order.buyAmount} base units`
             : formatUnits(order.buyAmount, order.buyToken.decimals);
+        const displaySell =
+          order.sellToken.decimals === null
+            ? sell
+            : formatTokenAmount(sell, order.sellToken.decimals);
+        const displayBuy =
+          order.buyToken.decimals === null
+            ? buy
+            : formatTokenAmount(buy, order.buyToken.decimals);
         return (
           <div
-            aria-label={`${shortAmount(sell)} ${order.sellToken.symbol} for ${shortAmount(buy)} ${order.buyToken.symbol}`}
+            aria-label={`${displaySell} ${order.sellToken.symbol} for ${displayBuy} ${order.buyToken.symbol}`}
             title={`${sell} ${order.sellToken.symbol} for ${buy} ${order.buyToken.symbol}`}
             className="flex min-w-0 items-center gap-2 xl:gap-2.5"
           >
@@ -135,8 +130,8 @@ export function getColumns(): ColumnDef<PlacementRow>[] {
             </div>
             <div className="min-w-0">
               <p className="whitespace-nowrap text-xs font-semibold tracking-tight tabular-nums">
-                {shortAmount(sell)} {order.sellToken.symbol} for{" "}
-                {shortAmount(buy)} {order.buyToken.symbol}
+                {displaySell} {order.sellToken.symbol} for {displayBuy}{" "}
+                {order.buyToken.symbol}
               </p>
               <p className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
                 <NetworkLogo
@@ -156,11 +151,16 @@ export function getColumns(): ColumnDef<PlacementRow>[] {
       header: "Trigger",
       cell: ({ row: { original: order } }) => (
         <div className="min-w-0">
-          <p className="text-xs font-semibold tabular-nums">
-            {formatPrice(Number(formatUnits(order.strike, 18)))}{" "}
+          <p
+            title={`${formatUnits(order.strike, 18)} ${order.buyToken.symbol}`}
+            className="text-xs font-semibold tabular-nums"
+          >
+            {formatTokenAmount(formatUnits(order.strike, 18))}{" "}
             {order.buyToken.symbol}
           </p>
-          {order.status === OrderStatus.OPEN && <MarketDistance order={order} />}
+          {order.status === OrderStatus.OPEN && (
+            <MarketDistance order={order} />
+          )}
         </div>
       ),
     },

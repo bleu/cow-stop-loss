@@ -22,6 +22,7 @@ import type {
 import type { ChainId } from "#/lib/publicClients";
 import { chainNames } from "#/lib/publicClients";
 import type { DraftOrder } from "#/lib/types";
+import { formatTokenAmount } from "#/utils/amountFormatting";
 
 import { BlockExplorerLink } from "./ExplorerLink";
 
@@ -210,7 +211,7 @@ export function ReviewOrderPanel({
               checked={mode === "limited"}
               onChange={() => setMode("limited")}
               label="Limited"
-              description={`${compactAmount(formatUnits(funding!.requiredAllowance, order.tokenSell.decimals))} ${order.tokenSell.symbol}`}
+              description={`${formatTokenAmount(formatUnits(funding!.requiredAllowance, order.tokenSell.decimals), order.tokenSell.decimals)} ${order.tokenSell.symbol}`}
             />
             <ApprovalChoice
               checked={mode === "unlimited"}
@@ -253,32 +254,16 @@ export function ReviewOrderPanel({
   );
 }
 
-function compactAmount(value: string) {
-  const [whole, fraction = ""] = value.split(".");
-  const leadingZeros = fraction.search(/[1-9]/);
-  const decimalPlaces =
-    whole === "0"
-      ? Math.max(8, leadingZeros + 8)
-      : Math.max(0, 8 - whole.length);
-  if (fraction.length <= decimalPlaces) return value;
-  return `${whole}${decimalPlaces ? `.${fraction.slice(0, decimalPlaces)}` : ""}…`;
-}
-
-function compactPrice(value: string) {
-  const [whole, fraction = ""] = value.split(".");
-  const decimalPlaces = Math.max(0, fraction.search(/[1-9]/)) + 4;
-  if (fraction.length <= decimalPlaces) return value;
-  return `${whole}.${fraction.slice(0, decimalPlaces)}…`;
-}
-
 function PreciseAmount({
   value,
   symbol,
   kind = "amount",
+  decimals,
 }: {
   value: string;
   symbol: string;
   kind?: "amount" | "price";
+  decimals?: number;
 }) {
   const label = kind === "price" ? "trigger price" : "amount";
   return (
@@ -290,9 +275,7 @@ function PreciseAmount({
           aria-label={`Show exact ${label}: ${value} ${symbol}`}
           className="rescue-review-inline-control focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rescue-review-number max-w-full rounded-none text-left underline decoration-dotted decoration-muted-foreground/50 underline-offset-4"
         >
-          <span>
-            {kind === "price" ? compactPrice(value) : compactAmount(value)}
-          </span>
+          <span>{formatTokenAmount(value, decimals)}</span>
           {kind === "amount" && (
             <>
               {" "}
@@ -344,7 +327,11 @@ function AmountSummary({
           height={24}
           className="size-6 shrink-0 rounded-full"
         />
-        <PreciseAmount value={amount} symbol={token.symbol} />
+        <PreciseAmount
+          value={amount}
+          symbol={token.symbol}
+          decimals={token.decimals}
+        />
         <BlockExplorerLink
           type="token"
           identifier={token.address}

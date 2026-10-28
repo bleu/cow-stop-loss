@@ -25,14 +25,19 @@ import type { NextRouter } from "next/router";
 import React from "react";
 import { hydrateRoot } from "react-dom/client";
 import { renderToString } from "react-dom/server";
+import { SWRConfig } from "swr";
 import { disconnect } from "wagmi/actions";
 
 import OrderRoute from "#/app/[chainId]/[safeAddress]/[orderId]/page";
 import LegacyListPage from "#/app/[chainId]/[safeAddress]/page";
 import HomePage from "#/app/app/page";
+import { OracleTokenPrice } from "#/components/OracleTokenPrice";
 import { RootLayout as AppRootLayout } from "#/components/RootLayout";
+import { TokenAmount } from "#/components/TokenAmount";
 import { useOrderList } from "#/hooks/useOrderList";
+import * as oraclePrice from "#/lib/oraclePrice";
 import { publicClientsFromIds, supportedChainIds } from "#/lib/publicClients";
+import { getSupportedTokens } from "#/lib/supportedTokens";
 import { createWagmiConfig } from "#/utils/wagmi";
 
 let config: ReturnType<typeof createWagmiConfig>;
@@ -238,7 +243,7 @@ test("reviews one sell order before asking the wallet to cancel", async () => {
   expect(within(dialog).getByText("Remaining sell")).toBeInTheDocument();
   expect(within(dialog).getByText("1 WETH")).toBeInTheDocument();
   expect(within(dialog).getByText("Minimum buy")).toBeInTheDocument();
-  expect(within(dialog).getByText("2000 USDC")).toBeInTheDocument();
+  expect(within(dialog).getByText("2,000 USDC")).toBeInTheDocument();
   expect(
     within(dialog).getByRole("button", { name: "Confirm cancellation" }),
   ).toBeInTheDocument();
@@ -419,7 +424,7 @@ test("reviews the remaining amounts when cancelling a partially filled order fro
   expect(within(dialog).getByText("Remaining sell")).toBeInTheDocument();
   expect(within(dialog).getByText("0.6 WETH")).toBeInTheDocument();
   expect(within(dialog).getByText("Minimum buy")).toBeInTheDocument();
-  expect(within(dialog).getByText("1200 USDC")).toBeInTheDocument();
+  expect(within(dialog).getByText("1,200 USDC")).toBeInTheDocument();
   expect(within(dialog).getByText("Trigger price")).toBeInTheDocument();
   expect(within(dialog).getByText("2,100 USDC per WETH")).toBeInTheDocument();
   expect(within(dialog).getByText("Expires")).toBeInTheDocument();
@@ -2317,7 +2322,7 @@ test.each(["0", "1000000000000000000"])(
       ["Created", "1970-01-01 00:00:00 UTC"],
       ["Valid until", "1970-01-01 00:00:00 UTC"],
       ["Partial fills", "All or nothing"],
-      ["Sell amount", "1.234567890123456789 WETH"],
+      ["Sell amount", "1.2346 WETH"],
       ["Minimum buy amount", "0 USDC"],
       ["Trigger price", "0 USDC per WETH"],
       ["Limit price", "0 USDC per WETH"],
@@ -2332,6 +2337,11 @@ test.each(["0", "1000000000000000000"])(
         value,
       );
     }
+    expect(
+      within(
+        screen.getByRole("definition", { name: "Sell amount" }),
+      ).getByTitle("1.234567890123456789 WETH"),
+    ).toBeVisible();
     expect(
       screen.getByRole("definition", { name: "Limit price" }).parentElement
         ?.parentElement,
@@ -2435,13 +2445,13 @@ test("shows owned order details, prices and partial execution and allows cancell
   ).toHaveTextContent("1 WETH");
   expect(
     screen.getByRole("definition", { name: "Minimum buy amount" }),
-  ).toHaveTextContent("2000 USDC");
+  ).toHaveTextContent("2,000 USDC");
   expect(
     screen.getByRole("definition", { name: "Trigger price" }),
-  ).toHaveTextContent("2100 USDC per WETH");
+  ).toHaveTextContent("2,100 USDC per WETH");
   expect(
     screen.getByRole("definition", { name: "Limit price" }),
-  ).toHaveTextContent("2000 USDC per WETH");
+  ).toHaveTextContent("2,000 USDC per WETH");
   expect(
     screen.queryByRole("definition", { name: "Execution price" }),
   ).not.toBeInTheDocument();
@@ -2613,7 +2623,7 @@ test("omits executed fee and execution price from filled order details", async (
   ).toHaveTextContent("1 WETH");
   expect(
     screen.getByRole("definition", { name: "Executed buy amount" }),
-  ).toHaveTextContent("2100 USDC");
+  ).toHaveTextContent("2,100 USDC");
   for (const label of ["Executed fee", "Execution price"]) {
     expect(
       screen.queryByRole("definition", { name: label }),
@@ -2876,3 +2886,40 @@ test("connects and disconnects a browser wallet without a chain switch", async (
     screen.queryByRole("button", { name: "Browser wallet" }),
   ).not.toBeInTheDocument();
 });
+
+test.each<[number, string]>([
+  [2634.1, "2,634.1"],
+  [1.235, "1.24"],
+  [0.004, "< 0.01"],
+])(
+  "formats the oracle USD price %s and keeps its full value on hover",
+  async (value, display) => {
+    jest.spyOn(oraclePrice, "fetchOracleUsdPrice").mockResolvedValue(value);
+    renderView(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <OracleTokenPrice chainId={1} oracle={wallet} tokenSymbol="WETH" />
+      </SWRConfig>,
+    );
+    expect(
+      await screen.findByText(`Current price: $${display} per WETH`),
+    ).toHaveAttribute("title", `$${value} per WETH`);
+  },
+);
+
+test.each(["1.23455", 1.23455])(
+  "formats the token amount %s half-up and keeps its full value on hover",
+  (balance) => {
+    renderView(
+      <TokenAmount
+        token={getSupportedTokens(1).buyToken.token}
+        balance={balance}
+        usdPrice={1}
+      />,
+    );
+    expect(screen.getByText("1.2346 USDC")).toHaveAttribute(
+      "title",
+      "1.23455 USDC",
+    );
+    expect(screen.getByText("≈ $1.23")).toHaveAttribute("title", "$1.23455");
+  },
+);

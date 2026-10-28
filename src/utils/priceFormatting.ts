@@ -1,6 +1,5 @@
-export function formatMarketPriceForInput(price: number) {
-  const fourDecimals = price.toFixed(4).replace(/\.?0+$/, "");
-  if (Number(fourDecimals) > 0) return fourDecimals;
+import { formatInputAmount } from "./amountFormatting";
 
-  return price.toFixed(18).replace(/\.?0+$/, "");
+export function formatMarketPriceForInput(price: number) {
+  return formatInputAmount(price);
 }
