@@ -43,6 +43,7 @@ const metadata = {
     sell: "0.1 WETH",
     buy: "USDC",
     trigger: "3000 USDC/WETH",
+    limit: "2970 USDC/WETH",
     expiry: "1 month",
   },
   screenshots: [],
@@ -156,7 +157,7 @@ const metadata = {
         .getByRole("textbox", { name: "Trigger price", exact: true })
         .locator("xpath=ancestor::section[1]"),
       receiveGroup: panel
-        .getByRole("textbox", { name: "Receive at least", exact: true })
+        .locator('output[aria-label="Receive at least"]')
         .locator("xpath=ancestor::section[1]"),
       sellAmount: page.getByRole("textbox", {
         name: "Sell amount",
@@ -166,8 +167,12 @@ const metadata = {
         name: "Trigger price",
         exact: true,
       }),
-      receiveAmount: page.getByRole("textbox", {
-        name: "Receive at least",
+      receiveAmount: page.locator('output[aria-label="Receive at least"]'),
+      limitGroup: panel
+        .getByRole("textbox", { name: "Limit price", exact: true })
+        .locator("xpath=ancestor::section[1]"),
+      limitPrice: panel.getByRole("textbox", {
+        name: "Limit price",
         exact: true,
       }),
       tokenSelector: page.locator('[data-side="sell"] button').first(),
@@ -208,6 +213,8 @@ const metadata = {
             "receiveGroup",
             "sellAmount",
             "triggerPrice",
+            "limitGroup",
+            "limitPrice",
             "receiveAmount",
           ];
     for (const key of requiredFields)
@@ -281,6 +288,9 @@ const metadata = {
       .getByRole("textbox", { name: "Trigger price", exact: true })
       .pressSequentially("3000", { delay: 160 });
     await page
+      .getByRole("textbox", { name: "Limit price", exact: true })
+      .fill("2970");
+    await page
       .getByRole("button", { name: "Review Stop Loss order", exact: true })
       .waitFor({ state: "visible" });
     await page.waitForTimeout(900);
@@ -298,11 +308,17 @@ const metadata = {
     );
     assert.equal(
       await page
-        .getByRole("textbox", { name: "Receive at least", exact: true })
-        .inputValue(),
+        .locator('output[aria-label="Receive at least"]')
+        .getAttribute("title"),
       "297",
     );
-    assert.match(await panel.innerText(), /Market: \$3,500/);
+    assert.equal(
+      await page
+        .getByRole("textbox", { name: "Limit price", exact: true })
+        .inputValue(),
+      "2970",
+    );
+    assert.match(await panel.innerText(), /Market: ≈ 3,500 USDC per WETH/);
     await stage("trigger-entered");
     await page.waitForTimeout(1500);
     await page
@@ -351,7 +367,7 @@ const metadata = {
     assert.match(await review.innerText(), /Nov 25, 2026/);
     assert.equal(await page.evaluate(() => window.ethereum.chainId), "0x1");
     assert.equal(audit.appData.length, 1);
-    assert(audit.quoteRequests > 0 && audit.slippageRequests > 0);
+    assert(audit.quoteRequests > 0);
     conclusions = await captureConclusions({ browser, appUrl, output, audit });
     await page.waitForTimeout(2000);
     completed = true;

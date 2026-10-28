@@ -34,7 +34,7 @@ npm --prefix video run capture
 
 The browser uses a synthetic wallet, fixed prices and balances, and intercepted service responses. It does not use a wallet extension. Signing and transaction methods throw, and unknown service requests fail closed. The form, portfolio, and execution detail are captured from the real local app. Open and filled orders come from read-only fixture responses; no order is placed, signed, or executed on a real service. The video does not include a simulation label.
 
-The example sells 0.1 WETH for USDC on Ethereum, with a trigger of 3000 USDC per WETH and a one-month expiry. The app calculates the 297 USDC minimum receive amount. The execution example reaches a synthetic 3000 market price and shows 300 USDC received. Prices, balances, orders, and account data are synthetic. The form is captured at 640 x 1600 CSS pixels and DPR 2; conclusion pages use 480 x 1600 for larger text. The camera zooms only during token selection. Amount and trigger share one steady form view with a short headline fade. Conclusion captures have separate metadata in `public/captures/conclusions.json`, so their dimensions cannot change the form camera.
+The example sells 0.1 WETH for USDC on Ethereum, with a trigger of 3000 USDC per WETH, a limit price of 2970 USDC per WETH, and a one-month expiry. The app calculates the 297 USDC minimum receive amount. The execution example reaches a synthetic 3000 market price and shows 300 USDC received. Prices, balances, orders, and account data are synthetic. The form is captured at 640 x 1600 CSS pixels and DPR 2; conclusion pages use 480 x 1600 for larger text. The camera zooms only during token selection. Amount and trigger share one steady form view with a short headline fade. Conclusion captures have separate metadata in `public/captures/conclusions.json`, so their dimensions cannot change the form camera.
 
 ## Preview and render
 
@@ -65,7 +65,7 @@ The Zod override uses the patched 4.6.6 release. Remotion 4.0.539 reports that i
 | 8-10.5s  | Real token selection with a brief zoom, then amount entry                                                                                    |
 | 10.5-13s | Change the headline and enter the trigger without moving the form                                                                            |
 | 13-17s   | Open-order cut: real order list and "Your stop-loss is set." Execution cut: trigger reached, then real execution amounts and "Order filled." |
-| 17-23s   | Product name, live-beta call to action, and builder attribution. Return to day during 18-20s.                                                |
+| 17-23s   | Product name, live-beta notice, and builder attribution. Return to day during 18-20s.                                                        |
 
 `timeline.json` sets the duration, scene boundaries, and sound cues. The composition and export check use the same schedule.
 

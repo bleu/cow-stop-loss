@@ -422,22 +422,6 @@ export const ClosingCard = () => {
       >
         Beta is live
       </div>
-      <div
-        style={{
-          position: "absolute",
-          left: 88,
-          right: 88,
-          top: 440,
-          color: foreground,
-          fontSize: 44,
-          lineHeight: 1.3,
-          opacity: interpolate(frame, [0.2 * fps, 0.45 * fps], [0, 1], clamp),
-        }}
-      >
-        Find it on
-        <br />
-        CoW Discord
-      </div>
       <ParachutingCow
         width={354}
         left={363 + Math.sin(frame / 40) * 8}

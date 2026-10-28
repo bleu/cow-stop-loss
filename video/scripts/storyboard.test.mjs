@@ -49,9 +49,21 @@ test("both stories fill 690 frames with no gaps or overlaps", () => {
   assert.ok(timeline.actions.executionVisible < timeline.scenes.closing.from);
 });
 
+test("closing card has no Discord message or replacement", () => {
+  const source = readFileSync(
+    new URL("../src/RescueScenes.tsx", import.meta.url),
+    "utf8",
+  );
+  const closing = source.slice(source.indexOf("export const ClosingCard"));
+  assert.doesNotMatch(closing, /Discord|Find it on/);
+  assert.match(closing, /Beta is live/);
+  assert.match(closing, /Built by/);
+});
+
 test("camera groups include field context and fit the real screenshots", () => {
   assert.equal(capture.passed, true);
   assert.equal(capture.viewport.width, 640);
+  assert.equal(capture.order.limit, "2970 USDC/WETH");
   const panelWidth = capture.screenshots[0].fields.panel.width;
   for (const image of capture.screenshots) {
     const png = { x: 0, y: 0, width: image.width, height: image.height };
@@ -63,10 +75,14 @@ test("camera groups include field context and fit the real screenshots", () => {
       assert.ok(image.fields.reviewAmounts);
       assert.ok(image.fields.reviewTerms);
     } else {
+      assert.ok(
+        contains(image.fields.receiveGroup, image.fields.receiveAmount),
+        `${image.file}: receive summary omits its amount`,
+      );
       for (const [group, input] of [
         ["sellGroup", "sellAmount"],
         ["triggerGroup", "triggerPrice"],
-        ["receiveGroup", "receiveAmount"],
+        ["limitGroup", "limitPrice"],
       ]) {
         assert.ok(
           contains(image.fields[group], image.fields[input]),
