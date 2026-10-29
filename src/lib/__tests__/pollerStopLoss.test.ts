@@ -14,6 +14,7 @@ jest.mock("#/lib/orderSizeLimit", () => ({
   assertOrderSizeLimit: jest.fn(),
 }));
 
+import { AppDataSdk } from "@cowprotocol/sdk-app-data";
 import {
   decodeAbiParameters,
   decodeFunctionData,
@@ -324,8 +325,22 @@ test("uploads a funding pre-hook for the reviewed order's schedule", async () =>
   expect(document.version).toBe("1.1.0");
   expect(document.appCode).toBe("bleu-stop-loss");
   expect(document.metadata.widget.appCode).toBe("bleu-stop-loss");
+  await expect(new AppDataSdk().validateAppDataDoc(document)).resolves.toEqual({
+    success: true,
+  });
+  expect(document.metadata.partnerFee).toEqual({
+    bps: 25,
+    recipient: "0x5D40015034DA6cD75411c54dd826135f725c2498",
+  });
+  expect(global.fetch).toHaveBeenCalledWith(
+    expect.stringContaining(prepared.appDataHash),
+    expect.objectContaining({
+      method: "PUT",
+      body: JSON.stringify({ fullAppData: prepared.fullAppData }),
+    }),
+  );
   expect(prepared.appDataHash).toBe(
-    "0xdf5a54aadac3ea58b7c916e613b142a0a219a2c9e3a74b56902489fcbc6dc530",
+    "0x57cf734ad356a62b09ae9cf339aa35457e0e8d53f21a0dd5746eb296840f7809",
   );
   expect(hook).toMatchObject({
     target: "0xd8088f0d57dB91AC6404FB3a9723A890100a6bB3",
@@ -518,9 +533,9 @@ test("keeps schedule, conditional-order and CoW digest identities distinct", asy
     scheduleId:
       "0xc7a10bd0f099ab322b1e38c1992d923b5d65a054d6bd03ea8cecbe3ab5d15b67",
     paramsHash:
-      "0xea842f1158cf50496c02d99d819541575956f3d4f07519039e485332ee52e232",
+      "0x22ca76df0cdcc326a05f159cf89865c8e7449066bb6c9b836cedb27e127d32e3",
     orderDigest:
-      "0x47fc44ed01381954809169093c4f3c51b6f60f432cb233b262f1174b4ea20419",
+      "0x6aedd3e706cd910a77811420d971ca5696e1102cdaf54fa21dcbf52412193f53",
   });
 });
 

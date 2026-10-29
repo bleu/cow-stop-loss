@@ -1,5 +1,6 @@
 /** @jest-environment jsdom */
 
+import { AppDataSdk } from "@cowprotocol/sdk-app-data";
 import { act, renderHook } from "@testing-library/react";
 import { SWRConfig } from "swr";
 
@@ -219,6 +220,22 @@ it("quotes the debounced sell budget without a slippage recommendation request",
     from: buy.address,
     priceQuality: "fast",
     signingScheme: "eip1271",
+    appData: expect.any(String),
+  });
+  const document = JSON.parse(JSON.parse(options.body).appData);
+  await expect(new AppDataSdk().validateAppDataDoc(document)).resolves.toEqual({
+    success: true,
+  });
+  expect(document).toMatchObject({
+    version: "1.1.0",
+    appCode: "bleu-stop-loss",
+    metadata: {
+      widget: { appCode: "bleu-stop-loss" },
+      partnerFee: {
+        bps: 25,
+        recipient: "0x5D40015034DA6cD75411c54dd826135f725c2498",
+      },
+    },
   });
   expect(
     fetchMock.mock.calls.some(([url]) => url.includes("slippageTolerance")),

@@ -13,6 +13,7 @@ import { formatUnits } from "viem";
 import { NetworkLogo } from "#/components/NetworkLogo";
 import { TokenLogo } from "#/components/TokenLogo";
 import { PixelIcon } from "#/components/ui/pixel-icon";
+import { PARTNER_FEE } from "#/lib/partnerFee";
 import type {
   ApprovalMode,
   FundingSnapshot,
@@ -184,6 +185,22 @@ export function ReviewOrderPanel({
           />
         </section>
       </div>
+
+      <section aria-label="Partner fee" className="rescue-review-terms">
+        <div className="rescue-review-ready">
+          <span className="text-muted-foreground">Partner fee</span>
+          <span>{PARTNER_FEE.bps / 100}%</span>
+        </div>
+        <AddressLine
+          label="Fee recipient"
+          address={PARTNER_FEE.recipient}
+          chainId={chainId}
+        />
+        <p className="text-xs text-muted-foreground">
+          Charged only when your order executes. Your &quot;Receive at
+          least&quot; minimum stays unchanged.
+        </p>
+      </section>
 
       {funding?.combinedCommitmentsExceedBalance && (
         <p
