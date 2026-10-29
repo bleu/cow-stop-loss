@@ -146,8 +146,9 @@ export async function preparePlacement({
   );
   const metadataApi = new AppDataSdk(new ViemAdapter({ provider: client }));
   const document = await metadataApi.generateAppDataDoc({
+    appCode: "bleu-stop-loss",
     metadata: {
-      widget: { appCode: "Stop Loss" },
+      widget: { appCode: "bleu-stop-loss" },
       hooks: {
         version: "0.1.0",
         pre: [
