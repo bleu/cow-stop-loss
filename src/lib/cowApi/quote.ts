@@ -1,9 +1,12 @@
+import { AppDataSdk, type v1_1_0 } from "@cowprotocol/sdk-app-data";
+import { ViemAdapter } from "@cowprotocol/sdk-viem-adapter";
 import { type Address } from "viem";
 import { z } from "zod";
 
 import { composableCowPollerAbi } from "../abis/composableCowPoller";
 import { cowShedFactoryAbi } from "../abis/cowShedFactory";
 import { POLLER_ADDRESS_BY_CHAIN_ID } from "../contracts";
+import { PARTNER_FEE } from "../partnerFee";
 import { type ChainId, publicClientsFromIds } from "../publicClients";
 import { COW_API_URL_BY_CHAIN_ID } from "./api";
 
@@ -36,6 +39,16 @@ export async function fetchSellQuote({
     functionName: "proxyOf",
     args: [account],
   });
+  const metadataApi = new AppDataSdk(new ViemAdapter({ provider: client }));
+  const document: v1_1_0.AppDataRootSchema = {
+    ...(await metadataApi.generateAppDataDoc({ appCode: "bleu-stop-loss" })),
+    version: "1.1.0",
+    metadata: {
+      widget: { appCode: "bleu-stop-loss" },
+      partnerFee: PARTNER_FEE,
+    },
+  };
+  const { appDataContent } = await metadataApi.getAppDataInfo(document);
   const response = await fetch(
     `${COW_API_URL_BY_CHAIN_ID[chainId]}/api/v1/quote`,
     {
@@ -49,6 +62,7 @@ export async function fetchSellQuote({
         sellAmountBeforeFee: sellAmount,
         priceQuality: "fast",
         signingScheme: "eip1271",
+        appData: appDataContent,
       }),
     },
   );
