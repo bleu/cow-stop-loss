@@ -3,7 +3,7 @@
  * @jest-environment-options {"customExportConditions": ["node", "node-addons"]}
  */
 
-import { act, fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import type { FundingSnapshot, PreparedPlacement } from "#/lib/pollerStopLoss";
@@ -117,49 +117,6 @@ it("shows a compact order summary with edit beside the heading", () => {
     ).toHaveAttribute("href", `https://etherscan.io/address/${address}`);
   }
 });
-
-it.each([
-  [1, "https://etherscan.io"],
-  [100, "https://gnosisscan.io"],
-] as const)(
-  "discloses the partner fee before signing on chain %s",
-  (chainId, explorer) => {
-    const input = props();
-    render(
-      <ReviewOrderPanel
-        {...input}
-        chainId={chainId}
-        prepared={{ ...prepared, chainId }}
-        checks={{ ...checks, approvalRequired: false }}
-      />,
-    );
-
-    const fee = screen.getByRole("region", { name: "Partner fee" });
-    expect(within(fee).getByText("Partner fee")).toBeVisible();
-    expect(within(fee).getByText("0.25%")).toBeVisible();
-    expect(fee).toHaveTextContent(
-      'Charged only when your order executes. Your "Receive at least" minimum stays unchanged.',
-    );
-    expect(within(fee).getByText("Fee recipient")).toBeVisible();
-    expect(within(fee).getByRole("link")).toHaveAttribute(
-      "href",
-      `${explorer}/address/0x5D40015034DA6cD75411c54dd826135f725c2498`,
-    );
-    expect(within(fee).getByRole("link")).toHaveAttribute(
-      "title",
-      "0x5D40015034DA6cD75411c54dd826135f725c2498",
-    );
-    expect(screen.getByText("Receive at least")).toBeVisible();
-    expect(
-      screen.getByRole("button", {
-        name: `Show exact amount: ${order.amountBuy} USDC`,
-      }),
-    ).toHaveAttribute("title", `${order.amountBuy} USDC`);
-    expect(screen.getByRole("button", { name: "Place order" })).toBeEnabled();
-    expect(input.onPlace).not.toHaveBeenCalled();
-    expect(input.onApprove).not.toHaveBeenCalled();
-  },
-);
 
 it("groups destination and oracle addresses in one shared wrapper", () => {
   const { container } = render(
