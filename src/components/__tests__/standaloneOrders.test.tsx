@@ -883,7 +883,7 @@ test("closes the review when an in-flight refresh replaces the selected row", as
   ).toBeInTheDocument();
 });
 
-test("keeps wrong-network retry ready without submitting or observing a transaction", async () => {
+test("switches to the order chain before allowing cancellation", async () => {
   serveOrders([parent]);
   cancellationRpc();
   const provider = new BrowserWallet();
@@ -907,21 +907,101 @@ test("keeps wrong-network retry ready without submitting or observing a transact
     }),
   );
   const dialog = await screen.findByRole("dialog");
+  const elements = dialog.querySelectorAll("*").length;
+  const walletRequest = BrowserWallet.prototype.request.bind(provider);
+  let finishSwitch!: () => void;
+  request.mockImplementation(async (args) => {
+    if (args.method === "wallet_switchEthereumChain")
+      await new Promise<void>((resolve) => {
+        finishSwitch = resolve;
+      });
+    return walletRequest(args);
+  });
   fireEvent.click(
-    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
+    within(dialog).getByRole("button", { name: "Switch to Ethereum" }),
   );
   expect(
-    await screen.findByText("Could not cancel the order. Please try again."),
-  ).toBeInTheDocument();
-  fireEvent.click(
-    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
+    await within(dialog).findByRole("button", { name: "Switching chain..." }),
+  ).toBeDisabled();
+  expect(dialog.querySelectorAll("*")).toHaveLength(elements);
+  expect(request).toHaveBeenCalledWith(
+    expect.objectContaining({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: "0x1" }],
+    }),
   );
-  expect(
-    await screen.findByText("Could not cancel the order. Please try again."),
-  ).toBeInTheDocument();
   expect(
     request.mock.calls.some(([args]) => args.method === "eth_sendTransaction"),
   ).toBe(false);
+  await act(async () => finishSwitch());
+  const confirm = await within(dialog).findByRole("button", {
+    name: "Confirm cancellation",
+  });
+  expect(confirm).toBeEnabled();
+  expect(dialog).toBeVisible();
+  expect(dialog.querySelectorAll("*")).toHaveLength(elements);
+  expect(
+    request.mock.calls.some(([args]) => args.method === "eth_sendTransaction"),
+  ).toBe(false);
+  fireEvent.click(confirm);
+  await waitFor(
+    () =>
+      expect({
+        methods: request.mock.calls.map(([args]) => args.method),
+        dialog: dialog.textContent,
+      }).toEqual(
+        expect.objectContaining({
+          methods: expect.arrayContaining(["eth_sendTransaction"]),
+        }),
+      ),
+    { timeout: 4000 },
+  );
+});
+
+test("allows another chain switch after the wallet rejects it", async () => {
+  serveOrders([parent]);
+  cancellationRpc();
+  const provider = new BrowserWallet();
+  provider.chainId = 100;
+  provider.rejectSwitch = true;
+  const request = jest.spyOn(provider, "request");
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: provider,
+  });
+  render(
+    <RootLayout>
+      <OrderPage
+        params={{ safeAddress: wallet, chainId: 1, orderId: "stop-loss-1" }}
+      />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  fireEvent.click(
+    await screen.findByRole("button", {
+      name: "Cancel order stop-loss-1 on Ethereum",
+    }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Switch to Ethereum" }),
+  );
+  await waitFor(() =>
+    expect(
+      within(dialog).getByRole("button", { name: "Switch to Ethereum" }),
+    ).toBeEnabled(),
+  );
+  expect(provider.chainId).toBe(100);
+  expect(request).not.toHaveBeenCalledWith(
+    expect.objectContaining({ method: "eth_sendTransaction" }),
+  );
+  provider.rejectSwitch = false;
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Switch to Ethereum" }),
+  );
+  expect(
+    await within(dialog).findByRole("button", { name: "Confirm cancellation" }),
+  ).toBeEnabled();
 });
 
 test("stops observation on close and starts a fresh review without the abandoned transaction", async () => {

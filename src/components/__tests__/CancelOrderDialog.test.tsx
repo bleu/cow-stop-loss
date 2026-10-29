@@ -34,6 +34,7 @@ jest.mock("wagmi", () => ({
   useAccount: () => ({ address: account, chainId: 1 }),
   useConfig: () => ({}),
   useSendTransaction: () => ({ sendTransactionAsync: send }),
+  useSwitchChain: () => ({ switchChainAsync: jest.fn(), isPending: false }),
 }));
 jest.mock("wagmi/actions", () => ({
   getAccount: () => ({ address: account, chainId: 1 }),

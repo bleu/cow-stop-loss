@@ -9,7 +9,12 @@ import {
 } from "@bleu/ui";
 import { useEffect, useRef, useState } from "react";
 import { formatUnits, type Hex } from "viem";
-import { useAccount, useConfig, useSendTransaction } from "wagmi";
+import {
+  useAccount,
+  useConfig,
+  useSendTransaction,
+  useSwitchChain,
+} from "wagmi";
 import { getAccount } from "wagmi/actions";
 
 import { PixelIcon } from "#/components/ui/pixel-icon";
@@ -34,8 +39,8 @@ export function CancelOrderDialog({
   order: StopLossOrder;
   compact?: boolean;
 }) {
-  const { address, chainId } = useAccount();
-  const identity = `${address?.toLowerCase()}:${chainId}:${order.chainId}:${order.owner.toLowerCase()}:${order.hash.toLowerCase()}:${order.parentId}`;
+  const { address } = useAccount();
+  const identity = `${address?.toLowerCase()}:${order.chainId}:${order.owner.toLowerCase()}:${order.hash.toLowerCase()}:${order.parentId}`;
   return <OrderCancellation key={identity} order={order} compact={compact} />;
 }
 
@@ -87,7 +92,8 @@ function CancellationReview({
   close: () => void;
 }) {
   const [order] = useState(reviewedOrder);
-  const { address } = useAccount();
+  const { address, chainId } = useAccount();
+  const { switchChainAsync, isPending: isSwitchingChain } = useSwitchChain();
   const { sendTransactionAsync } = useSendTransaction();
   const config = useConfig();
   const overlay = useCancellationOverlay();
@@ -103,8 +109,20 @@ function CancellationReview({
       clearTimeout(timer.current);
     };
   }, []);
+  const needsChainSwitch = chainId !== order.chainId;
+  useEffect(() => {
+    if (status === "loading" && needsChainSwitch) close();
+  }, [status, needsChainSwitch, close]);
   const submit = async () => {
-    if (!address || status === "loading") return;
+    if (!address || status === "loading" || isSwitchingChain) return;
+    if (needsChainSwitch) {
+      try {
+        await switchChainAsync({ chainId: order.chainId });
+      } catch (cause) {
+        if (!stopped.current) showOrderError("cancel", cause);
+      }
+      return;
+    }
     setStatus("loading");
     if (retryObservation.current) {
       await retryObservation.current();
@@ -261,14 +279,18 @@ function CancellationReview({
       <Button
         variant="destructive"
         className="rescue-danger-button pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-12 w-full rounded-none font-semibold"
-        disabled={status === "loading"}
+        disabled={status === "loading" || isSwitchingChain}
         onClick={() => void submit()}
       >
-        {status === "loading"
-          ? walletPrompt
-            ? "Waiting for wallet…"
-            : "Cancelling…"
-          : "Confirm cancellation"}
+        {isSwitchingChain
+          ? "Switching chain..."
+          : status === "loading"
+            ? walletPrompt
+              ? "Waiting for wallet…"
+              : "Cancelling…"
+            : needsChainSwitch
+              ? `Switch to ${chainNames[order.chainId]}`
+              : "Confirm cancellation"}
       </Button>
     </DialogContent>
   );
