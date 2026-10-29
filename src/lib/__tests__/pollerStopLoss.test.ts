@@ -322,8 +322,10 @@ test("uploads a funding pre-hook for the reviewed order's schedule", async () =>
   const hook = document.metadata.hooks.pre[0];
 
   expect(document.version).toBe("1.1.0");
+  expect(document.appCode).toBe("bleu-stop-loss");
+  expect(document.metadata.widget.appCode).toBe("bleu-stop-loss");
   expect(prepared.appDataHash).toBe(
-    "0x9cc2758400d8a259798ab3e558ff74ecaa53c8b83d6eae132022e08b6d34e2ae",
+    "0xdf5a54aadac3ea58b7c916e613b142a0a219a2c9e3a74b56902489fcbc6dc530",
   );
   expect(hook).toMatchObject({
     target: "0xd8088f0d57dB91AC6404FB3a9723A890100a6bB3",
@@ -516,9 +518,9 @@ test("keeps schedule, conditional-order and CoW digest identities distinct", asy
     scheduleId:
       "0xc7a10bd0f099ab322b1e38c1992d923b5d65a054d6bd03ea8cecbe3ab5d15b67",
     paramsHash:
-      "0xcb3a06f7a2e5cd07d0f78d4c6039d19a6fbe9c188cff088da129929f75a40b3a",
+      "0xea842f1158cf50496c02d99d819541575956f3d4f07519039e485332ee52e232",
     orderDigest:
-      "0xc22a14dc364d83ca22dae70b50268a88ce17bb9291986857e29b4eea9734cad1",
+      "0x47fc44ed01381954809169093c4f3c51b6f60f432cb233b262f1174b4ea20419",
   });
 });
 
