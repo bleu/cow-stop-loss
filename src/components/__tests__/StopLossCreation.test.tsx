@@ -23,6 +23,16 @@ jest.mock("#/lib/pollerStopLoss", () => ({
   assertPlacementOrderSize: jest.fn(),
 }));
 
+jest.mock("#/lib/analytics", () => ({
+  ...jest.requireActual("#/lib/analytics"),
+  analytics: {
+    ...jest.requireActual("#/lib/analytics").analytics,
+    reviewed: jest.fn(),
+    placementRequested: jest.fn(),
+    placementOutcome: jest.fn(),
+  },
+}));
+
 import { toast } from "@bleu/ui";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, render, screen, waitFor, within } from "@testing-library/react";
@@ -46,6 +56,7 @@ import {
   getStopLossPlacement,
   resumeStopLossPlacement,
 } from "#/hooks/useStopLossPlacement";
+import { analytics } from "#/lib/analytics";
 import { STOP_LOSS_ADDRESS } from "#/lib/contracts";
 import {
   assertOrderSizeLimit,
@@ -82,6 +93,9 @@ jest.mock("wagmi", () => ({
 }));
 
 beforeEach(() => {
+  jest.mocked(analytics.reviewed).mockClear();
+  jest.mocked(analytics.placementRequested).mockClear();
+  jest.mocked(analytics.placementOutcome).mockClear();
   jest.mocked(assertOrderSizeLimit).mockReset().mockResolvedValue(undefined);
   jest
     .mocked(assertPlacementOrderSize)
@@ -290,6 +304,7 @@ it.each([true, false])(
       ).not.toBeInTheDocument();
       expect(screen.getByRole("button", { name: /Validating/ })).toBeDisabled();
       expect(onReview).not.toHaveBeenCalled();
+      expect(analytics.reviewed).not.toHaveBeenCalled();
     } finally {
       await act(async () => {
         releaseUpload();
@@ -299,6 +314,17 @@ it.each([true, false])(
       name: "Review stop-loss order",
     });
     expect(onReview).toHaveBeenCalledTimes(1);
+    expect(analytics.reviewed).toHaveBeenCalledTimes(1);
+    expect(analytics.reviewed).toHaveBeenCalledWith(
+      expect.objectContaining({
+        account,
+        chainId: 1,
+        draft: expect.objectContaining({
+          amountSell: "1",
+          strikePrice: "2000",
+        }),
+      }),
+    );
     expect(
       within(review).getByRole("button", {
         name: approvalRequired ? "Approve WETH" : "Place order",
@@ -308,6 +334,7 @@ it.each([true, false])(
       Boolean(within(review).queryByRole("radio", { name: "Limited" })),
     ).toBe(approvalRequired);
     expect(sendTransactionAsync).not.toHaveBeenCalled();
+    expect(analytics.placementRequested).not.toHaveBeenCalled();
   },
 );
 
@@ -354,6 +381,7 @@ it.each(["preparation", "permission checks"])(
       screen.queryByRole("region", { name: "Review stop-loss order" }),
     ).not.toBeInTheDocument();
     expect(onReview).not.toHaveBeenCalled();
+    expect(analytics.reviewed).not.toHaveBeenCalled();
   },
 );
 
@@ -408,6 +436,7 @@ it.each(["approval", "setup"] as const)(
       ),
     );
     expect(sendTransactionAsync).not.toHaveBeenCalled();
+    expect(analytics.placementRequested).not.toHaveBeenCalled();
     expect(
       getStopLossPlacement().getPendingTransactions({ account, chainId: 1 }),
     ).toEqual([]);
@@ -465,6 +494,7 @@ it.each(["approval", "setup"] as const)(
     });
 
     expect(sendTransactionAsync).not.toHaveBeenCalled();
+    expect(analytics.placementRequested).not.toHaveBeenCalled();
     expect(
       screen.queryByRole("region", { name: "Review stop-loss order" }),
     ).not.toBeInTheDocument();
@@ -573,6 +603,22 @@ it("confirms approval before enabling Place and does not send setup automaticall
     }),
   );
   expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
+  expect(analytics.reviewed).toHaveBeenCalledTimes(1);
+  expect(analytics.placementRequested).toHaveBeenCalledTimes(1);
+  expect(analytics.placementRequested).toHaveBeenCalledWith(
+    expect.objectContaining({
+      stage: "approval",
+      status: "prompting",
+      prepared: expect.objectContaining({ account }),
+    }),
+  );
+  expect(analytics.placementOutcome).toHaveBeenCalledWith(
+    expect.objectContaining({
+      stage: "approval",
+      outcome: "success",
+      record: expect.objectContaining({ status: "ready" }),
+    }),
+  );
   expect(localStorage.getItem("stop-loss-placement") ?? "").not.toContain(
     '"draft"',
   );
@@ -828,6 +874,7 @@ it.each(["approval", "approval-reset"] as const)(
     );
     expect(placement.getRecords({ account, chainId: 1 })).toEqual([]);
     expect(sendTransactionAsync).not.toHaveBeenCalled();
+    expect(analytics.placementRequested).not.toHaveBeenCalled();
   },
 );
 

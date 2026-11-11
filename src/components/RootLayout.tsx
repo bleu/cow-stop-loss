@@ -9,6 +9,7 @@ import { type State, WagmiProvider } from "wagmi";
 
 import { wagmiConfig } from "#/utils/wagmi";
 
+import { AnalyticsProvider } from "./AnalyticsProvider";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { OrderToaster } from "./orderNotifications";
@@ -58,28 +59,30 @@ export function RootLayout({
           modalSize="compact"
           appInfo={{ appName: "CoW Air Rescue" }}
         >
-          <SWRConfig value={swrConfig}>
-            <div
-              className="rescue-shell flex flex-col"
-              data-scene-paused={scenePaused}
-            >
-              <Header
-                linkUrl="/"
-                isLandingPage={pathname === "/"}
-                imageSrc={`/assets/air-rescue/passenger-${theme}.svg`}
-                theme={theme}
-                onToggleTheme={toggleTheme}
-              />
-              <div className="app-scroll-area bg-transparent">{children}</div>
-              <Footer
-                githubLink="https://github.com/bleu/cow-stop-loss"
-                discordLink="https://discord.gg/cowprotocol"
-                scenePaused={scenePaused}
-                onToggleScene={() => setScenePaused((paused) => !paused)}
-              />
-            </div>
-            <OrderToaster />
-          </SWRConfig>
+          <AnalyticsProvider>
+            <SWRConfig value={swrConfig}>
+              <div
+                className="rescue-shell flex flex-col"
+                data-scene-paused={scenePaused}
+              >
+                <Header
+                  linkUrl="/"
+                  isLandingPage={pathname === "/"}
+                  imageSrc={`/assets/air-rescue/passenger-${theme}.svg`}
+                  theme={theme}
+                  onToggleTheme={toggleTheme}
+                />
+                <div className="app-scroll-area bg-transparent">{children}</div>
+                <Footer
+                  githubLink="https://github.com/bleu/cow-stop-loss"
+                  discordLink="https://discord.gg/cowprotocol"
+                  scenePaused={scenePaused}
+                  onToggleScene={() => setScenePaused((paused) => !paused)}
+                />
+              </div>
+              <OrderToaster />
+            </SWRConfig>
+          </AnalyticsProvider>
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>

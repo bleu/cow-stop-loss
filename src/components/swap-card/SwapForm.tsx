@@ -13,6 +13,7 @@ import { useOrderQuote } from "#/hooks/useOrderQuote";
 import { useOrderSizeLimit } from "#/hooks/useOrderSizeLimit";
 import { useSwapTokenBalances } from "#/hooks/useSwapTokenBalances";
 import { useTokenPairPrice } from "#/hooks/useTokenPairPrice";
+import { analytics } from "#/lib/analytics";
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import { assertOrderSizeLimit } from "#/lib/orderSizeLimit";
 import { DEFAULT_SLIPPAGE_PERCENT } from "#/lib/orderSlippage";
@@ -54,6 +55,10 @@ function WalletSwapForm({
   const { chainId: accountChainId, address: walletAddress } = useAccount();
   const chainId = (accountChainId ?? 1) as ChainId;
   const { buyToken, unavailableReason } = getSupportedTokens(chainId);
+  const recordEdit = () => {
+    if (walletAddress && !reviewDisabled && !unavailableReason)
+      analytics.creationStarted({ account: walletAddress, chainId });
+  };
 
   const [setCurrentDraftOrder, createDraftOrder] = useDraftOrder((state) => [
     state.setCurrentDraftOrder,
@@ -263,7 +268,11 @@ function WalletSwapForm({
       }}
       className="rescue-swap-form flex w-full flex-1 flex-col"
     >
-      <fieldset disabled={form.formState.isSubmitting} className="contents">
+      <fieldset
+        disabled={form.formState.isSubmitting}
+        onChangeCapture={recordEdit}
+        className="contents"
+      >
         <Card className="flex w-full min-w-0 flex-1 flex-col rounded-none border-0 bg-transparent p-0 shadow-none">
           <CardContent className="rescue-swap-content grid flex-1 gap-3 p-0">
             <AdvancedSettingsPanel
@@ -272,7 +281,7 @@ function WalletSwapForm({
               }
               open={settingsOpen}
               onOpenChange={setSettingsOpen}
-              orderTiming={<ValidToInput />}
+              orderTiming={<ValidToInput onEdit={recordEdit} />}
               title={
                 <h2
                   id="place-order-title"
@@ -295,15 +304,21 @@ function WalletSwapForm({
                   {unavailableReason}
                 </p>
               )}
-              <TokenInputCard side="Sell" />
+              <TokenInputCard side="Sell" onEdit={recordEdit} />
               <PriceInputCard
                 key={`${tokenSell?.address.toLowerCase()}:${tokenBuy?.address.toLowerCase()}`}
               />
               <LimitPriceInputCard
                 key={`limit:${pairKey}`}
                 defaultSlippage={defaultSlippage}
-                onManualEdit={() => setDefaultSlippage(false)}
-                onResetToDefault={resetToDefault}
+                onManualEdit={() => {
+                  recordEdit();
+                  setDefaultSlippage(false);
+                }}
+                onResetToDefault={() => {
+                  recordEdit();
+                  resetToDefault();
+                }}
               />
               <TokenInputCard side="Buy" />
               {quote.quoteError && (

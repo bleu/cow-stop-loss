@@ -12,12 +12,14 @@ import {
   within,
 } from "@testing-library/react";
 
+import { analytics } from "#/lib/analytics";
 import {
   buildCancellation,
   CancellationRevertedError,
   observeCancellation,
 } from "#/lib/stopLossCancellation";
 import type { StopLossOrder } from "#/lib/stopLossOrders";
+import { PlacementNotSubmittedError } from "#/lib/stopLossPlacement";
 import { OrderStatus } from "#/lib/types";
 
 import { CancelOrderDialog } from "../CancelOrderDialog";
@@ -26,18 +28,20 @@ import { OrderToaster } from "../orderNotifications";
 const account = "0x1111111111111111111111111111111111111111";
 const send = jest.fn();
 const confirm = jest.fn();
+const switchChain = jest.fn();
+let walletChainId = 1;
 jest.mock("@bleu/ui", () => ({
   ...jest.requireActual("@bleu/ui"),
   toast: jest.fn(),
 }));
 jest.mock("wagmi", () => ({
-  useAccount: () => ({ address: account, chainId: 1 }),
+  useAccount: () => ({ address: account, chainId: walletChainId }),
   useConfig: () => ({}),
   useSendTransaction: () => ({ sendTransactionAsync: send }),
-  useSwitchChain: () => ({ switchChainAsync: jest.fn(), isPending: false }),
+  useSwitchChain: () => ({ switchChainAsync: switchChain, isPending: false }),
 }));
 jest.mock("wagmi/actions", () => ({
-  getAccount: () => ({ address: account, chainId: 1 }),
+  getAccount: () => ({ address: account, chainId: walletChainId }),
 }));
 jest.mock("#/hooks/useOrderList", () => ({
   useCancellationOverlay: () => ({ confirm }),
@@ -80,6 +84,10 @@ const order: StopLossOrder = {
 };
 beforeEach(() => {
   jest.clearAllMocks();
+  walletChainId = 1;
+  switchChain.mockReset().mockResolvedValue(undefined);
+  jest.spyOn(analytics, "cancellationRequested").mockImplementation(() => {});
+  jest.spyOn(analytics, "cancellationOutcome").mockImplementation(() => {});
   jest.mocked(buildCancellation).mockResolvedValue({
     account,
     order,
@@ -96,6 +104,8 @@ beforeEach(() => {
   send.mockResolvedValue(`0x${"cd".repeat(32)}`);
   jest.mocked(observeCancellation).mockResolvedValue(true);
 });
+afterEach(() => jest.restoreAllMocks());
+
 async function openReview() {
   render(<CancelOrderDialog order={order} />);
   fireEvent.click(
@@ -154,6 +164,15 @@ test("keeps the card stable while signing and pending, then closes with an order
     ).toBeDisabled(),
   );
   expect(dialog.querySelectorAll("*")).toHaveLength(elements);
+  expect(analytics.cancellationRequested).toHaveBeenCalledTimes(1);
+  expect(analytics.cancellationRequested).toHaveBeenCalledWith(
+    { account, chainId: 1 },
+    order,
+  );
+  expect(
+    jest.mocked(analytics.cancellationRequested).mock.invocationCallOrder[0],
+  ).toBeLessThan(send.mock.invocationCallOrder[0]);
+  expect(analytics.cancellationOutcome).not.toHaveBeenCalled();
   await act(async () => {
     sign(`0x${"cd".repeat(32)}`);
   });
@@ -168,6 +187,12 @@ test("keeps the card stable while signing and pending, then closes with an order
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
   );
   expect(confirm).toHaveBeenCalledWith(account, order);
+  expect(analytics.cancellationOutcome).toHaveBeenCalledTimes(1);
+  expect(analytics.cancellationOutcome).toHaveBeenCalledWith(
+    { account, chainId: 1 },
+    order,
+    "success",
+  );
   const notification = jest.mocked(toast).mock.calls.at(-1)![0];
   expect(notification.title).toBe("Order cancelled.");
   expect(notification.action?.props.children.props.href).toBe(
@@ -192,6 +217,12 @@ test("restores the original action after rejection and shows only a short toast"
   );
   expect(within(dialog).queryByRole("alert")).not.toBeInTheDocument();
   expect(dialog).not.toHaveTextContent("Retry");
+  expect(analytics.cancellationRequested).toHaveBeenCalledTimes(1);
+  expect(analytics.cancellationOutcome).toHaveBeenCalledWith(
+    { account, chainId: 1 },
+    order,
+    "rejected",
+  );
   fireEvent.click(
     within(dialog).getByRole("button", { name: "Confirm cancellation" }),
   );
@@ -237,6 +268,8 @@ test("the original action checks an uncertain transaction instead of sending aga
   );
   await waitFor(() => expect(observeCancellation).toHaveBeenCalledTimes(2));
   expect(send).toHaveBeenCalledTimes(1);
+  expect(analytics.cancellationRequested).toHaveBeenCalledTimes(1);
+  expect(analytics.cancellationOutcome).not.toHaveBeenCalled();
 });
 test("a reverted transaction allows a fresh submission from the original action", async () => {
   jest
@@ -251,8 +284,78 @@ test("a reverted transaction allows a fresh submission from the original action"
       within(dialog).getByRole("button", { name: "Confirm cancellation" }),
     ).toBeEnabled(),
   );
+  expect(analytics.cancellationOutcome).toHaveBeenCalledWith(
+    { account, chainId: 1 },
+    order,
+    "failed",
+  );
   fireEvent.click(
     within(dialog).getByRole("button", { name: "Confirm cancellation" }),
   );
   await waitFor(() => expect(send).toHaveBeenCalledTimes(2));
+  expect(analytics.cancellationRequested).toHaveBeenCalledTimes(2);
+});
+
+test.each([
+  ["rejected", Object.assign(new Error("Rejected"), { code: 4001 })],
+  ["failed", new PlacementNotSubmittedError("Insufficient funds")],
+  ["pending", new Error("Wallet response lost")],
+] as const)("classifies a %s wallet sender outcome", async (outcome, error) => {
+  send.mockRejectedValue(error);
+  const dialog = await openReview();
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+  );
+  await waitFor(() =>
+    expect(analytics.cancellationOutcome).toHaveBeenCalledWith(
+      { account, chainId: 1 },
+      order,
+      outcome,
+    ),
+  );
+  expect(analytics.cancellationRequested).toHaveBeenCalledTimes(1);
+  expect(observeCancellation).not.toHaveBeenCalled();
+  expect(confirm).not.toHaveBeenCalled();
+  if (outcome === "pending") {
+    jest.mocked(observeCancellation).mockResolvedValue(true);
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+    );
+    await waitFor(() =>
+      expect(analytics.cancellationOutcome).toHaveBeenCalledWith(
+        { account, chainId: 1 },
+        order,
+        "success",
+      ),
+    );
+    expect(send).toHaveBeenCalledTimes(1);
+    expect(analytics.cancellationRequested).toHaveBeenCalledTimes(1);
+  }
+});
+
+test("chain switching does not count as a cancellation request", async () => {
+  walletChainId = 100;
+  const dialog = await openReview();
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Switch to Ethereum" }),
+  );
+  await waitFor(() => expect(switchChain).toHaveBeenCalledWith({ chainId: 1 }));
+  expect(buildCancellation).not.toHaveBeenCalled();
+  expect(send).not.toHaveBeenCalled();
+  expect(analytics.cancellationRequested).not.toHaveBeenCalled();
+  expect(analytics.cancellationOutcome).not.toHaveBeenCalled();
+});
+
+test("failed cancellation preflight does not count as a wallet request", async () => {
+  jest
+    .mocked(buildCancellation)
+    .mockRejectedValue(new Error("Order no longer open"));
+  const dialog = await openReview();
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Confirm cancellation" }),
+  );
+  await waitFor(() => expect(toast).toHaveBeenCalled());
+  expect(send).not.toHaveBeenCalled();
+  expect(analytics.cancellationRequested).not.toHaveBeenCalled();
+  expect(analytics.cancellationOutcome).not.toHaveBeenCalled();
 });

@@ -9,6 +9,7 @@ import {
   resumeStopLossPlacement,
   useStopLossPlacement,
 } from "#/hooks/useStopLossPlacement";
+import { analytics } from "#/lib/analytics";
 import {
   invalidatePlacementReads,
   PLACEMENT_READ_MAX_AGE,
@@ -248,6 +249,7 @@ export function StopLossCreation({ onReview }: { onReview?: () => void }) {
       });
       if (!open) onReview?.();
       setOpen(true);
+      if (!existing) analytics.reviewed(prepared);
     } catch (error) {
       if (
         currentScope.current !== selectedScope ||
@@ -309,7 +311,7 @@ export function StopLossCreation({ onReview }: { onReview?: () => void }) {
         await placement.submit(prepared, "approval", {
           approvalAmount:
             mode === "unlimited" ? maxUint256 : review.checks.requiredAllowance,
-          send: async () => {
+          send: async (record) => {
             await checkSizeBeforeSend(prepared);
             if (
               currentScope.current !== selectedScope ||
@@ -322,6 +324,7 @@ export function StopLossCreation({ onReview }: { onReview?: () => void }) {
               throw new PlacementNotSubmittedError(
                 "Funding changed. Review the order again.",
               );
+            analytics.placementRequested(record);
             const hash = await sendTransactionAsync(transaction);
             return {
               id: hash,
@@ -401,7 +404,7 @@ export function StopLossCreation({ onReview }: { onReview?: () => void }) {
         return;
       await placement.submit(prepared, "setup", {
         settlementAmount: review.checks.requiredSettlementAllowance,
-        send: async () => {
+        send: async (record) => {
           await checkSizeBeforeSend(prepared);
           if (
             currentScope.current !== selectedScope ||
@@ -414,6 +417,7 @@ export function StopLossCreation({ onReview }: { onReview?: () => void }) {
             throw new PlacementNotSubmittedError(
               "Funding changed. Review the order again.",
             );
+          analytics.placementRequested(record);
           const hash = await sendTransactionAsync(transaction);
           return {
             id: hash,

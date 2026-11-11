@@ -1293,3 +1293,212 @@ test("legacy reads are read-only and durable cleanup holds the storage lock", as
   expect(setItem).toHaveBeenCalledTimes(1);
   expect(JSON.parse(storage.getItem("stop-loss-placement")!).version).toBe(2);
 });
+
+describe("placement lifecycle observer", () => {
+  test.each(["approval-reset", "approval", "setup"] as const)(
+    "observes committed %s success once and ignores historical hydration",
+    async (stage) => {
+      const options = environment();
+      const onLifecycle = jest.fn(() => {
+        expect(placement.getRecords(scope)[0].status).toBe(
+          stage === "setup" ? "confirmed" : "ready",
+        );
+      });
+      const placement = createStopLossPlacement({ ...options, onLifecycle });
+      await placement.submit(prepared, stage, {
+        send: async () => ({ id: "transaction" }),
+      });
+      expect(onLifecycle).not.toHaveBeenCalled();
+      const reader = {
+        readTransaction: async () => ({ status: "success" as const }),
+        checkState: async () => true,
+      };
+      await placement.resume(scope, reader);
+      await placement.resume(scope, reader);
+      expect(onLifecycle).toHaveBeenCalledTimes(1);
+      expect(onLifecycle).toHaveBeenCalledWith({
+        stage,
+        outcome: "success",
+        record: expect.objectContaining({
+          prepared,
+          status: stage === "setup" ? "confirmed" : "ready",
+        }),
+      });
+      const reloaded = createStopLossPlacement({ ...options, onLifecycle });
+      reloaded.getRecords(scope);
+      await reloaded.cleanup();
+      await reloaded.resume(scope, reader);
+      expect(onLifecycle).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  test.each(["rejected", "failed"] as const)(
+    "observes a definite %s sender outcome after removing the active record",
+    async (outcome) => {
+      const onLifecycle = jest.fn(() => {
+        expect(placement.getRecords(scope)).toEqual([]);
+      });
+      const placement = createStopLossPlacement({
+        ...environment(),
+        onLifecycle,
+      });
+      const error =
+        outcome === "rejected"
+          ? new Error("Wallet request failed", { cause: { code: 4001 } })
+          : new InsufficientFundsError();
+      await expect(
+        placement.submit(prepared, "setup", {
+          send: async () => {
+            throw error;
+          },
+        }),
+      ).rejects.toBe(error);
+      expect(onLifecycle).toHaveBeenCalledTimes(1);
+      expect(onLifecycle).toHaveBeenCalledWith({
+        stage: "setup",
+        outcome,
+        record: expect.objectContaining({ prepared, status: outcome }),
+      });
+    },
+  );
+
+  test("keeps sender, receipt, and RPC ambiguity out of failure outcomes", async () => {
+    const onLifecycle = jest.fn();
+    const placement = createStopLossPlacement({
+      ...environment(),
+      onLifecycle,
+    });
+    await expect(
+      placement.submit(prepared, "setup", {
+        send: async () => {
+          throw new Error("Wallet response lost");
+        },
+      }),
+    ).rejects.toThrow("Wallet response lost");
+    await placement.resume(scope, { checkState: async () => false });
+    expect(onLifecycle).not.toHaveBeenCalled();
+    await placement.resume(scope, { checkState: async () => true });
+    expect(onLifecycle).toHaveBeenCalledWith(
+      expect.objectContaining({ outcome: "success" }),
+    );
+
+    onLifecycle.mockClear();
+    await placement.submit(
+      { ...prepared, paramsHash: `0x${"12".repeat(32)}` },
+      "setup",
+      {
+        send: async () => ({ id: "pending-receipt" }),
+      },
+    );
+    for (const readTransaction of [
+      async () => ({ status: "pending" as const }),
+      async () => ({ status: "pending" as const, error: "Receipt timeout" }),
+      async () => {
+        throw new Error("RPC unavailable");
+      },
+      async () => ({ status: "success" as const }),
+    ]) {
+      await placement.resume(scope, {
+        readTransaction,
+        checkState: async () => false,
+      });
+    }
+    expect(onLifecycle).not.toHaveBeenCalled();
+  });
+
+  test("observes recovered confirmation, but not a minimal setup guard", async () => {
+    const options = environment();
+    await createStopLossPlacement(options).submit(prepared, "setup", {
+      send: async () => ({ id: "submitted-before-reload" }),
+    });
+    const onLifecycle = jest.fn();
+    const reloaded = createStopLossPlacement({ ...options, onLifecycle });
+    await reloaded.resume(scope, { checkState: async () => true });
+    expect(onLifecycle).toHaveBeenCalledTimes(1);
+    expect(onLifecycle).toHaveBeenCalledWith(
+      expect.objectContaining({
+        outcome: "success",
+        stage: "setup",
+        record: expect.objectContaining({ status: "confirmed", prepared }),
+      }),
+    );
+
+    const uncertain = environment();
+    await expect(
+      createStopLossPlacement(uncertain).submit(prepared, "setup", {
+        send: async () => {
+          throw new Error("Unknown submission");
+        },
+      }),
+    ).rejects.toThrow("Unknown submission");
+    onLifecycle.mockClear();
+    await createStopLossPlacement({ ...uncertain, onLifecycle }).resume(scope, {
+      checkState: async () => true,
+    });
+    expect(onLifecycle).not.toHaveBeenCalled();
+  });
+
+  test("observes reverted receipts and recovered approval metadata", async () => {
+    const options = environment();
+    const onLifecycle = jest.fn();
+    const placement = createStopLossPlacement({ ...options, onLifecycle });
+    await placement.submit(prepared, "setup", {
+      send: async () => ({ id: "reverted" }),
+    });
+    await placement.resume(scope, {
+      readTransaction: async () => ({ status: "failed" }),
+      checkState: async () => false,
+    });
+    expect(onLifecycle).toHaveBeenCalledWith(
+      expect.objectContaining({
+        outcome: "failed",
+        record: expect.objectContaining({ status: "failed" }),
+      }),
+    );
+    await placement.submit(prepared, "approval", {
+      send: async () => ({ id: "approval" }),
+    });
+    onLifecycle.mockClear();
+    const reloaded = createStopLossPlacement({ ...options, onLifecycle });
+    await reloaded.resume(scope, {
+      readTransaction: async () => ({ status: "success" }),
+      checkState: async () => true,
+    });
+    expect(reloaded.getPendingTransactions(scope)).toEqual([]);
+    expect(onLifecycle).toHaveBeenCalledWith(
+      expect.objectContaining({
+        stage: "approval",
+        outcome: "success",
+        record: expect.objectContaining({ account }),
+      }),
+    );
+  });
+
+  test("observer exceptions and mutations cannot change placement handling", async () => {
+    const onLifecycle = jest.fn((event) => {
+      event.record.prepared.draft.amountSell = "99";
+      throw new Error("Observer failed");
+    });
+    const placement = createStopLossPlacement({
+      ...environment(),
+      onLifecycle,
+    });
+    await placement.submit(prepared, "setup", {
+      send: async () => ({ id: "setup" }),
+    });
+    await expect(
+      placement.resume(scope, { checkState: async () => true }),
+    ).resolves.toMatchObject([
+      { status: "confirmed", prepared: { draft: { amountSell: "1" } } },
+    ]);
+    const rejected = Object.assign(new Error("Rejected"), { code: 4001 });
+    await expect(
+      placement.submit(prepared, "setup", {
+        send: async () => {
+          throw rejected;
+        },
+      }),
+    ).rejects.toBe(rejected);
+    expect(onLifecycle).toHaveBeenCalledTimes(2);
+  });
+});

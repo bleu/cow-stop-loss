@@ -9,16 +9,20 @@ import {
 } from "@bleu/ui";
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { useRouter } from "next/navigation";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Address } from "viem";
 import { useAccount } from "wagmi";
 
+import { useAnalyticsConsent } from "#/components/AnalyticsProvider";
 import { DataTable } from "#/components/data-table/data-table";
 import { PixelIcon } from "#/components/ui/pixel-icon";
 import { useDataTable } from "#/hooks/useDataTable";
 import { useOrderList } from "#/hooks/useOrderList";
+import { analytics, orderAnalyticsKey } from "#/lib/analytics";
+import { getLocalOrderOrigin, getOrderOrigin } from "#/lib/orderOrigin";
 import { chainNames } from "#/lib/publicClients";
 import { PlacementRow } from "#/lib/stopLossPlacement";
+import { OrderStatus } from "#/lib/types";
 
 import { getColumns } from "./columns";
 import { PortfolioFilterField, PortfolioFilters } from "./filters";
@@ -102,6 +106,7 @@ function WalletRequiredOrders() {
 function ConnectedOrdersTable({ account }: { account: Address }) {
   const router = useRouter();
   const { orders, chains, isLoading, mutate, trackingError } = useOrderList();
+  const { consent, enabled, revision } = useAnalyticsConsent();
   const columns = useMemo(() => getColumns(), []);
   const { table } = useDataTable({
     data: orders,
@@ -125,6 +130,45 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
   );
 
   const failedChains = chains.filter((chain) => chain.status === "error");
+  const visibleRows = table.getRowModel().rows;
+  const stale = visibleRows.some(({ original }) =>
+    failedChains.some((chain) => chain.chainId === original.chainId),
+  );
+  useEffect(() => {
+    if (!enabled || consent !== "accepted" || document.hidden) return;
+    const openOrders = visibleRows
+      .map((row) => row.original)
+      .filter(
+        (order) =>
+          [OrderStatus.OPEN, OrderStatus.PARTIALLY_FILLED].includes(
+            order.status,
+          ) && order.validTo * 1000 > Date.now(),
+      );
+    if (!openOrders.length) return;
+    analytics.openOrdersViewed(account, openOrders, { stale });
+    let active = true;
+    void Promise.all(
+      openOrders.map(async (order) => {
+        const origin =
+          order.source === "local"
+            ? await getLocalOrderOrigin(
+                order.placement.prepared.fullAppData,
+                order.placement.prepared.appDataHash,
+              )
+            : await getOrderOrigin(order);
+        return [orderAnalyticsKey(order), origin] as const;
+      }),
+    ).then((origins) => {
+      if (active)
+        analytics.openOrdersViewed(account, openOrders, {
+          stale,
+          origins: Object.fromEntries(origins),
+        });
+    });
+    return () => {
+      active = false;
+    };
+  }, [account, consent, enabled, revision, stale, visibleRows]);
   const warnings = (trackingError || failedChains.length > 0) && (
     <div className="space-y-2 text-left">
       {trackingError && (
@@ -183,7 +227,10 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
                   aria-label="Refresh orders"
                   aria-busy={isLoading}
                   disabled={isLoading}
-                  onClick={() => mutate()}
+                  onClick={() => {
+                    analytics.ordersRefreshRequested(account, "portfolio");
+                    void mutate();
+                  }}
                 >
                   <PixelIcon
                     name="reload"

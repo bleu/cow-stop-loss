@@ -2,6 +2,8 @@ import Link from "next/link";
 
 import { PixelIcon } from "#/components/ui/pixel-icon";
 
+import { useAnalyticsConsent } from "./AnalyticsProvider";
+
 export function Footer({
   githubLink,
   discordLink,
@@ -13,6 +15,7 @@ export function Footer({
   scenePaused?: boolean;
   onToggleScene?: () => void;
 }) {
+  const { enabled, openPreferences } = useAnalyticsConsent();
   return (
     <footer className="rescue-footer flex w-full shrink-0 items-center justify-between bg-transparent text-foreground">
       <div className="rescue-footer-copy flex min-w-0 flex-1 flex-wrap items-center gap-x-5 gap-y-1 text-xs">
@@ -33,6 +36,15 @@ export function Footer({
         >
           FAQ
         </Link>
+        {enabled && (
+          <button
+            type="button"
+            className="inline-flex min-h-11 items-center hover:underline"
+            onClick={openPreferences}
+          >
+            Analytics preferences
+          </button>
+        )}
         <a
           href="https://cow.fi/"
           target="_blank"

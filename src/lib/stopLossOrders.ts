@@ -9,6 +9,7 @@ import {
 
 import { STOP_LOSS_ADDRESS } from "./contracts";
 import { type ChainId, supportedChainIds } from "./publicClients";
+import { decodeStopLossStaticInput } from "./staticInputDecoder";
 import { findKnownToken } from "./supportedTokens";
 import { type IToken, OrderStatus } from "./types";
 
@@ -45,6 +46,7 @@ export interface StopLossOrder {
   createdAt?: number;
   transactionHash?: string;
   hash: string;
+  appData?: Hex;
   sellTokenPriceOracle: Address;
   buyTokenPriceOracle: Address;
   maxTimeSinceLastOracleUpdate: number;
@@ -314,6 +316,15 @@ function priceForAmounts(
   );
 }
 
+function appDataHash(staticInput: Generator["staticInput"]): Hex | undefined {
+  if (!staticInput) return undefined;
+  try {
+    return decodeStopLossStaticInput(staticInput).appData;
+  } catch {
+    return undefined;
+  }
+}
+
 function fundingIdentity(
   parent: Generator,
   account: Address,
@@ -492,6 +503,7 @@ export async function loadStopLossOrders({
                   : undefined,
                 transactionHash: parent.transaction?.hash,
                 hash: parent.hash,
+                appData: appDataHash(parent.staticInput),
                 sellTokenPriceOracle: params.sellTokenPriceOracle,
                 buyTokenPriceOracle: params.buyTokenPriceOracle,
                 maxTimeSinceLastOracleUpdate:

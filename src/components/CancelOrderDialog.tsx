@@ -19,6 +19,7 @@ import { getAccount } from "wagmi/actions";
 
 import { PixelIcon } from "#/components/ui/pixel-icon";
 import { useCancellationOverlay } from "#/hooks/useOrderList";
+import { analytics } from "#/lib/analytics";
 import { chainNames } from "#/lib/publicClients";
 import {
   buildCancellation,
@@ -134,6 +135,7 @@ function CancellationReview({
           `Switch the wallet to ${chainNames[order.chainId]} before cancelling.`,
         );
       const prepared = await buildCancellation({ account: address, order });
+      const scope = { account: address, chainId: order.chainId };
       const current = getAccount(config);
       if (
         stopped.current ||
@@ -147,6 +149,7 @@ function CancellationReview({
           const confirmed = await observeCancellation(prepared, reference);
           if (stopped.current) return;
           if (confirmed) {
+            analytics.cancellationOutcome(scope, order, "success");
             overlay.confirm(prepared.account, prepared.order);
             showOrderSuccess(
               "cancel",
@@ -159,8 +162,10 @@ function CancellationReview({
             close();
           } else timer.current = setTimeout(observe, 1000);
         } catch (cause) {
-          if (cause instanceof CancellationRevertedError)
+          if (cause instanceof CancellationRevertedError) {
+            analytics.cancellationOutcome(scope, order, "failed");
             retryObservation.current = undefined;
+          }
           if (!stopped.current) {
             showOrderError("cancel", cause);
             setStatus("review");
@@ -170,9 +175,19 @@ function CancellationReview({
       retryObservation.current = observe;
       try {
         setWalletPrompt(true);
+        analytics.cancellationRequested(scope, order);
         reference = await sendTransactionAsync(prepared.transaction);
       } catch (cause) {
         setWalletPrompt(false);
+        analytics.cancellationOutcome(
+          scope,
+          order,
+          isRejected(cause)
+            ? "rejected"
+            : isDefiniteFailure(cause)
+              ? "failed"
+              : "pending",
+        );
         if (isRejected(cause) || isDefiniteFailure(cause))
           retryObservation.current = undefined;
         throw cause;
