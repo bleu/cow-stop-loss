@@ -39,6 +39,7 @@ import {
 } from "#/hooks/useAdvancedSettings";
 import { useDraftOrder } from "#/hooks/useDraftOrder";
 import { useOrderSizeLimit } from "#/hooks/useOrderSizeLimit";
+import { analytics } from "#/lib/analytics";
 import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 import {
   assertOrderSizeLimit,
@@ -86,6 +87,7 @@ const originalFetch = global.fetch;
 const fetchMock = jest.fn();
 
 beforeEach(() => {
+  jest.spyOn(analytics, "creationStarted").mockImplementation(() => {});
   jest.mocked(useOrderSizeLimit).mockReset().mockReturnValue("allowed");
   jest.mocked(assertOrderSizeLimit).mockReset().mockResolvedValue(undefined);
   global.fetch = fetchMock;
@@ -172,6 +174,133 @@ afterEach(() => {
   jest.restoreAllMocks();
   global.fetch = originalFetch;
 });
+
+it("does not start creation for default values, settings navigation, or programmatic updates", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  await act(async () => {});
+  expect(analytics.creationStarted).not.toHaveBeenCalled();
+  await user.click(screen.getByRole("button", { name: "Order settings" }));
+  await act(async () => {
+    useAdvancedSettingsStore.getState().setAdvancedSettings({
+      ...defaultAdvancedSettings,
+      maxHoursSinceOracleUpdates: 2,
+    });
+  });
+  expect(
+    useAdvancedSettingsStore.getState().advancedSettings
+      .maxHoursSinceOracleUpdates,
+  ).toBe(2);
+  expect(analytics.creationStarted).not.toHaveBeenCalled();
+  await user.click(screen.getByRole("button", { name: "Return to order" }));
+  expect(analytics.creationStarted).not.toHaveBeenCalled();
+});
+
+it.each(["Sell amount", "Trigger price", "Limit price"])(
+  "observes a user edit to %s without sending field values",
+  async (name) => {
+    const user = userEvent.setup();
+    renderForm();
+    expect(analytics.creationStarted).not.toHaveBeenCalled();
+    await user.type(screen.getByRole("textbox", { name }), "1");
+    expect(analytics.creationStarted).toHaveBeenCalledWith({
+      account: safe.safeAddress,
+      chainId: 1,
+    });
+    expect(
+      jest
+        .mocked(analytics.creationStarted)
+        .mock.calls.every(
+          ([scope]) => Object.keys(scope).sort().join() === "account,chainId",
+        ),
+    ).toBe(true);
+  },
+);
+
+it("observes token selection and Max, but not opening the token picker or balance reads", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  await user.click(screen.getByRole("button", { name: "Select token" }));
+  expect(analytics.creationStarted).not.toHaveBeenCalled();
+  await user.click(await screen.findByRole("option", { name: /WETH/ }));
+  expect(analytics.creationStarted).toHaveBeenCalledWith({
+    account: safe.safeAddress,
+    chainId: 1,
+  });
+  const max = await screen.findByRole("button", { name: "Max" });
+  await waitFor(() => expect(max).toBeEnabled());
+  jest.mocked(analytics.creationStarted).mockClear();
+  await act(async () => {});
+  expect(analytics.creationStarted).not.toHaveBeenCalled();
+  await user.click(max);
+  expect(screen.getByRole("textbox", { name: "Sell amount" })).toHaveValue(
+    "1.123456789012345678",
+  );
+  expect(analytics.creationStarted).toHaveBeenCalledWith({
+    account: safe.safeAddress,
+    chainId: 1,
+  });
+});
+
+it("observes a custom expiry selection without treating settings navigation as an edit", async () => {
+  const user = userEvent.setup();
+  renderForm();
+  await user.click(screen.getByRole("button", { name: "Order settings" }));
+  expect(analytics.creationStarted).not.toHaveBeenCalled();
+  await selectExpiry(user, VALID_TO_OPTIONS.MINUTES_30);
+  expect(analytics.creationStarted).toHaveBeenCalledWith({
+    account: safe.safeAddress,
+    chainId: 1,
+  });
+});
+
+it("observes an explicit limit reset without counting its derived values as more edits", async () => {
+  const { user } = await renderLimitExample();
+  const price = screen.getByRole("textbox", { name: "Limit price" });
+  await user.clear(price);
+  await user.type(price, "94");
+  jest.mocked(analytics.creationStarted).mockClear();
+  await user.click(screen.getByRole("button", { name: "Reset to default" }));
+  expect(price).toHaveValue("85.5");
+  expect(analytics.creationStarted).toHaveBeenCalledTimes(1);
+  expect(analytics.creationStarted).toHaveBeenCalledWith({
+    account: safe.safeAddress,
+    chainId: 1,
+  });
+});
+
+it.each(["account", "chain"] as const)(
+  "does not start creation from automatic %s resets",
+  async (change) => {
+    const { rerender } = renderForm();
+    if (change === "account")
+      safe = {
+        ...safe,
+        safeAddress: "0x2222222222222222222222222222222222222222",
+      };
+    else {
+      jest
+        .spyOn(publicClientsFromIds[100], "readContract")
+        .mockResolvedValue(BigInt(0));
+      safe = { ...safe, chainId: 100 };
+    }
+    rerender(
+      <SWRConfig
+        value={{ provider: () => new Map(), revalidateOnFocus: false }}
+      >
+        <SwapForm onReviewOrder={jest.fn()} />
+      </SWRConfig>,
+    );
+    await act(async () => {});
+    expect(analytics.creationStarted).not.toHaveBeenCalled();
+    const user = userEvent.setup();
+    await user.type(screen.getByRole("textbox", { name: "Sell amount" }), "1");
+    expect(analytics.creationStarted).toHaveBeenCalledWith({
+      account: safe.safeAddress,
+      chainId: safe.chainId,
+    });
+  },
+);
 
 it.each([
   ["checking", "Checking order size..."],

@@ -1,15 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import React, { useId, useState } from "react";
+import React, { useEffect, useId, useState } from "react";
 import useSWR from "swr";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
+import { useAnalyticsConsent } from "#/components/AnalyticsProvider";
 import { NetworkLogo } from "#/components/NetworkLogo";
 import { TokenLogo } from "#/components/TokenLogo";
 import { PixelIcon } from "#/components/ui/pixel-icon";
 import { useOrderList } from "#/hooks/useOrderList";
+import { analytics } from "#/lib/analytics";
 import { fetchOraclePairPrice } from "#/lib/oraclePrice";
 import { loadOrderFundingHealth } from "#/lib/orderFundingHealth";
 import { ChainId, chainNames, publicClientsFromIds } from "#/lib/publicClients";
@@ -479,6 +481,8 @@ export function OrderDetails({
   chainId: ChainId;
 }) {
   const { orders, chains, isLoading, mutate } = useOrderList();
+  const { address } = useAccount();
+  const { consent, enabled, revision } = useAnalyticsConsent();
   const chain = chains.find((chain) => chain.chainId === chainId);
   const matches = (order: StopLossOrder) =>
     order.chainId === chainId &&
@@ -486,6 +490,10 @@ export function OrderDetails({
       `${order.owner.toLowerCase()}:${order.hash.toLowerCase()}` ===
         orderId.toLowerCase());
   const order = orders.find(matches) ?? chain?.orders.find(matches);
+  useEffect(() => {
+    if (enabled && consent === "accepted" && address && order)
+      analytics.orderDetailsViewed(address, order);
+  }, [enabled, consent, address, order, revision]);
 
   const warning = chain?.status === "error" && (
     <div
@@ -503,7 +511,10 @@ export function OrderDetails({
       )}
       <button
         disabled={isLoading}
-        onClick={() => mutate()}
+        onClick={() => {
+          if (address) analytics.ordersRefreshRequested(address, "details");
+          void mutate();
+        }}
         className="pixel-control min-h-11 min-w-11 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring mt-3 rounded-none text-primary underline underline-offset-4 disabled:opacity-50"
       >
         Retry {chainNames[chainId]}

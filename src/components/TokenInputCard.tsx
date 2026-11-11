@@ -18,7 +18,13 @@ import { isDecimalInput } from "#/utils/inputs";
 
 import { TokenSelect } from "./TokenSelect";
 
-function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
+function TokenInputCardComponent({
+  side,
+  onEdit,
+}: {
+  side: "Sell" | "Buy";
+  onEdit?: () => void;
+}) {
   const { address: walletAddress, chainId: accountChainId } = useAccount();
   const chainId = (accountChainId ?? 1) as ChainId;
 
@@ -169,6 +175,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                 selectedToken={token}
                 disabled={isSubmitting}
                 onSelectToken={(newToken) => {
+                  onEdit?.();
                   setValue("strikePrice", "");
                   setValue("tokenSell", newToken, { shouldValidate: true });
                 }}
@@ -205,6 +212,7 @@ function TokenInputCardComponent({ side }: { side: "Sell" | "Buy" }) {
                     variant="ghost"
                     className="rescue-secondary-control min-h-0 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-auto p-0 text-xs text-primary underline-offset-4 hover:underline"
                     onClick={() => {
+                      onEdit?.();
                       setValue(amountFieldName, tokenBalance, {
                         shouldValidate: true,
                         shouldDirty: true,

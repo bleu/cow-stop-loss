@@ -11,6 +11,7 @@ import {
 } from "viem";
 
 import { composableCowAbi } from "#/lib/abis/composableCow";
+import { analytics } from "#/lib/analytics";
 import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 import { invalidatePlacementReads } from "#/lib/placementReads";
 import { verifyPlacementConfirmation } from "#/lib/pollerStopLoss";
@@ -30,7 +31,9 @@ import {
 let controller: ReturnType<typeof createStopLossPlacement> | undefined;
 
 export function getStopLossPlacement() {
-  controller ??= createStopLossPlacement();
+  controller ??= createStopLossPlacement({
+    onLifecycle: analytics.placementOutcome,
+  });
   return controller;
 }
 

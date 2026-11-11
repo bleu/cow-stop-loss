@@ -52,6 +52,18 @@ Without a project ID, WalletConnect is hidden. Browser wallet connection remains
 
 RainbowKit 2.2.0 is pinned with a pnpm patch in `patches/`. The patch removes its automatic chain switch during connection. Keep this behavior when upgrading RainbowKit: only an explicit selection in the header can request a chain switch.
 
+## Usage analytics
+
+PostHog is off unless explicitly enabled with a public project key. Set these values before building the production app:
+
+```dotenv
+NEXT_PUBLIC_POSTHOG_ENABLED=true
+NEXT_PUBLIC_POSTHOG_KEY=phc_your-public-project-key
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+```
+
+When configured, analytics are on by default. Users can turn collection off or back on through Analytics preferences in the footer. Existing opt-outs are preserved. Activity uses a browser ID and the connected wallet address. Session replay and automatic interaction capture are off. Keep these variables unset in local and preview environments; use a separate PostHog project for deliberate testing. Public settings are built into the client, so rebuild after changes. See [Analytics setup and events](docs/analytics.md) for account setup, event definitions, and return measurements.
+
 ## Order data
 
 The app reads https://programmatic-orders.cow.fi/graphql. It loads all ownership and order pages for the configured StopLoss handler. Each row is a stop-loss parent with at most one resulting CoW order. Details show available execution amounts, prices, oracle settings, and explorer links. Known historical tokens retain their metadata without becoming eligible for new orders. Tokens without known metadata are shown in raw base units. The API does not supply the execution fee token, so fees also remain in raw base units.

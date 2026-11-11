@@ -33,12 +33,7 @@ export type PlacementRecord = {
   prepared: PreparedPlacement;
   stage: PlacementStage;
   status:
-    | "prompting"
-    | "pending"
-    | "failed"
-    | "rejected"
-    | "confirmed"
-    | "ready";
+    "prompting" | "pending" | "failed" | "rejected" | "confirmed" | "ready";
   uncertain?: boolean;
   confirmedAt?: number;
   approvalAmount?: bigint;
@@ -60,6 +55,12 @@ export type PendingPlacementTransaction = PlacementScope & {
   transactions: Partial<Record<PlacementStage, TransactionReference>>;
 };
 type TrackedPlacement = PlacementRecord | PendingPlacementTransaction;
+
+export type PlacementLifecycleEvent = {
+  record: PlacementRecord | PendingPlacementTransaction;
+  stage: PlacementStage;
+  outcome: "success" | "rejected" | "failed" | "pending";
+};
 
 function scopeOf(record: TrackedPlacement): PlacementScope {
   return "prepared" in record ? record.prepared : record;
@@ -117,6 +118,7 @@ export type PlacementOptions = {
   locks?: PlacementLocks;
   now?: () => number;
   events?: Pick<EventTarget, "addEventListener" | "removeEventListener">;
+  onLifecycle?: (event: PlacementLifecycleEvent) => void;
 };
 export type PlacementSender = {
   approvalAmount?: bigint;
@@ -239,6 +241,7 @@ export function createStopLossPlacement({
   locks = typeof navigator === "undefined" ? undefined : navigator.locks,
   now = Date.now,
   events = typeof window === "undefined" ? undefined : window,
+  onLifecycle,
 }: PlacementOptions = {}) {
   const jsonStorage = createJSONStorage<{
     records: PlacementRecord[];
@@ -257,6 +260,17 @@ export function createStopLossPlacement({
   const state = createStore(() => ({ records: [] as TrackedPlacement[] }));
   let snapshot: string | null | undefined;
   let needsCleanup = false;
+
+  function observe(
+    record: TrackedPlacement,
+    outcome: PlacementLifecycleEvent["outcome"],
+  ) {
+    try {
+      onLifecycle?.(structuredClone({ record, stage: record.stage, outcome }));
+    } catch {
+      // Observation must not change transaction handling.
+    }
+  }
 
   function read() {
     const raw = storage.getItem(storageName);
@@ -295,12 +309,12 @@ export function createStopLossPlacement({
     };
     needsCleanup = Boolean(
       saved &&
-        JSON.stringify(saved, (_key, value) =>
+      JSON.stringify(saved, (_key, value) =>
+        typeof value === "bigint" ? value.toString() : value,
+      ) !==
+        JSON.stringify(normalized, (_key, value) =>
           typeof value === "bigint" ? value.toString() : value,
-        ) !==
-          JSON.stringify(normalized, (_key, value) =>
-            typeof value === "bigint" ? value.toString() : value,
-          ),
+        ),
     );
     snapshot = raw;
     const merged = records.map((record) => {
@@ -485,12 +499,21 @@ export function createStopLossPlacement({
           reference = await adapter.send(structuredClone(record));
         } catch (error) {
           const rejected = isRejected(error);
-          await locked(() =>
+          const failed = isDefiniteFailure(error);
+          await locked(() => {
+            let terminal: PlacementRecord | undefined;
             save(
               read().flatMap((entry) => {
                 if (!isCurrentAttempt(entry) || entry.status === "confirmed")
                   return [entry];
-                if (rejected || isDefiniteFailure(error)) return [];
+                if (rejected || failed) {
+                  terminal = {
+                    ...record,
+                    revision: entry.revision + 1,
+                    status: rejected ? "rejected" : "failed",
+                  };
+                  return [];
+                }
                 return [
                   {
                     ...entry,
@@ -501,8 +524,9 @@ export function createStopLossPlacement({
                   },
                 ];
               }),
-            ),
-          );
+            );
+            if (terminal) observe(terminal, rejected ? "rejected" : "failed");
+          });
           throw error;
         }
         await locked(() =>
@@ -537,17 +561,27 @@ export function createStopLossPlacement({
       let transactionSucceeded = false;
       const update = (
         change: (entry: TrackedPlacement) => TrackedPlacement | undefined,
+        outcome?: PlacementLifecycleEvent["outcome"],
       ) =>
-        locked(() =>
+        locked(() => {
+          let observed: TrackedPlacement | undefined;
           save(
             read().flatMap((entry) => {
               if (entry.id !== record.id || entry.revision !== record.revision)
                 return [entry];
               const next = change(entry);
+              observed = next ?? {
+                ...entry,
+                transactions: {
+                  ...entry.transactions,
+                  [record.stage]: reference,
+                },
+              };
               return next ? [next] : [];
             }),
-          ),
-        );
+          );
+          if (observed && outcome) observe(observed, outcome);
+        });
       try {
         let created = false;
         if (
@@ -576,19 +610,21 @@ export function createStopLossPlacement({
           )
             created = await adapter.checkState(record);
           if (receipt.status === "failed" && !created) {
-            await update((entry) =>
-              "prepared" in entry
-                ? {
-                    ...entry,
-                    revision: entry.revision + 1,
-                    status: "failed",
-                    error: receipt.error ?? "Transaction failed",
-                    transactions: {
-                      ...entry.transactions,
-                      [record.stage]: reference,
-                    },
-                  }
-                : undefined,
+            await update(
+              (entry) =>
+                "prepared" in entry
+                  ? {
+                      ...entry,
+                      revision: entry.revision + 1,
+                      status: "failed",
+                      error: receipt.error ?? "Transaction failed",
+                      transactions: {
+                        ...entry.transactions,
+                        [record.stage]: reference,
+                      },
+                    }
+                  : undefined,
+              "failed",
             );
             continue;
           }
@@ -605,38 +641,50 @@ export function createStopLossPlacement({
             })));
         const allowanceChanged =
           record.stage !== "setup" && transactionSucceeded && !confirmed;
-        await update((entry) => {
-          if (!("prepared" in entry)) {
-            if (confirmed || allowanceChanged) return undefined;
+        await update(
+          (entry) => {
+            if (!("prepared" in entry)) {
+              if (confirmed || allowanceChanged) return undefined;
+              return {
+                ...entry,
+                revision: entry.revision + 1,
+                transactions: {
+                  ...entry.transactions,
+                  [record.stage]: reference,
+                },
+              };
+            }
             return {
               ...entry,
               revision: entry.revision + 1,
+              status: confirmed
+                ? record.stage === "setup"
+                  ? "confirmed"
+                  : "ready"
+                : allowanceChanged
+                  ? "failed"
+                  : entry.status,
+              confirmedAt:
+                confirmed && record.stage === "setup" ? now() : undefined,
               transactions: {
                 ...entry.transactions,
                 [record.stage]: reference,
               },
+              error: allowanceChanged
+                ? "Approval completed, but allowance changed. Review the order again."
+                : !confirmed && entry.status === "prompting"
+                  ? entry.error
+                  : undefined,
             };
-          }
-          return {
-            ...entry,
-            revision: entry.revision + 1,
-            status: confirmed
-              ? record.stage === "setup"
-                ? "confirmed"
-                : "ready"
-              : allowanceChanged
-                ? "failed"
-                : entry.status,
-            confirmedAt:
-              confirmed && record.stage === "setup" ? now() : undefined,
-            transactions: { ...entry.transactions, [record.stage]: reference },
-            error: allowanceChanged
-              ? "Approval completed, but allowance changed. Review the order again."
-              : !confirmed && entry.status === "prompting"
-                ? entry.error
-                : undefined,
-          };
-        });
+          },
+          confirmed
+            ? record.stage !== "setup" || "prepared" in record
+              ? "success"
+              : undefined
+            : allowanceChanged
+              ? "failed"
+              : undefined,
+        );
       } catch (error) {
         await update((entry) => ({
           ...entry,
@@ -764,9 +812,11 @@ export function createStopLossPlacement({
       });
     const rows = new Map<string, PlacementRow>();
     for (const row of [
-      ...indexed.map(
-        (order): PlacementRow => ({ ...order, source: "api", canLink: true }),
-      ),
+      ...indexed.map((order): PlacementRow => ({
+        ...order,
+        source: "api",
+        canLink: true,
+      })),
       ...local,
     ]) {
       const identity = key(row.chainId, row.owner, row.hash);

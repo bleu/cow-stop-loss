@@ -25,10 +25,13 @@ import { deserialize, serialize } from "v8";
 import { disconnect } from "wagmi/actions";
 
 import OrderPage from "#/app/[chainId]/[safeAddress]/[orderId]/page";
+import * as analyticsProvider from "#/components/AnalyticsProvider";
 import { ConsolidatedOrdersTable } from "#/components/ConsolidatedOrdersTable";
 import { RootLayout } from "#/components/RootLayout";
 import { getStopLossPlacement } from "#/hooks/useStopLossPlacement";
 import * as tokenPairPrice from "#/hooks/useTokenPairPrice";
+import { analytics } from "#/lib/analytics";
+import * as orderOrigin from "#/lib/orderOrigin";
 import type { PreparedPlacement } from "#/lib/pollerStopLoss";
 import { publicClientsFromIds, supportedChainIds } from "#/lib/publicClients";
 import { encodeStopLossStaticInput } from "#/lib/staticInputEncoder";
@@ -1621,6 +1624,50 @@ test("clears local rows on account changes and ignores the old account's late AP
       release();
     });
   }
+});
+
+test("resolves origins only after consent and observes filtered open rows", async () => {
+  const consent = {
+    consent: null as "accepted" | "rejected" | null,
+    enabled: true,
+    revision: 0,
+    openPreferences: jest.fn(),
+  };
+  jest
+    .spyOn(analyticsProvider, "useAnalyticsConsent")
+    .mockImplementation(() => consent);
+  const origin = jest
+    .spyOn(orderOrigin, "getOrderOrigin")
+    .mockResolvedValue("app");
+  const viewed = jest
+    .spyOn(analytics, "openOrdersViewed")
+    .mockImplementation(() => {});
+  const refreshed = jest
+    .spyOn(analytics, "ordersRefreshRequested")
+    .mockImplementation(() => {});
+  serveOrders([apiParent(1, "ethereum"), apiParent(100, "gnosis")]);
+  const view = render(<TableView search="?chainId=1" />);
+  await connectWallet();
+  await screen.findByRole("row", { name: "View order ethereum on Ethereum" });
+  expect(origin).not.toHaveBeenCalled();
+  expect(viewed).not.toHaveBeenCalled();
+
+  consent.consent = "accepted";
+  consent.revision++;
+  view.rerender(<TableView search="?chainId=1" />);
+  await waitFor(() => expect(origin).toHaveBeenCalled());
+  await waitFor(() =>
+    expect(viewed).toHaveBeenCalledWith(
+      account,
+      [expect.objectContaining({ chainId: 1, parentId: "ethereum" })],
+      expect.objectContaining({ origins: expect.any(Object) }),
+    ),
+  );
+  expect(origin.mock.calls.every(([order]) => order.chainId === 1)).toBe(true);
+  expect(refreshed).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "Refresh orders" }));
+  expect(refreshed).toHaveBeenCalledTimes(1);
+  expect(refreshed).toHaveBeenCalledWith(account, "portfolio");
 });
 
 test("shows confirmed local Open rows on all supported chains without detail links", async () => {

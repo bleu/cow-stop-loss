@@ -16,7 +16,7 @@ import {
 } from "../ui/select";
 import { InfoTooltip } from "../ui/tooltip";
 
-export function ValidToInput() {
+export function ValidToInput({ onEdit }: { onEdit?: () => void }) {
   const { control } = useFormContext<SwapData>();
 
   return (
@@ -31,7 +31,14 @@ export function ValidToInput() {
         control={control}
         name="validTo"
         render={({ field: { onChange, value } }) => (
-          <Select onValueChange={onChange} value={value} name="validTo">
+          <Select
+            onValueChange={(next) => {
+              onEdit?.();
+              onChange(next);
+            }}
+            value={value}
+            name="validTo"
+          >
             <SelectTrigger
               id="order-expiry"
               className="pixel-control rescue-square-control min-h-11 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring h-11 w-full border-border bg-card text-sm text-foreground"
