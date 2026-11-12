@@ -14,6 +14,8 @@ The Limit price field starts in Price view with Default slippage fixed at 10%. E
 
 The former quote-based slippage recommendation algorithm and pair-recommendation helper are disabled for order creation, but their code and tests are retained. Execution quotes still load for execution checks and warnings; they do not change Default slippage.
 
+See [First-use EOA stop loss](docs/first-use-stop-loss.md) for approval, setup, execution, and the pinned mainnet fork check.
+
 ## Local setup
 
 Use Node.js 24.22.1 or later in the Node 24 LTS line, pnpm 9, and Python 3. The private `@bleu/ui` package requires a package-read `NPM_TOKEN` in the install environment.

@@ -24,6 +24,7 @@
     "format": "prettier --write \"**/*.{md,html,mjml,json,yml,css,scss,ts,tsx,js,jsx}\"",
     "lint": "eslint '**/*.{ts,tsx}'",
     "lint:fix": "eslint '**/*.{ts,tsx}' --fix",
+    "test:fork": "node scripts/test-stop-loss-fork.mjs",
     "test:jest": "pnpm exec jest --passWithNoTests",
     "test:watch": "pnpm exec jest --watchAll --verbose"
   },
