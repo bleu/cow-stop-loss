@@ -1,4 +1,4 @@
-import { AppDataSdk } from "@cowprotocol/sdk-app-data";
+import { AppDataSdk, type v1_1_0 } from "@cowprotocol/sdk-app-data";
 import { ViemAdapter } from "@cowprotocol/sdk-viem-adapter";
 import {
   Address,
@@ -30,6 +30,7 @@ import {
   readOraclePrice,
 } from "./oracleRouter";
 import { assertOrderSizeLimit } from "./orderSizeLimit";
+import { PARTNER_FEE } from "./partnerFee";
 import { getPlacementReads, type PlacementReads } from "./placementReads";
 import { ChainId, publicClientsFromIds } from "./publicClients";
 import { decodeStopLossStaticInput } from "./staticInputDecoder";
@@ -145,10 +146,13 @@ export async function preparePlacement({
     reviewed.salt,
   );
   const metadataApi = new AppDataSdk(new ViemAdapter({ provider: client }));
-  const document = await metadataApi.generateAppDataDoc({
-    appCode: "bleu-stop-loss",
+  const document: v1_1_0.AppDataRootSchema = {
+    ...(await metadataApi.generateAppDataDoc({ appCode: "bleu-stop-loss" })),
+    // Keep order identities stable when the SDK changes its default schema.
+    version: "1.1.0",
     metadata: {
       widget: { appCode: "bleu-stop-loss" },
+      partnerFee: PARTNER_FEE,
       hooks: {
         version: "0.1.0",
         pre: [
@@ -164,9 +168,7 @@ export async function preparePlacement({
         ],
       },
     },
-  });
-  // Keep order identities stable when the SDK changes its default schema.
-  document.version = "1.1.0";
+  };
   const { appDataHex, appDataContent } =
     await metadataApi.getAppDataInfo(document);
   await uploadAppData({ appDataHex, fullAppData: appDataContent, chainId });
