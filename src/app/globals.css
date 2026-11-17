@@ -665,13 +665,6 @@
   gap: 16px;
   background: var(--footer-ground) !important;
 }
-.rescue-footer-notice {
-  --muted-foreground: 220 56% 86%;
-  background: var(--footer-ground);
-}
-.light .rescue-footer-notice {
-  --muted-foreground: 213 25% 30%;
-}
 .rescue-footer a:focus-visible {
   outline-offset: 2px;
 }

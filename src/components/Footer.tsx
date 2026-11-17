@@ -19,40 +19,6 @@ export function Footer({
   return (
     <footer className="rescue-footer flex w-full shrink-0 items-center justify-between bg-transparent text-foreground">
       <div className="rescue-footer-copy flex min-w-0 flex-1 flex-wrap items-center gap-x-5 gap-y-1 text-xs">
-        <div
-          role="note"
-          aria-label="Beta software"
-          className="rescue-footer-notice flex w-full items-center gap-2 text-xs text-muted-foreground"
-        >
-          <PixelIcon name="warning" className="size-4 shrink-0 text-warning" />
-          <p>
-            Experimental software, provided as is. Execution is not guaranteed.
-            This interface limits new orders to USD 10k, based on the oracle
-            price at creation.{" "}
-            <Link
-              href="/terms"
-              className="inline-flex min-h-11 items-center hover:underline"
-            >
-              Terms
-            </Link>
-            {" · "}
-            <Link
-              href="/terms#risks"
-              className="inline-flex min-h-11 items-center hover:underline"
-            >
-              Risks
-            </Link>
-            {" · "}
-            <a
-              href="https://github.com/bleu/cow-stop-loss/issues/new?template=problem-report.yml"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-11 items-center hover:underline"
-            >
-              Report an issue
-            </a>
-          </p>
-        </div>
         <span>
           A little peace of mind, built by&nbsp;
           <a
@@ -69,6 +35,18 @@ export function Footer({
           className="inline-flex min-h-11 items-center hover:underline"
         >
           FAQ
+        </Link>
+        <Link
+          href="/terms"
+          className="inline-flex min-h-11 items-center hover:underline"
+        >
+          Terms
+        </Link>
+        <Link
+          href="/terms#risks"
+          className="inline-flex min-h-11 items-center hover:underline"
+        >
+          Risks
         </Link>
         {enabled && (
           <button

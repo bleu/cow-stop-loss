@@ -1197,7 +1197,7 @@ describe.each(["dark", "light"] as const)("beta notice in %s mode", (theme) => {
     },
   );
   test.each(["/", "/app", "/terms", `/1/${wallet}/stop-loss-1`])(
-    "shows beta terms and support links in the footer on %s",
+    "shows terms and risks links without a footer warning on %s",
     (initialPath) => {
       renderView(
         <Router initialPath={initialPath}>
@@ -1208,34 +1208,18 @@ describe.each(["dark", "light"] as const)("beta notice in %s mode", (theme) => {
       );
 
       const footer = screen.getByRole("contentinfo");
-      const notice = within(footer).getByRole("note", {
-        name: "Beta software",
-      });
-      expect(notice).toHaveTextContent(
-        "Experimental software, provided as is. Execution is not guaranteed. This interface limits new orders to USD 10k, based on the oracle price at creation.",
-      );
+      expect(within(footer).queryByRole("note")).not.toBeInTheDocument();
+      expect(footer).not.toHaveTextContent("Experimental software");
+      expect(footer.querySelector('[data-pixel-icon="warning"]')).toBeNull();
       expect(
-        within(notice).getByRole("link", { name: "Terms" }),
+        within(footer).getByRole("link", { name: "Terms" }),
       ).toHaveAttribute("href", "/terms");
       expect(
-        within(notice).getByRole("link", { name: "Risks" }),
+        within(footer).getByRole("link", { name: "Risks" }),
       ).toHaveAttribute("href", "/terms#risks");
-      const issues = within(notice).getByRole("link", {
-        name: "Report an issue",
-      });
-      expect(issues).toHaveAttribute(
-        "href",
-        "https://github.com/bleu/cow-stop-loss/issues/new?template=problem-report.yml",
-      );
-      expect(issues).toHaveAttribute("target", "_blank");
-      expect(issues.getAttribute("rel")?.split(/\s+/)).toEqual(
-        expect.arrayContaining(["noreferrer", "noopener"]),
-      );
       expect(
-        notice.compareDocumentPosition(
-          within(footer).getByText(/A little peace of mind/),
-        ) & Node.DOCUMENT_POSITION_FOLLOWING,
-      ).toBeTruthy();
+        within(footer).queryByRole("link", { name: "Report an issue" }),
+      ).not.toBeInTheDocument();
     },
   );
 });
