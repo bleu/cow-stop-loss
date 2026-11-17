@@ -195,8 +195,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/a420966c59b95b7a516c.svg",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0xcd627aa160a6fa45eb793d19ef54f5062f20f33f"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 1,
+          "tokenAddress": "0xd533a949740bb3306d119cc777fa900ba034cd52",
+          "quote": "USD",
+          "path": "crv-usd",
+          "proxyAddress": "0xcd627aa160a6fa45eb793d19ef54f5062f20f33f",
+          "expectedDescription": "CRV / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "exact-asset",
+          "identityEvidence": "The pinned CoW Ethereum metadata in scripts/catalog-metadata-sources.json identifies this exact contract as CRV. Live symbol and decimals match. The direct CRV/USD source prices the governance token itself, not a Curve LP token, staking receipt or pool share.",
+          "representationEvidence": "The pinned CoW Ethereum metadata in scripts/catalog-metadata-sources.json identifies this exact contract as CRV. Live symbol and decimals match. The direct CRV/USD source prices the governance token itself, not a Curve LP token, staking receipt or pool share.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "The selected source prices this issued token in its own units. No underlying-asset conversion is used. Issuer, custody, redemption and price-method risks remain; the answer is not an executable quote.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed low-category Crypto cex_price Reference Price source for CRV/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-mainnet.json: exact crv-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:553a63d0d77e1b764659e18510abedce1726b6201caca7a8e9856137b4f43cb9"
+        }
+      }
     },
     {
       "chainId": 1,
@@ -261,8 +282,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/611b9578e0601f6e590e.svg",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0x5c00128d4d1c2f4f652c267d7bcdd7ac99c16e16"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 1,
+          "tokenAddress": "0xc18360217d8f7ab5e7c516566761ea12ce7f9d72",
+          "quote": "USD",
+          "path": "ens-usd",
+          "proxyAddress": "0x5c00128d4d1c2f4f652c267d7bcdd7ac99c16e16",
+          "expectedDescription": "ENS / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "exact-asset",
+          "identityEvidence": "The pinned Ethereum metadata in scripts/catalog-metadata-sources.json identifies this exact contract as ENS. Live symbol and decimals match. The direct ENS/USD source prices the ENS governance token itself, not an ENS name or wrapped-name NFT.",
+          "representationEvidence": "The pinned Ethereum metadata in scripts/catalog-metadata-sources.json identifies this exact contract as ENS. Live symbol and decimals match. The direct ENS/USD source prices the ENS governance token itself, not an ENS name or wrapped-name NFT.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "The selected source prices this issued token in its own units. No underlying-asset conversion is used. Issuer, custody, redemption and price-method risks remain; the answer is not an executable quote.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed low-category Crypto cex_price Reference Price source for ENS/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-mainnet.json: exact ens-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:41905480fd4d399d1db4ca2a35c81c97a8f3459c135f7513a9d9dce5c9fd7436"
+        }
+      }
     },
     {
       "chainId": 1,
@@ -670,8 +712,29 @@
       "assetClass": "volatile",
       "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "logoURI": "/assets/tokens/dc65498031030f9747a5.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0xee10fe5e7aa92dd7b136597449c3d5813cfc5f18"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 1,
+          "tokenAddress": "0x56072c95faa701256059aa122697b133aded9279",
+          "quote": "USD",
+          "path": "sky-usd",
+          "proxyAddress": "0xee10fe5e7aa92dd7b136597449c3d5813cfc5f18",
+          "expectedDescription": "SKY / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "exact-asset",
+          "identityEvidence": "https://developers.skyeco.com/guides/sky/token-governance-upgrade/key-info/ identifies this exact SKY contract. The selected source prices SKY units directly; no MKR price or 1 MKR to 24000 SKY migration conversion is used.",
+          "representationEvidence": "https://developers.skyeco.com/guides/sky/token-governance-upgrade/key-info/ identifies this exact SKY contract. The selected source prices SKY units directly; no MKR price or 1 MKR to 24000 SKY migration conversion is used.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "The selected source prices this issued token in its own units. No underlying-asset conversion is used. Issuer, custody, redemption and price-method risks remain; the answer is not an executable quote.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed high-category Crypto cex_price Reference Price source for SKY/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-mainnet.json: exact sky-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:1e858480cdc57b5ee1149572fdb5364dd979e062f187f29ae031402685f9dc6a"
+        }
+      }
     },
     {
       "chainId": 1,
@@ -1059,8 +1122,29 @@
       "assetClass": "volatile",
       "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "logoURI": "/assets/tokens/3e3509465d1f024a2c19.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0x14e5fc91ddb3f97c33013cc9fa74f54062ad1aa1"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 1,
+          "tokenAddress": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
+          "quote": "USD",
+          "path": "wlfi-usd",
+          "proxyAddress": "0x14e5fc91ddb3f97c33013cc9fa74f54062ad1aa1",
+          "expectedDescription": "WLFI / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "exact-asset",
+          "identityEvidence": "https://docs.worldlibertyfinancial.com/wlfi-token/contract-addresses identifies this exact Ethereum WLFI contract. The direct WLFI/USD source prices WLFI governance units, not USD1 or another stablecoin.",
+          "representationEvidence": "https://docs.worldlibertyfinancial.com/wlfi-token/contract-addresses identifies this exact Ethereum WLFI contract. The direct WLFI/USD source prices WLFI governance units, not USD1 or another stablecoin.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "The selected source prices this issued token in its own units. No underlying-asset conversion is used. Issuer, custody, redemption and price-method risks remain; the answer is not an executable quote.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed new-category Crypto cex_price Reference Price source for WLFI/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-mainnet.json: exact wlfi-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:28a804c0bfbd39e37886061ffe0e0c554ce989ab8d33a5038560f4c820e6e239"
+        }
+      }
     },
     {
       "chainId": 1,
@@ -1175,8 +1259,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/0f421e5680e8067e23de.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0xa767f745331d267c7751297d982b050c93985627"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 56,
+          "tokenAddress": "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47",
+          "quote": "USD",
+          "path": "ada-usd",
+          "proxyAddress": "0xa767f745331d267c7751297d982b050c93985627",
+          "expectedDescription": "ADA / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 960,
+          "assetRelationship": "bridged-underlying",
+          "identityEvidence": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/assets/0x3EE2200Efb3400fAbB9AacF31297cBdD1d435D47/info.json identifies this exact 18-decimal BEP20 as Binance-Peg ADA; pinned chain-56 metadata and live symbol/decimals corroborate the contract. https://github.com/bnb-chain/token-canal-project describes Binance issuance and conversion. Apply the accepted 1:1 ADA token-unit assumption with the underlying ADA/USD feed. Binance custody, backing loss, depegs and failed redemption are not priced by that feed; no reserve audit or redemption guarantee is claimed.",
+          "representationEvidence": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/assets/0x3EE2200Efb3400fAbB9AacF31297cBdD1d435D47/info.json identifies this exact 18-decimal BEP20 as Binance-Peg ADA; pinned chain-56 metadata and live symbol/decimals corroborate the contract. https://github.com/bnb-chain/token-canal-project describes Binance issuance and conversion. Apply the accepted 1:1 ADA token-unit assumption with the underlying ADA/USD feed. Binance custody, backing loss, depegs and failed redemption are not priced by that feed; no reserve audit or redemption guarantee is claimed.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "Use the represented asset price at an assumed 1:1 token-unit relationship. The feed does not measure bridge or custody failures, backing loss or failed redemption; these can make the held token trade below its represented asset.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed low-category Crypto cex_price Reference Price source for ADA/USD, 8 decimals and heartbeat 600 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-bsc-mainnet.json: exact ada-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:997601fc9ba5565bd870e701f6a16aa8bf96fbc03a8214b73d9fdd89f0e2ab50"
+        }
+      }
     },
     {
       "chainId": 56,
@@ -1186,8 +1291,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/33ccb10ab656514654b2.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0x3ae518be05e3f7fabf7e3ace22af795d7a09c2e5"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 56,
+          "tokenAddress": "0x000ae314e2a2172a039b26378814c252734f556a",
+          "quote": "USD",
+          "path": "aster-usd",
+          "proxyAddress": "0x3ae518be05e3f7fabf7e3ace22af795d7a09c2e5",
+          "expectedDescription": "ASTER / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "exact-asset",
+          "identityEvidence": "https://docs.asterdex.com/usdaster-token/overview explicitly identifies BNB Chain ASTER at this exact 0x000ae314e2a2172a039b26378814c252734f556a contract. The selected source prices issued ASTER governance units directly, not USDF, asBNB or another staking/dollar receipt.",
+          "representationEvidence": "https://docs.asterdex.com/usdaster-token/overview explicitly identifies BNB Chain ASTER at this exact 0x000ae314e2a2172a039b26378814c252734f556a contract. The selected source prices issued ASTER governance units directly, not USDF, asBNB or another staking/dollar receipt.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "The selected source prices this issued token in its own units. No underlying-asset conversion is used. Issuer, custody, redemption and price-method risks remain; the answer is not an executable quote.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed new-category Crypto cex_price Reference Price source for ASTER/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-bsc-mainnet.json: exact aster-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:014f4e81529176a44b1bc35bdc8654112236b97b6eef96159da19d03fd24c4c6"
+        }
+      }
     },
     {
       "chainId": 56,
@@ -1605,8 +1731,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/60bae40dc5a736fd80e6.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0x0e8a53dd9c13589df6382f13da6b3ec8f919b323"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 56,
+          "tokenAddress": "0x570a5d26f7765ecb712c0924e4de545b89fd43df",
+          "quote": "USD",
+          "path": "sol-usd",
+          "proxyAddress": "0x0e8a53dd9c13589df6382f13da6b3ec8f919b323",
+          "expectedDescription": "SOL / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 960,
+          "assetRelationship": "bridged-underlying",
+          "identityEvidence": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/assets/0x570A5D26f7765Ecb712C0924E4De545B89fD43dF/info.json identifies this exact 18-decimal BEP20 as Binance-Peg SOL; pinned chain-56 metadata and live symbol/decimals corroborate the contract. https://github.com/bnb-chain/token-canal-project describes Binance issuance and conversion. Apply the accepted 1:1 SOL token-unit assumption with the underlying SOL/USD feed. Binance custody, backing loss, depegs and failed redemption are not priced by that feed; no reserve audit or redemption guarantee is claimed.",
+          "representationEvidence": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/assets/0x570A5D26f7765Ecb712C0924E4De545B89fD43dF/info.json identifies this exact 18-decimal BEP20 as Binance-Peg SOL; pinned chain-56 metadata and live symbol/decimals corroborate the contract. https://github.com/bnb-chain/token-canal-project describes Binance issuance and conversion. Apply the accepted 1:1 SOL token-unit assumption with the underlying SOL/USD feed. Binance custody, backing loss, depegs and failed redemption are not priced by that feed; no reserve audit or redemption guarantee is claimed.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "Use the represented asset price at an assumed 1:1 token-unit relationship. The feed does not measure bridge or custody failures, backing loss or failed redemption; these can make the held token trade below its represented asset.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed low-category Crypto cex_price Reference Price source for SOL/USD, 8 decimals and heartbeat 600 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-bsc-mainnet.json: exact sol-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:0246ca0d921a30078b5cfb56bf00d98c9bda1f0cc5da960882f6f8b6ec103033"
+        }
+      }
     },
     {
       "chainId": 56,
@@ -1835,8 +1982,29 @@
       "assetClass": "volatile",
       "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "logoURI": "/assets/tokens/3e3509465d1f024a2c19.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0xd3f669ef5c364c14d353f46b1d1a048a846e00f1"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 56,
+          "tokenAddress": "0x47474747477b199288bf72a1d702f7fe0fb1deea",
+          "quote": "USD",
+          "path": "wlfi-usd",
+          "proxyAddress": "0xd3f669ef5c364c14d353f46b1d1a048a846e00f1",
+          "expectedDescription": "WLFI / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "bridged-underlying",
+          "identityEvidence": "https://docs.worldlibertyfinancial.com/wlfi-token/contract-addresses identifies this exact BNB Chain WLFI contract and Ethereum WLFI 0xda5e1988097297dcdc1f90d4dfe7909e847cbef6. The underlying source prices WLFI token units under the accepted 1:1 representation assumption. It does not price USD1 or guarantee bridge backing or redemption.",
+          "representationEvidence": "https://docs.worldlibertyfinancial.com/wlfi-token/contract-addresses identifies this exact BNB Chain WLFI contract and Ethereum WLFI 0xda5e1988097297dcdc1f90d4dfe7909e847cbef6. The underlying source prices WLFI token units under the accepted 1:1 representation assumption. It does not price USD1 or guarantee bridge backing or redemption.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "Use the represented asset price at an assumed 1:1 token-unit relationship. The feed does not measure bridge or custody failures, backing loss or failed redemption; these can make the held token trade below its represented asset.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed new-category Crypto cex_price Reference Price source for WLFI/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-bsc-mainnet.json: exact wlfi-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:1d95083adcdd69d3468dd3dd868b5ba32c273404f422e41e92771d5396b0c479"
+        }
+      }
     },
     {
       "chainId": 56,
@@ -1858,8 +2026,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/dffc89c6c9e0531eba70.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0x93a67d414896a280bf8ffb3b389fe3686e014fda"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 56,
+          "tokenAddress": "0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe",
+          "quote": "USD",
+          "path": "xrp-usd",
+          "proxyAddress": "0x93a67d414896a280bf8ffb3b389fe3686e014fda",
+          "expectedDescription": "XRP / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 960,
+          "assetRelationship": "bridged-underlying",
+          "identityEvidence": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/assets/0x1D2F0da169ceB9fC7B3144628dB156f3F6c60dBE/info.json identifies this exact 18-decimal BEP20 as Binance-Peg XRP; pinned chain-56 metadata and live symbol/decimals corroborate the contract. https://github.com/bnb-chain/token-canal-project describes Binance issuance and conversion. Apply the accepted 1:1 XRP token-unit assumption with the underlying XRP/USD feed. Binance custody, backing loss, depegs and failed redemption are not priced by that feed; no reserve audit or redemption guarantee is claimed.",
+          "representationEvidence": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/assets/0x1D2F0da169ceB9fC7B3144628dB156f3F6c60dBE/info.json identifies this exact 18-decimal BEP20 as Binance-Peg XRP; pinned chain-56 metadata and live symbol/decimals corroborate the contract. https://github.com/bnb-chain/token-canal-project describes Binance issuance and conversion. Apply the accepted 1:1 XRP token-unit assumption with the underlying XRP/USD feed. Binance custody, backing loss, depegs and failed redemption are not priced by that feed; no reserve audit or redemption guarantee is claimed.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "Use the represented asset price at an assumed 1:1 token-unit relationship. The feed does not measure bridge or custody failures, backing loss or failed redemption; these can make the held token trade below its represented asset.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed low-category Crypto cex_price Reference Price source for XRP/USD, 8 decimals and heartbeat 600 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-bsc-mainnet.json: exact xrp-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:baa6343e855c04b42f634c7edbbc7d8ca5bfae9d18fb2d8f2cc79542c387d34c"
+        }
+      }
     },
     {
       "chainId": 56,
@@ -1988,8 +2177,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/8fc8782e9c8b6a814213.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0xc77b83ac3dd2a761073bd0f281f7b880b2ddde18"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 100,
+          "tokenAddress": "0x712b3d230f3c1c19db860d80619288b1f0bdd0bd",
+          "quote": "USD",
+          "path": "crv-usd",
+          "proxyAddress": "0xc77b83ac3dd2a761073bd0f281f7b880b2ddde18",
+          "expectedDescription": "CRV / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "bridged-underlying",
+          "identityEvidence": "https://docs.gnosischain.com/developers/Usefulcontracts identifies Omnibridge mediator 0xf6a78083ca3e2a662d6dd1703c939c8ace2e268d. Read-only foreignTokenAddress(this exact Gnosis token) returned Ethereum 0xd533a949740bb3306d119cc777fa900ba034cd52 on 2026-11-17. This establishes the represented CRV contract; apply the accepted 1:1 CRV token-unit assumption for bridge mint/burn representation. The underlying feed does not price bridge backing or failed redemption.",
+          "representationEvidence": "https://docs.gnosischain.com/developers/Usefulcontracts identifies Omnibridge mediator 0xf6a78083ca3e2a662d6dd1703c939c8ace2e268d. Read-only foreignTokenAddress(this exact Gnosis token) returned Ethereum 0xd533a949740bb3306d119cc777fa900ba034cd52 on 2026-11-17. This establishes the represented CRV contract; apply the accepted 1:1 CRV token-unit assumption for bridge mint/burn representation. The underlying feed does not price bridge backing or failed redemption.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "Use the represented asset price at an assumed 1:1 token-unit relationship. The feed does not measure bridge or custody failures, backing loss or failed redemption; these can make the held token trade below its represented asset.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed low-category Crypto cex_price Reference Price source for CRV/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-xdai-mainnet.json: exact crv-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:df2781bff496d133cb720e03ece6bb2ac38f7488bbe62292a482a70257af588e"
+        }
+      }
     },
     {
       "chainId": 100,
@@ -2066,8 +2276,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/f8d36a72b2f5ed286a64.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0xebbd67a84e33791f1bcfde74cdc22a71e332e2f1"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 100,
+          "tokenAddress": "0xfadc59d012ba3c110b08a15b7755a5cb7cbe77d7",
+          "quote": "USD",
+          "path": "grt-usd",
+          "proxyAddress": "0xebbd67a84e33791f1bcfde74cdc22a71e332e2f1",
+          "expectedDescription": "GRT / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "bridged-underlying",
+          "identityEvidence": "https://docs.gnosischain.com/developers/Usefulcontracts identifies Omnibridge mediator 0xf6a78083ca3e2a662d6dd1703c939c8ace2e268d. Read-only foreignTokenAddress(this exact Gnosis token) returned Ethereum 0xc944e90c64b2c07662a292be6244bdf05cda44a7 on 2026-11-17. This establishes the represented GRT contract; apply the accepted 1:1 GRT token-unit assumption for bridge mint/burn representation. The underlying feed does not price bridge backing or failed redemption.",
+          "representationEvidence": "https://docs.gnosischain.com/developers/Usefulcontracts identifies Omnibridge mediator 0xf6a78083ca3e2a662d6dd1703c939c8ace2e268d. Read-only foreignTokenAddress(this exact Gnosis token) returned Ethereum 0xc944e90c64b2c07662a292be6244bdf05cda44a7 on 2026-11-17. This establishes the represented GRT contract; apply the accepted 1:1 GRT token-unit assumption for bridge mint/burn representation. The underlying feed does not price bridge backing or failed redemption.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "Use the represented asset price at an assumed 1:1 token-unit relationship. The feed does not measure bridge or custody failures, backing loss or failed redemption; these can make the held token trade below its represented asset.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed medium-category Crypto cex_price Reference Price source for GRT/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-xdai-mainnet.json: exact grt-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:0de43dfc5a963811730e5d45812a540d3cdae552086e179080fede29ed772df2"
+        }
+      }
     },
     {
       "chainId": 100,
@@ -2115,8 +2346,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/4d05f1b6788e2c830757.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0x3b84d6e6976d5826500572600eb44f9f1753827b"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 100,
+          "tokenAddress": "0x3a00e08544d589e19a8e7d97d0294331341cdbf6",
+          "quote": "USD",
+          "path": "snx-usd",
+          "proxyAddress": "0x3b84d6e6976d5826500572600eb44f9f1753827b",
+          "expectedDescription": "SNX / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "bridged-underlying",
+          "identityEvidence": "https://docs.gnosischain.com/developers/Usefulcontracts identifies Omnibridge mediator 0xf6a78083ca3e2a662d6dd1703c939c8ace2e268d. Read-only foreignTokenAddress(this exact Gnosis token) returned Ethereum 0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f on 2026-11-17. This establishes the represented SNX contract; apply the accepted 1:1 SNX token-unit assumption for bridge mint/burn representation. The underlying feed does not price bridge backing or failed redemption.",
+          "representationEvidence": "https://docs.gnosischain.com/developers/Usefulcontracts identifies Omnibridge mediator 0xf6a78083ca3e2a662d6dd1703c939c8ace2e268d. Read-only foreignTokenAddress(this exact Gnosis token) returned Ethereum 0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f on 2026-11-17. This establishes the represented SNX contract; apply the accepted 1:1 SNX token-unit assumption for bridge mint/burn representation. The underlying feed does not price bridge backing or failed redemption.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "Use the represented asset price at an assumed 1:1 token-unit relationship. The feed does not measure bridge or custody failures, backing loss or failed redemption; these can make the held token trade below its represented asset.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed medium-category Crypto cex_price Reference Price source for SNX/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-xdai-mainnet.json: exact snx-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:3bfeb05a47dd0be46a7f1ee383f6e734b4b0d1d5f7e522f992c4f08dc1d5b8e3"
+        }
+      }
     },
     {
       "chainId": 100,
@@ -2138,8 +2390,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/412f11a2b03b7a456510.jpg",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0xc0a6bf8d5d408b091d022c3c0653d4056d4b9c01"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 100,
+          "tokenAddress": "0x2995d1317dcd4f0ab89f4ae60f3f020a4f17c7ce",
+          "quote": "USD",
+          "path": "sushi-usd",
+          "proxyAddress": "0xc0a6bf8d5d408b091d022c3c0653d4056d4b9c01",
+          "expectedDescription": "SUSHI / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "bridged-underlying",
+          "identityEvidence": "https://docs.gnosischain.com/developers/Usefulcontracts identifies Omnibridge mediator 0xf6a78083ca3e2a662d6dd1703c939c8ace2e268d. Read-only foreignTokenAddress(this exact Gnosis token) returned Ethereum 0x6b3595068778dd592e39a122f4f5a5cf09c90fe2 on 2026-11-17. This establishes the represented SUSHI contract; apply the accepted 1:1 SUSHI token-unit assumption for bridge mint/burn representation. The underlying feed does not price bridge backing or failed redemption.",
+          "representationEvidence": "https://docs.gnosischain.com/developers/Usefulcontracts identifies Omnibridge mediator 0xf6a78083ca3e2a662d6dd1703c939c8ace2e268d. Read-only foreignTokenAddress(this exact Gnosis token) returned Ethereum 0x6b3595068778dd592e39a122f4f5a5cf09c90fe2 on 2026-11-17. This establishes the represented SUSHI contract; apply the accepted 1:1 SUSHI token-unit assumption for bridge mint/burn representation. The underlying feed does not price bridge backing or failed redemption.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "Use the represented asset price at an assumed 1:1 token-unit relationship. The feed does not measure bridge or custody failures, backing loss or failed redemption; these can make the held token trade below its represented asset.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed low-category Crypto cex_price Reference Price source for SUSHI/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-xdai-mainnet.json: exact sushi-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:e62641c9eeea21b8bb7471fdb18492a1a80c4e7441eb6b7a8e4e569a8b266284"
+        }
+      }
     },
     {
       "chainId": 100,
@@ -2397,8 +2670,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/0f1a61d5a7a2dfb668ed.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0x2a8758b7257102461bc958279054e372c2b1bde6"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 137,
+          "tokenAddress": "0x8505b9d2254a7ae468c0e9dd10ccea3a837aef5c",
+          "quote": "USD",
+          "path": "comp-usd",
+          "proxyAddress": "0x2a8758b7257102461bc958279054e372c2b1bde6",
+          "expectedDescription": "COMP / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 100,
+          "assetRelationship": "bridged-underlying",
+          "identityEvidence": "https://github.com/0xPolygon/security/blob/main/scope-pos-contracts.md identifies Ethereum RootChainManager 0xa0c68c638235ee32657e8f720a23cec1bfc77c77. Read-only rootToChildToken(0xc00e94cb662c3520282e6f5717214004a7f26888) returned this exact Polygon COMP contract on 2026-11-17. https://github.com/maticnetwork/pos-portal/blob/master/contracts/root/RootChainManager/RootChainManager.sol defines the mapping and deposit/withdrawal flow. Apply the accepted 1:1 COMP unit assumption; bridge backing and redemption failures are not priced by the underlying feed.",
+          "representationEvidence": "https://github.com/0xPolygon/security/blob/main/scope-pos-contracts.md identifies Ethereum RootChainManager 0xa0c68c638235ee32657e8f720a23cec1bfc77c77. Read-only rootToChildToken(0xc00e94cb662c3520282e6f5717214004a7f26888) returned this exact Polygon COMP contract on 2026-11-17. https://github.com/maticnetwork/pos-portal/blob/master/contracts/root/RootChainManager/RootChainManager.sol defines the mapping and deposit/withdrawal flow. Apply the accepted 1:1 COMP unit assumption; bridge backing and redemption failures are not priced by the underlying feed.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "Use the represented asset price at an assumed 1:1 token-unit relationship. The feed does not measure bridge or custody failures, backing loss or failed redemption; these can make the held token trade below its represented asset.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed low-category Crypto cex_price Reference Price source for COMP/USD, 8 decimals and heartbeat 27 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-matic-mainnet.json: exact comp-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:c6493c30f77bfce608a615990f97644b3a1de0184c8714653d301a118b969b45"
+        }
+      }
     },
     {
       "chainId": 137,
@@ -2408,8 +2702,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/a420966c59b95b7a516c.svg",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0x336584c8e6dc19637a5b36206b1c79923111b405"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 137,
+          "tokenAddress": "0x172370d5cd63279efa6d502dab29171933a610af",
+          "quote": "USD",
+          "path": "crv-usd",
+          "proxyAddress": "0x336584c8e6dc19637a5b36206b1c79923111b405",
+          "expectedDescription": "CRV / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 510,
+          "assetRelationship": "bridged-underlying",
+          "identityEvidence": "https://github.com/0xPolygon/security/blob/main/scope-pos-contracts.md identifies Ethereum RootChainManager 0xa0c68c638235ee32657e8f720a23cec1bfc77c77. Read-only rootToChildToken(0xd533a949740bb3306d119cc777fa900ba034cd52) returned this exact Polygon CRV contract on 2026-11-17. https://github.com/maticnetwork/pos-portal/blob/master/contracts/root/RootChainManager/RootChainManager.sol defines the mapping and deposit/withdrawal flow. Apply the accepted 1:1 CRV unit assumption; bridge backing and redemption failures are not priced by the underlying feed.",
+          "representationEvidence": "https://github.com/0xPolygon/security/blob/main/scope-pos-contracts.md identifies Ethereum RootChainManager 0xa0c68c638235ee32657e8f720a23cec1bfc77c77. Read-only rootToChildToken(0xd533a949740bb3306d119cc777fa900ba034cd52) returned this exact Polygon CRV contract on 2026-11-17. https://github.com/maticnetwork/pos-portal/blob/master/contracts/root/RootChainManager/RootChainManager.sol defines the mapping and deposit/withdrawal flow. Apply the accepted 1:1 CRV unit assumption; bridge backing and redemption failures are not priced by the underlying feed.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "Use the represented asset price at an assumed 1:1 token-unit relationship. The feed does not measure bridge or custody failures, backing loss or failed redemption; these can make the held token trade below its represented asset.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed low-category Crypto cex_price Reference Price source for CRV/USD, 8 decimals and heartbeat 300 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-matic-mainnet.json: exact crv-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:211abe84d8b2b50970667bb466a265a6d1d583baec7d2bc090237357f74a1c73"
+        }
+      }
     },
     {
       "chainId": 137,
@@ -2431,8 +2746,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/d0d86a3bcd99dba9a4e7.svg",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0xdd229ce42f11d8ee7fff29bdb71c7b81352e11be"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 137,
+          "tokenAddress": "0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7",
+          "quote": "USD",
+          "path": "ghst-usd",
+          "proxyAddress": "0xdd229ce42f11d8ee7fff29bdb71c7b81352e11be",
+          "expectedDescription": "GHST / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "exact-asset",
+          "identityEvidence": "https://docs.aavegotchi.com/own/tokens/ghst-token identifies this exact Polygon GHST contract. The source prices issued GHST utility/governance units directly, not an Aavegotchi NFT or staking share.",
+          "representationEvidence": "https://docs.aavegotchi.com/own/tokens/ghst-token identifies this exact Polygon GHST contract. The source prices issued GHST utility/governance units directly, not an Aavegotchi NFT or staking share.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "The selected source prices this issued token in its own units. No underlying-asset conversion is used. Issuer, custody, redemption and price-method risks remain; the answer is not an executable quote.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed medium-category Crypto cex_price Reference Price source for GHST/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-matic-mainnet.json: exact ghst-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:4564b9ecc8e4604ed87b6a27cb0d3ba918f828d660f2bf9f9708895cbcda9d69"
+        }
+      }
     },
     {
       "chainId": 137,
@@ -2549,8 +2885,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/1719ce80d15c07300be1.svg",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0x49b0c695039243bbfeb8ecd054eb70061fd54aa0"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 137,
+          "tokenAddress": "0x0b3f868e0be5597d5db7feb59e1cadbb0fdda50a",
+          "quote": "USD",
+          "path": "sushi-usd",
+          "proxyAddress": "0x49b0c695039243bbfeb8ecd054eb70061fd54aa0",
+          "expectedDescription": "SUSHI / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "bridged-underlying",
+          "identityEvidence": "https://github.com/0xPolygon/security/blob/main/scope-pos-contracts.md identifies Ethereum RootChainManager 0xa0c68c638235ee32657e8f720a23cec1bfc77c77. Read-only rootToChildToken(0x6b3595068778dd592e39a122f4f5a5cf09c90fe2) returned this exact Polygon SUSHI contract on 2026-11-17. https://github.com/maticnetwork/pos-portal/blob/master/contracts/root/RootChainManager/RootChainManager.sol defines the mapping and deposit/withdrawal flow. Apply the accepted 1:1 SUSHI unit assumption; bridge backing and redemption failures are not priced by the underlying feed.",
+          "representationEvidence": "https://github.com/0xPolygon/security/blob/main/scope-pos-contracts.md identifies Ethereum RootChainManager 0xa0c68c638235ee32657e8f720a23cec1bfc77c77. Read-only rootToChildToken(0x6b3595068778dd592e39a122f4f5a5cf09c90fe2) returned this exact Polygon SUSHI contract on 2026-11-17. https://github.com/maticnetwork/pos-portal/blob/master/contracts/root/RootChainManager/RootChainManager.sol defines the mapping and deposit/withdrawal flow. Apply the accepted 1:1 SUSHI unit assumption; bridge backing and redemption failures are not priced by the underlying feed.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "Use the represented asset price at an assumed 1:1 token-unit relationship. The feed does not measure bridge or custody failures, backing loss or failed redemption; these can make the held token trade below its represented asset.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed low-category Crypto cex_price Reference Price source for SUSHI/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-matic-mainnet.json: exact sushi-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:62f18f6ae86f2b9008664f989838ff129edd7b48150735984b412d15dcc19939"
+        }
+      }
     },
     {
       "chainId": 137,
@@ -2779,8 +3136,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/54bc44ed9a78cd4ec558.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0x4ec5970fc728c5f65ba413992cd5ff6fd70fcff0"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 8453,
+          "tokenAddress": "0x940181a94a35a4569e4529a3cdfb74e38fd98631",
+          "quote": "USD",
+          "path": "aero-usd",
+          "proxyAddress": "0x4ec5970fc728c5f65ba413992cd5ff6fd70fcff0",
+          "expectedDescription": "AERO / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "exact-asset",
+          "identityEvidence": "https://github.com/aerodrome-finance/contracts/blob/main/README.md identifies this exact Base AERO contract. The source prices AERO governance/emission units directly, not veAERO voting escrow or an LP token.",
+          "representationEvidence": "https://github.com/aerodrome-finance/contracts/blob/main/README.md identifies this exact Base AERO contract. The source prices AERO governance/emission units directly, not veAERO voting escrow or an LP token.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "The selected source prices this issued token in its own units. No underlying-asset conversion is used. Issuer, custody, redemption and price-method risks remain; the answer is not an executable quote.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed medium-category Crypto cex_price Reference Price source for AERO/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-base-1.json: exact aero-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:deace861ca70a282c11413ce23c3f532d9763a6568eb8e79857681e38efdccb7"
+        }
+      }
     },
     {
       "chainId": 8453,
@@ -2790,8 +3168,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/5faf321f723b5916d4ea.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0x50997b806b574501cc34a2a6d845e4dc1bd9aa8c"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 8453,
+          "tokenAddress": "0x696f9436b67233384889472cd7cd58a6fb5df4f1",
+          "quote": "USD",
+          "path": "avnt-usd",
+          "proxyAddress": "0x50997b806b574501cc34a2a6d845e4dc1bd9aa8c",
+          "expectedDescription": "AVNT / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "exact-asset",
+          "identityEvidence": "https://docs.avantisfi.com/avnt-token identifies this exact Base AVNT governance contract. The source prices AVNT units directly, not an Avantis vault or staking receipt.",
+          "representationEvidence": "https://docs.avantisfi.com/avnt-token identifies this exact Base AVNT governance contract. The source prices AVNT units directly, not an Avantis vault or staking receipt.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "The selected source prices this issued token in its own units. No underlying-asset conversion is used. Issuer, custody, redemption and price-method risks remain; the answer is not an executable quote.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed new-category Crypto cex_price Reference Price source for AVNT/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-base-1.json: exact avnt-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:67f781f6d57c07f1c5371ba6fd0d45a6bddb23386ed302c8d42f3426764f6ef2"
+        }
+      }
     },
     {
       "chainId": 8453,
@@ -2813,8 +3212,29 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/42cd15fe2b9391da51d5.svg",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0x07da0e54543a844a80abe69c8a12f22b3aa59f9d"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 8453,
+          "tokenAddress": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+          "quote": "USD",
+          "path": "cbbtc-usd",
+          "proxyAddress": "0x07da0e54543a844a80abe69c8a12f22b3aa59f9d",
+          "expectedDescription": "cbBTC / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 1860,
+          "assetRelationship": "exact-asset",
+          "identityEvidence": "https://www.coinbase.com/campaigns/wrapped-assets identifies this exact Base cbBTC contract. The selected CBBTC/USD dex_state_price source prices a cbBTC token unit, with BTC recorded as underlying; it does not substitute a BTC/USD price at assumed parity. Custody, backing and redemption risks remain.",
+          "representationEvidence": "https://www.coinbase.com/campaigns/wrapped-assets identifies this exact Base cbBTC contract. The selected CBBTC/USD dex_state_price source prices a cbBTC token unit, with BTC recorded as underlying; it does not substitute a BTC/USD price at assumed parity. Custody, backing and redemption risks remain.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "The selected source prices this issued token in its own units. No underlying-asset conversion is used. Issuer, custody, redemption and price-method risks remain; the answer is not an executable quote.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed low-category Crypto dex_state_price Reference Price source for CBBTC/USD, 8 decimals and heartbeat 1200 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The onchain-state method can differ from executable market prices and does not prove collateral or redemption. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-base-1.json: exact cbbtc-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:8719a710066466da886c7bea29832caac4edad7a37e2af2ccb81e7ee9771b642"
+        }
+      }
     },
     {
       "chainId": 8453,
@@ -2825,8 +3245,29 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/68395d0e54b67f667a63.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0x95051de9db5cac61682f64505006f2991deab3c2"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 8453,
+          "tokenAddress": "0xcbd06e5a2b0c65597161de254aa074e489deb510",
+          "quote": "USD",
+          "path": "cbdoge-usd",
+          "proxyAddress": "0x95051de9db5cac61682f64505006f2991deab3c2",
+          "expectedDescription": "CBDOGE / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "exact-asset",
+          "identityEvidence": "https://www.coinbase.com/campaigns/wrapped-assets identifies this exact Base cbDOGE contract. The selected CBDOGE/USD dex_state_price source prices a cbDOGE token unit, with DOGE recorded as underlying; it does not substitute a DOGE/USD price at assumed parity. Custody, backing and redemption risks remain.",
+          "representationEvidence": "https://www.coinbase.com/campaigns/wrapped-assets identifies this exact Base cbDOGE contract. The selected CBDOGE/USD dex_state_price source prices a cbDOGE token unit, with DOGE recorded as underlying; it does not substitute a DOGE/USD price at assumed parity. Custody, backing and redemption risks remain.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "The selected source prices this issued token in its own units. No underlying-asset conversion is used. Issuer, custody, redemption and price-method risks remain; the answer is not an executable quote.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed high-category Crypto dex_state_price Reference Price source for CBDOGE/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The onchain-state method can differ from executable market prices and does not prove collateral or redemption. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-base-1.json: exact cbdoge-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:7745e82779eb36ec76912772e0a5185c4213dac5da2ccb1d0a4fded99344d33f"
+        }
+      }
     },
     {
       "chainId": 8453,
@@ -3322,6 +3763,39 @@
     },
     {
       "chainId": 9745,
+      "address": "0x58538e6a46e07434d7e7375bc268d3cb839c0133",
+      "symbol": "ENA",
+      "name": "Ethena",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
+      "logoURI": "/assets/tokens/99b4be1dea09e0dbfa33.png",
+      "oracles": {
+        "USD": "0xdf61cc2451e98dce8d511e2d65d3484b85675f9e"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 9745,
+          "tokenAddress": "0x58538e6a46e07434d7e7375bc268d3cb839c0133",
+          "quote": "USD",
+          "path": "ena-usd",
+          "proxyAddress": "0xdf61cc2451e98dce8d511e2d65d3484b85675f9e",
+          "expectedDescription": "ENA / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "bridged-underlying",
+          "identityEvidence": "https://raw.githubusercontent.com/PlasmaLaboratories/plasma-tokenlist/5920b4bdb56d87d3afd4a1187cffcef8d1c2f45a/plasma.tokenlist.json identifies this exact chain-9745 ENA contract with 18 decimals. https://docs.ethena.fi/technical-design/key-addresses.md gives the same ENA address for most L2s; https://layerzero.network/blog/the-plasma-case-study-launch-liquid names ENA among Plasma OFTs, and https://plasmascan.to/address/0x58538e6a46e07434d7e7375bc268d3cb839c0133 identifies ENAOFT. Read-only sharedDecimals() returned 6 on 2026-11-17. Apply the accepted 1:1 ENA token-unit pricing assumption; cross-chain dust rounding is not exact wei-level transfer parity, and no backing or redemption audit is claimed.",
+          "representationEvidence": "https://raw.githubusercontent.com/PlasmaLaboratories/plasma-tokenlist/5920b4bdb56d87d3afd4a1187cffcef8d1c2f45a/plasma.tokenlist.json identifies this exact chain-9745 ENA contract with 18 decimals. https://docs.ethena.fi/technical-design/key-addresses.md gives the same ENA address for most L2s; https://layerzero.network/blog/the-plasma-case-study-launch-liquid names ENA among Plasma OFTs, and https://plasmascan.to/address/0x58538e6a46e07434d7e7375bc268d3cb839c0133 identifies ENAOFT. Read-only sharedDecimals() returned 6 on 2026-11-17. Apply the accepted 1:1 ENA token-unit pricing assumption; cross-chain dust rounding is not exact wei-level transfer parity, and no backing or redemption audit is claimed.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "Use the represented asset price at an assumed 1:1 token-unit relationship. The feed does not measure bridge or custody failures, backing loss or failed redemption; these can make the held token trade below its represented asset.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed low-category Crypto cex_price Reference Price source for ENA/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-plasma-mainnet.json: exact ena-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:b3863e0b24e64cba5442d26f3dd03d09344e83f25d1a6eb61d8284b66829ce75"
+        }
+      }
+    },
+    {
+      "chainId": 9745,
       "address": "0xb77e872a68c62cfc0dfb02c067ecc3da23b4bbf3",
       "symbol": "GHO",
       "name": "Gho Token",
@@ -3770,8 +4244,29 @@
       "assetClass": "volatile",
       "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
       "logoURI": "/assets/tokens/99b4be1dea09e0dbfa33.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0x9ee96caa9972c801058caa8e23419fc6516fbf7e"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 42161,
+          "tokenAddress": "0x58538e6a46e07434d7e7375bc268d3cb839c0133",
+          "quote": "USD",
+          "path": "ena-usd",
+          "proxyAddress": "0x9ee96caa9972c801058caa8e23419fc6516fbf7e",
+          "expectedDescription": "ENA / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "bridged-underlying",
+          "identityEvidence": "https://docs.ethena.fi/technical-design/key-addresses.md identifies ENA 0x58538e6a46e07434d7e7375bc268d3cb839c0133 for most L2s and Ethereum ENA 0x57e114b691db790c35207b2e685d4a43181e6061. https://arbiscan.io/token/0x58538e6a46e07434d7e7375bc268d3cb839c0133 identifies ENAOFT. This is an OFT representation of ENA, not a canonical Arbitrum gateway token or USDe receipt. Apply the accepted 1:1 ENA token-unit assumption; no backing audit or redemption guarantee is claimed.",
+          "representationEvidence": "https://docs.ethena.fi/technical-design/key-addresses.md identifies ENA 0x58538e6a46e07434d7e7375bc268d3cb839c0133 for most L2s and Ethereum ENA 0x57e114b691db790c35207b2e685d4a43181e6061. https://arbiscan.io/token/0x58538e6a46e07434d7e7375bc268d3cb839c0133 identifies ENAOFT. This is an OFT representation of ENA, not a canonical Arbitrum gateway token or USDe receipt. Apply the accepted 1:1 ENA token-unit assumption; no backing audit or redemption guarantee is claimed.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "Use the represented asset price at an assumed 1:1 token-unit relationship. The feed does not measure bridge or custody failures, backing loss or failed redemption; these can make the held token trade below its represented asset.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed low-category Crypto cex_price Reference Price source for ENA/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-arbitrum-1.json: exact ena-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:d1894214c0929cd2d00f49965e04a7cf27c7c1b14af6c930bb56c361b9080dc5"
+        }
+      }
     },
     {
       "chainId": 42161,
@@ -3804,8 +4299,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/7e40f5a60d7ce701d1fe.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0xdb98056fecfff59d032ab628337a4887110df3db"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 42161,
+          "tokenAddress": "0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a",
+          "quote": "USD",
+          "path": "gmx-usd",
+          "proxyAddress": "0xdb98056fecfff59d032ab628337a4887110df3db",
+          "expectedDescription": "GMX / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "exact-asset",
+          "identityEvidence": "https://docs.gmx.io/docs/tokenomics/gmx-token/ identifies this exact Arbitrum GMX contract. The source prices issued GMX governance units, not GLP, GM liquidity shares, esGMX or staked GMX receipts.",
+          "representationEvidence": "https://docs.gmx.io/docs/tokenomics/gmx-token/ identifies this exact Arbitrum GMX contract. The source prices issued GMX governance units, not GLP, GM liquidity shares, esGMX or staked GMX receipts.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "The selected source prices this issued token in its own units. No underlying-asset conversion is used. Issuer, custody, redemption and price-method risks remain; the answer is not an executable quote.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed medium-category Crypto cex_price Reference Price source for GMX/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-arbitrum-1.json: exact gmx-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:689f7fc7222cb2e9dbdce80326cdea15fb1108b674647045547eb1b17e1c4f23"
+        }
+      }
     },
     {
       "chainId": 42161,
@@ -3815,8 +4331,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/032dff496763a5f3ec6d.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0xe89e98ce4e19071e59ed4780e0598b541ce76486"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 42161,
+          "tokenAddress": "0x18c11fd286c5ec11c3b683caa813b77f5163a122",
+          "quote": "USD",
+          "path": "gns-usd",
+          "proxyAddress": "0xe89e98ce4e19071e59ed4780e0598b541ce76486",
+          "expectedDescription": "GNS / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "exact-asset",
+          "identityEvidence": "https://gains.trade/gns identifies this exact Arbitrum GNS governance token. The selected source prices GNS units directly, not gToken vault shares or a staking receipt. No canonical gateway, audited bridge backing or redemption guarantee is claimed.",
+          "representationEvidence": "https://gains.trade/gns identifies this exact Arbitrum GNS governance token. The selected source prices GNS units directly, not gToken vault shares or a staking receipt. No canonical gateway, audited bridge backing or redemption guarantee is claimed.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "The selected source prices this issued token in its own units. No underlying-asset conversion is used. Issuer, custody, redemption and price-method risks remain; the answer is not an executable quote.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed high-category Crypto cex_price Reference Price source for GNS/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-arbitrum-1.json: exact gns-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:03baab2bdf31befb8db5d7dff548b8acefb59901b25ce3588657df37890d25a7"
+        }
+      }
     },
     {
       "chainId": 42161,
@@ -3920,8 +4457,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/6a473a6e72ac146b8e6b.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0x66853e19d73c0f9301fe099c324a1e9726953433"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 42161,
+          "tokenAddress": "0x0c880f6761f1af8d9aa9c466984b80dab9a8c9e8",
+          "quote": "USD",
+          "path": "pendle-usd",
+          "proxyAddress": "0x66853e19d73c0f9301fe099c324a1e9726953433",
+          "expectedDescription": "PENDLE / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "bridged-underlying",
+          "identityEvidence": "https://github.com/pendle-finance/pendle-core-v2-public/blob/main/deployments/42161-core.json identifies this exact PENDLE contract. Read-only l1Address() returned Ethereum PENDLE 0x808507121b80c02388fad14726482e061b8da827 on 2026-11-17. https://docs.pendle.finance/pendle-v2/AppGuide/BridgePendle describes bridging PENDLE units; this is the governance token, not PT, YT or a pool share.",
+          "representationEvidence": "https://github.com/pendle-finance/pendle-core-v2-public/blob/main/deployments/42161-core.json identifies this exact PENDLE contract. Read-only l1Address() returned Ethereum PENDLE 0x808507121b80c02388fad14726482e061b8da827 on 2026-11-17. https://docs.pendle.finance/pendle-v2/AppGuide/BridgePendle describes bridging PENDLE units; this is the governance token, not PT, YT or a pool share.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "Use the represented asset price at an assumed 1:1 token-unit relationship. The feed does not measure bridge or custody failures, backing loss or failed redemption; these can make the held token trade below its represented asset.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed low-category Crypto cex_price Reference Price source for PENDLE/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-arbitrum-1.json: exact pendle-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:e5300f1e2a87702255f7098ab6e55aa061861726c18d06b439c704005a5ccbdd"
+        }
+      }
     },
     {
       "chainId": 42161,
@@ -4531,8 +5089,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/4f445c82f44d917cc641.jpg",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0x36e039e6391a5e7a7267650979fdf613f659be5d"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 43114,
+          "tokenAddress": "0x8729438eb15e2c8b576fcc6aecda6a148776c0f5",
+          "quote": "USD",
+          "path": "qi-usd",
+          "proxyAddress": "0x36e039e6391a5e7a7267650979fdf613f659be5d",
+          "expectedDescription": "QI / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 2760,
+          "assetRelationship": "exact-asset",
+          "identityEvidence": "https://docs.benqi.fi/resources/contracts identifies this exact Avalanche QI contract. The source prices BENQI QI governance units, not qiTokens, sAVAX or lending/staking shares.",
+          "representationEvidence": "https://docs.benqi.fi/resources/contracts identifies this exact Avalanche QI contract. The source prices BENQI QI governance units, not qiTokens, sAVAX or lending/staking shares.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "The selected source prices this issued token in its own units. No underlying-asset conversion is used. Issuer, custody, redemption and price-method risks remain; the answer is not an executable quote.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed high-category Crypto cex_price Reference Price source for QI/USD, 8 decimals and heartbeat 1800 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-avalanche-mainnet.json: exact qi-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:49dbcf275962e4ac85f1f960fdd9cc9a9d573d155859d25d4066f2211a7f61d9"
+        }
+      }
     },
     {
       "chainId": 43114,
@@ -4732,8 +5311,29 @@
       "assetClass": "volatile",
       "classificationReason": "Wrapped, bridged or staked crypto exposure; a crypto-unit peg does not fix its USD value.",
       "logoURI": "/assets/tokens/c96ab2e608fe218d0dfc.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0x86442e3a98558357d46e6182f4b262f76c4fa26f"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 43114,
+          "tokenAddress": "0x0555e30da8f98308edb960aa94c0db47230d2b9c",
+          "quote": "USD",
+          "path": "wbtc-usd",
+          "proxyAddress": "0x86442e3a98558357d46e6182f4b262f76c4fa26f",
+          "expectedDescription": "WBTC / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "exact-asset",
+          "identityEvidence": "https://openapi.wbtc.network/public/v1/chains identifies this exact Avalanche WBTC contract 0x0555e30da8f98308edb960aa94c0db47230d2b9c as a LayerZero bridge deployment. https://bitgo.com/resources/blog/making-wbtc-natively-omnichain/ describes omnichain WBTC. This is distinct from Avalanche Bridge WBTC.e 0x50b7545627a5162f82a992c33b87adc75187b218. The selected WBTC/USD dex_state_price prices a WBTC token unit directly, not an assumed BTC unit. Custody, bridge, backing and redemption risks remain.",
+          "representationEvidence": "https://openapi.wbtc.network/public/v1/chains identifies this exact Avalanche WBTC contract 0x0555e30da8f98308edb960aa94c0db47230d2b9c as a LayerZero bridge deployment. https://bitgo.com/resources/blog/making-wbtc-natively-omnichain/ describes omnichain WBTC. This is distinct from Avalanche Bridge WBTC.e 0x50b7545627a5162f82a992c33b87adc75187b218. The selected WBTC/USD dex_state_price prices a WBTC token unit directly, not an assumed BTC unit. Custody, bridge, backing and redemption risks remain.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "The selected source prices this issued token in its own units. No underlying-asset conversion is used. Issuer, custody, redemption and price-method risks remain; the answer is not an executable quote.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed low-category Crypto dex_state_price Reference Price source for WBTC/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The onchain-state method can differ from executable market prices and does not prove collateral or redemption. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-avalanche-mainnet.json: exact wbtc-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:f890c46e68e51024c09d0c13b9c215018715d3ff6bfee2ab6cf3edc37f41a1e1"
+        }
+      }
     },
     {
       "chainId": 43114,
@@ -4793,8 +5393,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/d4b9eae1b1000bb8e388.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0x4cf57dc9028187b9daaf773c8eca941036989238"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 43114,
+          "tokenAddress": "0xd1c3f94de7e5b45fa4edbba472491a9f4b166fc4",
+          "quote": "USD",
+          "path": "xava-usd",
+          "proxyAddress": "0x4cf57dc9028187b9daaf773c8eca941036989238",
+          "expectedDescription": "XAVA / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "exact-asset",
+          "identityEvidence": "https://blog.avalaunch.app/pangolin-listing-private-sale-distribution/ identifies this exact Avalanche XAVA contract. The source prices issued XAVA governance/utility units directly, not a staking receipt.",
+          "representationEvidence": "https://blog.avalaunch.app/pangolin-listing-private-sale-distribution/ identifies this exact Avalanche XAVA contract. The source prices issued XAVA governance/utility units directly, not a staking receipt.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "The selected source prices this issued token in its own units. No underlying-asset conversion is used. Issuer, custody, redemption and price-method risks remain; the answer is not an executable quote.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed high-category Crypto cex_price Reference Price source for XAVA/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-avalanche-mainnet.json: exact xava-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:4e9430e8685a378da4b7dbfb7c1e8afa0aa8228cdf6b145e4ce7307a3afa5c17"
+        }
+      }
     },
     {
       "chainId": 43114,
@@ -4806,6 +5427,70 @@
       "logoURI": "/assets/tokens/ab8b8ddd24828478103e.jpg",
       "oracles": {},
       "oracleApprovals": {}
+    },
+    {
+      "chainId": 59144,
+      "address": "0xcb598507a524b02d61f8c89ae47cc6076407998b",
+      "symbol": "AAVE",
+      "name": "Aave Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "logoURI": "/assets/tokens/5b1b8adc120ffdfbd91e.svg",
+      "oracles": {
+        "USD": "0x09b0a8afd9185500d7c64fc68338b4c50db6df1d"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 59144,
+          "tokenAddress": "0xcb598507a524b02d61f8c89ae47cc6076407998b",
+          "quote": "USD",
+          "path": "aave-usd",
+          "proxyAddress": "0x09b0a8afd9185500d7c64fc68338b4c50db6df1d",
+          "expectedDescription": "AAVE / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "bridged-underlying",
+          "identityEvidence": "https://docs.linea.build/network/build/contracts identifies Linea TokenBridge 0x353012dc4a9a6cf55c941badc267f82004a8ceb9. Read-only nativeToBridgedToken(1, 0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9) returned this exact AAVE contract and bridgedToNativeToken returned that Ethereum AAVE on 2026-11-17. Mapping reference: https://docs.linea.build/reference/smart-contracts/tokenbridge. https://docs.linea.build/protocol/architecture/bridge/canonical-token-bridge describes lock/mint and burn/release units. Apply assumed 1:1 AAVE units, not a staking-share conversion.",
+          "representationEvidence": "https://docs.linea.build/network/build/contracts identifies Linea TokenBridge 0x353012dc4a9a6cf55c941badc267f82004a8ceb9. Read-only nativeToBridgedToken(1, 0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9) returned this exact AAVE contract and bridgedToNativeToken returned that Ethereum AAVE on 2026-11-17. Mapping reference: https://docs.linea.build/reference/smart-contracts/tokenbridge. https://docs.linea.build/protocol/architecture/bridge/canonical-token-bridge describes lock/mint and burn/release units. Apply assumed 1:1 AAVE units, not a staking-share conversion.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "Use the represented asset price at an assumed 1:1 token-unit relationship. The feed does not measure bridge or custody failures, backing loss or failed redemption; these can make the held token trade below its represented asset.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed low-category Crypto cex_price Reference Price source for AAVE/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-linea-1.json: exact aave-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:35f45ea31276d39656b9444288923e551ca089f60fc7db97e326e205ee9d8edc"
+        }
+      }
+    },
+    {
+      "chainId": 59144,
+      "address": "0x0ece76334fb560f2b1a49a60e38cf726b02203f0",
+      "symbol": "COMP",
+      "name": "Compound",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "logoURI": "/assets/tokens/0f1a61d5a7a2dfb668ed.png",
+      "oracles": {
+        "USD": "0xc0068a2f7e4847df9c3a34b27ccc07b7e15e0458"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 59144,
+          "tokenAddress": "0x0ece76334fb560f2b1a49a60e38cf726b02203f0",
+          "quote": "USD",
+          "path": "comp-usd",
+          "proxyAddress": "0xc0068a2f7e4847df9c3a34b27ccc07b7e15e0458",
+          "expectedDescription": "COMP / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "bridged-underlying",
+          "identityEvidence": "https://raw.githubusercontent.com/Consensys-Incorporated/linea-token-list/ffa400e46af4577d2db31d913e9ab3197785f145/json/linea-mainnet-token-shortlist.json identifies this exact COMP contract as canonical-bridge with Ethereum root 0xc00e94cb662c3520282e6f5717214004a7f26888 and 18 decimals. Read-only forward and reverse mappings on official Linea TokenBridge 0x353012dc4a9a6cf55c941badc267f82004a8ceb9 corroborated both addresses on 2026-11-17. https://docs.linea.build/protocol/architecture/bridge/canonical-token-bridge describes preserved COMP units under lock/mint and burn/release.",
+          "representationEvidence": "https://raw.githubusercontent.com/Consensys-Incorporated/linea-token-list/ffa400e46af4577d2db31d913e9ab3197785f145/json/linea-mainnet-token-shortlist.json identifies this exact COMP contract as canonical-bridge with Ethereum root 0xc00e94cb662c3520282e6f5717214004a7f26888 and 18 decimals. Read-only forward and reverse mappings on official Linea TokenBridge 0x353012dc4a9a6cf55c941badc267f82004a8ceb9 corroborated both addresses on 2026-11-17. https://docs.linea.build/protocol/architecture/bridge/canonical-token-bridge describes preserved COMP units under lock/mint and burn/release.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "Use the represented asset price at an assumed 1:1 token-unit relationship. The feed does not measure bridge or custody failures, backing loss or failed redemption; these can make the held token trade below its represented asset.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed low-category Crypto cex_price Reference Price source for COMP/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-linea-1.json: exact comp-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:37e18bdc156b88aea0599511614f1a16360e2998d2f1433fc50710a35eddd04f"
+        }
+      }
     },
     {
       "chainId": 59144,
@@ -4827,8 +5512,29 @@
       "decimals": 18,
       "assetClass": "volatile",
       "logoURI": "/assets/tokens/0879a2b69b8c4c76accf.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0x452b408b3e2805c109d52c80bd54deda239716d1"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 59144,
+          "tokenAddress": "0x1789e0043623282d5dcc7f213d703c6d8bafbb04",
+          "quote": "USD",
+          "path": "linea-usd",
+          "proxyAddress": "0x452b408b3e2805c109d52c80bd54deda239716d1",
+          "expectedDescription": "LINEA / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "assetRelationship": "bridged-underlying",
+          "identityEvidence": "https://raw.githubusercontent.com/Consensys-Incorporated/linea-token-list/ffa400e46af4577d2db31d913e9ab3197785f145/json/linea-mainnet-token-shortlist.json identifies this exact LINEA contract as canonical-bridge with Ethereum root 0x1789e0043623282d5dcc7f213d703c6d8bafbb04 and 18 decimals. https://docs.linea.build/protocol/architecture/bridge/canonical-token-bridge describes lock/mint and burn/release units. Use assumed 1:1 LINEA units; bridge failures are not priced by the feed.",
+          "representationEvidence": "https://raw.githubusercontent.com/Consensys-Incorporated/linea-token-list/ffa400e46af4577d2db31d913e9ab3197785f145/json/linea-mainnet-token-shortlist.json identifies this exact LINEA contract as canonical-bridge with Ethereum root 0x1789e0043623282d5dcc7f213d703c6d8bafbb04 and 18 decimals. https://docs.linea.build/protocol/architecture/bridge/canonical-token-bridge describes lock/mint and burn/release units. Use assumed 1:1 LINEA units; bridge failures are not priced by the feed.",
+          "reviewDate": "2026-11-17",
+          "assetRelationshipReason": "Use the represented asset price at an assumed 1:1 token-unit relationship. The feed does not measure bridge or custody failures, backing loss or failed redemption; these can make the held token trade below its represented asset.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: reviewed new-category Crypto cex_price Reference Price source for LINEA/USD, 8 decimals and heartbeat 86400 seconds. No hidden, shutdown, inactive or stablecoinCapped marker. The answer uses direct stated USD units. The reported reference price can differ from the held token market price. Accept this exact source and its method limits; category eligibility does not guarantee price quality.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-linea-1.json: exact linea-usd primary proxy row fetched 2026-11-17 and retained in scripts/catalog-feeds.json. The full directory digest and retained path are in scripts/catalog-sources.json categoryExpansionReview. Successful token/feed observations are pinned in scripts/catalog-policy-verification.json additionalReviews, category-expansion-2026-11-17. No alternate proxy substitution.",
+          "snapshotFingerprint": "sha256:da898a0d160912720c2698e66d9a8aae1bbf05e3052c90b1c85d8b711ae9581f"
+        }
+      }
     },
     {
       "chainId": 59144,
@@ -5052,56 +5758,56 @@
     "1": {
       "status": "approved",
       "executionEvidence": "scripts/oracle-execution-verification.json: block-pinned runtime SHA256 matches the retained compiled handler on this chain. Accept the existing shared-age, browser-only round-completeness and future-timestamp checks for these exact routes. No execution guarantee or security audit.",
-      "arithmeticBoundsEvidence": "All selected feeds have 0..18 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json; expanded exact routes reviewed 2026-10-20. Shared timeout does not replace separate browser freshness checks.",
-      "reviewDate": "2026-10-20"
+      "arithmeticBoundsEvidence": "All selected feeds have 0..18 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json; expanded exact routes reviewed 2026-10-20. Shared timeout does not replace separate browser freshness checks. Expansion on 2026-11-17: candidate sell feeds and unchanged fixed buy feed passed the same decimal, positive-round and int256 scaled-product checks. See additionalReviews category-expansion-2026-11-17 in scripts/catalog-policy-verification.json. Existing handler and L2 execution limits remain accepted.",
+      "reviewDate": "2026-11-17"
     },
     "56": {
       "status": "approved",
       "executionEvidence": "scripts/oracle-execution-verification.json: block-pinned runtime SHA256 matches the retained compiled handler on this chain. Accept the existing shared-age, browser-only round-completeness and future-timestamp checks for these exact routes. No execution guarantee or security audit.",
-      "arithmeticBoundsEvidence": "All selected feeds have 0..18 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json; expanded exact routes reviewed 2026-10-20. Shared timeout does not replace separate browser freshness checks.",
-      "reviewDate": "2026-10-20"
+      "arithmeticBoundsEvidence": "All selected feeds have 0..18 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json; expanded exact routes reviewed 2026-10-20. Shared timeout does not replace separate browser freshness checks. Expansion on 2026-11-17: candidate sell feeds and unchanged fixed buy feed passed the same decimal, positive-round and int256 scaled-product checks. See additionalReviews category-expansion-2026-11-17 in scripts/catalog-policy-verification.json. Existing handler and L2 execution limits remain accepted.",
+      "reviewDate": "2026-11-17"
     },
     "100": {
       "status": "approved",
       "executionEvidence": "scripts/oracle-execution-verification.json: block-pinned runtime SHA256 matches the retained compiled handler on this chain. Accept the existing shared-age, browser-only round-completeness and future-timestamp checks for these exact routes. No execution guarantee or security audit.",
-      "arithmeticBoundsEvidence": "All selected feeds have 0..18 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json; expanded exact routes reviewed 2026-10-20. Shared timeout does not replace separate browser freshness checks.",
-      "reviewDate": "2026-10-20"
+      "arithmeticBoundsEvidence": "All selected feeds have 0..18 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json; expanded exact routes reviewed 2026-10-20. Shared timeout does not replace separate browser freshness checks. Expansion on 2026-11-17: candidate sell feeds and unchanged fixed buy feed passed the same decimal, positive-round and int256 scaled-product checks. See additionalReviews category-expansion-2026-11-17 in scripts/catalog-policy-verification.json. Existing handler and L2 execution limits remain accepted.",
+      "reviewDate": "2026-11-17"
     },
     "137": {
       "status": "approved",
       "executionEvidence": "scripts/oracle-execution-verification.json: block-pinned runtime SHA256 matches the retained compiled handler on this chain. Accept the existing shared-age, browser-only round-completeness and future-timestamp checks for these exact routes. No execution guarantee or security audit.",
-      "arithmeticBoundsEvidence": "All selected feeds have 0..18 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 100 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json; expanded exact routes reviewed 2026-10-20. Shared timeout does not replace separate browser freshness checks.",
-      "reviewDate": "2026-10-20"
+      "arithmeticBoundsEvidence": "All selected feeds have 0..18 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 100 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json; expanded exact routes reviewed 2026-10-20. Shared timeout does not replace separate browser freshness checks. Expansion on 2026-11-17: candidate sell feeds and unchanged fixed buy feed passed the same decimal, positive-round and int256 scaled-product checks. See additionalReviews category-expansion-2026-11-17 in scripts/catalog-policy-verification.json. Existing handler and L2 execution limits remain accepted.",
+      "reviewDate": "2026-11-17"
     },
     "8453": {
       "status": "approved",
       "executionEvidence": "scripts/oracle-execution-verification.json: block-pinned runtime SHA256 matches the retained compiled handler on this chain. Accept the existing shared-age, browser-only round-completeness and future-timestamp checks for these exact routes. No execution guarantee or security audit. The deployed handler has no execution-time L2 sequencer uptime or recovery check. Accept outage/recovery risk; browser checks at creation cannot protect later execution.",
-      "arithmeticBoundsEvidence": "All selected feeds have 0..18 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json; expanded exact routes reviewed 2026-10-20. Shared timeout does not replace separate browser freshness checks.",
-      "reviewDate": "2026-10-20"
+      "arithmeticBoundsEvidence": "All selected feeds have 0..18 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json; expanded exact routes reviewed 2026-10-20. Shared timeout does not replace separate browser freshness checks. Expansion on 2026-11-17: candidate sell feeds and unchanged fixed buy feed passed the same decimal, positive-round and int256 scaled-product checks. See additionalReviews category-expansion-2026-11-17 in scripts/catalog-policy-verification.json. Existing handler and L2 execution limits remain accepted.",
+      "reviewDate": "2026-11-17"
     },
     "9745": {
       "status": "approved",
       "executionEvidence": "scripts/oracle-execution-verification.json: block-pinned runtime SHA256 matches the retained compiled handler on this chain. Accept the existing shared-age, browser-only round-completeness and future-timestamp checks for these exact routes. No execution guarantee or security audit.",
-      "arithmeticBoundsEvidence": "All selected feeds have 0..18 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json; expanded exact routes reviewed 2026-10-20. Shared timeout does not replace separate browser freshness checks.",
-      "reviewDate": "2026-10-20"
+      "arithmeticBoundsEvidence": "All selected feeds have 0..18 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json; expanded exact routes reviewed 2026-10-20. Shared timeout does not replace separate browser freshness checks. Expansion on 2026-11-17: candidate sell feeds and unchanged fixed buy feed passed the same decimal, positive-round and int256 scaled-product checks. See additionalReviews category-expansion-2026-11-17 in scripts/catalog-policy-verification.json. Existing handler and L2 execution limits remain accepted.",
+      "reviewDate": "2026-11-17"
     },
     "42161": {
       "status": "approved",
       "executionEvidence": "scripts/oracle-execution-verification.json: block-pinned runtime SHA256 matches the retained compiled handler on this chain. Accept the existing shared-age, browser-only round-completeness and future-timestamp checks for these exact routes. No execution guarantee or security audit. The deployed handler has no execution-time L2 sequencer uptime or recovery check. Accept outage/recovery risk; browser checks at creation cannot protect later execution.",
-      "arithmeticBoundsEvidence": "All selected feeds have 0..18 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json; expanded exact routes reviewed 2026-10-20. Shared timeout does not replace separate browser freshness checks.",
-      "reviewDate": "2026-10-20"
+      "arithmeticBoundsEvidence": "All selected feeds have 0..18 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json; expanded exact routes reviewed 2026-10-20. Shared timeout does not replace separate browser freshness checks. Expansion on 2026-11-17: candidate sell feeds and unchanged fixed buy feed passed the same decimal, positive-round and int256 scaled-product checks. See additionalReviews category-expansion-2026-11-17 in scripts/catalog-policy-verification.json. Existing handler and L2 execution limits remain accepted.",
+      "reviewDate": "2026-11-17"
     },
     "43114": {
       "status": "approved",
       "executionEvidence": "scripts/oracle-execution-verification.json: block-pinned runtime SHA256 matches the retained compiled handler on this chain. Accept the existing shared-age, browser-only round-completeness and future-timestamp checks for these exact routes. No execution guarantee or security audit.",
-      "arithmeticBoundsEvidence": "All selected feeds have 0..18 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json; expanded exact routes reviewed 2026-10-20. Shared timeout does not replace separate browser freshness checks.",
-      "reviewDate": "2026-10-20"
+      "arithmeticBoundsEvidence": "All selected feeds have 0..18 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json; expanded exact routes reviewed 2026-10-20. Shared timeout does not replace separate browser freshness checks. Expansion on 2026-11-17: candidate sell feeds and unchanged fixed buy feed passed the same decimal, positive-round and int256 scaled-product checks. See additionalReviews category-expansion-2026-11-17 in scripts/catalog-policy-verification.json. Existing handler and L2 execution limits remain accepted.",
+      "reviewDate": "2026-11-17"
     },
     "59144": {
       "status": "approved",
       "executionEvidence": "scripts/oracle-execution-verification.json: block-pinned runtime SHA256 matches the retained compiled handler on this chain. Accept the existing shared-age, browser-only round-completeness and future-timestamp checks for these exact routes. No execution guarantee or security audit. The deployed handler has no execution-time L2 sequencer uptime or recovery check. Accept outage/recovery risk; browser checks at creation cannot protect later execution.",
-      "arithmeticBoundsEvidence": "All selected feeds have 0..18 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json; expanded exact routes reviewed 2026-10-20. Shared timeout does not replace separate browser freshness checks.",
-      "reviewDate": "2026-10-20"
+      "arithmeticBoundsEvidence": "All selected feeds have 0..18 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 129660 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json; expanded exact routes reviewed 2026-10-20. Shared timeout does not replace separate browser freshness checks. Expansion on 2026-11-17: candidate sell feeds and unchanged fixed buy feed passed the same decimal, positive-round and int256 scaled-product checks. See additionalReviews category-expansion-2026-11-17 in scripts/catalog-policy-verification.json. Existing handler and L2 execution limits remain accepted.",
+      "reviewDate": "2026-11-17"
     },
     "11155111": {
       "status": "test-only",

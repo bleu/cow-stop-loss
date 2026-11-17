@@ -32,6 +32,22 @@
         "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf": {
           "decimals": 8,
           "symbol": "cbBTC"
+        },
+        "0xd533a949740bb3306d119cc777fa900ba034cd52": {
+          "decimals": 18,
+          "symbol": "CRV"
+        },
+        "0xc18360217d8f7ab5e7c516566761ea12ce7f9d72": {
+          "decimals": 18,
+          "symbol": "ENS"
+        },
+        "0x56072c95faa701256059aa122697b133aded9279": {
+          "decimals": 18,
+          "symbol": "SKY"
+        },
+        "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6": {
+          "decimals": 18,
+          "symbol": "WLFI"
         }
       },
       "feeds": {
@@ -111,6 +127,50 @@
           "heartbeat": 86400,
           "observedAt": 1792516167,
           "ageSeconds": 51532
+        },
+        "0xcd627aa160a6fa45eb793d19ef54f5062f20f33f": {
+          "description": "CRV / USD",
+          "decimals": 8,
+          "roundId": "36893488147419125692",
+          "answer": "20386324",
+          "updatedAt": 1794938279,
+          "answeredInRound": "36893488147419125692",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 6057
+        },
+        "0x5c00128d4d1c2f4f652c267d7bcdd7ac99c16e16": {
+          "description": "ENS / USD",
+          "decimals": 8,
+          "roundId": "36893488147419108180",
+          "answer": "389351910",
+          "updatedAt": 1794931799,
+          "answeredInRound": "36893488147419108180",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 12537
+        },
+        "0xee10fe5e7aa92dd7b136597449c3d5813cfc5f18": {
+          "description": "SKY / USD",
+          "decimals": 8,
+          "roundId": "18446744073709554777",
+          "answer": "5312439",
+          "updatedAt": 1794924179,
+          "answeredInRound": "18446744073709554777",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 20157
+        },
+        "0x14e5fc91ddb3f97c33013cc9fa74f54062ad1aa1": {
+          "description": "WLFI / USD",
+          "decimals": 8,
+          "roundId": "18446744073709554033",
+          "answer": "4606874",
+          "updatedAt": 1794904139,
+          "answeredInRound": "18446744073709554033",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 40197
         }
       },
       "issues": []
@@ -140,6 +200,22 @@
         "0x7ceb23fd6bc0add59e62ac25578270cff1b9f619": {
           "decimals": 18,
           "symbol": "WETH"
+        },
+        "0x8505b9d2254a7ae468c0e9dd10ccea3a837aef5c": {
+          "decimals": 18,
+          "symbol": "COMP"
+        },
+        "0x172370d5cd63279efa6d502dab29171933a610af": {
+          "decimals": 18,
+          "symbol": "CRV"
+        },
+        "0x0b3f868e0be5597d5db7feb59e1cadbb0fdda50a": {
+          "decimals": 18,
+          "symbol": "SUSHI"
+        },
+        "0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7": {
+          "decimals": 18,
+          "symbol": "GHST"
         }
       },
       "feeds": {
@@ -208,6 +284,50 @@
           "heartbeat": 27,
           "observedAt": 1792516196,
           "ageSeconds": 18
+        },
+        "0x2a8758b7257102461bc958279054e372c2b1bde6": {
+          "description": "COMP / USD",
+          "decimals": 8,
+          "roundId": "36893488147423096295",
+          "answer": "1768250000",
+          "updatedAt": 1794944311,
+          "answeredInRound": "36893488147423096295",
+          "heartbeat": 27,
+          "observedAt": 1794944336,
+          "ageSeconds": 25
+        },
+        "0x336584c8e6dc19637a5b36206b1c79923111b405": {
+          "description": "CRV / USD",
+          "decimals": 8,
+          "roundId": "36893488147419356713",
+          "answer": "20377705",
+          "updatedAt": 1794944224,
+          "answeredInRound": "36893488147419356713",
+          "heartbeat": 300,
+          "observedAt": 1794944336,
+          "ageSeconds": 112
+        },
+        "0x49b0c695039243bbfeb8ecd054eb70061fd54aa0": {
+          "description": "SUSHI / USD",
+          "decimals": 8,
+          "roundId": "55340232221128718493",
+          "answer": "15284174",
+          "updatedAt": 1794940811,
+          "answeredInRound": "55340232221128718493",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 3525
+        },
+        "0xdd229ce42f11d8ee7fff29bdb71c7b81352e11be": {
+          "description": "GHST / USD",
+          "decimals": 8,
+          "roundId": "36893488147419154494",
+          "answer": "4601567",
+          "updatedAt": 1794930599,
+          "answeredInRound": "36893488147419154494",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 13737
         }
       },
       "issues": []
@@ -245,6 +365,22 @@
         "0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f": {
           "decimals": 8,
           "symbol": "WBTC"
+        },
+        "0x58538e6a46e07434d7e7375bc268d3cb839c0133": {
+          "decimals": 18,
+          "symbol": "ENA"
+        },
+        "0x0c880f6761f1af8d9aa9c466984b80dab9a8c9e8": {
+          "decimals": 18,
+          "symbol": "PENDLE"
+        },
+        "0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a": {
+          "decimals": 18,
+          "symbol": "GMX"
+        },
+        "0x18c11fd286c5ec11c3b683caa813b77f5163a122": {
+          "decimals": 18,
+          "symbol": "GNS"
         }
       },
       "feeds": {
@@ -335,6 +471,50 @@
           "heartbeat": 86400,
           "observedAt": 1792516167,
           "ageSeconds": 73
+        },
+        "0x9ee96caa9972c801058caa8e23419fc6516fbf7e": {
+          "description": "ENA / USD",
+          "decimals": 8,
+          "roundId": "36893488147419124724",
+          "answer": "11390018",
+          "updatedAt": 1794943913,
+          "answeredInRound": "36893488147419124724",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 423
+        },
+        "0x66853e19d73c0f9301fe099c324a1e9726953433": {
+          "description": "PENDLE / USD",
+          "decimals": 8,
+          "roundId": "36893488147419119124",
+          "answer": "141231514",
+          "updatedAt": 1794941194,
+          "answeredInRound": "36893488147419119124",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 3142
+        },
+        "0xdb98056fecfff59d032ab628337a4887110df3db": {
+          "description": "GMX / USD",
+          "decimals": 8,
+          "roundId": "36893488147419111680",
+          "answer": "727634380",
+          "updatedAt": 1794941631,
+          "answeredInRound": "36893488147419111680",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 2705
+        },
+        "0xe89e98ce4e19071e59ed4780e0598b541ce76486": {
+          "description": "GNS / USD",
+          "decimals": 8,
+          "roundId": "36893488147419116530",
+          "answer": "31962599",
+          "updatedAt": 1794943510,
+          "answeredInRound": "36893488147419116530",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 826
         }
       },
       "issues": []
@@ -376,6 +556,18 @@
         "0x62edc0692bd897d2295872a9ffcac5425011c661": {
           "decimals": 18,
           "symbol": "GMX"
+        },
+        "0x0555e30da8f98308edb960aa94c0db47230d2b9c": {
+          "decimals": 8,
+          "symbol": "WBTC"
+        },
+        "0x8729438eb15e2c8b576fcc6aecda6a148776c0f5": {
+          "decimals": 18,
+          "symbol": "QI"
+        },
+        "0xd1c3f94de7e5b45fa4edbba472491a9f4b166fc4": {
+          "decimals": 18,
+          "symbol": "XAVA"
         }
       },
       "feeds": {
@@ -477,6 +669,39 @@
           "heartbeat": 86400,
           "observedAt": 1792516167,
           "ageSeconds": 208
+        },
+        "0x86442e3a98558357d46e6182f4b262f76c4fa26f": {
+          "description": "WBTC / USD",
+          "decimals": 8,
+          "roundId": "36893488147419241551",
+          "answer": "6374768398100",
+          "updatedAt": 1794943805,
+          "answeredInRound": "36893488147419241551",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 531
+        },
+        "0x36e039e6391a5e7a7267650979fdf613f659be5d": {
+          "description": "QI / USD",
+          "decimals": 8,
+          "roundId": "55340232221128724454",
+          "answer": "157326",
+          "updatedAt": 1794944274,
+          "answeredInRound": "55340232221128724454",
+          "heartbeat": 1800,
+          "observedAt": 1794944336,
+          "ageSeconds": 62
+        },
+        "0x4cf57dc9028187b9daaf773c8eca941036989238": {
+          "description": "XAVA / USD",
+          "decimals": 8,
+          "roundId": "36893488147419122317",
+          "answer": "9716010",
+          "updatedAt": 1794926291,
+          "answeredInRound": "36893488147419122317",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 18045
         }
       },
       "issues": []
@@ -506,6 +731,22 @@
         "0x9e1028f5f1d5ede59748ffcee5532509976840e0": {
           "decimals": 18,
           "symbol": "COMP"
+        },
+        "0x940181a94a35a4569e4529a3cdfb74e38fd98631": {
+          "decimals": 18,
+          "symbol": "AERO"
+        },
+        "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf": {
+          "decimals": 8,
+          "symbol": "cbBTC"
+        },
+        "0x696f9436b67233384889472cd7cd58a6fb5df4f1": {
+          "decimals": 18,
+          "symbol": "AVNT"
+        },
+        "0xcbd06e5a2b0c65597161de254aa074e489deb510": {
+          "decimals": 8,
+          "symbol": "cbDOGE"
         }
       },
       "feeds": {
@@ -574,6 +815,50 @@
           "heartbeat": 86400,
           "observedAt": 1792516167,
           "ageSeconds": 60
+        },
+        "0x4ec5970fc728c5f65ba413992cd5ff6fd70fcff0": {
+          "description": "AERO / USD",
+          "decimals": 8,
+          "roundId": "36893488147419117601",
+          "answer": "44156173",
+          "updatedAt": 1794943430,
+          "answeredInRound": "36893488147419117601",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 906
+        },
+        "0x07da0e54543a844a80abe69c8a12f22b3aa59f9d": {
+          "description": "cbBTC / USD",
+          "decimals": 8,
+          "roundId": "36893488147419123344",
+          "answer": "6365843137602",
+          "updatedAt": 1794944198,
+          "answeredInRound": "36893488147419123344",
+          "heartbeat": 1200,
+          "observedAt": 1794944336,
+          "ageSeconds": 138
+        },
+        "0x50997b806b574501cc34a2a6d845e4dc1bd9aa8c": {
+          "description": "AVNT / USD",
+          "decimals": 8,
+          "roundId": "36893488147419118323",
+          "answer": "7157004",
+          "updatedAt": 1794943844,
+          "answeredInRound": "36893488147419118323",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 492
+        },
+        "0x95051de9db5cac61682f64505006f2991deab3c2": {
+          "description": "CBDOGE / USD",
+          "decimals": 8,
+          "roundId": "36893488147419107861",
+          "answer": "5850333",
+          "updatedAt": 1794941263,
+          "answeredInRound": "36893488147419107861",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 3073
         }
       },
       "issues": []
@@ -595,6 +880,18 @@
         "0xb5bedd42000b71fdde22d3ee8a79bd49a568fc8f": {
           "decimals": 18,
           "symbol": "wstETH"
+        },
+        "0x1789e0043623282d5dcc7f213d703c6d8bafbb04": {
+          "decimals": 18,
+          "symbol": "LINEA"
+        },
+        "0xcb598507a524b02d61f8c89ae47cc6076407998b": {
+          "decimals": 18,
+          "symbol": "AAVE"
+        },
+        "0x0ece76334fb560f2b1a49a60e38cf726b02203f0": {
+          "decimals": 18,
+          "symbol": "COMP"
         }
       },
       "feeds": {
@@ -641,6 +938,39 @@
           "heartbeat": 86400,
           "observedAt": 1792516167,
           "ageSeconds": 2220
+        },
+        "0x452b408b3e2805c109d52c80bd54deda239716d1": {
+          "description": "LINEA / USD",
+          "decimals": 8,
+          "roundId": "18446744073709578563",
+          "answer": "185370",
+          "updatedAt": 1794940957,
+          "answeredInRound": "18446744073709578563",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 3379
+        },
+        "0x09b0a8afd9185500d7c64fc68338b4c50db6df1d": {
+          "description": "AAVE / USD",
+          "decimals": 8,
+          "roundId": "18446744073709626676",
+          "answer": "10990214713",
+          "updatedAt": 1794943577,
+          "answeredInRound": "18446744073709626676",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 759
+        },
+        "0xc0068a2f7e4847df9c3a34b27ccc07b7e15e0458": {
+          "description": "COMP / USD",
+          "decimals": 8,
+          "roundId": "18446744073709579429",
+          "answer": "1766889000",
+          "updatedAt": 1794943663,
+          "answeredInRound": "18446744073709579429",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 673
         }
       },
       "issues": []
@@ -674,6 +1004,22 @@
         "0xdf6ff92bfdc1e8be45177dc1f4845d391d3ad8fd": {
           "decimals": 18,
           "symbol": "COMP"
+        },
+        "0x712b3d230f3c1c19db860d80619288b1f0bdd0bd": {
+          "decimals": 18,
+          "symbol": "CRV"
+        },
+        "0x2995d1317dcd4f0ab89f4ae60f3f020a4f17c7ce": {
+          "decimals": 18,
+          "symbol": "SUSHI"
+        },
+        "0xfadc59d012ba3c110b08a15b7755a5cb7cbe77d7": {
+          "decimals": 18,
+          "symbol": "GRT"
+        },
+        "0x3a00e08544d589e19a8e7d97d0294331341cdbf6": {
+          "decimals": 18,
+          "symbol": "SNX"
         }
       },
       "feeds": {
@@ -753,6 +1099,50 @@
           "heartbeat": 86400,
           "observedAt": 1792516167,
           "ageSeconds": 57
+        },
+        "0xc77b83ac3dd2a761073bd0f281f7b880b2ddde18": {
+          "description": "CRV / USD",
+          "decimals": 8,
+          "roundId": "55340232221128663623",
+          "answer": "20335000",
+          "updatedAt": 1794943835,
+          "answeredInRound": "55340232221128663623",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 501
+        },
+        "0xc0a6bf8d5d408b091d022c3c0653d4056d4b9c01": {
+          "description": "SUSHI / USD",
+          "decimals": 8,
+          "roundId": "73786976294838213546",
+          "answer": "15243969",
+          "updatedAt": 1794943900,
+          "answeredInRound": "73786976294838213546",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 436
+        },
+        "0xebbd67a84e33791f1bcfde74cdc22a71e332e2f1": {
+          "description": "GRT / USD",
+          "decimals": 8,
+          "roundId": "73786976294838212742",
+          "answer": "1701418",
+          "updatedAt": 1794943615,
+          "answeredInRound": "73786976294838212742",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 721
+        },
+        "0x3b84d6e6976d5826500572600eb44f9f1753827b": {
+          "description": "SNX / USD",
+          "decimals": 8,
+          "roundId": "73786976294838212643",
+          "answer": "15373000",
+          "updatedAt": 1794943515,
+          "answeredInRound": "73786976294838212643",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 821
         }
       },
       "issues": []
@@ -778,6 +1168,10 @@
         "0xa3d68b74bf0528fdd07263c60d6488749044914b": {
           "decimals": 18,
           "symbol": "weETH"
+        },
+        "0x58538e6a46e07434d7e7375bc268d3cb839c0133": {
+          "decimals": 18,
+          "symbol": "ENA"
         }
       },
       "feeds": {
@@ -835,6 +1229,17 @@
           "heartbeat": 86400,
           "observedAt": 1792516168,
           "ageSeconds": 1275
+        },
+        "0xdf61cc2451e98dce8d511e2d65d3484b85675f9e": {
+          "description": "ENA / USD",
+          "decimals": 8,
+          "roundId": "18446744073709589464",
+          "answer": "11447616",
+          "updatedAt": 1794944054,
+          "answeredInRound": "18446744073709589464",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 282
         }
       },
       "issues": []
@@ -880,6 +1285,26 @@
         "0xaec945e04baf28b135fa7c640f624f8d90f1c3a6": {
           "decimals": 18,
           "symbol": "C98"
+        },
+        "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47": {
+          "decimals": 18,
+          "symbol": "ADA"
+        },
+        "0x570a5d26f7765ecb712c0924e4de545b89fd43df": {
+          "decimals": 18,
+          "symbol": "SOL"
+        },
+        "0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe": {
+          "decimals": 18,
+          "symbol": "XRP"
+        },
+        "0x000ae314e2a2172a039b26378814c252734f556a": {
+          "decimals": 18,
+          "symbol": "ASTER"
+        },
+        "0x47474747477b199288bf72a1d702f7fe0fb1deea": {
+          "decimals": 18,
+          "symbol": "WLFI"
         }
       },
       "feeds": {
@@ -992,6 +1417,61 @@
           "heartbeat": 86400,
           "observedAt": 1792516167,
           "ageSeconds": 1266
+        },
+        "0xa767f745331d267c7751297d982b050c93985627": {
+          "description": "ADA / USD",
+          "decimals": 8,
+          "roundId": "55340232221128924091",
+          "answer": "15205371",
+          "updatedAt": 1794944028,
+          "answeredInRound": "55340232221128924091",
+          "heartbeat": 600,
+          "observedAt": 1794944336,
+          "ageSeconds": 308
+        },
+        "0x0e8a53dd9c13589df6382f13da6b3ec8f919b323": {
+          "description": "SOL / USD",
+          "decimals": 8,
+          "roundId": "36893488147419319191",
+          "answer": "7239000000",
+          "updatedAt": 1794943819,
+          "answeredInRound": "36893488147419319191",
+          "heartbeat": 600,
+          "observedAt": 1794944336,
+          "ageSeconds": 517
+        },
+        "0x93a67d414896a280bf8ffb3b389fe3686e014fda": {
+          "description": "XRP / USD",
+          "decimals": 8,
+          "roundId": "55340232221128890530",
+          "answer": "95840603",
+          "updatedAt": 1794944301,
+          "answeredInRound": "55340232221128890530",
+          "heartbeat": 600,
+          "observedAt": 1794944336,
+          "ageSeconds": 35
+        },
+        "0x3ae518be05e3f7fabf7e3ace22af795d7a09c2e5": {
+          "description": "ASTER / USD",
+          "decimals": 8,
+          "roundId": "18446744073709581090",
+          "answer": "56282000",
+          "updatedAt": 1794944017,
+          "answeredInRound": "18446744073709581090",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 319
+        },
+        "0xd3f669ef5c364c14d353f46b1d1a048a846e00f1": {
+          "description": "WLFI / USD",
+          "decimals": 8,
+          "roundId": "18446744073709576999",
+          "answer": "4549922",
+          "updatedAt": 1794940819,
+          "answeredInRound": "18446744073709576999",
+          "heartbeat": 86400,
+          "observedAt": 1794944336,
+          "ageSeconds": 3517
         }
       },
       "issues": []
@@ -1361,6 +1841,984 @@
           }
         }
       ]
+    },
+    {
+      "id": "category-expansion-2026-11-17",
+      "checkedAt": "2026-11-17T19:38:56.879242+00:00",
+      "scope": "candidate-review",
+      "policyScope": "Low, Medium, High, Very High and New categories; exact token/feed approvals; assumed 1:1 verified representation units. No new staking-share routes, bounded sells or implicit conversions.",
+      "mappings": [
+        {
+          "chainId": 1,
+          "tokenAddress": "0xd533a949740bb3306d119cc777fa900ba034cd52",
+          "quote": "USD",
+          "path": "crv-usd",
+          "proxyAddress": "0xcd627aa160a6fa45eb793d19ef54f5062f20f33f"
+        },
+        {
+          "chainId": 1,
+          "tokenAddress": "0xc18360217d8f7ab5e7c516566761ea12ce7f9d72",
+          "quote": "USD",
+          "path": "ens-usd",
+          "proxyAddress": "0x5c00128d4d1c2f4f652c267d7bcdd7ac99c16e16"
+        },
+        {
+          "chainId": 1,
+          "tokenAddress": "0x56072c95faa701256059aa122697b133aded9279",
+          "quote": "USD",
+          "path": "sky-usd",
+          "proxyAddress": "0xee10fe5e7aa92dd7b136597449c3d5813cfc5f18"
+        },
+        {
+          "chainId": 1,
+          "tokenAddress": "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6",
+          "quote": "USD",
+          "path": "wlfi-usd",
+          "proxyAddress": "0x14e5fc91ddb3f97c33013cc9fa74f54062ad1aa1"
+        },
+        {
+          "chainId": 100,
+          "tokenAddress": "0x712b3d230f3c1c19db860d80619288b1f0bdd0bd",
+          "quote": "USD",
+          "path": "crv-usd",
+          "proxyAddress": "0xc77b83ac3dd2a761073bd0f281f7b880b2ddde18"
+        },
+        {
+          "chainId": 100,
+          "tokenAddress": "0x2995d1317dcd4f0ab89f4ae60f3f020a4f17c7ce",
+          "quote": "USD",
+          "path": "sushi-usd",
+          "proxyAddress": "0xc0a6bf8d5d408b091d022c3c0653d4056d4b9c01"
+        },
+        {
+          "chainId": 100,
+          "tokenAddress": "0xfadc59d012ba3c110b08a15b7755a5cb7cbe77d7",
+          "quote": "USD",
+          "path": "grt-usd",
+          "proxyAddress": "0xebbd67a84e33791f1bcfde74cdc22a71e332e2f1"
+        },
+        {
+          "chainId": 100,
+          "tokenAddress": "0x3a00e08544d589e19a8e7d97d0294331341cdbf6",
+          "quote": "USD",
+          "path": "snx-usd",
+          "proxyAddress": "0x3b84d6e6976d5826500572600eb44f9f1753827b"
+        },
+        {
+          "chainId": 42161,
+          "tokenAddress": "0x58538e6a46e07434d7e7375bc268d3cb839c0133",
+          "quote": "USD",
+          "path": "ena-usd",
+          "proxyAddress": "0x9ee96caa9972c801058caa8e23419fc6516fbf7e"
+        },
+        {
+          "chainId": 42161,
+          "tokenAddress": "0x0c880f6761f1af8d9aa9c466984b80dab9a8c9e8",
+          "quote": "USD",
+          "path": "pendle-usd",
+          "proxyAddress": "0x66853e19d73c0f9301fe099c324a1e9726953433"
+        },
+        {
+          "chainId": 42161,
+          "tokenAddress": "0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a",
+          "quote": "USD",
+          "path": "gmx-usd",
+          "proxyAddress": "0xdb98056fecfff59d032ab628337a4887110df3db"
+        },
+        {
+          "chainId": 42161,
+          "tokenAddress": "0x18c11fd286c5ec11c3b683caa813b77f5163a122",
+          "quote": "USD",
+          "path": "gns-usd",
+          "proxyAddress": "0xe89e98ce4e19071e59ed4780e0598b541ce76486"
+        },
+        {
+          "chainId": 8453,
+          "tokenAddress": "0x940181a94a35a4569e4529a3cdfb74e38fd98631",
+          "quote": "USD",
+          "path": "aero-usd",
+          "proxyAddress": "0x4ec5970fc728c5f65ba413992cd5ff6fd70fcff0"
+        },
+        {
+          "chainId": 8453,
+          "tokenAddress": "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf",
+          "quote": "USD",
+          "path": "cbbtc-usd",
+          "proxyAddress": "0x07da0e54543a844a80abe69c8a12f22b3aa59f9d"
+        },
+        {
+          "chainId": 8453,
+          "tokenAddress": "0x696f9436b67233384889472cd7cd58a6fb5df4f1",
+          "quote": "USD",
+          "path": "avnt-usd",
+          "proxyAddress": "0x50997b806b574501cc34a2a6d845e4dc1bd9aa8c"
+        },
+        {
+          "chainId": 8453,
+          "tokenAddress": "0xcbd06e5a2b0c65597161de254aa074e489deb510",
+          "quote": "USD",
+          "path": "cbdoge-usd",
+          "proxyAddress": "0x95051de9db5cac61682f64505006f2991deab3c2"
+        },
+        {
+          "chainId": 137,
+          "tokenAddress": "0x8505b9d2254a7ae468c0e9dd10ccea3a837aef5c",
+          "quote": "USD",
+          "path": "comp-usd",
+          "proxyAddress": "0x2a8758b7257102461bc958279054e372c2b1bde6"
+        },
+        {
+          "chainId": 137,
+          "tokenAddress": "0x172370d5cd63279efa6d502dab29171933a610af",
+          "quote": "USD",
+          "path": "crv-usd",
+          "proxyAddress": "0x336584c8e6dc19637a5b36206b1c79923111b405"
+        },
+        {
+          "chainId": 137,
+          "tokenAddress": "0x0b3f868e0be5597d5db7feb59e1cadbb0fdda50a",
+          "quote": "USD",
+          "path": "sushi-usd",
+          "proxyAddress": "0x49b0c695039243bbfeb8ecd054eb70061fd54aa0"
+        },
+        {
+          "chainId": 137,
+          "tokenAddress": "0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7",
+          "quote": "USD",
+          "path": "ghst-usd",
+          "proxyAddress": "0xdd229ce42f11d8ee7fff29bdb71c7b81352e11be"
+        },
+        {
+          "chainId": 43114,
+          "tokenAddress": "0x0555e30da8f98308edb960aa94c0db47230d2b9c",
+          "quote": "USD",
+          "path": "wbtc-usd",
+          "proxyAddress": "0x86442e3a98558357d46e6182f4b262f76c4fa26f"
+        },
+        {
+          "chainId": 43114,
+          "tokenAddress": "0x8729438eb15e2c8b576fcc6aecda6a148776c0f5",
+          "quote": "USD",
+          "path": "qi-usd",
+          "proxyAddress": "0x36e039e6391a5e7a7267650979fdf613f659be5d"
+        },
+        {
+          "chainId": 43114,
+          "tokenAddress": "0xd1c3f94de7e5b45fa4edbba472491a9f4b166fc4",
+          "quote": "USD",
+          "path": "xava-usd",
+          "proxyAddress": "0x4cf57dc9028187b9daaf773c8eca941036989238"
+        },
+        {
+          "chainId": 56,
+          "tokenAddress": "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47",
+          "quote": "USD",
+          "path": "ada-usd",
+          "proxyAddress": "0xa767f745331d267c7751297d982b050c93985627"
+        },
+        {
+          "chainId": 56,
+          "tokenAddress": "0x570a5d26f7765ecb712c0924e4de545b89fd43df",
+          "quote": "USD",
+          "path": "sol-usd",
+          "proxyAddress": "0x0e8a53dd9c13589df6382f13da6b3ec8f919b323"
+        },
+        {
+          "chainId": 56,
+          "tokenAddress": "0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe",
+          "quote": "USD",
+          "path": "xrp-usd",
+          "proxyAddress": "0x93a67d414896a280bf8ffb3b389fe3686e014fda"
+        },
+        {
+          "chainId": 56,
+          "tokenAddress": "0x000ae314e2a2172a039b26378814c252734f556a",
+          "quote": "USD",
+          "path": "aster-usd",
+          "proxyAddress": "0x3ae518be05e3f7fabf7e3ace22af795d7a09c2e5"
+        },
+        {
+          "chainId": 56,
+          "tokenAddress": "0x47474747477b199288bf72a1d702f7fe0fb1deea",
+          "quote": "USD",
+          "path": "wlfi-usd",
+          "proxyAddress": "0xd3f669ef5c364c14d353f46b1d1a048a846e00f1"
+        },
+        {
+          "chainId": 59144,
+          "tokenAddress": "0x1789e0043623282d5dcc7f213d703c6d8bafbb04",
+          "quote": "USD",
+          "path": "linea-usd",
+          "proxyAddress": "0x452b408b3e2805c109d52c80bd54deda239716d1"
+        },
+        {
+          "chainId": 59144,
+          "tokenAddress": "0xcb598507a524b02d61f8c89ae47cc6076407998b",
+          "quote": "USD",
+          "path": "aave-usd",
+          "proxyAddress": "0x09b0a8afd9185500d7c64fc68338b4c50db6df1d"
+        },
+        {
+          "chainId": 59144,
+          "tokenAddress": "0x0ece76334fb560f2b1a49a60e38cf726b02203f0",
+          "quote": "USD",
+          "path": "comp-usd",
+          "proxyAddress": "0xc0068a2f7e4847df9c3a34b27ccc07b7e15e0458"
+        },
+        {
+          "chainId": 9745,
+          "tokenAddress": "0x58538e6a46e07434d7e7375bc268d3cb839c0133",
+          "quote": "USD",
+          "path": "ena-usd",
+          "proxyAddress": "0xdf61cc2451e98dce8d511e2d65d3484b85675f9e"
+        }
+      ],
+      "note": "All 32 new sells and nine unchanged fixed buys passed the first live batch, with no errors or skipped chains. Only new canonical token/feed keys were appended; existing observations, approval objects and their fingerprints remain unchanged. Fresh fixed-buy observations remain in this batch. Top-level checkedAt remains the historical initial review date. Read-only checks do not prove later availability or end-to-end execution.",
+      "arithmeticBounds": {
+        "1": {
+          "feedDecimals": [8],
+          "largestNormalizedAnswer": "3893519100000000000",
+          "scaledProductFitsInt256": true,
+          "sharedAgeCeilingSeconds": 129660
+        },
+        "8453": {
+          "feedDecimals": [8],
+          "largestNormalizedAnswer": "63658431376020000000000",
+          "scaledProductFitsInt256": true,
+          "sharedAgeCeilingSeconds": 129660
+        },
+        "59144": {
+          "feedDecimals": [8],
+          "largestNormalizedAnswer": "109902147130000000000",
+          "scaledProductFitsInt256": true,
+          "sharedAgeCeilingSeconds": 129660
+        },
+        "137": {
+          "feedDecimals": [8],
+          "largestNormalizedAnswer": "17682500000000000000",
+          "scaledProductFitsInt256": true,
+          "sharedAgeCeilingSeconds": 129660
+        },
+        "42161": {
+          "feedDecimals": [8],
+          "largestNormalizedAnswer": "7276343800000000000",
+          "scaledProductFitsInt256": true,
+          "sharedAgeCeilingSeconds": 129660
+        },
+        "9745": {
+          "feedDecimals": [8],
+          "largestNormalizedAnswer": "999732070000000000",
+          "scaledProductFitsInt256": true,
+          "sharedAgeCeilingSeconds": 129660
+        },
+        "56": {
+          "feedDecimals": [8],
+          "largestNormalizedAnswer": "72390000000000000000",
+          "scaledProductFitsInt256": true,
+          "sharedAgeCeilingSeconds": 129660
+        },
+        "100": {
+          "feedDecimals": [8],
+          "largestNormalizedAnswer": "998928640000000000",
+          "scaledProductFitsInt256": true,
+          "sharedAgeCeilingSeconds": 129660
+        },
+        "43114": {
+          "feedDecimals": [8],
+          "largestNormalizedAnswer": "63747683981000000000000",
+          "scaledProductFitsInt256": true,
+          "sharedAgeCeilingSeconds": 129660
+        }
+      },
+      "observationBatches": [
+        {
+          "checkedAt": "2026-11-17T19:38:56.879242+00:00",
+          "scope": "candidate-review",
+          "status": "checked",
+          "chains": {
+            "1": {
+              "tokens": {
+                "0xd533a949740bb3306d119cc777fa900ba034cd52": {
+                  "decimals": 18,
+                  "symbol": "CRV"
+                },
+                "0xc18360217d8f7ab5e7c516566761ea12ce7f9d72": {
+                  "decimals": 18,
+                  "symbol": "ENS"
+                },
+                "0x56072c95faa701256059aa122697b133aded9279": {
+                  "decimals": 18,
+                  "symbol": "SKY"
+                },
+                "0xda5e1988097297dcdc1f90d4dfe7909e847cbef6": {
+                  "decimals": 18,
+                  "symbol": "WLFI"
+                },
+                "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+                  "decimals": 6,
+                  "symbol": "USDC"
+                }
+              },
+              "feeds": {
+                "0xcd627aa160a6fa45eb793d19ef54f5062f20f33f": {
+                  "description": "CRV / USD",
+                  "decimals": 8,
+                  "roundId": "36893488147419125692",
+                  "answer": "20386324",
+                  "updatedAt": 1794938279,
+                  "answeredInRound": "36893488147419125692",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 6057
+                },
+                "0x5c00128d4d1c2f4f652c267d7bcdd7ac99c16e16": {
+                  "description": "ENS / USD",
+                  "decimals": 8,
+                  "roundId": "36893488147419108180",
+                  "answer": "389351910",
+                  "updatedAt": 1794931799,
+                  "answeredInRound": "36893488147419108180",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 12537
+                },
+                "0xee10fe5e7aa92dd7b136597449c3d5813cfc5f18": {
+                  "description": "SKY / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709554777",
+                  "answer": "5312439",
+                  "updatedAt": 1794924179,
+                  "answeredInRound": "18446744073709554777",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 20157
+                },
+                "0x14e5fc91ddb3f97c33013cc9fa74f54062ad1aa1": {
+                  "description": "WLFI / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709554033",
+                  "answer": "4606874",
+                  "updatedAt": 1794904139,
+                  "answeredInRound": "18446744073709554033",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 40197
+                },
+                "0x8fffffd4afb6115b954bd326cbe7b4ba576818f6": {
+                  "description": "USDC / USD",
+                  "decimals": 8,
+                  "roundId": "73786976294838206531",
+                  "answer": "99979041",
+                  "updatedAt": 1794869747,
+                  "answeredInRound": "73786976294838206531",
+                  "heartbeat": 82800,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 74589
+                }
+              },
+              "issues": []
+            },
+            "8453": {
+              "tokens": {
+                "0x940181a94a35a4569e4529a3cdfb74e38fd98631": {
+                  "decimals": 18,
+                  "symbol": "AERO"
+                },
+                "0xcbb7c0000ab88b473b1f5afd9ef808440eed33bf": {
+                  "decimals": 8,
+                  "symbol": "cbBTC"
+                },
+                "0x696f9436b67233384889472cd7cd58a6fb5df4f1": {
+                  "decimals": 18,
+                  "symbol": "AVNT"
+                },
+                "0xcbd06e5a2b0c65597161de254aa074e489deb510": {
+                  "decimals": 8,
+                  "symbol": "cbDOGE"
+                },
+                "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913": {
+                  "decimals": 6,
+                  "symbol": "USDC"
+                }
+              },
+              "feeds": {
+                "0x4ec5970fc728c5f65ba413992cd5ff6fd70fcff0": {
+                  "description": "AERO / USD",
+                  "decimals": 8,
+                  "roundId": "36893488147419117601",
+                  "answer": "44156173",
+                  "updatedAt": 1794943430,
+                  "answeredInRound": "36893488147419117601",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 906
+                },
+                "0x07da0e54543a844a80abe69c8a12f22b3aa59f9d": {
+                  "description": "cbBTC / USD",
+                  "decimals": 8,
+                  "roundId": "36893488147419123344",
+                  "answer": "6365843137602",
+                  "updatedAt": 1794944198,
+                  "answeredInRound": "36893488147419123344",
+                  "heartbeat": 1200,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 138
+                },
+                "0x50997b806b574501cc34a2a6d845e4dc1bd9aa8c": {
+                  "description": "AVNT / USD",
+                  "decimals": 8,
+                  "roundId": "36893488147419118323",
+                  "answer": "7157004",
+                  "updatedAt": 1794943844,
+                  "answeredInRound": "36893488147419118323",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 492
+                },
+                "0x95051de9db5cac61682f64505006f2991deab3c2": {
+                  "description": "CBDOGE / USD",
+                  "decimals": 8,
+                  "roundId": "36893488147419107861",
+                  "answer": "5850333",
+                  "updatedAt": 1794941263,
+                  "answeredInRound": "36893488147419107861",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 3073
+                },
+                "0x7e860098f58bbfc8648a4311b374b1d669a2bc6b": {
+                  "description": "USDC / USD",
+                  "decimals": 8,
+                  "roundId": "55340232221128654938",
+                  "answer": "99974142",
+                  "updatedAt": 1794920390,
+                  "answeredInRound": "55340232221128654938",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 23946
+                }
+              },
+              "issues": []
+            },
+            "59144": {
+              "tokens": {
+                "0x1789e0043623282d5dcc7f213d703c6d8bafbb04": {
+                  "decimals": 18,
+                  "symbol": "LINEA"
+                },
+                "0xcb598507a524b02d61f8c89ae47cc6076407998b": {
+                  "decimals": 18,
+                  "symbol": "AAVE"
+                },
+                "0x0ece76334fb560f2b1a49a60e38cf726b02203f0": {
+                  "decimals": 18,
+                  "symbol": "COMP"
+                },
+                "0x176211869ca2b568f2a7d4ee941e073a821ee1ff": {
+                  "decimals": 6,
+                  "symbol": "USDC"
+                }
+              },
+              "feeds": {
+                "0x452b408b3e2805c109d52c80bd54deda239716d1": {
+                  "description": "LINEA / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709578563",
+                  "answer": "185370",
+                  "updatedAt": 1794940957,
+                  "answeredInRound": "18446744073709578563",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 3379
+                },
+                "0x09b0a8afd9185500d7c64fc68338b4c50db6df1d": {
+                  "description": "AAVE / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709626676",
+                  "answer": "10990214713",
+                  "updatedAt": 1794943577,
+                  "answeredInRound": "18446744073709626676",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 759
+                },
+                "0xc0068a2f7e4847df9c3a34b27ccc07b7e15e0458": {
+                  "description": "COMP / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709579429",
+                  "answer": "1766889000",
+                  "updatedAt": 1794943663,
+                  "answeredInRound": "18446744073709579429",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 673
+                },
+                "0xaadaa473c1bdf7317ec07c915680af29debfdcb5": {
+                  "description": "USDC / USD",
+                  "decimals": 8,
+                  "roundId": "36893488147419103367",
+                  "answer": "99983763",
+                  "updatedAt": 1794933783,
+                  "answeredInRound": "36893488147419103367",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 10553
+                }
+              },
+              "issues": []
+            },
+            "137": {
+              "tokens": {
+                "0x8505b9d2254a7ae468c0e9dd10ccea3a837aef5c": {
+                  "decimals": 18,
+                  "symbol": "COMP"
+                },
+                "0x172370d5cd63279efa6d502dab29171933a610af": {
+                  "decimals": 18,
+                  "symbol": "CRV"
+                },
+                "0x0b3f868e0be5597d5db7feb59e1cadbb0fdda50a": {
+                  "decimals": 18,
+                  "symbol": "SUSHI"
+                },
+                "0x385eeac5cb85a38a9a07a70c73e0a3271cfb54a7": {
+                  "decimals": 18,
+                  "symbol": "GHST"
+                },
+                "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359": {
+                  "decimals": 6,
+                  "symbol": "USDC"
+                }
+              },
+              "feeds": {
+                "0x2a8758b7257102461bc958279054e372c2b1bde6": {
+                  "description": "COMP / USD",
+                  "decimals": 8,
+                  "roundId": "36893488147423096295",
+                  "answer": "1768250000",
+                  "updatedAt": 1794944311,
+                  "answeredInRound": "36893488147423096295",
+                  "heartbeat": 27,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 25
+                },
+                "0x336584c8e6dc19637a5b36206b1c79923111b405": {
+                  "description": "CRV / USD",
+                  "decimals": 8,
+                  "roundId": "36893488147419356713",
+                  "answer": "20377705",
+                  "updatedAt": 1794944224,
+                  "answeredInRound": "36893488147419356713",
+                  "heartbeat": 300,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 112
+                },
+                "0x49b0c695039243bbfeb8ecd054eb70061fd54aa0": {
+                  "description": "SUSHI / USD",
+                  "decimals": 8,
+                  "roundId": "55340232221128718493",
+                  "answer": "15284174",
+                  "updatedAt": 1794940811,
+                  "answeredInRound": "55340232221128718493",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 3525
+                },
+                "0xdd229ce42f11d8ee7fff29bdb71c7b81352e11be": {
+                  "description": "GHST / USD",
+                  "decimals": 8,
+                  "roundId": "36893488147419154494",
+                  "answer": "4601567",
+                  "updatedAt": 1794930599,
+                  "answeredInRound": "36893488147419154494",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 13737
+                },
+                "0xfe4a8cc5b5b2366c1b58bea3858e81843581b2f7": {
+                  "description": "USDC / USD",
+                  "decimals": 8,
+                  "roundId": "73786976294838498544",
+                  "answer": "99977945",
+                  "updatedAt": 1794944333,
+                  "answeredInRound": "73786976294838498544",
+                  "heartbeat": 27,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 3
+                }
+              },
+              "issues": []
+            },
+            "42161": {
+              "tokens": {
+                "0x58538e6a46e07434d7e7375bc268d3cb839c0133": {
+                  "decimals": 18,
+                  "symbol": "ENA"
+                },
+                "0x0c880f6761f1af8d9aa9c466984b80dab9a8c9e8": {
+                  "decimals": 18,
+                  "symbol": "PENDLE"
+                },
+                "0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a": {
+                  "decimals": 18,
+                  "symbol": "GMX"
+                },
+                "0x18c11fd286c5ec11c3b683caa813b77f5163a122": {
+                  "decimals": 18,
+                  "symbol": "GNS"
+                },
+                "0xaf88d065e77c8cc2239327c5edb3a432268e5831": {
+                  "decimals": 6,
+                  "symbol": "USDC"
+                }
+              },
+              "feeds": {
+                "0x9ee96caa9972c801058caa8e23419fc6516fbf7e": {
+                  "description": "ENA / USD",
+                  "decimals": 8,
+                  "roundId": "36893488147419124724",
+                  "answer": "11390018",
+                  "updatedAt": 1794943913,
+                  "answeredInRound": "36893488147419124724",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 423
+                },
+                "0x66853e19d73c0f9301fe099c324a1e9726953433": {
+                  "description": "PENDLE / USD",
+                  "decimals": 8,
+                  "roundId": "36893488147419119124",
+                  "answer": "141231514",
+                  "updatedAt": 1794941194,
+                  "answeredInRound": "36893488147419119124",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 3142
+                },
+                "0xdb98056fecfff59d032ab628337a4887110df3db": {
+                  "description": "GMX / USD",
+                  "decimals": 8,
+                  "roundId": "36893488147419111680",
+                  "answer": "727634380",
+                  "updatedAt": 1794941631,
+                  "answeredInRound": "36893488147419111680",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 2705
+                },
+                "0xe89e98ce4e19071e59ed4780e0598b541ce76486": {
+                  "description": "GNS / USD",
+                  "decimals": 8,
+                  "roundId": "36893488147419116530",
+                  "answer": "31962599",
+                  "updatedAt": 1794943510,
+                  "answeredInRound": "36893488147419116530",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 826
+                },
+                "0x50834f3163758fcc1df9973b6e91f0f0f0434ad3": {
+                  "description": "USDC / USD",
+                  "decimals": 8,
+                  "roundId": "55340232221128683312",
+                  "answer": "99976062",
+                  "updatedAt": 1794944262,
+                  "answeredInRound": "55340232221128683312",
+                  "heartbeat": 255,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 74
+                }
+              },
+              "issues": []
+            },
+            "9745": {
+              "tokens": {
+                "0x58538e6a46e07434d7e7375bc268d3cb839c0133": {
+                  "decimals": 18,
+                  "symbol": "ENA"
+                },
+                "0x2d661c89d812261039af9764eceaaee884f5f67f": {
+                  "decimals": 6,
+                  "symbol": "USDC"
+                }
+              },
+              "feeds": {
+                "0xdf61cc2451e98dce8d511e2d65d3484b85675f9e": {
+                  "description": "ENA / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709589464",
+                  "answer": "11447616",
+                  "updatedAt": 1794944054,
+                  "answeredInRound": "18446744073709589464",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 282
+                },
+                "0xe3d6f313aeebc2d4ff780c2850f5ca95c85fafa4": {
+                  "description": "USDC / USD",
+                  "decimals": 8,
+                  "roundId": "36893488147419103350",
+                  "answer": "99973207",
+                  "updatedAt": 1794930352,
+                  "answeredInRound": "36893488147419103350",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 13984
+                }
+              },
+              "issues": []
+            },
+            "56": {
+              "tokens": {
+                "0x3ee2200efb3400fabb9aacf31297cbdd1d435d47": {
+                  "decimals": 18,
+                  "symbol": "ADA"
+                },
+                "0x570a5d26f7765ecb712c0924e4de545b89fd43df": {
+                  "decimals": 18,
+                  "symbol": "SOL"
+                },
+                "0x1d2f0da169ceb9fc7b3144628db156f3f6c60dbe": {
+                  "decimals": 18,
+                  "symbol": "XRP"
+                },
+                "0x000ae314e2a2172a039b26378814c252734f556a": {
+                  "decimals": 18,
+                  "symbol": "ASTER"
+                },
+                "0x47474747477b199288bf72a1d702f7fe0fb1deea": {
+                  "decimals": 18,
+                  "symbol": "WLFI"
+                },
+                "0x55d398326f99059ff775485246999027b3197955": {
+                  "decimals": 18,
+                  "symbol": "USDT"
+                }
+              },
+              "feeds": {
+                "0xa767f745331d267c7751297d982b050c93985627": {
+                  "description": "ADA / USD",
+                  "decimals": 8,
+                  "roundId": "55340232221128924091",
+                  "answer": "15205371",
+                  "updatedAt": 1794944028,
+                  "answeredInRound": "55340232221128924091",
+                  "heartbeat": 600,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 308
+                },
+                "0x0e8a53dd9c13589df6382f13da6b3ec8f919b323": {
+                  "description": "SOL / USD",
+                  "decimals": 8,
+                  "roundId": "36893488147419319191",
+                  "answer": "7239000000",
+                  "updatedAt": 1794943819,
+                  "answeredInRound": "36893488147419319191",
+                  "heartbeat": 600,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 517
+                },
+                "0x93a67d414896a280bf8ffb3b389fe3686e014fda": {
+                  "description": "XRP / USD",
+                  "decimals": 8,
+                  "roundId": "55340232221128890530",
+                  "answer": "95840603",
+                  "updatedAt": 1794944301,
+                  "answeredInRound": "55340232221128890530",
+                  "heartbeat": 600,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 35
+                },
+                "0x3ae518be05e3f7fabf7e3ace22af795d7a09c2e5": {
+                  "description": "ASTER / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709581090",
+                  "answer": "56282000",
+                  "updatedAt": 1794944017,
+                  "answeredInRound": "18446744073709581090",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 319
+                },
+                "0xd3f669ef5c364c14d353f46b1d1a048a846e00f1": {
+                  "description": "WLFI / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709576999",
+                  "answer": "4549922",
+                  "updatedAt": 1794940819,
+                  "answeredInRound": "18446744073709576999",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 3517
+                },
+                "0xb97ad0e74fa7d920791e90258a6e2085088b4320": {
+                  "description": "USDT / USD",
+                  "decimals": 8,
+                  "roundId": "73786976294838214976",
+                  "answer": "99879458",
+                  "updatedAt": 1794944170,
+                  "answeredInRound": "73786976294838214976",
+                  "heartbeat": 900,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 166
+                }
+              },
+              "issues": []
+            },
+            "100": {
+              "tokens": {
+                "0x712b3d230f3c1c19db860d80619288b1f0bdd0bd": {
+                  "decimals": 18,
+                  "symbol": "CRV"
+                },
+                "0x2995d1317dcd4f0ab89f4ae60f3f020a4f17c7ce": {
+                  "decimals": 18,
+                  "symbol": "SUSHI"
+                },
+                "0xfadc59d012ba3c110b08a15b7755a5cb7cbe77d7": {
+                  "decimals": 18,
+                  "symbol": "GRT"
+                },
+                "0x3a00e08544d589e19a8e7d97d0294331341cdbf6": {
+                  "decimals": 18,
+                  "symbol": "SNX"
+                },
+                "0x4ecaba5870353805a9f068101a40e0f32ed605c6": {
+                  "decimals": 6,
+                  "symbol": "USDT"
+                }
+              },
+              "feeds": {
+                "0xc77b83ac3dd2a761073bd0f281f7b880b2ddde18": {
+                  "description": "CRV / USD",
+                  "decimals": 8,
+                  "roundId": "55340232221128663623",
+                  "answer": "20335000",
+                  "updatedAt": 1794943835,
+                  "answeredInRound": "55340232221128663623",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 501
+                },
+                "0xc0a6bf8d5d408b091d022c3c0653d4056d4b9c01": {
+                  "description": "SUSHI / USD",
+                  "decimals": 8,
+                  "roundId": "73786976294838213546",
+                  "answer": "15243969",
+                  "updatedAt": 1794943900,
+                  "answeredInRound": "73786976294838213546",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 436
+                },
+                "0xebbd67a84e33791f1bcfde74cdc22a71e332e2f1": {
+                  "description": "GRT / USD",
+                  "decimals": 8,
+                  "roundId": "73786976294838212742",
+                  "answer": "1701418",
+                  "updatedAt": 1794943615,
+                  "answeredInRound": "73786976294838212742",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 721
+                },
+                "0x3b84d6e6976d5826500572600eb44f9f1753827b": {
+                  "description": "SNX / USD",
+                  "decimals": 8,
+                  "roundId": "73786976294838212643",
+                  "answer": "15373000",
+                  "updatedAt": 1794943515,
+                  "answeredInRound": "73786976294838212643",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 821
+                },
+                "0x68811d7df835b1c33e6eeae8e7c141ef48d48cc7": {
+                  "description": "USDT / USD",
+                  "decimals": 8,
+                  "roundId": "55340232221128654976",
+                  "answer": "99892864",
+                  "updatedAt": 1794940140,
+                  "answeredInRound": "55340232221128654976",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 4196
+                }
+              },
+              "issues": []
+            },
+            "43114": {
+              "tokens": {
+                "0x0555e30da8f98308edb960aa94c0db47230d2b9c": {
+                  "decimals": 8,
+                  "symbol": "WBTC"
+                },
+                "0x8729438eb15e2c8b576fcc6aecda6a148776c0f5": {
+                  "decimals": 18,
+                  "symbol": "QI"
+                },
+                "0xd1c3f94de7e5b45fa4edbba472491a9f4b166fc4": {
+                  "decimals": 18,
+                  "symbol": "XAVA"
+                },
+                "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e": {
+                  "decimals": 6,
+                  "symbol": "USDC"
+                }
+              },
+              "feeds": {
+                "0x86442e3a98558357d46e6182f4b262f76c4fa26f": {
+                  "description": "WBTC / USD",
+                  "decimals": 8,
+                  "roundId": "36893488147419241551",
+                  "answer": "6374768398100",
+                  "updatedAt": 1794943805,
+                  "answeredInRound": "36893488147419241551",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 531
+                },
+                "0x36e039e6391a5e7a7267650979fdf613f659be5d": {
+                  "description": "QI / USD",
+                  "decimals": 8,
+                  "roundId": "55340232221128724454",
+                  "answer": "157326",
+                  "updatedAt": 1794944274,
+                  "answeredInRound": "55340232221128724454",
+                  "heartbeat": 1800,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 62
+                },
+                "0x4cf57dc9028187b9daaf773c8eca941036989238": {
+                  "description": "XAVA / USD",
+                  "decimals": 8,
+                  "roundId": "36893488147419122317",
+                  "answer": "9716010",
+                  "updatedAt": 1794926291,
+                  "answeredInRound": "36893488147419122317",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 18045
+                },
+                "0xf096872672f44d6eba71458d74fe67f9a77a23b9": {
+                  "description": "USDC / USD",
+                  "decimals": 8,
+                  "roundId": "55340232221128654955",
+                  "answer": "99980477",
+                  "updatedAt": 1794926033,
+                  "answeredInRound": "55340232221128654955",
+                  "heartbeat": 86400,
+                  "observedAt": 1794944336,
+                  "ageSeconds": 18303
+                }
+              },
+              "issues": []
+            }
+          },
+          "skippedChains": {}
+        }
+      ],
+      "priorAttempts": []
     }
   ],
   "representationReviews": {

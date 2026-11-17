@@ -1,136 +1,113 @@
 # Token catalog
 
-## Current creation status
+## Supported tokens
 
-All nine mainnets support new orders with exact feed approvals and live observations. The 2026-10-20 review added four routes, then 38 more under the revised policy. Seven mainnets now meet the five-sell target. Linea has three approved sells and Plasma has four. The exact sell lists are below. Low- and medium-category sources qualify through normal review; bridge, custody, and price-method limits are accepted only as recorded in each exact approval. Gnosis and BNB Chain buy USDT; the other mainnets buy native USDC. Network selection, historical order display, approval repair, and cancellation remain available, subject to their normal ownership and state checks. Sepolia retains its WETH-only sell and 18-decimal USDC test buy configuration. Those fixed test feeds are not production token-specific prices.
+All nine mainnets below support new orders, with 85 approved sell token-and-chain pairs. Each chain has one fixed buy token. Only the listed sell tokens are enabled.
 
-The dated policy review marked all nine designated USD buy feeds as `stablecoinCapped` in the original Chainlink inventory. Chainlink's [bounded market-price documentation](https://docs.chain.link/data-feeds/selecting-data-feeds#bounded-market-price-feeds) states that a bounded feed does not publish a new price above its upper limit; the proxy returns its last onchain price. Each exact fixed buy feed has a separate `boundedPriceSuitability` decision in the policy. Their current upper limit is 1.05 USD. Above that limit, the retained answer can delay a stop-loss trigger and later fail freshness. This residual risk is accepted separately for each exact fixed buy leg only. Bounded sells and unreviewed buy feeds remain excluded. A `USD` label, low-risk category, or successful round alone is not approval.
+| Chain     | Chain ID | Fixed buy   | Approved sells                                                                |
+| --------- | -------- | ----------- | ----------------------------------------------------------------------------- |
+| Ethereum  | 1        | Native USDC | AAVE, cbBTC, COMP, CRV, ENS, LINK, SKY, UNI, WETH, WLFI                       |
+| Gnosis    | 100      | USDT        | AAVE, COMP, CRV, GNO, GRT, LINK, SNX, SUSHI, UNI, WETH                        |
+| Arbitrum  | 42161    | Native USDC | AAVE, ARB, COMP, ENA, GMX, GNS, LINK, PENDLE, UNI, WBTC, WETH                 |
+| Base      | 8453     | Native USDC | AAVE, AERO, AVNT, cbBTC, cbDOGE, COMP, LINK, VIRTUAL, WETH                    |
+| Polygon   | 137      | Native USDC | AAVE, COMP, CRV, GHST, LINK, SUSHI, UNI, WETH, WPOL                           |
+| Avalanche | 43114    | Native USDC | AAVE.e, COMP.e, GMX, JOE, LINK.e, QI, UNI.e, WAVAX, WBTC, WETH.e, XAVA        |
+| BNB Chain | 56       | USDT        | AAVE, ADA, ASTER, C98, Cake, ETH, LINK, LISTA, SOL, UNI, WBNB, WLFI, XRP, XVS |
+| Linea     | 59144    | Native USDC | AAVE, COMP, LINEA, LINK, WETH, wstETH                                         |
+| Plasma    | 9745     | Native USDC | ENA, LINK, weETH, WETH, WXPL                                                  |
 
-The deployed StopLoss handler also lacks sequencer-uptime and recovery checks. [Chainlink requires these checks for L2 consumers](https://docs.chain.link/data-feeds/using-data-feeds). A check when an order is created cannot protect its later execution. Creation on Arbitrum, Base, and Linea accepts this missing execution-time protection as an explicit route limit. Orders can use stale L2 state during an outage or recovery even if creation-time checks passed. No new handler is deployed by this change. See [execution evidence](../scripts/oracle-execution-verification.json).
+Sepolia is test-only: WETH sells into 18-decimal USDC (test), using fixed test feeds. Ink and Solana are excluded.
 
-## Known metadata is not creation eligibility
+The catalog also keeps metadata for 306 production contracts and three historical Sepolia records. A known token, image, or old order does not make a token eligible for new orders. Approvals use exact chain IDs and contract addresses, not symbols.
 
-The metadata inventory retains 303 production token contracts and three historical Sepolia records. All 306 have local images and explicit economic classifications. The production classifications are 207 volatile, 84 USD-pegged, seven USD-linked, and five other stable assets. Classification describes exposure, not current peg health, liquidity, bridge safety, or feed approval.
+## Rules for adding a sell token
 
-| Chain     | Chain ID | Known production contracts | Fixed buy metadata | Approved production sells                              |
-| --------- | -------- | -------------------------- | ------------------ | ------------------------------------------------------ |
-| Ethereum  | 1        | 85                         | Native USDC        | AAVE, cbBTC, COMP, LINK, UNI, WETH                     |
-| Gnosis    | 100      | 17                         | USDT               | AAVE, COMP, GNO, LINK, UNI, WETH                       |
-| Arbitrum  | 42161    | 44                         | Native USDC        | AAVE, ARB, COMP, LINK, UNI, WBTC, WETH                 |
-| Base      | 8453     | 38                         | Native USDC        | AAVE, COMP, LINK, VIRTUAL, WETH                        |
-| Polygon   | 137      | 25                         | Native USDC        | AAVE, LINK, UNI, WETH, WPOL                            |
-| Avalanche | 43114    | 28                         | Native USDC        | AAVE.e, COMP.e, GMX, JOE, LINK.e, UNI.e, WAVAX, WETH.e |
-| BNB Chain | 56       | 48                         | USDT               | AAVE, C98, Cake, ETH, LINK, LISTA, UNI, WBNB, XVS      |
-| Linea     | 59144    | 8                          | Native USDC        | LINK, WETH, wstETH                                     |
-| Plasma    | 9745     | 10                         | Native USDC        | LINK, weETH, WETH, WXPL                                |
+A token must pass all of these checks:
 
-Ink and Solana remain excluded. The fixed buy token is not a selectable sell. Dollar-pegged assets, their bridged forms, dollar-linked yield shares, other stable assets, and unclassified assets are excluded from new sells. Classification is pinned by exact chain and token contract, not a ticker rule. A volatile asset with a USD-quoted feed is not a dollar-pegged asset. FXS governance is separate from the old FRAX dollar contract.
+1. It is classified as `volatile` on that chain. USD-pegged tokens, USD-linked yield shares, other stable assets, unclassified tokens, and the fixed buy token cannot be sold. A USD-quoted price does not make a token USD-pegged; FXS governance is separate from the old FRAX dollar contract.
+2. Its Chainlink source is active, visible, has an onchain proxy, and is a `Crypto` / `Price` feed in the `low`, `medium`, `high`, `veryhigh`, or `new` category. Custom, hidden, deprecating, and unknown categories are excluded.
+3. The feed quotes USD or ETH directly, in the held token's unit. Both sell and buy must have an approved feed in the same quote. Routing prefers common ETH, then common USD. There is no assumed dollar peg, multi-feed conversion, arbitrary token import, or manual oracle override. ETH quotes are not used as direct USD estimates.
+4. The exact token, source path, and primary proxy have a reviewed approval in [`catalog-policy.json`](../scripts/catalog-policy.json). The approval records identity, representation, price method, source evidence, review date, expected description and decimals, and a freshness ceiling. The chain also needs execution and arithmetic review evidence. A matching symbol or risk category is insufficient; alternate proxies are not selected automatically.
+5. Read-only verification confirms the token's symbol and decimals, the feed's description and decimals, and a complete round with a positive answer and a nonzero timestamp that is not in the future. The answer must be within the approved age ceiling. Feed decimals must be 0 through 18 because the handler can truncate higher-decimal prices to zero.
+6. The approval fingerprint matches the reviewed identity, complete source row, and pinned observations. Changing these inputs requires another review; a metadata refresh cannot renew an approval.
 
-`findKnownToken` retains catalog and historical metadata for existing orders, including the old Gnosis USDC.e buy token. Ethereum WBTC is not in the retained identity inventory. Saved orders keep their original feeds for pair-price reads. Removing creation eligibility does not rewrite an order or make its saved feeds safe. Existing orders can still be cancelled or repaired when their ownership and state allow it. Saved but unsubmitted placements must pass the current policy before publication or transaction construction.
+All five allowed categories use the same exact-token review. High, Very High, and New feeds can have less reliable pricing; the category does not guarantee quality or approve a route. Chainlink uses `veryhigh` for Very High, separately from `custom`. The price method alone is not a reason to exclude a feed. Review must establish what the feed measures and record its limits. Calculated, backing-based, and onchain prices can differ from the traded token's market price. See [Chainlink's feed selection guide](https://docs.chain.link/data-feeds/selecting-data-feeds) and [category definitions](https://github.com/smartcontractkit/documentation/blob/main/src/db/feedCategories.ts).
 
-## Approval requirements
+### Wrappers and bridged tokens
 
-`scripts/catalog-policy.json` is the explicit approval source. Each feed approval must identify the exact chain, token contract, quote, path, and proxy. It must record identity, representation, methodology and source evidence, review date, expected live description and decimals, a freshness ceiling, and a fingerprint of its pinned inputs. The chain must also have approved execution evidence. Both sell and buy legs must qualify. Inventory refreshes cannot silently select another proxy or turn matching symbols into approved routes.
+A native wrapper needs evidence that its contract preserves the intended unit. A bridged WETH token does not qualify as a local native wrapper.
 
-Active `low`- and `medium`-category feeds can qualify through the normal exact-row review. [Chainlink describes its categories and feed methods](https://docs.chain.link/data-feeds/selecting-data-feeds). The category is a review input, not a guarantee. New, high, custom, hidden, deprecating, and unknown sources remain excluded. The price method alone does not exclude a feed or require a separate exception. Review must establish what the feed measures and whether its direct USD or ETH quote uses the same unit as the traded token. Calculated, backing-based, and onchain prices can differ from the traded token's market price. Each exact approval must record the method, evidence, and accepted limits. A bounded feed needs an additional fixed-buy suitability decision, date, and evidence. That decision must match the exact fixed buy token, USD quote, and either an exact-asset relationship or a separately reviewed bridged-underlying relationship; it does not bypass other source checks.
+A bridged token can use its underlying asset's feed at an assumed 1:1 token-unit relationship. Its exact approval must use `bridged-underlying` and keep identity, representation, and unit evidence. A separate per-token `representationSuitability` decision is no longer required; existing decisions remain valid and are checked when present. Original issuance on the chain is not required. A matching ticker alone does not establish the relationship.
 
-An underlying asset feed does not measure the price or redemption risk of a bridge claim, custodian claim, or derivative. A bridge substitution requires `assetRelationship: bridged-underlying` and a dated `representationSuitability` decision that states `bridgeRisk: not-priced-by-feed`. Bridge and custody exposure are accepted only within each exact approval's recorded scope. Original issuance on that chain is not required when the evidence establishes the held token and the feed's corresponding unit. A bridge depeg, failed redemption, or custody loss can leave a trigger based on the underlying price wrong for the token held. These approvals do not claim that the feed measures the bridge claim. A native asset wrapper can qualify only with explicit evidence that its wrapping contract preserves the intended unit. A bridged WETH contract does not inherit that exception. Approval must assess both feed suitability and the handler's arithmetic and execution limits.
+The underlying price does not measure bridge depegs, custody loss, or failed redemption. These events can make the trigger wrong for the token held. The 1:1 pricing assumption accepts that risk; it does not guarantee backing or redemption.
 
-Approved pairs keep the existing common-ETH-first, otherwise common-USD routing rule. Feed decimals are normalized before division; approved feeds are restricted to 0 through 18 decimals to avoid the handler's truncation risk. Direct USD estimates remain separate: an ETH quote is not a USD price. No assumed dollar peg, synthetic conversion, arbitrary import, or manual oracle override is allowed. Each approved age ceiling must be no larger than `floor(1.5 * heartbeat) + 60` seconds. Browser pair reads enforce each feed's own ceiling. The handler has one shared timeout, so its route ceiling is the larger of the two feed ceilings. For the original Ethereum WETH, LINK, UNI, AAVE, and COMP routes, sell feeds have a 3,600-second heartbeat and a 5,460-second ceiling; USDC has an 82,800-second heartbeat and a 124,260-second ceiling. Applying the sell ceiling to USDC would reject normal USDC rounds. The default shared timeout is the smaller of 24 hours and the selected route's ceiling. Reset to defaults uses the same route-aware value. Explicit settings still fail validation when they exceed that ceiling. A user can choose a shorter shared timeout but cannot exceed the route ceiling through settings, a restored draft, or encoded placement input. At execution, the shared timeout also permits older sell answers than browser reads; this accepted handler limit remains part of the route review.
+New staking-share routes are deferred for case-specific review. Existing approved Linea wstETH and Plasma weETH routes stay enabled. A share is not necessarily one unit of its backing asset: a bridge assumption for wstETH does not make one wstETH equal one ETH.
 
-Browser reads retain block-pinned, positive-answer, complete-round, nonzero/nonfuture timestamp, and freshness checks. These checks do not add missing checks to the deployed handler. The verified handler normalizes prices but does not check round completeness, future timestamps, or sequencer state. These limits must remain part of any later route approval.
+### Bounded feeds
 
-## Expansion review: 2026-10-20
+Bounded sell feeds are excluded. A bounded USD feed is allowed only for an exact fixed buy token with a separate, dated `boundedPriceSuitability` approval and evidence. The token relationship must be `exact-asset` or reviewed `bridged-underlying`; all other source checks still apply.
 
-The first four exact-asset USD routes passed review without changing the earlier policy. Each source is an active, low-category `Crypto / Price / Reference / cex_price` feed with eight decimals. Exact token contracts, primary proxies, issuance evidence, observations, and fingerprints are pinned in `scripts/catalog-policy.json` and its verification file. Existing identities and images were reused.
+In the 2026-11-17 directory screening, bounded sources covered USDC, USDT, and an Arbitrum DAI feed; none of the screened volatile sell candidates was blocked by this flag. Stablecoins are already excluded as sells by the economic-class rule. The bounded-feed rule also protects against any future bounded sell source.
 
-| Chain     | Sell | Exact token contract                         | Official path | Primary proxy                                | Heartbeat / age ceiling (seconds) |
-| --------- | ---- | -------------------------------------------- | ------------- | -------------------------------------------- | --------------------------------- |
-| Ethereum  | AAVE | `0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9` | `aave-usd`    | `0x547a514d5e3769680ce22b2361c10ea13619e8a9` | 3600 / 5460                       |
-| Ethereum  | COMP | `0xc00e94cb662c3520282e6f5717214004a7f26888` | `comp-usd`    | `0xdbd020caef83efd542f4de03e3cf0c28a4428bd5` | 3600 / 5460                       |
-| Arbitrum  | ARB  | `0x912ce59144191c1204e64559fe8253a0e49e6548` | `arb-usd`     | `0xb2a824043730fe05f3da2efafa1cbbe83fa548d6` | 86400 / 129660                    |
-| BNB Chain | Cake | `0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82` | `cake-usd`    | `0xb6064ed41d4f67e353768aa239ca86f4f73665a1` | 60 / 150                          |
+All nine fixed buy feeds were marked `stablecoinCapped` in the pinned review, with an upper limit of 1.05 USD. Above the bound, the feed retains its last onchain price. This can delay a trigger and later fail freshness checks. Each fixed buy approval accepts this risk separately. See [Chainlink's bounded feed behavior](https://docs.chain.link/data-feeds/selecting-data-feeds#bounded-market-price-feeds).
 
-ARB has a one-day heartbeat. Its default shared timeout is 24 hours; the existing Arbitrum WETH route still defaults to 2692 seconds. With no sell selected, Arbitrum uses the chain default of 24 hours. Cake's own browser freshness ceiling is 150 seconds, but its shared handler timeout defaults to 1410 seconds because of the fixed USDT leg. These differences follow the existing shared-timeout rule and do not relax browser feed checks.
+## Freshness and execution limits
 
-A later review on the same date added 38 USD routes under the revised policy. The retained metadata, classifications, and images did not change. Base WETH gained an explicit canonical native-wrapper marker. All prior approval objects, observations, and fingerprints were preserved.
+Each feed's approved age ceiling is at most `floor(1.5 * heartbeat) + 60` seconds. Browser pair reads use one pinned block and enforce each feed's own ceiling, positive answers, complete rounds, and valid timestamps.
 
-| Chain     | Additional sells in the revised review          | Final sells / shortfall to five |
-| --------- | ----------------------------------------------- | ------------------------------- |
-| Ethereum  | cbBTC                                           | 6 / 0                           |
-| Gnosis    | AAVE, COMP, LINK, UNI, WETH                     | 6 / 0                           |
-| Arbitrum  | AAVE, COMP, LINK, UNI, WBTC                     | 7 / 0                           |
-| Base      | AAVE, COMP, LINK, WETH                          | 5 / 0                           |
-| Polygon   | AAVE, LINK, UNI, WETH                           | 5 / 0                           |
-| Avalanche | AAVE.e, COMP.e, GMX, JOE, LINK.e, UNI.e, WETH.e | 8 / 0                           |
-| BNB Chain | AAVE, C98, ETH, LINK, LISTA, UNI, XVS           | 9 / 0                           |
-| Linea     | LINK, wstETH                                    | 3 / 2                           |
-| Plasma    | LINK, weETH, WETH                               | 4 / 1                           |
+The deployed handler has one shared timeout for both feeds. The route ceiling is the larger of their approved age ceilings. The default, including reset to defaults, is the smaller of 24 hours and that route ceiling. Users can set a shorter timeout, but settings, restored drafts, and encoded placements cannot exceed the route ceiling.
 
-Bridge representations use the corresponding underlying unit with exact representation approvals. This includes Gnosis and Arbitrum bluechips, Base AAVE/COMP/LINK, Polygon child tokens, Avalanche `.e` tokens, BNB Chain representations, and Linea/Plasma LINK. BNB ETH and Plasma WETH represent Ethereum exposure, not local native wrapping. Base WETH wraps native ETH; its selected `eth-usd-shared-svr-2` row uses the explicitly approved official primary proxy. No secondary proxy is substituted.
+For example, the original Ethereum sell feeds have a 5,460-second ceiling; USDC has a 124,260-second ceiling. Applying the sell ceiling to USDC would reject normal USDC rounds. The shared handler timeout can therefore allow older sell answers at execution than the browser allows.
 
-Ethereum cbBTC uses a low-category `dex_state_price` source. Linea wstETH and Plasma weETH use medium-category `dex_state_price` sources in their own share units; no fixed conversion to ETH, stETH, or eETH is assumed. These prices can differ from traded prices and do not guarantee backing or redemption. BNB AAVE and C98 approvals accept their recorded identity and unit evidence without claiming original native issuance or reserve proof. Plasma WETH and weETH approvals do not claim a verified deployed implementation or a fully established bridge mechanism.
+The handler normalizes feed decimals but does not check round completeness, future timestamps, or L2 sequencer uptime and recovery. Arbitrum, Base, and Linea approvals accept the missing execution-time sequencer protection. Creation-time checks cannot protect later execution during an outage or recovery. See [execution evidence](../scripts/oracle-execution-verification.json) and [Chainlink's consumer requirements](https://docs.chain.link/data-feeds/using-data-feeds). Read-only verification does not prove end-to-end execution or future feed quality.
 
-Only Linea and Plasma remain below five sells. Linea's inspected LINEA feed is new-category and remains excluded. Plasma ENA is not a retained identity, so it was left outside this review; no new metadata or broader missing-evidence review was added. Avalanche sAVAX and Ethereum's calculated wstETH source remain excluded because their source category is Custom, not because of their price method. High-category sources also remain excluded. A source with an unsupported quote cannot be combined with another feed to create a route. These checks do not establish a complete inventory of all possible tokens or oracles.
+## Add or review a token
 
-Contract and representation reviews used exact-chain contracts, pinned token metadata, issuer records, and read-only representation getters where available. LINK's [official contract list](https://github.com/smartcontractkit/documentation/blob/44b81dcea3b3ebdb82896eab37fd32c8b51e34b0/src/content/resources/link-token-contracts.mdx) establishes identity, but does not remove its [lock/release pool dependency](https://github.com/smartcontractkit/documentation/blob/44b81dcea3b3ebdb82896eab37fd32c8b51e34b0/src/content/ccip/v1/evm/api-reference/v1.5.1/lock-release-token-pool.mdx). The approval evidence states which representation facts were established and which risks were accepted. Current official feed directory URLs and dated source digests are recorded in `scripts/catalog-sources.json`.
+1. Review the exact chain, token contract, economic class, representation, feed unit, and execution limits above. Add missing identity and image evidence to [`catalog-identities.json`](../scripts/catalog-identities.json). Resolve display metadata from a pinned source or a reviewed entry in [`catalog-metadata-overrides.json`](../scripts/catalog-metadata-overrides.json). Keep historical metadata when old orders need it.
+2. Add the exact official source row to [`catalog-feeds.json`](../scripts/catalog-feeds.json). Record its directory URL, date, and digest in [`catalog-sources.json`](../scripts/catalog-sources.json). Review the lifecycle, price method, heartbeat, and both feed legs. Missing or changed mappings must fail review.
+3. Observe the proposed mappings before approval:
 
-## Sources and audit history
+   ```sh
+   python3 scripts/catalog-live.py --candidates /path/to/proposed-policy.json --output /tmp/catalog-candidates.json
+   ```
 
-The original source inventory was fetched on 2026-10-16 from the [official Chainlink chain registry](https://raw.githubusercontent.com/smartcontractkit/documentation/main/src/features/data/chains.ts). `scripts/catalog-sources.json` retains its source URLs, dates, counts, and hashes, including the original token-metadata references. Those dated sources include CoW, issuer references, Aave, and chain-specific maintained lists; they are identity inputs, not proof of oracle suitability. The full 2,102-row feed inventory is no longer retained. Its mutable source URLs cannot reliably reproduce the removed snapshot. The current display-metadata sources are separate and pinned as described below.
+   This read-only report is marked `candidate-review` and does not enable creation. `CATALOG_RPC_<chainId>` overrides the read-only RPC endpoint. A skipped or `not-performed` check is not a pass.
 
-The former build selected 336 proxies and the 2026-10-16 live snapshot reported no check failures. It accepted some underlying-feed substitutions, selected alternates by ordering, required only a nonempty token symbol, and checked feed descriptions only for their quote. The unused `scripts/catalog-verification.json` snapshot has been removed. Its dated scope, digest, and limits remain in `scripts/catalog-sources.json`. This summary does not preserve the detailed observations or provide equivalent evidence. Those old observations were not approval under the current policy.
+4. Review the observations and execution evidence. Pin accepted observations in the policy's `verificationFile`, then record the exact approval and fingerprint. Candidate observations alone cannot renew approvals. Live verification without `--candidates` checks approved production feeds only.
+5. Generate the catalog, inspect the diff, and run the checks below. Do not edit the generated JSON directly.
 
-`scripts/catalog-feeds.json` contains 62 exact approved official feed rows: the 20 rows fetched on 2026-10-19, four first-expansion rows reviewed on 2026-10-20, and 38 rows from the revised-policy review later that day. Each retained row has an exact approval. `scripts/catalog-sources.json` preserves the original source hashes and records the two expansion reviews' directory dates, hashes, and retained paths separately. Only the exact approved primary proxies qualify, including Base WETH's explicitly reviewed SVR primary row; no alternate or secondary proxy is selected automatically. Builds do not fetch the latest feed directory or select routes. Optional audit reports cover the retained reviewed input only; they do not reconstruct or account for every row of the removed historical inventory. Unresolved identities, unsuitable feed units, and unapproved routes must still reject a route. Missing handler checks remain explicit accepted limits of the reviewed routes. Metadata coverage, approved creation routes, and historical order support remain separate counts.
+## Files and checks
 
-`scripts/catalog-policy-verification.json` preserves the actual 2026-10-19 observations for all nine mainnets. Its `additionalReviews` retains the first four expansion observations and the later 38 observations as separate reviews. The accepted later batches together cover all nine chains and their unchanged fixed buy legs, with no remaining issues or unchecked chains. Earlier Polygon attempts rejected answers one second in the future, and an independent Polygon RPC attempt failed. A later Polygon retry passed the same strict timestamp and freshness checks; no tolerance was added. The failed attempts and accepted batch scopes remain in the verification file. Checks covered token symbols and decimals, feed descriptions and decimals, complete positive rounds, and valid freshness. Only new token/feed observations were appended; incumbent observations, approval objects, and fingerprints were preserved. The policy separately approves each reviewed row and binds it to its pinned observations. The handler runtime matches the retained compiled SHA-256 on all nine mainnets. None of these read-only checks proves successful end-to-end execution or future feed quality.
-
-## Display metadata
-
-`scripts/catalog-metadata-sources.json` pins 18 files from [cowprotocol/token-lists at revision `60b9905e7eeb10af657700f749c143ab68953df4`](https://github.com/cowprotocol/token-lists/tree/60b9905e7eeb10af657700f749c143ab68953df4): one CoW Swap list, nine CoinGecko lists, and eight Uniswap lists. Each source has an immutable URL, a content hash, and an explicit priority. Selection uses exact chain and contract matches for reviewed local identities. A new upstream token does not enter the catalog automatically.
-
-`scripts/catalog-identities.json` keeps the compact local identity inventory: chain, address, economic classification, evidence, and local image paths with `logoSource` and full `logoSha256` digests. It does not duplicate display names, symbols, or decimals. `scripts/catalog-metadata-overrides.json` holds full metadata for local gaps and field corrections for matched sources. The pinned sources cover 270 known records; the remaining 33 production records and three Sepolia records use full local entries. Reviewed corrections keep the existing metadata for externally matched records. All 306 known records keep their exact display metadata, fixed buy tokens, and local images. Historical records and saved feeds remain available.
-
-The generated runtime snapshot is `src/lib/tokenCatalogData.json` and remains checked in. Source manifests, identities, overrides, and approval evidence are also checked in; downloaded lists and optional reports are not. Normal generation writes only the runtime snapshot. Use `--reports DIR` to also write `catalog-audit.json` and `catalog-metadata-report.json` inside that directory. The metadata report records source selections, overridden fields, and counts without copying full token metadata. Review these reports when changing inputs, but do not commit them. The browser and ordinary tests read the runtime snapshot without asynchronous list requests. List-server availability and CORS settings cannot change runtime metadata.
-
-External display metadata does not approve oracle routes. `scripts/catalog-policy.json` keeps exact approval fingerprints; a metadata refresh cannot renew them automatically. Only the explicit sell routes in the table are enabled. Historical token support does not make its saved feeds suitable for a new order.
-
-## Build and verification
-
-```sh
-corepack pnpm@9 prepare:catalog
-corepack pnpm@9 check:assets
-corepack pnpm@9 check:catalog
-python3 -m unittest discover -s scripts -p 'test_catalog*.py'
-corepack pnpm@9 test:jest --runInBand
-```
-
-`prepare:catalog` runs `python3 scripts/catalog_metadata.py` and then `python3 scripts/catalog-assets.py`. Metadata preparation downloads and verifies pinned bytes into ignored `.cache/token-catalog`; use `--cache-dir` on the metadata helper to choose another cache directory. A cold cache needs network access. A warm cache works offline only when its bytes match the pinned hashes. Corrupt data or a hash mismatch fails the command; a network failure without verified cached bytes also fails. There is no latest-list or stale-data fallback. Both helpers use Python's standard library.
-
-`prepare:assets` runs the image helper on its own. It groups shared `localLogo` paths, requires matching full `logoSha256` digests, checks existing files, and downloads only missing images from reviewed `logoSource` URLs. Downloads are bounded and written atomically after validation. A changed image is an error; the helper does not replace artwork or rename a local URL. `check:assets` uses `--check` to verify files without fetching. Use the image helper's `--public-dir DIR` option to prepare or check a separate public output directory. Verified existing files allow offline use. Keep baseline assets and any image whose exact bytes cannot be restored committed; remove an image from tracking only after a cold restoration proves its full digest.
-
-`python3 scripts/catalog.py` is offline. It loads verified cached metadata, resolves reviewed inputs, and writes the runtime snapshot. `--check` validates the reviewed inputs and runtime snapshot without rewriting files, downloading sources, or requiring optional reports. Do not combine `--check` with `--reports`. `dev:next` and `build:next` run preparation, the offline image check, the offline catalog check, and Next.js in sequence. The combined `dev` and `build` commands run app and documentation tasks in parallel, but keep those steps in sequence within the app task. They do not silently regenerate changed output. CI runs preparation and both checks, then the Python catalog tests and Jest. Ordinary Jest tests check the reviewed image manifest without requiring prepared images or network access.
-
-## Maintenance
-
-To add a known token, first review its exact chain and contract. Add its identity, classification evidence, `localLogo`, `logoSource`, and full `logoSha256` to `scripts/catalog-identities.json`; keep any required identity and wrapper evidence. Resolve display metadata from a pinned source or add a reviewed full local gap entry in `scripts/catalog-metadata-overrides.json`. Use field corrections only where the selected source differs from reviewed metadata. Do not infer an identity or classification from a symbol. Keep removed upstream tokens locally when historical orders need their metadata.
-
-To refresh lists, select an explicit revision and update source hashes after review. Prepare the bytes, regenerate, and inspect source selection, runtime metadata, provenance, and correction drift. Corrections pin expected upstream field values; resolution fails when those values change or a correction becomes redundant. Check whether old corrections are still needed and whether new gaps need local entries. Do not delete a correction or accept a metadata change only because an upstream list changed. Run the offline check and catalog tests after reviewing the generated diff; do not edit generated JSON directly.
-
-After an intentional input change, run generation and the check. Request optional reports when a detailed input review is needed:
+| File                                                                                      | Purpose                                                                              |
+| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| [`scripts/catalog-policy.json`](../scripts/catalog-policy.json)                           | Exact feed approvals and chain execution decisions                                   |
+| [`scripts/catalog-policy-verification.json`](../scripts/catalog-policy-verification.json) | Pinned read-only observations, including separate review batches and failed attempts |
+| [`scripts/catalog-feeds.json`](../scripts/catalog-feeds.json)                             | 94 approved official source rows; not a full Chainlink inventory                     |
+| [`scripts/catalog-sources.json`](../scripts/catalog-sources.json)                         | Source URLs, dates, hashes, and historical review scope                              |
+| [`scripts/catalog-identities.json`](../scripts/catalog-identities.json)                   | Exact identities, economic classes, and image evidence                               |
+| [`scripts/catalog-metadata-sources.json`](../scripts/catalog-metadata-sources.json)       | Pinned display-metadata sources and priority                                         |
+| [`scripts/catalog-metadata-overrides.json`](../scripts/catalog-metadata-overrides.json)   | Reviewed local metadata gaps and field corrections                                   |
+| [`src/lib/tokenCatalogData.json`](../src/lib/tokenCatalogData.json)                       | Checked-in runtime snapshot                                                          |
 
 ```sh
 corepack pnpm@9 prepare:catalog
 corepack pnpm@9 generate:catalog
 corepack pnpm@9 check:assets
 corepack pnpm@9 check:catalog
-python3 scripts/catalog.py --reports .cache/token-catalog/reports
+python3 -m unittest discover -s scripts -p 'test_catalog*.py'
+corepack pnpm@9 test:jest --runInBand
 ```
 
-The last command regenerates the same runtime snapshot and writes the two optional reports under `.cache/token-catalog/reports`. These reports describe current retained inputs, not the removed historical inventory. Review the runtime diff and report contents before accepting the change.
+`prepare:catalog` downloads and verifies pinned metadata and missing images. A cold cache needs network access; a warm cache works offline only when hashes match. There is no latest-list or stale-data fallback. Images keep their local URLs and full digests; changed bytes are an error. Keep baseline assets and required fallbacks tracked. Untrack an image only after a cold restoration proves its digest.
 
-Before changing approvals, review current official documents, exact token contracts, both feed legs, lifecycle, methodology, heartbeat, live state, and deployed execution behavior. Add each exact official source row to `scripts/catalog-feeds.json` before candidate observation. Missing rows, changed rows, or mismatched chain, token, proxy, or quote must fail review. Preserve `excluded_reason` decisions and explicit `approved_feeds`; observe the candidate first, then separately review its complete-row approval fingerprint and execution evidence. Record source changes and repeat approval review without automatically renewing fingerprints.
+`generate:catalog` is offline and writes the runtime snapshot. `check:assets` and `check:catalog` verify without fetching or rewriting. App development, app builds, and CI run preparation and checks; they do not silently regenerate changed output. Ordinary Jest tests use the runtime snapshot and image manifest without network access or prepared images.
 
-Live verification normally checks only approved production feeds. Run `python3 scripts/catalog-live.py --output /tmp/catalog-policy-observations.json` for a separate read-only report. Use `--candidates /path/to/proposed-policy.json` to observe exact proposed mappings before approval; its report is marked `candidate-review` and does not enable creation. The policy's `verificationFile` selects the pinned current review observations. Verification compares exact token symbols and decimals and exact expected feed descriptions and decimals, validates rounds, and applies the selected freshness ceiling. `CATALOG_RPC_<chainId>` can override read-only RPC endpoints. When no feeds are selected, the report says `not-performed` and lists skipped chains. A skipped check is not a successful live verification. Candidate observations do not renew approvals or replace execution evidence.
+For an input review, `python3 scripts/catalog.py --reports .cache/token-catalog/reports` also writes audit and metadata reports. Do not commit the reports or combine `--reports` with `--check`. Reports cover retained inputs, not the removed historical inventory.
 
-All known token images keep their current URLs under `public/assets/tokens`; the identity manifest refers to 208 distinct image paths. Prepared files are ignored, while baseline and required fallback assets remain tracked. Network images remain committed, including Linea and Plasma in RainbowKit's actual network menu. Neither an image nor a known contract makes a route eligible. No eligibility review guarantees future liquidity, freshness, or correct execution.
+To refresh display lists, select an explicit revision, review hashes and corrections, prepare, regenerate, and inspect the diff. Corrections fail if expected upstream values change or a correction becomes redundant. New upstream tokens do not enter the catalog automatically; display metadata never approves a feed.
+
+## Existing orders
+
+Existing orders keep their saved feeds. Removing creation eligibility does not rewrite an order or make its feeds safe. `findKnownToken` retains metadata for historical orders, including the old Gnosis USDC.e buy token. Ethereum WBTC is not in the retained identity inventory.
+
+Order display, approval repair, and cancellation remain available subject to ownership and state checks. Saved but unsubmitted placements must pass the current policy before publication or transaction construction.
