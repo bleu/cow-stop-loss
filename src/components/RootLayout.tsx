@@ -1,6 +1,9 @@
 "use client";
 
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import {
+  type DisclaimerComponent,
+  RainbowKitProvider,
+} from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -23,6 +26,14 @@ export const swrConfig: SWRConfiguration = {
   keepPreviousData: false,
   provider: () => new Map(),
 };
+
+const WalletDisclaimer: DisclaimerComponent = ({ Text, Link }) => (
+  <Text>
+    By connecting a wallet, you agree to the <Link href="/terms">Terms</Link>{" "}
+    and acknowledge the <Link href="/terms#risks">Risks</Link> of using beta
+    software.
+  </Text>
+);
 
 export function RootLayout({
   children,
@@ -57,7 +68,11 @@ export function RootLayout({
         <RainbowKitProvider
           theme={createWalletTheme(theme)}
           modalSize="compact"
-          appInfo={{ appName: "CoW Air Rescue" }}
+          appInfo={{
+            appName: "CoW Air Rescue",
+            disclaimer: WalletDisclaimer,
+            learnMoreUrl: "/terms",
+          }}
         >
           <AnalyticsProvider>
             <SWRConfig value={swrConfig}>

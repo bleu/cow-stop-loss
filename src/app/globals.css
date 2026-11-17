@@ -665,6 +665,13 @@
   gap: 16px;
   background: var(--footer-ground) !important;
 }
+.rescue-footer-notice {
+  --muted-foreground: 220 56% 86%;
+  background: var(--footer-ground);
+}
+.light .rescue-footer-notice {
+  --muted-foreground: 213 25% 30%;
+}
 .rescue-footer a:focus-visible {
   outline-offset: 2px;
 }
@@ -995,7 +1002,9 @@
   .rescue-footer {
     padding: 14px 22px;
     min-height: var(--footer-height);
-    align-items: flex-end;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
   .rescue-footer-copy {
     font-size: 11px;

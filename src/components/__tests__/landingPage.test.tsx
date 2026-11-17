@@ -8,6 +8,18 @@ import React from "react";
 
 import LandingPageRoute from "#/app/page";
 
+it("links to the terms from the stop-loss protection answer", () => {
+  render(<LandingPageRoute />);
+  const question = "Does a stop-loss order guarantee protection?";
+  fireEvent.click(screen.getByRole("button", { name: question }));
+
+  const answer = screen.getByRole("region", { name: question });
+  expect(within(answer).getByRole("link", { name: "Terms" })).toHaveAttribute(
+    "href",
+    "/terms",
+  );
+});
+
 it("shows the landing page and links to the trading app without a wallet", () => {
   render(<LandingPageRoute />);
 

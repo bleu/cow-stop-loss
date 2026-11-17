@@ -253,6 +253,19 @@ export function LandingPage() {
                   </AccordionTrigger>
                   <AccordionContent className="landing-faq-answer">
                     {answer}
+                    {id === "risks" && (
+                      <>
+                        {" "}
+                        Read the{" "}
+                        <Link
+                          href="/terms"
+                          className="underline underline-offset-4"
+                        >
+                          Terms
+                        </Link>
+                        .
+                      </>
+                    )}
                   </AccordionContent>
                 </AccordionItem>
               ))}

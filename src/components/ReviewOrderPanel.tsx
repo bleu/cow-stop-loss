@@ -7,6 +7,7 @@ import {
   PopoverTrigger,
   Tooltip,
 } from "@bleu/ui";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { formatUnits } from "viem";
 
@@ -223,6 +224,14 @@ export function ReviewOrderPanel({
           </span>
         </div>
       )}
+      <p className="text-xs text-muted-foreground">
+        Execution and price are not guaranteed. By placing this order, you
+        accept the{" "}
+        <Link href="/terms" className="underline underline-offset-4">
+          Terms
+        </Link>
+        .
+      </p>
       <div className="rescue-review-actions">
         <Button
           type="button"

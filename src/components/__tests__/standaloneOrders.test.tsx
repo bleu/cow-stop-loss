@@ -12,7 +12,6 @@ import {
   waitFor,
   within,
 } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { EthereumProvider } from "@walletconnect/ethereum-provider";
 import { EventEmitter } from "events";
 import { AppRouterContext } from "next/dist/shared/lib/app-router-context.shared-runtime";
@@ -1168,69 +1167,102 @@ afterEach(async () => {
   jest.restoreAllMocks();
 });
 
-describe.each(["dark", "light"] as const)(
-  "public testing notice in %s mode",
-  (theme) => {
-    test.each(["/", "/app", `/1/${wallet}`, `/1/${wallet}/stop-loss-1`])(
-      "shows a permanent notice above the header on %s",
-      async (initialPath) => {
-        const user = userEvent.setup();
-        renderView(
-          <Router initialPath={initialPath}>
-            <AppRootLayout config={config} initialTheme={theme}>
-              <main>Page content</main>
-            </AppRootLayout>
-          </Router>,
-        );
+describe.each(["dark", "light"] as const)("beta notice in %s mode", (theme) => {
+  test.each([
+    "/",
+    "/app",
+    "/terms",
+    `/1/${wallet}`,
+    `/1/${wallet}/stop-loss-1`,
+  ])(
+    "shows a header BETA badge instead of the public testing banner on %s",
+    (initialPath) => {
+      renderView(
+        <Router initialPath={initialPath}>
+          <AppRootLayout config={config} initialTheme={theme}>
+            <main>Page content</main>
+          </AppRootLayout>
+        </Router>,
+      );
 
-        try {
-          const notice = screen.getByRole("note", { name: "Public testing" });
-          expect(notice).toBeVisible();
-          expect(notice).toHaveTextContent(
-            "All trades are executed through CoW Protocol. CoW Air Rescue is experimental software provided ‘as is’, without warranty. Execution is not guaranteed, and we cannot cover any losses. Trades are currently capped at $10k. Report issues on GitHub.",
-          );
-          expect(notice).toHaveClass("bg-yellow-300", "text-yellow-950");
-          expect(
-            notice.compareDocumentPosition(screen.getByRole("banner")) &
-              Node.DOCUMENT_POSITION_FOLLOWING,
-          ).toBeTruthy();
-          expect(
-            screen.queryByRole("button", { name: "Public testing warning" }),
-          ).not.toBeInTheDocument();
+      expect(
+        within(screen.getByRole("banner")).getByText("BETA"),
+      ).toBeVisible();
+      expect(
+        screen.queryByRole("note", { name: "Public testing" }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByText("Your exit plan. On your terms."),
+      ).not.toBeInTheDocument();
+    },
+  );
+  test.each(["/", "/app", "/terms", `/1/${wallet}/stop-loss-1`])(
+    "shows beta terms and support links in the footer on %s",
+    (initialPath) => {
+      renderView(
+        <Router initialPath={initialPath}>
+          <AppRootLayout config={config} initialTheme={theme}>
+            <main>Page content</main>
+          </AppRootLayout>
+        </Router>,
+      );
 
-          const issues = within(notice).getByRole("link", {
-            name: "GitHub",
-          });
-          expect(issues).toHaveAttribute(
-            "href",
-            "https://github.com/bleu/cow-stop-loss/issues/new?template=problem-report.yml",
-          );
-          expect(issues).toHaveAttribute("target", "_blank");
-          expect(issues.getAttribute("rel")?.split(/\s+/)).toEqual(
-            expect.arrayContaining(["noreferrer", "noopener"]),
-          );
-          act(() => issues.focus());
-          expect(issues).toHaveFocus();
-          const pathname = window.location.pathname;
-          await user.click(issues);
-          expect(window.location.pathname).toBe(pathname);
+      const footer = screen.getByRole("contentinfo");
+      const notice = within(footer).getByRole("note", {
+        name: "Beta software",
+      });
+      expect(notice).toHaveTextContent(
+        "Experimental software, provided as is. Execution is not guaranteed. This interface limits new orders to USD 10k, based on the oracle price at creation.",
+      );
+      expect(
+        within(notice).getByRole("link", { name: "Terms" }),
+      ).toHaveAttribute("href", "/terms");
+      expect(
+        within(notice).getByRole("link", { name: "Risks" }),
+      ).toHaveAttribute("href", "/terms#risks");
+      const issues = within(notice).getByRole("link", {
+        name: "Report an issue",
+      });
+      expect(issues).toHaveAttribute(
+        "href",
+        "https://github.com/bleu/cow-stop-loss/issues/new?template=problem-report.yml",
+      );
+      expect(issues).toHaveAttribute("target", "_blank");
+      expect(issues.getAttribute("rel")?.split(/\s+/)).toEqual(
+        expect.arrayContaining(["noreferrer", "noopener"]),
+      );
+      expect(
+        notice.compareDocumentPosition(
+          within(footer).getByText(/A little peace of mind/),
+        ) & Node.DOCUMENT_POSITION_FOLLOWING,
+      ).toBeTruthy();
+    },
+  );
+});
 
-          await user.keyboard("{Escape}");
-          await user.click(screen.getByRole("main"));
-          expect(notice).toBeVisible();
-          await user.click(
-            screen.getByRole("button", {
-              name: `Switch to ${theme === "dark" ? "light" : "dark"} mode`,
-            }),
-          );
-          expect(notice).toBeVisible();
-        } finally {
-          document.documentElement.classList.remove("light");
-        }
-      },
-    );
-  },
-);
+test("shows terms and risks before a visitor connects a wallet", async () => {
+  render(
+    <RootLayout>
+      <main>Trading page</main>
+    </RootLayout>,
+  );
+
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Connect wallet" }),
+  );
+  const dialog = await screen.findByRole("dialog");
+  expect(dialog).toHaveTextContent(
+    "By connecting a wallet, you agree to the Terms and acknowledge the Risks of using beta software.",
+  );
+  expect(within(dialog).getByRole("link", { name: "Terms" })).toHaveAttribute(
+    "href",
+    "/terms",
+  );
+  expect(within(dialog).getByRole("link", { name: "Risks" })).toHaveAttribute(
+    "href",
+    "/terms#risks",
+  );
+});
 
 test("shows the app link in the header and FAQ in the footer without wallet controls", async () => {
   renderView(
@@ -1335,14 +1367,11 @@ test("keeps header controls compact below desktop with accessible wallet actions
   expect(header).toHaveClass("flex-nowrap");
   const brand = within(header).getByRole("link", { name: "CoW Air Rescue" });
   expect(brand).toHaveAttribute("href", "/");
-  expect(within(brand).getByText("CoW Air Rescue").parentElement).toHaveClass(
+  expect(within(brand).getByText("CoW Air Rescue")).toHaveClass(
     "hidden",
     "sm:block",
   );
-  expect(within(brand).getByText("Your exit plan. On your terms.")).toHaveClass(
-    "hidden",
-    "lg:block",
-  );
+  expect(within(brand).getByText("BETA")).toBeVisible();
   expect(brand.querySelector("img")).toBeInTheDocument();
   const theme = within(header).getByRole("button", {
     name: "Switch to light mode",
