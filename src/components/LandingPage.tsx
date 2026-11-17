@@ -38,7 +38,7 @@ const questions = [
     id: "what-is-it",
     question: "What is CoW Air Rescue?",
     answer:
-      "CoW Air Rescue helps you prepare for market drops without worrying about watching prices around the clock. Create and manage conditional stop-loss orders with triggers you choose. CoW Protocol handles matching and settlement when execution requirements are met. Execution and price are not guaranteed.",
+      "CoW Air Rescue helps you prepare for market drops without worrying about watching prices around the clock. Create and manage conditional stop-loss orders with triggers you choose. CoW Protocol handles matching and settlement when execution requirements are met. Execution is not guaranteed.",
   },
   {
     id: "execution",
@@ -143,8 +143,7 @@ export function LandingPage() {
               </a>
             </div>
             <p className="landing-hero-note">
-              Your trigger sets a condition. Execution and price are not
-              guaranteed.
+              Your trigger sets a condition. Execution is not guaranteed.
             </p>
           </div>
           <div className="landing-scene" aria-hidden="true">

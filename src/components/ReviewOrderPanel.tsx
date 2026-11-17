@@ -225,8 +225,7 @@ export function ReviewOrderPanel({
         </div>
       )}
       <p className="text-xs text-muted-foreground">
-        Execution and price are not guaranteed. By placing this order, you
-        accept the{" "}
+        Execution is not guaranteed. By placing this order, you accept the{" "}
         <Link href="/terms" className="underline underline-offset-4">
           Terms
         </Link>

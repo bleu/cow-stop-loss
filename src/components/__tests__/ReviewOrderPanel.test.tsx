@@ -96,9 +96,9 @@ it.each([true, false])(
         }}
       />,
     );
-    const notice = screen.getByText(/Execution and price are not guaranteed\./);
+    const notice = screen.getByText(/Execution is not guaranteed\./);
     expect(notice).toHaveTextContent(
-      "Execution and price are not guaranteed. By placing this order, you accept the Terms.",
+      "Execution is not guaranteed. By placing this order, you accept the Terms.",
     );
     expect(screen.getByRole("link", { name: "Terms" })).toHaveAttribute(
       "href",
