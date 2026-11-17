@@ -82,6 +82,41 @@ function props() {
   };
 }
 
+it.each([true, false])(
+  "shows execution terms before the order action when approvalRequired is %s",
+  (approvalRequired) => {
+    render(
+      <ReviewOrderPanel
+        {...props()}
+        prepared={prepared}
+        checks={{
+          ...checks,
+          approvalRequired,
+          combinedCommitmentsExceedBalance: true,
+        }}
+      />,
+    );
+    const notice = screen.getByText(/Execution is not guaranteed\./);
+    expect(notice).toHaveTextContent(
+      "Execution is not guaranteed. By placing this order, you accept the Terms.",
+    );
+    expect(screen.getByRole("link", { name: "Terms" })).toHaveAttribute(
+      "href",
+      "/terms",
+    );
+    const action = screen.getByRole("button", {
+      name: approvalRequired ? "Approve WETH" : "Place order",
+    });
+    expect(
+      notice.compareDocumentPosition(action) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+    expect(action).toBeEnabled();
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Your other open orders may use this balance. Check them before continuing.",
+    );
+  },
+);
+
 it("shows a compact order summary with edit beside the heading", () => {
   render(<ReviewOrderPanel {...props()} prepared={prepared} checks={checks} />);
   const heading = screen.getByRole("heading", { name: "Confirm your order" });

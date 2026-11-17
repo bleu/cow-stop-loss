@@ -8,6 +8,18 @@ import React from "react";
 
 import LandingPageRoute from "#/app/page";
 
+it("links to the terms from the stop-loss protection answer", () => {
+  render(<LandingPageRoute />);
+  const question = "Does a stop-loss order guarantee protection?";
+  fireEvent.click(screen.getByRole("button", { name: question }));
+
+  const answer = screen.getByRole("region", { name: question });
+  expect(within(answer).getByRole("link", { name: "Terms" })).toHaveAttribute(
+    "href",
+    "/terms",
+  );
+});
+
 it("shows the landing page and links to the trading app without a wallet", () => {
   render(<LandingPageRoute />);
 
@@ -59,7 +71,7 @@ it.each([
     question: "What is CoW Air Rescue?",
     opening:
       "CoW Air Rescue helps you prepare for market drops without worrying about watching prices around the clock.",
-    warning: "Execution and price are not guaranteed.",
+    warning: "Execution is not guaranteed.",
   },
   {
     question: "Can I cancel an order?",
@@ -131,9 +143,7 @@ it("illustrates each step without adding spoken content or controls", () => {
     "aria-hidden",
     "true",
   );
-  expect(
-    screen.getByText(/Execution and price are not guaranteed/),
-  ).toBeVisible();
+  expect(screen.getByText(/Execution is not guaranteed/)).toBeVisible();
   expect(
     within(cards[2]).getByText(/if the order can be filled within its terms/),
   ).toBeVisible();

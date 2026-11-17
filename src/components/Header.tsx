@@ -6,7 +6,6 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { NetworkLogo } from "#/components/NetworkLogo";
-import { PublicTestingNotice } from "#/components/PublicTestingNotice";
 import { PixelIcon } from "#/components/ui/pixel-icon";
 import { ChainId, supportedChainIds } from "#/lib/publicClients";
 
@@ -29,7 +28,6 @@ export function Header({
 }: IHeader) {
   return (
     <>
-      <PublicTestingNotice />
       <header className="rescue-header pixel-frame relative z-20 flex shrink-0 flex-nowrap items-center gap-3">
         <Link
           href={linkUrl}
@@ -47,13 +45,11 @@ export function Header({
               priority
             />
           )}
-          <span className="hidden sm:block">
-            <span className="rescue-brand block text-foreground">
-              CoW Air Rescue
-            </span>
-            <span className="rescue-brand-subtitle mt-2 hidden font-serif text-xs text-muted-foreground lg:block">
-              Your exit plan. On your terms.
-            </span>
+          <span className="rescue-brand hidden text-foreground sm:block">
+            CoW Air Rescue
+          </span>
+          <span className="border-2 border-primary px-2 py-1 text-xs leading-none text-primary">
+            BETA
           </span>
         </Link>
         <div className="ml-auto flex shrink-0 flex-nowrap items-center justify-end gap-2">

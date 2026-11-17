@@ -36,6 +36,18 @@ export function Footer({
         >
           FAQ
         </Link>
+        <Link
+          href="/terms"
+          className="inline-flex min-h-11 items-center hover:underline"
+        >
+          Terms
+        </Link>
+        <Link
+          href="/terms#risks"
+          className="inline-flex min-h-11 items-center hover:underline"
+        >
+          Risks
+        </Link>
         {enabled && (
           <button
             type="button"

@@ -995,7 +995,9 @@
   .rescue-footer {
     padding: 14px 22px;
     min-height: var(--footer-height);
-    align-items: flex-end;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
   .rescue-footer-copy {
     font-size: 11px;
