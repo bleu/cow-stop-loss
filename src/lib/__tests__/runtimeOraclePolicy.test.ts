@@ -472,8 +472,8 @@ describe("approval identity parsing", () => {
     ).toEqual(expected);
   });
 
-  it.each(["new", "high", "custom", "unknown", null])(
-    "rejects a complete suitability override for category %s",
+  it.each(["low", "new", "high", "veryhigh", "custom", "unknown", null])(
+    "rejects a historical Medium review marker for category %s",
     (category) => {
       const token = approvedToken();
       expect(
@@ -537,7 +537,7 @@ describe("approval identity parsing", () => {
     }
   });
 
-  it("requires a reviewed bridged representation and explicit unpriced bridge risk", () => {
+  it("accepts bridge parity and validates optional historical bridge reviews", () => {
     const token = approvedToken();
     const representationSuitability = {
       decision: "accepted-underlying-feed",
@@ -550,16 +550,20 @@ describe("approval identity parsing", () => {
         ...token,
         oracleApprovals: { USD: { ...token.oracleApprovals.USD, ...patch } },
       });
+    const expected = {
+      oracles: { USD: proxy },
+      oracleApprovals: { USD: { maxAgeSeconds: 1800 } },
+    };
     expect(parse({ representationSuitability }).oracles).toEqual({});
+    expect(parse({ assetRelationship: "bridged-underlying" })).toEqual(
+      expected,
+    );
     expect(
       parse({
         assetRelationship: "bridged-underlying",
         representationSuitability,
       }),
-    ).toEqual({
-      oracles: { USD: proxy },
-      oracleApprovals: { USD: { maxAgeSeconds: 1800 } },
-    });
+    ).toEqual(expected);
     for (const review of [
       undefined,
       null,
@@ -595,12 +599,12 @@ describe("approval identity parsing", () => {
     for (const field of [
       "identityEvidence",
       "representationEvidence",
+      "assetRelationshipReason",
       "snapshotFingerprint",
     ]) {
       expect(
         parse({
           assetRelationship: "bridged-underlying",
-          representationSuitability,
           [field]: "",
         }).oracles,
       ).toEqual({});

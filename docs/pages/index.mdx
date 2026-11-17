@@ -16,20 +16,20 @@ If one chain fails, its warning and retry button appear while other chains remai
 
 Trigger, limit, and execution prices are in buy-token units per sell token. Amounts use configured token decimals where available. Historical orders with unknown token metadata show raw base units instead of estimated token amounts. Execution fees also show raw base units because the order API does not supply the fee token.
 
-New orders use a small approved sell list and one fixed buy token per chain:
+New orders use an explicit approved sell list and one fixed buy token per chain:
 
-| Chain             | Sell tokens     | Buy token   |
-| ----------------- | --------------- | ----------- |
-| Ethereum          | WETH, LINK, UNI | Native USDC |
-| Gnosis            | GNO             | USDT        |
-| Arbitrum          | WETH            | Native USDC |
-| Base              | VIRTUAL         | Native USDC |
-| Polygon           | WPOL            | Native USDC |
-| Avalanche         | WAVAX           | Native USDC |
-| BNB Chain         | WBNB            | USDT        |
-| Linea             | WETH            | Native USDC |
-| Plasma            | WXPL            | Native USDC |
-| Sepolia (testnet) | WETH            | USDC (test) |
+| Chain             | Sell tokens                                                                   | Buy token   |
+| ----------------- | ----------------------------------------------------------------------------- | ----------- |
+| Ethereum          | AAVE, cbBTC, COMP, CRV, ENS, LINK, SKY, UNI, WETH, WLFI                       | Native USDC |
+| Gnosis            | AAVE, COMP, CRV, GNO, GRT, LINK, SNX, SUSHI, UNI, WETH                        | USDT        |
+| Arbitrum          | AAVE, ARB, COMP, ENA, GMX, GNS, LINK, PENDLE, UNI, WBTC, WETH                 | Native USDC |
+| Base              | AAVE, AERO, AVNT, cbBTC, cbDOGE, COMP, LINK, VIRTUAL, WETH                    | Native USDC |
+| Polygon           | AAVE, COMP, CRV, GHST, LINK, SUSHI, UNI, WETH, WPOL                           | Native USDC |
+| Avalanche         | AAVE.e, COMP.e, GMX, JOE, LINK.e, QI, UNI.e, WAVAX, WBTC, WETH.e, XAVA        | Native USDC |
+| BNB Chain         | AAVE, ADA, ASTER, C98, Cake, ETH, LINK, LISTA, SOL, UNI, WBNB, WLFI, XRP, XVS | USDT        |
+| Linea             | AAVE, COMP, LINEA, LINK, WETH, wstETH                                         | Native USDC |
+| Plasma            | ENA, LINK, weETH, WETH, WXPL                                                  | Native USDC |
+| Sepolia (testnet) | WETH                                                                          | USDC (test) |
 
 Production feeds quote prices in USD. Sepolia keeps its two fixed test feeds. Tokens and feeds change with a reviewed app release. Historical token metadata does not make a token eligible for new orders. Arbitrary token imports, manual feed overrides, and exact-buy orders are not supported. See the [token catalog](https://github.com/bleu/cow-stop-loss/blob/main/docs/token-catalog.md) for the approved routes and accepted oracle limits.
 

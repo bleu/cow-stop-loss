@@ -5,11 +5,7 @@ import type { ChainId } from "./publicClients";
 import data from "./tokenCatalogData.json";
 
 export type AssetClass =
-  | "volatile"
-  | "usd-pegged"
-  | "usd-linked"
-  | "other-stable"
-  | "unknown";
+  "volatile" | "usd-pegged" | "usd-linked" | "other-stable" | "unknown";
 
 export interface OracleApproval {
   maxAgeSeconds: number;
@@ -112,8 +108,7 @@ export function parseOracleApprovals(value: unknown): {
       (approval.assetRelationship !== "exact-asset" &&
         approval.assetRelationship !== "native-wrapper" &&
         approval.assetRelationship !== "bridged-underlying") ||
-      ((approval.assetRelationship === "bridged-underlying" ||
-        "representationSuitability" in approval) &&
+      ("representationSuitability" in approval &&
         (approval.assetRelationship !== "bridged-underlying" ||
           !reviewedDecision(
             approval.representationSuitability,

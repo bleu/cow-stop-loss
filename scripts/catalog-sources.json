@@ -291,5 +291,65 @@
         "paths": ["link-usd", "eth-usd", "weeth-usd"]
       }
     }
+  },
+  "categoryExpansionReview": {
+    "reviewDate": "2026-11-17",
+    "scope": "32 proposed exact USD sell mappings under the Low, Medium, High, Very High and New category policy and 1:1 bridge-unit assumption. Complete directory digests cover more rows than the retained primary rows. Existing source rows and approvals are unchanged; retained candidates require separate exact approval and successful live observations. New staking-share routes remain deferred.",
+    "sources": {
+      "1": {
+        "url": "https://reference-data-directory.vercel.app/feeds-mainnet.json",
+        "retrievedAt": "2026-11-17T18:07:00+00:00",
+        "sha256": "451932aa500acbbd5af87ea42c7877b0891d5f87bcb98c81910d0e11e1ec8bcd",
+        "paths": ["crv-usd", "ens-usd", "sky-usd", "wlfi-usd"]
+      },
+      "100": {
+        "url": "https://reference-data-directory.vercel.app/feeds-xdai-mainnet.json",
+        "retrievedAt": "2026-11-17T18:07:00+00:00",
+        "sha256": "12627f33c7713e42664633350d97532f9eac5326957f2c9c89cb3efb19cb2f21",
+        "paths": ["crv-usd", "sushi-usd", "grt-usd", "snx-usd"]
+      },
+      "42161": {
+        "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-arbitrum-1.json",
+        "retrievedAt": "2026-11-17T18:07:00+00:00",
+        "sha256": "3f9a4f5b1e3afcef85948f9d89b36d2925d91d5eb791f43474634899d03db4b4",
+        "paths": ["ena-usd", "pendle-usd", "gmx-usd", "gns-usd"]
+      },
+      "8453": {
+        "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-base-1.json",
+        "retrievedAt": "2026-11-17T18:07:00+00:00",
+        "sha256": "9e336b6acc20681db1f7f7a461e5be8968d7415eb6793c325d0b8f2cd4e72b12",
+        "paths": ["aero-usd", "cbbtc-usd", "avnt-usd", "cbdoge-usd"]
+      },
+      "137": {
+        "url": "https://reference-data-directory.vercel.app/feeds-matic-mainnet.json",
+        "retrievedAt": "2026-11-17T18:07:00+00:00",
+        "sha256": "d62a5a400ea400240ab4715eaaac39d38d16ac542acc0bd284a06f9fbc4e5845",
+        "paths": ["comp-usd", "crv-usd", "sushi-usd", "ghst-usd"]
+      },
+      "43114": {
+        "url": "https://reference-data-directory.vercel.app/feeds-avalanche-mainnet.json",
+        "retrievedAt": "2026-11-17T18:07:00+00:00",
+        "sha256": "df8b4348e7a8743aca7e915418ee93a41b7536da73036bbd8de58383b2ad20ff",
+        "paths": ["wbtc-usd", "qi-usd", "xava-usd"]
+      },
+      "56": {
+        "url": "https://reference-data-directory.vercel.app/feeds-bsc-mainnet.json",
+        "retrievedAt": "2026-11-17T18:07:00+00:00",
+        "sha256": "16c07b7a09faeb69d8c6c5349368b7f9f0c73225bd0753e780668df869d11684",
+        "paths": ["ada-usd", "sol-usd", "xrp-usd", "aster-usd", "wlfi-usd"]
+      },
+      "59144": {
+        "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-linea-1.json",
+        "retrievedAt": "2026-11-17T18:07:00+00:00",
+        "sha256": "a929158d5c9f7913b83342a5b19060256be5f55ee09ed76379ad861aa9252e1a",
+        "paths": ["linea-usd", "aave-usd", "comp-usd"]
+      },
+      "9745": {
+        "url": "https://reference-data-directory.vercel.app/feeds-plasma-mainnet.json",
+        "retrievedAt": "2026-11-17T18:07:00+00:00",
+        "sha256": "65ed189c772ef3a42d1ebb169906e0ef6952e0c87dd801f786e04cb902ca8a26",
+        "paths": ["ena-usd"]
+      }
+    }
   }
 }

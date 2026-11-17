@@ -2,6 +2,36 @@
   "schemaVersion": 1,
   "tokens": [
     {
+      "chainId": 59144,
+      "address": "0xcb598507a524b02d61f8c89ae47cc6076407998b",
+      "metadata": {
+        "symbol": "AAVE",
+        "name": "Aave Token",
+        "decimals": 18
+      },
+      "reason": "Absent from the pinned metadata lists. Verified the official Linea TokenBridge forward and reverse mapping and live contract symbol and decimals via https://rpc.linea.build; bridge reference: https://docs.linea.build/reference/smart-contracts/tokenbridge."
+    },
+    {
+      "chainId": 59144,
+      "address": "0x0ece76334fb560f2b1a49a60e38cf726b02203f0",
+      "metadata": {
+        "symbol": "COMP",
+        "name": "Compound",
+        "decimals": 18
+      },
+      "reason": "Absent from the pinned metadata lists. Metadata source: official Linea token list at https://raw.githubusercontent.com/Consensys-Incorporated/linea-token-list/ffa400e46af4577d2db31d913e9ab3197785f145/json/linea-mainnet-token-shortlist.json."
+    },
+    {
+      "chainId": 9745,
+      "address": "0x58538e6a46e07434d7e7375bc268d3cb839c0133",
+      "metadata": {
+        "symbol": "ENA",
+        "name": "Ethena",
+        "decimals": 18
+      },
+      "reason": "Absent from the pinned metadata lists. Metadata source: official Plasma token list at https://raw.githubusercontent.com/PlasmaLaboratories/plasma-tokenlist/5920b4bdb56d87d3afd4a1187cffcef8d1c2f45a/plasma.tokenlist.json, with live contract metadata verified via https://rpc.plasma.to."
+    },
+    {
       "chainId": 1,
       "address": "0x0d8775f648430679a709e98d2b0cb6250d2887ef",
       "metadata": {

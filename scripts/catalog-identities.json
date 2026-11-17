@@ -1,6 +1,34 @@
 {
   "tokens": [
     {
+      "chainId": 59144,
+      "address": "0xcb598507a524b02d61f8c89ae47cc6076407998b",
+      "assetClass": "volatile",
+      "localLogo": "/assets/tokens/5b1b8adc120ffdfbd91e.svg",
+      "logoIdentity": "Linea AAVE representation; reuse Ethereum AAVE artwork",
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/aave.svg",
+      "logoSha256": "5b1b8adc120ffdfbd91e9c774299c615910fdea1c90015fc649755f4c5267546"
+    },
+    {
+      "chainId": 59144,
+      "address": "0x0ece76334fb560f2b1a49a60e38cf726b02203f0",
+      "assetClass": "volatile",
+      "localLogo": "/assets/tokens/0f1a61d5a7a2dfb668ed.png",
+      "logoIdentity": "Linea COMP representation; reuse Ethereum COMP artwork",
+      "logoSource": "https://assets.coingecko.com/coins/images/10775/thumb/COMP.png?1696510737",
+      "logoSha256": "0f1a61d5a7a2dfb668edd9a1c116164f3d958bd39e57a8c302c3a6cbda99ef17"
+    },
+    {
+      "chainId": 9745,
+      "address": "0x58538e6a46e07434d7e7375bc268d3cb839c0133",
+      "assetClass": "volatile",
+      "classificationReason": "Protocol governance or utility token; separate from the protocol's dollar stablecoin.",
+      "localLogo": "/assets/tokens/99b4be1dea09e0dbfa33.png",
+      "logoIdentity": "Plasma ENA representation; reuse Arbitrum ENA artwork",
+      "logoSource": "https://assets.coingecko.com/coins/images/36530/thumb/ethena.png?1711701436",
+      "logoSha256": "99b4be1dea09e0dbfa337779ffcadc3d0e1b95485e2ecb5ef83852699ebf510c"
+    },
+    {
       "chainId": 1,
       "address": "0x111111111117dc0aa78b770fa6a738034120c302",
       "assetClass": "volatile",

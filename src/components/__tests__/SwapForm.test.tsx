@@ -760,8 +760,18 @@ it.each(["account", "chain"] as const)(
       </SWRConfig>,
     );
     await user.click(screen.getByRole("button", { name: "Order settings" }));
+    expect(screen.getByRole("spinbutton")).toHaveValue(24);
+    expect(useAdvancedSettingsStore.getState().oracleAgeMode).toBe("automatic");
+    await user.click(screen.getByRole("button", { name: "Return to order" }));
+    await user.click(screen.getByRole("button", { name: "Select token" }));
+    await user.click(
+      screen.getByRole("option", {
+        name: scope === "account" ? /^Token Logo WPOL\b/ : /^Token Logo WETH\b/,
+      }),
+    );
+    await user.click(screen.getByRole("button", { name: "Order settings" }));
     expect(screen.getByRole("spinbutton")).toHaveValue(
-      (scope === "account" ? 100 : 86400) / 3600,
+      (scope === "account" ? 100 : 2692) / 3600,
     );
     expect(useAdvancedSettingsStore.getState().oracleAgeMode).toBe("automatic");
   },

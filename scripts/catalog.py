@@ -68,8 +68,8 @@ def excluded_reason(feed, *, bounded_price_approved=False):
         return "bounded-price-methodology-not-approved"
     if feed.get("status") not in {None, "active"}:
         return "inactive-feed"
-    if feed.get("feedCategory") not in {"low", "medium"}:
-        return "not-low-or-medium-risk-category"
+    if feed.get("feedCategory") not in {"low", "medium", "high", "veryhigh", "new"}:
+        return "unsupported-risk-category"
     if docs.get("productType") != "Price":
         return "not-price-data"
     if docs.get("quoteAsset") not in {"ETH", "USD"}:
@@ -163,7 +163,7 @@ def approved_feeds(identities, inventories, policy, verification):
             require(nonempty(entry.get(field)), f"Missing {field}")
         relationship = entry.get("assetRelationship")
         require(relationship in {"exact-asset", "native-wrapper", "bridged-underlying"}, "Unsupported assetRelationship: unreviewed underlying substitutions are not allowed")
-        if relationship == "bridged-underlying" or "representationSuitability" in entry:
+        if "representationSuitability" in entry:
             suitability = entry.get("representationSuitability")
             require(relationship == "bridged-underlying" and isinstance(suitability, dict) and suitability.get("decision") == "accepted-underlying-feed", "Invalid representationSuitability decision")
             require(suitability.get("bridgeRisk") == "not-priced-by-feed", "representationSuitability must acknowledge bridge risk is not priced by feed")
