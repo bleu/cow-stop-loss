@@ -84,6 +84,26 @@ it("shows wallet balances in USD-value order and selects a token", async () => {
   );
 });
 
+it("shows the contract address when sell tokens share a symbol", async () => {
+  wallet = { chainId: 137 };
+  const user = userEvent.setup();
+  const onSelectToken = jest.fn();
+  const { rerender } = render(<TokenSelect onSelectToken={onSelectToken} />);
+  await user.click(screen.getByRole("button", { name: "Select token" }));
+
+  const bridge = screen.getByRole("option", { name: /WETH 0x11cd.*6872/ });
+  expect(
+    screen.getByRole("option", { name: /WETH 0x7ceb.*f619/ }),
+  ).toBeVisible();
+  await user.click(bridge);
+  const token = onSelectToken.mock.calls[0][0];
+  expect(token.address).toBe("0x11cd37bb86f65419713f30673a480ea33c826872");
+  rerender(<TokenSelect onSelectToken={onSelectToken} selectedToken={token} />);
+  expect(
+    screen.getByRole("button", { name: /WETH 0x11cd.*6872/ }),
+  ).toBeVisible();
+});
+
 it("caps balance decimals and keeps tiny balances distinct from zero", async () => {
   const user = userEvent.setup();
   const { rpc, weth, link } = renderSelector();
@@ -106,10 +126,9 @@ it("caps balance decimals and keeps tiny balances distinct from zero", async () 
 
 it("lets the user retry failed balance reads without hiding supported tokens", async () => {
   const user = userEvent.setup();
-  const { rpc } = renderSelector();
-  jest
-    .mocked(publicClientsFromIds[1].getBlock)
-    .mockRejectedValueOnce(new Error("RPC unavailable"));
+  renderSelector();
+  const getBlock = jest.mocked(publicClientsFromIds[1].getBlock);
+  getBlock.mockRejectedValueOnce(new Error("RPC unavailable"));
   await user.click(screen.getByRole("button", { name: "Select token" }));
   await screen.findByText("Balances unavailable");
   expect(screen.getAllByRole("option")).toHaveLength(
@@ -117,9 +136,7 @@ it("lets the user retry failed balance reads without hiding supported tokens", a
   );
   await user.click(screen.getByRole("button", { name: "Retry" }));
   await screen.findByText("$2,634.1");
-  expect(rpc.calls.filter(({ method }) => method === "eth_call")).toHaveLength(
-    1,
-  );
+  expect(getBlock).toHaveBeenCalledTimes(2);
 });
 
 it("shares list balances and prices with the amount cards and keeps Max exact", async () => {
@@ -158,11 +175,10 @@ it("shares list balances and prices with the amount cards and keeps Max exact", 
     "185.500000000000000001",
   );
   await screen.findByText(/2,634.1/);
+  const reads = rpc.calls.slice();
   await user.click(screen.getByRole("button", { name: /LINK/ }));
   await screen.findByRole("option", { name: /LINK/ });
-  expect(rpc.calls.filter(({ method }) => method === "eth_call")).toHaveLength(
-    1,
-  );
+  expect(rpc.calls).toEqual(reads);
   expect(read).not.toHaveBeenCalled();
 });
 
@@ -420,14 +436,13 @@ it("keeps the value order while searching and reuses cached reads after reopenin
   const { rpc } = renderSelector();
   await user.click(screen.getByRole("button", { name: "Select token" }));
   await screen.findByText("$2,634.1");
+  const reads = rpc.calls.slice();
   await user.type(screen.getByPlaceholderText("Search supported tokens"), "0x");
   expect(screen.getAllByRole("option")[0]).toHaveTextContent("LINK");
   await user.keyboard("{Escape}");
   await user.click(screen.getByRole("button", { name: "Select token" }));
   await screen.findByText("$2,634.1");
-  expect(rpc.calls.filter(({ method }) => method === "eth_call")).toHaveLength(
-    1,
-  );
+  expect(rpc.calls).toEqual(reads);
 });
 
 it("removes old balances when a refresh fails", async () => {

@@ -1578,6 +1578,318 @@
         "decimals": 18
       },
       "reason": "Retain known token metadata absent from the pinned external lists."
+    },
+    {
+      "chainId": 56,
+      "address": "0x3524fd7488fdb1f4723bbc22c9cbd1bf89f46e3b",
+      "metadata": {
+        "name": "SushiToken (Wormhole)",
+        "symbol": "SUSHI",
+        "decimals": 18
+      },
+      "reason": "Absent from pinned BNB lists. https://raw.githubusercontent.com/wormhole-foundation/wormhole-token-list/main/content/dest_bsc.md supplies the exact bridge address and decimals; https://bscscan.com/token/0x3524fd7488fdb1f4723bbc22c9cbd1bf89f46e3b indexes the contract symbol SUSHI. Use the metadata for this Portal representation only."
+    },
+    {
+      "chainId": 56,
+      "address": "0x4db5a66e937a9f4473fa95b1caf1d1e1d62e29ea",
+      "metadata": {
+        "symbol": "WETH"
+      },
+      "expected": {
+        "symbol": "ETH"
+      },
+      "reason": "The read-only BNB Chain check at 0x4db5a66e937a9f4473fa95b1caf1d1e1d62e29ea returned ERC-20 symbol WETH and 18 decimals; the pinned list uses ETH as the display alias. https://raw.githubusercontent.com/wormhole-foundation/wormhole-token-list/main/content/dest_bsc.md maps the exact BNB contract to Ethereum WETH. The ETH / USD oracle description is unchanged."
+    },
+    {
+      "chainId": 56,
+      "address": "0x556b60c53fbc1518ad17e03d52e47368dd4d81b3",
+      "metadata": {
+        "name": "Axie Infinity Shard (Wormhole)",
+        "symbol": "AXS",
+        "decimals": 18
+      },
+      "reason": "Absent from pinned BNB lists. https://raw.githubusercontent.com/wormhole-foundation/wormhole-token-list/main/content/dest_bsc.md supplies the exact bridge address and decimals; https://bscscan.com/token/0x556b60c53fbc1518ad17e03d52e47368dd4d81b3 indexes the contract symbol AXS. Use the metadata for this Portal representation only."
+    },
+    {
+      "chainId": 56,
+      "address": "0x96412902aa9aff61e13f085e70d3152c6ef2a817",
+      "metadata": {
+        "name": "Wrapped AVAX (Wormhole)",
+        "symbol": "WAVAX",
+        "decimals": 18
+      },
+      "reason": "Absent from pinned BNB lists. https://raw.githubusercontent.com/wormhole-foundation/wormhole-token-list/main/content/dest_bsc.md supplies the exact bridge address and decimals; https://bscscan.com/token/0x96412902aa9aff61e13f085e70d3152c6ef2a817 indexes the contract symbol WAVAX. Use the metadata for this Portal representation only."
+    },
+    {
+      "chainId": 56,
+      "address": "0x9996d0276612d23b35f90c51ee935520b3d7355b",
+      "metadata": {
+        "name": "Curve DAO Token",
+        "symbol": "CRV",
+        "decimals": 18
+      },
+      "reason": "Absent from pinned BNB lists. https://docs.curve.finance/developer/deployments/dao identifies the exact BNB deployment and https://api.curve.finance/v1/getPools/bsc/factory-stable-ng identifies it as CRV with 18 decimals."
+    },
+    {
+      "chainId": 56,
+      "address": "0xb1547683da678f2e1f003a780143ec10af8a832b",
+      "metadata": {
+        "name": "SHIBA INU (Wormhole)",
+        "symbol": "SHIB",
+        "decimals": 18
+      },
+      "reason": "Absent from pinned BNB lists. https://raw.githubusercontent.com/wormhole-foundation/wormhole-token-list/main/content/dest_bsc.md supplies the exact bridge address and decimals; https://bscscan.com/token/0xb1547683da678f2e1f003a780143ec10af8a832b indexes the contract symbol SHIB. Use the metadata for this Portal representation only."
+    },
+    {
+      "chainId": 56,
+      "address": "0xc836d8dc361e44dbe64c4862d55ba041f88ddd39",
+      "metadata": {
+        "name": "Wrapped Matic (Wormhole)",
+        "symbol": "WMATIC",
+        "decimals": 18
+      },
+      "reason": "Absent from pinned BNB lists. https://raw.githubusercontent.com/wormhole-foundation/wormhole-token-list/main/content/dest_bsc.md supplies the exact bridge address and decimals; https://bscscan.com/token/0xc836d8dc361e44dbe64c4862d55ba041f88ddd39 indexes the contract symbol WMATIC. Use the metadata for this Portal representation only."
+    },
+    {
+      "chainId": 137,
+      "address": "0x11cd37bb86f65419713f30673a480ea33c826872",
+      "metadata": {
+        "symbol": "WETH"
+      },
+      "expected": {
+        "symbol": "ETH"
+      },
+      "reason": "The read-only Polygon check returned the ERC-20 symbol WETH; the pinned list uses ETH. https://github.com/wormhole-foundation/wormhole-token-list/blob/main/content/dest_polygon.md identifies the exact contract. This correction does not change the oracle mapping."
+    },
+    {
+      "chainId": 137,
+      "address": "0x1280830f690d0e65195b3c61b028244c3a49f26d",
+      "metadata": {
+        "symbol": "axlETH"
+      },
+      "expected": {
+        "symbol": "AXLETH"
+      },
+      "reason": "The read-only Polygon check returned the ERC-20 symbol axlETH; the pinned list uses AXLETH. https://api.axelarscan.io/api?method=getAssets identifies the exact contract. This correction does not change the oracle mapping."
+    },
+    {
+      "chainId": 137,
+      "address": "0x7bb11e7f8b10e9e571e5d8eace04735fdfb2358a",
+      "metadata": {
+        "symbol": "WAVAX"
+      },
+      "expected": {
+        "symbol": "AVAX"
+      },
+      "reason": "The read-only Polygon check returned the ERC-20 symbol WAVAX; the pinned list uses AVAX. https://github.com/wormhole-foundation/wormhole-token-list/blob/main/content/dest_polygon.md identifies the exact contract. This correction does not change the oracle mapping."
+    },
+    {
+      "chainId": 137,
+      "address": "0xd93f7e271cb87c23aaa73edc008a79646d1f9912",
+      "metadata": {
+        "symbol": "SOL"
+      },
+      "expected": {
+        "symbol": "WSOL"
+      },
+      "reason": "The read-only Polygon check returned the ERC-20 symbol SOL; the pinned list uses WSOL. https://github.com/wormhole-foundation/wormhole-token-list/blob/main/content/dest_polygon.md identifies the exact contract. This correction does not change the oracle mapping."
+    },
+    {
+      "chainId": 8453,
+      "address": "0x1a35ee4640b0a3b87705b0a4b45d227ba60ca2ad",
+      "metadata": {
+        "symbol": "axlWBTC",
+        "name": "Axelar Wrapped Bitcoin",
+        "decimals": 8
+      },
+      "reason": "Exact chain 8453 contract is absent from the pinned CoW, CoinGecko and Uniswap lists. https://api.axelarscan.io/api?method=getAssets identifies the Base deployment; https://basescan.org/token/0x1a35ee4640b0a3b87705b0a4b45d227ba60ca2ad corroborates the named token and decimals. A live contract check is still required."
+    },
+    {
+      "chainId": 8453,
+      "address": "0x994ac01750047b9d35431a7ae4ed312ee955e030",
+      "metadata": {
+        "symbol": "axlOP",
+        "name": "Axelar Wrapped OP",
+        "decimals": 18
+      },
+      "reason": "Exact chain 8453 contract is absent from the pinned CoW, CoinGecko and Uniswap lists. https://api.axelarscan.io/api?method=getAssets identifies the Base deployment; https://basescan.org/token/0x994ac01750047b9d35431a7ae4ed312ee955e030 corroborates the named token and decimals. A live contract check is still required."
+    },
+    {
+      "chainId": 8453,
+      "address": "0xb2000000000000000000008501b13360000cb2ec",
+      "metadata": {
+        "symbol": "cbZEC"
+      },
+      "expected": {
+        "symbol": "CBZEC"
+      },
+      "reason": "The effective pinned CoinGecko metadata is missing the case-sensitive contract symbol. The coordinator observed cbZEC in candidate RPC verification for this exact Base address; https://www.coinbase.com/campaigns/wrapped-assets identifies the exact issuer token."
+    },
+    {
+      "chainId": 8453,
+      "address": "0xcb17c9db87b595717c857a08468793f5bab6445f",
+      "metadata": {
+        "symbol": "cbLTC"
+      },
+      "expected": {
+        "symbol": "CBLTC"
+      },
+      "reason": "The effective pinned CoinGecko metadata is missing the case-sensitive contract symbol. The coordinator observed cbLTC in candidate RPC verification for this exact Base address; https://www.coinbase.com/campaigns/wrapped-assets identifies the exact issuer token."
+    },
+    {
+      "chainId": 8453,
+      "address": "0xcbada732173e39521cdbe8bf59a6dc85a9fc7b8c",
+      "metadata": {
+        "symbol": "cbADA"
+      },
+      "expected": {
+        "symbol": "CBADA"
+      },
+      "reason": "The effective pinned CoinGecko metadata is missing the case-sensitive contract symbol. The coordinator observed cbADA in candidate RPC verification for this exact Base address; https://www.coinbase.com/campaigns/wrapped-assets identifies the exact issuer token."
+    },
+    {
+      "chainId": 43114,
+      "address": "0x152b9d0fdc40c096757f570a51e494bd4b943e50",
+      "metadata": {
+        "symbol": "BTC.b"
+      },
+      "reason": "https://api.routescan.io/v2/network/mainnet/evm/43114/etherscan/api?module=token&action=tokeninfo&contractaddress=0x152b9d0fdc40c096757f570a51e494bd4b943e50: Avalanche explorer indexes the exact contract as BTC.b; the pinned list capitalizes the suffix. The issuer uses BTC.b.",
+      "expected": {
+        "symbol": "BTC.B"
+      }
+    },
+    {
+      "chainId": 43114,
+      "address": "0x50b7545627a5162f82a992c33b87adc75187b218",
+      "metadata": {
+        "symbol": "WBTC.e"
+      },
+      "reason": "https://api.routescan.io/v2/network/mainnet/evm/43114/etherscan/api?module=token&action=tokeninfo&contractaddress=0x50b7545627a5162f82a992c33b87adc75187b218: the Avalanche explorer indexes the contract symbol as WBTC.e. The Ava Labs mapping confirms that suffix; pinned display data uses WBTC.E.",
+      "expected": {
+        "symbol": "WBTC.E"
+      }
+    },
+    {
+      "chainId": 43114,
+      "address": "0x8b82a291f83ca07af22120aba21632088fc92931",
+      "metadata": {
+        "symbol": "WETH"
+      },
+      "reason": "https://api.routescan.io/v2/network/mainnet/evm/43114/etherscan/api?module=token&action=tokeninfo&contractaddress=0x8b82a291f83ca07af22120aba21632088fc92931: Avalanche explorer indexes exact contract symbol WETH; pinned symbol is a display alias.",
+      "expected": {
+        "symbol": "ETH"
+      }
+    },
+    {
+      "chainId": 43114,
+      "address": "0x901ee57f7118a7be56ac079cbcda7f22663a3874",
+      "metadata": {
+        "name": "GMX Liquidity Vault [WAVAX-USDC]",
+        "symbol": "GLV [WAVAX-USDC]",
+        "decimals": 18
+      },
+      "reason": "Absent from pinned lists. https://raw.githubusercontent.com/gmx-io/gmx-synthetics/main/config/glvs.ts gives the exact name and symbol, and https://api.routescan.io/v2/network/mainnet/evm/43114/etherscan/api?module=token&action=tokeninfo&contractaddress=0x901ee57f7118a7be56ac079cbcda7f22663a3874 indexes matching metadata including 18 decimals."
+    },
+    {
+      "chainId": 43114,
+      "address": "0xf2f13f0b7008ab2fa4a2418f4ccc3684e49d20eb",
+      "metadata": {
+        "symbol": "WMATIC"
+      },
+      "reason": "https://api.routescan.io/v2/network/mainnet/evm/43114/etherscan/api?module=token&action=tokeninfo&contractaddress=0xf2f13f0b7008ab2fa4a2418f4ccc3684e49d20eb: Avalanche explorer indexes exact contract symbol WMATIC; pinned symbol is a display alias.",
+      "expected": {
+        "symbol": "MATICPO"
+      }
+    },
+    {
+      "chainId": 1,
+      "address": "0x418d75f65a02b3d53b2418fb8e1fe493759c7605",
+      "metadata": {
+        "symbol": "WBNB",
+        "name": "Wrapped BNB (Wormhole)",
+        "decimals": 18
+      },
+      "reason": "https://raw.githubusercontent.com/wormhole-foundation/wormhole-sdk-ts/main/tokenRegistry/src/tokens/MainnetTokens.json: the official Wormhole registry maps BNB Chain 0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c to this exact Ethereum contract, with 18 decimals. https://etherscan.io/token/0x418d75f65a02b3d53b2418fb8e1fe493759c7605: token record for the exact contract."
+    },
+    {
+      "chainId": 1,
+      "address": "0x85f138bfee4ef8e540890cfb48f620571d67eda3",
+      "metadata": {
+        "symbol": "WAVAX",
+        "name": "Wrapped AVAX (Wormhole)",
+        "decimals": 18
+      },
+      "reason": "https://raw.githubusercontent.com/wormhole-foundation/wormhole-sdk-ts/main/tokenRegistry/src/tokens/MainnetTokens.json: the official Wormhole registry maps Avalanche 0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7 to this exact Ethereum contract, with 18 decimals. https://etherscan.io/token/0x85f138bfee4ef8e540890cfb48f620571d67eda3: token record for the exact contract."
+    },
+    {
+      "chainId": 1,
+      "address": "0xd31a59c85ae9d8edefec411d448f90841571b89c",
+      "metadata": {
+        "symbol": "SOL",
+        "name": "Wrapped SOL (Wormhole)",
+        "decimals": 9
+      },
+      "reason": "https://raw.githubusercontent.com/wormhole-foundation/wormhole-sdk-ts/main/tokenRegistry/src/tokens/MainnetTokens.json: the official Wormhole registry maps Solana So11111111111111111111111111111111111111112 to this exact Ethereum contract, with 9 decimals. https://etherscan.io/token/0xd31a59c85ae9d8edefec411d448f90841571b89c: token record for the exact contract. https://raw.githubusercontent.com/wormhole-foundation/wormhole-token-list/main/content/source_solana.md: the Ethereum Portal list labels this exact contract SOL (9 decimals); the SDK registry uses WSOL as its identifier."
+    },
+    {
+      "chainId": 42161,
+      "address": "0x4edef400ede5309240814b5fc403f224504604e9",
+      "metadata": {
+        "symbol": "APT",
+        "name": "Aptos Coin (Wormhole)",
+        "decimals": 8
+      },
+      "reason": "https://raw.githubusercontent.com/wormhole-foundation/wormhole-sdk-ts/main/tokenRegistry/src/tokens/MainnetTokens.json: the official Wormhole registry maps Aptos 0x1::aptos_coin::AptosCoin to this exact Arbitrum contract, with 8 decimals. https://arbiscan.io/token/0x4edef400ede5309240814b5fc403f224504604e9: token record for the exact contract."
+    },
+    {
+      "chainId": 42161,
+      "address": "0x565609faf65b92f7be02468acf86f8979423e514",
+      "metadata": {
+        "symbol": "WAVAX",
+        "name": "Wrapped AVAX (Wormhole)",
+        "decimals": 18
+      },
+      "reason": "https://raw.githubusercontent.com/wormhole-foundation/wormhole-sdk-ts/main/tokenRegistry/src/tokens/MainnetTokens.json: the official Wormhole registry maps Avalanche 0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7 to this exact Arbitrum contract, with 18 decimals. https://arbiscan.io/token/0x565609faf65b92f7be02468acf86f8979423e514: token record for the exact contract."
+    },
+    {
+      "chainId": 42161,
+      "address": "0x7af00405916d823edb1121546efa6f4972b51b84",
+      "metadata": {
+        "symbol": "WBNB",
+        "name": "Wrapped BNB (Wormhole)",
+        "decimals": 18
+      },
+      "reason": "https://raw.githubusercontent.com/wormhole-foundation/wormhole-sdk-ts/main/tokenRegistry/src/tokens/MainnetTokens.json: the official Wormhole registry maps BNB Chain 0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c to this exact Arbitrum contract, with 18 decimals. https://arbiscan.io/token/0x7af00405916d823edb1121546efa6f4972b51b84: token record for the exact contract."
+    },
+    {
+      "chainId": 42161,
+      "address": "0xcf79d86b8a830030af6d835737d6eac3be823fd7",
+      "metadata": {
+        "symbol": "SUI",
+        "name": "SUI (Wormhole)",
+        "decimals": 9
+      },
+      "reason": "https://raw.githubusercontent.com/wormhole-foundation/wormhole-sdk-ts/main/tokenRegistry/src/tokens/MainnetTokens.json: the official Wormhole registry maps Sui 0x2::sui::SUI to this exact Arbitrum contract, with 9 decimals. https://arbiscan.io/token/0xcf79d86b8a830030af6d835737d6eac3be823fd7: token record for the exact contract."
+    },
+    {
+      "chainId": 42161,
+      "address": "0x06bee9e7238a331b68d83df3b5b9b16d5dba83ff",
+      "metadata": {
+        "symbol": "axlATOM",
+        "name": "Axelar Wrapped ATOM",
+        "decimals": 6
+      },
+      "reason": "https://api.axelarscan.io/api/getAssets: the bridge asset record uatom maps this exact Arbitrum contract to ATOM. https://arbiscan.io/token/0x06bee9e7238a331b68d83df3b5b9b16d5dba83ff: deployed token reports symbol axlATOM."
+    },
+    {
+      "chainId": 42161,
+      "address": "0x41b94c5867f7f6217c9a30520cb3e793b1ee1b97",
+      "metadata": {
+        "symbol": "axlTIA",
+        "name": "Axelar Wrapped TIA",
+        "decimals": 6
+      },
+      "reason": "https://api.axelarscan.io/api/getAssets: the bridge asset record utia maps this exact Arbitrum contract to TIA. https://arbiscan.io/token/0x41b94c5867f7f6217c9a30520cb3e793b1ee1b97: deployed token reports symbol axlTIA."
     }
   ]
 }

@@ -7,7 +7,17 @@ import {
   walletTokenRpc,
 } from "#/test/walletTokenRpc";
 
-it("loads exact token balances and USD values in one pinned multicall", async () => {
+function expectPinnedReads(rpc: ReturnType<typeof walletTokenRpc>) {
+  const [blockRead, ...batches] = rpc.calls;
+  expect(blockRead?.method).toBe("eth_getBlockByNumber");
+  expect(batches.length).toBeGreaterThan(0);
+  for (const batch of batches) {
+    expect(batch.method).toBe("eth_call");
+    expect(batch.params[1]).toBe("0x1312d00");
+  }
+}
+
+it("loads exact token balances and USD values at a pinned block", async () => {
   const rpc = walletTokenRpc();
   const { sellTokens } = getSupportedTokens(1);
   const weth = sellTokens.find(({ token }) => token.symbol === "WETH")!;
@@ -35,11 +45,7 @@ it("loads exact token balances and USD values in one pinned multicall", async ()
   expect(
     snapshot.tokens.find(({ token }) => token.symbol === "cbBTC")?.usdValue,
   ).toBeCloseTo(3403.4);
-  expect(rpc.calls.map(({ method }) => method)).toEqual([
-    "eth_getBlockByNumber",
-    "eth_call",
-  ]);
-  expect(rpc.calls[1].params[1]).toBe("0x1312d00");
+  expectPinnedReads(rpc);
 });
 
 it.each(supportedChainIds)(
@@ -64,10 +70,7 @@ it.each(supportedChainIds)(
       ({ address, functionName }) => `${address.toLowerCase()}:${functionName}`,
     );
     expect(new Set(reads).size).toBe(reads.length);
-    expect(rpc.calls.map(({ method }) => method)).toEqual([
-      "eth_getBlockByNumber",
-      "eth_call",
-    ]);
+    expectPinnedReads(rpc);
   },
 );
 

@@ -9,42 +9,20 @@ import pathlib
 import re
 
 from catalog_metadata import load_identities, load_metadata
+from catalog_observations import (
+    ADDRESS, MAX_ORACLE_DECIMALS, approval_key, checked_at, integer, no_check_errors,
+    nonempty, require, source_rows, validate_leg, validate_observations,
+)
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-ADDRESS = re.compile(r"0x[0-9a-fA-F]{40}")
 PRODUCTION_CHAINS = {1, 100, 42161, 8453, 137, 43114, 56, 59144, 9745}
 TEST_CHAINS = {11155111}
 ASSET_CLASSES = {"volatile", "usd-pegged", "usd-linked", "other-stable", "unknown"}
 EVIDENCE_FIELDS = ("identityEvidence", "representationEvidence", "methodologyEvidence", "sourceEvidence")
-# The handler can truncate prices with more than 18 decimals to zero.
-MAX_ORACLE_DECIMALS = 18
 
 
 def read(name):
     return json.loads((ROOT / name).read_text())
-
-
-def require(condition, message):
-    if not condition:
-        raise ValueError(message)
-
-
-def nonempty(value):
-    return isinstance(value, str) and bool(value.strip())
-
-
-def integer(value, minimum, maximum=None):
-    return type(value) is int and value >= minimum and (maximum is None or value <= maximum)
-
-
-def round_number(value):
-    if isinstance(value, str) and value.isascii() and value.isdecimal():
-        return int(value)
-    return value if type(value) is int else 0
-
-
-def no_check_errors(record):
-    return not any(value for key, value in record.items() if key.lower().endswith(("error", "errors", "issues")))
 
 
 def review_date(value):
@@ -81,17 +59,51 @@ def excluded_reason(feed, *, bounded_price_approved=False):
     return None
 
 
-def snapshot_fingerprint(identity, feed, verification):
-    """Bind review to the complete identity, source row and relevant live observations."""
+def _fingerprint(snapshot):
+    encoded = json.dumps(snapshot, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
+    return "sha256:" + hashlib.sha256(encoded).hexdigest()
+
+
+def _batch_routes(verification):
+    batches = verification.get("observationBatches", {})
+    require(isinstance(batches, dict), "Invalid named observationBatches")
+    indexed = collections.defaultdict(dict)
+    for name, batch in batches.items():
+        require(nonempty(name) and no_check_errors(batch, strict=True), "Invalid named verification batch")
+        checked_at(batch.get("checkedAt"))
+        routes = batch.get("routes")
+        require(isinstance(routes, list) and routes, f"Missing routes in verification batch: {name}")
+        for route in routes:
+            require(isinstance(route, dict) and isinstance(route.get("sell"), dict), f"Missing sell leg in verification batch: {name}")
+            key = approval_key(route["sell"].get("approval"))
+            require(name not in indexed[key], f"Duplicate sell in verification batch: {name}")
+            indexed[key][name] = batch["checkedAt"], route
+    return indexed
+
+
+def _named_route(approval, batch_routes):
+    name = approval.get("verificationBatch")
+    require(nonempty(name), "Invalid or missing approval verificationBatch")
+    route = batch_routes.get(approval_key(approval), {}).get(name)
+    require(route is not None, f"Missing exact sell route in verification batch: {name}")
+    return name, *route
+
+
+def _batch_fingerprint(identity, feed, name, checked_at, route):
+    return _fingerprint({"identity": identity, "feed": feed, "verificationBatch": name, "checkedAt": checked_at, "route": route})
+
+
+def snapshot_fingerprint(identity, feed, verification, approval=None):
+    """Bind the review to the exact identity, source row and observations."""
+    if approval is not None and "verificationBatch" in approval:
+        return _batch_fingerprint(identity, feed, *_named_route(approval, _batch_routes(verification)))
     chain = verification.get("chains", {}).get(str(identity["chainId"]), {})
-    snapshot = {
+    return _fingerprint({
         "identity": identity,
         "feed": feed,
         "tokenVerification": chain.get("tokens", {}).get(identity["address"].lower()),
         "feedVerification": chain.get("feeds", {}).get(feed["proxyAddress"].lower()),
-    }
-    encoded = json.dumps(snapshot, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode()
-    return "sha256:" + hashlib.sha256(encoded).hexdigest()
+    })
 
 
 def verification_file(policy):
@@ -122,7 +134,8 @@ def validate_policy(policy):
 def approved_feeds(identities, inventories, policy, verification):
     validate_policy(policy)
     identity_map = {(item["chainId"], item["address"].lower()): item for item in identities["tokens"]}
-    approvals = {}
+    approvals, sources = {}, {}
+    batch_routes = _batch_routes(verification)
     for entry in policy["approvals"]:
         chain = entry.get("chainId")
         address = entry.get("tokenAddress", "")
@@ -139,7 +152,7 @@ def approved_feeds(identities, inventories, policy, verification):
         proxy = entry.get("proxyAddress", "")
         require(isinstance(proxy, str) and ADDRESS.fullmatch(proxy), "Invalid approval proxyAddress")
         require(nonempty(entry.get("path")), "Missing approval path")
-        matches = [feed for feed in inventories.get(str(chain), []) if feed.get("path") == entry["path"] and (feed.get("proxyAddress") or "").lower() == proxy.lower()]
+        matches = source_rows(entry, inventories)
         require(len(matches) == 1, "Approval must match exactly one source path/proxy")
         feed = matches[0]
         if "sourceCategorySuitability" in entry:
@@ -177,27 +190,29 @@ def approved_feeds(identities, inventories, policy, verification):
         require(entry["maxAgeSeconds"] <= (3 * feed["heartbeat"]) // 2 + 60, "maxAgeSeconds exceeds heartbeat safety cap")
         require(nonempty(entry.get("expectedDescription")), "Missing expectedDescription")
         require(integer(entry.get("expectedDecimals"), 0, MAX_ORACLE_DECIMALS), "Invalid expectedDecimals: handler supports only 0..18")
-        require(entry.get("snapshotFingerprint") == snapshot_fingerprint(identity, feed, verification), "Approval snapshot fingerprint changed")
-        checked_chain = verification.get("chains", {}).get(str(chain), {})
-        checked_token = checked_chain.get("tokens", {}).get(address.lower(), {})
-        observed = checked_chain.get("feeds", {}).get(proxy.lower(), {})
-        require(checked_chain.get("issues") == [] and all(no_check_errors(record) for record in (verification, checked_chain, checked_token, observed)), "Verification contains errors or issues")
-        require(checked_token.get("decimals") == identity["decimals"] and checked_token.get("symbol") == identity["symbol"], "Token verification metadata differs")
-        round_id, answered_in_round = round_number(observed.get("roundId")), round_number(observed.get("answeredInRound"))
-        require(round_id > 0 and answered_in_round >= round_id, "Incomplete verified feed round")
-        require(observed.get("description") == entry["expectedDescription"], "Feed description differs")
-        require(observed.get("decimals") == entry["expectedDecimals"] == feed["decimals"], "Feed decimals differ")
-        try:
-            answer = int(observed.get("answer", ""))
-        except (ValueError, TypeError):
-            answer = 0
-        require(answer > 0, "Feed answer must be positive")
-        updated, timestamp = observed.get("updatedAt"), observed.get("observedAt")
-        require(integer(updated, 1) and integer(timestamp, 1) and updated <= timestamp, "Invalid feed timestamps")
-        age = timestamp - updated
-        require(age <= entry["maxAgeSeconds"] and observed.get("ageSeconds") == age, "Feed snapshot exceeds maxAgeSeconds")
-        require(observed.get("heartbeat") == feed["heartbeat"], "Feed heartbeat differs")
+        if "verificationBatch" not in entry:
+            require(key not in batch_routes, "Missing approval verificationBatch for a named sell route")
+            require(entry.get("snapshotFingerprint") == snapshot_fingerprint(identity, feed, verification), "Approval snapshot fingerprint changed")
+            checked_chain = verification.get("chains", {}).get(str(chain), {})
+            validate_observations(identity, feed, entry, verification, checked_chain)
         approvals[key] = dict(entry, tokenAddress=address.lower(), proxyAddress=proxy.lower())
+        sources[key] = feed
+    for key, entry in approvals.items():
+        if "verificationBatch" not in entry:
+            continue
+        name, timestamp, route = _named_route(entry, batch_routes)
+        chain, sell_address, quote = key
+        identity = identity_map[chain, sell_address]
+        buy_address = identities["usdTokens"].get(str(chain), "").lower()
+        require(identity["assetClass"] == "volatile" and sell_address != buy_address, "Named verification batch requires a volatile sell token")
+        require((chain, buy_address, "USD") in approvals, "Named sell route requires an approved fixed USD buy feed")
+        selected_quote = "ETH" if (chain, sell_address, "ETH") in approvals and (chain, buy_address, "ETH") in approvals else "USD"
+        buy_key = (chain, buy_address, selected_quote)
+        require(quote == selected_quote and buy_key in approvals, "Named sell route must match the selected fixed buy quote")
+        require(entry.get("snapshotFingerprint") == _batch_fingerprint(identity, sources[key], name, timestamp, route), "Approval snapshot fingerprint changed")
+        require(no_check_errors(verification) and no_check_errors(route, strict=True), "Verification contains errors or issues")
+        validate_leg(route.get("sell"), identity, sources[key], entry)
+        validate_leg(route.get("buy"), identity_map[chain, buy_address], sources[buy_key], approvals[buy_key], buy=True)
     return approvals
 
 

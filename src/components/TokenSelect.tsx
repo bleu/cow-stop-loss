@@ -38,6 +38,13 @@ export function TokenSelect({
   const chainId = (accountChainId ?? 1) as ChainId;
   const [open, setOpen] = useState(false);
   const { sellTokens } = getSupportedTokens(chainId);
+  const symbols = new Set<string>();
+  const sharedSymbols = new Set<string>();
+  for (const { token } of sellTokens) {
+    const symbol = token.symbol.toLowerCase();
+    if (symbols.has(symbol)) sharedSymbols.add(symbol);
+    symbols.add(symbol);
+  }
   const { data, isLoading, error, mutate } = useWalletTokenValues(
     chainId,
     address,
@@ -79,7 +86,13 @@ export function TokenSelect({
             onClick={() => setOpen(true)}
           >
             {selectedToken ? (
-              <TokenInfo token={selectedToken} showExplorerLink={false} />
+              <TokenInfo
+                token={selectedToken}
+                showExplorerLink={false}
+                showAddress={sharedSymbols.has(
+                  selectedToken.symbol.toLowerCase(),
+                )}
+              />
             ) : (
               "Select token"
             )}
@@ -125,7 +138,11 @@ export function TokenSelect({
                 onSelect={() => handleSelectToken(token)}
                 className="rescue-token-option rounded-none py-2.5 hover:bg-primary/15 hover:text-foreground"
               >
-                <TokenInfo token={token} showExplorerLink={false} />
+                <TokenInfo
+                  token={token}
+                  showExplorerLink={false}
+                  showAddress={sharedSymbols.has(token.symbol.toLowerCase())}
+                />
                 {address && (
                   <span className="rescue-token-option-values">
                     <span
