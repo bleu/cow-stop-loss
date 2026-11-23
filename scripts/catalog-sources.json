@@ -351,5 +351,319 @@
         "paths": ["ena-usd"]
       }
     }
+  },
+  "bulkExpansion": {
+    "bulk-20261123T145005Z": {
+      "scope": "Full directory screening; only approved source rows are retained.",
+      "sources": {
+        "1": {
+          "url": "https://reference-data-directory.vercel.app/feeds-mainnet.json",
+          "retrievedAt": "2026-11-23T14:30:18.510943+00:00",
+          "sha256": "56d4d747587fec6ee56ed2edaa4a7b6840bdd840248d929cd9e6882c7387f34e",
+          "paths": [
+            "1inch-usd",
+            "ape-usd",
+            "arb-usd",
+            "bal-usd",
+            "cvx-usd",
+            "fxs-usd",
+            "grt-usd",
+            "imx-usd",
+            "knc-usd",
+            "mkr-usd",
+            "rdnt-usd",
+            "rpl-usd",
+            "rsr-usd",
+            "sand-usd",
+            "snx-usd",
+            "spell-usd",
+            "sushi-usd",
+            "sxt-usd",
+            "tbtc-usd",
+            "xcn-usd",
+            "yfi-usd",
+            "zrx-usd"
+          ]
+        },
+        "56": {
+          "url": "https://reference-data-directory.vercel.app/feeds-bsc-mainnet.json",
+          "retrievedAt": "2026-11-23T14:30:18.495327+00:00",
+          "sha256": "8a95e688e72a72fe2ad00649ed6b475bba4edfb5652c5baa3e1a0d310f446c79",
+          "paths": [
+            "1inch-usd",
+            "atom-usd",
+            "avax-usd",
+            "axs-usd",
+            "bch-usd",
+            "btc-usd",
+            "comp-usd",
+            "crv-usd",
+            "doge-usd",
+            "dot-usd",
+            "eth-usd",
+            "fet-usd",
+            "fil-usd",
+            "inj-usd",
+            "ltc-usd",
+            "mask-usd",
+            "near-usd",
+            "ont-usd",
+            "pol-usd",
+            "rdnt-usd",
+            "shib-usd",
+            "sol-usd",
+            "sushi-usd",
+            "tree-usd",
+            "trx-usd",
+            "xtz-usd"
+          ]
+        },
+        "100": {
+          "url": "https://reference-data-directory.vercel.app/feeds-xdai-mainnet.json",
+          "retrievedAt": "2026-11-23T14:30:18.452223+00:00",
+          "sha256": "12627f33c7713e42664633350d97532f9eac5326957f2c9c89cb3efb19cb2f21",
+          "paths": ["btc-usd", "yfi-usd"]
+        },
+        "137": {
+          "url": "https://reference-data-directory.vercel.app/feeds-matic-mainnet.json",
+          "retrievedAt": "2026-11-23T14:30:18.478108+00:00",
+          "sha256": "54c50351be1c3101ad86cf89bd60c52ddc7486fbf242439cecc5511dfad50d25",
+          "paths": [
+            "1inch-usd",
+            "ape-usd",
+            "avax-usd",
+            "axs-usd",
+            "bal-usd",
+            "bat-usd",
+            "bnb-usd",
+            "btc-usd",
+            "chz-usd",
+            "cvx-usd",
+            "eth-usd",
+            "grt-usd",
+            "mana-usd",
+            "qnt-usd",
+            "sand-usd",
+            "shib-usd",
+            "snx-usd",
+            "sol-usd",
+            "wbtc-usd"
+          ]
+        },
+        "8453": {
+          "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-base-1.json",
+          "retrievedAt": "2026-11-23T14:30:18.477563+00:00",
+          "sha256": "5134266982484f6090db4088bea278ac1da97f4ad4b0fe5e7aa0c5aca81b009d",
+          "paths": [
+            "ada-usd-shared-svr-2",
+            "amp-usd",
+            "axl-usd",
+            "btc-usd-shared-svr-2",
+            "degen-usd",
+            "home-usd",
+            "ltc-usd-shared-svr-2",
+            "mln-usd",
+            "mog-usd",
+            "morpho-usd",
+            "op-usd",
+            "pepe-usd",
+            "rsr-usd",
+            "snx-usd",
+            "sol-usd-shared-svr-2",
+            "tbtc-usd",
+            "vvv-usd",
+            "well-usd",
+            "xrp-usd-shared-svr-2",
+            "yfi-usd",
+            "zec-usd-shared-svr",
+            "zro-usd"
+          ]
+        },
+        "9745": {
+          "url": "https://reference-data-directory.vercel.app/feeds-plasma-mainnet.json",
+          "retrievedAt": "2026-11-23T14:30:18.433178+00:00",
+          "sha256": "65ed189c772ef3a42d1ebb169906e0ef6952e0c87dd801f786e04cb902ca8a26",
+          "paths": []
+        },
+        "42161": {
+          "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-arbitrum-1.json",
+          "retrievedAt": "2026-11-23T14:30:18.820391+00:00",
+          "sha256": "f057b1dfde3d7cf632bb05ed0e06853c76b4bf971fdac909cf7decad900ec720",
+          "paths": [
+            "ape-usd",
+            "ath-usd",
+            "cake-usd",
+            "crv-usd",
+            "grt-usd",
+            "magic-usd",
+            "morpho-usd",
+            "rdnt-usd",
+            "rsr-usd",
+            "spell-usd",
+            "sushi-usd",
+            "tbtc-usd",
+            "woo-usd",
+            "yfi-usd"
+          ]
+        },
+        "43114": {
+          "url": "https://reference-data-directory.vercel.app/feeds-avalanche-mainnet.json",
+          "retrievedAt": "2026-11-23T14:30:18.475129+00:00",
+          "sha256": "57e50e569d0385282239c72aab98765a9b937d2ee70dbaa0c198083277479ed4",
+          "paths": [
+            "bat-usd",
+            "bnb-usd",
+            "btc-usd",
+            "eth-usd",
+            "glv-[avax-usdc]-usd",
+            "pol-usd",
+            "snx-usd",
+            "sushi-usd",
+            "wbtc-usd",
+            "yfi-usd"
+          ]
+        },
+        "59144": {
+          "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-linea-1.json",
+          "retrievedAt": "2026-11-23T14:30:18.451596+00:00",
+          "sha256": "a929158d5c9f7913b83342a5b19060256be5f55ee09ed76379ad861aa9252e1a",
+          "paths": ["btc-usd"]
+        }
+      }
+    },
+    "bulk-20261123T145639Z": {
+      "scope": "Full directory screening; only approved source rows are retained.",
+      "sources": {
+        "1": {
+          "url": "https://reference-data-directory.vercel.app/feeds-mainnet.json",
+          "retrievedAt": "2026-11-23T14:30:18.510943+00:00",
+          "sha256": "56d4d747587fec6ee56ed2edaa4a7b6840bdd840248d929cd9e6882c7387f34e",
+          "paths": ["avax-usd", "bnb-usd", "btc-usd", "sol-usd"]
+        },
+        "56": {
+          "url": "https://reference-data-directory.vercel.app/feeds-bsc-mainnet.json",
+          "retrievedAt": "2026-11-23T14:30:18.495327+00:00",
+          "sha256": "8a95e688e72a72fe2ad00649ed6b475bba4edfb5652c5baa3e1a0d310f446c79",
+          "paths": []
+        },
+        "100": {
+          "url": "https://reference-data-directory.vercel.app/feeds-xdai-mainnet.json",
+          "retrievedAt": "2026-11-23T14:30:18.452223+00:00",
+          "sha256": "12627f33c7713e42664633350d97532f9eac5326957f2c9c89cb3efb19cb2f21",
+          "paths": []
+        },
+        "137": {
+          "url": "https://reference-data-directory.vercel.app/feeds-matic-mainnet.json",
+          "retrievedAt": "2026-11-23T14:30:18.478108+00:00",
+          "sha256": "54c50351be1c3101ad86cf89bd60c52ddc7486fbf242439cecc5511dfad50d25",
+          "paths": []
+        },
+        "8453": {
+          "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-base-1.json",
+          "retrievedAt": "2026-11-23T14:30:18.477563+00:00",
+          "sha256": "5134266982484f6090db4088bea278ac1da97f4ad4b0fe5e7aa0c5aca81b009d",
+          "paths": []
+        },
+        "9745": {
+          "url": "https://reference-data-directory.vercel.app/feeds-plasma-mainnet.json",
+          "retrievedAt": "2026-11-23T14:30:18.433178+00:00",
+          "sha256": "65ed189c772ef3a42d1ebb169906e0ef6952e0c87dd801f786e04cb902ca8a26",
+          "paths": []
+        },
+        "42161": {
+          "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-arbitrum-1.json",
+          "retrievedAt": "2026-11-23T14:30:18.820391+00:00",
+          "sha256": "f057b1dfde3d7cf632bb05ed0e06853c76b4bf971fdac909cf7decad900ec720",
+          "paths": [
+            "1inch-usd",
+            "apt-usd",
+            "avax-usd",
+            "bnb-usd",
+            "cro-usd",
+            "cvx-usd",
+            "ldo-usd",
+            "mnt-usd",
+            "pepe-usd",
+            "shib-usd",
+            "snx-usd",
+            "sol-usd",
+            "sui-usd",
+            "wlfi-usd",
+            "zro-usd"
+          ]
+        },
+        "43114": {
+          "url": "https://reference-data-directory.vercel.app/feeds-avalanche-mainnet.json",
+          "retrievedAt": "2026-11-23T14:30:18.475129+00:00",
+          "sha256": "57e50e569d0385282239c72aab98765a9b937d2ee70dbaa0c198083277479ed4",
+          "paths": []
+        },
+        "59144": {
+          "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-linea-1.json",
+          "retrievedAt": "2026-11-23T14:30:18.451596+00:00",
+          "sha256": "a929158d5c9f7913b83342a5b19060256be5f55ee09ed76379ad861aa9252e1a",
+          "paths": []
+        }
+      }
+    },
+    "bulk-20261123T145845Z": {
+      "scope": "Full directory screening; only approved source rows are retained.",
+      "sources": {
+        "1": {
+          "url": "https://reference-data-directory.vercel.app/feeds-mainnet.json",
+          "retrievedAt": "2026-11-23T14:30:18.510943+00:00",
+          "sha256": "56d4d747587fec6ee56ed2edaa4a7b6840bdd840248d929cd9e6882c7387f34e",
+          "paths": []
+        },
+        "56": {
+          "url": "https://reference-data-directory.vercel.app/feeds-bsc-mainnet.json",
+          "retrievedAt": "2026-11-23T14:30:18.495327+00:00",
+          "sha256": "8a95e688e72a72fe2ad00649ed6b475bba4edfb5652c5baa3e1a0d310f446c79",
+          "paths": []
+        },
+        "100": {
+          "url": "https://reference-data-directory.vercel.app/feeds-xdai-mainnet.json",
+          "retrievedAt": "2026-11-23T14:30:18.452223+00:00",
+          "sha256": "12627f33c7713e42664633350d97532f9eac5326957f2c9c89cb3efb19cb2f21",
+          "paths": []
+        },
+        "137": {
+          "url": "https://reference-data-directory.vercel.app/feeds-matic-mainnet.json",
+          "retrievedAt": "2026-11-23T14:30:18.478108+00:00",
+          "sha256": "54c50351be1c3101ad86cf89bd60c52ddc7486fbf242439cecc5511dfad50d25",
+          "paths": []
+        },
+        "8453": {
+          "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-base-1.json",
+          "retrievedAt": "2026-11-23T14:30:18.477563+00:00",
+          "sha256": "5134266982484f6090db4088bea278ac1da97f4ad4b0fe5e7aa0c5aca81b009d",
+          "paths": []
+        },
+        "9745": {
+          "url": "https://reference-data-directory.vercel.app/feeds-plasma-mainnet.json",
+          "retrievedAt": "2026-11-23T14:30:18.433178+00:00",
+          "sha256": "65ed189c772ef3a42d1ebb169906e0ef6952e0c87dd801f786e04cb902ca8a26",
+          "paths": []
+        },
+        "42161": {
+          "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-arbitrum-1.json",
+          "retrievedAt": "2026-11-23T14:30:18.820391+00:00",
+          "sha256": "f057b1dfde3d7cf632bb05ed0e06853c76b4bf971fdac909cf7decad900ec720",
+          "paths": ["atom-usd", "axl-usd", "tia-usd"]
+        },
+        "43114": {
+          "url": "https://reference-data-directory.vercel.app/feeds-avalanche-mainnet.json",
+          "retrievedAt": "2026-11-23T14:30:18.475129+00:00",
+          "sha256": "57e50e569d0385282239c72aab98765a9b937d2ee70dbaa0c198083277479ed4",
+          "paths": []
+        },
+        "59144": {
+          "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-linea-1.json",
+          "retrievedAt": "2026-11-23T14:30:18.451596+00:00",
+          "sha256": "a929158d5c9f7913b83342a5b19060256be5f55ee09ed76379ad861aa9252e1a",
+          "paths": []
+        }
+      }
+    }
   }
 }

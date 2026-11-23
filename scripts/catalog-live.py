@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Read live token metadata and price-feed state; never send transactions."""
 import argparse
+import collections
 import concurrent.futures
+import copy
 import datetime
 import json
 import os
@@ -9,6 +11,11 @@ import pathlib
 import subprocess
 import tempfile
 import time
+
+from catalog_observations import (
+    ADDRESS, MAX_ORACLE_DECIMALS, approval_key, approval_pin, checked_at, integer,
+    no_check_errors, nonempty, require, source_rows, validate_leg,
+)
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 RPCS = {
@@ -37,8 +44,14 @@ def rpc(chain, calls):
     replies = json.loads(result.stdout)
     if not isinstance(replies, list):
         raise RuntimeError(f"RPC {chain}: {replies}")
-    by_id = {reply["id"]: reply for reply in replies}
-    assert int(by_id[len(calls)]["result"], 16) == chain, "RPC chain ID differs"
+    by_id = {}
+    for reply in replies:
+        response_id = reply.get("id") if isinstance(reply, dict) else None
+        require(integer(response_id, 0, len(calls)) and response_id not in by_id, f"RPC {chain}: unexpected or duplicate response ID")
+        by_id[response_id] = reply
+    chain_reply = by_id.get(len(calls), {})
+    actual = chain_reply.get("result")
+    require("error" not in chain_reply and isinstance(actual, str) and int(actual, 16) == chain, "RPC chain ID differs")
     return [by_id.get(index, {"error": "missing response"}) for index in range(len(calls))]
 
 
@@ -51,8 +64,10 @@ def text(value):
     return raw[offset + 32:offset + 32 + length].decode()
 
 
-def verify_chain(item):
+def verify_chain(item, *, inventories=None):
     chain, tokens = item
+    if inventories is None:
+        inventories = json.loads((ROOT / "scripts/catalog-feeds.json").read_text())
     requests, labels = [], []
     feeds = {}
     for token in tokens:
@@ -76,10 +91,13 @@ def verify_chain(item):
     records = {"tokens": {}, "feeds": {}}
     batch_size = 10 if chain == 9745 else 40
     for start in range(0, len(requests), batch_size):
-        responses = rpc(chain, requests[start:start + batch_size])
+        batch = requests[start:start + batch_size]
+        responses = rpc(chain, batch)
+        require(len(responses) == len(batch), f"RPC {chain}: incomplete response coverage")
         for (kind, address, field), response in zip(labels[start:start + batch_size], responses):
             record = records[kind + "s"].setdefault(address, {})
             try:
+                require("error" not in response, "RPC call failed")
                 value = response["result"]
                 if field in {"symbol", "description"}:
                     record[field] = text(value)
@@ -87,15 +105,15 @@ def verify_chain(item):
                     record[field] = int(value, 16)
                 else:
                     raw = bytes.fromhex(value[2:])
-                    assert len(raw) >= 160, "Incomplete latestRoundData"
+                    require(len(raw) == 160, "Incomplete latestRoundData")
                     record["roundId"] = str(int.from_bytes(raw[:32], "big"))
                     record["answer"] = str(int.from_bytes(raw[32:64], "big", signed=True))
                     record["updatedAt"] = int.from_bytes(raw[96:128], "big")
                     record["answeredInRound"] = str(int.from_bytes(raw[128:160], "big"))
-                    assert int(record["answer"]) > 0 and record["updatedAt"] > 0, "Invalid round"
-                    assert int(record["roundId"]) > 0 and int(record["answeredInRound"]) >= int(record["roundId"]), "Incomplete round"
+                    require(int(record["answer"]) > 0 and record["updatedAt"] > 0, "Invalid round")
+                    require(int(record["roundId"]) > 0 and int(record["answeredInRound"]) >= int(record["roundId"]), "Incomplete round")
             except Exception as error:
-                record[field + "Error"] = str(response.get("error", error))
+                record[field + "Error"] = str(response.get("error", error) if isinstance(response, dict) else error)
     issues = []
     for token in tokens:
         live = records["tokens"][token["address"]]
@@ -103,11 +121,11 @@ def verify_chain(item):
             issues.append(f"{token['symbol']} decimals: catalog={token['decimals']} live={live}")
         if live.get("symbol") != token["symbol"]:
             issues.append(f"Token symbol differs: {token['address']}: expected={token['symbol']} live={live}")
-    inventory = json.loads((ROOT / "scripts/catalog-feeds.json").read_text())[str(chain)]
     for address, feed in records["feeds"].items():
         approval = feeds[address]
-        metadata = next(item for item in inventory if item["path"] == approval["path"] and (item.get("proxyAddress") or "").lower() == address.lower())
-        feed["heartbeat"] = metadata.get("heartbeat")
+        matches = source_rows({**approval, "chainId": chain}, inventories)
+        require(len(matches) == 1, f"Verification requires exactly one inventory path/proxy: {chain}/{address}")
+        feed["heartbeat"] = matches[0].get("heartbeat")
         feed["observedAt"] = int(time.time())
         feed["ageSeconds"] = feed["observedAt"] - feed.get("updatedAt", 0)
         if any(key.endswith("Error") for key in feed):
@@ -128,23 +146,149 @@ def candidate_tokens(policy, tokens, inventories):
     """Prepare proposed exact mappings for observation, without approving them."""
     selected = {}
     for approval in policy.get("approvals", []):
-        chain = approval.get("chainId")
-        address = approval.get("tokenAddress", "").lower()
-        denomination = approval.get("quote")
-        if chain not in RPCS or denomination not in {"ETH", "USD"}:
-            raise ValueError("Invalid candidate chain or quote")
-        token = next((item for item in tokens if item["chainId"] == chain and item["address"].lower() == address), None)
-        matches = [feed for feed in inventories.get(str(chain), []) if feed.get("path") == approval.get("path") and (feed.get("proxyAddress") or "").lower() == approval.get("proxyAddress", "").lower() and feed.get("docs", {}).get("quoteAsset") == denomination]
-        if token is None or len(matches) != 1:
-            raise ValueError("Candidate must match an exact known token and source path/proxy/quote")
-        if not isinstance(approval.get("expectedDescription"), str) or not approval["expectedDescription"] or type(approval.get("expectedDecimals")) is not int or not 0 <= approval["expectedDecimals"] <= 18 or type(approval.get("maxAgeSeconds")) is not int or approval["maxAgeSeconds"] <= 0:
-            raise ValueError("Candidate requires expected description, decimals and freshness limit")
-        entry = selected.setdefault((chain, address), {**token, "oracles": {}, "oracleApprovals": {}})
-        if denomination in entry["oracles"]:
-            raise ValueError("Duplicate candidate token/quote")
-        entry["oracles"][denomination] = approval["proxyAddress"].lower()
+        chain, address, denomination = approval_key(approval)
+        require(chain in RPCS, "Invalid candidate chain or quote")
+        proxy = approval.get("proxyAddress")
+        require(isinstance(proxy, str) and ADDRESS.fullmatch(proxy) and nonempty(approval.get("path")), "Candidate must match an exact known token and source path/proxy/quote")
+        tokens_at_address = [item for item in tokens if item["chainId"] == chain and item["address"].lower() == address]
+        matches = [feed for feed in source_rows(approval, inventories) if feed.get("docs", {}).get("quoteAsset") == denomination]
+        require(len(tokens_at_address) == len(matches) == 1, "Candidate must match an exact known token and source path/proxy/quote")
+        require(nonempty(approval.get("expectedDescription")) and integer(approval.get("expectedDecimals"), 0, MAX_ORACLE_DECIMALS) and integer(approval.get("maxAgeSeconds"), 1), "Candidate requires expected description, decimals and freshness limit")
+        entry = selected.setdefault((chain, address), {**tokens_at_address[0], "address": address, "oracles": {}, "oracleApprovals": {}})
+        require(denomination not in entry["oracles"], "Duplicate candidate token/quote")
+        entry["oracles"][denomination] = proxy.lower()
         entry["oracleApprovals"][denomination] = approval
     return list(selected.values())
+
+
+def _candidate_leg(approval, tokens, inventories):
+    token, = candidate_tokens({"approvals": [approval]}, tokens, inventories)
+    matches = source_rows(approval, inventories)
+    require(len(matches) == 1, "Candidate requires exactly one inventory path/proxy")
+    feed = matches[0]
+    require(nonempty(token.get("symbol")) and integer(token.get("decimals"), 0, 36), "Invalid resolved token metadata")
+    require(integer(feed.get("decimals"), 0, MAX_ORACLE_DECIMALS) and feed["decimals"] == approval["expectedDecimals"], "Candidate decimals differ from source")
+    require(integer(feed.get("heartbeat"), 1) and approval["maxAgeSeconds"] <= (3 * feed["heartbeat"]) // 2 + 60, "Candidate freshness limit exceeds source heartbeat cap")
+    return approval, token, feed
+
+
+def _candidate_plan(sells, buy_approvals, tokens, inventories):
+    buy_slots = collections.defaultdict(list)
+    for buy in buy_approvals:
+        chain, _, quote = approval_key(buy)
+        buy_slots[chain, quote].append(buy)
+    sell_keys = collections.Counter()
+    for sell in sells:
+        try:
+            sell_keys[approval_key(sell)] += 1
+        except ValueError:
+            pass
+    routes, rejected = [], []
+    for sell in sells:
+        try:
+            chain, address, quote = approval_key(sell)
+            require(sell_keys[chain, address, quote] == 1, "Duplicate candidate sell token/quote")
+            sell_leg = _candidate_leg(sell, tokens, inventories)
+            require(sell_leg[1].get("assetClass") == "volatile", "Candidate sell must be volatile")
+            expected = buy_slots[chain, quote]
+            require(len(expected) == 1, "Missing or ambiguous expected buy approval for candidate chain/quote")
+            buy = expected[0]
+            require(approval_key(buy)[1] != address, "Candidate sell is the expected buy token")
+            routes.append((sell_leg, _candidate_leg(buy, tokens, inventories)))
+        except ValueError as error:
+            rejected.append((sell, str(error)))
+    return routes, rejected
+
+
+def _observe_candidate(leg, inventories, *, buy):
+    approval, token, feed = leg
+    chain = approval["chainId"]
+    result = {"approval": approval_pin(approval, buy=buy)}
+    try:
+        key, observation = verify_chain((chain, [token]), inventories=inventories)
+        require(key == str(chain), "Verification returned the wrong chain ID")
+        result["observation"] = {"chainId": chain, **observation}
+        validate_leg(result, token, feed, approval, buy=buy)
+    except Exception as error:
+        result["error"] = str(error) or type(error).__name__
+    return result
+
+
+def _observe_sells(sells, inventories):
+    return [_observe_candidate(sell, inventories, buy=False) for sell in sells]
+
+
+def verify_candidate_routes(sells, buy_approvals, tokens, inventories):
+    """Read staged routes. A shared buy leg is checked once before its sells."""
+    routes, _ = _candidate_plan(sells, buy_approvals, tokens, inventories)
+    buys = {approval_key(buy[0]): buy for _, buy in routes}
+    with concurrent.futures.ThreadPoolExecutor(max_workers=9) as pool:
+        buy_futures = {key: pool.submit(_observe_candidate, buy, inventories, buy=True) for key, buy in buys.items()}
+        buy_results = {key: future.result() for key, future in buy_futures.items()}
+        sell_groups = collections.defaultdict(list)
+        for sell, buy in routes:
+            if no_check_errors(buy_results[approval_key(buy[0])]):
+                sell_groups[sell[0]["chainId"]].append(sell)
+        sell_futures = [pool.submit(_observe_sells, group[offset::2], inventories)
+                        for offset in range(2) for group in sell_groups.values() if offset < len(group)]
+        sell_results = [result for future in sell_futures for result in future.result()]
+    return {
+        "checkedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "scope": "candidate-route-review", "status": "checked" if buys else "not-performed",
+        "buyLegs": list(buy_results.values()), "sellLegs": sell_results,
+    }
+
+
+def _report_legs(report, field, expected):
+    legs, indexed = report.get(field), {}
+    require(isinstance(legs, list), f"Missing candidate report {field}")
+    for leg in legs:
+        require(isinstance(leg, dict), f"Invalid candidate report {field}")
+        key = approval_key(leg.get("approval"))
+        require(key in expected and key not in indexed, f"Unexpected or duplicate candidate report {field}: {key}")
+        indexed[key] = leg
+    return indexed
+
+
+def _reported_routes(sells, buy_approvals, tokens, inventories, report):
+    routes, rejected = _candidate_plan(sells, buy_approvals, tokens, inventories)
+    try:
+        require(no_check_errors(report, strict=True) and report.get("scope") == "candidate-route-review" and report.get("status") == "checked", "Candidate route observations were not checked")
+        checked_at(report.get("checkedAt"))
+        buys = _report_legs(report, "buyLegs", {approval_key(buy[0]) for _, buy in routes})
+        sells = _report_legs(report, "sellLegs", {approval_key(sell[0]) for sell, _ in routes})
+    except ValueError as error:
+        return [], rejected + [(sell[0], str(error)) for sell, _ in routes]
+    passed = []
+    for sell, buy in routes:
+        pair = {}
+        for role, (approval, token, feed), observed in (("buy", buy, buys), ("sell", sell, sells)):
+            leg = observed.get(approval_key(approval))
+            try:
+                validate_leg(leg, token, feed, approval, buy=role == "buy")
+            except ValueError as error:
+                observation = leg.get("observation") if isinstance(leg, dict) else None
+                issues = observation.get("issues") if isinstance(observation, dict) else None
+                details = ": " + "; ".join(map(str, issues)) if isinstance(issues, list) and issues else ""
+                rejected.append((sell[0], f"{role} leg: {error}{details}"))
+                break
+            pair[role] = leg
+        else:
+            passed.append((sell[0], pair))
+    return passed, rejected
+
+
+def candidate_route_results(sells, buy_approvals, tokens, inventories, report):
+    """Return passing sell approvals and (sell approval, reason) rejections."""
+    passed, rejected = _reported_routes(sells, buy_approvals, tokens, inventories, report)
+    return [sell for sell, _ in passed], rejected
+
+
+def candidate_observation_batch(sells, buy_approvals, tokens, inventories, report):
+    """Pin only passing routes from a report for the full candidate set."""
+    passed, _ = _reported_routes(sells, buy_approvals, tokens, inventories, report)
+    require(passed, "No passing candidate routes to pin")
+    return {"checkedAt": report["checkedAt"], "routes": copy.deepcopy([pair for _, pair in passed])}
 
 
 def main():

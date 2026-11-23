@@ -9,6 +9,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
+from catalog_observations import approval_pin
+
 SPEC = importlib.util.spec_from_file_location("catalog", pathlib.Path(__file__).with_name("catalog.py"))
 catalog = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(catalog)
@@ -97,7 +99,149 @@ class CatalogPolicyTests(unittest.TestCase):
         return next(token for token in result["tokens"] if token["chainId"] == identity["chainId"] and token["address"] == identity["address"])
 
     def refingerprint(self, approval, identity, feed):
-        approval["snapshotFingerprint"] = catalog.snapshot_fingerprint(identity, feed, self.verification)
+        approval["snapshotFingerprint"] = catalog.snapshot_fingerprint(identity, feed, self.verification, approval)
+
+    def named_leg(self, approval, identity, *, buy=False):
+        chain = identity["chainId"]
+        proxy = approval["proxyAddress"]
+        initial = self.verification["chains"][str(chain)]["feeds"][proxy]
+        return {
+            "approval": approval_pin(approval, buy=buy),
+            "observation": {
+                "chainId": chain, "issues": [],
+                "tokens": {identity["address"]: {"symbol": identity["symbol"], "decimals": identity["decimals"]}},
+                "feeds": {proxy: {**initial, "roundId": "124", "answeredInRound": "124", "answer": "456789012", "updatedAt": 10000, "observedAt": 10010}},
+            },
+        }
+
+    def pin_batch(self, identity, feed, name="candidate-review-1"):
+        approval = dict(self.policy["approvals"][1], tokenAddress=identity["address"], path=feed["path"],
+                        proxyAddress=feed["proxyAddress"], expectedDescription=feed["name"], verificationBatch=name)
+        route = {"sell": self.named_leg(approval, identity), "buy": self.named_leg(self.policy["approvals"][0], self.buy, buy=True)}
+        self.verification.setdefault("observationBatches", {})[name] = {"checkedAt": "2026-01-02T00:00:00+00:00", "routes": [route]}
+        self.refingerprint(approval, identity, feed)
+        self.policy["approvals"].append(approval)
+        return approval, route
+
+    def test_named_batches_with_shared_sell_and_buy_proxies_preserve_previous_results(self):
+        old_verification = copy.deepcopy(self.verification)
+        baseline, _ = self.build()
+        first, first_route = self.pin_batch(self.other, self.sell_feed)
+        first["assetRelationship"] = "bridged-underlying"
+        first["assetRelationshipReason"] = "Reviewed bridge keeps one unit per underlying token"
+        first_result, _ = self.build()
+        self.assertEqual(self.token(first_result, self.other)["oracleApprovals"]["USD"], first)
+        self.assertEqual(self.token(first_result, self.sell), self.token(baseline, self.sell))
+        self.assertEqual(self.token(first_result, self.buy), self.token(baseline, self.buy))
+        self.assertEqual(self.verification["chains"], old_verification["chains"])
+        saved_batch = copy.deepcopy(self.verification["observationBatches"][first["verificationBatch"]])
+        third = self.identity(1, 90003, "THIRD", "volatile")
+        self.identities["tokens"].append(third)
+        second, second_route = self.pin_batch(third, self.sell_feed, name="candidate-review-2")
+        second_feed = second_route["sell"]["observation"]["feeds"][self.sell_feed["proxyAddress"]]
+        second_feed["answer"] = "456789013"
+        self.refingerprint(second, third, self.sell_feed)
+        second_result, _ = self.build()
+        self.assertEqual(self.token(second_result, self.other), self.token(first_result, self.other))
+        self.assertEqual(self.token(second_result, third)["oracleApprovals"]["USD"], second)
+        self.assertEqual(saved_batch["routes"], [first_route])
+        self.assertEqual(self.verification["observationBatches"][first["verificationBatch"]], saved_batch)
+
+    def test_named_sell_requires_its_exact_batch_reference(self):
+        self.verification["chains"]["1"]["tokens"][self.other["address"]] = {"symbol": self.other["symbol"], "decimals": self.other["decimals"]}
+        approval, _ = self.pin_batch(self.other, self.sell_feed)
+        name = approval["verificationBatch"]
+        for other in (None, "", "unknown"):
+            with self.subTest(value=other):
+                approval["verificationBatch"] = other
+                with self.assertRaisesRegex(ValueError, "verificationBatch|verification batch"):
+                    self.build()
+        del approval["verificationBatch"]
+        self.refingerprint(approval, self.other, self.sell_feed)
+        with self.assertRaisesRegex(ValueError, "Missing approval verificationBatch"):
+            self.build()
+        approval["verificationBatch"] = name
+        del self.verification["observationBatches"][name]
+        with self.assertRaisesRegex(ValueError, "Missing exact sell route"):
+            self.build()
+
+    def test_named_route_rejects_skipped_batch_or_route(self):
+        approval, route = self.pin_batch(self.other, self.other_feed)
+        batch = self.verification["observationBatches"][approval["verificationBatch"]]
+        batch["status"] = "skipped"
+        with self.assertRaisesRegex(ValueError, "Invalid named verification batch"):
+            self.build()
+        del batch["status"]
+        route["skipped"] = True
+        self.refingerprint(approval, self.other, self.other_feed)
+        with self.assertRaisesRegex(ValueError, "Verification contains errors or issues"):
+            self.build()
+
+    def test_named_sell_requires_an_approved_fixed_buy(self):
+        self.pin_batch(self.other, self.other_feed)
+        self.policy["approvals"].pop(0)
+        with self.assertRaisesRegex(ValueError, "approved fixed USD buy feed"):
+            self.build()
+
+    def test_named_sell_must_match_runtime_selected_quote(self):
+        self.pin_batch(self.other, self.other_feed)
+        self.approve(self.buy, self.feed(1, 80010, "buy-eth", "BUY", "ETH"))
+        self.approve(self.other, self.feed(1, 80011, "other-eth", "OTHER", "ETH"))
+        with self.assertRaisesRegex(ValueError, "selected fixed buy quote"):
+            self.build()
+
+    def test_named_fingerprint_binds_both_leg_observations(self):
+        approval, route = self.pin_batch(self.other, self.other_feed)
+        for role in ("buy", "sell"):
+            with self.subTest(role=role):
+                observed = next(iter(route[role]["observation"]["feeds"].values()))
+                observed["answer"] = "1234"
+                with self.assertRaisesRegex(ValueError, "snapshot fingerprint changed"):
+                    self.build()
+                self.refingerprint(approval, self.other, self.other_feed)
+                self.build()
+
+    def test_named_buy_must_include_its_exact_two_observations(self):
+        approval, route = self.pin_batch(self.other, self.other_feed)
+        buy = copy.deepcopy(route["buy"])
+        for missing in ("tokens", "feeds"):
+            with self.subTest(missing=missing):
+                del route["buy"]["observation"][missing]
+                self.refingerprint(approval, self.other, self.other_feed)
+                with self.assertRaisesRegex(ValueError, f"expected {missing}"):
+                    self.build()
+                route["buy"] = copy.deepcopy(buy)
+        route["buy"]["approval"]["path"] = "not-the-fixed-buy-path"
+        self.refingerprint(approval, self.other, self.other_feed)
+        with self.assertRaisesRegex(ValueError, "does not match exact approval"):
+            self.build()
+        del route["buy"]
+        self.refingerprint(approval, self.other, self.other_feed)
+        with self.assertRaisesRegex(ValueError, "missing leg"):
+            self.build()
+
+    def test_named_observations_must_be_on_the_approved_chain(self):
+        approval, route = self.pin_batch(self.other, self.other_feed)
+        route["buy"]["observation"]["chainId"] = 100
+        self.refingerprint(approval, self.other, self.other_feed)
+        with self.assertRaisesRegex(ValueError, "chain ID differs"):
+            self.build()
+
+    def test_named_buy_round_must_be_valid_even_with_recomputed_fingerprint(self):
+        approval, route = self.pin_batch(self.other, self.other_feed)
+        observed = route["buy"]["observation"]["feeds"][self.buy_feed["proxyAddress"]]
+        for changes, reason in (({"answer": "0"}, "positive"), ({"answer": 1.5}, "positive"),
+                                ({"answeredInRound": "123"}, "Incomplete"), ({"updatedAt": 10011}, "Invalid feed timestamps"),
+                                ({"observedAt": 15000, "ageSeconds": 5000}, "maxAgeSeconds"),
+                                ({"answer": str(1 << 254)}, "exceeds int256"),
+                                ({"updatedAt": 3600, "observedAt": 3610}, "underflow")):
+            with self.subTest(changes=changes):
+                previous = dict(observed)
+                observed.update(changes)
+                self.refingerprint(approval, self.other, self.other_feed)
+                with self.assertRaisesRegex(ValueError, reason):
+                    self.build()
+                observed.update(previous)
 
     def test_builder_reads_explicit_policy_verification_file(self):
         with patch.object(catalog, "read", return_value=self.verification) as read:

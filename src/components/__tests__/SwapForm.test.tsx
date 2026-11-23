@@ -604,13 +604,12 @@ it.each(supportedChainIds)(
       screen.getByRole("img", { name: `${buyToken.token.symbol} token` }),
     ).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Select token" }));
-    expect(screen.getAllByRole("option")).toHaveLength(sellTokens.length);
-    for (const { token } of sellTokens)
-      expect(
-        screen.getByRole("option", {
-          name: new RegExp(`^Token Logo ${token.symbol}\\b`),
-        }),
-      ).toBeInTheDocument();
+    const options = screen.getAllByRole("option");
+    expect(
+      options.map((option) => option.getAttribute("data-value")).sort(),
+    ).toEqual(
+      sellTokens.map(({ token }) => token.symbol + token.address).sort(),
+    );
   },
 );
 

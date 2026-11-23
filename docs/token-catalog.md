@@ -2,23 +2,23 @@
 
 ## Supported tokens
 
-All nine mainnets below support new orders, with 85 approved sell token-and-chain pairs. Each chain has one fixed buy token. Only the listed sell tokens are enabled.
+All nine mainnets below support new orders, with 229 approved sell token-and-chain pairs. Each chain has one fixed buy token. Only the listed sell tokens are enabled.
 
-| Chain     | Chain ID | Fixed buy   | Approved sells                                                                |
-| --------- | -------- | ----------- | ----------------------------------------------------------------------------- |
-| Ethereum  | 1        | Native USDC | AAVE, cbBTC, COMP, CRV, ENS, LINK, SKY, UNI, WETH, WLFI                       |
-| Gnosis    | 100      | USDT        | AAVE, COMP, CRV, GNO, GRT, LINK, SNX, SUSHI, UNI, WETH                        |
-| Arbitrum  | 42161    | Native USDC | AAVE, ARB, COMP, ENA, GMX, GNS, LINK, PENDLE, UNI, WBTC, WETH                 |
-| Base      | 8453     | Native USDC | AAVE, AERO, AVNT, cbBTC, cbDOGE, COMP, LINK, VIRTUAL, WETH                    |
-| Polygon   | 137      | Native USDC | AAVE, COMP, CRV, GHST, LINK, SUSHI, UNI, WETH, WPOL                           |
-| Avalanche | 43114    | Native USDC | AAVE.e, COMP.e, GMX, JOE, LINK.e, QI, UNI.e, WAVAX, WBTC, WETH.e, XAVA        |
-| BNB Chain | 56       | USDT        | AAVE, ADA, ASTER, C98, Cake, ETH, LINK, LISTA, SOL, UNI, WBNB, WLFI, XRP, XVS |
-| Linea     | 59144    | Native USDC | AAVE, COMP, LINEA, LINK, WETH, wstETH                                         |
-| Plasma    | 9745     | Native USDC | ENA, LINK, weETH, WETH, WXPL                                                  |
+| Chain     | Chain ID | Fixed buy   | Approved sells                                                                                                                                                                                                                                                                                    |
+| --------- | -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Ethereum  | 1        | Native USDC | 1INCH, AAVE, APE, ARB, BAL, cbBTC, COMP, CRV, CVX, ENS, FXS, GRT, IMX, KNC, LINK, MKR, RDNT, RPL, RSR, SAND, SKY, SNX, SOL, SPELL, SUSHI, SXT, tBTC, UNI, WAVAX, WBNB, WBTC, WETH, WLFI, XCN, YFI, ZRX                                                                                            |
+| Gnosis    | 100      | USDT        | AAVE, COMP, CRV, GNO, GRT, LINK, SNX, SUSHI, UNI, WBTC, WETH, YFI                                                                                                                                                                                                                                 |
+| Arbitrum  | 42161    | Native USDC | 1INCH, AAVE, APE, APT, ARB, ATH, AXL, axlATOM, axlTIA, Cake, COMP, CRO, CRV, CVX, ENA, GMX, GNS, GRT, LDO, LINK, MAGIC, MNT, MORPHO, PENDLE, PEPE, RDNT, RSR, SHIB, SNX, SOL, SPELL, SUI, SUSHI, tBTC, UNI, WAVAX, WBNB, WBTC, WETH, WLFI, WOO, YFI, ZRO                                          |
+| Base      | 8453     | Native USDC | AAVE, AERO, AMP, AVNT, AXL, axlOP, axlWBTC, cbADA, cbBTC, cbDOGE, cbLTC, cbXRP, cbZEC, COMP, DEGEN, HOME, LINK, MLN, Mog, MORPHO, PEPE, RSR, SNX, SOL, tBTC, VIRTUAL, VVV, WELL, WETH, YFI, ZRO                                                                                                   |
+| Polygon   | 137      | Native USDC | 1INCH, AAVE, APE, axlETH, AXS, BAL, BAT, CHZ, COMP, CRV, CVX, GHST, GRT, LINK, MANA, QNT, SAND, SHIB, SNX, SOL, SUSHI, UNI, WAVAX, WBNB, WBTC (2 contracts), WETH (2 contracts), WPOL                                                                                                             |
+| Avalanche | 43114    | Native USDC | AAVE.e, BAT.e, BTC.b, COMP.e, GLV [WAVAX-USDC], GMX, JOE, LINK.e, QI, SNX.e, SUSHI.e, UNI.e, WAVAX, WBNB, WBTC, WBTC.e, WETH, WETH.e, WMATIC, XAVA, YFI.e                                                                                                                                         |
+| BNB Chain | 56       | USDT        | 1INCH, AAVE, ADA, ASTER, ATOM, AVAX, AXS (2 contracts), BCH, BTCB, C98, Cake, COMP, CRV, DOGE, DOT, ETH, FET, FIL, INJ, LINK, LISTA, LTC, MASK, NEAR, ONT, RDNT, SHIB (2 contracts), SOL (2 contracts), SUSHI (2 contracts), TREE, TRX, UNI, WAVAX, WBNB, WBTC, WETH, WLFI, WMATIC, XRP, XTZ, XVS |
+| Linea     | 59144    | Native USDC | AAVE, COMP, LINEA, LINK, WBTC, WETH, wstETH                                                                                                                                                                                                                                                       |
+| Plasma    | 9745     | Native USDC | ENA, LINK, weETH, WETH, WXPL                                                                                                                                                                                                                                                                      |
 
 Sepolia is test-only: WETH sells into 18-decimal USDC (test), using fixed test feeds. Ink and Solana are excluded.
 
-The catalog also keeps metadata for 306 production contracts and three historical Sepolia records. A known token, image, or old order does not make a token eligible for new orders. Approvals use exact chain IDs and contract addresses, not symbols.
+The catalog also keeps metadata for 359 production contracts and three historical Sepolia records. A known token, image, or old order does not make a token eligible for new orders. Approvals use exact chain IDs and contract addresses, not symbols.
 
 ## Rules for adding a sell token
 
@@ -76,13 +76,30 @@ The handler normalizes feed decimals but does not check round completeness, futu
 4. Review the observations and execution evidence. Pin accepted observations in the policy's `verificationFile`, then record the exact approval and fingerprint. Candidate observations alone cannot renew approvals. Live verification without `--candidates` checks approved production feeds only.
 5. Generate the catalog, inspect the diff, and run the checks below. Do not edit the generated JSON directly.
 
+### Expand in a batch
+
+`catalog-expand.py scan` captures the full Chainlink directories and checks their source rows. It records potential contract matches from the pinned token lists. These are search hints. They do not prove that a feed measures the token's price.
+
+Supply exact mappings with issuer, wrapper, or bridge evidence in an `approvals` list. Use the fields from `catalog-policy.json` without `snapshotFingerprint` or `verificationBatch`. Supply `newIdentities` for contracts missing from the catalog, with a logo source and evidence for the economic class. Use `metadataOverrides` only for gaps or corrections to the pinned lists.
+
+```sh
+python3 scripts/catalog-expand.py scan --output .cache/token-catalog/directories
+python3 scripts/catalog-expand.py stage --inventory .cache/token-catalog/directories --evidence /path/to/mappings.json --output .cache/token-catalog/staged
+```
+
+Staging checks the supplied mapping against the catalog rules, then reads the sell and fixed buy legs. A failed buy blocks all new routes that use it. These reads can come from different blocks. They do not prove identity or bridge claims, measure liquidity, or predict whether an order will fill.
+
+Staging writes the results and only the passing catalog inputs. It does not change the app catalog. Apply the staged `scripts` and `public` files, then regenerate and check the catalog.
+
+New approvals from a batch point to named observations for both legs. The batch keeps fresh observations separate from the older records, so an added token can share a feed without changing an existing approval.
+
 ## Files and checks
 
 | File                                                                                      | Purpose                                                                              |
 | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
 | [`scripts/catalog-policy.json`](../scripts/catalog-policy.json)                           | Exact feed approvals and chain execution decisions                                   |
 | [`scripts/catalog-policy-verification.json`](../scripts/catalog-policy-verification.json) | Pinned read-only observations, including separate review batches and failed attempts |
-| [`scripts/catalog-feeds.json`](../scripts/catalog-feeds.json)                             | 94 approved official source rows; not a full Chainlink inventory                     |
+| [`scripts/catalog-feeds.json`](../scripts/catalog-feeds.json)                             | 227 approved official source rows; not a full Chainlink inventory                    |
 | [`scripts/catalog-sources.json`](../scripts/catalog-sources.json)                         | Source URLs, dates, hashes, and historical review scope                              |
 | [`scripts/catalog-identities.json`](../scripts/catalog-identities.json)                   | Exact identities, economic classes, and image evidence                               |
 | [`scripts/catalog-metadata-sources.json`](../scripts/catalog-metadata-sources.json)       | Pinned display-metadata sources and priority                                         |
@@ -108,6 +125,6 @@ To refresh display lists, select an explicit revision, review hashes and correct
 
 ## Existing orders
 
-Existing orders keep their saved feeds. Removing creation eligibility does not rewrite an order or make its feeds safe. `findKnownToken` retains metadata for historical orders, including the old Gnosis USDC.e buy token. Ethereum WBTC is not in the retained identity inventory.
+Existing orders keep their saved feeds. Removing creation eligibility does not rewrite an order or make its feeds safe. `findKnownToken` retains metadata for historical orders, including the old Gnosis USDC.e buy token.
 
 Order display, approval repair, and cancellation remain available subject to ownership and state checks. Saved but unsubmitted placements must pass the current policy before publication or transaction construction.

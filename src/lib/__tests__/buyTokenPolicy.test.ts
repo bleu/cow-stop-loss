@@ -154,15 +154,20 @@ describe("fixed USD buy token policy", () => {
     ).toBe(false);
   });
 
-  it("retains Ethereum WBTC metadata without allowing new orders", () => {
-    const legacy = findKnownToken(
-      1,
-      "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-    );
-    expect(legacy).toMatchObject({ symbol: "WBTC", decimals: 8 });
-    expect(
-      generateSwapSchema(1).safeParse({ ...validOrder(1), tokenSell: legacy })
-        .success,
-    ).toBe(false);
-  });
+  it.each([
+    [1, "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599", true],
+    [8453, "0x0555e30da8f98308edb960aa94c0db47230d2b9c", false],
+  ] as const)(
+    "applies the exact WBTC sell approval on chain %s",
+    (chainId, address, approved) => {
+      const token = findKnownToken(chainId, address);
+      expect(token).toMatchObject({ symbol: "WBTC", decimals: 8 });
+      expect(
+        generateSwapSchema(chainId).safeParse({
+          ...validOrder(chainId),
+          tokenSell: token,
+        }).success,
+      ).toBe(approved);
+    },
+  );
 });

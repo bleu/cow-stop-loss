@@ -16,6 +16,10 @@ __pycache__/
 !/public/assets/tokens/usdc.svg
 !/public/assets/tokens/wbtc.svg
 !/public/assets/tokens/weth.svg
+# Originals that no longer match the upstream bytes.
+!/public/assets/tokens/28db54b1b5e74f9dc1ac.png
+!/public/assets/tokens/38e2b54b262b20c2cffc.png
+!/public/assets/tokens/7e40f5a60d7ce701d1fe.png
 /scripts/catalog-audit.json
 /scripts/catalog-metadata-report.json
 

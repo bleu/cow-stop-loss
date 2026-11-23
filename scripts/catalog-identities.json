@@ -2614,6 +2614,430 @@
       "identitySource": "https://research.lido.fi/t/wsteth-on-avalanche-and-bnb-and-ownership-acceptance-by-lido-dao/5749",
       "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/wsteth.svg",
       "logoSha256": "a44eb9b6b4d97a7a967171679356c12d620494da8eeb65293d1149ea55f12419"
+    },
+    {
+      "chainId": 56,
+      "address": "0x0555e30da8f98308edb960aa94c0db47230d2b9c",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/7598/large/WBTCLOGO.png?1764496367",
+      "localLogo": "/assets/tokens/e4378ba7147c998674a4.png",
+      "logoSha256": "e4378ba7147c998674a47bd3d3e279ff9970952f1305113818a9656d60af23eb"
+    },
+    {
+      "chainId": 56,
+      "address": "0x3524fd7488fdb1f4723bbc22c9cbd1bf89f46e3b",
+      "assetClass": "volatile",
+      "logoSource": "https://raw.githubusercontent.com/wormhole-foundation/wormhole-token-list/main/assets/SUSHI_wh.png",
+      "localLogo": "/assets/tokens/bc91b8610839d071a56e.png",
+      "logoSha256": "bc91b8610839d071a56e3cc4b724ba68f71006b191afd810238aaf78a3ce697b"
+    },
+    {
+      "chainId": 56,
+      "address": "0x4db5a66e937a9f4473fa95b1caf1d1e1d62e29ea",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/22990/large/ETH_wh_small.png?1696522286",
+      "localLogo": "/assets/tokens/e4a0e3fd63402005ebea.png",
+      "logoSha256": "e4a0e3fd63402005ebea453a705ab6bf87d32523b144167d3f4b3a75f272a1e7"
+    },
+    {
+      "chainId": 56,
+      "address": "0x556b60c53fbc1518ad17e03d52e47368dd4d81b3",
+      "assetClass": "volatile",
+      "logoSource": "https://raw.githubusercontent.com/wormhole-foundation/wormhole-token-list/main/assets/AXSet_wh.png",
+      "localLogo": "/assets/tokens/742abb5ead3d8ef9f893.png",
+      "logoSha256": "742abb5ead3d8ef9f893386055bdb7517c132a3ad1df603a54e66c08dfa243c6"
+    },
+    {
+      "chainId": 56,
+      "address": "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
+      "assetClass": "volatile",
+      "logoSource": "https://files.cow.fi/token-lists/images/56/0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c/logo.png",
+      "localLogo": "/assets/tokens/399db0d1a345a93ac305.png",
+      "logoSha256": "399db0d1a345a93ac30570029397cc59d7bfa7d0afc62651d881b35708394bdf"
+    },
+    {
+      "chainId": 56,
+      "address": "0x96412902aa9aff61e13f085e70d3152c6ef2a817",
+      "assetClass": "volatile",
+      "logoSource": "https://raw.githubusercontent.com/wormhole-foundation/wormhole-token-list/main/assets/AVAX_wh.png",
+      "localLogo": "/assets/tokens/9459a9fa03219247d6d1.png",
+      "logoSha256": "9459a9fa03219247d6d1a4631a77862205e134e763d8a32cf5c50763ce4389bd"
+    },
+    {
+      "chainId": 56,
+      "address": "0x9996d0276612d23b35f90c51ee935520b3d7355b",
+      "assetClass": "volatile",
+      "logoSource": "https://raw.githubusercontent.com/aave-dao/web3-icons/main/icons/full/crv.svg",
+      "localLogo": "/assets/tokens/a420966c59b95b7a516c.svg",
+      "logoSha256": "a420966c59b95b7a516cb5bd03013808684e3a07753b0a363f4cce0c8c47d5ec"
+    },
+    {
+      "chainId": 56,
+      "address": "0xb1547683da678f2e1f003a780143ec10af8a832b",
+      "assetClass": "volatile",
+      "logoSource": "https://raw.githubusercontent.com/wormhole-foundation/wormhole-token-list/main/assets/SHIB_wh.png",
+      "localLogo": "/assets/tokens/534804a64392ec39f988.png",
+      "logoSha256": "534804a64392ec39f988e8775b8a97a4b018addbd184d745bf5675f08cc9bb44"
+    },
+    {
+      "chainId": 56,
+      "address": "0xc836d8dc361e44dbe64c4862d55ba041f88ddd39",
+      "assetClass": "volatile",
+      "logoSource": "https://raw.githubusercontent.com/wormhole-foundation/wormhole-token-list/main/assets/MATICpo_wh.png",
+      "localLogo": "/assets/tokens/d9e71bba4e627c71e262.png",
+      "logoSha256": "d9e71bba4e627c71e262c1751a25ec053eb91dc8407e3cacbce6f5d0dbbcab3a"
+    },
+    {
+      "chainId": 56,
+      "address": "0xfa54ff1a158b5189ebba6ae130ced6bbd3aea76e",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/22876/large/SOL_wh_small.png?1644224316",
+      "localLogo": "/assets/tokens/85dd19baebe897ec00ed.png",
+      "logoSha256": "85dd19baebe897ec00eda750f909823e09b3b9067a23bd6303d683b365985050"
+    },
+    {
+      "chainId": 137,
+      "address": "0x11cd37bb86f65419713f30673a480ea33c826872",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/22990/large/ETH_wh_small.png?1696522286",
+      "localLogo": "/assets/tokens/e4a0e3fd63402005ebea.png",
+      "logoSha256": "e4a0e3fd63402005ebea453a705ab6bf87d32523b144167d3f4b3a75f272a1e7"
+    },
+    {
+      "chainId": 137,
+      "address": "0x1280830f690d0e65195b3c61b028244c3a49f26d",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/28171/large/weth-wei_D_3x.png?1696527174",
+      "localLogo": "/assets/tokens/5785d29b0a6dcd0526f0.png",
+      "logoSha256": "5785d29b0a6dcd0526f0036ddc9351f1fb676d0af9e3d183684d73f0d586584c"
+    },
+    {
+      "chainId": 137,
+      "address": "0x36b77a184be8ee56f5e81c56727b20647a42e28e",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/3370/large/5ZOu7brX_400x400.jpg?1612437252",
+      "localLogo": "/assets/tokens/690f3bf31723f755ffe0.jpg",
+      "logoSha256": "690f3bf31723f755ffe0e21d1408c02a94ab5d41c8b1c991cd5554fbc714a3b7"
+    },
+    {
+      "chainId": 137,
+      "address": "0x4257ea7637c355f81616050cbb6a9b709fd72683",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/15585/large/convex.png?1621256328",
+      "localLogo": "/assets/tokens/7f9d91173b3cfd6387c8.png",
+      "logoSha256": "7f9d91173b3cfd6387c8edb579554de412d8ebe30413a48ceb5d092109481ce0"
+    },
+    {
+      "chainId": 137,
+      "address": "0x5d49c278340655b56609fdf8976eb0612af3a0c3",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/23004/large/WBTC_wh_small.png?1696522299",
+      "localLogo": "/assets/tokens/f9d3f8a6122a7e5fadf8.png",
+      "logoSha256": "f9d3f8a6122a7e5fadf8ec27e7e108c3737d8e166b806ed8495f2fc861850fe1"
+    },
+    {
+      "chainId": 137,
+      "address": "0x6f8a06447ff6fcf75d803135a7de15ce88c1d4ec",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/11939/large/shiba.png?1622619446",
+      "localLogo": "/assets/tokens/b99c3a13da12494a290d.png",
+      "logoSha256": "b99c3a13da12494a290d6fbea21e759945109363719803e6067fb2b70c7a2146"
+    },
+    {
+      "chainId": 137,
+      "address": "0x7bb11e7f8b10e9e571e5d8eace04735fdfb2358a",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/22943/large/AVAX_wh_small.png?1696522240",
+      "localLogo": "/assets/tokens/ff7215d8eb86cb09db97.png",
+      "logoSha256": "ff7215d8eb86cb09db970e28fd5a2700f20610430144db698be035077566cdac"
+    },
+    {
+      "chainId": 137,
+      "address": "0xd93f7e271cb87c23aaa73edc008a79646d1f9912",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/22876/large/SOL_wh_small.png?1696522175",
+      "localLogo": "/assets/tokens/85dd19baebe897ec00ed.png",
+      "logoSha256": "85dd19baebe897ec00eda750f909823e09b3b9067a23bd6303d683b365985050"
+    },
+    {
+      "chainId": 137,
+      "address": "0xecdcb5b88f8e3c15f95c720c51c71c9e2080525d",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/22884/large/BNB_wh_small.png?1696522182",
+      "localLogo": "/assets/tokens/d3b3de9dd7b4a0df37b7.png",
+      "logoSha256": "d3b3de9dd7b4a0df37b7b3b974d4a84f723a509c3a18064081df61b8efbc80e5"
+    },
+    {
+      "chainId": 137,
+      "address": "0xf1938ce12400f9a761084e7a80d37e732a4da056",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/8834/large/Chiliz.png?1561970540",
+      "localLogo": "/assets/tokens/adf2fb1be04965d1fb71.png",
+      "logoSha256": "adf2fb1be04965d1fb71ffbb40d3c08d5293e1e873b9994e32c8f739d0a502c2"
+    },
+    {
+      "chainId": 8453,
+      "address": "0x1a35ee4640b0a3b87705b0a4b45d227ba60ca2ad",
+      "assetClass": "volatile",
+      "logoSource": "https://axelarscan.io/logos/assets/wbtc.svg",
+      "localLogo": "/assets/tokens/ef151eb23ac474cdd5bc.svg",
+      "logoSha256": "ef151eb23ac474cdd5bc6682043bd24470e8d576aaa1698ec912f2e92765c6b2"
+    },
+    {
+      "chainId": 8453,
+      "address": "0x311935cd80b76769bf2ecc9d8ab7635b2139cf82",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/71099/large/solana.jpg?1765793164",
+      "localLogo": "/assets/tokens/4ef8c5dd8c0e8f0dffb2.jpg",
+      "logoSha256": "4ef8c5dd8c0e8f0dffb2c477209d4cd23cbfd21c82fdee505dc9b8fc1e7f98db"
+    },
+    {
+      "chainId": 8453,
+      "address": "0x7c298664bd6582f6f264c2cb5a4b9cc09b6e3889",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/605/large/melon.png?1547034295",
+      "localLogo": "/assets/tokens/3c764c16f10bae02d6e1.png",
+      "logoSha256": "3c764c16f10bae02d6e140aa859ac1871e40e9f3528ae227c03057af30ffea4b"
+    },
+    {
+      "chainId": 8453,
+      "address": "0x994ac01750047b9d35431a7ae4ed312ee955e030",
+      "assetClass": "volatile",
+      "logoSource": "https://axelarscan.io/logos/assets/op.svg",
+      "localLogo": "/assets/tokens/e108a10acece9e00461a.svg",
+      "logoSha256": "e108a10acece9e00461a419e88dc709655a6665190692a5b6b3a1ac7b9f90705"
+    },
+    {
+      "chainId": 8453,
+      "address": "0xb2000000000000000000008501b13360000cb2ec",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/102176591/large/Coinbase_Wrapped_ZEC_%28cbZEC%29.png?1788278133",
+      "localLogo": "/assets/tokens/4f022723e252db5cff70.png",
+      "logoSha256": "4f022723e252db5cff707a1e0657402136dc83f35fb5836f364edb1c01d83b12"
+    },
+    {
+      "chainId": 8453,
+      "address": "0xb358489d5d92641edb4d8ee8063f8005964346ba",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/12409/large/amp-200x200.png?1599625397",
+      "localLogo": "/assets/tokens/1fe5382858f76bc2d07f.png",
+      "logoSha256": "1fe5382858f76bc2d07f23d7092b941c6bd459d60f6de1c56bea71072e6ca066"
+    },
+    {
+      "chainId": 8453,
+      "address": "0xb4fde59a779991bfb6a52253b51947828b982be3",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/29850/large/pepe-token.jpeg?1682922725",
+      "localLogo": "/assets/tokens/159bf6eb3aab326ee7fc.jpg",
+      "logoSha256": "159bf6eb3aab326ee7fccb4744fb19aff48d88c45e773c3ab2e0110d4f9c476f"
+    },
+    {
+      "chainId": 8453,
+      "address": "0xcb17c9db87b595717c857a08468793f5bab6445f",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/66646/large/Coinbase_Wrapped_Litecoin_%28cbLTC%29.png?1750129508",
+      "localLogo": "/assets/tokens/7091625361e8cf831436.png",
+      "logoSha256": "7091625361e8cf831436a21fe373ea0699ea5de2d38115f962aefccf41585a11"
+    },
+    {
+      "chainId": 8453,
+      "address": "0xcbada732173e39521cdbe8bf59a6dc85a9fc7b8c",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/66647/large/Coinbase_Wrapped_Ada_%28cbADA%29.png?1750129533",
+      "localLogo": "/assets/tokens/2e17e970246e9248f486.png",
+      "logoSha256": "2e17e970246e9248f486f46a1b4528ee90b2dd6cc7455d4b2b9f7a068a318ab5"
+    },
+    {
+      "chainId": 43114,
+      "address": "0x152b9d0fdc40c096757f570a51e494bd4b943e50",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/26115/large/BTC.b.png?1772210755",
+      "localLogo": "/assets/tokens/d8363e8cc4007a4589c0.png",
+      "logoSha256": "d8363e8cc4007a4589c0dd6ab42e511c1fc85f75cc0ee4ba861ee1bc71d9d4c2"
+    },
+    {
+      "chainId": 43114,
+      "address": "0x442f7f22b1ee2c842beaff52880d4573e9201158",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/22884/large/BNB_wh_small.png?1696522182",
+      "localLogo": "/assets/tokens/d3b3de9dd7b4a0df37b7.png",
+      "logoSha256": "d3b3de9dd7b4a0df37b7b3b974d4a84f723a509c3a18064081df61b8efbc80e5"
+    },
+    {
+      "chainId": 43114,
+      "address": "0x50b7545627a5162f82a992c33b87adc75187b218",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/39529/large/WBTCLOGO.png?1764684093",
+      "localLogo": "/assets/tokens/b742e723b813fc044544.png",
+      "logoSha256": "b742e723b813fc044544318c65075c44f82b625790f6a00feba69fd86a19e0d8"
+    },
+    {
+      "chainId": 43114,
+      "address": "0x8b82a291f83ca07af22120aba21632088fc92931",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/22990/large/ETH_wh_small.png?1696522286",
+      "localLogo": "/assets/tokens/e4a0e3fd63402005ebea.png",
+      "logoSha256": "e4a0e3fd63402005ebea453a705ab6bf87d32523b144167d3f4b3a75f272a1e7"
+    },
+    {
+      "chainId": 43114,
+      "address": "0x901ee57f7118a7be56ac079cbcda7f22663a3874",
+      "assetClass": "volatile",
+      "logoSource": "https://raw.githubusercontent.com/gmx-io/gmx-interface/release/src/img/tokens/ic_glv.svg",
+      "localLogo": "/assets/tokens/4df160ae809ddb29e6d2.svg",
+      "logoSha256": "4df160ae809ddb29e6d205150ce8785304f2560b2be368c4e1afea997b766c56"
+    },
+    {
+      "chainId": 43114,
+      "address": "0xf2f13f0b7008ab2fa4a2418f4ccc3684e49d20eb",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/22947/large/MATICpo_wh_small.png?1696522243",
+      "localLogo": "/assets/tokens/61fcd8e0b5f8e6ebc83e.png",
+      "logoSha256": "61fcd8e0b5f8e6ebc83e3d8e4bde7c3a6b4c18fe72db3cfa5431b6a726f99137"
+    },
+    {
+      "chainId": 59144,
+      "address": "0x3aab2285ddcddad8edf438c1bab47e1a9d05a9b4",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/50164/large/wbtc.png?1726136135",
+      "localLogo": "/assets/tokens/e44c0961b2d100c15902.png",
+      "logoSha256": "e44c0961b2d100c159027b3900ac282d166953a0b2008cb6ca68a2b3b6225354"
+    },
+    {
+      "chainId": 1,
+      "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+      "assetClass": "volatile",
+      "logoSource": "https://files.cow.fi/token-lists/images/1/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599/logo.png",
+      "localLogo": "/assets/tokens/87e078fdc503e188db9e.png",
+      "logoSha256": "87e078fdc503e188db9e1d15e2d22e6fe47a16c74784e9cb3acef0657fa2be87"
+    },
+    {
+      "chainId": 1,
+      "address": "0x418d75f65a02b3d53b2418fb8e1fe493759c7605",
+      "assetClass": "volatile",
+      "logoSource": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png",
+      "localLogo": "/assets/tokens/4135f6a88e8c8c62a4da.png",
+      "logoSha256": "4135f6a88e8c8c62a4daaaa4f296fffbfd3c41e731b6b8ba54ccbcb7f9ff46ce"
+    },
+    {
+      "chainId": 1,
+      "address": "0x85f138bfee4ef8e540890cfb48f620571d67eda3",
+      "assetClass": "volatile",
+      "logoSource": "https://raw.githubusercontent.com/wormhole-foundation/wormhole-token-list/main/assets/AVAX_wh.png",
+      "localLogo": "/assets/tokens/9459a9fa03219247d6d1.png",
+      "logoSha256": "9459a9fa03219247d6d1a4631a77862205e134e763d8a32cf5c50763ce4389bd"
+    },
+    {
+      "chainId": 1,
+      "address": "0xd31a59c85ae9d8edefec411d448f90841571b89c",
+      "assetClass": "volatile",
+      "logoSource": "https://raw.githubusercontent.com/wormhole-foundation/wormhole-token-list/main/assets/SOL_wh.png",
+      "localLogo": "/assets/tokens/ba7414fe5f93fc5f6af8.png",
+      "logoSha256": "ba7414fe5f93fc5f6af8aa0e9602827d5913aba925686bd24e3aececa80f341e"
+    },
+    {
+      "chainId": 42161,
+      "address": "0x4d1d7134b87490ae5eebdb22a5820d7d0e1980bf",
+      "assetClass": "volatile",
+      "logoSource": "https://coin-images.coingecko.com/coins/images/50767/large/wlfi.png?1756438915",
+      "localLogo": "/assets/tokens/98d8053e3dc64afd4498.png",
+      "logoSha256": "98d8053e3dc64afd44982cefc1b5c330ca2b39ab738bbfb2eac5241baa76c61b"
+    },
+    {
+      "chainId": 42161,
+      "address": "0x4edef400ede5309240814b5fc403f224504604e9",
+      "assetClass": "volatile",
+      "logoSource": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/aptos/info/logo.png",
+      "localLogo": "/assets/tokens/030fc736338e392f4da4.png",
+      "logoSha256": "030fc736338e392f4da475108706266e10ff77442b181e6a3b1d034f7481a615"
+    },
+    {
+      "chainId": 42161,
+      "address": "0x5033833c9fe8b9d3e09eed2f73d2aaf7e3872fd1",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/11939/large/shiba.png?1622619446",
+      "localLogo": "/assets/tokens/b99c3a13da12494a290d.png",
+      "logoSha256": "b99c3a13da12494a290d6fbea21e759945109363719803e6067fb2b70c7a2146"
+    },
+    {
+      "chainId": 42161,
+      "address": "0x565609faf65b92f7be02468acf86f8979423e514",
+      "assetClass": "volatile",
+      "logoSource": "https://raw.githubusercontent.com/wormhole-foundation/wormhole-token-list/main/assets/AVAX_wh.png",
+      "localLogo": "/assets/tokens/9459a9fa03219247d6d1.png",
+      "logoSha256": "9459a9fa03219247d6d1a4631a77862205e134e763d8a32cf5c50763ce4389bd"
+    },
+    {
+      "chainId": 42161,
+      "address": "0x7af00405916d823edb1121546efa6f4972b51b84",
+      "assetClass": "volatile",
+      "logoSource": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/binance/info/logo.png",
+      "localLogo": "/assets/tokens/4135f6a88e8c8c62a4da.png",
+      "logoSha256": "4135f6a88e8c8c62a4daaaa4f296fffbfd3c41e731b6b8ba54ccbcb7f9ff46ce"
+    },
+    {
+      "chainId": 42161,
+      "address": "0x8ea3156f834a0dfc78f1a5304fac2cda676f354c",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/7310/large/oCw2s3GI_400x400.jpeg?1645172042",
+      "localLogo": "/assets/tokens/6a56e2d2ab8c34092ec3.jpg",
+      "logoSha256": "6a56e2d2ab8c34092ec37e06a47ac95dd98415e923504a7f5b3113c3b407d24e"
+    },
+    {
+      "chainId": 42161,
+      "address": "0x9c1a1c7ba9c2602123fd7ef3eb41a769edf6c53a",
+      "assetClass": "volatile",
+      "logoSource": "https://coin-images.coingecko.com/coins/images/30980/large/Mantle-Logo-mark.png?1739213200",
+      "localLogo": "/assets/tokens/162f44fea4f6117c3435.png",
+      "logoSha256": "162f44fea4f6117c343585e0adea41bdbaed8f2186194fe525b35521edc3e42d"
+    },
+    {
+      "chainId": 42161,
+      "address": "0xaafcfd42c9954c6689ef1901e03db742520829c5",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/15585/large/convex.png?1621256328",
+      "localLogo": "/assets/tokens/7f9d91173b3cfd6387c8.png",
+      "logoSha256": "7f9d91173b3cfd6387c8edb579554de412d8ebe30413a48ceb5d092109481ce0"
+    },
+    {
+      "chainId": 42161,
+      "address": "0xb74da9fe2f96b9e0a5f4a3cf0b92dd2bec617124",
+      "assetClass": "volatile",
+      "logoSource": "https://assets.coingecko.com/coins/images/22876/large/SOL_wh_small.png?1644224316",
+      "localLogo": "/assets/tokens/85dd19baebe897ec00ed.png",
+      "logoSha256": "85dd19baebe897ec00eda750f909823e09b3b9067a23bd6303d683b365985050"
+    },
+    {
+      "chainId": 42161,
+      "address": "0xcba56cd8216fcbbf3fa6df6137f3147cbca37d60",
+      "assetClass": "volatile",
+      "logoSource": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC011a73ee8576Fb46F5E1c5751cA3B9Fe0af2a6F/logo.png",
+      "localLogo": "/assets/tokens/18f68dc240d4a49c5dc4.png",
+      "logoSha256": "18f68dc240d4a49c5dc49040264a94adbfa946e10658cb4cf427b45db10e05d9"
+    },
+    {
+      "chainId": 42161,
+      "address": "0xcf79d86b8a830030af6d835737d6eac3be823fd7",
+      "assetClass": "volatile",
+      "logoSource": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/sui/info/logo.png",
+      "localLogo": "/assets/tokens/4f8bdce8c8effcc5fb84.png",
+      "logoSha256": "4f8bdce8c8effcc5fb8402578051f3800eab3ac590b100de4e0f4da35dd0dc93"
+    },
+    {
+      "chainId": 42161,
+      "address": "0x06bee9e7238a331b68d83df3b5b9b16d5dba83ff",
+      "assetClass": "volatile",
+      "logoSource": "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/cosmos/info/logo.png",
+      "localLogo": "/assets/tokens/dc5c2d0bd18ed4f4def2.png",
+      "logoSha256": "dc5c2d0bd18ed4f4def21b6459f4eff45c04991c7662d05a72399fe655f71b44"
+    },
+    {
+      "chainId": 42161,
+      "address": "0x41b94c5867f7f6217c9a30520cb3e793b1ee1b97",
+      "assetClass": "volatile",
+      "logoSource": "https://raw.githubusercontent.com/cosmos/chain-registry/master/celestia/images/celestia.png",
+      "localLogo": "/assets/tokens/45b5e2d7027095b436a1.png",
+      "logoSha256": "45b5e2d7027095b436a18ced22be13963fbf9d8abd48ad4c2baad3f2d502c631"
     }
   ],
   "usdTokens": {
