@@ -720,37 +720,37 @@ describe("TEST-only approved route ceilings", () => {
     ).not.toThrow();
   });
 
-  it("caps configured pair and separate direct-USD reads without weakening stale checks", async () => {
+  it("accepts static Sepolia pair and direct-USD feeds regardless of age", async () => {
     shorterApprovals();
     const draft = sepoliaDraft();
     const client = publicClientsFromIds[testChain];
     jest.spyOn(client, "getBlock").mockResolvedValue({
       number: BigInt(10),
-      timestamp: BigInt(10000),
+      timestamp: BigInt(1795541964),
     } as never);
     jest
       .spyOn(client, "readContract")
       .mockImplementation(async ({ functionName }) => {
         if (functionName === "decimals") return 8;
         return [
-          BigInt(1),
-          BigInt(100000000),
-          BigInt(8000),
-          BigInt(8000),
-          BigInt(1),
+          BigInt(0),
+          BigInt("1000000000000000"),
+          BigInt(0),
+          BigInt(1721741040),
+          BigInt(0),
         ];
       });
     const router = new ConfiguredRouter({ chainId: testChain, ...draft });
     await expect(
-      router.calculatePrice(configuredTokenRoute(router), 86400),
-    ).rejects.toThrow("stale");
+      router.calculatePrice(configuredTokenRoute(router), 1),
+    ).resolves.toBe(1);
     await expect(
       fetchOracleUsdPrice({
         chainId: testChain,
         oracle: draft.tokenBuyOracle,
-        maxAge: 86400,
+        maxAge: 1,
       }),
-    ).rejects.toThrow("stale");
+    ).resolves.toBe(10000000);
   });
 });
 

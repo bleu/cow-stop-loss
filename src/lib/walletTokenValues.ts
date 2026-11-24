@@ -116,6 +116,7 @@ export async function fetchWalletTokenValues({
         ) {
           try {
             validateOracleRound({
+              chainId,
               round,
               timestamp: block.timestamp,
               maxAge: Math.min(86400, ...(ceilings as number[])),

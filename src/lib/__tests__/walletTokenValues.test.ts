@@ -1,3 +1,5 @@
+import type { ContractFunctionParameters, PublicClient } from "viem";
+
 import { supportedChainIds } from "#/lib/publicClients";
 import { getSupportedTokens } from "#/lib/supportedTokens";
 import { fetchWalletTokenValues } from "#/lib/walletTokenValues";
@@ -6,6 +8,45 @@ import {
   TOKEN_WALLET,
   walletTokenRpc,
 } from "#/test/walletTokenRpc";
+
+it("values Sepolia wallet tokens with static zero-round feeds", async () => {
+  const client = {
+    getBlock: jest.fn(async () => ({
+      number: BigInt(123),
+      timestamp: BigInt(1795541964),
+    })),
+    multicall: jest.fn(
+      async ({ contracts }: { contracts: ContractFunctionParameters[] }) =>
+        contracts.map(({ functionName }) => ({
+          status: "success",
+          result:
+            functionName === "balanceOf"
+              ? BigInt("1000000000000000000")
+              : functionName === "decimals"
+                ? 18
+                : [
+                    BigInt(0),
+                    BigInt("1000000000000000"),
+                    BigInt(0),
+                    BigInt(1721741040),
+                    BigInt(0),
+                  ],
+        })),
+    ),
+  } as unknown as PublicClient;
+  const snapshot = await fetchWalletTokenValues({
+    chainId: 11155111,
+    account: TOKEN_WALLET,
+    client,
+  });
+  expect(
+    snapshot.tokens.find(({ token }) => token.symbol === "WETH"),
+  ).toMatchObject({
+    balance: BigInt("1000000000000000000"),
+    usdPrice: 0.001,
+    usdValue: 0.001,
+  });
+});
 
 function expectPinnedReads(rpc: ReturnType<typeof walletTokenRpc>) {
   const [blockRead, ...batches] = rpc.calls;

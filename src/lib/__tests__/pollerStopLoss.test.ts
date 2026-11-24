@@ -24,6 +24,7 @@ import {
   PublicClient,
   zeroAddress,
 } from "viem";
+import { sepolia } from "viem/chains";
 
 import { defaultAdvancedSettings } from "#/hooks/useAdvancedSettings";
 import { configuredTokenRoute } from "#/lib/oracleRouter";
@@ -931,6 +932,49 @@ test.each([
     status: "unknown",
     error: "Required price feed is invalid",
   });
+});
+
+test("accepts static Sepolia feeds during placement review without changing the encoded age", async () => {
+  const { sellTokens, buyToken } = getSupportedTokens(sepolia.id);
+  const pair = {
+    chainId: sepolia.id,
+    tokenSell: sellTokens[0].token,
+    tokenBuy: buyToken.token,
+  };
+  const client = {
+    ...checkingClient({
+      latestRoundData: [
+        BigInt(0),
+        BigInt("1000000000000000"),
+        BigInt(0),
+        BigInt(1721741040),
+        BigInt(0),
+      ],
+    }),
+    chain: sepolia,
+  };
+  const prepared = await preparePlacement({
+    draft: { ...draft, ...pair, ...configuredTokenRoute(pair) },
+    account,
+    chainId: sepolia.id,
+    client,
+  });
+  emptyFundingApi();
+
+  try {
+    await expect(
+      refreshPlacementChecks(prepared, { client }),
+    ).resolves.toMatchObject({ status: "known" });
+    const encoded = decodeAbiParameters(
+      parseAbiParameters(
+        "address,address,uint256,uint256,bytes32,address,bool,bool,uint32,address,address,int256,uint32",
+      ),
+      prepared.staticInput,
+    );
+    expect(encoded[12]).toBe(3600);
+  } finally {
+    invalidatePlacementReads({ account, chainId: sepolia.id });
+  }
 });
 
 test("keeps an oracle RPC failure distinct from a stale price", async () => {

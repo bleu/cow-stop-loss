@@ -15,6 +15,8 @@ import {
   CHAINS_ORACLE_ROUTER_FACTORY,
   configuredTokenRoute,
   readOraclePairPrice,
+  readOraclePrice,
+  validateOracleRound,
 } from "../oracleRouter";
 import { publicClientsFromIds, supportedChainIds } from "../publicClients";
 import { getSupportedTokens } from "../supportedTokens";
@@ -190,6 +192,86 @@ it("deduplicates identical pair feeds in the low-level reader", async () => {
     }),
   ).resolves.toBe(1);
   expect(client.readContract).toHaveBeenCalledTimes(2);
+});
+
+describe("Sepolia static feed validation", () => {
+  const timestamp = BigInt(1795541964);
+  const round = [
+    BigInt(0),
+    BigInt("1000000000000000"),
+    BigInt(0),
+    BigInt(1721741040),
+    BigInt(0),
+  ] as const;
+
+  it.each([
+    { round },
+    { round: [BigInt(2), round[1], round[2], round[3], BigInt(1)] as const },
+  ])(
+    "accepts old Sepolia feeds without complete round metadata: %#",
+    ({ round }) => {
+      expect(() =>
+        validateOracleRound({ round, timestamp, maxAge: 1, chainId: 11155111 }),
+      ).not.toThrow();
+    },
+  );
+
+  it.each([-1, 0.5, 256, NaN])(
+    "rejects invalid Sepolia feed decimals %s",
+    async (decimals) => {
+      const client = publicClientsFromIds[11155111];
+      jest
+        .spyOn(client, "readContract")
+        .mockImplementation(async ({ functionName }) =>
+          functionName === "decimals" ? decimals : round,
+        );
+      await expect(
+        readOraclePrice({
+          client,
+          oracle: getSupportedTokens(11155111).sellTokens[0].oracles.USD!,
+          blockNumber: BigInt(123),
+          timestamp,
+          maxAge: 1,
+        }),
+      ).rejects.toThrow("Required price feed decimals are invalid");
+    },
+  );
+
+  it.each([1, 100, 42161, undefined])(
+    "keeps round and age checks on chain %s",
+    (chainId) => {
+      expect(() =>
+        validateOracleRound({ round, timestamp, maxAge: 86400, chainId }),
+      ).toThrow("Required price feed is invalid");
+      expect(() =>
+        validateOracleRound({
+          round: [BigInt(1), round[1], round[2], round[3], BigInt(1)],
+          timestamp,
+          maxAge: 86400,
+          chainId,
+        }),
+      ).toThrow("Oracle price data is stale");
+    },
+  );
+
+  it.each([
+    [BigInt(0), round[3]],
+    [BigInt(-1), round[3]],
+    [round[1], BigInt(0)],
+    [round[1], timestamp + BigInt(1)],
+  ])(
+    "rejects invalid Sepolia answers or timestamps: %#",
+    (answer, updatedAt) => {
+      expect(() =>
+        validateOracleRound({
+          round: [round[0], answer, round[2], updatedAt, round[4]],
+          timestamp,
+          maxAge: 86400,
+          chainId: 11155111,
+        }),
+      ).toThrow("Required price feed is invalid");
+    },
+  );
 });
 
 it("retains round and freshness checks for pair prices", async () => {

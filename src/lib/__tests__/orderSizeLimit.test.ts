@@ -277,6 +277,37 @@ describe("fresh USD order size validation", () => {
     },
   );
 
+  it("checks Sepolia order sizes with a static zero-round USD feed", async () => {
+    const chainId = 11155111;
+    const { sellTokens } = getSupportedTokens(chainId);
+    const client = publicClientsFromIds[chainId];
+    jest.spyOn(client, "getBlock").mockResolvedValue({
+      number: BigInt(123),
+      timestamp: BigInt(1795541964),
+    } as never);
+    jest
+      .spyOn(client, "readContract")
+      .mockImplementation(async ({ functionName }) =>
+        functionName === "decimals"
+          ? 18
+          : [
+              BigInt(0),
+              BigInt("1000000000000000"),
+              BigInt(0),
+              BigInt(1721741040),
+              BigInt(0),
+            ],
+      );
+    const args = { chainId, tokenSell: sellTokens[0].token, client } as const;
+    const capAmount = BigInt(10_000_000) * BigInt(10) ** BigInt(18);
+    await expect(
+      assertOrderSizeLimit({ ...args, sellAmount: capAmount }),
+    ).resolves.toBeUndefined();
+    await expect(
+      assertOrderSizeLimit({ ...args, sellAmount: capAmount + BigInt(1) }),
+    ).rejects.toThrow(ORDER_SIZE_LIMIT_EXCEEDED_ERROR);
+  });
+
   it("fails closed when the RPC is unavailable", async () => {
     getBlock.mockRejectedValueOnce(new Error("RPC failed"));
     await expect(
