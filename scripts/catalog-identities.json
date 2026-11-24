@@ -568,9 +568,9 @@
       "chainId": 1,
       "address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
       "assetClass": "usd-pegged",
-      "localLogo": "/assets/tokens/3f7e7a7ae10f296bb141.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/54977/thumb/USD1_1000x1000_transparent.png?1749297002",
-      "logoSha256": "3f7e7a7ae10f296bb1419a904c0f1febe277e4c774aff0f6ad4bcba35381ebfc"
+      "localLogo": "/assets/tokens/642556d67336162b915a.png",
+      "logoSource": "https://raw.githubusercontent.com/trustwallet/assets/76b3ae77107942a5ae382a9d5eabf3a25a14268b/blockchains/ethereum/assets/0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d/logo.png",
+      "logoSha256": "642556d67336162b915a89f57a353a6661cd77e20437d2c426192535b6634376"
     },
     {
       "chainId": 1,
@@ -2291,9 +2291,9 @@
       "chainId": 56,
       "address": "0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d",
       "assetClass": "usd-pegged",
-      "localLogo": "/assets/tokens/3f7e7a7ae10f296bb141.png",
-      "logoSource": "https://assets.coingecko.com/coins/images/54977/thumb/USD1_1000x1000_transparent.png?1749297002",
-      "logoSha256": "3f7e7a7ae10f296bb1419a904c0f1febe277e4c774aff0f6ad4bcba35381ebfc"
+      "localLogo": "/assets/tokens/642556d67336162b915a.png",
+      "logoSource": "https://raw.githubusercontent.com/trustwallet/assets/76b3ae77107942a5ae382a9d5eabf3a25a14268b/blockchains/smartchain/assets/0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d/logo.png",
+      "logoSha256": "642556d67336162b915a89f57a353a6661cd77e20437d2c426192535b6634376"
     },
     {
       "chainId": 56,

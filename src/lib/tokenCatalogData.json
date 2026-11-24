@@ -1410,7 +1410,7 @@
       "name": "USD1",
       "decimals": 18,
       "assetClass": "usd-pegged",
-      "logoURI": "/assets/tokens/3f7e7a7ae10f296bb141.png",
+      "logoURI": "/assets/tokens/642556d67336162b915a.png",
       "oracles": {},
       "oracleApprovals": {}
     },
@@ -3133,7 +3133,7 @@
       "name": "USD1",
       "decimals": 18,
       "assetClass": "usd-pegged",
-      "logoURI": "/assets/tokens/3f7e7a7ae10f296bb141.png",
+      "logoURI": "/assets/tokens/642556d67336162b915a.png",
       "oracles": {},
       "oracleApprovals": {}
     },
