@@ -1,4 +1,5 @@
 import { Address, formatUnits, PublicClient } from "viem";
+import { sepolia } from "viem/chains";
 
 import { oracleMinimalAbi } from "./abis/oracleMinimalAbi";
 import {
@@ -15,23 +16,26 @@ export function validateOracleRound({
   round,
   timestamp,
   maxAge,
+  chainId,
 }: {
   round: OracleRound;
   timestamp: bigint;
   maxAge: number;
+  chainId?: number;
 }) {
   if (!Number.isFinite(maxAge) || maxAge <= 0)
     throw new Error("Oracle time limit must be a positive finite number");
+  // Sepolia's fixed test feeds have no round history and do not refresh.
+  const staticFeed = chainId === sepolia.id;
   if (
-    round[0] <= BigInt(0) ||
+    (!staticFeed && (round[0] <= BigInt(0) || round[4] < round[0])) ||
     round[1] <= BigInt(0) ||
     round[3] <= BigInt(0) ||
-    round[3] > timestamp ||
-    round[4] < round[0]
+    round[3] > timestamp
   ) {
     throw new Error("Required price feed is invalid");
   }
-  if (timestamp - round[3] > BigInt(Math.floor(maxAge))) {
+  if (!staticFeed && timestamp - round[3] > BigInt(Math.floor(maxAge))) {
     throw new Error(
       "Oracle price data is stale. Try again later, or increase the oracle time limit in Advanced Settings.",
     );
@@ -59,7 +63,7 @@ export async function readOraclePrice({
     functionName: "latestRoundData",
     blockNumber,
   })) as OracleRound;
-  validateOracleRound({ round, timestamp, maxAge });
+  validateOracleRound({ round, timestamp, maxAge, chainId: client.chain?.id });
   const decimals = (await client.readContract({
     address: oracle,
     abi: oracleMinimalAbi,
