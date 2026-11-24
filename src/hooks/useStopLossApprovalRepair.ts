@@ -4,7 +4,11 @@ import { useEffect, useState } from "react";
 import { Address, erc20Abi } from "viem";
 
 import { GPV2_VAULT_RELAYER_ADDRESS } from "#/lib/contracts";
-import { ChainId, publicClientsFromIds } from "#/lib/publicClients";
+import {
+  ChainId,
+  isSupportedChainId,
+  publicClientsFromIds,
+} from "#/lib/publicClients";
 import {
   ApprovalRepairRecord,
   createStopLossApprovalRepair,
@@ -22,6 +26,7 @@ export function resumeStopLossApprovalRepair(
   account: Address,
   chainId: ChainId,
 ) {
+  if (!isSupportedChainId(chainId)) return Promise.resolve([]);
   const key = `${account.toLowerCase()}:${chainId}`;
   const running = resumptions.get(key);
   if (running) return running;
@@ -59,7 +64,7 @@ export function useStopLossApprovalRepair(
   const [records, setRecords] = useState<ApprovalRepairRecord[]>([]);
   const [error, setError] = useState<string>();
   useEffect(() => {
-    if (!account || !chainId) {
+    if (!account || !isSupportedChainId(chainId)) {
       setRecords([]);
       setError(undefined);
       return;

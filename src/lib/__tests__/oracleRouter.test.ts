@@ -12,7 +12,7 @@ jest.mock("#/lib/supportedTokens", () => {
 import type { Address } from "viem";
 
 import {
-  CHAINS_ORACLE_ROUTER_FACTORY,
+  ConfiguredRouter,
   configuredTokenRoute,
   readOraclePairPrice,
 } from "../oracleRouter";
@@ -24,8 +24,7 @@ const client = publicClientsFromIds[1];
 
 function routerFor(chainId: (typeof supportedChainIds)[number] = 1) {
   const { sellTokens, buyToken } = getSupportedTokens(chainId);
-  const Router = CHAINS_ORACLE_ROUTER_FACTORY[chainId];
-  return new Router({
+  return new ConfiguredRouter({
     chainId,
     tokenSell: sellTokens[0].token,
     tokenBuy: buyToken.token,
@@ -47,8 +46,9 @@ it.each([1, 100, 42161, 11155111] as const)(
         tokenBuyOracle: buyToken.oracles[quote],
       };
       expect(configuredTokenRoute(args)).toEqual(route);
-      const Router = CHAINS_ORACLE_ROUTER_FACTORY[chainId];
-      await expect(new Router(args).findRoute()).resolves.toEqual(route);
+      await expect(new ConfiguredRouter(args).findRoute()).resolves.toEqual(
+        route,
+      );
     }
   },
 );

@@ -10,7 +10,7 @@ import {
   sepolia,
 } from "viem/chains";
 
-import { ChainId, plasma } from "../publicClients";
+import { ChainId, plasma, robinhood } from "../publicClients";
 
 const COW_API_BASE_URL = "https://api.cow.fi/";
 
@@ -25,4 +25,5 @@ export const COW_API_URL_BY_CHAIN_ID = {
   [bsc.id]: COW_API_BASE_URL + "bnb",
   [linea.id]: COW_API_BASE_URL + "linea",
   [plasma.id]: COW_API_BASE_URL + "plasma",
+  [robinhood.id]: COW_API_BASE_URL + "robinhood",
 } satisfies Record<ChainId, string>;

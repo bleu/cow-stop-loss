@@ -17,6 +17,7 @@ import { invalidatePlacementReads } from "#/lib/placementReads";
 import { verifyPlacementConfirmation } from "#/lib/pollerStopLoss";
 import {
   ChainId,
+  isSupportedChainId,
   publicClientsFromIds,
   supportedChainIds,
 } from "#/lib/publicClients";
@@ -44,7 +45,7 @@ export function useStopLossPlacement(account?: Address, chainId?: ChainId) {
   >([]);
   const [error, setError] = useState<string>();
   useEffect(() => {
-    if (!account) {
+    if (!account || (chainId !== undefined && !isSupportedChainId(chainId))) {
       setRecords([]);
       setPendingTransactions([]);
       setError(undefined);
@@ -137,6 +138,7 @@ export function useStopLossPlacement(account?: Address, chainId?: ChainId) {
 const resumptions = new Map<string, Promise<PlacementRecord[]>>();
 
 export function resumeStopLossPlacement(account: Address, chainId: ChainId) {
+  if (!isSupportedChainId(chainId)) return Promise.resolve([]);
   const key = `${account.toLowerCase()}:${chainId}`;
   const current = resumptions.get(key);
   if (current) return current;

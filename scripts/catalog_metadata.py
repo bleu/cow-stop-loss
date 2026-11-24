@@ -15,7 +15,8 @@ import urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 PRODUCTION_CHAINS = {1, 100, 42161, 8453, 137, 43114, 56, 59144, 9745}
-SUPPORTED_CHAINS = PRODUCTION_CHAINS | {11155111}
+ROBINHOOD_CHAIN = 4663
+SUPPORTED_CHAINS = PRODUCTION_CHAINS | {11155111, ROBINHOOD_CHAIN}
 ADDRESS = re.compile(r"0x[0-9a-fA-F]{40}")
 METADATA_FIELDS = {"symbol", "name", "decimals"}
 MAX_BYTES = 16 * 1024 * 1024

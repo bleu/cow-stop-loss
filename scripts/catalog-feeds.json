@@ -13,7 +13,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ETH / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "eth-usd",
       "proxyAddress": "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419",
       "threshold": 0.5,
@@ -54,7 +57,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "LINK / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "link-usd",
       "proxyAddress": "0x2c1d072e956AFFC0D435Cb7AC38EF18d24d9127c",
       "threshold": 0.5,
@@ -94,7 +100,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "UNI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "uni-usd",
       "proxyAddress": "0x553303d460EE0afB37EdFf9bE42922D8FF63220e",
       "threshold": 1,
@@ -134,7 +143,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "USDC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "usdc-usd",
       "proxyAddress": "0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6",
       "threshold": 0.25,
@@ -179,7 +191,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "AAVE / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "aave-usd",
       "proxyAddress": "0x547a514d5e3769680Ce22B2361c10Ea13619e8a9",
       "threshold": 1,
@@ -220,7 +235,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "COMP / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "comp-usd",
       "proxyAddress": "0xdbd020CAeF83eFd542f4De03e3cF0C28A4428bd5",
       "threshold": 1,
@@ -260,7 +278,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "cbBTC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "cbbtc-usd",
       "proxyAddress": "0x2665701293fCbEB223D11A08D826563EDcCE423A",
       "threshold": 2,
@@ -304,7 +325,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "CRV / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "crv-usd",
       "proxyAddress": "0xCd627aA160A6fA45Eb793D19Ef54f5062F20f33f",
       "threshold": 1,
@@ -345,7 +369,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ENS / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "ens-usd",
       "proxyAddress": "0x5C00128d4d1c2F4f652C267d7bcdD7aC99C16E16",
       "threshold": 2,
@@ -386,7 +413,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SKY / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "sky-usd",
       "proxyAddress": "0xee10fE5E7aa92dd7b136597449c3d5813cFC5F18",
       "threshold": 2,
@@ -427,7 +457,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "WLFI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "wlfi-usd",
       "proxyAddress": "0x14E5FC91Ddb3f97C33013Cc9fA74F54062Ad1Aa1",
       "threshold": 2,
@@ -467,7 +500,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SPELL / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "spell-usd",
       "proxyAddress": "0x8c110B94C5f1d347fAcF5E1E938AB2db60E3c9a8",
       "threshold": 1,
@@ -508,7 +544,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "YFI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "yfi-usd",
       "proxyAddress": "0xA027702dbb89fbd58938e4324ac03B58d812b0E1",
       "threshold": 1,
@@ -548,7 +587,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "1INCH / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "1inch-usd",
       "proxyAddress": "0xc929ad75B72593967DE83E7F7Cda0493458261D9",
       "threshold": 1,
@@ -589,7 +631,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "RDNT / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "rdnt-usd",
       "proxyAddress": "0x393CC05baD439c9B36489384F11487d9C8410471",
       "threshold": 2,
@@ -629,7 +674,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "TBTC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "tbtc-usd",
       "proxyAddress": "0x8350b7De6a6a2C1368E7D4Bd968190e13E354297",
       "threshold": 2,
@@ -673,7 +721,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "RSR / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "rsr-usd",
       "proxyAddress": "0x759bBC1be8F90eE6457C44abc7d443842a976d02",
       "threshold": 2,
@@ -714,7 +765,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "FXS / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "fxs-usd",
       "proxyAddress": "0x6Ebc52C8C1089be9eB3945C4350B68B8E4C2233f",
       "threshold": 2,
@@ -755,7 +809,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SAND / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "sand-usd",
       "proxyAddress": "0x35E3f7E558C04cE7eEE1629258EcbbA03B36Ec56",
       "threshold": 2,
@@ -796,7 +853,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "APE / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "ape-usd",
       "proxyAddress": "0xD10aBbC76679a20055E167BB80A24ac851b37056",
       "threshold": 2,
@@ -836,7 +896,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "CVX / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "cvx-usd",
       "proxyAddress": "0xd962fC30A72A84cE50161031391756Bf2876Af5D",
       "threshold": 2,
@@ -877,7 +940,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SUSHI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "sushi-usd",
       "proxyAddress": "0xCc70F09A6CC17553b2E31954cD36E4A2d89501f7",
       "threshold": 1,
@@ -917,7 +983,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "MKR / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "mkr-usd",
       "proxyAddress": "0xec1D1B3b0443256cc3860e24a46F108e699484Aa",
       "threshold": 1,
@@ -957,7 +1026,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "XCN / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "xcn-usd",
       "proxyAddress": "0xeb988B77b94C186053282BfcD8B7ED55142D3cAB",
       "threshold": 2,
@@ -998,7 +1070,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ARB / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "arb-usd",
       "proxyAddress": "0x31697852a68433DbCc2Ff612c516d69E3D9bd08F",
       "threshold": 2,
@@ -1041,7 +1116,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "BAL / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "bal-usd",
       "proxyAddress": "0xdF2917806E30300537aEB49A7663062F4d1F2b5F",
       "threshold": 2,
@@ -1082,7 +1160,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SNX / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "snx-usd",
       "proxyAddress": "0xDC3EA94CD0AC27d9A86C180091e7f78C683d3699",
       "threshold": 1,
@@ -1123,7 +1204,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "GRT / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "grt-usd",
       "proxyAddress": "0x86cF33a451dE9dc61a2862FD94FF4ad4Bd65A5d2",
       "threshold": 2,
@@ -1164,7 +1248,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "RPL / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "rpl-usd",
       "proxyAddress": "0x4E155eD98aFE9034b7A5962f6C84c86d869daA9d",
       "threshold": 2,
@@ -1204,7 +1291,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "KNC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "knc-usd",
       "proxyAddress": "0xf8fF43E991A81e6eC886a3D281A2C6cC19aE70Fc",
       "threshold": 1,
@@ -1245,7 +1335,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ZRX / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "zrx-usd",
       "proxyAddress": "0x2885d15b8Af22648b98B122b22FDF4D2a56c6023",
       "threshold": 1,
@@ -1285,7 +1378,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SXT / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "sxt-usd",
       "proxyAddress": "0x2D27d9e1b74936D8E83c4BA118F09A4c4a897f62",
       "threshold": 2,
@@ -1326,7 +1422,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "IMX / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "imx-usd",
       "proxyAddress": "0xBAEbEFc1D023c0feCcc047Bff42E75F15Ff213E6",
       "threshold": 2,
@@ -1367,7 +1466,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "BTC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "btc-usd",
       "proxyAddress": "0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c",
       "threshold": 0.5,
@@ -1407,7 +1509,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "BNB / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "bnb-usd",
       "proxyAddress": "0x14e613AC84a31f709eadbdF89C6CC390fDc9540A",
       "threshold": 1,
@@ -1448,7 +1553,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "AVAX / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "avax-usd",
       "proxyAddress": "0xFF3EEb22B5E3dE6e705b44749C2559d704923FD7",
       "threshold": 2,
@@ -1489,7 +1597,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SOL / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "sol-usd",
       "proxyAddress": "0x4ffC43a60e009B551865A93d232E33Fce9f01507",
       "threshold": 2,
@@ -1516,6 +1627,53 @@
       },
       "decimals": 8,
       "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x6795D4A47c9c8F4117b409D966259CdCf6A9Eb6E",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": "paxg-usd",
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "PAXG / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "paxg-usd",
+      "proxyAddress": "0x9944D86CEB9160aF5C5feB251FD671923323f8C3",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Pax Gold",
+      "feedCategory": "low",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Crypto",
+        "assetSubClass": "Pegged Asset",
+        "attributeType": "cex_price",
+        "baseAsset": "PAXG",
+        "baseAssetClic": "PAXG_CR",
+        "baseAssetEntityId": "crypto-PAXG",
+        "blockchainName": "Ethereum",
+        "clicProductName": "PAXG/USD-RefPrice-DF-Ethereum-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "Crypto",
+        "productSubType": "Reference",
+        "productType": "Price",
+        "productTypeCode": "RefPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD",
+        "underlyingAsset": "XAU",
+        "underlyingAssetClic": "XAU_CO"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
     }
   ],
   "100": [
@@ -1532,7 +1690,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "GNO / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "gno-usd",
       "proxyAddress": "0x22441d81416430A54336aB28765abd31a792Ad37",
       "threshold": 0.5,
@@ -1573,7 +1734,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "USDT / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "usdt-usd",
       "proxyAddress": "0x68811D7DF835B1c33e6EEae8E7C141eF48d48cc7",
       "threshold": 0.5,
@@ -1619,7 +1783,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ETH / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "eth-usd",
       "proxyAddress": "0xa767f745331D267c7751297D982b050c93985627",
       "threshold": 0.5,
@@ -1660,7 +1827,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "LINK / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "link-usd",
       "proxyAddress": "0xed322A5ac55BAE091190dFf9066760b86751947B",
       "threshold": 0.5,
@@ -1701,7 +1871,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "AAVE / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "aave-usd",
       "proxyAddress": "0x2b481Dc923Aa050E009113Dca8dcb0daB4B68cDF",
       "threshold": 0.5,
@@ -1742,7 +1915,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "UNI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "uni-usd",
       "proxyAddress": "0xd98735d78266c62277Bb4dBf3e3bCdd3694782F4",
       "threshold": 0.5,
@@ -1783,7 +1959,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "COMP / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "comp-usd",
       "proxyAddress": "0xBa95Bc8418Ebcdf8a690924E1d4aD5292139F2EA",
       "threshold": 0.5,
@@ -1824,7 +2003,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "CRV / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "crv-usd",
       "proxyAddress": "0xC77B83ac3Dd2a761073bD0f281f7b880B2DDDe18",
       "threshold": 0.5,
@@ -1865,7 +2047,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SUSHI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "sushi-usd",
       "proxyAddress": "0xC0a6Bf8d5D408B091D022C3C0653d4056D4B9c01",
       "threshold": 0.5,
@@ -1906,7 +2091,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "GRT / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "grt-usd",
       "proxyAddress": "0xeBbd67a84e33791F1bcFde74CDc22a71e332e2F1",
       "threshold": 0.5,
@@ -1947,7 +2135,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SNX / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "snx-usd",
       "proxyAddress": "0x3b84d6e6976D5826500572600eB44f9f1753827b",
       "threshold": 0.5,
@@ -1988,7 +2179,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "BTC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "btc-usd",
       "proxyAddress": "0x6C1d7e76EF7304a40e8456ce883BC56d3dEA3F7d",
       "threshold": 0.5,
@@ -2029,7 +2223,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "YFI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "yfi-usd",
       "proxyAddress": "0x14030d5a0C9e63D9606C6f2c8771Fc95b34b07e0",
       "threshold": 0.5,
@@ -2072,7 +2269,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ETH / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "eth-usd",
       "proxyAddress": "0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612",
       "threshold": 0.05,
@@ -2113,7 +2313,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "USDC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "usdc-usd",
       "proxyAddress": "0x50834F3163758fcC1Df9973b6e91f0F0F0434aD3",
       "threshold": 0.1,
@@ -2158,7 +2361,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ARB / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "arb-usd",
       "proxyAddress": "0xb2A824043730FE05F3DA2efaFa1CBbe83fa548D6",
       "threshold": 0.05,
@@ -2198,7 +2404,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "LINK / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "link-usd",
       "proxyAddress": "0x86E53CF1B870786351Da77A57575e79CB55812CB",
       "threshold": 1,
@@ -2239,7 +2448,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "AAVE / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "aave-usd",
       "proxyAddress": "0xaD1d5344AaDE45F43E596773Bcc4c423EAbdD034",
       "threshold": 0.5,
@@ -2280,7 +2492,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "UNI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "uni-usd",
       "proxyAddress": "0x9C917083fDb403ab5ADbEC26Ee294f6EcAda2720",
       "threshold": 0.15,
@@ -2321,7 +2536,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "COMP / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "comp-usd",
       "proxyAddress": "0xe7C53FFd03Eb6ceF7d208bC4C13446c76d1E5884",
       "threshold": 0.5,
@@ -2362,7 +2580,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "WBTC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "wbtc-usd",
       "proxyAddress": "0xd0C7101eACbB49F3deCcCc166d238410D6D46d57",
       "threshold": 0.05,
@@ -2406,7 +2627,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ENA / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "ena-usd",
       "proxyAddress": "0x9eE96caa9972c801058CAA8E23419fc6516FbF7e",
       "threshold": 0.5,
@@ -2447,7 +2671,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "PENDLE / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "pendle-usd",
       "proxyAddress": "0x66853E19d73c0F9301fe099c324A1E9726953433",
       "threshold": 0.5,
@@ -2488,7 +2715,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "GMX / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "gmx-usd",
       "proxyAddress": "0xDB98056FecFff59D032aB628337A4887110df3dB",
       "threshold": 0.5,
@@ -2529,7 +2759,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "GNS / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "gns-usd",
       "proxyAddress": "0xE89E98CE4E19071E59Ed4780E0598b541CE76486",
       "threshold": 0.5,
@@ -2570,7 +2803,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "CRV / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "crv-usd",
       "proxyAddress": "0xaebDA2c976cfd1eE1977Eac079B4382acb849325",
       "threshold": 0.5,
@@ -2611,7 +2847,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "CAKE / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "cake-usd",
       "proxyAddress": "0x256654437f1ADA8057684b18d742eFD14034C400",
       "threshold": 0.5,
@@ -2651,7 +2890,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "RDNT / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "rdnt-usd",
       "proxyAddress": "0x20d0Fcab0ECFD078B036b6CAf1FaC69A6453b352",
       "threshold": 0.5,
@@ -2691,7 +2933,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SPELL / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "spell-usd",
       "proxyAddress": "0x383b3624478124697BEF675F07cA37570b73992f",
       "threshold": 0.5,
@@ -2732,7 +2977,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "MORPHO / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "morpho-usd",
       "proxyAddress": "0x1E48733Eeee02468b674b69958b046EB6A0a7d94",
       "threshold": 0.5,
@@ -2773,7 +3021,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "MAGIC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "magic-usd",
       "proxyAddress": "0x47E55cCec6582838E173f252D08Afd8116c2202d",
       "threshold": 0.5,
@@ -2814,7 +3065,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "TBTC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "tbtc-usd",
       "proxyAddress": "0xE808488e8627F6531bA79a13A9E0271B39abEb1C",
       "threshold": 0.5,
@@ -2858,7 +3112,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "APE / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "ape-usd",
       "proxyAddress": "0x221912ce795669f628c51c69b7d0873eDA9C03bB",
       "threshold": 0.5,
@@ -2899,7 +3156,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "YFI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "yfi-usd",
       "proxyAddress": "0x745Ab5b69E01E2BE1104Ca84937Bb71f96f5fB21",
       "threshold": 0.5,
@@ -2940,7 +3200,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "GRT / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "grt-usd",
       "proxyAddress": "0x0F38D86FceF4955B705F35c9e41d1A16e0637c73",
       "threshold": 0.5,
@@ -2981,7 +3244,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ATH / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "ath-usd",
       "proxyAddress": "0x920E09A98f83b82701207BA7E433a5b53eCB888A",
       "threshold": 0.5,
@@ -3023,7 +3289,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "RSR / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "rsr-usd",
       "proxyAddress": "0xcfF9349ec6d027f20fC9360117fef4a1Ad38B488",
       "threshold": 0.5,
@@ -3064,7 +3333,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "WOO / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "woo-usd",
       "proxyAddress": "0x5e2b5C5C07cCA3437c4D724225Bb42c7E55d1597",
       "threshold": 0.5,
@@ -3105,7 +3377,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SUSHI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "sushi-usd",
       "proxyAddress": "0xb2A8BA74cbca38508BA1632761b56C897060147C",
       "threshold": 0.5,
@@ -3146,7 +3421,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "LDO / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "ldo-usd",
       "proxyAddress": "0xA43A34030088E6510FecCFb77E88ee5e7ed0fE64",
       "threshold": 0.5,
@@ -3187,7 +3465,10 @@
       "history": null,
       "multiply": "1000000000000000000",
       "name": "PEPE / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "pepe-usd",
       "proxyAddress": "0x02DEd5a7EDDA750E3Eb240b54437a54d57b74dBE",
       "threshold": 0.5,
@@ -3227,7 +3508,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "WLFI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "wlfi-usd",
       "proxyAddress": "0x4b13Dd76De990Db9A2Dab58D35C2c02E5e3AE848",
       "threshold": 0.5,
@@ -3268,7 +3552,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "APT / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "apt-usd",
       "proxyAddress": "0xdc49F292ad1bb3DAb6C11363d74ED06F38b9bd9C",
       "threshold": 0.1,
@@ -3309,7 +3596,10 @@
       "history": null,
       "multiply": "1000000000000000000",
       "name": "SHIB / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "shib-usd",
       "proxyAddress": "0x0E278D14B4bf6429dDB0a1B353e2Ae8A4e128C93",
       "threshold": 0.5,
@@ -3350,7 +3640,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "AVAX / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "avax-usd",
       "proxyAddress": "0x8bf61728eeDCE2F32c456454d87B5d6eD6150208",
       "threshold": 0.1,
@@ -3391,7 +3684,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "1INCH / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "1inch-usd",
       "proxyAddress": "0x4bC735Ef24bf286983024CAd5D03f0738865Aaef",
       "threshold": 0.5,
@@ -3432,7 +3728,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ZRO / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "zro-usd",
       "proxyAddress": "0x1940fEd49cDBC397941f2D336eb4994D599e568B",
       "threshold": 0.5,
@@ -3472,7 +3771,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "BNB / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "bnb-usd",
       "proxyAddress": "0x6970460aabF80C5BE983C6b74e5D06dEDCA95D4A",
       "threshold": 0.1,
@@ -3513,7 +3815,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "CRO / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "cro-usd",
       "proxyAddress": "0xea320E4d688B143A3bFBF1b4a5cc4B986fCa086c",
       "threshold": 0.5,
@@ -3554,7 +3859,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "MNT / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "mnt-usd",
       "proxyAddress": "0x37DDEE84dE03d039e1Bf809b7a01EDd2c4665771",
       "threshold": 10,
@@ -3594,7 +3902,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "CVX / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "cvx-usd",
       "proxyAddress": "0x851175a919f36c8e30197c09a9A49dA932c2CC00",
       "threshold": 0.5,
@@ -3635,7 +3946,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SOL / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "sol-usd",
       "proxyAddress": "0x24ceA4b8ce57cdA5058b924B9B9987992450590c",
       "threshold": 0.1,
@@ -3676,7 +3990,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SNX / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "snx-usd",
       "proxyAddress": "0x054296f0D036b95531B4E14aFB578B80CFb41252",
       "threshold": 0.5,
@@ -3716,7 +4033,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SUI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "sui-usd",
       "proxyAddress": "0x4a85B128EBDaFC24d5CB611e161376ffDECeB289",
       "threshold": 0.5,
@@ -3756,7 +4076,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ATOM / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "atom-usd",
       "proxyAddress": "0xCDA67618e51762235eacA373894F0C79256768fa",
       "threshold": 0.5,
@@ -3797,7 +4120,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "AXL / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "axl-usd",
       "proxyAddress": "0x84e8237CC1418Ea1B4A1e0C3e7F48c3A5fbC81AF",
       "threshold": 0.5,
@@ -3838,7 +4164,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "TIA / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "tia-usd",
       "proxyAddress": "0x4096b9bfB4c34497B7a3939D4f629cf65EBf5634",
       "threshold": 0.5,
@@ -3881,7 +4210,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "VIRTUAL / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "virtual-usd",
       "proxyAddress": "0xEaf310161c9eF7c813A14f8FEF6Fb271434019F7",
       "threshold": 0.5,
@@ -3922,7 +4254,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "USDC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "usdc-usd",
       "proxyAddress": "0x7e860098F58bBFC8648a4311b374B1D669a2bc6B",
       "threshold": 0.3,
@@ -3967,7 +4302,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ETH / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "eth-usd-shared-svr-2",
       "proxyAddress": "0x50015f8b17fb2C290Dde41fDc246ed0dcEE93a8b",
       "secondaryProxyAddress": "0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70",
@@ -4014,7 +4352,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "LINK / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "link-usd",
       "proxyAddress": "0x17CAb8FE31E32f08326e5E27412894e49B0f9D65",
       "threshold": 0.5,
@@ -4057,7 +4398,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "AAVE / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "aave-usd",
       "proxyAddress": "0x3d6774EF702A10b20FCa8Ed40FC022f7E4938e07",
       "threshold": 0.5,
@@ -4098,7 +4442,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "COMP / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "comp-usd",
       "proxyAddress": "0x9DDa783DE64A9d1A60c49ca761EbE528C35BA428",
       "threshold": 0.5,
@@ -4141,7 +4488,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "AERO / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "aero-usd",
       "proxyAddress": "0x4EC5970fC728C5f65ba413992CD5fF6FD70fcfF0",
       "threshold": 0.5,
@@ -4182,7 +4532,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "cbBTC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "cbbtc-usd",
       "proxyAddress": "0x07DA0E54543a844a80ABE69c8A12F22B3aA59f9D",
       "threshold": 0.3,
@@ -4226,7 +4579,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "AVNT / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "avnt-usd",
       "proxyAddress": "0x50997b806B574501cC34a2a6d845e4dc1Bd9Aa8c",
       "threshold": 0.5,
@@ -4267,7 +4623,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "CBDOGE / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "cbdoge-usd",
       "proxyAddress": "0x95051De9Db5Cac61682f64505006f2991dEaB3c2",
       "threshold": 0.5,
@@ -4308,7 +4667,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "BTC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "btc-usd-shared-svr-2",
       "proxyAddress": "0xC01502b887D09B0f329981764268fC32a94cB453",
       "secondaryProxyAddress": "0x64c911996D3c6aC71f9b455B1E8E7266BcbD848F",
@@ -4352,7 +4714,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SNX / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "snx-usd",
       "proxyAddress": "0xe3971Ed6F1A5903321479Ef3148B5950c0612075",
       "threshold": 0.5,
@@ -4393,7 +4758,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "TBTC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "tbtc-usd",
       "proxyAddress": "0x6D75BFB5A5885f841b132198C9f0bE8c872057BF",
       "threshold": 0.5,
@@ -4437,7 +4805,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "AXL / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "axl-usd",
       "proxyAddress": "0x676C4C6C31D97A5581D3204C04A8125B350E2F9D",
       "threshold": 0.5,
@@ -4478,7 +4849,10 @@
       "history": null,
       "multiply": "1000000000000000000",
       "name": "MOG / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "mog-usd",
       "proxyAddress": "0x4aeb6D15769EaD32D0c5Be2940F40c7CFf53801d",
       "threshold": 0.5,
@@ -4521,7 +4895,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SOL / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "sol-usd-shared-svr-2",
       "proxyAddress": "0x5D424D5a664a9f3c820F422297077d49877F9C93",
       "secondaryProxyAddress": "0x975043adBb80fc32276CbF9Bbcfd4A601a12462D",
@@ -4565,7 +4942,10 @@
       "history": null,
       "multiply": "1000000000000000000",
       "name": "HOME / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "home-usd",
       "proxyAddress": "0x121934C415937863d64ef93436169444633EE0d8",
       "threshold": 0.5,
@@ -4606,7 +4986,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "DEGEN / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "degen-usd",
       "proxyAddress": "0xE62BcE5D7CB9d16AB8b4D622538bc0A50A5799c2",
       "threshold": 0.5,
@@ -4649,7 +5032,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ZRO / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "zro-usd",
       "proxyAddress": "0xdc31a4CCfCA039BeC6222e20BE7770E12581bfEB",
       "threshold": 0.5,
@@ -4689,7 +5075,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "MLN / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "mln-usd",
       "proxyAddress": "0x122b5334A8b55861dBc6729c294451471FbF318D",
       "threshold": 0.5,
@@ -4730,7 +5119,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "OP / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "op-usd",
       "proxyAddress": "0x3E3A6bD129A63564FE7abde85FA67c3950569060",
       "threshold": 0.5,
@@ -4771,7 +5163,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "YFI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "yfi-usd",
       "proxyAddress": "0xD40e758b5eC80820B68DFC302fc5Ce1239083548",
       "threshold": 0.5,
@@ -4812,7 +5207,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "WELL / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "well-usd",
       "proxyAddress": "0xc15d9944dAefE2dB03e53bef8DDA25a56832C5fe",
       "threshold": 0.5,
@@ -4853,7 +5251,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "RSR / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "rsr-usd",
       "proxyAddress": "0xAa98aE504658766Dfe11F31c5D95a0bdcABDe0b1",
       "threshold": 2,
@@ -4894,7 +5295,10 @@
       "history": null,
       "multiply": "1000000000000000000",
       "name": "VVV / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "vvv-usd",
       "proxyAddress": "0xaABc55Ca55D70B034e4daA2551A224239890282F",
       "threshold": 0.5,
@@ -4935,7 +5339,10 @@
       "history": null,
       "multiply": "1000000000000000000",
       "name": "ZEC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "zec-usd-shared-svr",
       "proxyAddress": "0x69e5BC4988a9AF30Ec827C5609c0D41028446ec0",
       "secondaryProxyAddress": "0xC4a161651546983083AeDDDEc5878A2eAf604890",
@@ -4978,7 +5385,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "AMP / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "amp-usd",
       "proxyAddress": "0x1688e4B274a4CC9fD398EbA6Ae4dfb6528A9D2bc",
       "threshold": 0.5,
@@ -5019,7 +5429,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "PEPE / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "pepe-usd",
       "proxyAddress": "0xB48ac6409C0c3718b956089b0fFE295A10ACDdad",
       "threshold": 0.5,
@@ -5059,7 +5472,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "MORPHO / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "morpho-usd",
       "proxyAddress": "0xe95e258bb6615d47515Fc849f8542dA651f12bF6",
       "threshold": 0.5,
@@ -5100,7 +5516,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "LTC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "ltc-usd-shared-svr-2",
       "proxyAddress": "0xa03A14F790eb8F5Ff73227278a3bb6eDE57Dc8c9",
       "secondaryProxyAddress": "0x206a34e47093125fbf4C75b7c7E88b84c6A77a69",
@@ -5144,7 +5563,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "XRP / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "xrp-usd-shared-svr-2",
       "proxyAddress": "0x281F1D237Fa1382d96f7A4fd190500D182042e3b",
       "secondaryProxyAddress": "0x9f0C1dD78C4CBdF5b9cf923a549A201EdC676D34",
@@ -5188,7 +5610,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ADA / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "ada-usd-shared-svr-2",
       "proxyAddress": "0xf4DF589BeAbE63fEF977c73b9150BD2bdA1e346C",
       "secondaryProxyAddress": "0x34cD971a092d5411bD69C10a5F0A7EEF72C69041",
@@ -5234,7 +5659,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "MATIC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "matic-usd",
       "proxyAddress": "0xAB594600376Ec9fD91F8e885dADF0CE036862dE0",
       "threshold": 0.25,
@@ -5275,7 +5703,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "USDC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "usdc-usd",
       "proxyAddress": "0xfE4A8cc5b5B2366C1B58Bea3858e81843581b2F7",
       "threshold": 0.005,
@@ -5320,7 +5751,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "LINK / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "link-usd",
       "proxyAddress": "0xd9FFdb71EbE7496cC440152d43986Aae0AB76665",
       "threshold": 0.25,
@@ -5361,7 +5795,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "AAVE / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "aave-usd",
       "proxyAddress": "0x72484B12719E23115761D5DA1646945632979bB6",
       "threshold": 0.25,
@@ -5402,7 +5839,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "UNI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "uni-usd",
       "proxyAddress": "0xdf0Fb4e4F928d2dCB76f438575fDD8682386e13C",
       "threshold": 0.25,
@@ -5443,7 +5883,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ETH / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "eth-usd",
       "proxyAddress": "0xF9680D99D6C9589e2a93a78A04A279e509205945",
       "threshold": 0.1,
@@ -5484,7 +5927,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "COMP / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "comp-usd",
       "proxyAddress": "0x2A8758b7257102461BC958279054e372C2b1bDE6",
       "threshold": 0.25,
@@ -5525,7 +5971,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "CRV / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "crv-usd",
       "proxyAddress": "0x336584C8E6Dc19637A5b36206B1c79923111b405",
       "threshold": 0.5,
@@ -5566,7 +6015,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SUSHI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "sushi-usd",
       "proxyAddress": "0x49B0c695039243BBfEb8EcD054EB70061fd54aa0",
       "threshold": 0.5,
@@ -5607,7 +6059,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "GHST / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "ghst-usd",
       "proxyAddress": "0xDD229Ce42f11D8Ee7fFf29bDB71C7b81352e11be",
       "threshold": 0.5,
@@ -5648,7 +6103,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "WBTC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "wbtc-usd",
       "proxyAddress": "0xDE31F8bFBD8c84b5360CFACCa3539B938dd78ae6",
       "threshold": 0.1,
@@ -5692,7 +6150,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "QNT / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "qnt-usd",
       "proxyAddress": "0xF7F291042F6Cbc4deC0Ad75c17786511a530dbe8",
       "threshold": 0.5,
@@ -5733,7 +6194,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "BAT / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "bat-usd",
       "proxyAddress": "0x2346Ce62bd732c62618944E51cbFa09D985d86D2",
       "threshold": 0.25,
@@ -5774,7 +6238,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "CVX / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "cvx-usd",
       "proxyAddress": "0x5ec151834040B4D453A1eA46aA634C1773b36084",
       "threshold": 0.5,
@@ -5815,7 +6282,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SNX / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "snx-usd",
       "proxyAddress": "0xbF90A5D9B6EE9019028dbFc2a9E50056d5252894",
       "threshold": 0.25,
@@ -5856,7 +6326,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "BTC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "btc-usd",
       "proxyAddress": "0xc907E116054Ad103354f2D350FD2514433D57F6f",
       "threshold": 0.1,
@@ -5897,7 +6370,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "GRT / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "grt-usd",
       "proxyAddress": "0x3FabBfb300B1e2D7c9B84512fe9D30aeDF24C410",
       "threshold": 0.25,
@@ -5938,7 +6414,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "AXS / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "axs-usd",
       "proxyAddress": "0x9c371aE34509590E10aB98205d2dF5936A1aD875",
       "threshold": 0.5,
@@ -5979,7 +6458,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SHIB / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "shib-usd",
       "proxyAddress": "0x3710abeb1A0Fc7C2EC59C26c8DAA7a448ff6125A",
       "threshold": 0.5,
@@ -6020,7 +6502,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "AVAX / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "avax-usd",
       "proxyAddress": "0xe01eA2fbd8D76ee323FbEd03eB9a8625EC981A10",
       "threshold": 0.5,
@@ -6061,7 +6546,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "BAL / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "bal-usd",
       "proxyAddress": "0xD106B538F2A868c28Ca1Ec7E298C3325E0251d66",
       "threshold": 0.5,
@@ -6102,7 +6590,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "1INCH / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "1inch-usd",
       "proxyAddress": "0x443C5116CdF663Eb387e72C688D276e702135C87",
       "threshold": 0.25,
@@ -6143,7 +6634,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "MANA / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "mana-usd",
       "proxyAddress": "0xA1CbF3Fe43BC3501e3Fc4b573e822c70e76A7512",
       "threshold": 0.25,
@@ -6184,7 +6678,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "APE / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "ape-usd",
       "proxyAddress": "0x2Ac3F3Bfac8fC9094BC3f0F9041a51375235B992",
       "threshold": 0.5,
@@ -6225,7 +6722,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SAND / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "sand-usd",
       "proxyAddress": "0x3D49406EDd4D52Fb7FFd25485f32E073b529C924",
       "threshold": 0.5,
@@ -6266,7 +6766,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SOL / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "sol-usd",
       "proxyAddress": "0x10C8264C0935b3B9870013e057f330Ff3e9C56dC",
       "threshold": 0.25,
@@ -6307,7 +6810,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "BNB / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "bnb-usd",
       "proxyAddress": "0x82a6c4AF830caa6c97bb504425f6A66165C2c26e",
       "threshold": 0.1,
@@ -6348,7 +6854,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "CHZ / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "chz-usd",
       "proxyAddress": "0x2409987e514Ad8B0973C2b90ee1D95051DF0ECB9",
       "threshold": 1,
@@ -6391,7 +6900,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "AVAX / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "avax-usd",
       "proxyAddress": "0x0A77230d17318075983913bC2145DB16C7366156",
       "threshold": 0.1,
@@ -6432,7 +6944,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "USDC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "usdc-usd",
       "proxyAddress": "0xF096872672F44d6EBA71458D74fe67F9a77a23B9",
       "threshold": 0.1,
@@ -6477,7 +6992,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "AAVE / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "aave-usd",
       "proxyAddress": "0x3CA13391E9fb38a75330fb28f8cc2eB3D9ceceED",
       "threshold": 0.5,
@@ -6518,7 +7036,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "COMP / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "comp-usd",
       "proxyAddress": "0x9D6AA0AC8c4818433bEA7a74F49C73B57BcEC4Ec",
       "threshold": 0.5,
@@ -6559,7 +7080,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "LINK / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "link-usd",
       "proxyAddress": "0x49ccd9ca821EfEab2b98c60dC60F518E765EDe9a",
       "threshold": 0.5,
@@ -6600,7 +7124,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "UNI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "uni-usd",
       "proxyAddress": "0x9a1372f9b1B71B3A5a72E092AE67E172dBd7Daaa",
       "threshold": 0.15,
@@ -6641,7 +7168,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ETH / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "eth-usd",
       "proxyAddress": "0x976B3D034E162d8bD72D6b9C989d545b839003b0",
       "threshold": 0.1,
@@ -6682,7 +7212,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "JOE / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "joe-usd",
       "proxyAddress": "0x02D35d3a8aC3e1626d3eE09A78Dd87286F5E8e3a",
       "threshold": 0.5,
@@ -6723,7 +7256,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "GMX / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "gmx-usd",
       "proxyAddress": "0x3F968A21647d7ca81Fb8A5b69c0A452701d5DCe8",
       "threshold": 0.1,
@@ -6764,7 +7300,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "WBTC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "wbtc-usd",
       "proxyAddress": "0x86442E3a98558357d46E6182F4b262f76c4fa26F",
       "threshold": 0.1,
@@ -6808,7 +7347,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "QI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "qi-usd",
       "proxyAddress": "0x36E039e6391A5E7A7267650979fdf613f659be5D",
       "threshold": 0.5,
@@ -6849,7 +7391,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "XAVA / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "xava-usd",
       "proxyAddress": "0x4Cf57DC9028187b9DAaF773c8ecA941036989238",
       "threshold": 0.5,
@@ -6890,7 +7435,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "BTC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "btc-usd",
       "proxyAddress": "0x2779D32d5166BAaa2B2b658333bA7e6Ec0C65743",
       "threshold": 0.1,
@@ -6931,7 +7479,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SUSHI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "sushi-usd",
       "proxyAddress": "0x449A373A090d8A1e5F74c63Ef831Ceff39E94563",
       "threshold": 0.5,
@@ -6972,7 +7523,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "BNB / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "bnb-usd",
       "proxyAddress": "0xBb92195Ec95DE626346eeC8282D53e261dF95241",
       "threshold": 0.5,
@@ -7013,7 +7567,10 @@
       "history": null,
       "multiply": "1000000000000000000",
       "name": "GLV [AVAX-USDC] / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "glv-[avax-usdc]-usd",
       "proxyAddress": "0x0A6fd6F735faCD3Cdb1D5aE1c74ebd54a4fc3CCf",
       "threshold": 0.25,
@@ -7056,7 +7613,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "BAT / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "bat-usd",
       "proxyAddress": "0xe89B3CE86D25599D1e615C0f6a353B4572FF868D",
       "threshold": 0.5,
@@ -7097,7 +7657,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "YFI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "yfi-usd",
       "proxyAddress": "0x28043B1Ebd41860B93EC1F1eC19560760B6dB556",
       "threshold": 0.5,
@@ -7138,7 +7701,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SNX / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "snx-usd",
       "proxyAddress": "0x01752eAAB988ECb0ceBa2C8FC97c4f1d38Bf246D",
       "threshold": 0.5,
@@ -7179,7 +7745,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "POL / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "pol-usd",
       "proxyAddress": "0x7B0e7d292d414788B080EfCa58b04B6372789639",
       "threshold": 0.5,
@@ -7222,7 +7791,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "BNB / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "bnb-usd",
       "proxyAddress": "0x0567F2323251f0Aab15c8dFb1967E4e8A7D42aeE",
       "threshold": 0.1,
@@ -7263,7 +7835,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "USDT / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "usdt-usd",
       "proxyAddress": "0xB97Ad0E74fa7d920791E90258A6E2085088b4320",
       "threshold": 0.1,
@@ -7308,7 +7883,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "CAKE / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "cake-usd",
       "proxyAddress": "0xB6064eD41d4f67e353768aA239cA86f4F73665a1",
       "threshold": 0.2,
@@ -7349,7 +7927,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ETH / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "eth-usd",
       "proxyAddress": "0x9ef1B8c0E4F7dc8bF5719Ea496883DC6401d5b2e",
       "threshold": 0.1,
@@ -7390,7 +7971,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "LINK / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "link-usd",
       "proxyAddress": "0xca236E327F629f9Fc2c30A4E95775EbF0B89fac8",
       "threshold": 0.2,
@@ -7431,7 +8015,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "UNI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "uni-usd",
       "proxyAddress": "0xb57f259E7C24e56a1dA00F66b55A5640d9f9E7e4",
       "threshold": 0.2,
@@ -7472,7 +8059,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "XVS / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "xvs-usd",
       "proxyAddress": "0xBF63F430A79D4036A5900C19818aFf1fa710f206",
       "threshold": 0.3,
@@ -7513,7 +8103,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "LISTA / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "lista-usd",
       "proxyAddress": "0x801A72542E6F2c1A022eC6865600D6872b191308",
       "threshold": 0.5,
@@ -7554,7 +8147,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "AAVE / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "aave-usd",
       "proxyAddress": "0xA8357BF572460fC40f4B0aCacbB2a6A61c89f475",
       "threshold": 0.2,
@@ -7595,7 +8191,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "C98 / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "c98-usd",
       "proxyAddress": "0x889158E39628C0397DC54B84F6b1cbe0AaEb7FFc",
       "threshold": 0.5,
@@ -7636,7 +8235,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ADA / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "ada-usd",
       "proxyAddress": "0xa767f745331D267c7751297D982b050c93985627",
       "threshold": 0.2,
@@ -7677,7 +8279,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SOL / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "sol-usd",
       "proxyAddress": "0x0E8a53DD9c13589df6382F13dA6B3Ec8F919B323",
       "threshold": 0.2,
@@ -7718,7 +8323,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "XRP / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "xrp-usd",
       "proxyAddress": "0x93A67D414896A280bF8FFB3b389fE3686E014fda",
       "threshold": 0.2,
@@ -7759,7 +8367,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ASTER / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "aster-usd",
       "proxyAddress": "0x3ae518be05e3F7faBf7e3Ace22Af795D7A09c2E5",
       "threshold": 0.5,
@@ -7800,7 +8411,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "WLFI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "wlfi-usd",
       "proxyAddress": "0xD3F669EF5C364C14d353F46b1D1a048A846e00f1",
       "threshold": 0.5,
@@ -7841,7 +8455,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "FET / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "fet-usd",
       "proxyAddress": "0x657e700c66C48c135c4A29c4292908DbdA7aa280",
       "threshold": 0.5,
@@ -7882,7 +8499,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "BTC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "btc-usd",
       "proxyAddress": "0x264990fbd0A4796A3E3d8E37C4d5F87a3aCa5Ebf",
       "threshold": 0.1,
@@ -7923,7 +8543,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "FIL / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "fil-usd",
       "proxyAddress": "0xE5dbFD9003bFf9dF5feB2f4F445Ca00fb121fb83",
       "threshold": 0.3,
@@ -7964,7 +8587,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ATOM / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "atom-usd",
       "proxyAddress": "0xb056B7C804297279A9a673289264c17E6Dc6055d",
       "threshold": 0.5,
@@ -8005,7 +8631,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "1INCH / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "1inch-usd",
       "proxyAddress": "0x9a177Bb9f5b6083E962f9e62bD21d4b5660Aeb03",
       "threshold": 0.5,
@@ -8046,7 +8675,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "XTZ / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "xtz-usd",
       "proxyAddress": "0x9A18137ADCF7b05f033ad26968Ed5a9cf0Bf8E6b",
       "threshold": 0.5,
@@ -8087,7 +8719,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "AVAX / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "avax-usd",
       "proxyAddress": "0x5974855ce31EE8E1fff2e76591CbF83D7110F151",
       "threshold": 0.5,
@@ -8128,7 +8763,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "NEAR / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "near-usd",
       "proxyAddress": "0x0Fe4D87883005fCAFaF56B81d09473D9A29dCDC3",
       "threshold": 0.5,
@@ -8169,7 +8807,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SHIB / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "shib-usd",
       "proxyAddress": "0xA615Be6cb0f3F36A641858dB6F30B9242d0ABeD8",
       "threshold": 0.5,
@@ -8210,7 +8851,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "MASK / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "mask-usd",
       "proxyAddress": "0x4978c0abE6899178c1A74838Ee0062280888E2Cf",
       "threshold": 0.2,
@@ -8251,7 +8895,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "SUSHI / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "sushi-usd",
       "proxyAddress": "0xa679C72a97B654CFfF58aB704de3BA15Cde89B07",
       "threshold": 0.5,
@@ -8292,7 +8939,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "LTC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "ltc-usd",
       "proxyAddress": "0x74E72F37A8c415c8f1a98Ed42E78Ff997435791D",
       "threshold": 0.3,
@@ -8333,7 +8983,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "COMP / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "comp-usd",
       "proxyAddress": "0x0Db8945f9aEf5651fa5bd52314C5aAe78DfDe540",
       "threshold": 0.5,
@@ -8374,7 +9027,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "AXS / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "axs-usd",
       "proxyAddress": "0x7B49524ee5740c99435f52d731dFC94082fE61Ab",
       "threshold": 0.5,
@@ -8415,7 +9071,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "DOT / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "dot-usd",
       "proxyAddress": "0xC333eb0086309a16aa7c8308DfD32c8BBA0a2592",
       "threshold": 0.2,
@@ -8456,7 +9115,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "TREE / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "tree-usd",
       "proxyAddress": "0x8fCC2d2973e3740c40aF00d030725A429cd24b57",
       "threshold": 0.5,
@@ -8497,7 +9159,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "BCH / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "bch-usd",
       "proxyAddress": "0x43d80f616DAf0b0B42a928EeD32147dC59027D41",
       "threshold": 0.3,
@@ -8538,7 +9203,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "CRV / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "crv-usd",
       "proxyAddress": "0x2e1C3b6Fcae47b20Dd343D9354F7B1140a1E6B27",
       "threshold": 0.5,
@@ -8579,7 +9247,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "INJ / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "inj-usd",
       "proxyAddress": "0x63A9133cd7c611d6049761038C16f238FddA71d7",
       "threshold": 0.5,
@@ -8620,7 +9291,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "DOGE / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "doge-usd",
       "proxyAddress": "0x3AB0A0d137D4F946fBB19eecc6e92E64660231C8",
       "threshold": 0.2,
@@ -8661,7 +9335,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "POL / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "pol-usd",
       "proxyAddress": "0x081195B56674bb87b2B92F6D58F7c5f449aCE19d",
       "threshold": 0.2,
@@ -8702,7 +9379,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "TRX / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "trx-usd",
       "proxyAddress": "0xF4C5e535756D11994fCBB12Ba8adD0192D9b88be",
       "threshold": 0.2,
@@ -8743,7 +9423,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "RDNT / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "rdnt-usd",
       "proxyAddress": "0x20123C6ebd45c6496102BeEA86e1a6616Ca547c6",
       "threshold": 0.5,
@@ -8784,7 +9467,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ONT / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "ont-usd",
       "proxyAddress": "0x887f177CBED2cf555a64e7bF125E1825EB69dB82",
       "threshold": 0.5,
@@ -8827,7 +9513,10 @@
       "history": false,
       "multiply": "100000000",
       "name": "ETH / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "eth-usd",
       "proxyAddress": "0x3c6Cd9Cc7c7a4c2Cf5a82734CD249D7D593354dA",
       "threshold": 0.5,
@@ -8868,7 +9557,10 @@
       "history": false,
       "multiply": "100000000",
       "name": "USDC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "usdc-usd",
       "proxyAddress": "0xAADAa473C1bDF7317ec07c915680Af29DeBfdCb5",
       "threshold": 0.3,
@@ -8913,7 +9605,10 @@
       "history": false,
       "multiply": "100000000",
       "name": "LINK / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "link-usd",
       "proxyAddress": "0x8dF01C2eFed1404872b54a69f40a57FeC1545998",
       "threshold": 0.5,
@@ -8954,7 +9649,10 @@
       "history": false,
       "multiply": "100000000",
       "name": "WSTETH / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "wsteth-usd",
       "proxyAddress": "0x8eCE1AbA32716FdDe8D6482bfd88E9a0ee01f565",
       "threshold": 0.5,
@@ -8998,7 +9696,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "LINEA / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "linea-usd",
       "proxyAddress": "0x452b408b3e2805C109D52C80Bd54Deda239716d1",
       "threshold": 0.5,
@@ -9038,7 +9739,10 @@
       "history": false,
       "multiply": "100000000",
       "name": "AAVE / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "aave-usd",
       "proxyAddress": "0x09B0a8AFD9185500d7C64FC68338b4C50db6df1d",
       "threshold": 0.5,
@@ -9079,7 +9783,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "COMP / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "comp-usd",
       "proxyAddress": "0xc0068A2F7e4847DF9C3A34B27CCc07b7e15e0458",
       "threshold": 0.5,
@@ -9120,7 +9827,10 @@
       "history": false,
       "multiply": "100000000",
       "name": "BTC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "btc-usd",
       "proxyAddress": "0x7A99092816C8BD5ec8ba229e3a6E6Da1E628E1F9",
       "threshold": 0.5,
@@ -9163,7 +9873,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "XPL / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "xpl-usd",
       "proxyAddress": "0xF932477C37715aE6657Ab884414Bd9876FE3f750",
       "threshold": 0.5,
@@ -9204,7 +9917,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "USDC / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "usdc-usd",
       "proxyAddress": "0xe3D6f313aeebC2d4ff780C2850f5cA95c85fAFA4",
       "threshold": 0.3,
@@ -9249,7 +9965,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "LINK / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "link-usd",
       "proxyAddress": "0xe37F74Cb2237C5274DDbBf841C3284Bd2E23E65B",
       "threshold": 0.5,
@@ -9290,7 +10009,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ETH / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "eth-usd",
       "proxyAddress": "0x43A7dd2125266c5c4c26EB86cd61241132426Fe7",
       "threshold": 0.5,
@@ -9331,7 +10053,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "WEETH / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "weeth-usd",
       "proxyAddress": "0xBfEd4ef33B8ec58bC15fcbb4a0f934A812d5D7b5",
       "threshold": 0.5,
@@ -9375,7 +10100,10 @@
       "history": null,
       "multiply": "100000000",
       "name": "ENA / USD",
-      "pair": ["", ""],
+      "pair": [
+        "",
+        ""
+      ],
       "path": "ena-usd",
       "proxyAddress": "0xDf61Cc2451e98dce8d511e2D65d3484B85675f9E",
       "threshold": 0.5,
@@ -9396,6 +10124,1811 @@
         "productSubType": "Reference",
         "productType": "Price",
         "productTypeCode": "RefPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0xc819C6D8745FC03d8b90A2a38795ca5ef8CF1fCF",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": "xaut-usd",
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "XAUT / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "xaut-usd",
+      "proxyAddress": "0x354Df1ca4AE838A45405B3486ED0161AA7f01191",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Tether Gold",
+      "feedCategory": "new",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Crypto",
+        "attributeType": "cex_price",
+        "baseAsset": "XAUT",
+        "baseAssetClic": "XAUT_CR",
+        "baseAssetEntityId": "crypto-XAUT",
+        "blockchainName": "Plasma",
+        "clicProductName": "XAUT/USD-RefPrice-DF-Plasma-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "Crypto",
+        "productSubType": "Reference",
+        "productType": "Price",
+        "productTypeCode": "RefPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    }
+  ],
+  "4663": [
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x8bEeE3503F6860D5dac4cE26b5eEe92982951c2e",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "USDG / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "usdg-usd-shared-svr",
+      "proxyAddress": "0x61B7e5650328764B076A108EFF5fa7282a1B9aD2",
+      "secondaryProxyAddress": "0x901f56689360B89D7767a8acE28B7801e6348fa2",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Global Dollar",
+      "feedCategory": "medium",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Crypto",
+        "assetSubClass": "Stablecoin",
+        "attributeType": "cex_price",
+        "baseAsset": "USDG",
+        "baseAssetClic": "USDG_CR",
+        "baseAssetEntityId": "crypto-USDG",
+        "blockchainName": "Robinhood",
+        "clicProductName": "USDG/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "Crypto",
+        "productSubType": "Reference",
+        "productType": "Price",
+        "productTypeCode": "RefPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD",
+        "underlyingAsset": "forex-USD",
+        "underlyingAssetClic": "USD_FX"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x6091E64eb7138EEF066a80FD3A0d7427B91f2721",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "ETH / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "eth-usd-shared-svr",
+      "proxyAddress": "0x78F3556b67E17Df817D51Ef5a990cDaF09E8d3A9",
+      "secondaryProxyAddress": "0x5058aDee53b04e374d8bEDbAD634Bc4778F50b22",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Ethereum",
+      "feedCategory": "low",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Crypto",
+        "attributeType": "cex_price",
+        "baseAsset": "ETH",
+        "baseAssetClic": "ETH_CR",
+        "baseAssetEntityId": "crypto-ETH",
+        "blockchainName": "Robinhood",
+        "clicProductName": "ETH/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "Crypto",
+        "productSubType": "Reference",
+        "productType": "Price",
+        "productTypeCode": "RefPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x78BCB218fA04B9b3a278eBc865Ed320BF8DEFBAc",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood SPY / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-spy-usd-shared-svr",
+      "proxyAddress": "0x319724394D3A0e3669269846abE664Cd621f9f6A",
+      "secondaryProxyAddress": "0xa68CA83408bE3f78d1c58a82081c619e9d21486d",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "State Street SPDR S&P 500 ETF Trust (Robinhood Tokenized ETF)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "SPY",
+        "baseAssetClic": "SPY_CR",
+        "baseAssetEntityId": "crypto-SPY",
+        "blockchainName": "Robinhood",
+        "clicProductName": "SPY/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x93503dFc97157cdB8aADcCaf70452621d598FDeb",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood AMZN / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-amzn-usd-shared-svr",
+      "proxyAddress": "0xD5a1508ceD74c084eBf3cBe853e2C968fB2a651C",
+      "secondaryProxyAddress": "0x9244830430bC7D9C9A48dd47603F24AD61f7c56e",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Amazon (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "AMZN",
+        "baseAssetClic": "AMZN_CR",
+        "baseAssetEntityId": "crypto-AMZN",
+        "blockchainName": "Robinhood",
+        "clicProductName": "AMZN/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0xf83Cde62D1Cd90dE8d2Bf3332B90c590985aD679",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood GME / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-gme-usd-shared-svr",
+      "proxyAddress": "0x27C71df6A64fB476468EdF256CF72c038baB5B67",
+      "secondaryProxyAddress": "0x42A4652D447A5B0bccF3B265bE8530b85A33b3A2",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Gamestop (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "GME",
+        "baseAssetClic": "GME_CR",
+        "baseAssetEntityId": "crypto-GME",
+        "blockchainName": "Robinhood",
+        "clicProductName": "GME/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x42B1C5174cE84Be751A23489d7DbDc969Bc17eA2",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood RGTI / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-rgti-usd-shared-svr",
+      "proxyAddress": "0x2A045cF1C49c61c166C036d2f06FA2D2d984f765",
+      "secondaryProxyAddress": "0xC9C477AEfF7eD1BB89B84F7907E2e11707491466",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Rigetti Computing Inc (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "RGTI",
+        "baseAssetClic": "RGTI_CR",
+        "baseAssetEntityId": "crypto-RGTI",
+        "blockchainName": "Robinhood",
+        "clicProductName": "RGTI/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x11eD6d598eF565DDA86fAfE7E779303e7CC6b2Bd",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood GOOGL / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-googl-usd-shared-svr",
+      "proxyAddress": "0xF6f373a037c30F0e5010d854385cA89185AE638b",
+      "secondaryProxyAddress": "0xA04EE5c4c8827F17e82f93bE9e19DeA221A749a8",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Alphabet (Robinhood Tokenized Equity)",
+      "feedCategory": "low",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "assetSubClass": "US",
+        "attributeType": "other",
+        "baseAsset": "GOOGL",
+        "baseAssetClic": "GOOGL_CR",
+        "baseAssetEntityId": "crypto-GOOGL",
+        "blockchainName": "Robinhood",
+        "clicProductName": "GOOGL/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x7A6b81ba7FbCB90104d8C496158Cf383cD7233b1",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood TSLA / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-tsla-usd-shared-svr",
+      "proxyAddress": "0x4A1166a659A55625345e9515b32adECea5547C38",
+      "secondaryProxyAddress": "0xE4479F01738B4e8C428CD8eB72D47AB9BC3c7de6",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Tesla (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "TSLA",
+        "baseAssetClic": "TSLA_CR",
+        "baseAssetEntityId": "crypto-TSLA",
+        "blockchainName": "Robinhood",
+        "clicProductName": "TSLA/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x59aB60B1D63DE8b282852573D18a3a99c04C787c",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood RKLB / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-rklb-usd-shared-svr",
+      "proxyAddress": "0x045477BF65Aef6f4F2386ad0164579e48381CC74",
+      "secondaryProxyAddress": "0x955c60932E517B36be137Eee78E65343cBFC9D29",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Rocket Lab Corp (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "RKLB",
+        "baseAssetClic": "RKLB_CR",
+        "baseAssetEntityId": "crypto-RKLB",
+        "blockchainName": "Robinhood",
+        "clicProductName": "RKLB/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0xcdF6F7043b3aF6Afa0CAAACe1230B355096B5386",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood SLV / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-slv-usd-shared-svr",
+      "proxyAddress": "0x209b73908e92Ae021826eD79609845451Ecba2ce",
+      "secondaryProxyAddress": "0xdA81cD9c76F1D3Ea32655dfFc7408ef22BB0Ee2a",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "iShares Silver Trust ETF (Robinhood Tokenized ETF)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "SLV",
+        "baseAssetClic": "SLV_CR",
+        "baseAssetEntityId": "crypto-SLV",
+        "blockchainName": "Robinhood",
+        "clicProductName": "SLV/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0xF795030a46ad6CA4b07Bf5fB704dC36039118c9F",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood ASML / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-asml-usd-shared-svr",
+      "proxyAddress": "0xB4106147E8cce40b7d46124090d373A71b70f87D",
+      "secondaryProxyAddress": "0x3eFBba343e2b1cF9ed4d4D5768e20B70307Aa8c9",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "ASML Holding NV (Nasdaq) (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "ASML",
+        "baseAssetClic": "ASML_CR",
+        "baseAssetEntityId": "crypto-ASML",
+        "blockchainName": "Robinhood",
+        "clicProductName": "ASML/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x3D2A8E2937F306D11829D95059DEdA9A290C74dA",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "LINK / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "link-usd-shared-svr",
+      "proxyAddress": "0xe86e3422Aa9B5e8ee9f3E41a63975bC387A8bce9",
+      "secondaryProxyAddress": "0xB7F054718bD802716FA7bD5944Df2f50a8D0424E",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Chainlink",
+      "feedCategory": "low",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Crypto",
+        "attributeType": "cex_price",
+        "baseAsset": "LINK",
+        "baseAssetClic": "LINK_CR",
+        "baseAssetEntityId": "crypto-LINK",
+        "blockchainName": "Robinhood",
+        "clicProductName": "LINK/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "Crypto",
+        "productSubType": "Reference",
+        "productType": "Price",
+        "productTypeCode": "RefPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x5eaa223c585F40CDcA2D119ea91B97C491245631",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood SPCX / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-spcx-usd-shared-svr",
+      "proxyAddress": "0xB265810950ba6c5C0Ff821c9963014a56fD8Bffb",
+      "secondaryProxyAddress": "0x42a95341ff361e81fd934F39943c5C98F6991844",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Space Exploration Technologies Corp. (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "SPCX",
+        "baseAssetClic": "SPCX_CR",
+        "baseAssetEntityId": "crypto-SPCX",
+        "blockchainName": "Robinhood",
+        "clicProductName": "SPCX/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x886E11c1053289Eed882C734e1864EfE3430BC24",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood IONQ / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-ionq-usd-shared-svr",
+      "proxyAddress": "0x22EfeC4919baf55F360E0EDee4AbEB26DE4971eb",
+      "secondaryProxyAddress": "0x926D7D95E554D1e671EB2C0d238fe37a2C23A64E",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "IonQ, Inc. (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "IONQ",
+        "baseAssetClic": "IONQ_CR",
+        "baseAssetEntityId": "crypto-IONQ",
+        "blockchainName": "Robinhood",
+        "clicProductName": "IONQ/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x815D23392A48bEE944c872CbBb4Bc47691ef710F",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "ENA / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "ena-usd-shared-svr",
+      "proxyAddress": "0x2A291496b3aa19d8948e442Ef28Ee952f3Ee97E8",
+      "secondaryProxyAddress": "0x68350E7a5f6b17d2d72231F2F33b2CfBAE408E23",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Ethena",
+      "feedCategory": "low",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Crypto",
+        "attributeType": "cex_price",
+        "baseAsset": "ENA",
+        "baseAssetClic": "ENA_CR",
+        "baseAssetEntityId": "crypto-ENA",
+        "blockchainName": "Robinhood",
+        "clicProductName": "ENA/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "Crypto",
+        "productSubType": "Reference",
+        "productType": "Price",
+        "productTypeCode": "RefPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x2B3A9A18998e9464760658233ab093e6aEbF45d0",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood TSM / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-tsm-usd-shared-svr",
+      "proxyAddress": "0x874cF94aa8eC88Fd9560094dD065f2fB3E41Fc2F",
+      "secondaryProxyAddress": "0xB48D6D5729Ca032ca43729F4b605bBf9f257A84d",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Taiwan Semiconductor (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "assetSubClass": "US",
+        "attributeType": "other",
+        "baseAsset": "TSM",
+        "baseAssetClic": "TSM_CR",
+        "baseAssetEntityId": "crypto-TSM",
+        "blockchainName": "Robinhood",
+        "clicProductName": "TSM/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0xd9C04B7353421fC4deb1614Ed13Fe10D90E586cc",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood CRWV / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-crwv-usd-shared-svr",
+      "proxyAddress": "0xe1b3aABCAFAd1c94708dc1367dcfF8Aa4407487C",
+      "secondaryProxyAddress": "0x288b837A17fED1aa00c1df832ef79D0C77336c10",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "CoreWeave Inc (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "CRWV",
+        "baseAssetClic": "CRWV_CR",
+        "baseAssetEntityId": "crypto-CRWV",
+        "blockchainName": "Robinhood",
+        "clicProductName": "CRWV/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x30398b0B0df82a009bB2D507BC7fE1dc6d3ca294",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood COIN / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-coin-usd-shared-svr",
+      "proxyAddress": "0xA3a468A452940B7D6b69991207B508c609a98Ef2",
+      "secondaryProxyAddress": "0xA7F7D79D578fb007384BaDF42c8E1D76a6a63bBD",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Coinbase (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "COIN",
+        "baseAssetClic": "COIN_CR",
+        "baseAssetEntityId": "crypto-COIN",
+        "blockchainName": "Robinhood",
+        "clicProductName": "COIN/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x983F726BF320Cdc1fdaE041DbA782cD08a55842F",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "WBTC / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "wbtc-usd-shared-svr",
+      "proxyAddress": "0x62107b0d3adA75fc1697fD342d99eed947a3aA5E",
+      "secondaryProxyAddress": "0x43AF1Fc55DeAD1766fe96432148A069Cfd52D138",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Wrapped Bitcoin",
+      "feedCategory": "low",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Crypto",
+        "assetSubClass": "Pegged asset",
+        "attributeType": "dex_state_price",
+        "baseAsset": "WBTC",
+        "baseAssetClic": "WBTC_CR",
+        "baseAssetEntityId": "crypto-WBTC",
+        "blockchainName": "Robinhood",
+        "clicProductName": "WBTC/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "Crypto",
+        "productSubType": "Reference",
+        "productType": "Price",
+        "productTypeCode": "RefPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD",
+        "underlyingAsset": "crypto-BTC",
+        "underlyingAssetClic": "BTC_CR"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x105Cbe427BBD3225826a450f67EA80FeC6417F93",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood EWY / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-ewy-usd-shared-svr",
+      "proxyAddress": "0xEFdf54610B62A7753Ec30bDc380847c12D32e1D1",
+      "secondaryProxyAddress": "0x26bca2a89D2D23787ada8F91B849608c51A26977",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "ISHARES MSCI SOUTH KOREA ETF (Robinhood Tokenized ETF)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "EWY",
+        "baseAssetClic": "EWY_CR",
+        "baseAssetEntityId": "crypto-EWY",
+        "blockchainName": "Robinhood",
+        "clicProductName": "EWY/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0xdAD54b8Ee51Af258e5A6Faa9a84a3300f4775f7d",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood AMD / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-amd-usd-shared-svr",
+      "proxyAddress": "0x943A29E7ae51A4798823ca9eEd2ed533B2A22C72",
+      "secondaryProxyAddress": "0xF6d57763DFa625F4A413485261Ab2E71Ff4304CF",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Advanced Micro Devices / AMD (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "AMD",
+        "baseAssetClic": "AMD_CR",
+        "baseAssetEntityId": "crypto-AMD",
+        "blockchainName": "Robinhood",
+        "clicProductName": "AMD/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x315afd0f71D5407B99ad19ab001a67af40fbAAF4",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood PLTR / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-pltr-usd-shared-svr",
+      "proxyAddress": "0x820ABedFF239034956B7A9d2F0a331f9F075eB4c",
+      "secondaryProxyAddress": "0x8cd1DFC0fc61fcA55FA77b37e008A90f13364Fce",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Palantir Technologies Inc (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "PLTR",
+        "baseAssetClic": "PLTR_CR",
+        "baseAssetEntityId": "crypto-PLTR",
+        "blockchainName": "Robinhood",
+        "clicProductName": "PLTR/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0xD6ed4e7D4ABA1111EB42A349899b5c72EE1C9FEF",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood DELL-USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "rhdell-usd-shared-svr",
+      "proxyAddress": "0x1C6c8cADBe02E19129c39dDB92281cE4c0bf206b",
+      "secondaryProxyAddress": "0xe9B94828424a8Efe6e773c28AB5Fd486851867c8",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Dell Technologies Inc",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "assetSubClass": "US",
+        "attributeType": "other",
+        "baseAsset": "RHDELL",
+        "baseAssetClic": "RHDELL_CR",
+        "baseAssetEntityId": "crypto-RHDELL",
+        "blockchainName": "Robinhood",
+        "clicProductName": "RHDELL/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0xE50c4775FeFc1E3C9206771dd0056AEe30F51b2F",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood NBIS / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-nbis-usd-shared-svr",
+      "proxyAddress": "0xE1D87B116Ba0fe898998f1D140339D1fA1E09705",
+      "secondaryProxyAddress": "0xCa59A8F53bf4E0628CC0b1BD3a2216F2F8E04770",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Nebius Group (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "NBIS",
+        "baseAssetClic": "NBIS_CR",
+        "baseAssetEntityId": "crypto-NBIS",
+        "blockchainName": "Robinhood",
+        "clicProductName": "NBIS/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0xa6aC45e27D19f91c55109191D71CfBA4A9f5fBe1",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood USO / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-uso-usd-shared-svr",
+      "proxyAddress": "0x75a9c76Ef439e2C7c2E5a34Ab105EcFe3766431c",
+      "secondaryProxyAddress": "0x6D054DECb74Cf8ef3675B0Abc100e02921176EdF",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "United States Oil Fund LP ETF (Robinhood Tokenized ETF)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "USO",
+        "baseAssetClic": "USO_CR",
+        "baseAssetEntityId": "crypto-USO",
+        "blockchainName": "Robinhood",
+        "clicProductName": "USO/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0xFf5F85e4888782e66f1dd9cabaDF4822Fbeb1439",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood BABA / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-baba-usd-shared-svr",
+      "proxyAddress": "0x62Cc8F9b5f56a33c9C8A60c8B92779f523c4E984",
+      "secondaryProxyAddress": "0xDB69948B26050818E8c9f43300F78b2582e67260",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Alibaba Group Holding Ltd (ADRs) (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "BABA",
+        "baseAssetClic": "BABA_CR",
+        "baseAssetEntityId": "crypto-BABA",
+        "blockchainName": "Robinhood",
+        "clicProductName": "BABA/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0xBb11A21267cFDb63d4935d99a499133DD1744ACb",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood AAPL / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-aapl-usd-shared-svr",
+      "proxyAddress": "0x6B22A786bAa607d76728168703a39Ea9C99f2cD0",
+      "secondaryProxyAddress": "0x4bDbb3150014c6Ab2C6D9347B0779c49015a2f3f",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Apple (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "assetSubClass": "US",
+        "attributeType": "other",
+        "baseAsset": "AAPL",
+        "baseAssetClic": "AAPL_CR",
+        "baseAssetEntityId": "crypto-AAPL",
+        "blockchainName": "Robinhood",
+        "clicProductName": "AAPL/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x4a9aBC759e0B7b0ba98b5fd39c419A5D3e962aAf",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood ORCL / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-orcl-usd-shared-svr",
+      "proxyAddress": "0x0e6a64a2B58A6693a531E6c555f3A5d042eEA844",
+      "secondaryProxyAddress": "0x2a07f8d87d369Bd8Bc36472337ae02d512a7b5e5",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Oracle Corp (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "ORCL",
+        "baseAssetClic": "ORCL_CR",
+        "baseAssetEntityId": "crypto-ORCL",
+        "blockchainName": "Robinhood",
+        "clicProductName": "ORCL/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x7B2FdfcEa772f093DD33b3aCF8EE294B368f6c23",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood SNDK / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-sndk-usd-shared-svr",
+      "proxyAddress": "0xfb133Fa4B7b385802B693a293606682Df47109A3",
+      "secondaryProxyAddress": "0xd1016D9Da414B13D55abe02221A8A145eB89aA0D",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "SanDisk Corp (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "SNDK",
+        "baseAssetClic": "SNDK_CR",
+        "baseAssetEntityId": "crypto-SNDK",
+        "blockchainName": "Robinhood",
+        "clicProductName": "SNDK/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0xc190B6164B9e320A6400cdaB0085a2e0E2b9738e",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood META / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-meta-usd-shared-svr",
+      "proxyAddress": "0x7C38C00C30BEe9378381E7B6135d7283356D71b1",
+      "secondaryProxyAddress": "0x5cBC53D382E56cBb223f118CF8Eefb6c9c2759f5",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Meta (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "META",
+        "baseAssetClic": "META_CR",
+        "baseAssetEntityId": "crypto-META",
+        "blockchainName": "Robinhood",
+        "clicProductName": "META/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x95fB52f75aEcBCa8E12aA4403f840C8bc18CFbd4",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood INTC / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-intc-usd-shared-svr",
+      "proxyAddress": "0x3f390C5C24628Ac7C489515402235FeAD71D1913",
+      "secondaryProxyAddress": "0x127B1DeDeE6269E962a59E6C1295b4002c56c403",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Intel Corp (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "INTC",
+        "baseAssetClic": "INTC_CR",
+        "baseAssetEntityId": "crypto-INTC",
+        "blockchainName": "Robinhood",
+        "clicProductName": "INTC/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0xEff19B88E3c72f046e4a19A1E62544D5869d4275",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood CLSK / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-clsk-usd-shared-svr",
+      "proxyAddress": "0x810c12D3a554Bc47fd39597Fe3b3AAC4941F50eF",
+      "secondaryProxyAddress": "0x951C5E9a2a065053035D4B812b1f6cA7e64c5102",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "CleanSpark Inc (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "CLSK",
+        "baseAssetClic": "CLSK_CR",
+        "baseAssetEntityId": "crypto-CLSK",
+        "blockchainName": "Robinhood",
+        "clicProductName": "CLSK/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0xC9d16E4f2569b9E3ea0468fD85844953713DC2a2",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood NVDA / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-nvda-usd-shared-svr",
+      "proxyAddress": "0x379EC4f7C378F34a1B47E4F3cbeBCbAC3E8E9F15",
+      "secondaryProxyAddress": "0xCF169363636D73dbBf77733629CB38919d14232d",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Nvidia (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "NVDA",
+        "baseAssetClic": "NVDA_CR",
+        "baseAssetEntityId": "crypto-NVDA",
+        "blockchainName": "Robinhood",
+        "clicProductName": "NVDA/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x25e996ce8b3529885D429241156e83e7b7744049",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood QQQ / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-qqq-usd-shared-svr",
+      "proxyAddress": "0x80901d846d5D7B030F26B480776EE3b29374C2ae",
+      "secondaryProxyAddress": "0x41ed2c58611790af0760e31e80Bb427e4e83D603",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Invesco QQQ (Robinhood Tokenized ETF)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "QQQ",
+        "baseAssetClic": "QQQ_CR",
+        "baseAssetEntityId": "crypto-QQQ",
+        "blockchainName": "Robinhood",
+        "clicProductName": "QQQ/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x901D8DF245E48Dfc82D6483FC45b5BE6ddc5281a",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood CRCL / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-crcl-usd-shared-svr",
+      "proxyAddress": "0x6652eDf64bA3731C4F2D3ce821A0Fb1f1f6b482a",
+      "secondaryProxyAddress": "0x025Ba3B3569Ca7d15Da7BFC1648F13F06A072851",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Circle Internet Group Inc (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "CRCL",
+        "baseAssetClic": "CRCL_CR",
+        "baseAssetEntityId": "crypto-CRCL",
+        "blockchainName": "Robinhood",
+        "clicProductName": "CRCL/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0xc3b117F52cf17Dd4369eaF5eaf7cF0E2f91b4E30",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood MSFT / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-msft-usd-shared-svr",
+      "proxyAddress": "0x45C3C877C15E6BA2EBB19eA114Ea508d14C1Af2E",
+      "secondaryProxyAddress": "0xaD6D88eab22aa4867Efe807a5311Ed64962f740D",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Microsoft (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "assetSubClass": "US",
+        "attributeType": "other",
+        "baseAsset": "MSFT",
+        "baseAssetClic": "MSFT_CR",
+        "baseAssetEntityId": "crypto-MSFT",
+        "blockchainName": "Robinhood",
+        "clicProductName": "MSFT/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0x55bd01F666c99E4590E084FdEfF88041BB50CCD1",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood MSTR / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-mstr-usd-shared-svr",
+      "proxyAddress": "0x396118bdFB181e6240E74D243F266B061c0edc3D",
+      "secondaryProxyAddress": "0x2521a77F42098357e83bDea7fBb2A38745bf9280",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Microstrategy Inc Class A (Robinhood Tokenized Equity",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "assetSubClass": "US",
+        "attributeType": "other",
+        "baseAsset": "MSTR",
+        "baseAssetClic": "MSTR_CR",
+        "baseAssetEntityId": "crypto-MSTR",
+        "blockchainName": "Robinhood",
+        "clicProductName": "MSTR/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
+        "quoteAsset": "USD",
+        "quoteAssetClic": "USD_FX",
+        "quoteAssetEntityId": "forex-USD"
+      },
+      "decimals": 8,
+      "maxSubmissionValue": "95780971304118053647396689196894323976171195136475135"
+    },
+    {
+      "compareOffchain": "",
+      "contractAddress": "0xA088FaD0A0A62693aF068E2EdB80B1578c8A9365",
+      "contractType": "",
+      "contractVersion": 6,
+      "decimalPlaces": null,
+      "ens": null,
+      "formatDecimalPlaces": null,
+      "healthPrice": "",
+      "heartbeat": 86400,
+      "history": null,
+      "multiply": "100000000",
+      "name": "Robinhood MU / USD",
+      "pair": [
+        "",
+        ""
+      ],
+      "path": "robinhood-mu-usd-shared-svr",
+      "proxyAddress": "0x425EEFdCf05ed6526C3cE61Af99429A228a6d596",
+      "secondaryProxyAddress": "0x5b40F4E78FA58B60a4F59b8cc8cB8d2Fb0690467",
+      "svrDisplayLabel": "Shared SVR",
+      "threshold": 0.5,
+      "valuePrefix": "",
+      "assetName": "Micron Technology Inc (Robinhood Tokenized Equity)",
+      "feedCategory": "custom",
+      "feedType": "Crypto",
+      "docs": {
+        "assetClass": "Equity",
+        "attributeType": "other",
+        "baseAsset": "MU",
+        "baseAssetClic": "MU_CR",
+        "baseAssetEntityId": "crypto-MU",
+        "blockchainName": "Robinhood",
+        "clicProductName": "MU/USD-RefPrice-DF-Robinhood-001",
+        "deliveryChannelCode": "DF",
+        "marketHours": "us_equities_24/5",
+        "productSubType": "calculatedPrice",
+        "productType": "Price",
+        "productTypeCode": "primaryTokenizedPrice",
         "quoteAsset": "USD",
         "quoteAssetClic": "USD_FX",
         "quoteAssetEntityId": "forex-USD"

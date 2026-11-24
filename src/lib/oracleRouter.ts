@@ -1,12 +1,9 @@
 import { Address, formatUnits, PublicClient } from "viem";
 
 import { oracleMinimalAbi } from "./abis/oracleMinimalAbi";
-import {
-  ChainId,
-  publicClientsFromIds,
-  supportedChainIds,
-} from "./publicClients";
+import { ChainId, publicClientsFromIds } from "./publicClients";
 import { getSupportedTokens } from "./supportedTokens";
+import type { MarketHours } from "./tokenCatalog";
 import { IToken } from "./types";
 
 export type OracleRound = readonly [bigint, bigint, bigint, bigint, bigint];
@@ -223,9 +220,13 @@ function configuredRoute(args: IOracleRouterArgs) {
     buyMaxAge <= 0
   )
     throw new Error("No approved matching oracle route");
+  const marketHours = sellToken.oracleApprovals?.[quote]?.marketHours;
   return {
     route: { tokenSellOracle, tokenBuyOracle },
-    maxAgeSeconds: Math.max(sellMaxAge, buyMaxAge),
+    marketHours,
+    maxAgeSeconds: marketHours
+      ? Math.min(sellMaxAge, buyMaxAge)
+      : Math.max(sellMaxAge, buyMaxAge),
     sellMaxAge,
     buyMaxAge,
   };
@@ -233,6 +234,12 @@ function configuredRoute(args: IOracleRouterArgs) {
 
 export function configuredTokenRoute(args: IOracleRouterArgs): IRoute {
   return configuredRoute(args).route;
+}
+
+export function configuredRouteMarketHours(
+  args: IOracleRouterArgs,
+): MarketHours | undefined {
+  return configuredRoute(args).marketHours;
 }
 
 export function configuredRouteMaxAges(args: IOracleRouterArgs) {
@@ -297,7 +304,3 @@ export class ConfiguredRouter extends OracleRouter {
     return configuredTokenRoute(this);
   }
 }
-
-export const CHAINS_ORACLE_ROUTER_FACTORY = Object.fromEntries(
-  supportedChainIds.map((chainId) => [chainId, ConfiguredRouter]),
-) as Record<ChainId, new (args: IOracleRouterArgs) => OracleRouter>;

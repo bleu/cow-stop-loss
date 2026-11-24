@@ -4,7 +4,7 @@ import { use } from "react";
 import { useAccount } from "wagmi";
 
 import { OrderDetails } from "#/components/OrderDetails";
-import { ChainId, supportedChainIds } from "#/lib/publicClients";
+import { isSupportedChainId } from "#/lib/publicClients";
 
 export default function OrderPage({
   params: paramsPromise,
@@ -13,8 +13,8 @@ export default function OrderPage({
 }) {
   const params = use(paramsPromise);
   const { address } = useAccount();
-  const chainId = Number(params.chainId) as ChainId;
-  if (!supportedChainIds.includes(chainId))
+  const chainId = Number(params.chainId);
+  if (!isSupportedChainId(chainId))
     return (
       <main className="rescue-detail-page mx-auto w-full px-4 py-8 sm:px-6 sm:py-10 lg:flex lg:min-h-full lg:flex-col lg:justify-center">
         <p

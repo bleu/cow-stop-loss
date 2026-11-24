@@ -75,6 +75,7 @@ import { StopLossCreation } from "../StopLossCreation";
 const account = "0x1111111111111111111111111111111111111111";
 let requestLock: (action: () => unknown) => Promise<unknown>;
 let connectedAccount: `0x${string}` = account;
+let connectedChainId: number | undefined;
 let chainTime: bigint;
 const originalFetch = global.fetch;
 const sendTransactionAsync = jest.fn();
@@ -86,7 +87,7 @@ jest.mock("wagmi", () => ({
   ...jest.requireActual("wagmi"),
   useAccount: () => ({
     address: connectedAccount,
-    chainId: 1,
+    chainId: connectedChainId,
     isConnected: true,
   }),
   useSendTransaction: () => ({ sendTransactionAsync }),
@@ -103,6 +104,7 @@ beforeEach(() => {
     .mockResolvedValue(undefined);
   requestLock = async (action) => action();
   connectedAccount = account;
+  connectedChainId = 1;
   chainTime = BigInt(Math.floor(Date.now() / 1000));
   localStorage.clear();
   Object.defineProperty(navigator, "locks", {
@@ -234,6 +236,59 @@ function showCreation(onReview?: () => void) {
   const view = render(content());
   return { ...view, refreshWallet: () => view.rerender(content()) };
 }
+
+it("does not mount the order form, prefetch, or track placement on Robinhood", async () => {
+  connectedChainId = 4663;
+  const getRecords = jest.spyOn(getStopLossPlacement(), "getRecords");
+  showCreation();
+
+  expect(screen.getByRole("alert")).toHaveTextContent(
+    "Stop-loss orders are unavailable on Robinhood.",
+  );
+  expect(screen.queryByRole("button", { name: "Select token" })).toBeNull();
+  await act(async () => {
+    window.dispatchEvent(new Event("focus"));
+  });
+
+  expect(getRecords).not.toHaveBeenCalled();
+  expect(publicClientsFromIds[1].getBlockNumber).not.toHaveBeenCalled();
+  expect(publicClientsFromIds[1].readContract).not.toHaveBeenCalled();
+  expect(global.fetch).not.toHaveBeenCalled();
+  expect(sendTransactionAsync).not.toHaveBeenCalled();
+});
+
+it("does not fall back to account-wide creation tracking before the wallet chain is known", () => {
+  connectedChainId = undefined;
+  const getRecords = jest.spyOn(getStopLossPlacement(), "getRecords");
+  showCreation();
+
+  expect(getRecords).not.toHaveBeenCalled();
+});
+
+it("clears the current review when the wallet switches to Robinhood", async () => {
+  const user = userEvent.setup();
+  const view = showCreation();
+  await reviewOneOrder(user);
+
+  connectedChainId = 4663;
+  view.refreshWallet();
+
+  expect(screen.getByRole("alert")).toHaveTextContent(
+    "Stop-loss orders are unavailable on Robinhood.",
+  );
+  expect(
+    screen.queryByRole("region", { name: "Review stop-loss order" }),
+  ).not.toBeInTheDocument();
+
+  connectedChainId = 1;
+  view.refreshWallet();
+
+  expect(screen.getByRole("textbox", { name: "Sell amount" })).toBeVisible();
+  expect(
+    screen.queryByRole("region", { name: "Review stop-loss order" }),
+  ).not.toBeInTheDocument();
+  expect(sendTransactionAsync).not.toHaveBeenCalled();
+});
 
 it("does not fill the trigger price when a sell token is selected", async () => {
   const user = userEvent.setup();
@@ -789,6 +844,46 @@ it("keeps approval pending while the receipt block is unavailable from the RPC",
   } finally {
     jest.useRealTimers();
   }
+});
+
+it("does not resume saved Robinhood placement while orders are disabled", async () => {
+  const scope = { account, chainId: 4663 } as const;
+  const hash = `0x${"ac".repeat(32)}`;
+  localStorage.setItem(
+    "stop-loss-placement",
+    JSON.stringify({
+      version: 2,
+      state: {
+        records: [],
+        pendingTransactions: [
+          {
+            ...scope,
+            id: "saved-robinhood-approval",
+            revision: 0,
+            stage: "approval",
+            status: "pending",
+            token: "0x0bd7d308f8e1639fab988df18a8011f41eacad73",
+            poller: "0xd8088f0d57db91ac6404fb3a9723a890100a6bb3",
+            approvalAmount: { __bigint: "1" },
+            transactions: { approval: { id: hash, transactionHash: hash } },
+          },
+        ],
+      },
+    }),
+  );
+  const read = jest
+    .spyOn(publicClientsFromIds[4663], "getTransaction")
+    .mockRejectedValue(new Error("Unexpected RPC read"));
+  const receipt = jest
+    .spyOn(publicClientsFromIds[4663], "waitForTransactionReceipt")
+    .mockRejectedValue(new Error("Unexpected RPC read"));
+
+  await expect(resumeStopLossPlacement(account, 4663)).resolves.toEqual([]);
+  expect(read).not.toHaveBeenCalled();
+  expect(receipt).not.toHaveBeenCalled();
+  expect(getStopLossPlacement().getPendingTransactions(scope)).toMatchObject([
+    { status: "pending" },
+  ]);
 });
 
 it.each(["approval", "approval-reset"] as const)(

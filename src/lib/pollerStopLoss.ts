@@ -31,7 +31,11 @@ import {
 } from "./oracleRouter";
 import { assertOrderSizeLimit } from "./orderSizeLimit";
 import { getPlacementReads, type PlacementReads } from "./placementReads";
-import { ChainId, publicClientsFromIds } from "./publicClients";
+import {
+  assertOrderChainEnabled,
+  ChainId,
+  publicClientsFromIds,
+} from "./publicClients";
 import { decodeStopLossStaticInput } from "./staticInputDecoder";
 import { encodeStopLossStaticInput } from "./staticInputEncoder";
 import {
@@ -715,6 +719,7 @@ export async function refreshApprovalRepair(
   }: { client?: PublicClient; localOrders?: readonly PreparedPlacement[] } = {},
 ): Promise<ApprovalRepairReview> {
   try {
+    assertOrderChainEnabled(selection.chainId);
     const poller = POLLER_ADDRESS_BY_CHAIN_ID[selection.chainId];
     const factory = await client.readContract({
       address: poller,
@@ -891,6 +896,7 @@ export async function buildPlacementApproval(
   kind: "approval" | "none";
   transaction: PlacementTransaction | null;
 }> {
+  assertOrderChainEnabled(prepared.chainId);
   if (
     prepared.draft.isSellOrder !== true ||
     !decodeStopLossStaticInput(prepared.staticInput).isSellOrder
@@ -1029,6 +1035,7 @@ export async function verifyPlacementConfirmation(
     ).sellAmount,
   }: { client?: PublicClient; requiredSettlementAllowance?: bigint } = {},
 ): Promise<boolean> {
+  assertOrderChainEnabled(prepared.chainId);
   const blockNumber = await client.getBlockNumber();
   const shedCode = await client.getBytecode({
     address: prepared.owner,

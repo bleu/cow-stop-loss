@@ -1475,6 +1475,29 @@
         }
       },
       "issues": []
+    },
+    "4663": {
+      "chainId": 4663,
+      "tokens": {
+        "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+          "decimals": 6,
+          "symbol": "USDG"
+        }
+      },
+      "feeds": {
+        "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+          "description": "USDG / USD",
+          "decimals": 8,
+          "roundId": "18446744073709551788",
+          "answer": "100007810",
+          "updatedAt": 1795449323,
+          "answeredInRound": "18446744073709551788",
+          "heartbeat": 86400,
+          "observedAt": 1795524487,
+          "ageSeconds": 75164
+        }
+      },
+      "issues": []
     }
   },
   "skippedChains": {},
@@ -1797,7 +1820,9 @@
         },
         {
           "checkedAt": "2026-10-20T17:09:56.189281+00:00",
-          "acceptedChains": ["137"],
+          "acceptedChains": [
+            "137"
+          ],
           "scope": "candidate-review",
           "skippedChains": {
             "1": "No selected production feeds; live verification was not performed",
@@ -1837,7 +1862,9 @@
           "scope": "candidate-review",
           "outcome": "failed",
           "chainIssues": {
-            "137": ["RPC 137: "]
+            "137": [
+              "RPC 137: "
+            ]
           }
         }
       ]
@@ -2076,55 +2103,73 @@
       "note": "All 32 new sells and nine unchanged fixed buys passed the first live batch, with no errors or skipped chains. Only new canonical token/feed keys were appended; existing observations, approval objects and their fingerprints remain unchanged. Fresh fixed-buy observations remain in this batch. Top-level checkedAt remains the historical initial review date. Read-only checks do not prove later availability or end-to-end execution.",
       "arithmeticBounds": {
         "1": {
-          "feedDecimals": [8],
+          "feedDecimals": [
+            8
+          ],
           "largestNormalizedAnswer": "3893519100000000000",
           "scaledProductFitsInt256": true,
           "sharedAgeCeilingSeconds": 129660
         },
         "8453": {
-          "feedDecimals": [8],
+          "feedDecimals": [
+            8
+          ],
           "largestNormalizedAnswer": "63658431376020000000000",
           "scaledProductFitsInt256": true,
           "sharedAgeCeilingSeconds": 129660
         },
         "59144": {
-          "feedDecimals": [8],
+          "feedDecimals": [
+            8
+          ],
           "largestNormalizedAnswer": "109902147130000000000",
           "scaledProductFitsInt256": true,
           "sharedAgeCeilingSeconds": 129660
         },
         "137": {
-          "feedDecimals": [8],
+          "feedDecimals": [
+            8
+          ],
           "largestNormalizedAnswer": "17682500000000000000",
           "scaledProductFitsInt256": true,
           "sharedAgeCeilingSeconds": 129660
         },
         "42161": {
-          "feedDecimals": [8],
+          "feedDecimals": [
+            8
+          ],
           "largestNormalizedAnswer": "7276343800000000000",
           "scaledProductFitsInt256": true,
           "sharedAgeCeilingSeconds": 129660
         },
         "9745": {
-          "feedDecimals": [8],
+          "feedDecimals": [
+            8
+          ],
           "largestNormalizedAnswer": "999732070000000000",
           "scaledProductFitsInt256": true,
           "sharedAgeCeilingSeconds": 129660
         },
         "56": {
-          "feedDecimals": [8],
+          "feedDecimals": [
+            8
+          ],
           "largestNormalizedAnswer": "72390000000000000000",
           "scaledProductFitsInt256": true,
           "sharedAgeCeilingSeconds": 129660
         },
         "100": {
-          "feedDecimals": [8],
+          "feedDecimals": [
+            8
+          ],
           "largestNormalizedAnswer": "998928640000000000",
           "scaledProductFitsInt256": true,
           "sharedAgeCeilingSeconds": 129660
         },
         "43114": {
-          "feedDecimals": [8],
+          "feedDecimals": [
+            8
+          ],
           "largestNormalizedAnswer": "63747683981000000000000",
           "scaledProductFitsInt256": true,
           "sharedAgeCeilingSeconds": 129660
@@ -13591,6 +13636,2896 @@
                   "heartbeat": 86400,
                   "observedAt": 1795445926,
                   "ageSeconds": 134
+                }
+              },
+              "issues": []
+            }
+          }
+        }
+      ]
+    },
+    "bulk-20261123T171557Z": {
+      "checkedAt": "2026-11-23T17:15:59.293123+00:00",
+      "routes": [
+        {
+          "buy": {
+            "approval": {
+              "chainId": 1,
+              "tokenAddress": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+              "quote": "USD",
+              "path": "usdc-usd",
+              "proxyAddress": "0x8fffffd4afb6115b954bd326cbe7b4ba576818f6",
+              "expectedDescription": "USDC / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 124260,
+              "snapshotFingerprint": "sha256:58fb8d9e50d1884e9dac47f87bead14c5007bffda2f8a9c11985c30318449567"
+            },
+            "observation": {
+              "chainId": 1,
+              "tokens": {
+                "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48": {
+                  "decimals": 6,
+                  "symbol": "USDC"
+                }
+              },
+              "feeds": {
+                "0x8fffffd4afb6115b954bd326cbe7b4ba576818f6": {
+                  "description": "USDC / USD",
+                  "decimals": 8,
+                  "roundId": "73786976294838206538",
+                  "answer": "99994000",
+                  "updatedAt": 1795449515,
+                  "answeredInRound": "73786976294838206538",
+                  "heartbeat": 82800,
+                  "observedAt": 1795454158,
+                  "ageSeconds": 4643
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 1,
+              "tokenAddress": "0x45804880de22913dafe09f4980848ece6ecbaf78",
+              "quote": "USD",
+              "path": "paxg-usd",
+              "proxyAddress": "0x9944d86ceb9160af5c5feb251fd671923323f8c3",
+              "expectedDescription": "PAXG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 129660
+            },
+            "observation": {
+              "chainId": 1,
+              "tokens": {
+                "0x45804880de22913dafe09f4980848ece6ecbaf78": {
+                  "decimals": 18,
+                  "symbol": "PAXG"
+                }
+              },
+              "feeds": {
+                "0x9944d86ceb9160af5c5feb251fd671923323f8c3": {
+                  "description": "PAXG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709555357",
+                  "answer": "366196128856",
+                  "updatedAt": 1795443755,
+                  "answeredInRound": "18446744073709555357",
+                  "heartbeat": 86400,
+                  "observedAt": 1795454158,
+                  "ageSeconds": 10403
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 9745,
+              "tokenAddress": "0x2d661c89d812261039af9764eceaaee884f5f67f",
+              "quote": "USD",
+              "path": "usdc-usd",
+              "proxyAddress": "0xe3d6f313aeebc2d4ff780c2850f5ca95c85fafa4",
+              "expectedDescription": "USDC / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 129660,
+              "snapshotFingerprint": "sha256:15436d4f77376e8d596d81f399893988f712f0530bc2853ad967e41ab7144aab"
+            },
+            "observation": {
+              "chainId": 9745,
+              "tokens": {
+                "0x2d661c89d812261039af9764eceaaee884f5f67f": {
+                  "decimals": 6,
+                  "symbol": "USDC"
+                }
+              },
+              "feeds": {
+                "0xe3d6f313aeebc2d4ff780c2850f5ca95c85fafa4": {
+                  "description": "USDC / USD",
+                  "decimals": 8,
+                  "roundId": "36893488147419103356",
+                  "answer": "99989846",
+                  "updatedAt": 1795448783,
+                  "answeredInRound": "36893488147419103356",
+                  "heartbeat": 86400,
+                  "observedAt": 1795454158,
+                  "ageSeconds": 5375
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 9745,
+              "tokenAddress": "0x1b64b9025eebb9a6239575df9ea4b9ac46d4d193",
+              "quote": "USD",
+              "path": "xaut-usd",
+              "proxyAddress": "0x354df1ca4ae838a45405b3486ed0161aa7f01191",
+              "expectedDescription": "XAUT / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 129660
+            },
+            "observation": {
+              "chainId": 9745,
+              "tokens": {
+                "0x1b64b9025eebb9a6239575df9ea4b9ac46d4d193": {
+                  "decimals": 6,
+                  "symbol": "XAUt0"
+                }
+              },
+              "feeds": {
+                "0x354df1ca4ae838a45405b3486ed0161aa7f01191": {
+                  "description": "XAUT / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709554412",
+                  "answer": "365623761647",
+                  "updatedAt": 1795444581,
+                  "answeredInRound": "18446744073709554412",
+                  "heartbeat": 86400,
+                  "observedAt": 1795454159,
+                  "ageSeconds": 9578
+                }
+              },
+              "issues": []
+            }
+          }
+        }
+      ]
+    },
+    "bulk-20261124T124809Z": {
+      "checkedAt": "2026-11-24T12:48:18.741828+00:00",
+      "routes": [
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x0bd7d308f8e1639fab988df18a8011f41eacad73",
+              "quote": "USD",
+              "path": "eth-usd-shared-svr",
+              "proxyAddress": "0x78f3556b67e17df817d51ef5a990cdaf09e8d3a9",
+              "expectedDescription": "ETH / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x0bd7d308f8e1639fab988df18a8011f41eacad73": {
+                  "decimals": 18,
+                  "symbol": "WETH"
+                }
+              },
+              "feeds": {
+                "0x78f3556b67e17df817d51ef5a990cdaf09e8d3a9": {
+                  "description": "ETH / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709555481",
+                  "answer": "170416518795",
+                  "updatedAt": 1795524299,
+                  "answeredInRound": "18446744073709555481",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 188
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x117cc2133c37b721f49de2a7a74833232b3b4c0c",
+              "quote": "USD",
+              "path": "robinhood-spy-usd-shared-svr",
+              "proxyAddress": "0x319724394d3a0e3669269846abe664cd621f9f6a",
+              "expectedDescription": "RHSPY / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x117cc2133c37b721f49de2a7a74833232b3b4c0c": {
+                  "decimals": 18,
+                  "symbol": "SPY",
+                  "uid": "0x000000000000000000000000000000001c6f27a62789417d8ed359ed3c2d3da1"
+                }
+              },
+              "feeds": {
+                "0x319724394d3a0e3669269846abe664cd621f9f6a": {
+                  "description": "RHSPY / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551928",
+                  "answer": "71852971061",
+                  "updatedAt": 1795516892,
+                  "answeredInRound": "18446744073709551928",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 7595
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x12f190a9f9d7d37a250758b26824b97ce941bf54",
+              "quote": "USD",
+              "path": "robinhood-amzn-usd-shared-svr",
+              "proxyAddress": "0xd5a1508ced74c084ebf3cbe853e2c968fb2a651c",
+              "expectedDescription": "Robinhood AMZN / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x12f190a9f9d7d37a250758b26824b97ce941bf54": {
+                  "decimals": 18,
+                  "symbol": "AMZN",
+                  "uid": "0x000000000000000000000000000000004f508d5e2a7042299694d85c2f362ad2"
+                }
+              },
+              "feeds": {
+                "0xd5a1508ced74c084ebf3cbe853e2c968fb2a651c": {
+                  "description": "Robinhood AMZN / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709553155",
+                  "answer": "25278900000",
+                  "updatedAt": 1795522693,
+                  "answeredInRound": "18446744073709553155",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 1794
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x1b0e319c6a659f002271b69db8a7df2f911c153e",
+              "quote": "USD",
+              "path": "robinhood-gme-usd-shared-svr",
+              "proxyAddress": "0x27c71df6a64fb476468edf256cf72c038bab5b67",
+              "expectedDescription": "Robinhood GME / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x1b0e319c6a659f002271b69db8a7df2f911c153e": {
+                  "decimals": 18,
+                  "symbol": "GME",
+                  "uid": "0x00000000000000000000000000000000c5ac9420091c4f9eb3ff1fdd1d2b60c6"
+                }
+              },
+              "feeds": {
+                "0x27c71df6a64fb476468edf256cf72c038bab5b67": {
+                  "description": "Robinhood GME / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709553664",
+                  "answer": "2765500000",
+                  "updatedAt": 1795522077,
+                  "answeredInRound": "18446744073709553664",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 2410
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x284358abc07f9359f19f4b5b4ac91901be2597ba",
+              "quote": "USD",
+              "path": "robinhood-rgti-usd-shared-svr",
+              "proxyAddress": "0x2a045cf1c49c61c166c036d2f06fa2d2d984f765",
+              "expectedDescription": "Robinhood RGTI / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x284358abc07f9359f19f4b5b4ac91901be2597ba": {
+                  "decimals": 18,
+                  "symbol": "RGTI",
+                  "uid": "0x0000000000000000000000000000000031a6c09d095b4d49b4155de0040da68f"
+                }
+              },
+              "feeds": {
+                "0x2a045cf1c49c61c166c036d2f06fa2d2d984f765": {
+                  "description": "Robinhood RGTI / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709558269",
+                  "answer": "777500000",
+                  "updatedAt": 1795523417,
+                  "answeredInRound": "18446744073709558269",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 1070
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x2e0847e8910a9732eb3fb1bb4b70a580adad4fe3",
+              "quote": "USD",
+              "path": "robinhood-googl-usd-shared-svr",
+              "proxyAddress": "0xf6f373a037c30f0e5010d854385ca89185ae638b",
+              "expectedDescription": "Robinhood GOOGL / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x2e0847e8910a9732eb3fb1bb4b70a580adad4fe3": {
+                  "decimals": 18,
+                  "symbol": "GOOGL",
+                  "uid": "0x0000000000000000000000000000000053b69e2076884cc9ae2ada9bc7095df3"
+                }
+              },
+              "feeds": {
+                "0xf6f373a037c30f0e5010d854385ca89185ae638b": {
+                  "description": "Robinhood GOOGL / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709553124",
+                  "answer": "28091946658",
+                  "updatedAt": 1795524235,
+                  "answeredInRound": "18446744073709553124",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 252
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x322f0929c4625ed5bad873c95208d54e1c003b2d",
+              "quote": "USD",
+              "path": "robinhood-tsla-usd-shared-svr",
+              "proxyAddress": "0x4a1166a659a55625345e9515b32adecea5547c38",
+              "expectedDescription": "RHTSLA / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x322f0929c4625ed5bad873c95208d54e1c003b2d": {
+                  "decimals": 18,
+                  "symbol": "TSLA",
+                  "uid": "0x00000000000000000000000000000000cfece3244ea34bb29414dd9488b32d9f"
+                }
+              },
+              "feeds": {
+                "0x4a1166a659a55625345e9515b32adecea5547c38": {
+                  "description": "RHTSLA / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709553975",
+                  "answer": "38482500000",
+                  "updatedAt": 1795521344,
+                  "answeredInRound": "18446744073709553975",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 3143
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x3b14c39e89d60d627b42a1a4ca45b5bb45fc12e2",
+              "quote": "USD",
+              "path": "robinhood-rklb-usd-shared-svr",
+              "proxyAddress": "0x045477bf65aef6f4f2386ad0164579e48381cc74",
+              "expectedDescription": "Robinhood RKLB / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x3b14c39e89d60d627b42a1a4ca45b5bb45fc12e2": {
+                  "decimals": 18,
+                  "symbol": "RKLB",
+                  "uid": "0x000000000000000000000000000000007cacd0cd4c0547d480e89459e648592b"
+                }
+              },
+              "feeds": {
+                "0x045477bf65aef6f4f2386ad0164579e48381cc74": {
+                  "description": "Robinhood RKLB / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709558963",
+                  "answer": "4843000000",
+                  "updatedAt": 1795524209,
+                  "answeredInRound": "18446744073709558963",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 278
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x411efb0e7f985935daec3d4c3ebaea0d0ad7d89f",
+              "quote": "USD",
+              "path": "robinhood-slv-usd-shared-svr",
+              "proxyAddress": "0x209b73908e92ae021826ed79609845451ecba2ce",
+              "expectedDescription": "Robinhood SLV / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x411efb0e7f985935daec3d4c3ebaea0d0ad7d89f": {
+                  "decimals": 18,
+                  "symbol": "SLV",
+                  "uid": "0x00000000000000000000000000000000ddf030d4e25046cab85b3d8c7cd86553"
+                }
+              },
+              "feeds": {
+                "0x209b73908e92ae021826ed79609845451ecba2ce": {
+                  "description": "Robinhood SLV / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709553894",
+                  "answer": "3843500000",
+                  "updatedAt": 1795524324,
+                  "answeredInRound": "18446744073709553894",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 163
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x47f93d52cbec7c6d2cfc080e154002370a60daea",
+              "quote": "USD",
+              "path": "robinhood-asml-usd-shared-svr",
+              "proxyAddress": "0xb4106147e8cce40b7d46124090d373a71b70f87d",
+              "expectedDescription": "Robinhood ASML / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x47f93d52cbec7c6d2cfc080e154002370a60daea": {
+                  "decimals": 18,
+                  "symbol": "ASML",
+                  "uid": "0x00000000000000000000000000000000f6e013126d524981acc9df053b0c19ea"
+                }
+              },
+              "feeds": {
+                "0xb4106147e8cce40b7d46124090d373a71b70f87d": {
+                  "description": "Robinhood ASML / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709554791",
+                  "answer": "135755087278",
+                  "updatedAt": 1795522132,
+                  "answeredInRound": "18446744073709554791",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 2355
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x492641f648a4986844848e0befe66d14817bce34",
+              "quote": "USD",
+              "path": "link-usd-shared-svr",
+              "proxyAddress": "0xe86e3422aa9b5e8ee9f3e41a63975bc387a8bce9",
+              "expectedDescription": "LINK / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x492641f648a4986844848e0befe66d14817bce34": {
+                  "decimals": 18,
+                  "symbol": "LINK"
+                }
+              },
+              "feeds": {
+                "0xe86e3422aa9b5e8ee9f3e41a63975bc387a8bce9": {
+                  "description": "LINK / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709557346",
+                  "answer": "892852000",
+                  "updatedAt": 1795523652,
+                  "answeredInRound": "18446744073709557346",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 835
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x4a0e65a3eccec6dbe60ae065f2e7bb85fae35eea",
+              "quote": "USD",
+              "path": "robinhood-spcx-usd-shared-svr",
+              "proxyAddress": "0xb265810950ba6c5c0ff821c9963014a56fd8bffb",
+              "expectedDescription": "Robinhood SPCX / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x4a0e65a3eccec6dbe60ae065f2e7bb85fae35eea": {
+                  "decimals": 18,
+                  "symbol": "SPCX",
+                  "uid": "0x000000000000000000000000000000001aa9c9cc0bf34c5e95cfe7168463d310"
+                }
+              },
+              "feeds": {
+                "0xb265810950ba6c5c0ff821c9963014a56fd8bffb": {
+                  "description": "Robinhood SPCX / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709556598",
+                  "answer": "13100000000",
+                  "updatedAt": 1795521671,
+                  "answeredInRound": "18446744073709556598",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 2816
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x558378e000d634a36593e338ebacdd6207640efe",
+              "quote": "USD",
+              "path": "robinhood-ionq-usd-shared-svr",
+              "proxyAddress": "0x22efec4919baf55f360e0edee4abeb26de4971eb",
+              "expectedDescription": "Robinhood IONQ / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x558378e000d634a36593e338ebacdd6207640efe": {
+                  "decimals": 18,
+                  "symbol": "IONQ",
+                  "uid": "0x00000000000000000000000000000000b6f6e756b7ff46b88238c18d0bc07fd4"
+                }
+              },
+              "feeds": {
+                "0x22efec4919baf55f360e0edee4abeb26de4971eb": {
+                  "description": "Robinhood IONQ / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709558747",
+                  "answer": "2258500000",
+                  "updatedAt": 1795521722,
+                  "answeredInRound": "18446744073709558747",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 2765
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x58538e6a46e07434d7e7375bc268d3cb839c0133",
+              "quote": "USD",
+              "path": "ena-usd-shared-svr",
+              "proxyAddress": "0x2a291496b3aa19d8948e442ef28ee952f3ee97e8",
+              "expectedDescription": "ENA / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x58538e6a46e07434d7e7375bc268d3cb839c0133": {
+                  "decimals": 18,
+                  "symbol": "ENA"
+                }
+              },
+              "feeds": {
+                "0x2a291496b3aa19d8948e442ef28ee952f3ee97e8": {
+                  "description": "ENA / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709569548",
+                  "answer": "9922329",
+                  "updatedAt": 1795524300,
+                  "answeredInRound": "18446744073709569548",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 187
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x58ffe4a942d3885baa22d7520691f611ef09e7aa",
+              "quote": "USD",
+              "path": "robinhood-tsm-usd-shared-svr",
+              "proxyAddress": "0x874cf94aa8ec88fd9560094dd065f2fb3e41fc2f",
+              "expectedDescription": "Robinhood TSM / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x58ffe4a942d3885baa22d7520691f611ef09e7aa": {
+                  "decimals": 18,
+                  "symbol": "TSM",
+                  "uid": "0x000000000000000000000000000000002e890a0884474abd86ba66b19722e827"
+                }
+              },
+              "feeds": {
+                "0x874cf94aa8ec88fd9560094dd065f2fb3e41fc2f": {
+                  "description": "Robinhood TSM / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709554224",
+                  "answer": "35839524800",
+                  "updatedAt": 1795523962,
+                  "answeredInRound": "18446744073709554224",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 525
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5f10a1c971b69e47e059e1dc91901b59b3fb49c3",
+              "quote": "USD",
+              "path": "robinhood-crwv-usd-shared-svr",
+              "proxyAddress": "0xe1b3aabcafad1c94708dc1367dcff8aa4407487c",
+              "expectedDescription": "Robinhood CRWV / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5f10a1c971b69e47e059e1dc91901b59b3fb49c3": {
+                  "decimals": 18,
+                  "symbol": "CRWV",
+                  "uid": "0x000000000000000000000000000000007f48cdbfaced4ff4b34fbc832f449c33"
+                }
+              },
+              "feeds": {
+                "0xe1b3aabcafad1c94708dc1367dcff8aa4407487c": {
+                  "description": "Robinhood CRWV / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709560498",
+                  "answer": "4617500000",
+                  "updatedAt": 1795524137,
+                  "answeredInRound": "18446744073709560498",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 350
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x6330d8c3178a418788df01a47479c0ce7ccf450b",
+              "quote": "USD",
+              "path": "robinhood-coin-usd-shared-svr",
+              "proxyAddress": "0xa3a468a452940b7d6b69991207b508c609a98ef2",
+              "expectedDescription": "Robinhood COIN / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x6330d8c3178a418788df01a47479c0ce7ccf450b": {
+                  "decimals": 18,
+                  "symbol": "COIN",
+                  "uid": "0x00000000000000000000000000000000970b46dbdece4ae4958a53815e62a85a"
+                }
+              },
+              "feeds": {
+                "0xa3a468a452940b7d6b69991207b508c609a98ef2": {
+                  "description": "Robinhood COIN / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709556682",
+                  "answer": "10644000000",
+                  "updatedAt": 1795520997,
+                  "answeredInRound": "18446744073709556682",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 3490
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x6bac06600d220ac5ac281ad1f504d2cf0f90f6e6",
+              "quote": "USD",
+              "path": "wbtc-usd-shared-svr",
+              "proxyAddress": "0x62107b0d3ada75fc1697fd342d99eed947a3aa5e",
+              "expectedDescription": "WBTC / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x6bac06600d220ac5ac281ad1f504d2cf0f90f6e6": {
+                  "decimals": 8,
+                  "symbol": "WBTC"
+                }
+              },
+              "feeds": {
+                "0x62107b0d3ada75fc1697fd342d99eed947a3aa5e": {
+                  "description": "WBTC / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709553713",
+                  "answer": "6033675893897",
+                  "updatedAt": 1795520983,
+                  "answeredInRound": "18446744073709553713",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 3504
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x7f0abef0c07280f82c6a08ead09ded6bae2c13fc",
+              "quote": "USD",
+              "path": "robinhood-ewy-usd-shared-svr",
+              "proxyAddress": "0xefdf54610b62a7753ec30bdc380847c12d32e1d1",
+              "expectedDescription": "Robinhood EWY / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x7f0abef0c07280f82c6a08ead09ded6bae2c13fc": {
+                  "decimals": 18,
+                  "symbol": "EWY",
+                  "uid": "0x000000000000000000000000000000008a8710f26e424b2dbc1f6b5de9f267b8"
+                }
+              },
+              "feeds": {
+                "0xefdf54610b62a7753ec30bdc380847c12d32e1d1": {
+                  "description": "Robinhood EWY / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709556318",
+                  "answer": "13204000000",
+                  "updatedAt": 1795517401,
+                  "answeredInRound": "18446744073709556318",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 7086
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x86923f96303d656e4aa86d9d42d1e57ad2023fdc",
+              "quote": "USD",
+              "path": "robinhood-amd-usd-shared-svr",
+              "proxyAddress": "0x943a29e7ae51a4798823ca9eed2ed533b2a22c72",
+              "expectedDescription": "RHAMD / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x86923f96303d656e4aa86d9d42d1e57ad2023fdc": {
+                  "decimals": 18,
+                  "symbol": "AMD",
+                  "uid": "0x0000000000000000000000000000000086aeaac3c7d9422c90f6fd41aff0eaf7"
+                }
+              },
+              "feeds": {
+                "0x943a29e7ae51a4798823ca9eed2ed533b2a22c72": {
+                  "description": "RHAMD / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709557087",
+                  "answer": "43569000000",
+                  "updatedAt": 1795523517,
+                  "answeredInRound": "18446744073709557087",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 970
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x894e1ec2d74ffe5aef8dc8a9e84686accb964f2a",
+              "quote": "USD",
+              "path": "robinhood-pltr-usd-shared-svr",
+              "proxyAddress": "0x820abedff239034956b7a9d2f0a331f9f075eb4c",
+              "expectedDescription": "Robinhood PLTR / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x894e1ec2d74ffe5aef8dc8a9e84686accb964f2a": {
+                  "decimals": 18,
+                  "symbol": "PLTR",
+                  "uid": "0x000000000000000000000000000000007454a90b4aab491389ce9fa3c485de42"
+                }
+              },
+              "feeds": {
+                "0x820abedff239034956b7a9d2f0a331f9f075eb4c": {
+                  "description": "Robinhood PLTR / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709555057",
+                  "answer": "15561100000",
+                  "updatedAt": 1795521848,
+                  "answeredInRound": "18446744073709555057",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 2639
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x941ae714ec6d8130c7b75d67160ca08f1e7d11dd",
+              "quote": "USD",
+              "path": "rhdell-usd-shared-svr",
+              "proxyAddress": "0x1c6c8cadbe02e19129c39ddb92281ce4c0bf206b",
+              "expectedDescription": "Robinhood DELL-USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x941ae714ec6d8130c7b75d67160ca08f1e7d11dd": {
+                  "decimals": 18,
+                  "symbol": "DELL",
+                  "uid": "0x0000000000000000000000000000000014eaef73a2c44d62b7952cfd0a44ff51"
+                }
+              },
+              "feeds": {
+                "0x1c6c8cadbe02e19129c39ddb92281ce4c0bf206b": {
+                  "description": "Robinhood DELL-USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709556702",
+                  "answer": "31512107848",
+                  "updatedAt": 1795523624,
+                  "answeredInRound": "18446744073709556702",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 863
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x9d9c6684f596f66a64c030b93a886d51fd4d7931",
+              "quote": "USD",
+              "path": "robinhood-nbis-usd-shared-svr",
+              "proxyAddress": "0xe1d87b116ba0fe898998f1d140339d1fa1e09705",
+              "expectedDescription": "Robinhood NBIS / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x9d9c6684f596f66a64c030b93a886d51fd4d7931": {
+                  "decimals": 18,
+                  "symbol": "NBIS",
+                  "uid": "0x00000000000000000000000000000000994b82ab24514d439fccc87156df35f9"
+                }
+              },
+              "feeds": {
+                "0xe1d87b116ba0fe898998f1d140339d1fa1e09705": {
+                  "description": "Robinhood NBIS / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709563071",
+                  "answer": "9396500000",
+                  "updatedAt": 1795524073,
+                  "answeredInRound": "18446744073709563071",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 414
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0xa30fa36db767ad9ed3f7a60fc79526fb4d56d344",
+              "quote": "USD",
+              "path": "robinhood-uso-usd-shared-svr",
+              "proxyAddress": "0x75a9c76ef439e2c7c2e5a34ab105ecfe3766431c",
+              "expectedDescription": "RHUSO / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0xa30fa36db767ad9ed3f7a60fc79526fb4d56d344": {
+                  "decimals": 18,
+                  "symbol": "USO",
+                  "uid": "0x00000000000000000000000000000000949bd039a8ae465d9cf9336068188b55"
+                }
+              },
+              "feeds": {
+                "0x75a9c76ef439e2c7c2e5a34ab105ecfe3766431c": {
+                  "description": "RHUSO / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709554217",
+                  "answer": "13353000000",
+                  "updatedAt": 1795519904,
+                  "answeredInRound": "18446744073709554217",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 4583
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0xad25ac6c84d497db898fa1e8387bf6af3532a1c4",
+              "quote": "USD",
+              "path": "robinhood-baba-usd-shared-svr",
+              "proxyAddress": "0x62cc8f9b5f56a33c9c8a60c8b92779f523c4e984",
+              "expectedDescription": "Robinhood BABA / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0xad25ac6c84d497db898fa1e8387bf6af3532a1c4": {
+                  "decimals": 18,
+                  "symbol": "BABA",
+                  "uid": "0x000000000000000000000000000000006ef9da606f504495ad7de6a7a58b87cd"
+                }
+              },
+              "feeds": {
+                "0x62cc8f9b5f56a33c9c8a60c8b92779f523c4e984": {
+                  "description": "Robinhood BABA / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709554229",
+                  "answer": "8366000000",
+                  "updatedAt": 1795520618,
+                  "answeredInRound": "18446744073709554229",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 3869
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0xaf3d76f1834a1d425780943c99ea8a608f8a93f9",
+              "quote": "USD",
+              "path": "robinhood-aapl-usd-shared-svr",
+              "proxyAddress": "0x6b22a786baa607d76728168703a39ea9c99f2cd0",
+              "expectedDescription": "Robinhood AAPL / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0xaf3d76f1834a1d425780943c99ea8a608f8a93f9": {
+                  "decimals": 18,
+                  "symbol": "AAPL",
+                  "uid": "0x00000000000000000000000000000000c2425be3658540dd8e2424cbf3c5c649"
+                }
+              },
+              "feeds": {
+                "0x6b22a786baa607d76728168703a39ea9c99f2cd0": {
+                  "description": "Robinhood AAPL / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709552659",
+                  "answer": "34929052716",
+                  "updatedAt": 1795519266,
+                  "answeredInRound": "18446744073709552659",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 5221
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0xb0992820e760d836549ba69bc7598b4af75dee03",
+              "quote": "USD",
+              "path": "robinhood-orcl-usd-shared-svr",
+              "proxyAddress": "0x0e6a64a2b58a6693a531e6c555f3a5d042eea844",
+              "expectedDescription": "Robinhood ORCL / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0xb0992820e760d836549ba69bc7598b4af75dee03": {
+                  "decimals": 18,
+                  "symbol": "ORCL",
+                  "uid": "0x00000000000000000000000000000000be23b7c535e841a3b1bae97bc0166eae"
+                }
+              },
+              "feeds": {
+                "0x0e6a64a2b58a6693a531e6c555f3a5d042eea844": {
+                  "description": "Robinhood ORCL / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709555447",
+                  "answer": "11055406374",
+                  "updatedAt": 1795523761,
+                  "answeredInRound": "18446744073709555447",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 726
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0xb90a19ff0af67f7779aff50a882a9cff42446400",
+              "quote": "USD",
+              "path": "robinhood-sndk-usd-shared-svr",
+              "proxyAddress": "0xfb133fa4b7b385802b693a293606682df47109a3",
+              "expectedDescription": "RHSNDK / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0xb90a19ff0af67f7779aff50a882a9cff42446400": {
+                  "decimals": 18,
+                  "symbol": "SNDK",
+                  "uid": "0x0000000000000000000000000000000046e46cc63fe842ebbdfe6187bda403d6"
+                }
+              },
+              "feeds": {
+                "0xfb133fa4b7b385802b693a293606682df47109a3": {
+                  "description": "RHSNDK / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709562266",
+                  "answer": "66236000000",
+                  "updatedAt": 1795524337,
+                  "answeredInRound": "18446744073709562266",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 150
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0xc0d6457c16cc70d6790dd43521c899c87ce02f35",
+              "quote": "USD",
+              "path": "robinhood-meta-usd-shared-svr",
+              "proxyAddress": "0x7c38c00c30bee9378381e7b6135d7283356d71b1",
+              "expectedDescription": "Robinhood META / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0xc0d6457c16cc70d6790dd43521c899c87ce02f35": {
+                  "decimals": 18,
+                  "symbol": "META",
+                  "uid": "0x00000000000000000000000000000000343e7beca03644bcba2e50b8236784f5"
+                }
+              },
+              "feeds": {
+                "0x7c38c00c30bee9378381e7b6135d7283356d71b1": {
+                  "description": "Robinhood META / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709553838",
+                  "answer": "59176724482",
+                  "updatedAt": 1795520730,
+                  "answeredInRound": "18446744073709553838",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 3757
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0xc72b96e0e48ecd4dc75e1e45396e26300bc39681",
+              "quote": "USD",
+              "path": "robinhood-intc-usd-shared-svr",
+              "proxyAddress": "0x3f390c5c24628ac7c489515402235fead71d1913",
+              "expectedDescription": "RHINTC / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0xc72b96e0e48ecd4dc75e1e45396e26300bc39681": {
+                  "decimals": 18,
+                  "symbol": "INTC",
+                  "uid": "0x000000000000000000000000000000002eb75a2c20d7423881b4f812c27d0abe"
+                }
+              },
+              "feeds": {
+                "0x3f390c5c24628ac7c489515402235fead71d1913": {
+                  "description": "RHINTC / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709558412",
+                  "answer": "5610500000",
+                  "updatedAt": 1795523503,
+                  "answeredInRound": "18446744073709558412",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 984
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0xcbb95bbf36099d34da091dc6fa6f49efa257cee3",
+              "quote": "USD",
+              "path": "robinhood-clsk-usd-shared-svr",
+              "proxyAddress": "0x810c12d3a554bc47fd39597fe3b3aac4941f50ef",
+              "expectedDescription": "Robinhood CLSK / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0xcbb95bbf36099d34da091dc6fa6f49efa257cee3": {
+                  "decimals": 18,
+                  "symbol": "CLSK",
+                  "uid": "0x00000000000000000000000000000000730835cf25474184af89c27075a82be1"
+                }
+              },
+              "feeds": {
+                "0x810c12d3a554bc47fd39597fe3b3aac4941f50ef": {
+                  "description": "Robinhood CLSK / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709560026",
+                  "answer": "529500000",
+                  "updatedAt": 1795522165,
+                  "answeredInRound": "18446744073709560026",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 2322
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec",
+              "quote": "USD",
+              "path": "robinhood-nvda-usd-shared-svr",
+              "proxyAddress": "0x379ec4f7c378f34a1b47e4f3cbebcbac3e8e9f15",
+              "expectedDescription": "RHNVDA / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec": {
+                  "decimals": 18,
+                  "symbol": "NVDA",
+                  "uid": "0x00000000000000000000000000000000915f477416294f5099a5e0e09f327ce5"
+                }
+              },
+              "feeds": {
+                "0x379ec4f7c378f34a1b47e4f3cbebcbac3e8e9f15": {
+                  "description": "RHNVDA / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709554104",
+                  "answer": "15657627751",
+                  "updatedAt": 1795524056,
+                  "answeredInRound": "18446744073709554104",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 431
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0xd5f3879160bc7c32ebb4dc785f8a4f505888de68",
+              "quote": "USD",
+              "path": "robinhood-qqq-usd-shared-svr",
+              "proxyAddress": "0x80901d846d5d7b030f26b480776ee3b29374c2ae",
+              "expectedDescription": "Robinhood QQQ / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0xd5f3879160bc7c32ebb4dc785f8a4f505888de68": {
+                  "decimals": 18,
+                  "symbol": "QQQ",
+                  "uid": "0x000000000000000000000000000000002470b933c52d47ccad017ed9ee80c9ed"
+                }
+              },
+              "feeds": {
+                "0x80901d846d5d7b030f26b480776ee3b29374c2ae": {
+                  "description": "Robinhood QQQ / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709552365",
+                  "answer": "63869602913",
+                  "updatedAt": 1795522931,
+                  "answeredInRound": "18446744073709552365",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 1556
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0xdf0992e440dd0be65bd8439b609d6d4366bf1cb5",
+              "quote": "USD",
+              "path": "robinhood-crcl-usd-shared-svr",
+              "proxyAddress": "0x6652edf64ba3731c4f2d3ce821a0fb1f1f6b482a",
+              "expectedDescription": "Robinhood CRCL / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0xdf0992e440dd0be65bd8439b609d6d4366bf1cb5": {
+                  "decimals": 18,
+                  "symbol": "CRCL",
+                  "uid": "0x000000000000000000000000000000005047f8f8a1a34a9ebee52a4155570807"
+                }
+              },
+              "feeds": {
+                "0x6652edf64ba3731c4f2d3ce821a0fb1f1f6b482a": {
+                  "description": "Robinhood CRCL / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709558390",
+                  "answer": "5022000000",
+                  "updatedAt": 1795524228,
+                  "answeredInRound": "18446744073709558390",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 259
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0xe93237c50d904957cf27e7b1133b510c669c2e74",
+              "quote": "USD",
+              "path": "robinhood-msft-usd-shared-svr",
+              "proxyAddress": "0x45c3c877c15e6ba2ebb19ea114ea508d14c1af2e",
+              "expectedDescription": "RHMSFT / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0xe93237c50d904957cf27e7b1133b510c669c2e74": {
+                  "decimals": 18,
+                  "symbol": "MSFT",
+                  "uid": "0x00000000000000000000000000000000307bb0113ca54f93adf80f4ff2bf681a"
+                }
+              },
+              "feeds": {
+                "0x45c3c877c15e6ba2ebb19ea114ea508d14c1af2e": {
+                  "description": "RHMSFT / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709552995",
+                  "answer": "49076104929",
+                  "updatedAt": 1795521724,
+                  "answeredInRound": "18446744073709552995",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 2763
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0xec262a75e413fafd0df80480274532c79d42da09",
+              "quote": "USD",
+              "path": "robinhood-mstr-usd-shared-svr",
+              "proxyAddress": "0x396118bdfb181e6240e74d243f266b061c0edc3d",
+              "expectedDescription": "Robinhood MSTR / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0xec262a75e413fafd0df80480274532c79d42da09": {
+                  "decimals": 18,
+                  "symbol": "MSTR",
+                  "uid": "0x00000000000000000000000000000000c91ba6e57a1c493f99cae2174e43c86e"
+                }
+              },
+              "feeds": {
+                "0x396118bdfb181e6240e74d243f266b061c0edc3d": {
+                  "description": "Robinhood MSTR / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709558572",
+                  "answer": "8193500000",
+                  "updatedAt": 1795524311,
+                  "answeredInRound": "18446744073709558572",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 176
+                }
+              },
+              "issues": []
+            }
+          }
+        },
+        {
+          "buy": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+              "quote": "USD",
+              "path": "usdg-usd-shared-svr",
+              "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+              "expectedDescription": "USDG / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400,
+              "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0x5fc5360d0400a0fd4f2af552add042d716f1d168": {
+                  "decimals": 6,
+                  "symbol": "USDG"
+                }
+              },
+              "feeds": {
+                "0x61b7e5650328764b076a108eff5fa7282a1b9ad2": {
+                  "description": "USDG / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709551788",
+                  "answer": "100007810",
+                  "updatedAt": 1795449323,
+                  "answeredInRound": "18446744073709551788",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 75164
+                }
+              },
+              "issues": []
+            }
+          },
+          "sell": {
+            "approval": {
+              "chainId": 4663,
+              "tokenAddress": "0xff080c8ce2e5feadaca0da81314ae59d232d4afd",
+              "quote": "USD",
+              "path": "robinhood-mu-usd-shared-svr",
+              "proxyAddress": "0x425eefdcf05ed6526c3ce61af99429a228a6d596",
+              "expectedDescription": "RHMU / USD",
+              "expectedDecimals": 8,
+              "maxAgeSeconds": 86400
+            },
+            "observation": {
+              "chainId": 4663,
+              "tokens": {
+                "0xff080c8ce2e5feadaca0da81314ae59d232d4afd": {
+                  "decimals": 18,
+                  "symbol": "MU",
+                  "uid": "0x000000000000000000000000000000007757415150a94b50a879cdc04dc90664"
+                }
+              },
+              "feeds": {
+                "0x425eefdcf05ed6526c3ce61af99429a228a6d596": {
+                  "description": "RHMU / USD",
+                  "decimals": 8,
+                  "roundId": "18446744073709559068",
+                  "answer": "66336367617",
+                  "updatedAt": 1795524091,
+                  "answeredInRound": "18446744073709559068",
+                  "heartbeat": 86400,
+                  "observedAt": 1795524487,
+                  "ageSeconds": 396
                 }
               },
               "issues": []

@@ -7,7 +7,7 @@ import { createPublicClient, custom } from "viem";
 import { createConfig, WagmiProvider } from "wagmi";
 
 import { CHAIN_INFO } from "#/lib/chainInfo";
-import { supportedChains } from "#/lib/publicClients";
+import { walletChains } from "#/lib/publicClients";
 
 jest.mock("wagmi", () => ({
   ...jest.requireActual("wagmi"),
@@ -19,12 +19,12 @@ function OpenNetworkMenu() {
   return <button onClick={openChainModal}>Networks</button>;
 }
 
-it("shows local Linea and Plasma icons in the RainbowKit network menu", async () => {
+it("shows local Linea, Plasma, and Robinhood icons in the RainbowKit network menu", async () => {
   const request = jest
     .fn()
     .mockRejectedValue(new Error("Unexpected RPC request"));
   const config = createConfig({
-    chains: supportedChains,
+    chains: walletChains,
     client: ({ chain }) =>
       createPublicClient({
         chain,
@@ -53,6 +53,12 @@ it("shows local Linea and Plasma icons in the RainbowKit network menu", async ()
     expect(image).toHaveStyle({ background: chain.color });
   }
 
+  const robinhood = await within(menu).findByRole("img", { name: "Robinhood" });
+  expect(robinhood.querySelector("img")).toHaveAttribute(
+    "src",
+    "/assets/chains/robinhood.svg",
+  );
+  expect(robinhood).toHaveStyle({ background: "#00C805" });
   expect(request).not.toHaveBeenCalled();
   view.unmount();
   queryClient.clear();

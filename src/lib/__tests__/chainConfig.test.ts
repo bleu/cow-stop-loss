@@ -22,6 +22,11 @@ describe("chain endpoint configuration", () => {
     );
   });
 
+  it("configures the Robinhood production CoW API without enabling orders", () => {
+    expect(COW_API_URL_BY_CHAIN_ID[4663]).toBe("https://api.cow.fi/robinhood");
+    expect(supportedChainIds).not.toContain(4663);
+  });
+
   it.each(expectedPaths)(
     "uses the CoW API and explorer paths for chain %s",
     (chainId, apiPath, explorerPath) => {

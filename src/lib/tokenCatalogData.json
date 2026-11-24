@@ -807,8 +807,30 @@
       "assetClass": "volatile",
       "classificationReason": "PAX Gold tracks gold, whose USD price changes; it is not a fiat stablecoin.",
       "logoURI": "/assets/tokens/f29091d061c58a3ff726.png",
-      "oracles": {},
-      "oracleApprovals": {}
+      "oracles": {
+        "USD": "0x9944d86ceb9160af5c5feb251fd671923323f8c3"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 1,
+          "tokenAddress": "0x45804880de22913dafe09f4980848ece6ecbaf78",
+          "quote": "USD",
+          "path": "paxg-usd",
+          "proxyAddress": "0x9944d86ceb9160af5c5feb251fd671923323f8c3",
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The feed prices the Paxos PAXG token held on Ethereum.",
+          "identityEvidence": "https://raw.githubusercontent.com/paxosglobal/paxos-gold-contract/1a21e856ebe70360de3817edd5c89baf30a429a4/README.md (SHA-256 c0866a05442e4fbe5f4de704f75b6be87a5bf85b40368d61177295a6c99725de)",
+          "representationEvidence": "https://raw.githubusercontent.com/paxosglobal/paxos-gold-contract/1a21e856ebe70360de3817edd5c89baf30a429a4/README.md (SHA-256 c0866a05442e4fbe5f4de704f75b6be87a5bf85b40368d61177295a6c99725de)",
+          "methodologyEvidence": "Chainlink cex_price token reference feed (crypto-PAXG). Read 81 consecutive rounds (18446744073709555277 to 18446744073709555357) over at least seven days, with Saturday and Sunday updates and a maximum gap of 49884 seconds.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-mainnet.json (SHA-256 56d4d747587fec6ee56ed2edaa4a7b6840bdd840248d929cd9e6882c7387f34e)",
+          "expectedDescription": "PAXG / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "reviewDate": "2026-11-23",
+          "verificationBatch": "bulk-20261123T171557Z",
+          "snapshotFingerprint": "sha256:30746c57f07e9f8d75b5a2a67d16e12625e5b51d7a8bf47c2577d79e4246f6c8"
+        }
+      }
     },
     {
       "chainId": 1,
@@ -5093,6 +5115,1540 @@
       }
     },
     {
+      "chainId": 4663,
+      "address": "0xaf3d76f1834a1d425780943c99ea8a608f8a93f9",
+      "symbol": "AAPL",
+      "name": "Apple • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/916ecedbb00d88220132.png",
+      "oracles": {
+        "USD": "0x6b22a786baa607d76728168703a39ea9c99f2cd0"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0xaf3d76f1834a1d425780943c99ea8a608f8a93f9",
+          "quote": "USD",
+          "path": "robinhood-aapl-usd-shared-svr",
+          "proxyAddress": "0x6b22a786baa607d76728168703a39ea9c99f2cd0",
+          "expectedDescription": "Robinhood AAPL / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0xaf3d76f1834a1d425780943c99ea8a608f8a93f9, issuer UID 0x00000000000000000000000000000000c2425be3658540dd8e2424cbf3c5c649; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:42112365a4bc269a094d2de2fa589df47be632e8d15a9b3bb14ea2cf74322abf"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x86923f96303d656e4aa86d9d42d1e57ad2023fdc",
+      "symbol": "AMD",
+      "name": "AMD • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/867efa3d4fcede3849a5.png",
+      "oracles": {
+        "USD": "0x943a29e7ae51a4798823ca9eed2ed533b2a22c72"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x86923f96303d656e4aa86d9d42d1e57ad2023fdc",
+          "quote": "USD",
+          "path": "robinhood-amd-usd-shared-svr",
+          "proxyAddress": "0x943a29e7ae51a4798823ca9eed2ed533b2a22c72",
+          "expectedDescription": "RHAMD / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0x86923f96303d656e4aa86d9d42d1e57ad2023fdc, issuer UID 0x0000000000000000000000000000000086aeaac3c7d9422c90f6fd41aff0eaf7; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:cf9e9eaf38375f5b1048fe4ed30e73d5a5e45bbfc29ac49d8e1a4b63592e093a"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x12f190a9f9d7d37a250758b26824b97ce941bf54",
+      "symbol": "AMZN",
+      "name": "Amazon • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/a7a79eb0dabc646d2b54.png",
+      "oracles": {
+        "USD": "0xd5a1508ced74c084ebf3cbe853e2c968fb2a651c"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x12f190a9f9d7d37a250758b26824b97ce941bf54",
+          "quote": "USD",
+          "path": "robinhood-amzn-usd-shared-svr",
+          "proxyAddress": "0xd5a1508ced74c084ebf3cbe853e2c968fb2a651c",
+          "expectedDescription": "Robinhood AMZN / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0x12f190a9f9d7d37a250758b26824b97ce941bf54, issuer UID 0x000000000000000000000000000000004f508d5e2a7042299694d85c2f362ad2; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:0246a16e5c043f813f164e8520a70823a504fdb999c6832e3ce4269476b50a6c"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x47f93d52cbec7c6d2cfc080e154002370a60daea",
+      "symbol": "ASML",
+      "name": "ASML Holding NV • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/cc23199bf6bdd71ce965.png",
+      "oracles": {
+        "USD": "0xb4106147e8cce40b7d46124090d373a71b70f87d"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x47f93d52cbec7c6d2cfc080e154002370a60daea",
+          "quote": "USD",
+          "path": "robinhood-asml-usd-shared-svr",
+          "proxyAddress": "0xb4106147e8cce40b7d46124090d373a71b70f87d",
+          "expectedDescription": "Robinhood ASML / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0x47f93d52cbec7c6d2cfc080e154002370a60daea, issuer UID 0x00000000000000000000000000000000f6e013126d524981acc9df053b0c19ea; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:9f9d0fe731d337de28a9645a38daaeb1d01429720e761c27b2af649439d6e824"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0xad25ac6c84d497db898fa1e8387bf6af3532a1c4",
+      "symbol": "BABA",
+      "name": "Alibaba • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/1009fbba20f7846c3306.png",
+      "oracles": {
+        "USD": "0x62cc8f9b5f56a33c9c8a60c8b92779f523c4e984"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0xad25ac6c84d497db898fa1e8387bf6af3532a1c4",
+          "quote": "USD",
+          "path": "robinhood-baba-usd-shared-svr",
+          "proxyAddress": "0x62cc8f9b5f56a33c9c8a60c8b92779f523c4e984",
+          "expectedDescription": "Robinhood BABA / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0xad25ac6c84d497db898fa1e8387bf6af3532a1c4, issuer UID 0x000000000000000000000000000000006ef9da606f504495ad7de6a7a58b87cd; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:b8614834ec5a74f45f4efccae648fb161b87625bcfb12ca230de5d8ebbd909d0"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0xcbb95bbf36099d34da091dc6fa6f49efa257cee3",
+      "symbol": "CLSK",
+      "name": "CleanSpark • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/508e9f7ae250e12d6f4f.png",
+      "oracles": {
+        "USD": "0x810c12d3a554bc47fd39597fe3b3aac4941f50ef"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0xcbb95bbf36099d34da091dc6fa6f49efa257cee3",
+          "quote": "USD",
+          "path": "robinhood-clsk-usd-shared-svr",
+          "proxyAddress": "0x810c12d3a554bc47fd39597fe3b3aac4941f50ef",
+          "expectedDescription": "Robinhood CLSK / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0xcbb95bbf36099d34da091dc6fa6f49efa257cee3, issuer UID 0x00000000000000000000000000000000730835cf25474184af89c27075a82be1; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:34188bf6cea47d399c978a99dc7f28adc5ed6b3aec86284549ce777fc1020d96"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x6330d8c3178a418788df01a47479c0ce7ccf450b",
+      "symbol": "COIN",
+      "name": "Coinbase • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/9f48eaeb53e213a81532.png",
+      "oracles": {
+        "USD": "0xa3a468a452940b7d6b69991207b508c609a98ef2"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x6330d8c3178a418788df01a47479c0ce7ccf450b",
+          "quote": "USD",
+          "path": "robinhood-coin-usd-shared-svr",
+          "proxyAddress": "0xa3a468a452940b7d6b69991207b508c609a98ef2",
+          "expectedDescription": "Robinhood COIN / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0x6330d8c3178a418788df01a47479c0ce7ccf450b, issuer UID 0x00000000000000000000000000000000970b46dbdece4ae4958a53815e62a85a; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:ac0cef5704f61688cd6ff4e2c547263469a11fa41e6f1cb20e28ed8f21a9c5ba"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0xdf0992e440dd0be65bd8439b609d6d4366bf1cb5",
+      "symbol": "CRCL",
+      "name": "Circle Internet Group • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/6f8821ff86eb82d03a9b.png",
+      "oracles": {
+        "USD": "0x6652edf64ba3731c4f2d3ce821a0fb1f1f6b482a"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0xdf0992e440dd0be65bd8439b609d6d4366bf1cb5",
+          "quote": "USD",
+          "path": "robinhood-crcl-usd-shared-svr",
+          "proxyAddress": "0x6652edf64ba3731c4f2d3ce821a0fb1f1f6b482a",
+          "expectedDescription": "Robinhood CRCL / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0xdf0992e440dd0be65bd8439b609d6d4366bf1cb5, issuer UID 0x000000000000000000000000000000005047f8f8a1a34a9ebee52a4155570807; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:f5376d24d4fba1a879cad46a2bb0b0e234ed49950cd3ce1b2637c9ca0fe00e05"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x5f10a1c971b69e47e059e1dc91901b59b3fb49c3",
+      "symbol": "CRWV",
+      "name": "CoreWeave • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/66c0d6a6807aa1da7afc.png",
+      "oracles": {
+        "USD": "0xe1b3aabcafad1c94708dc1367dcff8aa4407487c"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x5f10a1c971b69e47e059e1dc91901b59b3fb49c3",
+          "quote": "USD",
+          "path": "robinhood-crwv-usd-shared-svr",
+          "proxyAddress": "0xe1b3aabcafad1c94708dc1367dcff8aa4407487c",
+          "expectedDescription": "Robinhood CRWV / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0x5f10a1c971b69e47e059e1dc91901b59b3fb49c3, issuer UID 0x000000000000000000000000000000007f48cdbfaced4ff4b34fbc832f449c33; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:86fd3189b5f35e3e8403851adc47a58bd2db106222c296a79c4bdd53ad861daf"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x941ae714ec6d8130c7b75d67160ca08f1e7d11dd",
+      "symbol": "DELL",
+      "name": "Dell • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/74f89ef217b1a549474c.png",
+      "oracles": {
+        "USD": "0x1c6c8cadbe02e19129c39ddb92281ce4c0bf206b"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x941ae714ec6d8130c7b75d67160ca08f1e7d11dd",
+          "quote": "USD",
+          "path": "rhdell-usd-shared-svr",
+          "proxyAddress": "0x1c6c8cadbe02e19129c39ddb92281ce4c0bf206b",
+          "expectedDescription": "Robinhood DELL-USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included. Chainlink uses the RHDELL alias; the exact issuer UID and proxy match the Dell Final Terms and live feed description.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0x941ae714ec6d8130c7b75d67160ca08f1e7d11dd, issuer UID 0x0000000000000000000000000000000014eaef73a2c44d62b7952cfd0a44ff51; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:b5c34d8ff0e61435d077be586d33ede1b49bd71216b1fffc6498bf4b8bfadf46"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x58538e6a46e07434d7e7375bc268d3cb839c0133",
+      "symbol": "ENA",
+      "name": "ENA",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The referenced crypto asset price changes in USD.",
+      "logoURI": "/assets/tokens/99b4be1dea09e0dbfa33.png",
+      "oracles": {
+        "USD": "0x2a291496b3aa19d8948e442ef28ee952f3ee97e8"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x58538e6a46e07434d7e7375bc268d3cb839c0133",
+          "quote": "USD",
+          "path": "ena-usd-shared-svr",
+          "proxyAddress": "0x2a291496b3aa19d8948e442ef28ee952f3ee97e8",
+          "expectedDescription": "ENA / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "bridged-underlying",
+          "assetRelationshipReason": "The ENA OFT tracks its Ethereum underlying. The reference feed does not price bridge risk.",
+          "identityEvidence": "LayerZero reciprocal peers at 0x58538e6a46e07434d7e7375bc268d3cb839c0133; Ethereum token() returned 0x57e114b691db790c35207b2e685d4a43181e6061 and Robinhood token() returned 0x58538e6a46e07434d7e7375bc268d3cb839c0133 at Robinhood block 121669324.",
+          "representationEvidence": "LayerZero OFT contracts use reciprocal peers at 0x58538e6a46e07434d7e7375bc268d3cb839c0133; Robinhood endpoint 0x6f475642a6e85809b1c36fa62763669b1b48dd5b, EID 30416.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: uncapped Crypto Price RefPrice in USD; published heartbeat 86400 seconds.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "representationSuitability": {
+            "decision": "accepted-underlying-feed",
+            "bridgeRisk": "not-priced-by-feed",
+            "evidence": "LayerZero OFT contracts use reciprocal peers at 0x58538e6a46e07434d7e7375bc268d3cb839c0133; Robinhood endpoint 0x6f475642a6e85809b1c36fa62763669b1b48dd5b, EID 30416.",
+            "reviewDate": "2026-11-23"
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:040706fc5b378f777ad1d14d970d672584a7147e1f918d4a4027242d9228efac"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x7f0abef0c07280f82c6a08ead09ded6bae2c13fc",
+      "symbol": "EWY",
+      "name": "iShares MSCI South Korea fund • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/e574b78fc57c3ec45f79.png",
+      "oracles": {
+        "USD": "0xefdf54610b62a7753ec30bdc380847c12d32e1d1"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x7f0abef0c07280f82c6a08ead09ded6bae2c13fc",
+          "quote": "USD",
+          "path": "robinhood-ewy-usd-shared-svr",
+          "proxyAddress": "0xefdf54610b62a7753ec30bdc380847c12d32e1d1",
+          "expectedDescription": "Robinhood EWY / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0x7f0abef0c07280f82c6a08ead09ded6bae2c13fc, issuer UID 0x000000000000000000000000000000008a8710f26e424b2dbc1f6b5de9f267b8; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:4d15555109e68014c197d9499055df736b93dd7b1f69e048f3216b10f5a07001"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x1b0e319c6a659f002271b69db8a7df2f911c153e",
+      "symbol": "GME",
+      "name": "GameStop • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/86a5b36ef33bc6361aab.png",
+      "oracles": {
+        "USD": "0x27c71df6a64fb476468edf256cf72c038bab5b67"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x1b0e319c6a659f002271b69db8a7df2f911c153e",
+          "quote": "USD",
+          "path": "robinhood-gme-usd-shared-svr",
+          "proxyAddress": "0x27c71df6a64fb476468edf256cf72c038bab5b67",
+          "expectedDescription": "Robinhood GME / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0x1b0e319c6a659f002271b69db8a7df2f911c153e, issuer UID 0x00000000000000000000000000000000c5ac9420091c4f9eb3ff1fdd1d2b60c6; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:28dbf8484db1ec446904ff2184643da86d72c078159d672ac58fdb1810e1413b"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x2e0847e8910a9732eb3fb1bb4b70a580adad4fe3",
+      "symbol": "GOOGL",
+      "name": "Alphabet Class A • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/2cbcd62ad80a8667cd52.png",
+      "oracles": {
+        "USD": "0xf6f373a037c30f0e5010d854385ca89185ae638b"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x2e0847e8910a9732eb3fb1bb4b70a580adad4fe3",
+          "quote": "USD",
+          "path": "robinhood-googl-usd-shared-svr",
+          "proxyAddress": "0xf6f373a037c30f0e5010d854385ca89185ae638b",
+          "expectedDescription": "Robinhood GOOGL / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0x2e0847e8910a9732eb3fb1bb4b70a580adad4fe3, issuer UID 0x0000000000000000000000000000000053b69e2076884cc9ae2ada9bc7095df3; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:d285e3e1440ff428864326ccc1c7342f159ca00b0ef6e2c2c65add2c9fb5cf0b"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0xc72b96e0e48ecd4dc75e1e45396e26300bc39681",
+      "symbol": "INTC",
+      "name": "Intel • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/eeebd58ff9e52eb99095.png",
+      "oracles": {
+        "USD": "0x3f390c5c24628ac7c489515402235fead71d1913"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0xc72b96e0e48ecd4dc75e1e45396e26300bc39681",
+          "quote": "USD",
+          "path": "robinhood-intc-usd-shared-svr",
+          "proxyAddress": "0x3f390c5c24628ac7c489515402235fead71d1913",
+          "expectedDescription": "RHINTC / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0xc72b96e0e48ecd4dc75e1e45396e26300bc39681, issuer UID 0x000000000000000000000000000000002eb75a2c20d7423881b4f812c27d0abe; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:28389e604268338fbcbc778c8de625dd17d615cdc5e62d53dcb6628bfec65010"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x558378e000d634a36593e338ebacdd6207640efe",
+      "symbol": "IONQ",
+      "name": "IonQ • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/6c37366cb8936d91c9df.png",
+      "oracles": {
+        "USD": "0x22efec4919baf55f360e0edee4abeb26de4971eb"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x558378e000d634a36593e338ebacdd6207640efe",
+          "quote": "USD",
+          "path": "robinhood-ionq-usd-shared-svr",
+          "proxyAddress": "0x22efec4919baf55f360e0edee4abeb26de4971eb",
+          "expectedDescription": "Robinhood IONQ / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0x558378e000d634a36593e338ebacdd6207640efe, issuer UID 0x00000000000000000000000000000000b6f6e756b7ff46b88238c18d0bc07fd4; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:8bd32c93e14215fc0288e24804418944a62f9fbb52669c7ddf1eaa1f7728ba17"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x492641f648a4986844848e0befe66d14817bce34",
+      "symbol": "LINK",
+      "name": "ChainLink Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The referenced crypto asset price changes in USD.",
+      "logoURI": "/assets/tokens/408cb6cf3c7ab80fe7b3.svg",
+      "oracles": {
+        "USD": "0xe86e3422aa9b5e8ee9f3e41a63975bc387a8bce9"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x492641f648a4986844848e0befe66d14817bce34",
+          "quote": "USD",
+          "path": "link-usd-shared-svr",
+          "proxyAddress": "0xe86e3422aa9b5e8ee9f3e41a63975bc387a8bce9",
+          "expectedDescription": "LINK / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The reference feed prices the Chainlink-listed LINK deployment on Robinhood Chain.",
+          "identityEvidence": "https://docs.chain.link/resources/link-token-contracts: Robinhood LINK contract 0x492641f648a4986844848e0befe66d14817bce34; alternate gateway token is excluded.",
+          "representationEvidence": "Chainlink lists this exact LINK contract for Robinhood Chain; the bridged alternate is not selected.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: uncapped Crypto Price RefPrice in USD; published heartbeat 86400 seconds.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:72bf5e81889535afc69413b674f1b0ec72bbf45525231200ce005a26bb4a05c6"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0xc0d6457c16cc70d6790dd43521c899c87ce02f35",
+      "symbol": "META",
+      "name": "Meta Platforms • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/eb2e6043b4edb2386dde.png",
+      "oracles": {
+        "USD": "0x7c38c00c30bee9378381e7b6135d7283356d71b1"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0xc0d6457c16cc70d6790dd43521c899c87ce02f35",
+          "quote": "USD",
+          "path": "robinhood-meta-usd-shared-svr",
+          "proxyAddress": "0x7c38c00c30bee9378381e7b6135d7283356d71b1",
+          "expectedDescription": "Robinhood META / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0xc0d6457c16cc70d6790dd43521c899c87ce02f35, issuer UID 0x00000000000000000000000000000000343e7beca03644bcba2e50b8236784f5; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:3566f024e8a952ea4b93ca8ee50df3e8aa3736d91265caa006cc96aee1e5d7eb"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0xe93237c50d904957cf27e7b1133b510c669c2e74",
+      "symbol": "MSFT",
+      "name": "Microsoft • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/bcbfca5825308c79fa4b.png",
+      "oracles": {
+        "USD": "0x45c3c877c15e6ba2ebb19ea114ea508d14c1af2e"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0xe93237c50d904957cf27e7b1133b510c669c2e74",
+          "quote": "USD",
+          "path": "robinhood-msft-usd-shared-svr",
+          "proxyAddress": "0x45c3c877c15e6ba2ebb19ea114ea508d14c1af2e",
+          "expectedDescription": "RHMSFT / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0xe93237c50d904957cf27e7b1133b510c669c2e74, issuer UID 0x00000000000000000000000000000000307bb0113ca54f93adf80f4ff2bf681a; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:f1f37424ccb47a643194e17de093c0c9dc905a5ea76d34aea243f08491e170b1"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0xec262a75e413fafd0df80480274532c79d42da09",
+      "symbol": "MSTR",
+      "name": "Strategy Inc. • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/ee1d3da683ea692b1d08.png",
+      "oracles": {
+        "USD": "0x396118bdfb181e6240e74d243f266b061c0edc3d"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0xec262a75e413fafd0df80480274532c79d42da09",
+          "quote": "USD",
+          "path": "robinhood-mstr-usd-shared-svr",
+          "proxyAddress": "0x396118bdfb181e6240e74d243f266b061c0edc3d",
+          "expectedDescription": "Robinhood MSTR / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0xec262a75e413fafd0df80480274532c79d42da09, issuer UID 0x00000000000000000000000000000000c91ba6e57a1c493f99cae2174e43c86e; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:4b345681a54f24831d3e1e45517012cca5b8e2378e849ac3d17d3f41827d385a"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0xff080c8ce2e5feadaca0da81314ae59d232d4afd",
+      "symbol": "MU",
+      "name": "Micron Technology • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/1322886d339442bbfa68.png",
+      "oracles": {
+        "USD": "0x425eefdcf05ed6526c3ce61af99429a228a6d596"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0xff080c8ce2e5feadaca0da81314ae59d232d4afd",
+          "quote": "USD",
+          "path": "robinhood-mu-usd-shared-svr",
+          "proxyAddress": "0x425eefdcf05ed6526c3ce61af99429a228a6d596",
+          "expectedDescription": "RHMU / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0xff080c8ce2e5feadaca0da81314ae59d232d4afd, issuer UID 0x000000000000000000000000000000007757415150a94b50a879cdc04dc90664; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:59ef3e3b57638cd9bb33cfe4c435ac1d7ca2c6fc016d3a2fc1c5ad641ea6610a"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x9d9c6684f596f66a64c030b93a886d51fd4d7931",
+      "symbol": "NBIS",
+      "name": "Nebius Group • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/2b004caa97f87155d045.png",
+      "oracles": {
+        "USD": "0xe1d87b116ba0fe898998f1d140339d1fa1e09705"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x9d9c6684f596f66a64c030b93a886d51fd4d7931",
+          "quote": "USD",
+          "path": "robinhood-nbis-usd-shared-svr",
+          "proxyAddress": "0xe1d87b116ba0fe898998f1d140339d1fa1e09705",
+          "expectedDescription": "Robinhood NBIS / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0x9d9c6684f596f66a64c030b93a886d51fd4d7931, issuer UID 0x00000000000000000000000000000000994b82ab24514d439fccc87156df35f9; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:501405652e2bf3ccffbde2b121b4d4040596299e1c14192fc5ac1a8ce82c1d43"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec",
+      "symbol": "NVDA",
+      "name": "NVIDIA • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/e54227adbec6c9e112dc.png",
+      "oracles": {
+        "USD": "0x379ec4f7c378f34a1b47e4f3cbebcbac3e8e9f15"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec",
+          "quote": "USD",
+          "path": "robinhood-nvda-usd-shared-svr",
+          "proxyAddress": "0x379ec4f7c378f34a1b47e4f3cbebcbac3e8e9f15",
+          "expectedDescription": "RHNVDA / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0xd0601ce157db5bdc3162bbac2a2c8af5320d9eec, issuer UID 0x00000000000000000000000000000000915f477416294f5099a5e0e09f327ce5; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:3f48c881b650dcea47a309f0975e3579fd0f3454b01050c048d23a5bf843be74"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0xb0992820e760d836549ba69bc7598b4af75dee03",
+      "symbol": "ORCL",
+      "name": "Oracle • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/e2b4a390e2c751a2f2a1.png",
+      "oracles": {
+        "USD": "0x0e6a64a2b58a6693a531e6c555f3a5d042eea844"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0xb0992820e760d836549ba69bc7598b4af75dee03",
+          "quote": "USD",
+          "path": "robinhood-orcl-usd-shared-svr",
+          "proxyAddress": "0x0e6a64a2b58a6693a531e6c555f3a5d042eea844",
+          "expectedDescription": "Robinhood ORCL / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0xb0992820e760d836549ba69bc7598b4af75dee03, issuer UID 0x00000000000000000000000000000000be23b7c535e841a3b1bae97bc0166eae; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:8268372e3a423b32b81f0b7f6ec48ecb7de34302960aed1ceb401037d216ab0d"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x894e1ec2d74ffe5aef8dc8a9e84686accb964f2a",
+      "symbol": "PLTR",
+      "name": "Palantir Technologies • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/299a70ace33071e79556.png",
+      "oracles": {
+        "USD": "0x820abedff239034956b7a9d2f0a331f9f075eb4c"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x894e1ec2d74ffe5aef8dc8a9e84686accb964f2a",
+          "quote": "USD",
+          "path": "robinhood-pltr-usd-shared-svr",
+          "proxyAddress": "0x820abedff239034956b7a9d2f0a331f9f075eb4c",
+          "expectedDescription": "Robinhood PLTR / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0x894e1ec2d74ffe5aef8dc8a9e84686accb964f2a, issuer UID 0x000000000000000000000000000000007454a90b4aab491389ce9fa3c485de42; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:f3d75907ab4262c5579eb657342e318dd3fce93d7969a15e1d1c53b67ccf7ae2"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0xd5f3879160bc7c32ebb4dc785f8a4f505888de68",
+      "symbol": "QQQ",
+      "name": "Invesco QQQ • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/e79b0ec12b5f125da7a1.png",
+      "oracles": {
+        "USD": "0x80901d846d5d7b030f26b480776ee3b29374c2ae"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0xd5f3879160bc7c32ebb4dc785f8a4f505888de68",
+          "quote": "USD",
+          "path": "robinhood-qqq-usd-shared-svr",
+          "proxyAddress": "0x80901d846d5d7b030f26b480776ee3b29374c2ae",
+          "expectedDescription": "Robinhood QQQ / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0xd5f3879160bc7c32ebb4dc785f8a4f505888de68, issuer UID 0x000000000000000000000000000000002470b933c52d47ccad017ed9ee80c9ed; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:5527b8f529afc80aa0578985b9ea62e796eb153c1b0342a38b579eada23b1768"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x284358abc07f9359f19f4b5b4ac91901be2597ba",
+      "symbol": "RGTI",
+      "name": "Rigetti Computing • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/6fffc9edfb36d415a838.png",
+      "oracles": {
+        "USD": "0x2a045cf1c49c61c166c036d2f06fa2d2d984f765"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x284358abc07f9359f19f4b5b4ac91901be2597ba",
+          "quote": "USD",
+          "path": "robinhood-rgti-usd-shared-svr",
+          "proxyAddress": "0x2a045cf1c49c61c166c036d2f06fa2d2d984f765",
+          "expectedDescription": "Robinhood RGTI / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0x284358abc07f9359f19f4b5b4ac91901be2597ba, issuer UID 0x0000000000000000000000000000000031a6c09d095b4d49b4155de0040da68f; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:889f8a2ef2dbcf1caac29c7e49c5b328e7536bdcc68ed0461f18a7741f9af133"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x3b14c39e89d60d627b42a1a4ca45b5bb45fc12e2",
+      "symbol": "RKLB",
+      "name": "Rocket Lab Corporation • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/5675ece7038f9663819d.png",
+      "oracles": {
+        "USD": "0x045477bf65aef6f4f2386ad0164579e48381cc74"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x3b14c39e89d60d627b42a1a4ca45b5bb45fc12e2",
+          "quote": "USD",
+          "path": "robinhood-rklb-usd-shared-svr",
+          "proxyAddress": "0x045477bf65aef6f4f2386ad0164579e48381cc74",
+          "expectedDescription": "Robinhood RKLB / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0x3b14c39e89d60d627b42a1a4ca45b5bb45fc12e2, issuer UID 0x000000000000000000000000000000007cacd0cd4c0547d480e89459e648592b; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:9dcee3b1eac28d41aaca02eb49356e56bfa1f32f07b5226b51f96996e0589a21"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x411efb0e7f985935daec3d4c3ebaea0d0ad7d89f",
+      "symbol": "SLV",
+      "name": "iShares Silver Trust • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/dfa6863c3286303acd3c.png",
+      "oracles": {
+        "USD": "0x209b73908e92ae021826ed79609845451ecba2ce"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x411efb0e7f985935daec3d4c3ebaea0d0ad7d89f",
+          "quote": "USD",
+          "path": "robinhood-slv-usd-shared-svr",
+          "proxyAddress": "0x209b73908e92ae021826ed79609845451ecba2ce",
+          "expectedDescription": "Robinhood SLV / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0x411efb0e7f985935daec3d4c3ebaea0d0ad7d89f, issuer UID 0x00000000000000000000000000000000ddf030d4e25046cab85b3d8c7cd86553; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:81452898854685bf70d855258290d1f30a5cc44618aa0739dff265a4835689df"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0xb90a19ff0af67f7779aff50a882a9cff42446400",
+      "symbol": "SNDK",
+      "name": "Sandisk Corporation • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/632259ae95498e37e483.png",
+      "oracles": {
+        "USD": "0xfb133fa4b7b385802b693a293606682df47109a3"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0xb90a19ff0af67f7779aff50a882a9cff42446400",
+          "quote": "USD",
+          "path": "robinhood-sndk-usd-shared-svr",
+          "proxyAddress": "0xfb133fa4b7b385802b693a293606682df47109a3",
+          "expectedDescription": "RHSNDK / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0xb90a19ff0af67f7779aff50a882a9cff42446400, issuer UID 0x0000000000000000000000000000000046e46cc63fe842ebbdfe6187bda403d6; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:4218f09b7e1b23f1ef09cb28c46a8cb7efe71d88c45272c3a8d1468958178dba"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x4a0e65a3eccec6dbe60ae065f2e7bb85fae35eea",
+      "symbol": "SPCX",
+      "name": "Space Exploration Technologies Corp. Class A Common Stock • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/1bdacb283d83305fa2c0.png",
+      "oracles": {
+        "USD": "0xb265810950ba6c5c0ff821c9963014a56fd8bffb"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x4a0e65a3eccec6dbe60ae065f2e7bb85fae35eea",
+          "quote": "USD",
+          "path": "robinhood-spcx-usd-shared-svr",
+          "proxyAddress": "0xb265810950ba6c5c0ff821c9963014a56fd8bffb",
+          "expectedDescription": "Robinhood SPCX / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0x4a0e65a3eccec6dbe60ae065f2e7bb85fae35eea, issuer UID 0x000000000000000000000000000000001aa9c9cc0bf34c5e95cfe7168463d310; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:77e9e6a0560a79d4b1fcafcd2a055c2df48e68a05b9b61cde0ec7c2155e581db"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x117cc2133c37b721f49de2a7a74833232b3b4c0c",
+      "symbol": "SPY",
+      "name": "SPDR S&P 500 ETF Trust • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/9576557984368265464d.png",
+      "oracles": {
+        "USD": "0x319724394d3a0e3669269846abe664cd621f9f6a"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x117cc2133c37b721f49de2a7a74833232b3b4c0c",
+          "quote": "USD",
+          "path": "robinhood-spy-usd-shared-svr",
+          "proxyAddress": "0x319724394d3a0e3669269846abe664cd621f9f6a",
+          "expectedDescription": "RHSPY / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0x117cc2133c37b721f49de2a7a74833232b3b4c0c, issuer UID 0x000000000000000000000000000000001c6f27a62789417d8ed359ed3c2d3da1; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:58402b03ed8bcda51c3604543a870517535e46088349f784c438952e6eab2a5d"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x322f0929c4625ed5bad873c95208d54e1c003b2d",
+      "symbol": "TSLA",
+      "name": "Tesla • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/558445d6e83a2dd0bdb4.png",
+      "oracles": {
+        "USD": "0x4a1166a659a55625345e9515b32adecea5547c38"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x322f0929c4625ed5bad873c95208d54e1c003b2d",
+          "quote": "USD",
+          "path": "robinhood-tsla-usd-shared-svr",
+          "proxyAddress": "0x4a1166a659a55625345e9515b32adecea5547c38",
+          "expectedDescription": "RHTSLA / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0x322f0929c4625ed5bad873c95208d54e1c003b2d, issuer UID 0x00000000000000000000000000000000cfece3244ea34bb29414dd9488b32d9f; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:6bc9b91a2939682f045f7e0eba047fd5261936552b0986198095f4d5e72d5f2a"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x58ffe4a942d3885baa22d7520691f611ef09e7aa",
+      "symbol": "TSM",
+      "name": "Taiwan Semiconductor Manufacturing • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/799de7a30506751c8c09.png",
+      "oracles": {
+        "USD": "0x874cf94aa8ec88fd9560094dd065f2fb3e41fc2f"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x58ffe4a942d3885baa22d7520691f611ef09e7aa",
+          "quote": "USD",
+          "path": "robinhood-tsm-usd-shared-svr",
+          "proxyAddress": "0x874cf94aa8ec88fd9560094dd065f2fb3e41fc2f",
+          "expectedDescription": "Robinhood TSM / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0x58ffe4a942d3885baa22d7520691f611ef09e7aa, issuer UID 0x000000000000000000000000000000002e890a0884474abd86ba66b19722e827; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:a360ea1787770cd0fa96e8894dfcc85360156c6b6ef08b1c7a9fead65167b807"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+      "symbol": "USDG",
+      "name": "Global Dollar",
+      "decimals": 6,
+      "assetClass": "usd-pegged",
+      "classificationReason": "The issuer targets one USD per token.",
+      "logoURI": "/assets/tokens/3f81ec220ae417b1bb9e.png",
+      "oracles": {
+        "USD": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+          "quote": "USD",
+          "path": "usdg-usd-shared-svr",
+          "proxyAddress": "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+          "expectedDescription": "USDG / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The feed prices the exact issuer-listed USDG contract on Robinhood Chain.",
+          "identityEvidence": "https://docs.paxos.com/guides/stablecoin/usdg/mainnet: exact USDG contract 0x5fc5360d0400a0fd4f2af552add042d716f1d168; Robinhood registry and live metadata match.",
+          "representationEvidence": "https://docs.robinhood.com/chain/contracts/: USDG is the issuer-listed stock trading stablecoin on Robinhood Chain.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: uncapped Crypto Price RefPrice in USD; published heartbeat 86400 seconds.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "snapshotFingerprint": "sha256:98745046b80932b4755f7c8782369dac00eae4f902f135c61531a529877d0f59"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0xa30fa36db767ad9ed3f7a60fc79526fb4d56d344",
+      "symbol": "USO",
+      "name": "United States Oil Fund • Robinhood Token",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The issuer token tracks an equity or fund price that changes in USD.",
+      "logoURI": "/assets/tokens/066baba8a6007ede32d0.png",
+      "oracles": {
+        "USD": "0x75a9c76ef439e2c7c2e5a34ab105ecfe3766431c"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0xa30fa36db767ad9ed3f7a60fc79526fb4d56d344",
+          "quote": "USD",
+          "path": "robinhood-uso-usd-shared-svr",
+          "proxyAddress": "0x75a9c76ef439e2c7c2e5a34ab105ecfe3766431c",
+          "expectedDescription": "RHUSO / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "exact-asset",
+          "assetRelationshipReason": "The primary feed prices the Robinhood Stock Token, with the issuer multiplier already included.",
+          "identityEvidence": "https://api.robinhood.com/rhj/assets (SHA-256 eb88566fffb717a3a58a10c15c12bf9888fbe04f64ce8d555f80292431dc5bab): active 4663 deployment 0xa30fa36db767ad9ed3f7a60fc79526fb4d56d344, issuer UID 0x00000000000000000000000000000000949bd039a8ae465d9cf9336068188b55; confirmed via uid() onchain.",
+          "representationEvidence": "https://docs.robinhood.com/chain/building-with-stock-tokens/: token issued on Robinhood Chain, subject to issuer transfer rules.",
+          "methodologyEvidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "marketHours": "us_equities_24/5",
+          "sourceCategorySuitability": {
+            "category": "custom",
+            "decision": "accepted",
+            "reviewDate": "2026-11-23",
+            "evidence": "https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx: USD onchain primary tokenized price with a US equities 24/5 session and issuer multiplier included."
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:5a4368d72e22583f7f55058aba871b5f0831684ffd5ae59815523d0c01b094ea"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x6bac06600d220ac5ac281ad1f504d2cf0f90f6e6",
+      "symbol": "WBTC",
+      "name": "Wrapped BTC",
+      "decimals": 8,
+      "assetClass": "volatile",
+      "classificationReason": "The referenced crypto asset price changes in USD.",
+      "logoURI": "/assets/tokens/87e078fdc503e188db9e.png",
+      "oracles": {
+        "USD": "0x62107b0d3ada75fc1697fd342d99eed947a3aa5e"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x6bac06600d220ac5ac281ad1f504d2cf0f90f6e6",
+          "quote": "USD",
+          "path": "wbtc-usd-shared-svr",
+          "proxyAddress": "0x62107b0d3ada75fc1697fd342d99eed947a3aa5e",
+          "expectedDescription": "WBTC / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "bridged-underlying",
+          "assetRelationshipReason": "The feed prices the underlying asset of the reviewed Ethereum bridge representation of WBTC. It does not price bridge risk.",
+          "identityEvidence": "https://docs.robinhood.com/chain/contracts/: Ethereum gateway router 0x6a2E3a1e16FC29f27Ce61429746D558d656975bB maps parent 0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599 to 0x6bac06600d220ac5ac281ad1f504d2cf0f90f6e6; reciprocal L2 parent mapping was read at Robinhood block 121669324.",
+          "representationEvidence": "Ethereum bridge gateway 0x85001cc4867c5e1c22da4b79bb8852b9e2a06da0; exact parent and child addresses match the Robinhood bridge route.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: uncapped Crypto Price RefPrice in USD; published heartbeat 86400 seconds.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "representationSuitability": {
+            "decision": "accepted-underlying-feed",
+            "bridgeRisk": "not-priced-by-feed",
+            "evidence": "Ethereum bridge gateway 0x85001cc4867c5e1c22da4b79bb8852b9e2a06da0; exact parent and child addresses match the Robinhood bridge route.",
+            "reviewDate": "2026-11-23"
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:bef076114c28166be7c7a75d6415593e8573a602e46b1d907fd2fbee844aef1f"
+        }
+      }
+    },
+    {
+      "chainId": 4663,
+      "address": "0x0bd7d308f8e1639fab988df18a8011f41eacad73",
+      "symbol": "WETH",
+      "name": "WETH",
+      "decimals": 18,
+      "assetClass": "volatile",
+      "classificationReason": "The referenced crypto asset price changes in USD.",
+      "logoURI": "/assets/tokens/c0b567bd541bf5033207.svg",
+      "oracles": {
+        "USD": "0x78f3556b67e17df817d51ef5a990cdaf09e8d3a9"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 4663,
+          "tokenAddress": "0x0bd7d308f8e1639fab988df18a8011f41eacad73",
+          "quote": "USD",
+          "path": "eth-usd-shared-svr",
+          "proxyAddress": "0x78f3556b67e17df817d51ef5a990cdaf09e8d3a9",
+          "expectedDescription": "ETH / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 86400,
+          "assetRelationship": "bridged-underlying",
+          "assetRelationshipReason": "The feed prices the underlying asset of the reviewed Ethereum bridge representation of WETH. It does not price bridge risk.",
+          "identityEvidence": "https://docs.robinhood.com/chain/contracts/: Ethereum gateway router 0x6a2E3a1e16FC29f27Ce61429746D558d656975bB maps parent 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2 to 0x0bd7d308f8e1639fab988df18a8011f41eacad73; reciprocal L2 parent mapping was read at Robinhood block 121669324.",
+          "representationEvidence": "Ethereum bridge gateway 0xf7e12b9614b509c747ab4423bc4acf923759cf1b; exact parent and child addresses match the Robinhood bridge route.",
+          "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: uncapped Crypto Price RefPrice in USD; published heartbeat 86400 seconds.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json (SHA-256 9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339): exact primary path and proxy, checked at Robinhood block 122234681.",
+          "reviewDate": "2026-11-23",
+          "representationSuitability": {
+            "decision": "accepted-underlying-feed",
+            "bridgeRisk": "not-priced-by-feed",
+            "evidence": "Ethereum bridge gateway 0xf7e12b9614b509c747ab4423bc4acf923759cf1b; exact parent and child addresses match the Robinhood bridge route.",
+            "reviewDate": "2026-11-23"
+          },
+          "verificationBatch": "bulk-20261124T124809Z",
+          "snapshotFingerprint": "sha256:0eefca996ee406e152e44ce9f69cb8c7e84c81705118c70a84d97a48b992cc57"
+        }
+      }
+    },
+    {
       "chainId": 8453,
       "address": "0x63706e401c06ac8513145b7687a14804d17f814b",
       "symbol": "AAVE",
@@ -6619,6 +8175,46 @@
           "methodologyEvidence": "https://docs.chain.link/data-feeds/selecting-data-feeds: official low-category Crypto cex_price Reference Price row with USD quote. Fixed-buy bounded behavior and bridge risk are reviewed separately where present.",
           "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-plasma-mainnet.json: exact xpl-usd proxy row fetched 2026-10-19 and retained in scripts/catalog-feeds.json; actual observations in scripts/catalog-policy-verification.json.",
           "snapshotFingerprint": "sha256:5ba6eaf68f63cd1086cfa89191410f66895d82fe93fead1840c6aacaa5ea390c"
+        }
+      }
+    },
+    {
+      "chainId": 9745,
+      "address": "0x1b64b9025eebb9a6239575df9ea4b9ac46d4d193",
+      "symbol": "XAUt0",
+      "name": "Tether Gold",
+      "decimals": 6,
+      "assetClass": "volatile",
+      "classificationReason": "XAUt0 tracks gold, whose USD price changes; it is not a fiat stablecoin.",
+      "logoURI": "/assets/tokens/e9adb8df54200a884f5c.png",
+      "oracles": {
+        "USD": "0x354df1ca4ae838a45405b3486ed0161aa7f01191"
+      },
+      "oracleApprovals": {
+        "USD": {
+          "chainId": 9745,
+          "tokenAddress": "0x1b64b9025eebb9a6239575df9ea4b9ac46d4d193",
+          "quote": "USD",
+          "path": "xaut-usd",
+          "proxyAddress": "0x354df1ca4ae838a45405b3486ed0161aa7f01191",
+          "assetRelationship": "bridged-underlying",
+          "assetRelationshipReason": "The bridge locks original XAUT for XAUt0 on Plasma. XAUT/USD does not price bridge or custody risk.",
+          "identityEvidence": "https://raw.githubusercontent.com/PlasmaLaboratories/plasma-tokenlist/5920b4bdb56d87d3afd4a1187cffcef8d1c2f45a/plasma.tokenlist.json (SHA-256 d70d54b7170a973c7919e245b4ebb8db98ccaad102b2b6e2e9c726abb18f9842); https://usdt0.to/ecosystem/plasma (SHA-256 d8d56ff4949eaf6e3b3e84ce6ecc643b18adaa61b31f95d0e7277382690d21cf)",
+          "representationEvidence": "https://usdt0.to/assets/xaut0 (SHA-256 3ecbe9b93f6a8e590c8e39c16883789d73acf87ed81df9e6292f2a37fb5aa509)",
+          "methodologyEvidence": "Chainlink cex_price token reference feed (crypto-XAUT). Read 81 consecutive rounds (18446744073709554332 to 18446744073709554412) over at least seven days, with Saturday and Sunday updates and a maximum gap of 51170 seconds.",
+          "sourceEvidence": "https://reference-data-directory.vercel.app/feeds-plasma-mainnet.json (SHA-256 65ed189c772ef3a42d1ebb169906e0ef6952e0c87dd801f786e04cb902ca8a26)",
+          "expectedDescription": "XAUT / USD",
+          "expectedDecimals": 8,
+          "maxAgeSeconds": 129660,
+          "reviewDate": "2026-11-23",
+          "representationSuitability": {
+            "decision": "accepted-underlying-feed",
+            "bridgeRisk": "not-priced-by-feed",
+            "evidence": "https://usdt0.to/assets/xaut0 (SHA-256 3ecbe9b93f6a8e590c8e39c16883789d73acf87ed81df9e6292f2a37fb5aa509)",
+            "reviewDate": "2026-11-23"
+          },
+          "verificationBatch": "bulk-20261123T171557Z",
+          "snapshotFingerprint": "sha256:7bf5c0d982eb6ddbc46419025cd00015588f84a1be91c4699d18bd0cec27d683"
         }
       }
     },
@@ -9503,7 +11099,8 @@
     "56": "0x55d398326f99059ff775485246999027b3197955",
     "59144": "0x176211869ca2b568f2a7d4ee941e073a821ee1ff",
     "9745": "0x2d661c89d812261039af9764eceaaee884f5f67f",
-    "11155111": "0xbe72e441bf55620febc26715db68d3494213d8cb"
+    "11155111": "0xbe72e441bf55620febc26715db68d3494213d8cb",
+    "4663": "0x5fc5360d0400a0fd4f2af552add042d716f1d168"
   },
   "chains": {
     "1": {
@@ -9529,6 +11126,12 @@
       "executionEvidence": "scripts/oracle-execution-verification.json: block-pinned runtime SHA256 matches the retained compiled handler on this chain. Accept the existing shared-age, browser-only round-completeness and future-timestamp checks for these exact routes. No execution guarantee or security audit.",
       "arithmeticBoundsEvidence": "All selected feeds have 0..18 decimals and positive complete observed rounds. Each observed answer scaled to 18 decimals and multiplied by 10^18 fits int256. Shared age ceiling 100 seconds is below observed chain timestamps. Extreme future values can still overflow and revert. See scripts/catalog-policy-verification.json; expanded exact routes reviewed 2026-10-20. Shared timeout does not replace separate browser freshness checks. Expansion on 2026-11-17: candidate sell feeds and unchanged fixed buy feed passed the same decimal, positive-round and int256 scaled-product checks. See additionalReviews category-expansion-2026-11-17 in scripts/catalog-policy-verification.json. Existing handler and L2 execution limits remain accepted.",
       "reviewDate": "2026-11-17"
+    },
+    "4663": {
+      "status": "pilot-only",
+      "executionEvidence": "Robinhood chain 4663, block 121658415 (0x634344eb656481e8a5834e48abfe5265183f204535e9d5189225c83c198fc2e0): verified Poller, CowShed factory, ComposableCoW, StopLoss, settlement and relayer. See docs/robinhood-chain-readiness.md and https://sourcify.dev/server/v2/contract/4663/0x412c36e5011cd2517016d243a2dfb37f73a242e7 . Watchtower operation is assumed for this pilot. No funded StopLoss fill was tested.",
+      "arithmeticBoundsEvidence": "Both legs are checked at Robinhood block 122234681 (0x9df50a21c746d1023268555af19cb13dbc47745f5975eaf2000c6f4ea73f6222). Each complete positive price fits the handler arithmetic. Stock and USDG approval ages are both 86400 seconds. The deployed handler uses one timeout and can accept a fresh last price after close.",
+      "reviewDate": "2026-11-23"
     },
     "8453": {
       "status": "approved",

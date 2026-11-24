@@ -8,15 +8,19 @@ import json
 import pathlib
 import re
 
-from catalog_metadata import load_identities, load_metadata
+from catalog_metadata import PRODUCTION_CHAINS, ROBINHOOD_CHAIN, load_identities, load_metadata
 from catalog_observations import (
     ADDRESS, MAX_ORACLE_DECIMALS, approval_key, checked_at, integer, no_check_errors,
     nonempty, require, source_rows, validate_leg, validate_observations,
 )
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
-PRODUCTION_CHAINS = {1, 100, 42161, 8453, 137, 43114, 56, 59144, 9745}
 TEST_CHAINS = {11155111}
+ROBINHOOD_FIXED_BUY = "0x5fc5360d0400a0fd4f2af552add042d716f1d168"
+ROBINHOOD_FIXED_FEED = ("usdg-usd-shared-svr", "0x61b7e5650328764b076a108eff5fa7282a1b9ad2")
+ROBINHOOD_MAX_AGE = 86400
+ROBINHOOD_MARKET_HOURS = "us_equities_24/5"
+ROBINHOOD_FEED_ALIASES = {"0x941ae714ec6d8130c7b75d67160ca08f1e7d11dd": ("DELL", "RHDELL")}
 ASSET_CLASSES = {"volatile", "usd-pegged", "usd-linked", "other-stable", "unknown"}
 EVIDENCE_FIELDS = ("identityEvidence", "representationEvidence", "methodologyEvidence", "sourceEvidence")
 
@@ -34,19 +38,22 @@ def review_date(value):
     require(parsed.isoformat() == value and parsed <= datetime.date.today(), "Invalid reviewDate")
 
 
-def excluded_reason(feed, *, bounded_price_approved=False):
+def excluded_reason(feed, *, bounded_price_approved=False, robinhood_stock=False):
     docs = feed.get("docs", {})
     if feed.get("feedCategory") in {"hidden", "deprecating"} or docs.get("hidden") or docs.get("shutdownDate"):
         return "hidden-or-deprecating"
     if not ADDRESS.fullmatch(feed.get("proxyAddress") or ""):
         return "no-onchain-proxy"
-    if docs.get("assetClass") != "Crypto":
+    if docs.get("assetClass") != ("Equity" if robinhood_stock else "Crypto"):
         return "non-crypto-price-or-data"
     if docs.get("stablecoinCapped") and not bounded_price_approved:
         return "bounded-price-methodology-not-approved"
     if feed.get("status") not in {None, "active"}:
         return "inactive-feed"
-    if feed.get("feedCategory") not in {"low", "medium", "high", "veryhigh", "new"}:
+    categories = {"low", "medium", "high", "veryhigh", "new"}
+    if robinhood_stock:
+        categories.add("custom")
+    if feed.get("feedCategory") not in categories:
         return "unsupported-risk-category"
     if docs.get("productType") != "Price":
         return "not-price-data"
@@ -57,6 +64,48 @@ def excluded_reason(feed, *, bounded_price_approved=False):
     if not integer(feed.get("decimals"), 0, 36) or not integer(feed.get("heartbeat"), 1):
         return "missing-source-metadata"
     return None
+
+
+def approval_source_reason(feed, approval, identity, *, bounded_price_approved=False):
+    docs = feed.get("docs", {})
+    if (approval.get("chainId") == ROBINHOOD_CHAIN
+            and (approval.get("tokenAddress") or "").lower() == ROBINHOOD_FIXED_BUY):
+        if (docs.get("blockchainName"), docs.get("deliveryChannelCode"), docs.get("productTypeCode"),
+                docs.get("baseAsset"), docs.get("quoteAsset"), docs.get("marketHours")) != (
+                "Robinhood", "DF", "RefPrice", "USDG", "USD", "Crypto"):
+            return "unsupported-robinhood-fixed-buy-price-method"
+        if feed.get("heartbeat") != ROBINHOOD_MAX_AGE:
+            return "unsupported-robinhood-fixed-buy-heartbeat"
+    stock = identity.get("robinhoodStockToken") if identity else None
+    market_hours = approval.get("marketHours")
+    robinhood_stock = stock is not None or "marketHours" in approval
+    if robinhood_stock:
+        if (approval.get("chainId") != ROBINHOOD_CHAIN or approval.get("quote") != "USD"
+                or identity is None or identity.get("assetClass") != "volatile"
+                or identity.get("address", "").lower() != (approval.get("tokenAddress") or "").lower()
+                or approval.get("assetRelationship") != "exact-asset" or not isinstance(stock, dict)
+                or not re.fullmatch(r"0x[0-9a-f]{64}", stock.get("uid") or "") or int(stock["uid"], 16) == 0):
+            return "missing-exact-robinhood-stock-identity"
+        symbol = identity.get("symbol")
+        expected_base = ROBINHOOD_FEED_ALIASES.get(identity["address"].lower(), (symbol, symbol))
+        if (symbol, stock.get("feedBase")) != expected_base or docs.get("baseAsset") != stock["feedBase"]:
+            return "stock-feed-identity-differs"
+        if (docs.get("blockchainName"), docs.get("deliveryChannelCode"), docs.get("productTypeCode"), docs.get("quoteAsset")) != (
+                "Robinhood", "DF", "primaryTokenizedPrice", "USD"):
+            return "unsupported-robinhood-stock-price-method"
+        if market_hours != ROBINHOOD_MARKET_HOURS or docs.get("marketHours") != market_hours:
+            return "unsupported-robinhood-stock-market-session"
+        if approval.get("maxAgeSeconds") != ROBINHOOD_MAX_AGE:
+            return "stock-age-must-match-fixed-buy"
+    category = feed.get("feedCategory")
+    if "sourceCategorySuitability" in approval or (robinhood_stock and category == "custom"):
+        suitability = approval.get("sourceCategorySuitability")
+        allowed = {"medium", "custom"} if robinhood_stock else {"medium"}
+        require(isinstance(suitability, dict) and suitability.get("decision") == "accepted", "Invalid sourceCategorySuitability decision")
+        require(category in allowed and suitability.get("category") == category, "sourceCategorySuitability must match medium or reviewed Robinhood custom source category")
+        require(nonempty(suitability.get("evidence")), "Missing sourceCategorySuitability evidence")
+        review_date(suitability.get("reviewDate"))
+    return excluded_reason(feed, bounded_price_approved=bounded_price_approved, robinhood_stock=robinhood_stock)
 
 
 def _fingerprint(snapshot):
@@ -119,9 +168,12 @@ def validate_policy(policy):
     require(policy.get("schemaVersion") == 1, "Unsupported policy schemaVersion")
     verification_file(policy)
     chains = policy.get("chains", {})
-    require(set(chains) == {str(chain) for chain in PRODUCTION_CHAINS}, "Policy must cover exactly the production chains")
+    production = {str(chain) for chain in PRODUCTION_CHAINS}
+    pilot = str(ROBINHOOD_CHAIN)
+    require(set(chains) - {pilot} == production, "Policy must cover exactly the production chains and optional Robinhood pilot")
     for chain, entry in chains.items():
-        require(entry.get("status") in {"approved", "unavailable"}, f"Invalid chain status: {chain}")
+        statuses = {"pilot-only"} if chain == pilot else {"approved", "unavailable"}
+        require(entry.get("status") in statuses, f"Invalid chain status: {chain}")
         if entry["status"] == "unavailable":
             require(nonempty(entry.get("unavailableReason")), f"Missing unavailableReason: {chain}")
         else:
@@ -133,13 +185,16 @@ def validate_policy(policy):
 
 def approved_feeds(identities, inventories, policy, verification):
     validate_policy(policy)
+    pilot = str(ROBINHOOD_CHAIN)
+    if pilot in policy["chains"]:
+        require(identities["usdTokens"].get(pilot, "").lower() == ROBINHOOD_FIXED_BUY, "Robinhood pilot requires fixed buy USDG")
     identity_map = {(item["chainId"], item["address"].lower()): item for item in identities["tokens"]}
     approvals, sources = {}, {}
     batch_routes = _batch_routes(verification)
     for entry in policy["approvals"]:
         chain = entry.get("chainId")
         address = entry.get("tokenAddress", "")
-        require(type(chain) is int and chain in PRODUCTION_CHAINS, "Unknown approval chain")
+        require(type(chain) is int and str(chain) in policy["chains"], "Unknown approval chain")
         require(isinstance(address, str) and ADDRESS.fullmatch(address), "Invalid approval tokenAddress")
         identity = identity_map.get((chain, address.lower()))
         require(identity is not None, "Unknown approval token")
@@ -148,19 +203,23 @@ def approved_feeds(identities, inventories, policy, verification):
         require(denomination in {"USD", "ETH"}, "Unsupported approval quote")
         key = (chain, address.lower(), denomination)
         require(key not in approvals, "Duplicate token/quote approval")
-        require(policy["chains"][str(chain)]["status"] == "approved", "Approval requires chain execution approval")
+        execution = policy["chains"][str(chain)]["status"]
+        require(execution in {"approved", "pilot-only"}, "Approval requires chain execution approval")
+        if execution == "pilot-only":
+            require(denomination == "USD", "Robinhood pilot requires USD feeds")
+            if address.lower() == ROBINHOOD_FIXED_BUY:
+                require((entry.get("path"), (entry.get("proxyAddress") or "").lower()) == ROBINHOOD_FIXED_FEED
+                        and entry.get("maxAgeSeconds") == ROBINHOOD_MAX_AGE and identity["assetClass"] == "usd-pegged"
+                        and identity["decimals"] == 6 and identity["symbol"] == "USDG"
+                        and "boundedPriceSuitability" not in entry, "Invalid Robinhood fixed buy approval")
+            else:
+                require("verificationBatch" in entry, "Robinhood sell requires a named verification batch")
         proxy = entry.get("proxyAddress", "")
         require(isinstance(proxy, str) and ADDRESS.fullmatch(proxy), "Invalid approval proxyAddress")
         require(nonempty(entry.get("path")), "Missing approval path")
         matches = source_rows(entry, inventories)
         require(len(matches) == 1, "Approval must match exactly one source path/proxy")
         feed = matches[0]
-        if "sourceCategorySuitability" in entry:
-            suitability = entry["sourceCategorySuitability"]
-            require(isinstance(suitability, dict) and suitability.get("decision") == "accepted", "Invalid sourceCategorySuitability decision")
-            require(suitability.get("category") == "medium" and suitability["category"] == feed.get("feedCategory"), "sourceCategorySuitability must match medium source category")
-            require(nonempty(suitability.get("evidence")), "Missing sourceCategorySuitability evidence")
-            review_date(suitability.get("reviewDate"))
         bounded_price_approved = False
         if "boundedPriceSuitability" in entry:
             suitability = entry["boundedPriceSuitability"]
@@ -169,7 +228,7 @@ def approved_feeds(identities, inventories, policy, verification):
             review_date(suitability.get("reviewDate"))
             require(address.lower() == identities["usdTokens"].get(str(chain), "").lower() and denomination == "USD" and entry.get("assetRelationship") in {"exact-asset", "bridged-underlying"}, "boundedPriceSuitability requires fixed buy token, USD quote and exact-asset or reviewed bridged-underlying relationship")
             bounded_price_approved = True
-        reason = excluded_reason(feed, bounded_price_approved=bounded_price_approved)
+        reason = approval_source_reason(feed, entry, identity, bounded_price_approved=bounded_price_approved)
         require(reason is None, f"Ineligible approved source: {reason}")
         require(feed["docs"]["quoteAsset"] == denomination, "Approval quote differs from source")
         for field in EVIDENCE_FIELDS:
@@ -213,6 +272,8 @@ def approved_feeds(identities, inventories, policy, verification):
         require(no_check_errors(verification) and no_check_errors(route, strict=True), "Verification contains errors or issues")
         validate_leg(route.get("sell"), identity, sources[key], entry)
         validate_leg(route.get("buy"), identity_map[chain, buy_address], sources[buy_key], approvals[buy_key], buy=True)
+    if pilot in policy["chains"]:
+        require((ROBINHOOD_CHAIN, ROBINHOOD_FIXED_BUY, "USD") in approvals, "Robinhood pilot requires an approved USDG feed")
     return approvals
 
 
@@ -221,9 +282,10 @@ def build(identities=None, inventories=None, policy=None, verification=None):
     inventories = read("scripts/catalog-feeds.json") if inventories is None else inventories
     policy = read("scripts/catalog-policy.json") if policy is None else policy
     verification = read(verification_file(policy)) if verification is None else verification
+    configured = {int(chain) for chain in policy["chains"]} | TEST_CHAINS
     tokens, audit = [], []
     for identity in identities["tokens"]:
-        require(type(identity.get("chainId")) is int and identity["chainId"] in PRODUCTION_CHAINS | TEST_CHAINS, "Unknown identity chain")
+        require(type(identity.get("chainId")) is int and identity["chainId"] in configured, "Unknown identity chain")
         require(identity.get("assetClass") in ASSET_CLASSES, f"Missing or invalid assetClass: {identity.get('symbol')}")
         token = {key: identity[key] for key in ("chainId", "address", "symbol", "name", "decimals", "assetClass")}
         if "classificationReason" in identity:
@@ -235,7 +297,7 @@ def build(identities=None, inventories=None, policy=None, verification=None):
         tokens.append(token)
     keys = [(token["chainId"], token["address"]) for token in tokens]
     require(len(keys) == len(set(keys)), "Duplicate token contract")
-    require(set(identities["usdTokens"]) == {str(chain) for chain in PRODUCTION_CHAINS | TEST_CHAINS}, "Invalid buy-token chain map")
+    require(set(identities["usdTokens"]) == {str(chain) for chain in configured}, "Invalid buy-token chain map")
     token_map = dict(zip(keys, tokens))
     for identity, token in zip(identities["tokens"], tokens):
         require(ADDRESS.fullmatch(token["address"]), "Invalid token contract")
@@ -249,10 +311,10 @@ def build(identities=None, inventories=None, policy=None, verification=None):
         require((int(chain), address.lower()) in token_map, f"Missing buy-token metadata: {chain}")
     approvals = approved_feeds(identities, inventories, policy, verification)
     chains = {}
-    for chain in sorted(PRODUCTION_CHAINS):
+    for chain in sorted(map(int, policy["chains"])):
         execution = policy["chains"][str(chain)]
         buy_address = identities["usdTokens"][str(chain)].lower()
-        if execution["status"] != "approved":
+        if execution["status"] == "unavailable":
             chains[str(chain)] = {"status": "unavailable", "unavailableReason": execution["unavailableReason"]}
             continue
         if (chain, buy_address, "USD") not in approvals:
@@ -269,7 +331,7 @@ def build(identities=None, inventories=None, policy=None, verification=None):
         chains[str(chain)] = {"status": "test-only", "unavailableReason": "explicit-test-configuration-outside-production-policy"}
     used = {(token["chainId"], entry["path"], entry["proxyAddress"]) for token in tokens for entry in token["oracleApprovals"].values()}
     for chain, feeds in inventories.items():
-        require(int(chain) in PRODUCTION_CHAINS, f"Unknown source chain: {chain}")
+        require(chain in policy["chains"], f"Unknown source chain: {chain}")
         for feed in feeds:
             key = (int(chain), feed.get("path"), (feed.get("proxyAddress") or "").lower())
             reason = excluded_reason(feed)

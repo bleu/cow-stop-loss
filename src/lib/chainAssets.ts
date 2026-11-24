@@ -9,4 +9,5 @@ export const CHAIN_ASSETS = {
   56: { color: "#F0B90B", icon: "/assets/chains/bnb.svg" },
   59144: { color: "#61DFFF", icon: "/assets/chains/linea.svg" },
   9745: { color: "#569F8C", icon: "/assets/chains/plasma.svg" },
+  4663: { color: "#00C805", icon: "/assets/chains/robinhood.svg" },
 } as const;

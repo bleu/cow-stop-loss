@@ -82,6 +82,8 @@ def validate_observations(identity, feed, approval, verification, chain, *, stri
     require(chain.get("issues") == [] and all(no_check_errors(record, strict=strict) for record in (verification, chain, token, observed)), "Verification contains errors or issues")
     token_decimals = token.get("decimals")
     require(token_decimals == identity["decimals"] and token.get("symbol") == identity["symbol"] and (not strict or integer(token_decimals, 0, 36)), "Token verification metadata differs")
+    if "robinhoodStockToken" in identity:
+        require(token.get("uid") == identity["robinhoodStockToken"]["uid"], "Token issuer UID differs")
     round_id, answered_in_round = round_number(observed.get("roundId")), round_number(observed.get("answeredInRound"))
     require(round_id > 0 and answered_in_round >= round_id, "Incomplete verified feed round")
     require(observed.get("description") == approval["expectedDescription"], "Feed description differs")

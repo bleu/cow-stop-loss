@@ -28,6 +28,7 @@ RPCS = {
     56: "https://bsc-rpc.publicnode.com",
     59144: "https://rpc.linea.build",
     9745: "https://rpc.plasma.to",
+    4663: "https://rpc.mainnet.chain.robinhood.com",
 }
 
 
@@ -71,7 +72,10 @@ def verify_chain(item, *, inventories=None):
     requests, labels = [], []
     feeds = {}
     for token in tokens:
-        for label, selector in [("decimals", "0x313ce567"), ("symbol", "0x95d89b41")]:
+        token_fields = [("decimals", "0x313ce567"), ("symbol", "0x95d89b41")]
+        if "robinhoodStockToken" in token:
+            token_fields.append(("uid", "0xf514ce36"))
+        for label, selector in token_fields:
             requests.append((token["address"], selector))
             labels.append(("token", token["address"], label))
         for quote, address in token["oracles"].items():
@@ -103,6 +107,8 @@ def verify_chain(item, *, inventories=None):
                     record[field] = text(value)
                 elif field == "decimals":
                     record[field] = int(value, 16)
+                elif field == "uid":
+                    record[field] = value.lower()
                 else:
                     raw = bytes.fromhex(value[2:])
                     require(len(raw) == 160, "Incomplete latestRoundData")
@@ -121,6 +127,8 @@ def verify_chain(item, *, inventories=None):
             issues.append(f"{token['symbol']} decimals: catalog={token['decimals']} live={live}")
         if live.get("symbol") != token["symbol"]:
             issues.append(f"Token symbol differs: {token['address']}: expected={token['symbol']} live={live}")
+        if "robinhoodStockToken" in token and live.get("uid") != token["robinhoodStockToken"]["uid"]:
+            issues.append(f"Token issuer UID differs: {token['address']}: {live}")
     for address, feed in records["feeds"].items():
         approval = feeds[address]
         matches = source_rows({**approval, "chainId": chain}, inventories)

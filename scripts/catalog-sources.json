@@ -39,6 +39,11 @@
     "9745": {
       "url": "https://reference-data-directory.vercel.app/feeds-plasma-mainnet.json",
       "sha256": "7b6fd0bf585692f82aca0ca676033747636016c4d8210a551e509716b70318dc"
+    },
+    "4663": {
+      "url": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json",
+      "retrievedAt": "2026-11-23T21:06:33.962173+00:00",
+      "sha256": "9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339"
     }
   },
   "metadataSources": {
@@ -200,19 +205,26 @@
         "url": "https://reference-data-directory.vercel.app/feeds-mainnet.json",
         "retrievedAt": "2026-10-20T14:08:43.478547+00:00",
         "sha256": "3a654b2ffd742134cb0b222fb8715ee94d3857c5af510e6522bb29a333040b33",
-        "paths": ["aave-usd", "comp-usd"]
+        "paths": [
+          "aave-usd",
+          "comp-usd"
+        ]
       },
       "56": {
         "url": "https://reference-data-directory.vercel.app/feeds-bsc-mainnet.json",
         "retrievedAt": "2026-10-20T14:08:43.701431+00:00",
         "sha256": "1404df9b89bf2dc9b706d7b093f45b66779462686f6a9cb6a64d39500d09a064",
-        "paths": ["cake-usd"]
+        "paths": [
+          "cake-usd"
+        ]
       },
       "42161": {
         "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-arbitrum-1.json",
         "retrievedAt": "2026-10-20T14:10:54.854579+00:00",
         "sha256": "3bf7d41ea1b724cc0e100273f341681ead318c979a05f43d3119b6cadcb9d055",
-        "paths": ["arb-usd"]
+        "paths": [
+          "arb-usd"
+        ]
       }
     }
   },
@@ -224,31 +236,55 @@
         "url": "https://reference-data-directory.vercel.app/feeds-mainnet.json",
         "sha256": "3a654b2ffd742134cb0b222fb8715ee94d3857c5af510e6522bb29a333040b33",
         "retrievedAt": "2026-10-20T17:02:36.752811+00:00",
-        "paths": ["cbbtc-usd"]
+        "paths": [
+          "cbbtc-usd"
+        ]
       },
       "100": {
         "url": "https://reference-data-directory.vercel.app/feeds-xdai-mainnet.json",
         "sha256": "12627f33c7713e42664633350d97532f9eac5326957f2c9c89cb3efb19cb2f21",
         "retrievedAt": "2026-10-20T17:02:36.860299+00:00",
-        "paths": ["eth-usd", "link-usd", "aave-usd", "uni-usd", "comp-usd"]
+        "paths": [
+          "eth-usd",
+          "link-usd",
+          "aave-usd",
+          "uni-usd",
+          "comp-usd"
+        ]
       },
       "42161": {
         "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-arbitrum-1.json",
         "sha256": "3bf7d41ea1b724cc0e100273f341681ead318c979a05f43d3119b6cadcb9d055",
         "retrievedAt": "2026-10-20T17:02:37.686202+00:00",
-        "paths": ["link-usd", "aave-usd", "uni-usd", "comp-usd", "wbtc-usd"]
+        "paths": [
+          "link-usd",
+          "aave-usd",
+          "uni-usd",
+          "comp-usd",
+          "wbtc-usd"
+        ]
       },
       "8453": {
         "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-base-1.json",
         "sha256": "c85976b8be013b054d354bdedaab31dd9de7eedbd758755855b481be6750f90b",
         "retrievedAt": "2026-10-20T17:02:36.940581+00:00",
-        "paths": ["eth-usd-shared-svr-2", "link-usd", "aave-usd", "comp-usd"]
+        "paths": [
+          "eth-usd-shared-svr-2",
+          "link-usd",
+          "aave-usd",
+          "comp-usd"
+        ]
       },
       "137": {
         "url": "https://reference-data-directory.vercel.app/feeds-matic-mainnet.json",
         "sha256": "d01606a308bdf71e8f440c23f3c6efd4a659c9b4e7440d2a16ca205b1ec0212e",
         "retrievedAt": "2026-10-20T17:02:36.769015+00:00",
-        "paths": ["link-usd", "aave-usd", "uni-usd", "eth-usd"]
+        "paths": [
+          "link-usd",
+          "aave-usd",
+          "uni-usd",
+          "eth-usd"
+        ]
       },
       "43114": {
         "url": "https://reference-data-directory.vercel.app/feeds-avalanche-mainnet.json",
@@ -282,13 +318,20 @@
         "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-linea-1.json",
         "sha256": "0cb350fa552cbe667c60c8061bf2807be91817841097bff28749ea4c01feca90",
         "retrievedAt": "2026-10-20T17:02:36.874300+00:00",
-        "paths": ["link-usd", "wsteth-usd"]
+        "paths": [
+          "link-usd",
+          "wsteth-usd"
+        ]
       },
       "9745": {
         "url": "https://reference-data-directory.vercel.app/feeds-plasma-mainnet.json",
         "sha256": "6fea77476a00ef9d3d15338d2a41cbbdb443a10f8f09c722d856e49fd83221eb",
         "retrievedAt": "2026-10-20T17:02:36.852698+00:00",
-        "paths": ["link-usd", "eth-usd", "weeth-usd"]
+        "paths": [
+          "link-usd",
+          "eth-usd",
+          "weeth-usd"
+        ]
       }
     }
   },
@@ -300,55 +343,96 @@
         "url": "https://reference-data-directory.vercel.app/feeds-mainnet.json",
         "retrievedAt": "2026-11-17T18:07:00+00:00",
         "sha256": "451932aa500acbbd5af87ea42c7877b0891d5f87bcb98c81910d0e11e1ec8bcd",
-        "paths": ["crv-usd", "ens-usd", "sky-usd", "wlfi-usd"]
+        "paths": [
+          "crv-usd",
+          "ens-usd",
+          "sky-usd",
+          "wlfi-usd"
+        ]
       },
       "100": {
         "url": "https://reference-data-directory.vercel.app/feeds-xdai-mainnet.json",
         "retrievedAt": "2026-11-17T18:07:00+00:00",
         "sha256": "12627f33c7713e42664633350d97532f9eac5326957f2c9c89cb3efb19cb2f21",
-        "paths": ["crv-usd", "sushi-usd", "grt-usd", "snx-usd"]
+        "paths": [
+          "crv-usd",
+          "sushi-usd",
+          "grt-usd",
+          "snx-usd"
+        ]
       },
       "42161": {
         "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-arbitrum-1.json",
         "retrievedAt": "2026-11-17T18:07:00+00:00",
         "sha256": "3f9a4f5b1e3afcef85948f9d89b36d2925d91d5eb791f43474634899d03db4b4",
-        "paths": ["ena-usd", "pendle-usd", "gmx-usd", "gns-usd"]
+        "paths": [
+          "ena-usd",
+          "pendle-usd",
+          "gmx-usd",
+          "gns-usd"
+        ]
       },
       "8453": {
         "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-base-1.json",
         "retrievedAt": "2026-11-17T18:07:00+00:00",
         "sha256": "9e336b6acc20681db1f7f7a461e5be8968d7415eb6793c325d0b8f2cd4e72b12",
-        "paths": ["aero-usd", "cbbtc-usd", "avnt-usd", "cbdoge-usd"]
+        "paths": [
+          "aero-usd",
+          "cbbtc-usd",
+          "avnt-usd",
+          "cbdoge-usd"
+        ]
       },
       "137": {
         "url": "https://reference-data-directory.vercel.app/feeds-matic-mainnet.json",
         "retrievedAt": "2026-11-17T18:07:00+00:00",
         "sha256": "d62a5a400ea400240ab4715eaaac39d38d16ac542acc0bd284a06f9fbc4e5845",
-        "paths": ["comp-usd", "crv-usd", "sushi-usd", "ghst-usd"]
+        "paths": [
+          "comp-usd",
+          "crv-usd",
+          "sushi-usd",
+          "ghst-usd"
+        ]
       },
       "43114": {
         "url": "https://reference-data-directory.vercel.app/feeds-avalanche-mainnet.json",
         "retrievedAt": "2026-11-17T18:07:00+00:00",
         "sha256": "df8b4348e7a8743aca7e915418ee93a41b7536da73036bbd8de58383b2ad20ff",
-        "paths": ["wbtc-usd", "qi-usd", "xava-usd"]
+        "paths": [
+          "wbtc-usd",
+          "qi-usd",
+          "xava-usd"
+        ]
       },
       "56": {
         "url": "https://reference-data-directory.vercel.app/feeds-bsc-mainnet.json",
         "retrievedAt": "2026-11-17T18:07:00+00:00",
         "sha256": "16c07b7a09faeb69d8c6c5349368b7f9f0c73225bd0753e780668df869d11684",
-        "paths": ["ada-usd", "sol-usd", "xrp-usd", "aster-usd", "wlfi-usd"]
+        "paths": [
+          "ada-usd",
+          "sol-usd",
+          "xrp-usd",
+          "aster-usd",
+          "wlfi-usd"
+        ]
       },
       "59144": {
         "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-linea-1.json",
         "retrievedAt": "2026-11-17T18:07:00+00:00",
         "sha256": "a929158d5c9f7913b83342a5b19060256be5f55ee09ed76379ad861aa9252e1a",
-        "paths": ["linea-usd", "aave-usd", "comp-usd"]
+        "paths": [
+          "linea-usd",
+          "aave-usd",
+          "comp-usd"
+        ]
       },
       "9745": {
         "url": "https://reference-data-directory.vercel.app/feeds-plasma-mainnet.json",
         "retrievedAt": "2026-11-17T18:07:00+00:00",
         "sha256": "65ed189c772ef3a42d1ebb169906e0ef6952e0c87dd801f786e04cb902ca8a26",
-        "paths": ["ena-usd"]
+        "paths": [
+          "ena-usd"
+        ]
       }
     }
   },
@@ -422,7 +506,10 @@
           "url": "https://reference-data-directory.vercel.app/feeds-xdai-mainnet.json",
           "retrievedAt": "2026-11-23T14:30:18.452223+00:00",
           "sha256": "12627f33c7713e42664633350d97532f9eac5326957f2c9c89cb3efb19cb2f21",
-          "paths": ["btc-usd", "yfi-usd"]
+          "paths": [
+            "btc-usd",
+            "yfi-usd"
+          ]
         },
         "137": {
           "url": "https://reference-data-directory.vercel.app/feeds-matic-mainnet.json",
@@ -527,7 +614,9 @@
           "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-linea-1.json",
           "retrievedAt": "2026-11-23T14:30:18.451596+00:00",
           "sha256": "a929158d5c9f7913b83342a5b19060256be5f55ee09ed76379ad861aa9252e1a",
-          "paths": ["btc-usd"]
+          "paths": [
+            "btc-usd"
+          ]
         }
       }
     },
@@ -538,7 +627,12 @@
           "url": "https://reference-data-directory.vercel.app/feeds-mainnet.json",
           "retrievedAt": "2026-11-23T14:30:18.510943+00:00",
           "sha256": "56d4d747587fec6ee56ed2edaa4a7b6840bdd840248d929cd9e6882c7387f34e",
-          "paths": ["avax-usd", "bnb-usd", "btc-usd", "sol-usd"]
+          "paths": [
+            "avax-usd",
+            "bnb-usd",
+            "btc-usd",
+            "sol-usd"
+          ]
         },
         "56": {
           "url": "https://reference-data-directory.vercel.app/feeds-bsc-mainnet.json",
@@ -649,7 +743,11 @@
           "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-arbitrum-1.json",
           "retrievedAt": "2026-11-23T14:30:18.820391+00:00",
           "sha256": "f057b1dfde3d7cf632bb05ed0e06853c76b4bf971fdac909cf7decad900ec720",
-          "paths": ["atom-usd", "axl-usd", "tia-usd"]
+          "paths": [
+            "atom-usd",
+            "axl-usd",
+            "tia-usd"
+          ]
         },
         "43114": {
           "url": "https://reference-data-directory.vercel.app/feeds-avalanche-mainnet.json",
@@ -662,6 +760,119 @@
           "retrievedAt": "2026-11-23T14:30:18.451596+00:00",
           "sha256": "a929158d5c9f7913b83342a5b19060256be5f55ee09ed76379ad861aa9252e1a",
           "paths": []
+        }
+      }
+    },
+    "bulk-20261123T171557Z": {
+      "scope": "Full directory screening; only approved source rows are retained.",
+      "sources": {
+        "1": {
+          "url": "https://reference-data-directory.vercel.app/feeds-mainnet.json",
+          "retrievedAt": "2026-11-23T17:01:22.943412+00:00",
+          "sha256": "56d4d747587fec6ee56ed2edaa4a7b6840bdd840248d929cd9e6882c7387f34e",
+          "paths": [
+            "paxg-usd"
+          ]
+        },
+        "56": {
+          "url": "https://reference-data-directory.vercel.app/feeds-bsc-mainnet.json",
+          "retrievedAt": "2026-11-23T17:01:22.905718+00:00",
+          "sha256": "8a95e688e72a72fe2ad00649ed6b475bba4edfb5652c5baa3e1a0d310f446c79",
+          "paths": []
+        },
+        "100": {
+          "url": "https://reference-data-directory.vercel.app/feeds-xdai-mainnet.json",
+          "retrievedAt": "2026-11-23T17:01:22.904012+00:00",
+          "sha256": "12627f33c7713e42664633350d97532f9eac5326957f2c9c89cb3efb19cb2f21",
+          "paths": []
+        },
+        "137": {
+          "url": "https://reference-data-directory.vercel.app/feeds-matic-mainnet.json",
+          "retrievedAt": "2026-11-23T17:01:22.911751+00:00",
+          "sha256": "54c50351be1c3101ad86cf89bd60c52ddc7486fbf242439cecc5511dfad50d25",
+          "paths": []
+        },
+        "8453": {
+          "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-base-1.json",
+          "retrievedAt": "2026-11-23T17:01:22.910688+00:00",
+          "sha256": "5134266982484f6090db4088bea278ac1da97f4ad4b0fe5e7aa0c5aca81b009d",
+          "paths": []
+        },
+        "9745": {
+          "url": "https://reference-data-directory.vercel.app/feeds-plasma-mainnet.json",
+          "retrievedAt": "2026-11-23T17:01:22.661075+00:00",
+          "sha256": "65ed189c772ef3a42d1ebb169906e0ef6952e0c87dd801f786e04cb902ca8a26",
+          "paths": [
+            "xaut-usd"
+          ]
+        },
+        "42161": {
+          "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-arbitrum-1.json",
+          "retrievedAt": "2026-11-23T17:01:23.110764+00:00",
+          "sha256": "e682930a0c1a4e11236bd3e2a9d235c561643a6596b32cb811f22540c37979ca",
+          "paths": []
+        },
+        "43114": {
+          "url": "https://reference-data-directory.vercel.app/feeds-avalanche-mainnet.json",
+          "retrievedAt": "2026-11-23T17:01:22.945080+00:00",
+          "sha256": "57e50e569d0385282239c72aab98765a9b937d2ee70dbaa0c198083277479ed4",
+          "paths": []
+        },
+        "59144": {
+          "url": "https://reference-data-directory.vercel.app/feeds-ethereum-mainnet-linea-1.json",
+          "retrievedAt": "2026-11-23T17:01:22.811745+00:00",
+          "sha256": "a929158d5c9f7913b83342a5b19060256be5f55ee09ed76379ad861aa9252e1a",
+          "paths": []
+        }
+      }
+    },
+    "bulk-20261124T124809Z": {
+      "scope": "Full directory screening; only approved source rows are retained.",
+      "sources": {
+        "4663": {
+          "url": "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json",
+          "retrievedAt": "2026-11-23T21:06:33.962173+00:00",
+          "sha256": "9b21f1262fd333228743ce1987506ebfa9aa1296119db2a8aba93848db225339",
+          "paths": [
+            "ena-usd-shared-svr",
+            "eth-usd-shared-svr",
+            "link-usd-shared-svr",
+            "rhdell-usd-shared-svr",
+            "robinhood-aapl-usd-shared-svr",
+            "robinhood-amd-usd-shared-svr",
+            "robinhood-amzn-usd-shared-svr",
+            "robinhood-asml-usd-shared-svr",
+            "robinhood-baba-usd-shared-svr",
+            "robinhood-clsk-usd-shared-svr",
+            "robinhood-coin-usd-shared-svr",
+            "robinhood-crcl-usd-shared-svr",
+            "robinhood-crwv-usd-shared-svr",
+            "robinhood-ewy-usd-shared-svr",
+            "robinhood-gme-usd-shared-svr",
+            "robinhood-googl-usd-shared-svr",
+            "robinhood-intc-usd-shared-svr",
+            "robinhood-ionq-usd-shared-svr",
+            "robinhood-meta-usd-shared-svr",
+            "robinhood-msft-usd-shared-svr",
+            "robinhood-mstr-usd-shared-svr",
+            "robinhood-mu-usd-shared-svr",
+            "robinhood-nbis-usd-shared-svr",
+            "robinhood-nvda-usd-shared-svr",
+            "robinhood-orcl-usd-shared-svr",
+            "robinhood-pltr-usd-shared-svr",
+            "robinhood-qqq-usd-shared-svr",
+            "robinhood-rgti-usd-shared-svr",
+            "robinhood-rklb-usd-shared-svr",
+            "robinhood-slv-usd-shared-svr",
+            "robinhood-sndk-usd-shared-svr",
+            "robinhood-spcx-usd-shared-svr",
+            "robinhood-spy-usd-shared-svr",
+            "robinhood-tsla-usd-shared-svr",
+            "robinhood-tsm-usd-shared-svr",
+            "robinhood-uso-usd-shared-svr",
+            "usdg-usd-shared-svr",
+            "wbtc-usd-shared-svr"
+          ]
         }
       }
     }

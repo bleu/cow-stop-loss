@@ -89,6 +89,31 @@ async function submitRepair() {
   }));
 }
 
+test("leaves saved Robinhood approval repair untouched when orders are disabled", async () => {
+  const chainId = 4663;
+  const client = publicClientsFromIds[chainId];
+  const read = jest
+    .spyOn(client, "getTransaction")
+    .mockRejectedValue(new Error("Unexpected RPC request"));
+  jest
+    .spyOn(client, "waitForTransactionReceipt")
+    .mockRejectedValue(new Error("Unexpected RPC request"));
+  const tracker = getStopLossApprovalRepair();
+  await tracker.submit(
+    { ...prepared, chainId },
+    { ...work, transaction: { ...work.transaction, chainId } },
+    async () => ({ id: transactionHash, transactionHash }),
+  );
+
+  await expect(resumeStopLossApprovalRepair(account, chainId)).resolves.toEqual(
+    [],
+  );
+  expect(read).not.toHaveBeenCalled();
+  expect(tracker.getRecords({ account, chainId })).toMatchObject([
+    { status: "pending" },
+  ]);
+});
+
 test("keeps a successful receipt pending when the allowance read throws and retries only reads", async () => {
   const read = jest
     .spyOn(client, "readContract")

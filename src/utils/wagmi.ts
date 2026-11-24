@@ -5,7 +5,7 @@ import {
 } from "@rainbow-me/rainbowkit/wallets";
 import { cookieStorage, createConfig, createStorage } from "wagmi";
 
-import { createRpcTransports, supportedChains } from "#/lib/publicClients";
+import { createWalletRpcTransports, walletChains } from "#/lib/publicClients";
 
 export function createWagmiConfig() {
   const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
@@ -57,9 +57,9 @@ export function createWagmiConfig() {
   return createConfig({
     ssr: true,
     storage: createStorage({ storage: cookieStorage }),
-    chains: supportedChains,
+    chains: walletChains,
     connectors,
-    transports: createRpcTransports(),
+    transports: createWalletRpcTransports(),
   });
 }
 

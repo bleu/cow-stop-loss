@@ -25,6 +25,7 @@ import { DraftOrder, SwapData } from "#/lib/types";
 import { AdvancedSettingsAlert } from "../AdvancedSettingsAlert";
 import { AdvancedSettingsPanel } from "../AdvancedSettingsPanel";
 import { LimitPriceInputCard } from "../LimitPriceInputCard";
+import { MarketHoursNotice } from "../MarketHoursNotice";
 import { PriceInputCard } from "../PriceInputCard";
 import { TokenInputCard } from "../TokenInputCard";
 import { Form } from "../ui/form";
@@ -305,6 +306,11 @@ function WalletSwapForm({
                 </p>
               )}
               <TokenInputCard side="Sell" onEdit={recordEdit} />
+              <MarketHoursNotice
+                chainId={chainId}
+                tokenSell={tokenSell}
+                tokenBuy={tokenBuy}
+              />
               <PriceInputCard
                 key={`${tokenSell?.address.toLowerCase()}:${tokenBuy?.address.toLowerCase()}`}
               />

@@ -1,6 +1,10 @@
 import type { Address, PublicClient } from "viem";
 
-import { type ChainId, publicClientsFromIds } from "./publicClients";
+import {
+  assertOrderChainEnabled,
+  type ChainId,
+  publicClientsFromIds,
+} from "./publicClients";
 import {
   loadStopLossFundingParents,
   loadStopLossOrders,
@@ -32,6 +36,7 @@ export function getPlacementReads({
   client?: PublicClient;
   minimumBlockNumber?: bigint;
 }): PlacementReads {
+  assertOrderChainEnabled(chainId);
   const scope = { account, chainId };
   if (client)
     return createPlacementReads(scope, client, false, minimumBlockNumber);

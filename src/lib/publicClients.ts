@@ -36,7 +36,23 @@ export const plasma = defineChain({
   },
 });
 
-export const supportedChains = [
+export const robinhood = defineChain({
+  id: 4663,
+  name: "Robinhood",
+  nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
+  rpcUrls: { default: { http: ["https://rpc.mainnet.chain.robinhood.com"] } },
+  blockExplorers: {
+    default: {
+      name: "Blockscout",
+      url: "https://robinhoodchain.blockscout.com",
+    },
+  },
+  contracts: {
+    multicall3: { address: "0xcA11bde05977b3631167028862bE2a173976CA11" },
+  },
+});
+
+export const walletChains = [
   mainnet,
   { ...sepolia, name: "Sepolia (testnet)" },
   gnosis,
@@ -56,13 +72,39 @@ export const supportedChains = [
     iconUrl: CHAIN_ASSETS[plasma.id].icon,
     iconBackground: CHAIN_ASSETS[plasma.id].color,
   },
+  {
+    ...robinhood,
+    iconUrl: CHAIN_ASSETS[robinhood.id].icon,
+    iconBackground: CHAIN_ASSETS[robinhood.id].color,
+  },
 ] as const;
 
-export type ChainId = (typeof supportedChains)[number]["id"];
+export type WalletChainId = (typeof walletChains)[number]["id"];
+export type ChainId = WalletChainId;
 export type ChainType = Chain & { id: ChainId };
 export type ChainName = keyof typeof publicClientsFromNames;
 
+const robinhoodOrdersEnabled =
+  process.env.NEXT_PUBLIC_ENABLE_ROBINHOOD_ORDERS === "true";
+export const supportedChains = walletChains.filter(
+  ({ id }) => id !== robinhood.id || robinhoodOrdersEnabled,
+);
 export const supportedChainIds = supportedChains.map((chain) => chain.id);
+
+export function isSupportedChainId(
+  chainId: number | undefined,
+): chainId is ChainId {
+  return supportedChainIds.some((id) => id === chainId);
+}
+
+export function assertOrderChainEnabled(chainId: number) {
+  if (!isSupportedChainId(chainId))
+    throw new Error("Stop-loss orders are unavailable on this network.");
+}
+
+export function isConfiguredChainId(chainId: number): chainId is ChainId {
+  return walletChains.some(({ id }) => id === chainId);
+}
 
 export const chainNames: Record<ChainId, string> = {
   1: "Ethereum",
@@ -75,7 +117,10 @@ export const chainNames: Record<ChainId, string> = {
   59144: "Linea",
   9745: "Plasma",
   11155111: "Sepolia (testnet)",
+  [robinhood.id]: robinhood.name,
 };
+
+type DrpcChainId = Exclude<ChainId, typeof robinhood.id>;
 
 const DRPC_NETWORKS = {
   [mainnet.id]: "ethereum",
@@ -88,11 +133,11 @@ const DRPC_NETWORKS = {
   [bsc.id]: "bsc",
   [linea.id]: "linea",
   [plasma.id]: "plasma",
-} as const satisfies Record<ChainId, string>;
+} as const satisfies Record<DrpcChainId, string>;
 
 const drpcKey = process.env.NEXT_PUBLIC_DRPC_KEY;
 
-function rpcUrl(chainId: ChainId, defaultUrl: string): string {
+function rpcUrl(chainId: DrpcChainId, defaultUrl: string): string {
   return drpcKey
     ? `https://lb.drpc.live/${DRPC_NETWORKS[chainId]}/${encodeURIComponent(drpcKey)}`
     : defaultUrl;
@@ -109,13 +154,16 @@ export const RPC_PROVIDERS = {
   [bsc.id]: rpcUrl(bsc.id, "https://bsc-dataseed1.bnbchain.org"),
   [linea.id]: rpcUrl(linea.id, linea.rpcUrls.default.http[0]),
   [plasma.id]: rpcUrl(plasma.id, plasma.rpcUrls.default.http[0]),
+  [robinhood.id]:
+    process.env.NEXT_PUBLIC_ROBINHOOD_RPC_URL ||
+    robinhood.rpcUrls.default.http[0],
 } as const satisfies Record<ChainId, string>;
 
 export function createRpcTransport(chain: ChainType) {
   return http(RPC_PROVIDERS[chain.id], { retryCount: 1, timeout: 10000 });
 }
 
-export function createRpcTransports() {
+export function createWalletRpcTransports() {
   return {
     [mainnet.id]: createRpcTransport(mainnet),
     [gnosis.id]: createRpcTransport(gnosis),
@@ -127,7 +175,8 @@ export function createRpcTransports() {
     [bsc.id]: createRpcTransport(bsc),
     [linea.id]: createRpcTransport(linea),
     [plasma.id]: createRpcTransport(plasma),
-  } satisfies Record<ChainId, ReturnType<typeof createRpcTransport>>;
+    [robinhood.id]: createRpcTransport(robinhood),
+  } satisfies Record<WalletChainId, ReturnType<typeof createRpcTransport>>;
 }
 
 export function createClientForChain(chain: ChainType): PublicClient {
@@ -150,6 +199,7 @@ export const publicClientsFromNames = {
   bnb: createClientForChain(bsc),
   linea: createClientForChain(linea),
   plasma: createClientForChain(plasma),
+  robinhood: createClientForChain(robinhood),
 };
 
 export const publicClientsFromIds = {
@@ -163,4 +213,5 @@ export const publicClientsFromIds = {
   [bsc.id]: publicClientsFromNames.bnb,
   [linea.id]: publicClientsFromNames.linea,
   [plasma.id]: publicClientsFromNames.plasma,
+  [robinhood.id]: publicClientsFromNames.robinhood,
 } as const satisfies Record<ChainId, ReturnType<typeof createClientForChain>>;

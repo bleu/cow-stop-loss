@@ -4,7 +4,11 @@ import { z } from "zod";
 import { composableCowPollerAbi } from "../abis/composableCowPoller";
 import { cowShedFactoryAbi } from "../abis/cowShedFactory";
 import { POLLER_ADDRESS_BY_CHAIN_ID } from "../contracts";
-import { type ChainId, publicClientsFromIds } from "../publicClients";
+import {
+  assertOrderChainEnabled,
+  type ChainId,
+  publicClientsFromIds,
+} from "../publicClients";
 import { COW_API_URL_BY_CHAIN_ID } from "./api";
 
 const quoteSchema = z.object({
@@ -24,6 +28,7 @@ export async function fetchSellQuote({
   buyToken: Address;
   sellAmount: string;
 }) {
+  assertOrderChainEnabled(chainId);
   const client = publicClientsFromIds[chainId];
   const factory = await client.readContract({
     address: POLLER_ADDRESS_BY_CHAIN_ID[chainId],
@@ -74,6 +79,7 @@ export async function fetchPairSlippage(
   sellToken: Address,
   buyToken: Address,
 ) {
+  assertOrderChainEnabled(chainId);
   const response = await fetch(
     `https://bff.cow.fi/${chainId}/markets/${sellToken}-${buyToken}/slippageTolerance`,
   );

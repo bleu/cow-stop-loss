@@ -1,20 +1,20 @@
 import Image from "next/image";
 
-import { CHAIN_INFO } from "#/lib/chainInfo";
-import { ChainId } from "#/lib/publicClients";
+import { CHAIN_ASSETS } from "#/lib/chainAssets";
+import type { WalletChainId } from "#/lib/publicClients";
 
 export function NetworkLogo({
   chainId,
   size = 22,
   className,
 }: {
-  chainId: ChainId;
+  chainId: WalletChainId;
   size?: number;
   className?: string;
 }) {
   return (
     <Image
-      src={CHAIN_INFO[chainId].icon}
+      src={CHAIN_ASSETS[chainId].icon}
       alt=""
       aria-hidden="true"
       width={size}

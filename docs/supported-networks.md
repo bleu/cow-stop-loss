@@ -1,32 +1,44 @@
 # Supported networks
 
-The standalone app provides wallet selection and historical order access for Ethereum (1), Gnosis (100), Arbitrum One (42161), Base (8453), Polygon (137), Avalanche (43114), BNB Chain (56), Linea (59144), and Plasma (9745). All nine mainnets support new orders with an explicit sell list: 85 token-and-chain pairs in total, with at least five sells on each mainnet. See the [supported-token table](token-catalog.md#supported-tokens).
+The standalone app supports new orders and order history on Ethereum (1), Gnosis (100), Arbitrum One (42161), Base (8453), Polygon (137), Avalanche (43114), BNB Chain (56), Linea (59144), and Plasma (9745). Each of these nine mainnets has an explicit sell list. See the [supported-token table](token-catalog.md#supported-tokens).
 
 Sepolia (11155111) remains available for tests. Ink and Solana are excluded. The app connects through Wagmi and RainbowKit and does not require a Safe frame or Safe gateway.
 
-Connection and browsing do not switch the wallet chain. Only an explicit network selection requests a switch. Order creation uses exact-sell amounts, a trigger price, slippage, and one fixed USD buy token per chain. Gnosis and BNB Chain use USDT; the other mainnets use native USDC. Sepolia offers only WETH into the existing 18-decimal USDC test token, with fixed test feeds. See [Token catalog](token-catalog.md) for token eligibility and oracle limits.
+Connecting a wallet or browsing order history does not switch the wallet chain. Use the wallet network menu to switch chains. Order creation uses exact-sell amounts, a trigger price, slippage, and one fixed USD buy token per order-capable chain. Of the nine mainnets above, Gnosis and BNB Chain use USDT and the other seven use native USDC. Sepolia offers only WETH into the existing 18-decimal USDC test token, with fixed test feeds. See [Token catalog](token-catalog.md) for token eligibility and oracle limits.
+
+## Robinhood Chain wallet preview
+
+The wallet network menu lists Robinhood Chain mainnet (4663) as "Robinhood". It uses ETH for gas and the [Blockscout explorer](https://robinhoodchain.blockscout.com). Robinhood Chain testnet is not in the menu.
+
+By default, Robinhood Chain is a wallet preview. The app shows that stop-loss orders are unavailable. It does not load a sell form, check funding or approvals, query Robinhood order history, or send requests to the Robinhood CoW order API. Order history on other supported networks remains available.
+
+For a controlled pilot build, set `NEXT_PUBLIC_ENABLE_ROBINHOOD_ORDERS=true` when Next.js builds the app. The pilot enables placement, order history, and cancellation through Air Rescue on Robinhood Chain and uses the [production CoW API](https://api.cow.fi/robinhood). It allows [37 exact sell contracts](token-catalog.md#robinhood-chain-pilot): 4 crypto tokens and 33 Stock Tokens and funds with 24/5 feeds. The fixed buy token is USDG.
+
+Stock Token feeds do not update outside their 24/5 session. An order can still execute after close while the last price is within the selected freshness timeout. No funded Air Rescue stop-loss or cancellation test has run on Robinhood Chain. See the [signed tester checklist](robinhood-chain-readiness.md#signed-tester-checklist).
+
+Turning off the flag restores the wallet preview and removes access to Robinhood order history and cancellation in that build. It does not cancel any onchain orders. Cancel open pilot orders and verify the cancellations before turning off the flag.
 
 ## Limit price and slippage
 
-On every supported network, Default slippage is fixed at 10%. The Limit price field starts in Price view. Edit the price or percentage to select Custom; switching between Price and Slippage does not change the order. `Reset to default` restores 10% without changing the selected view. With a trigger price of 95 and a sell amount of 10, Default gives a limit price of 85.5 and a minimum buy amount of 855, subject to buy-token rounding.
+On every order-capable network, Default slippage is fixed at 10%. The Limit price field starts in Price view. Edit the price or percentage to select Custom; switching between Price and Slippage does not change the order. `Reset to default` restores 10% without changing the selected view. With a trigger price of 95 and a sell amount of 10, Default gives a limit price of 85.5 and a minimum buy amount of 855, subject to buy-token rounding.
 
 The former quote-based slippage recommendation algorithm and pair-recommendation helper are disabled for order creation. Their code and tests remain for later use. Execution quotes still load for execution checks and warnings, but do not set slippage. Default 10% is not a cap on Custom slippage.
 
 ## RPC configuration
 
-Set `NEXT_PUBLIC_DRPC_KEY` in `.env.local` or the build environment to use one dRPC key for all ten chains, including Sepolia. Each chain uses its own network endpoint at `https://lb.drpc.live/<network>/<key>`. Wagmi and read clients share these RPC settings. The old per-chain RPC URL settings are no longer read.
+Set `NEXT_PUBLIC_DRPC_KEY` in `.env.local` or the build environment to use one dRPC key for the ten order-capable chains outside the Robinhood pilot, including Sepolia. Each chain uses its own network endpoint at `https://lb.drpc.live/<network>/<key>`. Wagmi and order read clients share these RPC settings. Robinhood Chain uses its [official RPC](https://rpc.mainnet.chain.robinhood.com) by default. To use a different Robinhood mainnet RPC for both clients, set `NEXT_PUBLIC_ROBINHOOD_RPC_URL` at build time. The other old per-chain RPC URL settings are no longer read.
 
 ```dotenv
 NEXT_PUBLIC_DRPC_KEY=your-public-drpc-key
 ```
 
-The key is included in the browser bundle. Use a key intended for public browser use, not a private server credential. Restart the development server or rebuild the deployed app after changing it.
+The public RPC URL and dRPC key can appear in the browser bundle. Use credentials intended for public browser use. Restart the development server or rebuild the deployed app after changing the RPC settings.
 
 Without a key, or with an empty key, clients use the viem chain defaults except for Ethereum, Polygon, and BNB Chain. Their defaults are `https://ethereum-rpc.publicnode.com`, `https://polygon-bor-rpc.publicnode.com`, and `https://bsc-dataseed1.bnbchain.org`. Plasma has a local chain definition with `https://rpc.plasma.to` because the locked viem version has no Plasma definition. A failed dRPC request does not switch to a public endpoint.
 
 ## Placement requirements
 
-Placement first requires an explicitly approved token/feed route and chain execution policy. Each fixed buy feed has its own bounded-feed suitability decision; bounded sells remain excluded. Active Low, Medium, High, Very High (`veryhigh`), and New feeds can qualify through exact-token review. These categories do not guarantee reliable prices. Custom and unknown categories remain excluded, as do hidden, deprecating, inactive sources and stable sells.
+Placement first requires an explicitly approved token/feed route and chain execution policy. Each bounded fixed buy feed has its own suitability decision; bounded sells remain excluded. Active Low, Medium, High, Very High (`veryhigh`), and New feeds can qualify through exact-token review. These categories do not guarantee reliable prices. Custom feeds remain excluded except for exact Stock Token feeds with a [Robinhood pilot approval](token-catalog.md#robinhood-chain-pilot). Unknown categories, hidden, deprecating or inactive sources, and stable sells remain excluded.
 
 A price method alone does not exclude a feed. Calculated, backing-based, and onchain prices can differ from the traded token's market price. Each approval must cover a direct same-unit USD or ETH quote and its accepted limits. Bridged tokens can use their underlying asset's feed at an assumed 1:1 token-unit relationship with exact identity and representation evidence; a separate per-token bridge-risk decision is optional. Underlying prices do not measure bridge or custody failures. New staking-share routes are deferred; existing approvals remain enabled in their own share units.
 
@@ -38,7 +50,7 @@ Read-only checks on 2026-10-19 verified bytecode and deployment configuration on
 
 ## Order data and service checks
 
-The app reads `https://programmatic-orders.cow.fi/graphql` for account ownership and conditional order generators across all ten configured chains. It does not require the old ComposableCoW staging indexer, its `/status` endpoint, or a Safe transaction queue. A failed chain is reported separately so orders from other chains remain visible.
+The app reads `https://programmatic-orders.cow.fi/graphql` for account ownership and conditional order generators across the ten default order-capable chains. A pilot build also queries Robinhood Chain. It does not require the old ComposableCoW staging indexer, its `/status` endpoint, or a Safe transaction queue. A failed chain is reported separately so orders from other chains remain visible.
 
 On 2026-10-19, the endpoint accepted owner and conditional order generator queries for all ten chains. Sample orders were returned for Ethereum, Gnosis, Arbitrum, Base, and Sepolia. Polygon, Avalanche, BNB Chain, Linea, and Plasma returned no sample orders. Query acceptance alone does not prove that those five chains are indexed. `scripts/eoa-indexer-verification.json` records these results. Confirm actual order indexing before relying on order history on those chains.
 
@@ -46,4 +58,4 @@ Historical checks on 2026-10-16 found working CoW API version endpoints on the s
 
 ## Chain icons
 
-Local chain icons in `public/assets/chains` come from `https://files.cow.fi/cow-sdk/chains/images/`. Sepolia uses the Ethereum icon. The shared chain image map also supplies RainbowKit's `iconUrl` and `iconBackground` for Linea and Plasma; the menu does not read the header's `NetworkLogo` component.
+Most local chain icons in `public/assets/chains` come from `https://files.cow.fi/cow-sdk/chains/images/`. Sepolia uses the Ethereum icon. Robinhood uses the [Robinhood feather](https://cdn.robinhood.com/assets/generated_assets/hoodchain_docsite/feather-dark.svg). The shared chain image map also supplies RainbowKit's `iconUrl` and `iconBackground` for Linea, Plasma, and Robinhood. The menu does not read the header's `NetworkLogo` component.
