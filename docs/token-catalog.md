@@ -2,7 +2,7 @@
 
 ## Supported tokens
 
-All nine mainnets below support new orders, with 231 approved sell token-and-chain pairs. Each chain has one fixed buy token. Only the listed sell tokens are enabled.
+The nine mainnets in this table support 231 approved sell token-and-chain pairs. The [Robinhood sell list](#robinhood-chain) is below. Each chain has one fixed buy token. Only the listed sell tokens are enabled.
 
 | Chain     | Chain ID | Fixed buy   | Approved sells                                                                                                                                                                                                                                                                                    |
 | --------- | -------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -18,24 +18,24 @@ All nine mainnets below support new orders, with 231 approved sell token-and-cha
 
 Sepolia is test-only: WETH sells into 18-decimal USDC (test), using fixed test feeds. Ink and Solana are excluded.
 
-The catalog keeps metadata for 360 contracts on the nine default mainnets, 38 Robinhood Chain pilot contracts, and three Sepolia records. A known token, image, or old order does not make a token eligible for new orders. Approvals use exact chain IDs and contract addresses, not symbols.
+The catalog keeps metadata for 360 contracts on the nine mainnets above, 38 Robinhood Chain contracts, and three Sepolia records. A known token, image, or old order does not make a token eligible for new orders. Approvals use exact chain IDs and contract addresses, not symbols.
 
-## Robinhood Chain pilot
+## Robinhood Chain
 
-The [default-off pilot](supported-networks.md#robinhood-chain-wallet-preview) allows 37 exact sell contracts on Robinhood Chain (4663). All sell into USDG, using direct USD feeds for both legs. USDG has six decimals and is buy-only. Staging requires its exact uncapped Chainlink `RefPrice` feed with an 86,400-second heartbeat.
+The app allows 37 exact sell contracts on [Robinhood Chain](supported-networks.md#robinhood-chain) (4663). All sell into USDG, using direct USD feeds for both legs. USDG has six decimals and is buy-only. Staging requires its exact uncapped Chainlink `RefPrice` feed with an 86,400-second heartbeat.
 
 | Group | Approved sells |
 | --- | --- |
 | Crypto (4) | ENA, LINK, WBTC, WETH |
 | Stock Tokens and funds (33) | AAPL, AMD, AMZN, ASML, BABA, CLSK, COIN, CRCL, CRWV, DELL, EWY, GME, GOOGL, INTC, IONQ, META, MSFT, MSTR, MU, NBIS, NVDA, ORCL, PLTR, QQQ, RGTI, RKLB, SLV, SNDK, SPCX, SPY, TSLA, TSM, USO |
 
-Stock Token approvals are specific to this pilot. Each uses the exact issuer token and UID and a Chainlink onchain `Equity` / `Price` feed with method `primaryTokenizedPrice` and session `us_equities_24/5`. The feed already includes the issuer multiplier. A `custom` category requires its own dated approval for that exact feed. This exception does not apply to other chains or allow 24/7 smoothed references or raw share prices. See [hold reasons and quote limits](robinhood-chain-readiness.md#held-tokens-and-quote-limits).
+Stock Token approvals are specific to Robinhood Chain. Each uses the exact issuer token and UID and a Chainlink onchain `Equity` / `Price` feed with method `primaryTokenizedPrice` and session `us_equities_24/5`. The feed already includes the issuer multiplier. A `custom` category requires its own dated approval for that exact feed. This exception does not apply to other chains or allow 24/7 smoothed references or raw share prices. See [hold reasons and quote limits](robinhood-chain-readiness.md#held-tokens-and-quote-limits).
 
 The [CoW Swap RWA list](https://files.cow.fi/token-lists/CoinGeckoRwa.4663.json) matches these Stock Tokens and funds by contract address, but uses the same Robinhood feather for each image. The app pins images for the underlying stocks and funds from the [Ondo token list](https://raw.githubusercontent.com/ondoprotocol/ondo-global-markets-token-list/c2741088e2a3b323ee8c42bcbf6f010cd7476f86/tokenlist.json), with CleanSpark from the [Backed xStocks list](https://raw.githubusercontent.com/backed-fi/cowswap-xstocks-tokenlist/91f6da6946dc6a932b76292cc784ec202a37a2f6/tokenlist.json). Only the images come from those lists. The token contracts and price feeds remain Robinhood-specific.
 
 ## Rules for adding a sell token
 
-A token must pass all of these checks. For an exact Robinhood Stock Token approval, the pilot feed type and category rules above apply in step 2.
+A token must pass all of these checks. For an exact Robinhood Stock Token approval, the Robinhood feed type and category rules above apply in step 2.
 
 1. It is classified as `volatile` on that chain. USD-pegged tokens, USD-linked yield shares, other stable assets, unclassified tokens, and the fixed buy token cannot be sold. A USD-quoted price does not make a token USD-pegged; FXS governance is separate from the old FRAX dollar contract.
 2. Its Chainlink source is active, visible, has an onchain proxy, and is a `Crypto` / `Price` feed in the `low`, `medium`, `high`, `veryhigh`, or `new` category. Custom, hidden, deprecating, and unknown categories are excluded.
@@ -62,7 +62,7 @@ Bounded sell feeds are excluded. A bounded USD feed is allowed only for an exact
 
 In the 2026-11-17 directory screening, bounded sources covered USDC, USDT, and an Arbitrum DAI feed; none of the screened volatile sell candidates was blocked by this flag. Stablecoins are already excluded as sells by the economic-class rule. The bounded-feed rule also protects against any future bounded sell source.
 
-The nine default mainnet buy feeds were marked `stablecoinCapped` in the pinned review, with an upper limit of 1.05 USD. Above the bound, the feed retains its last onchain price. This can delay a trigger and later fail freshness checks. Each of those fixed buy approvals accepts this risk separately. The Robinhood pilot uses an uncapped USDG feed. See [Chainlink's bounded feed behavior](https://docs.chain.link/data-feeds/selecting-data-feeds#bounded-market-price-feeds).
+The nine mainnet buy feeds outside Robinhood were marked `stablecoinCapped` in the pinned review, with an upper limit of 1.05 USD. Above the bound, the feed retains its last onchain price. This can delay a trigger and later fail freshness checks. Each of those fixed buy approvals accepts this risk separately. Robinhood uses an uncapped USDG feed. See [Chainlink's bounded feed behavior](https://docs.chain.link/data-feeds/selecting-data-feeds#bounded-market-price-feeds).
 
 ## Freshness and execution limits
 
@@ -70,7 +70,7 @@ Each feed's approved age ceiling is at most `floor(1.5 * heartbeat) + 60` second
 
 The deployed handler has one shared timeout for both feeds. The route ceiling is the larger of their approved age ceilings, except for Robinhood Stock Tokens, which use the smaller ceiling. The default, including reset to defaults, is the smaller of 24 hours and the route ceiling. Users can set a shorter timeout, but settings, restored drafts, and encoded placements cannot exceed the route ceiling.
 
-All Robinhood pilot feeds have a 24-hour (86,400-second) freshness ceiling. Stock Token feeds have no off-hours heartbeat. The app warns during order setup and review that a stop-loss can still execute after close while the last answer is fresh. The handler has no market-session check. Once a feed becomes stale, the order cannot trigger until both feeds are fresh again.
+All approved Robinhood feeds have a 24-hour (86,400-second) freshness ceiling. Stock Token feeds have no off-hours heartbeat. The app warns during order setup and review that a stop-loss can still execute after close while the last answer is fresh. The handler has no market-session check. Once a feed becomes stale, the order cannot trigger until both feeds are fresh again.
 
 For example, the original Ethereum sell feeds have a 5,460-second ceiling; USDC has a 124,260-second ceiling. Applying the sell ceiling to USDC would reject normal USDC rounds. The shared handler timeout can therefore allow older sell answers at execution than the browser allows.
 
@@ -121,7 +121,7 @@ The 2026-11-23 batch added Ethereum PAXG and Plasma XAUt0, both into native USDC
 
 The discovery run found 20 Ondo feed rows on Ethereum and 37 Robinhood feed rows on Robinhood Chain. Of these, 14 Ondo and 33 Robinhood rows had the 24/5 onchain token price method. The rest used other methods or sessions. Counts are feed rows and can include more than one proxy for a token. A symbol match in an issuer registry is a hint. It does not approve a contract or select a proxy. The Robinhood directory is separate from the nine default mainnet snapshots. Use `--robinhood-registry` to supply a captured issuer API response if direct access fails. The report records that the snapshot was supplied and gives its digest.
 
-Only the exact [Robinhood pilot routes](#robinhood-chain-pilot) were added in this pilot. The remaining non-Robinhood candidates, including the Ondo Stock Token feeds, remain research only. The pilot accepts the current handler's lack of a market-session guard and separate execution-time checks for each feed. See [Chainlink feed research](chainlink-feed-research.md) and [Robinhood Chain readiness](robinhood-chain-readiness.md).
+Only the exact [Robinhood routes](#robinhood-chain) are approved in this group. Candidates on other chains, including the Ondo Stock Token feeds, remain research only. The Robinhood approvals accept the current handler's lack of a market-session guard and separate execution-time checks for each feed. See [Chainlink feed research](chainlink-feed-research.md) and [Robinhood Chain readiness](robinhood-chain-readiness.md).
 
 ## Files and checks
 
@@ -129,7 +129,7 @@ Only the exact [Robinhood pilot routes](#robinhood-chain-pilot) were added in th
 | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
 | [`scripts/catalog-policy.json`](../scripts/catalog-policy.json)                           | Exact feed approvals and chain execution decisions                                   |
 | [`scripts/catalog-policy-verification.json`](../scripts/catalog-policy-verification.json) | Pinned read-only observations, including separate review batches and failed attempts |
-| [`scripts/catalog-feeds.json`](../scripts/catalog-feeds.json)                             | 267 approved official source rows, including 38 pilot rows; not a full Chainlink inventory |
+| [`scripts/catalog-feeds.json`](../scripts/catalog-feeds.json)                             | 267 approved official source rows, including 38 Robinhood rows; not a full Chainlink inventory |
 | [`scripts/catalog-sources.json`](../scripts/catalog-sources.json)                         | Source URLs, dates, hashes, and historical review scope                              |
 | [`scripts/catalog-identities.json`](../scripts/catalog-identities.json)                   | Exact identities, economic classes, and image evidence                               |
 | [`scripts/catalog-metadata-sources.json`](../scripts/catalog-metadata-sources.json)       | Pinned display-metadata sources and priority                                         |

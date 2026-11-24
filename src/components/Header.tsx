@@ -7,11 +7,7 @@ import Link from "next/link";
 
 import { NetworkLogo } from "#/components/NetworkLogo";
 import { PixelIcon } from "#/components/ui/pixel-icon";
-import {
-  isSupportedChainId,
-  robinhood,
-  walletChains,
-} from "#/lib/publicClients";
+import { walletChains } from "#/lib/publicClients";
 
 interface IHeader {
   isLandingPage?: boolean;
@@ -30,18 +26,13 @@ function WalletNetworkButton({
   onClick: () => void;
 }) {
   const network = walletChains.find(({ id }) => id === chain?.id);
-  const preview =
-    network?.id === robinhood.id && !isSupportedChainId(network.id);
-  const label = preview
-    ? `${robinhood.name} (stop-loss unavailable)`
-    : chain?.unsupported
-      ? "Unsupported network"
-      : (chain?.name ?? "Select network");
+  const label = chain?.unsupported
+    ? "Unsupported network"
+    : (chain?.name ?? "Select network");
   return (
     <Button
       variant="outline"
       aria-label="Switch wallet network"
-      aria-description={preview ? label : undefined}
       title={label}
       onClick={onClick}
       className="pixel-control rescue-header-control size-11 gap-2 bg-card px-0 font-medium text-foreground lg:w-auto lg:px-4"

@@ -3,16 +3,6 @@
  * @jest-environment-options {"customExportConditions": ["node", "node-addons"]}
  */
 
-jest.mock("#/lib/publicClients", () => {
-  const env = process.env;
-  try {
-    process.env = { ...env, NEXT_PUBLIC_ENABLE_ROBINHOOD_ORDERS: "true" };
-    return jest.requireActual("#/lib/publicClients");
-  } finally {
-    process.env = env;
-  }
-});
-
 jest.mock("wagmi", () => ({
   ...jest.requireActual("wagmi"),
   useAccount: () => ({ address: account, chainId: 4663, isConnected: true }),

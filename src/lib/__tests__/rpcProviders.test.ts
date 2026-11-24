@@ -18,7 +18,6 @@ describe("shared RPC configuration", () => {
 
   beforeEach(() => {
     process.env = { ...originalEnv };
-    delete process.env.NEXT_PUBLIC_ENABLE_ROBINHOOD_ORDERS;
     delete process.env.NEXT_PUBLIC_ROBINHOOD_RPC_URL;
     delete process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID;
     process.env.NEXT_PUBLIC_RPC_URL_MAINNET = "https://obsolete.example";
@@ -29,24 +28,13 @@ describe("shared RPC configuration", () => {
     process.env = originalEnv;
   });
 
-  it("opts Robinhood into orders without changing wallet network selection", () => {
-    process.env.NEXT_PUBLIC_ENABLE_ROBINHOOD_ORDERS = "true";
+  it("uses the Robinhood RPC override for order reads", () => {
     process.env.NEXT_PUBLIC_ROBINHOOD_RPC_URL = "https://robinhood-rpc.example";
     jest.isolateModules(() => {
-      const {
-        isSupportedChainId,
-        publicClientsFromIds,
-        supportedChainIds,
-        walletChains,
-      } =
+      const { publicClientsFromIds } =
         jest.requireActual<typeof import("../publicClients")>(
           "../publicClients",
         );
-      expect(isSupportedChainId(4663)).toBe(true);
-      expect([...supportedChainIds].sort()).toEqual(
-        [...networks.map(([id]) => id), 4663].sort(),
-      );
-      expect(walletChains.map(({ id }) => id)).toEqual(supportedChainIds);
       const client = publicClientsFromIds[4663];
       expect(client.transport.url).toBe("https://robinhood-rpc.example");
       expect(client.chain?.contracts?.multicall3?.address).toBe(
@@ -101,13 +89,10 @@ describe("shared RPC configuration", () => {
           }
         }
         const robinhoodRpc = "https://rpc.mainnet.chain.robinhood.com";
-        expect(supportedChainIds).not.toContain(4663);
+        expect(supportedChainIds).toContain(4663);
         expect(publicClientsFromIds[4663].transport.url).toBe(robinhoodRpc);
         for (const config of [browser, wagmiServerConfig]) {
-          expect(config.chains.map(({ id }) => id)).toEqual([
-            ...supportedChainIds,
-            4663,
-          ]);
+          expect(config.chains.map(({ id }) => id)).toEqual(supportedChainIds);
           const client = config.getClient({ chainId: 4663 });
           expect(client.chain).toMatchObject({
             id: 4663,

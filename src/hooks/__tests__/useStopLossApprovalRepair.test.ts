@@ -89,15 +89,18 @@ async function submitRepair() {
   }));
 }
 
-test("leaves saved Robinhood approval repair untouched when orders are disabled", async () => {
+test("confirms a saved Robinhood approval repair from the receipt block", async () => {
   const chainId = 4663;
   const client = publicClientsFromIds[chainId];
-  const read = jest
-    .spyOn(client, "getTransaction")
-    .mockRejectedValue(new Error("Unexpected RPC request"));
   jest
-    .spyOn(client, "waitForTransactionReceipt")
-    .mockRejectedValue(new Error("Unexpected RPC request"));
+    .spyOn(client, "getTransaction")
+    .mockRejectedValue(new Error("Original transaction unavailable"));
+  jest.spyOn(client, "waitForTransactionReceipt").mockResolvedValue({
+    status: "success",
+    transactionHash,
+    blockNumber: BigInt(101),
+  } as never);
+  const read = jest.spyOn(client, "readContract").mockResolvedValue(BigInt(3));
   const tracker = getStopLossApprovalRepair();
   await tracker.submit(
     { ...prepared, chainId },
@@ -105,13 +108,18 @@ test("leaves saved Robinhood approval repair untouched when orders are disabled"
     async () => ({ id: transactionHash, transactionHash }),
   );
 
-  await expect(resumeStopLossApprovalRepair(account, chainId)).resolves.toEqual(
-    [],
+  const [record] = await resumeStopLossApprovalRepair(account, chainId);
+  expect(record).toMatchObject({
+    status: "confirmed",
+    reference: { transactionHash, blockNumber: BigInt(101) },
+  });
+  expect(read).toHaveBeenCalledWith(
+    expect.objectContaining({
+      functionName: "allowance",
+      blockNumber: BigInt(101),
+      args: [account, prepared.poller],
+    }),
   );
-  expect(read).not.toHaveBeenCalled();
-  expect(tracker.getRecords({ account, chainId })).toMatchObject([
-    { status: "pending" },
-  ]);
 });
 
 test("keeps a successful receipt pending when the allowance read throws and retries only reads", async () => {

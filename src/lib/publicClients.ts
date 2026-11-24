@@ -84,11 +84,7 @@ export type ChainId = WalletChainId;
 export type ChainType = Chain & { id: ChainId };
 export type ChainName = keyof typeof publicClientsFromNames;
 
-const robinhoodOrdersEnabled =
-  process.env.NEXT_PUBLIC_ENABLE_ROBINHOOD_ORDERS === "true";
-export const supportedChains = walletChains.filter(
-  ({ id }) => id !== robinhood.id || robinhoodOrdersEnabled,
-);
+export const supportedChains = walletChains;
 export const supportedChainIds = supportedChains.map((chain) => chain.id);
 
 export function isSupportedChainId(

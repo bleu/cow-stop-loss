@@ -37,27 +37,16 @@ const order: StopLossOrder = {
   executedBuyAmount: null,
   executedFee: null,
 };
-test("rejects direct Robinhood cancellation without an RPC read when orders are disabled", async () => {
-  const env = process.env;
-  process.env = { ...env, NEXT_PUBLIC_ENABLE_ROBINHOOD_ORDERS: "false" };
-  try {
-    await jest.isolateModulesAsync(async () => {
-      const { buildCancellation } = jest.requireActual<
-        typeof import("../stopLossCancellation")
-      >("../stopLossCancellation");
-      const client = rpc();
-      await expect(
-        buildCancellation({
-          account,
-          order: { ...order, chainId: 4663 },
-          client: client as unknown as PublicClient,
-        }),
-      ).rejects.toThrow(/orders are unavailable/i);
-      expect(client.getBlockNumber).not.toHaveBeenCalled();
-    });
-  } finally {
-    process.env = env;
-  }
+test("rejects cancellation on an unsupported chain before an RPC read", async () => {
+  const client = rpc();
+  await expect(
+    buildCancellation({
+      account,
+      order: { ...order, chainId: 57073 as StopLossOrder["chainId"] },
+      client: client as unknown as PublicClient,
+    }),
+  ).rejects.toThrow(/orders are unavailable/i);
+  expect(client.getBlockNumber).not.toHaveBeenCalled();
 });
 
 test("a Safe proposal stays pending until a later mined block removes the order", async () => {

@@ -1,6 +1,6 @@
 # Robinhood Chain readiness for CoW Air Rescue
 
-Robinhood Chain is a [wallet preview](supported-networks.md#robinhood-chain-wallet-preview) by default. The approved pilot is for controlled tester builds with `NEXT_PUBLIC_ENABLE_ROBINHOOD_ORDERS=true` set at Next.js build time. The pilot allows [37 exact sells into USDG](token-catalog.md#robinhood-chain-pilot): 4 crypto tokens and 33 Stock Tokens and funds with 24/5 feeds.
+[Robinhood Chain](supported-networks.md#robinhood-chain) supports [37 exact sells into USDG](token-catalog.md#robinhood-chain): 4 crypto tokens and 33 Stock Tokens and funds with 24/5 feeds.
 
 Read-only checks on 2026-11-23 confirmed CoW settlement, the conditional-order contract wiring, and indexed TWAP orders. No funded Air Rescue test has run on Robinhood Chain. An indexed Air Rescue stop-loss, trigger, CowShed funding, solver fill, and cancellation still need signed verification.
 
@@ -13,7 +13,7 @@ Robinhood launched Classic Stock Tokens for eligible EU customers on Arbitrum On
 | Mainnet | `4663` | ETH | `https://rpc.mainnet.chain.robinhood.com` | [Blockscout](https://robinhoodchain.blockscout.com/) |
 | Public testnet | `46630` | Test ETH | `https://rpc.testnet.chain.robinhood.com` | [Testnet explorer](https://explorer.testnet.chain.robinhood.com/) |
 
-These are Robinhood's published values. The public RPCs are rate-limited. For the pilot, set `NEXT_PUBLIC_ROBINHOOD_RPC_URL` at build time if you need a different browser-safe mainnet endpoint. The app uses the official mainnet RPC when the setting is absent. [Robinhood connection guide](https://docs.robinhood.com/chain/connecting/) · [Robinhood deployment guide](https://docs.robinhood.com/chain/deploy-smart-contracts/)
+These are Robinhood's published values. The public RPCs are rate-limited. Set `NEXT_PUBLIC_ROBINHOOD_RPC_URL` at build time if you need a different browser-safe mainnet endpoint. The app uses the official mainnet RPC when the setting is absent. [Robinhood connection guide](https://docs.robinhood.com/chain/connecting/) · [Robinhood deployment guide](https://docs.robinhood.com/chain/deploy-smart-contracts/)
 
 ## Which Stock Tokens can move and trade
 
@@ -44,7 +44,7 @@ The **2026-10-28** [CoW DAO CIP-91 post](https://forum.cow.fi/t/cip-91-continued
 | Settlement | `0x9008D19f58AAbD9eD0D60971565AA8510560ab41` |
 | Vault relayer | `0xC92E8bdf79f0507f65a392b0ab4667716BFE0110` |
 
-The pilot uses the same production contracts and services. The signed test still needs to show that the CoW service accepts the app data with the `pollFunds` pre-hook, the indexer returns the stop-loss generator, and the Watchtower and a solver carry the order through trigger, funding, and settlement at or above the minimum buy amount. A direct read of the handler does not exercise this path. [Order preparation](../src/lib/pollerStopLoss.ts) · [Order data checks](supported-networks.md#order-data-and-service-checks)
+Air Rescue uses these production contracts and services. The signed test still needs to show that the CoW service accepts the app data with the `pollFunds` pre-hook, the indexer returns the stop-loss generator, and the Watchtower and a solver carry the order through trigger, funding, and settlement at or above the minimum buy amount. A direct read of the handler does not exercise this path. [Order preparation](../src/lib/pollerStopLoss.ts) · [Order data checks](supported-networks.md#order-data-and-service-checks)
 
 ## Onchain prices for exact Stock Tokens
 
@@ -56,7 +56,7 @@ Chainlink's [changelog](https://docs.chain.link/changelog) records Data Feeds go
 | Robinhood SPY / USD | `robinhood-spy-usd-shared-svr` | `0x319724394D3A0e3669269846abE664Cd621f9f6A` |
 | USDG / USD | `usdg-usd-shared-svr` | `0x61B7e5650328764B076A108EFF5fa7282a1B9aD2` |
 
-On 2026-11-23 the official RPC returned descriptions, 8 decimals, and positive, complete rounds for all three proxies. Their update times were 16:40:45 UTC for AAPL, 16:39:08 UTC for SPY, and 15:55:23 UTC for USDG. USDG is the fixed buy token for the pilot. These sample reads do not check publication across a session close. The exact pilot approvals and their pinned observations are in [the catalog policy](../scripts/catalog-policy.json).
+On 2026-11-23 the official RPC returned descriptions, 8 decimals, and positive, complete rounds for all three proxies. Their update times were 16:40:45 UTC for AAPL, 16:39:08 UTC for SPY, and 15:55:23 UTC for USDG. USDG is the fixed buy token on Robinhood Chain. These sample reads do not check publication across a session close. The exact Robinhood approvals and their pinned observations are in [the catalog policy](../scripts/catalog-policy.json).
 
 The Robinhood equity rows above are calculated prices per **token**, rather than raw share quotes. Chainlink multiplies the underlying price by the token contract's normalized `uiMultiplier()` to account for dividends and corporate actions. Do not apply the multiplier again to the feed answer. It is a reference price, which can differ from the trade price. The documented updates cover 24/5 sessions, with no off-hours heartbeats and possible pauses for corporate actions. Robinhood documents the `latestRoundData()` and `decimals()` interface the current handler needs. [Chainlink Robinhood methodology](https://github.com/smartcontractkit/documentation/blob/main/src/content/data-feeds/tokenized-equity-feeds/robinhood.mdx) · [Robinhood oracle guide](https://docs.robinhood.com/chain/oracles-and-price-feeds/) · [Air Rescue oracle ABI](../src/lib/abis/oracleMinimalAbi.ts#L12-L51)
 
@@ -64,24 +64,24 @@ The Robinhood equity rows above are calculated prices per **token**, rather than
 
 ## Freshness and market close
 
-The pilot caps both price legs at 24 hours (86,400 seconds). The deployed handler applies one timeout to both feeds and does not check the market session. Air Rescue warns in the sell form and review that a Stock Token feed stops updating outside its 24/5 session. The last price can still trigger a fill after close while it is within the timeout. Once either price is stale, the handler cannot generate an order until both prices are fresh again. A feed can also stop during a corporate action.
+The app caps both price legs at 24 hours (86,400 seconds). The deployed handler applies one timeout to both feeds and does not check the market session. Air Rescue warns in the sell form and review that a Stock Token feed stops updating outside its 24/5 session. The last price can still trigger a fill after close while it is within the timeout. Once either price is stale, the handler cannot generate an order until both prices are fresh again. A feed can also stop during a corporate action.
 
 A read-only AAPL/USDG handler call returned an order when the sample price met the test trigger. Other calls rejected an unmet trigger and a price outside a shorter test timeout. These calls did not use a CowShed or the `pollFunds` hook. The public RPC could not provide historical state for the sampled closed-session blocks.
 
 ## Held tokens and quote limits
 
-- SGOV and USAR stay out of the pilot. Both have incomplete Chainlink directory records. Onchain and issuer evidence support the SGOV token-price match, but the row lacks the required primary token price metadata. For USAR, the exact pricing method is also unconfirmed. Positive rounds and fast quotes do not resolve these gaps.
-- GLD uses a DEX-state feed with a crypto session, not the reviewed 24/5 Stock Token method. The pilot excludes smoothed 24/7 references and raw share quotes. The alternate bridged LINK contract is also out of scope. Only the exact Chainlink-listed Robinhood LINK contract is approved.
+- SGOV and USAR are not approved. Both have incomplete Chainlink directory records. Onchain and issuer evidence support the SGOV token-price match, but the row lacks the required primary token price metadata. For USAR, the exact pricing method is also unconfirmed. Positive rounds and fast quotes do not resolve these gaps.
+- GLD uses a DEX-state feed with a crypto session, not the reviewed 24/5 Stock Token method. Robinhood Stock Token approvals exclude smoothed 24/7 references and raw share quotes. The alternate bridged LINK contract is also out of scope. Only the exact Chainlink-listed Robinhood LINK contract is approved.
 
 On 2026-11-23, WETH and MU returned indicative CoW fast quotes. The [public MU sell record](https://api.cow.fi/robinhood/api/v1/orders/0xf287fbd7f1fafd85728c9f9ef159a6c6de9d4a85c77c6c357fd4e78ffb322cb4f4792f0c8307634c9f9f9547502f97bb6fc793786b048e6c) shows a normal MU/USDG fill that did not use an Air Rescue stop-loss.
 
-CLSK, IONQ, and RKLB returned `NoLiquidity` for fast quotes at 0.01, 1, 10, and 100 tokens. WBTC, LINK, and ENA also returned `NoLiquidity` at their sampled sizes. These routes remain eligible in the pilot. `NoLiquidity` means the API found no quote for that request at that time. A successful fast quote does not prove that a stop-loss will fill. In the app, an unavailable execution quote warns the user but does not by itself block placement. Do not use a route without a current quote for the first signed test.
+CLSK, IONQ, and RKLB returned `NoLiquidity` for fast quotes at 0.01, 1, 10, and 100 tokens. WBTC, LINK, and ENA also returned `NoLiquidity` at their sampled sizes. These routes remain eligible. `NoLiquidity` means the API found no quote for that request at that time. A successful fast quote does not prove that a stop-loss will fill. In the app, an unavailable execution quote warns the user but does not by itself block placement. Do not use a route without a current quote for the first signed test.
 
 ## Signed tester checklist
 
-1. Use a tester build with the flag set and an authorized wallet on mainnet (`4663`). Use a small amount of test funds and keep enough ETH for placement and cancellation. Check the exact sell token and USDG contracts, funding and approvals, and a current CoW quote at the intended sell size. For MU, confirm issuer eligibility, the Final Terms, and transfer controls. [Issuer disclosures](https://robinhood.com/eu/en/legal/rhj/) · [Token contracts](https://docs.robinhood.com/chain/contracts/)
+1. Use an authorized wallet on Robinhood mainnet (`4663`). Use a small amount of test funds and keep enough ETH for placement and cancellation. Check the exact sell token and USDG contracts, funding and approvals, and a current CoW quote at the intended sell size. For MU, confirm issuer eligibility, the Final Terms, and transfer controls. [Issuer disclosures](https://robinhood.com/eu/en/legal/rhj/) · [Token contracts](https://docs.robinhood.com/chain/contracts/)
 2. Test WETH into USDG first. Sign a small exact-sell stop-loss and record the placement transaction, app data hash, and generator hash. Check that the indexer shows the order under the tester's account and that it stays unfilled before the trigger. After the trigger, verify that the Watchtower made it available to solvers and that the settlement used the `pollFunds` pre-hook to fund the CowShed. Record the child order UID, settlement receipt, and USDG received. Check that the amount meets the signed minimum buy amount.
 3. After WETH passes, repeat with MU into USDG during the Stock Token feed's 24/5 session. Check both price timestamps and the market-hours warning before signing. Confirm that the held MU can pass from the tester's wallet through the CowShed to settlement, and record the same evidence as for WETH.
-4. Test cancellation separately with an open order before the trigger. Sign the cancellation on Robinhood Chain. Verify the receipt and that ComposableCoW no longer lists the generator as active. Refresh the app to check the order state, and check any remaining token balance and allowances. Cancel any other open test orders before turning off the flag. A flag change does not cancel an onchain order.
+4. Test cancellation separately with an open order before the trigger. Sign the cancellation on Robinhood Chain. Verify the receipt and that ComposableCoW no longer lists the generator as active. Refresh the app to check the order state, and check any remaining token balance and allowances. Cancel any other open test orders when the test is complete.
 
-Keep Robinhood orders off in the default build. The checks recorded here are read-only. No funded Air Rescue stop-loss, settlement, or cancellation has been tested on Robinhood Chain.
+The checks recorded here are read-only. No funded Air Rescue stop-loss, settlement, or cancellation has been tested on Robinhood Chain.

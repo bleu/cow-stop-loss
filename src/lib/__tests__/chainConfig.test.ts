@@ -12,6 +12,7 @@ const expectedPaths = [
   [56, "bnb", "/bnb"],
   [59144, "linea", "/linea"],
   [9745, "plasma", "/plasma"],
+  [4663, "robinhood", "/robinhood"],
   [11155111, "sepolia", "/sepolia"],
 ] as const satisfies ReadonlyArray<readonly [ChainId, string, string]>;
 
@@ -20,11 +21,6 @@ describe("chain endpoint configuration", () => {
     expect([...supportedChainIds].sort()).toEqual(
       expectedPaths.map(([id]) => id).sort(),
     );
-  });
-
-  it("configures the Robinhood production CoW API without enabling orders", () => {
-    expect(COW_API_URL_BY_CHAIN_ID[4663]).toBe("https://api.cow.fi/robinhood");
-    expect(supportedChainIds).not.toContain(4663);
   });
 
   it.each(expectedPaths)(

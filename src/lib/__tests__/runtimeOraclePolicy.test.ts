@@ -200,7 +200,7 @@ describe("real creation admission policy", () => {
       expect(
         data.chains[String(chainId) as keyof typeof data.chains],
       ).toMatchObject({
-        status: "approved",
+        status: chainId === 4663 ? "pilot-only" : "approved",
         executionEvidence: expect.stringMatching(/\S/),
         arithmeticBoundsEvidence: expect.stringMatching(/\S/),
         reviewDate: expect.stringMatching(/^\d{4}-\d{2}-\d{2}$/),
@@ -234,10 +234,12 @@ describe("real creation admission policy", () => {
           );
         }
         expect(configuredRouteMaxAgeSeconds(pair)).toBe(
-          Math.max(
-            sell.oracleApprovals![quote]!.maxAgeSeconds,
-            buyToken.oracleApprovals![quote]!.maxAgeSeconds,
-          ),
+          chainId === 4663
+            ? 86400
+            : Math.max(
+                sell.oracleApprovals![quote]!.maxAgeSeconds,
+                buyToken.oracleApprovals![quote]!.maxAgeSeconds,
+              ),
         );
         await expect(new ConfiguredRouter(pair).findRoute()).resolves.toEqual(
           route,

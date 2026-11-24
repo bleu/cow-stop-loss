@@ -1752,202 +1752,163 @@ test("switches the wallet network only through the header and keeps all chains v
   expect(screen.queryByText(/row\(s\) selected\./)).not.toBeInTheDocument();
 });
 
-const robinhoodOrdersEnabled =
-  process.env.NEXT_PUBLIC_ENABLE_ROBINHOOD_ORDERS === "true";
-const testPilot = robinhoodOrdersEnabled ? test : test.skip;
-const testPreview = robinhoodOrdersEnabled ? test.skip : test;
+test("opens a Robinhood Stock Token order from history and confirms removal on Robinhood", async () => {
+  const order = {
+    ...parent,
+    chainId: 4663,
+    owner: "0x4444444444444444444444444444444444444444",
+    decodedParams: {
+      ...parent.decodedParams,
+      sellToken: "0xff080c8ce2e5feadaca0da81314ae59d232d4afd",
+      buyToken: "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
+      buyAmount: "90000000",
+      sellTokenPriceOracle: "0x425eefdcf05ed6526c3ce61af99429a228a6d596",
+      buyTokenPriceOracle: "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
+      maxTimeSinceLastOracleUpdate: 86400,
+    },
+  };
+  const chain = cancellationRpc(4663, order.owner);
+  serveOrders([order]);
+  const provider = new BrowserWallet();
+  const request = jest.spyOn(provider, "request");
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: provider,
+  });
+  const details = (
+    <OrderPage
+      params={{ safeAddress: wallet, chainId: 4663, orderId: order.eventId }}
+    />
+  );
+  const view = render(
+    <RootLayout>
+      <HomePage />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  const name = "stop-loss-1 on Robinhood";
+  expectOrderDestination(
+    await screen.findByRole("row", { name: `View order ${name}` }),
+    `/4663/${wallet}/stop-loss-1`,
+  );
+  view.rerender(
+    <Router>
+      <RootLayout>{details}</RootLayout>
+    </Router>,
+  );
+  expect(
+    await screen.findByRole("definition", { name: "Sell amount" }),
+  ).toHaveTextContent("1 MU");
+  expect(
+    screen.getByRole("definition", { name: "Minimum buy amount" }),
+  ).toHaveTextContent("90 USDG");
+  expect(
+    within(
+      screen.getByRole("definition", { name: "Creation transaction" }),
+    ).getByRole("link"),
+  ).toHaveAttribute(
+    "href",
+    `https://robinhoodchain.blockscout.com/tx/${order.transaction.hash}`,
+  );
 
-testPilot(
-  "opens a Robinhood Stock Token order from history and confirms removal on Robinhood",
-  async () => {
-    const order = {
-      ...parent,
-      chainId: 4663,
-      owner: "0x4444444444444444444444444444444444444444",
-      decodedParams: {
-        ...parent.decodedParams,
-        sellToken: "0xff080c8ce2e5feadaca0da81314ae59d232d4afd",
-        buyToken: "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
-        buyAmount: "90000000",
-        sellTokenPriceOracle: "0x425eefdcf05ed6526c3ce61af99429a228a6d596",
-        buyTokenPriceOracle: "0x61b7e5650328764b076a108eff5fa7282a1b9ad2",
-        maxTimeSinceLastOracleUpdate: 86400,
-      },
-    };
-    const chain = cancellationRpc(4663, order.owner);
-    serveOrders([order]);
-    const provider = new BrowserWallet();
-    const request = jest.spyOn(provider, "request");
-    Object.defineProperty(window, "ethereum", {
-      configurable: true,
-      value: provider,
-    });
-    const details = (
-      <OrderPage
-        params={{ safeAddress: wallet, chainId: 4663, orderId: order.eventId }}
-      />
-    );
-    const view = render(
-      <RootLayout>
-        <HomePage />
-      </RootLayout>,
-    );
-    await connectBrowserWallet();
-    const name = "stop-loss-1 on Robinhood";
-    expectOrderDestination(
-      await screen.findByRole("row", { name: `View order ${name}` }),
-      `/4663/${wallet}/stop-loss-1`,
-    );
-    view.rerender(
-      <Router>
-        <RootLayout>{details}</RootLayout>
-      </Router>,
-    );
-    expect(
-      await screen.findByRole("definition", { name: "Sell amount" }),
-    ).toHaveTextContent("1 MU");
-    expect(
-      screen.getByRole("definition", { name: "Minimum buy amount" }),
-    ).toHaveTextContent("90 USDG");
-    expect(
-      within(
-        screen.getByRole("definition", { name: "Creation transaction" }),
-      ).getByRole("link"),
-    ).toHaveAttribute(
-      "href",
-      `https://robinhoodchain.blockscout.com/tx/${order.transaction.hash}`,
-    );
-
-    fireEvent.click(
-      screen.getByRole("button", { name: `Cancel order ${name}` }),
-    );
-    const dialog = await screen.findByRole("dialog");
-    fireEvent.click(
-      within(dialog).getByRole("button", { name: "Switch to Robinhood" }),
-    );
-    const confirm = await within(dialog).findByRole("button", {
-      name: "Confirm cancellation",
-    });
-    await waitFor(() => expect(confirm).toBeEnabled());
-    expect(provider.chainId).toBe(4663);
-    expect(request).not.toHaveBeenCalledWith(
-      expect.objectContaining({ method: "eth_sendTransaction" }),
-    );
-    fireEvent.click(confirm);
-    await waitFor(() =>
-      expect(request.mock.calls.map(([args]) => args)).toContainEqual(
-        expect.objectContaining({
-          method: "eth_sendTransaction",
-          params: expect.arrayContaining([
-            expect.objectContaining({
-              to: "0x221c28ec177cf7da6f837dfd0052ba8f265fb4ca",
-            }),
-          ]),
-        }),
-      ),
-    );
-    expect(dialog).toBeVisible();
-    expect(screen.queryByText("Order cancelled.")).not.toBeInTheDocument();
-    chain.active = false;
-    chain.block = BigInt(101);
-    await waitFor(
-      () => expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
-      { timeout: 4000 },
-    );
-    expect(screen.getByText("Cancelled", { exact: true })).toBeVisible();
-  },
-);
-
-testPreview(
-  "selects the Robinhood wallet preview and keeps history on order networks",
-  async () => {
-    serveOrders([parent]);
-    const provider = new BrowserWallet();
-    const request = jest.spyOn(provider, "request");
-    Object.defineProperty(window, "ethereum", {
-      configurable: true,
-      value: provider,
-    });
-    render(
-      <RootLayout>
-        <HomePage />
-      </RootLayout>,
-    );
-    await connectBrowserWallet();
-    await screen.findByRole("row", {
-      name: "View order stop-loss-1 on Ethereum",
-    });
-    const creation = within(
-      screen.getByRole("region", { name: "Create stop-loss order" }),
-    );
-    expect(
-      creation.getByRole("button", { name: "Select token" }),
-    ).toBeVisible();
-    expect(request).not.toHaveBeenCalledWith(
-      expect.objectContaining({ method: "wallet_switchEthereumChain" }),
-    );
-
-    const network = () =>
-      screen.getByRole("button", { name: "Switch wallet network" });
-    fireEvent.click(network());
-    const menu = within(await screen.findByRole("dialog"));
-    fireEvent.click(menu.getByRole("button", { name: /Robinhood/ }));
-
-    expect(await creation.findByRole("alert")).toHaveTextContent(
-      "Stop-loss orders are unavailable on Robinhood.",
-    );
-    expect(network()).toHaveTextContent("Robinhood (stop-loss unavailable)");
-    expect(network().querySelector("img")).toHaveAttribute(
-      "src",
-      "/assets/chains/robinhood.svg",
-    );
-    expect(provider.chainId).toBe(4663);
-    expect(request).toHaveBeenCalledWith(
+  fireEvent.click(screen.getByRole("button", { name: `Cancel order ${name}` }));
+  const dialog = await screen.findByRole("dialog");
+  fireEvent.click(
+    within(dialog).getByRole("button", { name: "Switch to Robinhood" }),
+  );
+  const confirm = await within(dialog).findByRole("button", {
+    name: "Confirm cancellation",
+  });
+  await waitFor(() => expect(confirm).toBeEnabled());
+  expect(provider.chainId).toBe(4663);
+  expect(request).not.toHaveBeenCalledWith(
+    expect.objectContaining({ method: "eth_sendTransaction" }),
+  );
+  fireEvent.click(confirm);
+  await waitFor(() =>
+    expect(request.mock.calls.map(([args]) => args)).toContainEqual(
       expect.objectContaining({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: "0x1237" }],
+        method: "eth_sendTransaction",
+        params: expect.arrayContaining([
+          expect.objectContaining({
+            to: "0x221c28ec177cf7da6f837dfd0052ba8f265fb4ca",
+          }),
+        ]),
       }),
-    );
-    expect(creation.queryByRole("button", { name: "Select token" })).toBeNull();
-    expect(screen.getByTitle(wallet)).toBeInTheDocument();
-    expect(
-      screen.getByRole("row", { name: "View order stop-loss-1 on Ethereum" }),
-    ).toBeVisible();
+    ),
+  );
+  expect(dialog).toBeVisible();
+  expect(screen.queryByText("Order cancelled.")).not.toBeInTheDocument();
+  chain.active = false;
+  chain.block = BigInt(101);
+  await waitFor(
+    () => expect(screen.queryByRole("dialog")).not.toBeInTheDocument(),
+    { timeout: 4000 },
+  );
+  expect(screen.getByText("Cancelled", { exact: true })).toBeVisible();
+});
 
-    const historyChains = new Set();
-    for (const [url, init] of jest.mocked(global.fetch).mock.calls) {
-      expect(String(url)).not.toMatch(/robinhood|\/quote/);
-      if (String(url).includes("programmatic-orders")) {
-        historyChains.add(JSON.parse(String(init?.body)).variables.chain);
-      }
+test("switches to Robinhood for order creation and keeps cross-chain history", async () => {
+  serveOrders([parent]);
+  const provider = new BrowserWallet();
+  const request = jest.spyOn(provider, "request");
+  Object.defineProperty(window, "ethereum", {
+    configurable: true,
+    value: provider,
+  });
+  render(
+    <RootLayout>
+      <HomePage />
+    </RootLayout>,
+  );
+  await connectBrowserWallet();
+  await screen.findByRole("row", {
+    name: "View order stop-loss-1 on Ethereum",
+  });
+  const creation = within(
+    screen.getByRole("region", { name: "Create stop-loss order" }),
+  );
+  expect(creation.getByRole("button", { name: "Select token" })).toBeVisible();
+  expect(request).not.toHaveBeenCalledWith(
+    expect.objectContaining({ method: "wallet_switchEthereumChain" }),
+  );
+
+  const network = () =>
+    screen.getByRole("button", { name: "Switch wallet network" });
+  fireEvent.click(network());
+  const menu = within(await screen.findByRole("dialog"));
+  fireEvent.click(menu.getByRole("button", { name: /Robinhood/ }));
+
+  await waitFor(() => expect(network()).toHaveTextContent("Robinhood"));
+  expect(network().querySelector("img")).toHaveAttribute(
+    "src",
+    "/assets/chains/robinhood.svg",
+  );
+  expect(provider.chainId).toBe(4663);
+  expect(request).toHaveBeenCalledWith(
+    expect.objectContaining({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: "0x1237" }],
+    }),
+  );
+  expect(creation.getByRole("button", { name: "Select token" })).toBeVisible();
+  expect(creation.getByText("USDG")).toBeVisible();
+  expect(screen.getByTitle(wallet)).toBeInTheDocument();
+  expect(
+    screen.getByRole("row", { name: "View order stop-loss-1 on Ethereum" }),
+  ).toBeVisible();
+
+  const historyChains = new Set();
+  for (const [url, init] of jest.mocked(global.fetch).mock.calls) {
+    if (String(url).includes("programmatic-orders")) {
+      historyChains.add(JSON.parse(String(init?.body)).variables.chain);
     }
-    expect(historyChains).toEqual(new Set(supportedChainIds));
-    expect(request).not.toHaveBeenCalledWith(
-      expect.objectContaining({ method: "eth_sendTransaction" }),
-    );
-  },
-);
-
-testPreview(
-  "does not fetch order data for a direct Robinhood detail link when disabled",
-  async () => {
-    render(
-      <RootLayout>
-        <OrderPage
-          params={{
-            safeAddress: wallet,
-            chainId: 4663,
-            orderId: "stop-loss-1",
-          }}
-        />
-      </RootLayout>,
-    );
-    expect(await screen.findByRole("alert")).toHaveTextContent(
-      "Unsupported chain: 4663.",
-    );
-    expect(global.fetch).not.toHaveBeenCalled();
-  },
-);
+  }
+  expect(historyChains).toEqual(new Set(supportedChainIds));
+  expect(request).not.toHaveBeenCalledWith(
+    expect.objectContaining({ method: "eth_sendTransaction" }),
+  );
+});
 
 test("keeps account access and orders when a wallet network switch is rejected", async () => {
   serveOrders([parent]);
