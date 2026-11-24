@@ -12,7 +12,7 @@ The wallet network menu lists Robinhood Chain mainnet (4663) as "Robinhood". It 
 
 Robinhood Chain supports placement, order history, and cancellation through the [production CoW API](https://api.cow.fi/robinhood). The [37 approved sell contracts](token-catalog.md#robinhood-chain) include 4 crypto tokens and 33 Stock Tokens and funds with 24/5 feeds.
 
-Stock Token feeds do not update outside their 24/5 session. An order can still execute after close while the last price is within the selected freshness timeout. No funded Air Rescue stop-loss or cancellation test has run on Robinhood Chain. See the [signed tester checklist](robinhood-chain-readiness.md#signed-tester-checklist).
+Stock Token feeds do not update outside their 24/5 session. An order can still execute after close while the last price is within the selected freshness timeout.
 
 ## Limit price and slippage
 

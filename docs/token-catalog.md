@@ -29,7 +29,7 @@ The app allows 37 exact sell contracts on [Robinhood Chain](supported-networks.m
 | Crypto (4) | ENA, LINK, WBTC, WETH |
 | Stock Tokens and funds (33) | AAPL, AMD, AMZN, ASML, BABA, CLSK, COIN, CRCL, CRWV, DELL, EWY, GME, GOOGL, INTC, IONQ, META, MSFT, MSTR, MU, NBIS, NVDA, ORCL, PLTR, QQQ, RGTI, RKLB, SLV, SNDK, SPCX, SPY, TSLA, TSM, USO |
 
-Stock Token approvals are specific to Robinhood Chain. Each uses the exact issuer token and UID and a Chainlink onchain `Equity` / `Price` feed with method `primaryTokenizedPrice` and session `us_equities_24/5`. The feed already includes the issuer multiplier. A `custom` category requires its own dated approval for that exact feed. This exception does not apply to other chains or allow 24/7 smoothed references or raw share prices. See [hold reasons and quote limits](robinhood-chain-readiness.md#held-tokens-and-quote-limits).
+Stock Token approvals are specific to Robinhood Chain. Each uses the exact issuer token and UID and a Chainlink onchain `Equity` / `Price` feed with method `primaryTokenizedPrice` and session `us_equities_24/5`. The feed already includes the issuer multiplier. A `custom` category requires its own dated approval for that exact feed. This exception does not apply to other chains or allow 24/7 smoothed references or raw share prices.
 
 The [CoW Swap RWA list](https://files.cow.fi/token-lists/CoinGeckoRwa.4663.json) matches these Stock Tokens and funds by contract address, but uses the same Robinhood feather for each image. The app pins images for the underlying stocks and funds from the [Ondo token list](https://raw.githubusercontent.com/ondoprotocol/ondo-global-markets-token-list/c2741088e2a3b323ee8c42bcbf6f010cd7476f86/tokenlist.json), with CleanSpark from the [Backed xStocks list](https://raw.githubusercontent.com/backed-fi/cowswap-xstocks-tokenlist/91f6da6946dc6a932b76292cc784ec202a37a2f6/tokenlist.json). Only the images come from those lists. The token contracts and price feeds remain Robinhood-specific.
 
@@ -121,7 +121,7 @@ The 2026-11-23 batch added Ethereum PAXG and Plasma XAUt0, both into native USDC
 
 The discovery run found 20 Ondo feed rows on Ethereum and 37 Robinhood feed rows on Robinhood Chain. Of these, 14 Ondo and 33 Robinhood rows had the 24/5 onchain token price method. The rest used other methods or sessions. Counts are feed rows and can include more than one proxy for a token. A symbol match in an issuer registry is a hint. It does not approve a contract or select a proxy. The Robinhood directory is separate from the nine default mainnet snapshots. Use `--robinhood-registry` to supply a captured issuer API response if direct access fails. The report records that the snapshot was supplied and gives its digest.
 
-Only the exact [Robinhood routes](#robinhood-chain) are approved in this group. Candidates on other chains, including the Ondo Stock Token feeds, remain research only. The Robinhood approvals accept the current handler's lack of a market-session guard and separate execution-time checks for each feed. See [Chainlink feed research](chainlink-feed-research.md) and [Robinhood Chain readiness](robinhood-chain-readiness.md).
+Only the exact [Robinhood routes](#robinhood-chain) are approved in this group. Candidates on other chains, including the Ondo Stock Token feeds, remain research only. The Robinhood approvals accept the current handler's lack of a market-session guard and separate execution-time checks for each feed. See [Chainlink feed research](chainlink-feed-research.md).
 
 ## Files and checks
 

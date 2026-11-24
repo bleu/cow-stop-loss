@@ -11129,7 +11129,7 @@
     },
     "4663": {
       "status": "pilot-only",
-      "executionEvidence": "Robinhood chain 4663, block 121658415 (0x634344eb656481e8a5834e48abfe5265183f204535e9d5189225c83c198fc2e0): verified Poller, CowShed factory, ComposableCoW, StopLoss, settlement and relayer. See docs/robinhood-chain-readiness.md and https://sourcify.dev/server/v2/contract/4663/0x412c36e5011cd2517016d243a2dfb37f73a242e7 . Watchtower operation is assumed for this pilot. No funded StopLoss fill was tested.",
+      "executionEvidence": "Robinhood chain 4663, block 121658415 (0x634344eb656481e8a5834e48abfe5265183f204535e9d5189225c83c198fc2e0): verified Poller, CowShed factory, ComposableCoW, StopLoss, settlement and relayer. See https://robinhoodchain.blockscout.com/block/121658415 and https://sourcify.dev/server/v2/contract/4663/0x412c36e5011cd2517016d243a2dfb37f73a242e7 . Watchtower operation is assumed for this pilot. No funded StopLoss fill was tested.",
       "arithmeticBoundsEvidence": "Both legs are checked at Robinhood block 122234681 (0x9df50a21c746d1023268555af19cb13dbc47745f5975eaf2000c6f4ea73f6222). Each complete positive price fits the handler arithmetic. Stock and USDG approval ages are both 86400 seconds. The deployed handler uses one timeout and can accept a fresh last price after close.",
       "reviewDate": "2026-11-23"
     },
