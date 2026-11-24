@@ -29,6 +29,7 @@ New orders use an explicit approved sell list and one fixed buy token per chain:
 | BNB Chain         | AAVE, ADA, ASTER, C98, Cake, ETH, LINK, LISTA, SOL, UNI, WBNB, WLFI, XRP, XVS | USDT        |
 | Linea             | AAVE, COMP, LINEA, LINK, WETH, wstETH                                         | Native USDC |
 | Plasma            | ENA, LINK, weETH, WETH, WXPL                                                  | Native USDC |
+| Robinhood         | [4 crypto tokens and 33 Stock Tokens and funds](https://github.com/bleu/cow-stop-loss/blob/main/docs/token-catalog.md#robinhood-chain) | USDG |
 | Sepolia (testnet) | WETH                                                                          | USDC (test) |
 
 Production feeds quote prices in USD. Sepolia keeps its two fixed test feeds. Tokens and feeds change with a reviewed app release. Historical token metadata does not make a token eligible for new orders. Arbitrary token imports, manual feed overrides, and exact-buy orders are not supported. See the [token catalog](https://github.com/bleu/cow-stop-loss/blob/main/docs/token-catalog.md) for the approved routes and accepted oracle limits.
@@ -57,6 +58,10 @@ Set `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID` and `NEXT_PUBLIC_APP_URL` before buil
 
 :::details[Is the trigger price my sale price?]
 No. The trigger price is the oracle condition that makes an order eligible to execute. The limit price is the minimum sale price set by your minimum buy amount. If the price falls below the limit before execution, the order waits for recovery to at least the limit while the oracle price is below the trigger. Within that range, execution is expected soon, subject to sufficient funds, approvals, and liquidity. Open a support ticket if the order stays unfilled for a prolonged time. Higher slippage lowers the minimum price and improves the chance of execution, but does not guarantee a fill. Placed order terms are fixed; cancel and replace the order to change them. The displayed market price is an oracle reference, not a firm quote. Orders can fill partially if allowed or expire.
+:::
+
+:::details[Can I set a stop-loss for Stock Tokens?]
+Yes. On Robinhood, you can sell supported Stock Tokens and funds into USDG. Their Chainlink price feeds update only during a 24/5 session. A stop-loss can still execute after the market closes while both prices are within the order's freshness timeout. If either price becomes stale, the order cannot trigger until both prices are fresh again.
 :::
 
 :::details[Can I create or cancel an order?]

@@ -70,7 +70,7 @@ Each feed's approved age ceiling is at most `floor(1.5 * heartbeat) + 60` second
 
 The deployed handler has one shared timeout for both feeds. The route ceiling is the larger of their approved age ceilings, except for Robinhood Stock Tokens, which use the smaller ceiling. The default, including reset to defaults, is the smaller of 24 hours and the route ceiling. Users can set a shorter timeout, but settings, restored drafts, and encoded placements cannot exceed the route ceiling.
 
-All approved Robinhood feeds have a 24-hour (86,400-second) freshness ceiling. Stock Token feeds have no off-hours heartbeat. The app warns during order setup and review that a stop-loss can still execute after close while the last answer is fresh. The handler has no market-session check. Once a feed becomes stale, the order cannot trigger until both feeds are fresh again.
+All approved Robinhood feeds have a 24-hour (86,400-second) freshness ceiling. Order review warns that Stock Token feeds do not update outside their 24/5 session. The handler has no market-session check. A stop-loss can still execute after close while both prices are within the order's freshness timeout. Once a feed becomes stale, the order cannot trigger until both feeds are fresh again.
 
 For example, the original Ethereum sell feeds have a 5,460-second ceiling; USDC has a 124,260-second ceiling. Applying the sell ceiling to USDC would reject normal USDC rounds. The shared handler timeout can therefore allow older sell answers at execution than the browser allows.
 

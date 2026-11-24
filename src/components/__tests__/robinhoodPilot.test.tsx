@@ -104,22 +104,6 @@ it("lets a Robinhood wallet select WETH with its balance and shows USDG as the b
   expect(await screen.findByText("Balance: 2")).toBeVisible();
 });
 
-it("warns when a Robinhood Stock Token is selected and removes the warning for WETH", async () => {
-  const user = userEvent.setup();
-  renderPilot();
-  await user.click(screen.getByRole("button", { name: "Select token" }));
-  await user.click(await screen.findByRole("option", { name: /\bMU\b/ }));
-  expect(
-    screen.getByText(/stop-loss can still execute after the market closes/i),
-  ).toBeVisible();
-
-  await user.click(screen.getByRole("button", { name: /\bMU\b/ }));
-  await user.click(await screen.findByRole("option", { name: /\bWETH\b/ }));
-  expect(
-    screen.queryByText(/stop-loss can still execute after the market closes/i),
-  ).not.toBeInTheDocument();
-});
-
 function draftWithRoundAges({ sell, buy }: { sell: number; buy: number }) {
   const timestamp = BigInt(Date.parse("2026-11-28T01:00:00Z") / 1000);
   jest
@@ -306,6 +290,9 @@ it("reviews a fresh Stock Token after close and requests CowShed setup only on c
     );
     expect(reviewButton).toBeEnabled();
   });
+  const marketHoursWarning =
+    /this Stock Token feed does not update outside its 24\/5 session/i;
+  expect(screen.queryByText(marketHoursWarning)).not.toBeInTheDocument();
   await user.click(reviewButton);
   const review = await waitFor(() => {
     const error = screen.queryByRole("alert");
@@ -314,9 +301,10 @@ it("reviews a fresh Stock Token after close and requests CowShed setup only on c
       screen.getByRole("region", { name: "Review stop-loss order" }),
     );
   });
+  expect(review.getByText(marketHoursWarning)).toBeVisible();
   expect(
-    review.getByText(/stop-loss can still execute after the market closes/i),
-  ).toBeVisible();
+    review.queryByText(/stop-loss can still execute after the market closes/i),
+  ).not.toBeInTheDocument();
   const place = await review.findByRole("button", { name: "Place order" });
   expect(place).toBeEnabled();
   expect(sendTransactionAsync).not.toHaveBeenCalled();

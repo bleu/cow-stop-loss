@@ -25,9 +25,7 @@ export function MarketHoursNotice({
   }
   return (
     <WarningNotice>
-      This Stock Token feed does not update outside its 24/5 session. A
-      stop-loss can still execute after the market closes while the last price
-      is fresh.
+      This Stock Token feed does not update outside its 24/5 session.
     </WarningNotice>
   );
 }
