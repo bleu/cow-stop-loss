@@ -35,7 +35,7 @@ Set this optional value in `.env.local` before starting or building Next.js:
 NEXT_PUBLIC_DRPC_KEY=your-public-drpc-key
 ```
 
-Ten chains use this key with their own dRPC endpoints. Without a key, the app uses their public RPC defaults. Robinhood uses its official RPC or `NEXT_PUBLIC_ROBINHOOD_RPC_URL` if you set it. The old per-chain RPC URL settings are no longer read. The key is visible in the browser; use a key intended for public browser use. Restart the development server or rebuild the deployed app after changing it. See [RPC configuration](docs/supported-networks.md#rpc-configuration) for details.
+All supported chains use this key with their own dRPC endpoints. Without a key, each chain uses its public RPC default. Robinhood uses `https://robinhood-rpc.publicnode.com`. The key is visible in the browser; use a key intended for public browser use. Restart the development server or rebuild the deployed app after changing the key. See [RPC configuration](docs/supported-networks.md#rpc-configuration) for details.
 
 ## WalletConnect setup
 

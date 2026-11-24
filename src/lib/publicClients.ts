@@ -40,7 +40,7 @@ export const robinhood = defineChain({
   id: 4663,
   name: "Robinhood",
   nativeCurrency: { name: "Ether", symbol: "ETH", decimals: 18 },
-  rpcUrls: { default: { http: ["https://rpc.mainnet.chain.robinhood.com"] } },
+  rpcUrls: { default: { http: ["https://robinhood-rpc.publicnode.com"] } },
   blockExplorers: {
     default: {
       name: "Blockscout",
@@ -116,8 +116,6 @@ export const chainNames: Record<ChainId, string> = {
   [robinhood.id]: robinhood.name,
 };
 
-type DrpcChainId = Exclude<ChainId, typeof robinhood.id>;
-
 const DRPC_NETWORKS = {
   [mainnet.id]: "ethereum",
   [gnosis.id]: "gnosis",
@@ -129,11 +127,12 @@ const DRPC_NETWORKS = {
   [bsc.id]: "bsc",
   [linea.id]: "linea",
   [plasma.id]: "plasma",
-} as const satisfies Record<DrpcChainId, string>;
+  [robinhood.id]: "robinhood",
+} as const satisfies Record<ChainId, string>;
 
 const drpcKey = process.env.NEXT_PUBLIC_DRPC_KEY;
 
-function rpcUrl(chainId: DrpcChainId, defaultUrl: string): string {
+function rpcUrl(chainId: ChainId, defaultUrl: string): string {
   return drpcKey
     ? `https://lb.drpc.live/${DRPC_NETWORKS[chainId]}/${encodeURIComponent(drpcKey)}`
     : defaultUrl;
@@ -150,9 +149,7 @@ export const RPC_PROVIDERS = {
   [bsc.id]: rpcUrl(bsc.id, "https://bsc-dataseed1.bnbchain.org"),
   [linea.id]: rpcUrl(linea.id, linea.rpcUrls.default.http[0]),
   [plasma.id]: rpcUrl(plasma.id, plasma.rpcUrls.default.http[0]),
-  [robinhood.id]:
-    process.env.NEXT_PUBLIC_ROBINHOOD_RPC_URL ||
-    robinhood.rpcUrls.default.http[0],
+  [robinhood.id]: rpcUrl(robinhood.id, robinhood.rpcUrls.default.http[0]),
 } as const satisfies Record<ChainId, string>;
 
 export function createRpcTransport(chain: ChainType) {

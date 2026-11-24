@@ -13,7 +13,6 @@ import {
   plasma,
   publicClientsFromIds,
   publicClientsFromNames,
-  robinhood,
   RPC_PROVIDERS,
   walletChains,
 } from "../publicClients";
@@ -39,11 +38,7 @@ describe("standalone chain configuration", () => {
       const serverTransport = wagmiServerConfig.getClient({
         chainId: chain.id,
       }).transport;
-      const expectedUrl =
-        chain.id === robinhood.id
-          ? "https://rpc.mainnet.chain.robinhood.com"
-          : RPC_PROVIDERS[chain.id];
-      expect(browserTransport.url).toBe(expectedUrl);
+      expect(browserTransport.url).toBe(RPC_PROVIDERS[chain.id]);
       expect(serverTransport.url).toBe(browserTransport.url);
       expect(browserTransport.timeout).toBe(10000);
       expect(serverTransport.timeout).toBe(10000);

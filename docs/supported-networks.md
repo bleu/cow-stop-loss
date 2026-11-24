@@ -22,7 +22,7 @@ The former quote-based slippage recommendation algorithm and pair-recommendation
 
 ## RPC configuration
 
-Set `NEXT_PUBLIC_DRPC_KEY` in `.env.local` or the build environment to use one dRPC key for the ten order-capable chains other than Robinhood, including Sepolia. Each chain uses its own network endpoint at `https://lb.drpc.live/<network>/<key>`. Wagmi and order read clients share these RPC settings. Robinhood Chain uses its [official RPC](https://rpc.mainnet.chain.robinhood.com) by default. To use a different Robinhood mainnet RPC for both clients, set `NEXT_PUBLIC_ROBINHOOD_RPC_URL` at build time. The other old per-chain RPC URL settings are no longer read.
+Set `NEXT_PUBLIC_DRPC_KEY` in `.env.local` or the build environment to use one dRPC key for all eleven order-capable chains, including Robinhood and Sepolia. Each chain uses its own network endpoint at `https://lb.drpc.live/<network>/<key>`. Wagmi and order read clients share these RPC settings.
 
 ```dotenv
 NEXT_PUBLIC_DRPC_KEY=your-public-drpc-key
@@ -30,7 +30,7 @@ NEXT_PUBLIC_DRPC_KEY=your-public-drpc-key
 
 The public RPC URL and dRPC key can appear in the browser bundle. Use credentials intended for public browser use. Restart the development server or rebuild the deployed app after changing the RPC settings.
 
-Without a key, or with an empty key, clients use the viem chain defaults except for Ethereum, Polygon, and BNB Chain. Their defaults are `https://ethereum-rpc.publicnode.com`, `https://polygon-bor-rpc.publicnode.com`, and `https://bsc-dataseed1.bnbchain.org`. Plasma has a local chain definition with `https://rpc.plasma.to` because the locked viem version has no Plasma definition. A failed dRPC request does not switch to a public endpoint.
+Without a key, or with an empty key, clients use each chain's public RPC default. Robinhood uses `https://robinhood-rpc.publicnode.com`. Ethereum, Polygon, and BNB Chain use `https://ethereum-rpc.publicnode.com`, `https://polygon-bor-rpc.publicnode.com`, and `https://bsc-dataseed1.bnbchain.org`. Plasma uses `https://rpc.plasma.to`. The other chains use the viem defaults. A failed dRPC request does not switch to a public endpoint.
 
 ## Placement requirements
 
