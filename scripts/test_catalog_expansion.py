@@ -1,18 +1,16 @@
 import hashlib
-import importlib.util
+import io
 import json
-from contextlib import ExitStack
 import pathlib
 import tempfile
 import unittest
+from contextlib import ExitStack, redirect_stdout
 from unittest.mock import patch
 
+import catalog
 from test_catalog_live import abi_text, word
-
-SCRIPTS = pathlib.Path(__file__).resolve().parent
-SPEC = importlib.util.spec_from_file_location("catalog_expand", SCRIPTS / "catalog-expand.py")
-expand = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(expand)
+from token_catalog import assets, live
+from token_catalog import expansion as expand
 
 PROXY = "0x" + "1" * 40
 TOKEN = "0x" + "2" * 40
@@ -36,10 +34,37 @@ class CatalogExpansionTests(unittest.TestCase):
             (1, OTHER_TOKEN): {"symbol": "APE", "name": "Different token", "assetClass": "unknown"},
             (56, TOKEN): {"symbol": "APE", "name": "ApeCoin", "assetClass": "volatile"},
         }
-        report, unresolved = expand.screen_directories({"1": [FEED]}, tokens, [])
+        other_feed = {**FEED, "docs": {**FEED["docs"], "baseAsset": "OTHER"}}
+        report, unresolved = expand.screen_directories({"1": [FEED], "56": [other_feed]}, tokens, [])
         self.assertEqual(report["1"][0]["reason"], "needs-exact-evidence")
         self.assertEqual([hint["address"] for hint in report["1"][0]["tokenHints"]], [TOKEN, OTHER_TOKEN])
         self.assertEqual([token["sourceHints"] for token in unresolved], [["ape-usd"], []])
+
+    def test_robinhood_scan_writes_a_stage_readable_inventory(self):
+        url = "https://reference-data-directory.vercel.app/feeds-robinhood-mainnet.json"
+        stock = {**FEED, "path": "aapl-usd", "name": "AAPL / USD", "feedCategory": "custom", "docs": {
+            **FEED["docs"], "assetClass": "Equity", "baseAsset": "AAPL", "blockchainName": "Robinhood",
+            "deliveryChannelCode": "DF", "productTypeCode": "primaryTokenizedPrice", "marketHours": "us_equities_24/5",
+        }}
+        smoothed = {**stock, "path": "aapl-smoothed-usd", "docs": {**stock["docs"], "marketHours": "24/7"}}
+        data = json.dumps([FEED, stock, smoothed]).encode()
+        display = {"symbol": "AAPL", "name": "Apple", "assetClass": "volatile"}
+        with tempfile.TemporaryDirectory() as path, redirect_stdout(io.StringIO()), \
+                patch("urllib.request.OpenerDirector.open", return_value=io.BytesIO(data)) as fetch, \
+                patch.object(expand, "discovery_tokens", return_value={(4663, TOKEN): display, (1, TOKEN): display}):
+            output = pathlib.Path(path) / "robinhood"
+            self.assertEqual(catalog.main(["scan", "--chain", "4663", "--output", str(output)]), 0)
+            fetch.assert_called_once_with(url, timeout=30)
+            sources, rows = expand.read_snapshot(output, allow_pilot=True)
+            self.assertEqual(rows, {"4663": [FEED, stock, smoothed]})
+            self.assertEqual(sources["4663"]["url"], url)
+            self.assertEqual((output / "4663.json").read_bytes(), data)
+            screened = json.loads((output / "screening.json").read_bytes())["4663"]
+            self.assertEqual(screened[1]["reason"], "needs-exact-evidence")
+            self.assertEqual(screened[1]["tokenHints"], [{"address": TOKEN, "assetClass": "volatile", "alreadyApproved": False}])
+            self.assertNotIn("tokenHints", screened[2])
+            unresolved = json.loads((output / "unapproved-volatile.json").read_bytes())
+            self.assertEqual([entry["chainId"] for entry in unresolved], [4663])
 
     def test_requires_exact_primary_row_and_same_quote(self):
         self.assertEqual(expand.primary_row([FEED], APPROVAL), FEED)
@@ -128,11 +153,9 @@ class RobinhoodStagingTests(unittest.TestCase):
             "policy": {"schemaVersion": 1, "verificationFile": "scripts/catalog-policy-verification.json", "approvals": [],
                        "chains": {str(chain): {"status": "unavailable", "unavailableReason": "Fixture"} for chain in expand.CHAINS}},
         }
-        live, assets = (expand.load_script(name) for name in ("catalog-live", "catalog-assets"))
         with ExitStack() as stack:
             stack.enter_context(patch.object(expand, "ROOT", self.root))
             stack.enter_context(patch.object(expand, "read", side_effect=documents.__getitem__))
-            stack.enter_context(patch.object(expand, "load_script", side_effect={"catalog-live": live, "catalog-assets": assets}.__getitem__))
             stack.enter_context(patch.object(expand.metadata, "fetch_sources", return_value={source["id"]: {"tokens": []} for source in manifest["sources"]}))
             stack.enter_context(patch.object(assets, "download", return_value=b"\x89PNG\r\n\x1a\n" + b"0" * 100))
             stack.enter_context(patch.object(live, "rpc", side_effect=lambda chain, calls: [{"result": self.replies[call]} for call in calls]))

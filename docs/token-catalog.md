@@ -78,43 +78,38 @@ The handler normalizes feed decimals but does not check round completeness, futu
 
 ## Add or review a token
 
-1. Review the exact chain, token contract, economic class, representation, feed unit, and execution limits above. Add missing identity and image evidence to [`catalog-identities.json`](../scripts/catalog-identities.json). Resolve display metadata from a pinned source or a reviewed entry in [`catalog-metadata-overrides.json`](../scripts/catalog-metadata-overrides.json). Keep historical metadata when old orders need it.
-2. Add the exact official source row to [`catalog-feeds.json`](../scripts/catalog-feeds.json). Record its directory URL, date, and digest in [`catalog-sources.json`](../scripts/catalog-sources.json). Review the lifecycle, price method, heartbeat, and both feed legs. Missing or changed mappings must fail review.
-3. Observe the proposed mappings before approval:
+Use the same staging process for one token or a batch. Review the exact chain, token contract, economic class, representation, feed unit, and execution limits above. Use a new output directory for each scan or stage.
+
+1. Capture the nine production Chainlink directories outside Robinhood. The scan checks source rows and reports possible contract matches from pinned token lists. These matches are search hints and do not prove what a feed prices.
 
    ```sh
-   python3 scripts/catalog-live.py --candidates /path/to/proposed-policy.json --output /tmp/catalog-candidates.json
+   corepack pnpm@9 catalog scan --output .cache/token-catalog/directories
    ```
 
-   This read-only report is marked `candidate-review` and does not enable creation. `CATALOG_RPC_<chainId>` overrides the read-only RPC endpoint. A skipped or `not-performed` check is not a pass.
+   For a Robinhood change, capture chain 4663 alone and pass that output directory to `stage` instead.
 
-4. Review the observations and execution evidence. Pin accepted observations in the policy's `verificationFile`, then record the exact approval and fingerprint. Candidate observations alone cannot renew approvals. Live verification without `--candidates` checks approved production feeds only.
-5. Generate the catalog, inspect the diff, and run the checks below. Do not edit the generated JSON directly.
+   ```sh
+   corepack pnpm@9 catalog scan --chain 4663 --output .cache/token-catalog/robinhood-directories
+   ```
 
-### Expand in a batch
+2. Create an evidence file with an `approvals` list. Staging takes USD route mappings. Use the exact fields from [`catalog-policy.json`](../scripts/catalog-policy.json), including the source path and primary proxy, without `snapshotFingerprint` or `verificationBatch`. Include issuer, wrapper, or bridge evidence as applicable. For contracts missing from [`catalog-identities.json`](../scripts/catalog-identities.json), supply `newIdentities` with a logo source and evidence for the economic class. Use `metadataOverrides` only for gaps or corrections in the pinned display lists. Keep historical metadata when old orders need it.
+3. Stage the reviewed mappings. The command checks the exact source rows and verifies both the sell and fixed buy price legs. A failed buy check blocks all proposed routes that use it. A skipped check does not pass. Set `CATALOG_RPC_<chainId>` to override a read-only RPC endpoint. Reads can come from different blocks. They do not prove identity or bridge claims, measure liquidity, or predict whether an order will fill.
 
-`catalog-expand.py scan` captures the full Chainlink directories and checks their source rows. It records potential contract matches from the pinned token lists. These are search hints. They do not prove that a feed measures the token's price.
+   ```sh
+   corepack pnpm@9 catalog stage --inventory .cache/token-catalog/directories --evidence /path/to/mappings.json --output .cache/token-catalog/staged
+   ```
 
-Supply exact mappings with issuer, wrapper, or bridge evidence in an `approvals` list. Use the fields from `catalog-policy.json` without `snapshotFingerprint` or `verificationBatch`. Supply `newIdentities` for contracts missing from the catalog, with a logo source and evidence for the economic class. Use `metadataOverrides` only for gaps or corrections to the pinned lists.
+4. Review `results.json` and the proposed changes. Staging writes proposed catalog inputs for passing mappings only and does not change the runtime snapshot. The staged inputs retain exact source rows and their provenance, and record named observations for both price legs. New observations stay separate from older batches, so a new token can share a feed without renewing an existing approval.
+5. Apply the reviewed files from the staged `scripts` and `public` directories, when present. Run `corepack pnpm@9 catalog prepare` if local pinned inputs are missing. Run `corepack pnpm@9 catalog generate` to rewrite the runtime snapshot, review the diff, then run `corepack pnpm@9 catalog check`. Do not edit the snapshot directly.
 
-```sh
-python3 scripts/catalog-expand.py scan --output .cache/token-catalog/directories
-python3 scripts/catalog-expand.py stage --inventory .cache/token-catalog/directories --evidence /path/to/mappings.json --output .cache/token-catalog/staged
-```
-
-Staging checks the supplied mapping against the catalog rules, then reads the sell and fixed buy legs. A failed buy blocks all new routes that use it. These reads can come from different blocks. They do not prove identity or bridge claims, measure liquidity, or predict whether an order will fill.
-
-Staging writes the results and only the passing catalog inputs. It does not change the app catalog. Apply the staged `scripts` and `public` files, then regenerate and check the catalog.
-
-New approvals from a batch point to named observations for both legs. The batch keeps fresh observations separate from the older records, so an added token can share a feed without changing an existing approval.
+To diagnose feeds that the policy already approves, run `corepack pnpm@9 catalog observe --output .cache/token-catalog/approved-observations.json`. The report covers approved feeds only. It does not change the policy or renew an approval.
 
 ### Discover issuer-priced assets
 
-The `instruments` command uses pinned issuer records and exact Chainlink paths and proxies to prepare gold-token mappings. It checks at least seven days of consecutive feed rounds, including updates on both weekend days. The command writes proposed mappings to `evidence.json`. Use `stage` to check both live price legs before you apply them. The `instruments.json` report records source URLs, digests, and any checks that failed.
+`catalog instruments` is an optional research command. It uses pinned issuer records and exact Chainlink paths and proxies to prepare gold-token mappings. It checks at least seven days of consecutive feed rounds, including updates on both weekend days. To verify both live price legs, review the proposed mappings in `evidence.json` and pass that file to the [staging process above](#add-or-review-a-token). The `instruments.json` report records source URLs, digests, and any checks that failed.
 
 ```sh
-python3 scripts/catalog-expand.py instruments --inventory .cache/token-catalog/directories --output .cache/token-catalog/instruments
-python3 scripts/catalog-expand.py stage --inventory .cache/token-catalog/directories --evidence .cache/token-catalog/instruments/evidence.json --output .cache/token-catalog/staged
+corepack pnpm@9 catalog instruments --inventory .cache/token-catalog/directories --output .cache/token-catalog/instruments
 ```
 
 The 2026-11-23 batch added Ethereum PAXG and Plasma XAUt0, both into native USDC. Both sell feeds passed the publication and live checks. Chainlink classifies these token-unit feeds as `Crypto` / `Price`, so the production feed rule did not change. XAUT/USD prices the XAUT that backs XAUt0 at 1:1. It does not price bridge or custody risk. The Plasma token list spells the symbol `XAUT0`; the catalog uses `XAUt0`, as returned by the contract.
@@ -136,20 +131,13 @@ Only the exact [Robinhood routes](#robinhood-chain) are approved in this group. 
 | [`scripts/catalog-metadata-overrides.json`](../scripts/catalog-metadata-overrides.json)   | Reviewed local metadata gaps and field corrections                                   |
 | [`src/lib/tokenCatalogData.json`](../src/lib/tokenCatalogData.json)                       | Checked-in runtime snapshot                                                          |
 
-```sh
-corepack pnpm@9.15.9 prepare:catalog
-corepack pnpm@9.15.9 generate:catalog
-corepack pnpm@9.15.9 check:assets
-corepack pnpm@9.15.9 check:catalog
-python3 -m unittest discover -s scripts -p 'test_catalog*.py'
-corepack pnpm@9.15.9 test:jest --runInBand
-```
+`corepack pnpm@9 catalog prepare` restores missing pinned metadata and images and verifies the local files. A cold cache needs network access. A warm cache works offline when all required files are present and match their digests. There is no latest-list or stale-data fallback. Images keep their local URLs and full digests. Changed bytes are an error. Keep baseline assets and required fallbacks tracked. Untrack an image only after a cold restoration proves its digest.
 
-`prepare:catalog` downloads and verifies pinned metadata and missing images. A cold cache needs network access; a warm cache works offline only when hashes match. There is no latest-list or stale-data fallback. Images keep their local URLs and full digests; changed bytes are an error. Keep baseline assets and required fallbacks tracked. Untrack an image only after a cold restoration proves its digest.
+`corepack pnpm@9 catalog prepare --check` also compares the checked-in runtime snapshot. It is the single catalog gate for app development and builds. CI runs it through `pnpm build`. The gate can restore missing inputs, but it does not rewrite the snapshot.
 
-`generate:catalog` is offline and writes the runtime snapshot. `check:assets` and `check:catalog` verify without fetching or rewriting. App development, app builds, and CI run preparation and checks; they do not silently regenerate changed output. Ordinary Jest tests use the runtime snapshot and image manifest without network access or prepared images.
+`corepack pnpm@9 catalog generate` verifies local pinned metadata and images offline and rewrites the runtime snapshot. `corepack pnpm@9 catalog check` verifies the same local inputs and compares the snapshot offline without writing files. The [snapshot builder](../scripts/token_catalog/snapshot.py) uses the retained inputs in the table above.
 
-For an input review, `python3 scripts/catalog.py --reports .cache/token-catalog/reports` also writes audit and metadata reports. Do not commit the reports or combine `--reports` with `--check`. Reports cover retained inputs, not the removed historical inventory.
+For an input review, `corepack pnpm@9 catalog generate --reports .cache/token-catalog/reports` also writes `catalog-audit.json` and `catalog-metadata-report.json`. These optional reports cover retained inputs. Do not commit them. Ordinary Jest tests use the runtime snapshot and image manifest without network access or prepared images.
 
 To refresh display lists, select an explicit revision, review hashes and corrections, prepare, regenerate, and inspect the diff. Corrections fail if expected upstream values change or a correction becomes redundant. New upstream tokens do not enter the catalog automatically; display metadata never approves a feed.
 

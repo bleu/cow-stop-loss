@@ -1,10 +1,7 @@
-#!/usr/bin/env python3
 """Verify pinned token images and restore missing files from reviewed sources."""
-import argparse
 import concurrent.futures
 import hashlib
 import http.client
-import json
 import os
 import pathlib
 import re
@@ -12,8 +9,6 @@ import tempfile
 import urllib.parse
 import urllib.request
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
-PATH = ROOT / "scripts/catalog-identities.json"
 MAX_BYTES = 4 * 1024 * 1024
 LOGO_PATH = re.compile(r"/assets/tokens/([0-9a-f]{20})\.(png|jpg|jpeg|svg|gif|webp)")
 
@@ -163,21 +158,3 @@ def prepare_assets(identities, public_dir, download_missing=True, workers=6):
     if failures:
         raise ValueError("Token image preparation failed:\n" + "\n".join(sorted(failures)))
     return len(items)
-
-
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--public-dir", type=pathlib.Path, default=ROOT / "public")
-    parser.add_argument("--check", action="store_true", help="verify files without downloading")
-    parser.add_argument("--workers", type=int, default=6)
-    args = parser.parse_args()
-    try:
-        count = prepare_assets(json.loads(PATH.read_text()), args.public_dir,
-                               download_missing=not args.check, workers=args.workers)
-    except (OSError, ValueError) as error:
-        parser.exit(1, f"{error}\n")
-    print(f"Verified {count} unique token images")
-
-
-if __name__ == "__main__":
-    main()

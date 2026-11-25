@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
 """Fetch pinned token lists and resolve selected identities without network access."""
-import argparse
 import copy
 import hashlib
 import http.client
@@ -13,7 +11,8 @@ import tempfile
 import urllib.error
 import urllib.request
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
+from . import ROOT
+
 PRODUCTION_CHAINS = {1, 100, 42161, 8453, 137, 43114, 56, 59144, 9745}
 ROBINHOOD_CHAIN = 4663
 SUPPORTED_CHAINS = PRODUCTION_CHAINS | {11155111, ROBINHOOD_CHAIN}
@@ -234,18 +233,15 @@ def download(source):
             if length is not None:
                 require(length.isascii() and length.isdecimal(), f"Invalid metadata Content-Length: {source['id']}")
                 require(int(length) == len(data), f"Incomplete or oversized metadata response: {source['id']}")
-        verified_document(data, source)
         return data
     except (OSError, urllib.error.URLError, http.client.HTTPException) as error:
         raise ValueError(f"Cannot fetch pinned metadata {source['id']}: {error}") from error
 
 
-def fetch_sources(root=ROOT, cache_dir=None):
-    """Cache missing pinned sources; reject corrupt existing cache files."""
-    root = pathlib.Path(root)
-    sources = validate_manifest(read_json(root / MANIFEST_PATH))
+def load_sources(sources, root, cache_dir, *, restore):
     directory = cache_directory(root, cache_dir)
-    directory.mkdir(parents=True, exist_ok=True)
+    if restore:
+        directory.mkdir(parents=True, exist_ok=True)
     documents = {}
     for source in sources:
         path = directory / f"{source['sha256']}.json"
@@ -253,7 +249,9 @@ def fetch_sources(root=ROOT, cache_dir=None):
         if path.exists():
             documents[source["id"]] = cached_document(path, source)
             continue
+        require(restore, f"Missing pinned metadata cache: {path}; run pnpm catalog prepare")
         data = download(source)
+        documents[source["id"]] = verified_document(data, source)
         temporary = None
         try:
             with tempfile.NamedTemporaryFile(dir=directory, prefix=".metadata-", suffix=".tmp", delete=False) as stream:
@@ -266,41 +264,19 @@ def fetch_sources(root=ROOT, cache_dir=None):
         finally:
             if temporary is not None:
                 temporary.unlink(missing_ok=True)
-        documents[source["id"]] = verified_document(data, source)
     return documents
 
 
-def load_metadata(root=ROOT, cache_dir=None):
-    """Load verified cache bytes only. Use fetch_sources to prepare a cold cache."""
+def fetch_sources(root=ROOT, cache_dir=None):
+    """Cache missing pinned sources; reject corrupt existing cache files."""
+    root = pathlib.Path(root)
+    sources = validate_manifest(read_json(root / MANIFEST_PATH))
+    return load_sources(sources, root, cache_dir, restore=True)
+
+
+def load_metadata(root=ROOT, cache_dir=None, *, restore=False):
+    """Resolve verified pinned metadata, using the cache unless asked to restore it."""
     root = pathlib.Path(root)
     manifest = read_json(root / MANIFEST_PATH)
-    sources = validate_manifest(manifest)
-    directory = cache_directory(root, cache_dir)
-    documents = {}
-    for source in sources:
-        path = directory / f"{source['sha256']}.json"
-        require(path.exists() or path.is_symlink(), f"Missing pinned metadata cache: {path}; run prepare:catalog")
-        documents[source["id"]] = cached_document(path, source)
+    documents = load_sources(validate_manifest(manifest), root, cache_dir, restore=restore)
     return resolve_metadata(read_json(root / IDENTITIES_PATH), manifest, read_json(root / OVERRIDES_PATH), documents)
-
-
-def load_identities(root=ROOT, cache_dir=None):
-    return load_metadata(root=root, cache_dir=cache_dir)[0]
-
-
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--cache-dir", type=pathlib.Path, help="Use a separate content-addressed cache directory")
-    parser.add_argument("--check", action="store_true", help="Validate and resolve existing cache without network access")
-    args = parser.parse_args()
-    try:
-        if not args.check:
-            fetch_sources(cache_dir=args.cache_dir)
-        _, report = load_metadata(cache_dir=args.cache_dir)
-        print(json.dumps(report["summary"], sort_keys=True))
-    except (ValueError, OSError) as error:
-        parser.exit(1, f"Metadata error: {error}\n")
-
-
-if __name__ == "__main__":
-    main()

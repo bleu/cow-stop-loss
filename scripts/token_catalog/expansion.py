@@ -1,31 +1,18 @@
-#!/usr/bin/env python3
 """Screen official directories and stage verified sell routes for the pinned catalog."""
-import argparse
 import concurrent.futures
 import datetime
 import hashlib
-import importlib.util
 import json
-import pathlib
 import re
 import time
 import urllib.request
 from collections import Counter, defaultdict
 
-import catalog
-import catalog_instruments as instruments
-import catalog_metadata as metadata
+from . import ROOT, assets, instruments, live, metadata
+from . import snapshot as catalog
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
 CHAINS = sorted(catalog.PRODUCTION_CHAINS)
 DIRECTORY_URL = re.compile(r"https://reference-data-directory\.vercel\.app/feeds-[a-z0-9-]+\.json")
-
-
-def load_script(name):
-    spec = importlib.util.spec_from_file_location(name.replace("-", "_"), ROOT / f"scripts/{name}.py")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
 
 
 def now():
@@ -41,7 +28,9 @@ def write(path, value):
     path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n")
 
 
-def source_urls():
+def source_urls(*, robinhood=False):
+    if robinhood:
+        return {str(catalog.ROBINHOOD_CHAIN): instruments.ROBINHOOD_DIRECTORY}
     entries = read("sources")["feedSources"]
     return {str(chain): entries[str(chain)]["url"] for chain in CHAINS}
 
@@ -84,12 +73,17 @@ def screen_directories(directories, tokens, approvals):
         report[chain] = []
         for row in rows:
             docs = row.get("docs", {})
-            reason = catalog.excluded_reason(row)
+            robinhood_stock = int(chain) == catalog.ROBINHOOD_CHAIN and docs.get("assetClass") == "Equity"
+            reason = catalog.excluded_reason(row, robinhood_stock=robinhood_stock)
             if reason is None:
                 if docs["quoteAsset"] != "USD":
                     reason = "no-fixed-buy-in-quote"
                 elif row["decimals"] > catalog.MAX_ORACLE_DECIMALS:
                     reason = "unsupported-feed-decimals"
+                elif robinhood_stock and (docs.get("blockchainName"), docs.get("deliveryChannelCode"),
+                                           docs.get("productTypeCode"), docs.get("marketHours")) != (
+                        "Robinhood", "DF", "primaryTokenizedPrice", catalog.ROBINHOOD_MARKET_HOURS):
+                    reason = "unsupported-robinhood-stock-source"
                 else:
                     reason = "needs-exact-evidence"
             result = {"path": row.get("path"), "name": row.get("name"), "proxyAddress": row.get("proxyAddress"), "reason": reason}
@@ -108,14 +102,15 @@ def screen_directories(directories, tokens, approvals):
     volatile = [
         {"chainId": chain, "address": address, "symbol": token["symbol"], "sourceHints": sorted(matched[chain, address])}
         for (chain, address), token in sorted(tokens.items())
-        if chain in CHAINS and token["assetClass"] == "volatile" and (chain, address) not in approved
+        if str(chain) in directories and token["assetClass"] == "volatile" and (chain, address) not in approved
     ]
     return report, volatile
 
 
-def scan(output):
-    with concurrent.futures.ThreadPoolExecutor(max_workers=len(CHAINS)) as pool:
-        snapshots = list(pool.map(fetch_directory, source_urls().items()))
+def scan(output, *, robinhood=False):
+    urls = source_urls(robinhood=robinhood)
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(urls)) as pool:
+        snapshots = list(pool.map(fetch_directory, urls.items()))
     directories = {chain: parse_directory(data, chain) for chain, data, _ in snapshots}
     report, volatile = screen_directories(directories, discovery_tokens(), read("policy")["approvals"])
     output.mkdir(parents=True, exist_ok=False)
@@ -125,16 +120,14 @@ def scan(output):
     write(output / "screening.json", report)
     write(output / "unapproved-volatile.json", volatile)
     for chain, rows in report.items():
-        print(f"{chain}: {len(rows)} directory rows, {sum(row['reason'] == 'needs-exact-evidence' for row in rows)} eligible USD source rows")
+        print(f"{chain}: {len(rows)} directory rows, {sum(row['reason'] == 'needs-exact-evidence' for row in rows)} USD source rows for review")
     print(f"{len(volatile)} known volatile tokens without approved feeds")
 
 
 def read_snapshot(directory, *, allow_pilot=False):
     sources = metadata.read_json(directory / "sources.json")
-    if allow_pilot and set(sources) == {str(catalog.ROBINHOOD_CHAIN)}:
-        urls = {str(catalog.ROBINHOOD_CHAIN): instruments.ROBINHOOD_DIRECTORY}
-    else:
-        urls = source_urls()
+    robinhood = allow_pilot and set(sources) == {str(catalog.ROBINHOOD_CHAIN)}
+    urls = source_urls(robinhood=robinhood)
     catalog.require(set(sources) == set(urls), "Snapshot must cover every production chain or only the Robinhood pilot")
     inventories = {}
     for chain, url in urls.items():
@@ -150,7 +143,6 @@ def discover_instruments(inventory, output, *, robinhood_registry=None):
     output.mkdir(parents=True, exist_ok=False)
     known = {metadata.token_key(token, "identity") for token in read("identities")["tokens"]}
     approved = {route_key(entry)[:2] for entry in read("policy")["approvals"] if entry["quote"] == "USD"}
-    live = load_script("catalog-live")
     evidence = {"approvals": [], "newIdentities": [], "metadataOverrides": []}
     gold, stocks, issuer_sources, issues = [], [], {}, {}
 
@@ -263,7 +255,6 @@ def stage_identities(inputs, output, rejections, *, new_fixed_buy=None):
         source: {"tokens": [token for token in doc["tokens"] if isinstance(token.get("address"), str) and (token.get("chainId"), token["address"].lower()) in new_ids]}
         for source, doc in documents.items()
     }
-    assets = load_script("catalog-assets")
     image_dir = output / "images"
     def prepare(item):
         key, identity = item
@@ -351,7 +342,6 @@ def stage(inventory, evidence, output):
         except (KeyError, ValueError) as error:
             rejections[key] = str(error)
 
-    live = load_script("catalog-live")
     passing, batch = [], None
     if candidates:
         arguments = (candidates, list(buy_approvals.values()), list(tokens.values()), staged)
@@ -414,32 +404,3 @@ def stage(inventory, evidence, output):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes((output / "images" / relative).read_bytes())
     print(f"Staged {len(passing)} new sell routes: {dict(sorted(Counter(key[0] for key in accepted_keys).items()))}")
-
-
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    commands = parser.add_subparsers(dest="command", required=True)
-    scanning = commands.add_parser("scan", help="capture and screen the full directories")
-    scanning.add_argument("--output", type=pathlib.Path, required=True)
-    discovery = commands.add_parser("instruments", help="prepare issuer-backed evidence and report blocked stock feeds")
-    discovery.add_argument("--inventory", type=pathlib.Path, required=True)
-    discovery.add_argument("--output", type=pathlib.Path, required=True)
-    discovery.add_argument("--robinhood-registry", type=pathlib.Path, help="read a captured issuer response for discovery only")
-    staging = commands.add_parser("stage", help="check exact evidence and stage passing catalog changes")
-    staging.add_argument("--inventory", type=pathlib.Path, required=True)
-    staging.add_argument("--evidence", type=pathlib.Path, action="append", required=True)
-    staging.add_argument("--output", type=pathlib.Path, required=True)
-    args = parser.parse_args()
-    try:
-        if args.command == "scan":
-            scan(args.output)
-        elif args.command == "instruments":
-            discover_instruments(args.inventory, args.output, robinhood_registry=args.robinhood_registry)
-        else:
-            stage(args.inventory, args.evidence, args.output)
-    except (ValueError, OSError) as error:
-        parser.exit(1, f"Catalog expansion: {error}\n")
-
-
-if __name__ == "__main__":
-    main()

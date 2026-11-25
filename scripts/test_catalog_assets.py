@@ -1,14 +1,12 @@
 import copy
 import hashlib
-import importlib.util
 import pathlib
 import tempfile
 import unittest
 from unittest import mock
 
-SPEC = importlib.util.spec_from_file_location("catalog_assets", pathlib.Path(__file__).with_name("catalog-assets.py"))
-ASSETS = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(ASSETS)
+from token_catalog import assets as ASSETS
+
 IMAGE = b"<svg xmlns='http://www.w3.org/2000/svg'>" + b" " * 100 + b"</svg>"
 SOURCE = "https://example.com/token.svg"
 

@@ -1,19 +1,13 @@
 """Offline approval-policy tests. Run with python3 -m unittest discover -s scripts -p 'test_*.py'."""
 import copy
 import hashlib
-import importlib.util
-import io
-import json
 import pathlib
 import tempfile
 import unittest
 from unittest.mock import patch
 
-from catalog_observations import approval_pin
-
-SPEC = importlib.util.spec_from_file_location("catalog", pathlib.Path(__file__).with_name("catalog.py"))
-catalog = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(catalog)
+from token_catalog import snapshot as catalog
+from token_catalog.observations import approval_pin
 
 
 def address(number):
@@ -25,8 +19,6 @@ class CatalogPolicyTests(unittest.TestCase):
         self.directory = tempfile.TemporaryDirectory()
         self.addCleanup(self.directory.cleanup)
         root = pathlib.Path(self.directory.name)
-        (root / "public").mkdir()
-        (root / "public" / "token.svg").write_text("x" * 101)
         self.root_patch = patch.object(catalog, "ROOT", root)
         self.root_patch.start()
         self.addCleanup(self.root_patch.stop)
@@ -969,20 +961,6 @@ class CatalogPolicyTests(unittest.TestCase):
         test_token = next(token for token in result["tokens"] if token["chainId"] == 11155111)
         self.assertEqual(test_token["oracles"], {})
 
-    def test_logo_digest_is_required_and_must_match_file(self):
-        for digest in [None, "", "invalid", "0" * 64]:
-            with self.subTest(digest=digest):
-                identity = copy.deepcopy(self.identities)
-                if digest is None:
-                    del identity["tokens"][0]["logoSha256"]
-                else:
-                    identity["tokens"][0]["logoSha256"] = digest
-                with self.assertRaisesRegex(ValueError, "logoSha256|Logo digest differs"):
-                    catalog.build(identity, self.inventories, self.policy, self.verification)
-        (catalog.ROOT / "public/token.svg").write_text("y" * 101)
-        with self.assertRaisesRegex(ValueError, "Logo digest differs"):
-            self.build()
-
     def test_audit_accounts_for_each_fixture_source_row(self):
         capped = self.feed(1, 80004, "capped-usd", "CAPPED")
         capped["docs"]["stablecoinCapped"] = True
@@ -1023,97 +1001,6 @@ class CatalogPolicyTests(unittest.TestCase):
                 self.assertEqual(result["chains"][str(chain)], policy["chains"][str(chain)])
                 self.assertEqual(result["chains"][str(chain)]["status"], "unavailable")
         self.assertEqual(result["chains"]["11155111"]["status"], "test-only")
-
-
-class CatalogCliTests(unittest.TestCase):
-    def setUp(self):
-        self.directory = tempfile.TemporaryDirectory()
-        self.addCleanup(self.directory.cleanup)
-        self.root = pathlib.Path(self.directory.name)
-        (self.root / "scripts").mkdir()
-        (self.root / "src/lib").mkdir(parents=True)
-        self.manifest = self.root / "scripts/catalog-metadata-sources.json"
-        self.manifest.write_text("{}\n")
-        self.snapshot = self.root / "src/lib/tokenCatalogData.json"
-        self.result = {"tokens": [{"chainId": 1}], "usdTokens": {}, "chains": {}}
-        self.audit = [{"reason": "awaiting-approval"}]
-        self.identities = {"tokens": []}
-        self.metadata = {"summary": {"tokens": 1}}
-        for target, kwargs in [
-            ("ROOT", {"new": self.root}),
-            ("load_metadata", {"return_value": (self.identities, self.metadata)}),
-            ("build", {"return_value": (self.result, self.audit)}),
-        ]:
-            mock = patch.object(catalog, target, **kwargs)
-            setattr(self, target, mock.start())
-            self.addCleanup(mock.stop)
-
-    def run_cli(self, *args):
-        with patch("sys.argv", ["catalog.py", *map(str, args)]), patch("sys.stdout", new_callable=io.StringIO):
-            catalog.main()
-
-    def files(self):
-        return {path.relative_to(self.root) for path in self.root.rglob("*") if path.is_file()}
-
-    def test_default_writes_only_runtime_snapshot(self):
-        self.run_cli()
-        self.load_metadata.assert_called_once_with(self.root, None)
-        self.build.assert_called_once_with(identities=self.identities)
-        self.assertEqual(self.snapshot.read_text(), json.dumps(self.result, indent=2) + "\n")
-        self.assertEqual(self.files(), {self.manifest.relative_to(self.root), self.snapshot.relative_to(self.root)})
-
-    def test_reports_are_optional_and_written_to_requested_directory(self):
-        reports = self.root / "reports/nested"
-        cache = self.root / "cache"
-        self.run_cli("--reports", reports, "--cache-dir", cache)
-        self.load_metadata.assert_called_once_with(self.root, cache)
-        self.assertEqual(json.loads(self.snapshot.read_text()), self.result)
-        self.assertEqual(json.loads((reports / "catalog-audit.json").read_text()), self.audit)
-        self.assertEqual(json.loads((reports / "catalog-metadata-report.json").read_text()), {
-            "schemaVersion": 1,
-            "sourceManifest": "scripts/catalog-metadata-sources.json",
-            "sourceManifestSha256": hashlib.sha256(self.manifest.read_bytes()).hexdigest(),
-            **self.metadata,
-        })
-        self.assertEqual(self.files(), {
-            self.manifest.relative_to(self.root), self.snapshot.relative_to(self.root),
-            pathlib.Path("reports/nested/catalog-audit.json"),
-            pathlib.Path("reports/nested/catalog-metadata-report.json"),
-        })
-
-    def test_check_needs_only_runtime_snapshot_and_writes_no_reports(self):
-        content = json.dumps(self.result, indent=2) + "\n"
-        self.snapshot.write_text(content)
-        with patch.object(pathlib.Path, "write_text") as write:
-            self.run_cli("--check")
-        write.assert_not_called()
-        self.assertEqual(self.snapshot.read_text(), content)
-        self.assertEqual(self.files(), {self.manifest.relative_to(self.root), self.snapshot.relative_to(self.root)})
-
-    def test_check_rejects_missing_or_stale_snapshot_without_writing(self):
-        for content in [None, "{}\n"]:
-            with self.subTest(content=content):
-                if content is not None:
-                    self.snapshot.write_text(content)
-                with patch.object(pathlib.Path, "write_text") as write:
-                    with self.assertRaisesRegex(ValueError, "tokenCatalogData.json differs"):
-                        self.run_cli("--check")
-                write.assert_not_called()
-                if content is None:
-                    self.assertFalse(self.snapshot.exists())
-                else:
-                    self.assertEqual(self.snapshot.read_text(), content)
-
-    def test_check_and_reports_are_mutually_exclusive(self):
-        reports = self.root / "reports"
-        for args in [("--check", "--reports", reports), ("--reports", reports, "--check")]:
-            with self.subTest(args=args), patch("sys.stderr", new_callable=io.StringIO):
-                with self.assertRaises(SystemExit) as error:
-                    self.run_cli(*args)
-                self.assertEqual(error.exception.code, 2)
-        self.load_metadata.assert_not_called()
-        self.build.assert_not_called()
-        self.assertEqual(self.files(), {self.manifest.relative_to(self.root)})
 
 
 if __name__ == "__main__":

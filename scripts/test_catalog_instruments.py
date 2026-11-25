@@ -2,8 +2,8 @@ import datetime
 import json
 import unittest
 
-import catalog
-import catalog_instruments as instruments
+from token_catalog import instruments
+from token_catalog import snapshot as catalog
 
 TOKEN = "0x" + "a" * 40
 OTHER_TOKEN = "0x" + "b" * 40

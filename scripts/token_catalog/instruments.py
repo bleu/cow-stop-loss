@@ -6,9 +6,9 @@ import re
 import urllib.request
 from collections import defaultdict
 
-from catalog import excluded_reason
-from catalog_metadata import MAX_BYTES, PinnedRedirectHandler
-from catalog_observations import ADDRESS, MAX_ORACLE_DECIMALS, integer, require
+from .metadata import MAX_BYTES, PinnedRedirectHandler
+from .observations import ADDRESS, MAX_ORACLE_DECIMALS, integer, require
+from .snapshot import excluded_reason
 
 PAXOS_URL = "https://raw.githubusercontent.com/paxosglobal/paxos-gold-contract/1a21e856ebe70360de3817edd5c89baf30a429a4/README.md"
 PLASMA_ROOT = "https://raw.githubusercontent.com/PlasmaLaboratories/plasma-tokenlist/5920b4bdb56d87d3afd4a1187cffcef8d1c2f45a/"

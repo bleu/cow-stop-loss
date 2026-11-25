@@ -10,7 +10,7 @@ import unittest
 import urllib.error
 from unittest import mock
 
-import catalog_metadata as metadata
+from token_catalog import metadata
 
 ADDRESS = "0x" + "ab" * 20
 OTHER_ADDRESS = "0x" + "cd" * 20
@@ -229,7 +229,6 @@ class CacheTests(unittest.TestCase):
         self.fetch()
         resolved, _ = self.load()
         self.assertEqual(resolved["tokens"][0]["symbol"], "TOK")
-        self.assertEqual(metadata.load_identities(self.root, self.cache), resolved)
         self.opener.open.assert_not_called()
 
     def test_default_cache_is_content_addressed(self):

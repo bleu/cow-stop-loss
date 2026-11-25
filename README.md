@@ -25,7 +25,9 @@ corepack pnpm@9 dev:next
 
 Open http://localhost:3000. Run `corepack pnpm@9 dev` to start the app and documentation together.
 
-`dev:next` and `build:next` first prepare pinned token-list bytes and local token images, then check image hashes and the generated catalog offline. A clean checkout needs network access for missing files. Verified metadata in `.cache/token-catalog` and verified images in `public/assets/tokens` can be reused offline. Images keep their current local URLs and exact bytes; baseline assets and any image that cannot be restored remain committed. Changed bytes or corrupt data stop the command, as does a network failure without verified local files. There is no latest-list or replacement-artwork fallback. These commands do not regenerate the runtime catalog. After an intentional catalog change, run `corepack pnpm@9 generate:catalog`, review the diff, and repeat the checks. See [Token catalog](docs/token-catalog.md) for sources and maintenance.
+`dev:next` and `build:next` run `corepack pnpm@9 catalog prepare --check` before Next.js starts. It restores missing pinned metadata and images, verifies their hashes, and compares the checked-in runtime snapshot offline. It does not rewrite the snapshot. See [Token catalog](docs/token-catalog.md) for the steps to change and regenerate the catalog.
+
+A clean checkout needs network access for missing files. Verified metadata in `.cache/token-catalog` and verified images in `public/assets/tokens` can be reused offline. Images keep their local URLs and exact bytes. Baseline assets and images that cannot be restored stay in Git. The gate fails if bytes do not match or a missing file cannot be restored. There is no latest-list or replacement-artwork fallback.
 
 ## RPC setup
 
@@ -77,18 +79,14 @@ A detail link for a different account asks you to connect that account and does 
 ## Checks
 
 ```bash
-corepack pnpm@9 prepare:catalog
-corepack pnpm@9 check:assets
-corepack pnpm@9 check:catalog
 python3 -m unittest discover -s scripts -p 'test_catalog*.py'
+corepack pnpm@9 exec tsc --noEmit
 corepack pnpm@9 test:jest --runInBand
 corepack pnpm@9 lint
-corepack pnpm@9 exec tsc --noEmit
-corepack pnpm@9 build:next
 corepack pnpm@9 build
 ```
 
-The app uses the checked-in runtime catalog and local images. Ordinary Jest tests do not fetch token lists or images; they check the reviewed image manifest. CI prepares metadata and images, checks image hashes and the runtime snapshot, runs the Python catalog tests, checks TypeScript, runs Jest and lint, then builds the app and documentation. TypeScript checks the whole project, including tests. Jest transforms and runs tests without a second type-check pass, which avoids a React Native global type collision in ts-jest. The browser loads local images and does not depend on list-server CORS settings. Detailed reports are optional ignored outputs: `python3 scripts/catalog.py --reports .cache/token-catalog/reports` regenerates the runtime snapshot and writes `catalog-audit.json` and `catalog-metadata-report.json` there. Normal generation and checks do not require these reports.
+CI runs these checks in order. The build runs the catalog gate through `build:next` and also builds the documentation. TypeScript checks the whole project, including tests. Jest runs tests without a second type check to avoid a React Native global type collision in ts-jest. Ordinary Jest tests use the checked-in runtime catalog and reviewed image manifest without fetching lists or images. The browser loads local images and does not depend on list-server CORS settings.
 
 Tests replace external HTTP, wallet providers, and time. Policy tests use the reviewed sell lists and require usable routes on all ten mainnets. Rejection tests cover tokens outside those lists and unavailable-policy fixtures. Some order-math and EOA-flow suites opt into synthetic approved routes; those fixtures are not production approval evidence. A real WalletConnect session also needs a configured project and an external wallet.
 

@@ -1,6 +1,5 @@
 import contextlib
 import copy
-import importlib.util
 import io
 import json
 import pathlib
@@ -8,9 +7,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-SPEC = importlib.util.spec_from_file_location("catalog_live", pathlib.Path(__file__).with_name("catalog-live.py"))
-LIVE = importlib.util.module_from_spec(SPEC)
-SPEC.loader.exec_module(LIVE)
+from token_catalog import live as LIVE
 
 
 def word(value):
