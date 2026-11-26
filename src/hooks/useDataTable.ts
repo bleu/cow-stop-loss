@@ -79,12 +79,10 @@ interface UseDataTableProps<TData, TValue> {
   defaultPerPage?: number;
 
   /**
-   * The default sort order.
-   * @default undefined
-   * @type `${Extract<keyof TData, string | number>}.${"asc" | "desc"}` | undefined
+   * The fixed sort order.
    * @example "createdAt.desc"
    */
-  defaultSort?: `${Extract<keyof TData, string | number>}.${"asc" | "desc"}`;
+  fixedSort?: `${Extract<keyof TData, string | number>}.${"asc" | "desc"}`;
 
   /**
    * Defines filter fields for the table. Supports both dynamic faceted filters and search filters.
@@ -132,7 +130,6 @@ interface UseDataTableProps<TData, TValue> {
 
 const schema = z.object({
   page: z.coerce.number().default(1),
-  sort: z.string().optional(),
 });
 
 export function useDataTable<TData, TValue>({
@@ -140,7 +137,7 @@ export function useDataTable<TData, TValue>({
   columns,
   initialColumnVisibility = {},
   defaultPerPage = 5,
-  defaultSort,
+  fixedSort,
   filterFields = [],
   enableAdvancedFilter = false,
   enableRowSelection,
@@ -153,8 +150,6 @@ export function useDataTable<TData, TValue>({
   const search = schema.parse(Object.fromEntries(searchParams));
   const page = search.page;
   const perPage = defaultPerPage;
-  const sort = search.sort ?? defaultSort;
-  const [column, order] = sort?.split(".") ?? [];
 
   // Memoize computation of searchableColumns and filterableColumns
   const { searchableColumns, filterableColumns } = React.useMemo(() => {
@@ -233,28 +228,24 @@ export function useDataTable<TData, TValue>({
     [pageIndex, pageSize],
   );
 
-  // Handle server-side sorting
-  const [sorting, setSorting] = React.useState<SortingState>([
-    {
-      id: column ?? "",
-      desc: order === "desc",
-    },
-  ]);
+  const sorting = React.useMemo<SortingState>(() => {
+    if (!fixedSort) return [];
+    const [id, direction] = fixedSort.split(".");
+    return [{ id, desc: direction === "desc" }];
+  }, [fixedSort]);
 
   React.useEffect(() => {
     router.push(
       `${pathname}?${createQueryString({
         page: pageIndex + 1,
         per_page: null,
-        sort: sorting[0]?.id
-          ? `${sorting[0]?.id}.${sorting[0]?.desc ? "desc" : "asc"}`
-          : null,
+        sort: fixedSort ?? null,
       })}`,
       {
         scroll: false,
       },
     );
-  }, [pageIndex, pageSize, sorting]);
+  }, [pageIndex, pageSize, fixedSort]);
 
   // Handle server-side filtering
   const debouncedSearchableColumnFilters = JSON.parse(
@@ -343,7 +334,6 @@ export function useDataTable<TData, TValue>({
     getRowId: (row) => (row as { id: string }).id,
     onRowSelectionChange: setRowSelection,
     onPaginationChange: setPagination,
-    onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),

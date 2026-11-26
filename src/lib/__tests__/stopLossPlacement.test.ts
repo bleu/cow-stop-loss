@@ -624,6 +624,35 @@ test("a confirmed transaction failure permits a new explicit submission", async 
   ]);
 });
 
+test("uses confirmation time when a setup retry has no wallet reference", async () => {
+  let time = 1000;
+  const placement = createStopLossPlacement({
+    ...environment(),
+    now: () => time,
+  });
+  await placement.submit(prepared, "setup", {
+    send: async () => ({ id: "failed-setup" }),
+  });
+  await placement.resume(scope, {
+    readTransaction: async () => ({ status: "failed" }),
+    checkState: async () => false,
+  });
+
+  time = 2000;
+  await expect(
+    placement.submit(prepared, "setup", {
+      send: async () => {
+        throw new Error("Wallet response lost");
+      },
+    }),
+  ).rejects.toThrow("Wallet response lost");
+
+  time = 3000;
+  await placement.resume(scope, { checkState: async () => true });
+  const [order] = await placement.mergeRows(scope, []);
+  expect(order).toMatchObject({ status: OrderStatus.OPEN, createdAt: 3 });
+});
+
 test("an old approval check cannot update a later setup stage", async () => {
   const placement = createStopLossPlacement(environment());
   await placement.submit(prepared, "approval", {
@@ -813,6 +842,23 @@ test("local rows are pending until verified, then Open without an API detail lin
     partiallyFillable: true,
   });
   expect(placement.getConfirmedPlacements(scope)).toEqual([prepared]);
+});
+
+test("keeps the local creation time after reload and confirmation", async () => {
+  let time = 1700000000250;
+  const options = { ...environment(), now: () => time };
+  await createStopLossPlacement(options).submit(prepared, "setup", {
+    send: async () => ({ id: "submitted-setup" }),
+  });
+
+  time += 5000;
+  const reloaded = createStopLossPlacement(options);
+  const [pending] = await reloaded.mergeRows(scope, []);
+  expect(pending.createdAt).toBe(1700000000.25);
+
+  await reloaded.resume(scope, { checkState: async () => true });
+  const [confirmed] = await reloaded.mergeRows(scope, []);
+  expect(confirmed.createdAt).toBe(pending.createdAt);
 });
 
 test("five minutes without indexing shows the exact API error after reload and keeps funding active", async () => {

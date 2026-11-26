@@ -35,6 +35,7 @@ export type PlacementRecord = {
   status:
     "prompting" | "pending" | "failed" | "rejected" | "confirmed" | "ready";
   uncertain?: boolean;
+  setupSubmittedAt?: number;
   confirmedAt?: number;
   approvalAmount?: bigint;
   settlementAmount?: bigint;
@@ -457,6 +458,8 @@ export function createStopLossPlacement({
               stage,
               status: "prompting",
               uncertain: undefined,
+              setupSubmittedAt:
+                stage === "setup" ? undefined : active.setupSubmittedAt,
               transactions: { ...active.transactions, [stage]: undefined },
               error: undefined,
               settlementAmount:
@@ -538,6 +541,8 @@ export function createStopLossPlacement({
                     revision: entry.revision + 1,
                     status:
                       entry.status === "prompting" ? "pending" : entry.status,
+                    setupSubmittedAt:
+                      stage === "setup" ? now() : entry.setupSubmittedAt,
                     transactions: { ...entry.transactions, [stage]: reference },
                   }
                 : entry,
@@ -761,6 +766,7 @@ export function createStopLossPlacement({
       .map((record) => {
         const order = decodeStopLossStaticInput(record.prepared.staticInput);
         const { prepared } = record;
+        const createdAt = record.setupSubmittedAt ?? record.confirmedAt;
         return {
           id: record.id,
           parentId: record.id,
@@ -794,10 +800,7 @@ export function createStopLossPlacement({
           executedSellAmount: null,
           executedBuyAmount: null,
           executedFee: null,
-          createdAt:
-            record.confirmedAt === undefined
-              ? undefined
-              : record.confirmedAt / 1000,
+          createdAt: createdAt === undefined ? undefined : createdAt / 1000,
           transactionHash: record.transactions.setup?.transactionHash,
           source: "local",
           canLink: false,
