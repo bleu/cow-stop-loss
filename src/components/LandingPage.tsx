@@ -62,7 +62,13 @@ const questions = [
     id: "networks",
     question: "Which tokens and networks can I use?",
     answer:
-      "The app supports Ethereum, Gnosis, Arbitrum, Base, Polygon, Avalanche, BNB Chain, Linea, Plasma, and Sepolia. The supported sell tokens, fixed buy token, and approved oracle routes depend on the network and current catalog. Sepolia uses WETH and test USDC. New-order availability can be limited while a network has no approved route. The creation form follows your connected wallet's network. Always check token contract addresses and the network in your order review.",
+      "The app supports Ethereum, Gnosis, Arbitrum, Base, Polygon, Avalanche, BNB Chain, Linea, Plasma, Robinhood, and Sepolia. The supported sell tokens, fixed buy token, and approved oracle routes depend on the network and current catalog. Sepolia uses WETH and test USDC. New-order availability can be limited while a network has no approved route. The creation form follows your connected wallet's network. Always check token contract addresses and the network in your order review.",
+  },
+  {
+    id: "stock-tokens",
+    question: "Can I set a stop-loss for Stock Tokens?",
+    answer:
+      "Yes. On Robinhood, you can sell supported Stock Tokens and funds into USDG. Their Chainlink price feeds update only during a 24/5 session. A stop-loss can still execute after the market closes while both prices are within the order's freshness timeout. If either price becomes stale, the order cannot trigger until both prices are fresh again.",
   },
   {
     id: "approvals",

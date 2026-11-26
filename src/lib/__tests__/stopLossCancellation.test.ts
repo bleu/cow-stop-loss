@@ -37,6 +37,18 @@ const order: StopLossOrder = {
   executedBuyAmount: null,
   executedFee: null,
 };
+test("rejects cancellation on an unsupported chain before an RPC read", async () => {
+  const client = rpc();
+  await expect(
+    buildCancellation({
+      account,
+      order: { ...order, chainId: 57073 as StopLossOrder["chainId"] },
+      client: client as unknown as PublicClient,
+    }),
+  ).rejects.toThrow(/orders are unavailable/i);
+  expect(client.getBlockNumber).not.toHaveBeenCalled();
+});
+
 test("a Safe proposal stays pending until a later mined block removes the order", async () => {
   const client = rpc();
   const prepared = await buildCancellation({

@@ -12,7 +12,7 @@ import {
   COMPOSABLE_COW_ADDRESS,
   POLLER_ADDRESS_BY_CHAIN_ID,
 } from "./contracts";
-import { publicClientsFromIds } from "./publicClients";
+import { assertOrderChainEnabled, publicClientsFromIds } from "./publicClients";
 import type { StopLossOrder } from "./stopLossOrders";
 import { OrderStatus } from "./types";
 
@@ -25,6 +25,7 @@ export async function buildCancellation({
   order: StopLossOrder;
   client?: PublicClient;
 }) {
+  assertOrderChainEnabled(order.chainId);
   const hash = order.hash;
   if (!isHex(hash) || hash.length !== 66)
     throw new Error("Invalid conditional-order hash.");
@@ -114,6 +115,7 @@ export async function observeCancellation(
     client = publicClientsFromIds[prepared.order.chainId],
   }: { client?: PublicClient } = {},
 ): Promise<boolean> {
+  assertOrderChainEnabled(prepared.order.chainId);
   const blockNumber = await client.getBlockNumber({ cacheTime: 0 });
   if (blockNumber <= prepared.blockNumber) return false;
   const active = await client.readContract({

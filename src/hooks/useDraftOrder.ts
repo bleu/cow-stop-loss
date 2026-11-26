@@ -3,8 +3,8 @@ import { create } from "zustand";
 
 import { calculateAmounts } from "#/lib/calculateAmounts";
 import {
-  CHAINS_ORACLE_ROUTER_FACTORY,
   configuredRouteMaxAgeSeconds,
+  ConfiguredRouter,
 } from "#/lib/oracleRouter";
 import { getPlacementReads } from "#/lib/placementReads";
 import { ChainId } from "#/lib/publicClients";
@@ -66,8 +66,7 @@ export const useDraftOrder = create<DraftOrderState>()((set) => ({
       throw new Error("Receiver must not be the zero address.");
     }
 
-    const oracleRouterClass = CHAINS_ORACLE_ROUTER_FACTORY[chainId];
-    const oracleRouter = new oracleRouterClass({
+    const oracleRouter = new ConfiguredRouter({
       chainId,
       tokenBuy: swapData.tokenBuy,
       tokenSell: swapData.tokenSell,

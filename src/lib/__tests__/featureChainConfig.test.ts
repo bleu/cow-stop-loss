@@ -14,21 +14,24 @@ import {
   publicClientsFromIds,
   publicClientsFromNames,
   RPC_PROVIDERS,
-  supportedChainIds,
-  supportedChains,
+  walletChains,
 } from "../publicClients";
 
-const chainIds = [1, 100, 42161, 8453, 137, 43114, 56, 59144, 9745, 11155111];
+const walletChainIds = [
+  1, 100, 42161, 8453, 137, 43114, 56, 59144, 9745, 11155111, 4663,
+];
 
 describe("standalone chain configuration", () => {
   it("keeps browser and server chains, transports, and cookie storage in sync", () => {
     const browser = createWagmiConfig();
     expect(browser.chains).toEqual(wagmiServerConfig.chains);
-    expect(browser.chains.map(({ id }) => id).sort()).toEqual(chainIds.sort());
+    expect(browser.chains.map(({ id }) => id).sort()).toEqual(
+      [...walletChainIds].sort(),
+    );
     expect(browser._internal.ssr).toBe(true);
     expect(wagmiServerConfig._internal.ssr).toBe(true);
     expect(browser.storage?.key).toBe(wagmiServerConfig.storage?.key);
-    for (const chain of supportedChains) {
+    for (const chain of walletChains) {
       const browserTransport = browser.getClient({
         chainId: chain.id,
       }).transport;
@@ -57,7 +60,7 @@ describe("standalone chain configuration", () => {
     }
   });
 
-  it.each(chainIds)(
+  it.each(walletChainIds)(
     "restores the selected chain %s from the SSR cookie",
     (chainId) => {
       const cookie = `wagmi.store=${serialize({ state: { chainId, connections: new Map(), current: null } })}`;
@@ -67,10 +70,12 @@ describe("standalone chain configuration", () => {
 
   it("has complete client, label, and local image maps", () => {
     expect(Object.keys(publicClientsFromIds).map(Number).sort()).toEqual(
-      [...supportedChainIds].sort(),
+      [...walletChainIds].sort(),
     );
-    expect(Object.values(publicClientsFromNames)).toHaveLength(10);
-    for (const chain of supportedChains) {
+    expect(Object.values(publicClientsFromNames)).toHaveLength(
+      walletChainIds.length,
+    );
+    for (const chain of walletChains) {
       expect(publicClientsFromIds[chain.id].chain?.id).toBe(chain.id);
       expect(chainNames[chain.id]).toBeTruthy();
       expect(CHAIN_INFO[chain.id].icon).toMatch(/^\/assets\/chains\//);

@@ -89,6 +89,39 @@ async function submitRepair() {
   }));
 }
 
+test("confirms a saved Robinhood approval repair from the receipt block", async () => {
+  const chainId = 4663;
+  const client = publicClientsFromIds[chainId];
+  jest
+    .spyOn(client, "getTransaction")
+    .mockRejectedValue(new Error("Original transaction unavailable"));
+  jest.spyOn(client, "waitForTransactionReceipt").mockResolvedValue({
+    status: "success",
+    transactionHash,
+    blockNumber: BigInt(101),
+  } as never);
+  const read = jest.spyOn(client, "readContract").mockResolvedValue(BigInt(3));
+  const tracker = getStopLossApprovalRepair();
+  await tracker.submit(
+    { ...prepared, chainId },
+    { ...work, transaction: { ...work.transaction, chainId } },
+    async () => ({ id: transactionHash, transactionHash }),
+  );
+
+  const [record] = await resumeStopLossApprovalRepair(account, chainId);
+  expect(record).toMatchObject({
+    status: "confirmed",
+    reference: { transactionHash, blockNumber: BigInt(101) },
+  });
+  expect(read).toHaveBeenCalledWith(
+    expect.objectContaining({
+      functionName: "allowance",
+      blockNumber: BigInt(101),
+      args: [account, prepared.poller],
+    }),
+  );
+});
+
 test("keeps a successful receipt pending when the allowance read throws and retries only reads", async () => {
   const read = jest
     .spyOn(client, "readContract")

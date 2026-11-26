@@ -2,7 +2,7 @@
 
 import { useAccount } from "wagmi";
 
-import { supportedChainIds } from "#/lib/publicClients";
+import { isSupportedChainId } from "#/lib/publicClients";
 
 import { SwapForm, SwapFormProps } from "./SwapForm";
 
@@ -11,7 +11,7 @@ export function SwapCard({
   reviewDisabled,
 }: Partial<SwapFormProps>) {
   const { chainId } = useAccount();
-  if (chainId && !supportedChainIds.some((id) => id === chainId)) {
+  if (chainId !== undefined && !isSupportedChainId(chainId)) {
     return (
       <p role="alert">
         Switch to a supported wallet network to place an order.

@@ -8,7 +8,7 @@ import {
   POLLER_ADDRESS_BY_CHAIN_ID,
   STOP_LOSS_ADDRESS,
 } from "./contracts";
-import { publicClientsFromIds } from "./publicClients";
+import { isSupportedChainId, publicClientsFromIds } from "./publicClients";
 import { decodeStopLossStaticInput } from "./staticInputDecoder";
 import {
   conditionalOrderHash,
@@ -31,6 +31,7 @@ export async function loadOrderFundingHealth(
   order: StopLossOrder,
   client: PublicClient = publicClientsFromIds[order.chainId],
 ): Promise<OrderFundingHealth> {
+  if (!isSupportedChainId(order.chainId)) return { status: "unknown" };
   try {
     const funding = order.funding;
     if (!funding || funding.kind === "unknown") return { status: "unknown" };

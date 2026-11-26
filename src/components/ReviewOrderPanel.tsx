@@ -25,6 +25,7 @@ import type { DraftOrder } from "#/lib/types";
 import { formatTokenAmount } from "#/utils/amountFormatting";
 
 import { BlockExplorerLink } from "./ExplorerLink";
+import { MarketHoursNotice } from "./MarketHoursNotice";
 
 export interface ReviewOrderPanelProps {
   chainId: ChainId;
@@ -186,6 +187,11 @@ export function ReviewOrderPanel({
         </section>
       </div>
 
+      <MarketHoursNotice
+        chainId={chainId}
+        tokenSell={order.tokenSell}
+        tokenBuy={order.tokenBuy}
+      />
       {funding?.combinedCommitmentsExceedBalance && (
         <p
           role="alert"

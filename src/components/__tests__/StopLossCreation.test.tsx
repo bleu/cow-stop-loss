@@ -75,6 +75,7 @@ import { StopLossCreation } from "../StopLossCreation";
 const account = "0x1111111111111111111111111111111111111111";
 let requestLock: (action: () => unknown) => Promise<unknown>;
 let connectedAccount: `0x${string}` = account;
+let connectedChainId: number | undefined;
 let chainTime: bigint;
 const originalFetch = global.fetch;
 const sendTransactionAsync = jest.fn();
@@ -86,7 +87,7 @@ jest.mock("wagmi", () => ({
   ...jest.requireActual("wagmi"),
   useAccount: () => ({
     address: connectedAccount,
-    chainId: 1,
+    chainId: connectedChainId,
     isConnected: true,
   }),
   useSendTransaction: () => ({ sendTransactionAsync }),
@@ -103,6 +104,7 @@ beforeEach(() => {
     .mockResolvedValue(undefined);
   requestLock = async (action) => action();
   connectedAccount = account;
+  connectedChainId = 1;
   chainTime = BigInt(Math.floor(Date.now() / 1000));
   localStorage.clear();
   Object.defineProperty(navigator, "locks", {
@@ -234,6 +236,59 @@ function showCreation(onReview?: () => void) {
   const view = render(content());
   return { ...view, refreshWallet: () => view.rerender(content()) };
 }
+
+it("does not mount the order form, prefetch, or track placement on an unsupported chain", async () => {
+  connectedChainId = 57073;
+  const getRecords = jest.spyOn(getStopLossPlacement(), "getRecords");
+  showCreation();
+
+  expect(screen.getByRole("alert")).toHaveTextContent(
+    "Switch to a supported wallet network to place an order.",
+  );
+  expect(screen.queryByRole("button", { name: "Select token" })).toBeNull();
+  await act(async () => {
+    window.dispatchEvent(new Event("focus"));
+  });
+
+  expect(getRecords).not.toHaveBeenCalled();
+  expect(publicClientsFromIds[1].getBlockNumber).not.toHaveBeenCalled();
+  expect(publicClientsFromIds[1].readContract).not.toHaveBeenCalled();
+  expect(global.fetch).not.toHaveBeenCalled();
+  expect(sendTransactionAsync).not.toHaveBeenCalled();
+});
+
+it("does not fall back to account-wide creation tracking before the wallet chain is known", () => {
+  connectedChainId = undefined;
+  const getRecords = jest.spyOn(getStopLossPlacement(), "getRecords");
+  showCreation();
+
+  expect(getRecords).not.toHaveBeenCalled();
+});
+
+it("clears the current review when the wallet switches to an unsupported chain", async () => {
+  const user = userEvent.setup();
+  const view = showCreation();
+  await reviewOneOrder(user);
+
+  connectedChainId = 57073;
+  view.refreshWallet();
+
+  expect(screen.getByRole("alert")).toHaveTextContent(
+    "Switch to a supported wallet network to place an order.",
+  );
+  expect(
+    screen.queryByRole("region", { name: "Review stop-loss order" }),
+  ).not.toBeInTheDocument();
+
+  connectedChainId = 1;
+  view.refreshWallet();
+
+  expect(screen.getByRole("textbox", { name: "Sell amount" })).toBeVisible();
+  expect(
+    screen.queryByRole("region", { name: "Review stop-loss order" }),
+  ).not.toBeInTheDocument();
+  expect(sendTransactionAsync).not.toHaveBeenCalled();
+});
 
 it("does not fill the trigger price when a sell token is selected", async () => {
   const user = userEvent.setup();

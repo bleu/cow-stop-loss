@@ -13,7 +13,7 @@ import {
 export const COW_PROTOCOL_LINK = "https://cow.fi/";
 
 import { CHAIN_ASSETS } from "./chainAssets";
-import { type ChainId, plasma } from "./publicClients";
+import { type ChainId, plasma, robinhood } from "./publicClients";
 
 export interface BaseChainInfo {
   readonly docs: string;
@@ -143,6 +143,17 @@ export const CHAIN_INFO: ChainInfoMap = {
     explorerTitle: "PlasmaScan",
     urlAlias: "plasma",
     ...CHAIN_ASSETS[plasma.id],
+  },
+  [robinhood.id]: {
+    docs: "https://docs.robinhood.com/chain/",
+    explorer: robinhood.blockExplorers.default.url,
+    infoLink: COW_PROTOCOL_LINK,
+    label: robinhood.name,
+    name: "robinhood",
+    addressPrefix: "robinhood",
+    explorerTitle: robinhood.blockExplorers.default.name,
+    urlAlias: "robinhood",
+    ...CHAIN_ASSETS[robinhood.id],
   },
 };
 

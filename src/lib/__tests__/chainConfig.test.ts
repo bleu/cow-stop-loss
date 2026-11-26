@@ -12,6 +12,7 @@ const expectedPaths = [
   [56, "bnb", "/bnb"],
   [59144, "linea", "/linea"],
   [9745, "plasma", "/plasma"],
+  [4663, "robinhood", "/robinhood"],
   [11155111, "sepolia", "/sepolia"],
 ] as const satisfies ReadonlyArray<readonly [ChainId, string, string]>;
 

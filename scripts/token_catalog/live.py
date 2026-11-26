@@ -1,23 +1,20 @@
-#!/usr/bin/env python3
 """Read live token metadata and price-feed state; never send transactions."""
-import argparse
 import collections
 import concurrent.futures
 import copy
 import datetime
 import json
 import os
-import pathlib
 import subprocess
 import tempfile
 import time
 
-from catalog_observations import (
+from . import ROOT
+from .observations import (
     ADDRESS, MAX_ORACLE_DECIMALS, approval_key, approval_pin, checked_at, integer,
     no_check_errors, nonempty, require, source_rows, validate_leg,
 )
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
 RPCS = {
     1: "https://ethereum-rpc.publicnode.com",
     100: "https://gnosis-rpc.publicnode.com",
@@ -28,6 +25,7 @@ RPCS = {
     56: "https://bsc-rpc.publicnode.com",
     59144: "https://rpc.linea.build",
     9745: "https://rpc.plasma.to",
+    4663: "https://rpc.mainnet.chain.robinhood.com",
 }
 
 
@@ -71,7 +69,10 @@ def verify_chain(item, *, inventories=None):
     requests, labels = [], []
     feeds = {}
     for token in tokens:
-        for label, selector in [("decimals", "0x313ce567"), ("symbol", "0x95d89b41")]:
+        token_fields = [("decimals", "0x313ce567"), ("symbol", "0x95d89b41")]
+        if "robinhoodStockToken" in token:
+            token_fields.append(("uid", "0xf514ce36"))
+        for label, selector in token_fields:
             requests.append((token["address"], selector))
             labels.append(("token", token["address"], label))
         for quote, address in token["oracles"].items():
@@ -103,6 +104,8 @@ def verify_chain(item, *, inventories=None):
                     record[field] = text(value)
                 elif field == "decimals":
                     record[field] = int(value, 16)
+                elif field == "uid":
+                    record[field] = value.lower()
                 else:
                     raw = bytes.fromhex(value[2:])
                     require(len(raw) == 160, "Incomplete latestRoundData")
@@ -121,6 +124,8 @@ def verify_chain(item, *, inventories=None):
             issues.append(f"{token['symbol']} decimals: catalog={token['decimals']} live={live}")
         if live.get("symbol") != token["symbol"]:
             issues.append(f"Token symbol differs: {token['address']}: expected={token['symbol']} live={live}")
+        if "robinhoodStockToken" in token and live.get("uid") != token["robinhoodStockToken"]["uid"]:
+            issues.append(f"Token issuer UID differs: {token['address']}: {live}")
     for address, feed in records["feeds"].items():
         approval = feeds[address]
         matches = source_rows({**approval, "chainId": chain}, inventories)
@@ -291,17 +296,8 @@ def candidate_observation_batch(sells, buy_approvals, tokens, inventories, repor
     return {"checkedAt": report["checkedAt"], "routes": copy.deepcopy([pair for _, pair in passed])}
 
 
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=pathlib.Path, required=True, help="Write read-only verification evidence outside the app catalog")
-    parser.add_argument("--candidates", type=pathlib.Path, help="Observe proposed policy mappings before approval; this does not approve routes")
-    args = parser.parse_args()
+def observe_approved(output):
     data = json.loads((ROOT / "src/lib/tokenCatalogData.json").read_text())
-    scope = "candidate-review" if args.candidates else "approved-feeds"
-    if args.candidates:
-        policy = json.loads(args.candidates.read_text())
-        inventory = json.loads((ROOT / "scripts/catalog-feeds.json").read_text())
-        data["tokens"] = candidate_tokens(policy, data["tokens"], inventory)
     grouped = {chain: [token for token in data["tokens"] if token["chainId"] == chain and token.get("oracles")] for chain in RPCS}
     skipped = {str(chain): "No selected production feeds; live verification was not performed" for chain, tokens in grouped.items() if not tokens}
     grouped = {chain: tokens for chain, tokens in grouped.items() if tokens}
@@ -316,12 +312,7 @@ def main():
             except Exception as error:
                 results[str(chain)] = {"issues": [str(error)]}
                 print(f"{chain}: {error}", flush=True)
-    args.output.write_text(json.dumps({"checkedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(), "scope": scope, "status": "checked" if results else "not-performed", "chains": results, "skippedChains": skipped}, indent=2) + "\n")
+    output.write_text(json.dumps({"checkedAt": datetime.datetime.now(datetime.timezone.utc).isoformat(), "scope": "approved-feeds", "status": "checked" if results else "not-performed", "chains": results, "skippedChains": skipped}, indent=2) + "\n")
     if not results:
         print("No selected production feeds. No live token/feed checks were performed.", flush=True)
-    if any(result["issues"] for result in results.values()):
-        raise SystemExit(1)
-
-
-if __name__ == "__main__":
-    main()
+    return not any(result["issues"] for result in results.values())

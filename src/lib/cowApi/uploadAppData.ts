@@ -1,4 +1,4 @@
-import { ChainId } from "../publicClients";
+import { assertOrderChainEnabled, ChainId } from "../publicClients";
 import { COW_API_URL_BY_CHAIN_ID } from "./api";
 
 export async function uploadAppData({
@@ -10,6 +10,7 @@ export async function uploadAppData({
   fullAppData: string;
   chainId: ChainId;
 }) {
+  assertOrderChainEnabled(chainId);
   const url = COW_API_URL_BY_CHAIN_ID[chainId];
 
   const response = await fetch(`${url}/api/v1/app_data/${appDataHex}`, {

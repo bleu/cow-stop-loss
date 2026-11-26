@@ -8,7 +8,12 @@ import {
 } from "viem";
 
 import { STOP_LOSS_ADDRESS } from "./contracts";
-import { type ChainId, supportedChainIds } from "./publicClients";
+import {
+  assertOrderChainEnabled,
+  type ChainId,
+  isSupportedChainId,
+  supportedChainIds,
+} from "./publicClients";
 import { decodeStopLossStaticInput } from "./staticInputDecoder";
 import { findKnownToken } from "./supportedTokens";
 import { type IToken, OrderStatus } from "./types";
@@ -170,6 +175,7 @@ export async function loadStopLossFundingParents({
   cowShed: Address;
   signal?: AbortSignal;
 }): Promise<FundingParent[]> {
+  assertOrderChainEnabled(chainId);
   const wallet = account.toLowerCase();
   const mappings = await fetchPages<{
     address: Address;
@@ -373,8 +379,9 @@ export async function loadStopLossOrders({
   chainIds?: readonly ChainId[];
 }) {
   throwIfAborted(signal);
+  const orderChainIds = chainIds.filter(isSupportedChainId);
   const chains = await Promise.all(
-    chainIds.map(async (chainId): Promise<ChainOrders> => {
+    orderChainIds.map(async (chainId): Promise<ChainOrders> => {
       try {
         const mappings = await fetchPages<{
           address: Address;

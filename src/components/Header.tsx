@@ -7,7 +7,7 @@ import Link from "next/link";
 
 import { NetworkLogo } from "#/components/NetworkLogo";
 import { PixelIcon } from "#/components/ui/pixel-icon";
-import { ChainId, supportedChainIds } from "#/lib/publicClients";
+import { walletChains } from "#/lib/publicClients";
 
 interface IHeader {
   isLandingPage?: boolean;
@@ -16,6 +16,42 @@ interface IHeader {
   onLinkClick?: () => void;
   theme: "dark" | "light";
   onToggleTheme: () => void;
+}
+
+function WalletNetworkButton({
+  chain,
+  onClick,
+}: {
+  chain?: { id: number; name?: string; unsupported?: boolean };
+  onClick: () => void;
+}) {
+  const network = walletChains.find(({ id }) => id === chain?.id);
+  const label = chain?.unsupported
+    ? "Unsupported network"
+    : (chain?.name ?? "Select network");
+  return (
+    <Button
+      variant="outline"
+      aria-label="Switch wallet network"
+      title={label}
+      onClick={onClick}
+      className="pixel-control rescue-header-control size-11 gap-2 bg-card px-0 font-medium text-foreground lg:w-auto lg:px-4"
+    >
+      {network ? (
+        <NetworkLogo chainId={network.id} size={20} className="rounded-full" />
+      ) : (
+        <span
+          aria-hidden="true"
+          className={`size-2 shrink-0 rounded-full ${chain?.unsupported ? "bg-destructive" : "bg-primary"}`}
+        />
+      )}
+      <span className="hidden lg:inline">{label}</span>
+      <PixelIcon
+        name="chevron-down"
+        className="hidden size-4 opacity-70 lg:block"
+      />
+    </Button>
+  );
 }
 
 export function Header({
@@ -87,40 +123,10 @@ export function Header({
                 <>
                   {mounted && account ? (
                     <>
-                      <Button
-                        variant="outline"
-                        aria-label="Switch wallet network"
-                        title={
-                          chain?.unsupported
-                            ? "Unsupported network"
-                            : (chain?.name ?? "Select network")
-                        }
+                      <WalletNetworkButton
+                        chain={chain}
                         onClick={openChainModal}
-                        className="pixel-control rescue-header-control size-11 gap-2 bg-card px-0 font-medium text-foreground lg:w-auto lg:px-4"
-                      >
-                        {chain &&
-                        supportedChainIds.includes(chain.id as ChainId) ? (
-                          <NetworkLogo
-                            chainId={chain.id as ChainId}
-                            size={20}
-                            className="rounded-full"
-                          />
-                        ) : (
-                          <span
-                            aria-hidden="true"
-                            className={`size-2 shrink-0 rounded-full ${chain?.unsupported ? "bg-destructive" : "bg-primary"}`}
-                          />
-                        )}
-                        <span className="hidden lg:inline">
-                          {chain?.unsupported
-                            ? "Unsupported network"
-                            : (chain?.name ?? "Select network")}
-                        </span>
-                        <PixelIcon
-                          name="chevron-down"
-                          className="hidden size-4 opacity-70 lg:block"
-                        />
-                      </Button>
+                      />
                       <Button
                         variant="outline"
                         title={account.address}

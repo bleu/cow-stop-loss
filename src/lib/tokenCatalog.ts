@@ -1,14 +1,22 @@
 import type { Address } from "viem";
 
 import type { Oracles } from "./oracleRouter";
-import type { ChainId } from "./publicClients";
+import {
+  type ChainId,
+  isConfiguredChainId,
+  isSupportedChainId,
+  robinhood,
+} from "./publicClients";
 import data from "./tokenCatalogData.json";
 
 export type AssetClass =
   "volatile" | "usd-pegged" | "usd-linked" | "other-stable" | "unknown";
 
+export type MarketHours = "us_equities_24/5";
+
 export interface OracleApproval {
   maxAgeSeconds: number;
+  marketHours?: MarketHours;
 }
 
 export type OracleApprovals = Partial<Record<keyof Oracles, OracleApproval>>;
@@ -24,21 +32,9 @@ export interface CatalogToken {
 }
 
 function catalogChainId(chainId: number): ChainId {
-  switch (chainId) {
-    case 1:
-    case 100:
-    case 42161:
-    case 8453:
-    case 137:
-    case 43114:
-    case 56:
-    case 59144:
-    case 9745:
-    case 11155111:
-      return chainId;
-    default:
-      throw new Error(`Unsupported catalog chain: ${chainId}`);
-  }
+  if (!isConfiguredChainId(chainId))
+    throw new Error(`Unsupported catalog chain: ${chainId}`);
+  return chainId;
 }
 
 function record(value: unknown): Record<string, unknown> {
@@ -94,6 +90,16 @@ export function parseOracleApprovals(value: unknown): {
   for (const quote of ["USD", "ETH"] as const) {
     const proxy = record(token.oracles)[quote];
     const approval = record(record(token.oracleApprovals)[quote]);
+    const marketHours =
+      approval.marketHours === "us_equities_24/5" &&
+      token.chainId === robinhood.id &&
+      quote === "USD" &&
+      token.assetClass === "volatile" &&
+      approval.assetRelationship === "exact-asset" &&
+      approval.maxAgeSeconds === 86400
+        ? approval.marketHours
+        : undefined;
+    const categoryReview = record(approval.sourceCategorySuitability);
     if (
       typeof proxy !== "string" ||
       !/^0x[0-9a-fA-F]{40}$/.test(proxy) ||
@@ -102,9 +108,11 @@ export function parseOracleApprovals(value: unknown): {
       typeof approval.tokenAddress !== "string" ||
       approval.tokenAddress.toLowerCase() !== token.address.toLowerCase() ||
       approval.quote !== quote ||
+      ("marketHours" in approval && !marketHours) ||
       ("sourceCategorySuitability" in approval &&
-        (!reviewedDecision(approval.sourceCategorySuitability, "accepted") ||
-          record(approval.sourceCategorySuitability).category !== "medium")) ||
+        (!reviewedDecision(categoryReview, "accepted") ||
+          (categoryReview.category !== "medium" &&
+            !(categoryReview.category === "custom" && marketHours)))) ||
       (approval.assetRelationship !== "exact-asset" &&
         approval.assetRelationship !== "native-wrapper" &&
         approval.assetRelationship !== "bridged-underlying") ||
@@ -144,15 +152,21 @@ export function parseOracleApprovals(value: unknown): {
     )
       continue;
     oracles[quote] = proxy as Address;
-    oracleApprovals[quote] = { maxAgeSeconds: approval.maxAgeSeconds };
+    oracleApprovals[quote] = {
+      maxAgeSeconds: approval.maxAgeSeconds,
+      ...(marketHours ? { marketHours } : {}),
+    };
   }
   return { oracles, oracleApprovals };
 }
 
 export function catalogUnavailableReason(chainId: ChainId): string | undefined {
   const chain = record(record(record(data).chains)[String(chainId)]);
+  if (!isSupportedChainId(chainId))
+    return "Stop-loss orders are unavailable on this network.";
+  const expectedStatus = chainId === robinhood.id ? "pilot-only" : "approved";
   if (
-    chain.status === "approved" &&
+    chain.status === expectedStatus &&
     ["executionEvidence", "arithmeticBoundsEvidence", "reviewDate"].every(
       (field) =>
         typeof chain[field] === "string" &&
@@ -208,6 +222,7 @@ export const USD_TOKENS = {
   59144: requireCatalogToken(59144, data.usdTokens["59144"]),
   9745: requireCatalogToken(9745, data.usdTokens["9745"]),
   11155111: requireCatalogToken(11155111, data.usdTokens["11155111"]),
+  [robinhood.id]: requireCatalogToken(robinhood.id, data.usdTokens["4663"]),
 } satisfies Record<ChainId, CatalogToken>;
 
 export function findTokenOracles(

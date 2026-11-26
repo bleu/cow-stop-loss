@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { getAddress, isAddress } from "viem";
 
-import { ChainId } from "#/lib/publicClients";
+import { type ChainId, robinhood } from "#/lib/publicClients";
 import { TOKEN_CATALOG } from "#/lib/tokenCatalog";
 
 type ImageAttributes = React.DetailedHTMLProps<
@@ -24,7 +24,7 @@ const tokenUrlRoot =
 export const cowprotocolTokenLogoUrl = (address?: string, chainId?: ChainId) =>
   `${tokenUrlRoot}/${chainId}/${address}/logo.png`;
 
-const chainIdToName: Record<ChainId, string> = {
+const chainIdToName: Record<ChainId, string | null> = {
   1: "ethereum",
   100: "xdai",
   11155111: "ethereum",
@@ -35,10 +35,13 @@ const chainIdToName: Record<ChainId, string> = {
   56: "smartchain",
   59144: "linea",
   9745: "plasma",
+  [robinhood.id]: null,
 };
 
-export function trustTokenLogoUrl(address?: string, chainId?: ChainId): string {
-  return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${chainIdToName[chainId || 1]}/assets/${address}/logo.png`;
+export function trustTokenLogoUrl(address?: string, chainId?: ChainId) {
+  const name = chainIdToName[chainId || 1];
+  if (!name) return undefined;
+  return `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/${name}/assets/${address}/logo.png`;
 }
 
 const FALLBACK_SRC = "/assets/generic-token-logo.png";
@@ -73,7 +76,7 @@ export const TokenLogo = (props: ImageFallbackProps) => {
   const imagesSrc = [
     ...new Set([
       ...(localAsset ? [localAsset] : []),
-      ...remoteAssets,
+      ...remoteAssets.filter((url): url is string => Boolean(url)),
       FALLBACK_SRC,
     ]),
   ];

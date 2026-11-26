@@ -6,11 +6,11 @@ import { networkFor, networkIdFor } from "../../utils";
 import { CHAIN_INFO } from "../chainInfo";
 import { COW_API_URL_BY_CHAIN_ID } from "../cowApi/api";
 import { getExplorerOrderLink } from "../cowExplorer";
-import { CHAINS_ORACLE_ROUTER_FACTORY } from "../oracleRouter";
+import { ConfiguredRouter } from "../oracleRouter";
 import {
   publicClientsFromIds,
   RPC_PROVIDERS,
-  supportedChainIds,
+  walletChains,
 } from "../publicClients";
 import { getSupportedTokens } from "../supportedTokens";
 import { findTokenOracles, TOKEN_CATALOG, USD_TOKENS } from "../tokenCatalog";
@@ -62,18 +62,20 @@ const sources = read<{
 const reviewedFeeds = read<Record<string, Feed[]>>("catalog-feeds.json");
 const policy = read<{ approvals: Approval[] }>("catalog-policy.json");
 
+const configuredChainIds = walletChains.map(({ id }) => id);
+
 it("covers the requested CoW EVM networks and preserves Sepolia", () => {
-  expect([...supportedChainIds].sort((a, b) => a - b)).toEqual([
-    1, 56, 100, 137, 8453, 9745, 42161, 43114, 59144, 11155111,
+  expect([...configuredChainIds].sort((a, b) => a - b)).toEqual([
+    1, 56, 100, 137, 4663, 8453, 9745, 42161, 43114, 59144, 11155111,
   ]);
   expect(
     Object.keys(USD_TOKENS)
       .map(Number)
       .sort((a, b) => a - b),
-  ).toEqual([...supportedChainIds].sort((a, b) => a - b));
+  ).toEqual([...configuredChainIds].sort((a, b) => a - b));
 });
 
-it.each(supportedChainIds)(
+it.each(configuredChainIds)(
   "has complete configuration for chain %s",
   (chainId) => {
     const info = CHAIN_INFO[chainId];
@@ -84,8 +86,8 @@ it.each(supportedChainIds)(
     expect(publicClientsFromIds[chainId].chain?.id).toBe(chainId);
     expect(new URL(RPC_PROVIDERS[chainId]).protocol).toBe("https:");
     expect(new URL(COW_API_URL_BY_CHAIN_ID[chainId]).protocol).toBe("https:");
-    expect(CHAINS_ORACLE_ROUTER_FACTORY[chainId]).toBeDefined();
-    expect(Number(networkIdFor(networkFor(chainId)))).toBe(chainId);
+    if (chainId !== 4663)
+      expect(Number(networkIdFor(networkFor(chainId)))).toBe(chainId);
     expect(getExplorerOrderLink(chainId, "0x1234")).not.toContain("undefined");
   },
 );
@@ -96,7 +98,7 @@ it("has unique, valid token contracts and local images", () => {
   );
   expect(new Set(keys).size).toBe(keys.length);
   for (const token of TOKEN_CATALOG) {
-    expect(supportedChainIds).toContain(token.chainId);
+    expect(configuredChainIds).toContain(token.chainId);
     expect(isAddress(token.address)).toBe(true);
     expect(token.address.toLowerCase()).not.toBe(zeroAddress);
     expect(Number.isInteger(token.decimals)).toBe(true);
@@ -113,7 +115,17 @@ it("has unique, valid token contracts and local images", () => {
   }
 });
 
-it.each(supportedChainIds.filter((id) => id !== 11155111))(
+it("uses asset icons instead of the Robinhood placeholder", () => {
+  const tokens = TOKEN_CATALOG.filter(({ chainId }) => chainId === 4663);
+  const logos = new Set(tokens.map(({ logoURI }) => logoURI));
+  expect(logos).not.toContain("/assets/tokens/3acff25ee4e8f842d245.png");
+  const stocks = tokens.filter(
+    ({ symbol }) => symbol === "MU" || symbol === "AAPL",
+  );
+  expect(new Set(stocks.map(({ logoURI }) => logoURI)).size).toBe(2);
+});
+
+it.each(configuredChainIds.filter((id) => id !== 11155111 && id !== 4663))(
   "offers the exact reviewed sell contracts on mainnet %s",
   async (chainId) => {
     const { sellTokens, buyToken, unavailableReason } =
@@ -158,6 +170,7 @@ it.each(supportedChainIds.filter((id) => id !== 11155111))(
         "0x418d75f65a02b3d53b2418fb8e1fe493759c7605",
         "0x85f138bfee4ef8e540890cfb48f620571d67eda3",
         "0xd31a59c85ae9d8edefec411d448f90841571b89c",
+        "0x45804880de22913dafe09f4980848ece6ecbaf78",
       ],
       56: [
         "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
@@ -290,6 +303,7 @@ it.each(supportedChainIds.filter((id) => id !== 11155111))(
         "0x9895d81bb462a195b4922ed7de0e3acd007c32cb",
         "0xa3d68b74bf0528fdd07263c60d6488749044914b",
         "0x58538e6a46e07434d7e7375bc268d3cb839c0133",
+        "0x1b64b9025eebb9a6239575df9ea4b9ac46d4d193",
       ],
       42161: [
         "0x82af49447d8a07e3bd95bd0d56f35241523fbab1",
@@ -392,13 +406,12 @@ it.each(supportedChainIds.filter((id) => id !== 11155111))(
       expect(sellTokens[0].token.address).toBe(
         "0x4200000000000000000000000000000000000006",
       );
-    const Router = CHAINS_ORACLE_ROUTER_FACTORY[chainId];
     for (const sell of sellTokens) {
       const quote = sell.oracles.ETH && buyToken.oracles.ETH ? "ETH" : "USD";
       expect(sell.oracles[quote]).toBeDefined();
       expect(buyToken.oracles[quote]).toBeDefined();
       await expect(
-        new Router({
+        new ConfiguredRouter({
           chainId,
           tokenSell: sell.token,
           tokenBuy: buyToken.token,
@@ -417,7 +430,8 @@ it("pins reviewed underlying-feed approvals and the historical source-category r
   expect(
     policy.approvals
       .filter(
-        ({ assetRelationship }) => assetRelationship === "bridged-underlying",
+        ({ chainId, assetRelationship }) =>
+          chainId !== 4663 && assetRelationship === "bridged-underlying",
       )
       .map(approvalKey)
       .sort(),
@@ -583,6 +597,7 @@ it("pins reviewed underlying-feed approvals and the historical source-category r
     "8453:0xcb17c9db87b595717c857a08468793f5bab6445f:USD",
     "8453:0xcb585250f852c6c6bf90434ab21a00f02833a4af:USD",
     "8453:0xcbada732173e39521cdbe8bf59a6dc85a9fc7b8c:USD",
+    "9745:0x1b64b9025eebb9a6239575df9ea4b9ac46d4d193:USD",
     "9745:0x58538e6a46e07434d7e7375bc268d3cb839c0133:USD",
     "9745:0x76a443768a5e3b8d1aed0105fc250877841deb40:USD",
     "9745:0x9895d81bb462a195b4922ed7de0e3acd007c32cb:USD",
@@ -590,7 +605,10 @@ it("pins reviewed underlying-feed approvals and the historical source-category r
   ]);
   expect(
     policy.approvals
-      .filter(({ sourceCategorySuitability }) => sourceCategorySuitability)
+      .filter(
+        ({ chainId, sourceCategorySuitability }) =>
+          chainId !== 4663 && sourceCategorySuitability,
+      )
       .map(approvalKey),
   ).toEqual(["100:0x9c58bacc331c9aa871afd802db6379a98e80cedb:USD"]);
   for (const approval of policy.approvals.filter(
@@ -630,6 +648,7 @@ it("keeps the designated buy token contracts unchanged", () => {
     56: "0x55d398326f99059ff775485246999027b3197955",
     100: "0x4ecaba5870353805a9f068101a40e0f32ed605c6",
     137: "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+    4663: "0x5fc5360d0400a0fd4f2af552add042d716f1d168",
     8453: "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
     9745: "0x2d661c89d812261039af9764eceaaee884f5f67f",
     42161: "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
@@ -710,7 +729,7 @@ it("pins external metadata to an immutable revision and content digests", () => 
 it("exposes only feeds with exact reviewed rows and token approvals", () => {
   const reviewed = new Set<string>();
   for (const [chainId, feeds] of Object.entries(reviewedFeeds)) {
-    expect(supportedChainIds.map(String)).toContain(chainId);
+    expect(configuredChainIds.map(String)).toContain(chainId);
     const rows = feeds.map(
       (feed) => `${feed.path}:${feed.proxyAddress.toLowerCase()}`,
     );

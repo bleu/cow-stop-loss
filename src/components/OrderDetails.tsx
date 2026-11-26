@@ -11,17 +11,14 @@ import { NetworkLogo } from "#/components/NetworkLogo";
 import { TokenLogo } from "#/components/TokenLogo";
 import { PixelIcon } from "#/components/ui/pixel-icon";
 import { useOrderList } from "#/hooks/useOrderList";
+import { getBlockExplorerUrl } from "#/lib/addressUtils";
 import { analytics } from "#/lib/analytics";
 import { fetchOraclePairPrice } from "#/lib/oraclePrice";
 import { loadOrderFundingHealth } from "#/lib/orderFundingHealth";
 import { ChainId, chainNames, publicClientsFromIds } from "#/lib/publicClients";
 import { OrderToken, StopLossOrder } from "#/lib/stopLossOrders";
 import { OrderStatus } from "#/lib/types";
-import {
-  buildBlockExplorerTxUrl,
-  buildOrderCowExplorerUrl,
-  truncateAddress,
-} from "#/utils";
+import { buildOrderCowExplorerUrl, truncateAddress } from "#/utils";
 import { formatTokenAmount } from "#/utils/amountFormatting";
 
 import { CancelOrderDialog } from "./CancelOrderDialog";
@@ -656,10 +653,11 @@ export function OrderDetails({
           {order.transactionHash !== undefined && (
             <Field label="Creation transaction">
               <Link
-                href={buildBlockExplorerTxUrl({
+                href={getBlockExplorerUrl(
                   chainId,
-                  txHash: order.transactionHash,
-                })!}
+                  "transaction",
+                  order.transactionHash,
+                )}
                 target="_blank"
                 rel="noreferrer noopener"
                 title={order.transactionHash}

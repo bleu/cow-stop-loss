@@ -25,7 +25,7 @@ import {
   preparePlacement,
   refreshPlacementChecks,
 } from "#/lib/pollerStopLoss";
-import { ChainId, supportedChainIds } from "#/lib/publicClients";
+import { type ChainId, isSupportedChainId } from "#/lib/publicClients";
 import { PlacementNotSubmittedError } from "#/lib/stopLossPlacement";
 import { DraftOrder } from "#/lib/types";
 
@@ -85,23 +85,30 @@ async function checkSizeBeforeSend(prepared: PreparedPlacement) {
 }
 
 export function StopLossCreation({ onReview }: { onReview?: () => void }) {
-  const { address, chainId } = useAccount();
+  const { address, chainId: walletChainId } = useAccount();
+  const chainId = isSupportedChainId(walletChainId) ? walletChainId : undefined;
   const { sendTransactionAsync } = useSendTransaction();
+  // With an account and no chain, tracking covers all order networks.
   const { records, error: trackingError } = useStopLossPlacement(
-    address,
-    chainId as ChainId,
+    chainId === undefined ? undefined : address,
+    chainId,
   );
-  const [review, setReview] = useState<Review>();
+  const [savedReview, setReview] = useState<Review>();
+  const review =
+    savedReview?.chainId === chainId &&
+    savedReview?.account.toLowerCase() === address?.toLowerCase()
+      ? savedReview
+      : undefined;
   const [open, setOpen] = useState(false);
-  const scope = `${address?.toLowerCase()}:${chainId}`;
+  const scope = `${address?.toLowerCase()}:${walletChainId}`;
   const currentScope = useRef(scope);
   currentScope.current = scope;
   const request = useRef(0);
   const refreshedApproval = useRef<string | undefined>(undefined);
 
   useEffect(() => {
-    if (!address || !supportedChainIds.includes(chainId as ChainId)) return;
-    const scope = { account: address, chainId: chainId as ChainId };
+    if (!address || chainId === undefined) return;
+    const scope = { account: address, chainId };
     const prefetch = () => {
       void prefetchPlacementChecks(scope);
     };
@@ -126,6 +133,7 @@ export function StopLossCreation({ onReview }: { onReview?: () => void }) {
     if (!prepared) return;
     const placement = getStopLossPlacement();
     const update = () => {
+      if (currentScope.current !== scope) return;
       try {
         const record = placement
           .getRecords(prepared)
@@ -148,7 +156,7 @@ export function StopLossCreation({ onReview }: { onReview?: () => void }) {
     };
     update();
     return placement.subscribe(update);
-  }, [review?.prepared]);
+  }, [review?.prepared, scope]);
 
   useEffect(() => {
     if (
@@ -178,8 +186,9 @@ export function StopLossCreation({ onReview }: { onReview?: () => void }) {
   }, [open, records, review]);
 
   useEffect(() => {
-    if (trackingError) showOrderError("check", trackingError);
-  }, [trackingError]);
+    if (chainId !== undefined && trackingError)
+      showOrderError("check", trackingError);
+  }, [chainId, trackingError]);
 
   async function loadReview(
     order: DraftOrder,
@@ -188,6 +197,7 @@ export function StopLossCreation({ onReview }: { onReview?: () => void }) {
     existing?: PreparedPlacement,
   ) {
     const selectedScope = `${account.toLowerCase()}:${selectedChain}`;
+    if (currentScope.current !== selectedScope) return;
     const revision = ++request.current;
     setReview((current) => ({
       ...(current?.order.id === order.id &&
@@ -471,11 +481,11 @@ export function StopLossCreation({ onReview }: { onReview?: () => void }) {
     setReview({ ...saved, busy: true, refreshRequired: false });
     try {
       await resumeStopLossPlacement(saved.account, saved.chainId);
-      invalidatePlacementReads(saved);
       if (
         currentScope.current === selectedScope &&
         request.current === revision
       ) {
+        invalidatePlacementReads(saved);
         await loadReview(
           saved.order,
           saved.chainId,

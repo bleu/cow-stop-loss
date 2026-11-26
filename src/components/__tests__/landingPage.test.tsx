@@ -87,6 +87,13 @@ it.each([
       "The displayed market price is an oracle reference, not a firm quote.",
   },
   {
+    question: "Can I set a stop-loss for Stock Tokens?",
+    opening:
+      "Yes. On Robinhood, you can sell supported Stock Tokens and funds into USDG.",
+    warning:
+      "A stop-loss can still execute after the market closes while both prices are within the order's freshness timeout.",
+  },
+  {
     question: "Does a stop-loss order guarantee protection?",
     opening:
       "A stop-loss helps you plan your response to a price drop, but it cannot guarantee protection.",
@@ -177,7 +184,7 @@ it("provides an addressable FAQ with expandable technical answers", () => {
   });
   fireEvent.click(networkQuestion);
   expect(
-    within(faq).getByText(/BNB Chain, Linea, Plasma, and Sepolia/),
+    within(faq).getByText(/BNB Chain, Linea, Plasma, Robinhood, and Sepolia/),
   ).toBeVisible();
   expect(
     within(faq).getByText(/approved oracle routes depend on the network/),
