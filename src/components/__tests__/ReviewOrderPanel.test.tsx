@@ -3,7 +3,7 @@
  * @jest-environment-options {"customExportConditions": ["node", "node-addons"]}
  */
 
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import type { FundingSnapshot, PreparedPlacement } from "#/lib/pollerStopLoss";
@@ -128,7 +128,6 @@ it("shows a compact order summary with edit beside the heading", () => {
   expect(
     screen.getByLabelText("Show exact amount: 246.666665 USDC"),
   ).toBeInTheDocument();
-  expect(screen.getByText("Execution account")).toBeInTheDocument();
   expect(screen.queryByText("Connected wallet")).not.toBeInTheDocument();
   expect(screen.queryByText(/Owner/)).not.toBeInTheDocument();
   expect(screen.queryByText("Wallet balance")).not.toBeInTheDocument();
@@ -140,43 +139,53 @@ it("shows a compact order summary with edit beside the heading", () => {
   expect(
     screen.queryByText(/sell amount, not the trigger price/i),
   ).not.toBeInTheDocument();
-  for (const [label, address] of [
-    ["WETH oracle (2h max age)", order.tokenSellOracle],
-    ["USDC oracle (2h max age)", order.tokenBuyOracle],
-  ]) {
-    expect(
-      screen
-        .getByText(label)
-        .closest(".rescue-review-address")
-        ?.querySelector("a"),
-    ).toHaveAttribute("href", `https://etherscan.io/address/${address}`);
-  }
 });
 
-it("groups destination and oracle addresses in one shared wrapper", () => {
-  const { container } = render(
-    <ReviewOrderPanel {...props()} prepared={prepared} checks={checks} />,
-  );
+it("shows execution account and price oracles only when Advanced details is open", async () => {
+  const user = userEvent.setup();
+  render(<ReviewOrderPanel {...props()} prepared={prepared} checks={checks} />);
   const destination = screen.getByRole("region", { name: "Order destination" });
-  const oracles = screen.getByRole("region", { name: "Price oracles" });
-  const addresses = destination.parentElement;
-  expect(addresses).toHaveClass("rescue-review-addresses");
-  expect(container.querySelectorAll(".rescue-review-addresses")).toHaveLength(
-    1,
+  const recipient = within(destination).getByRole("link", {
+    name: "0x1111…1111",
+  });
+  expect(within(destination).getByText("Custom recipient")).toBeVisible();
+  expect(recipient).toBeVisible();
+  expect(recipient).toHaveAttribute(
+    "href",
+    `https://etherscan.io/address/${order.receiver}`,
   );
-  expect(oracles.parentElement).toBe(addresses);
-  expect(addresses?.children).toHaveLength(2);
-  for (const [label, address] of [
-    ["Custom recipient", order.receiver],
-    ["Execution account", prepared.owner],
-  ]) {
-    expect(
-      screen
-        .getByText(label)
-        .closest(".rescue-review-address")
-        ?.querySelector("a"),
-    ).toHaveAttribute("href", `https://etherscan.io/address/${address}`);
+
+  const addresses = [
+    ["Execution account", "0x4444…4444", prepared.owner],
+    ["WETH oracle (2h max age)", "0x8888…8888", order.tokenSellOracle],
+    ["USDC oracle (2h max age)", "0x9999…9999", order.tokenBuyOracle],
+  ];
+  for (const [, name] of addresses) {
+    expect(screen.queryByRole("link", { name })).not.toBeInTheDocument();
   }
+
+  const trigger = screen.getByRole("button", { name: "Advanced details" });
+  expect(trigger).toHaveAttribute("aria-expanded", "false");
+  trigger.focus();
+  await user.keyboard("{Enter}");
+  expect(trigger).toHaveAttribute("aria-expanded", "true");
+  const details = screen.getByRole("region", { name: "Advanced details" });
+  for (const [label, name, address] of addresses) {
+    expect(within(details).getByText(label)).toBeVisible();
+    const link = within(details).getByRole("link", { name });
+    expect(link).toBeVisible();
+    expect(link).toHaveAttribute(
+      "href",
+      `https://etherscan.io/address/${address}`,
+    );
+  }
+
+  await user.click(trigger);
+  expect(trigger).toHaveAttribute("aria-expanded", "false");
+  for (const [, name] of addresses) {
+    expect(screen.queryByRole("link", { name })).not.toBeInTheDocument();
+  }
+  expect(recipient).toBeVisible();
 });
 
 it("keeps exact amounts and oracle help as inline keyboard controls", async () => {
@@ -185,6 +194,7 @@ it("keeps exact amounts and oracle help as inline keyboard controls", async () =
   const amount = screen.getByRole("button", {
     name: "Show exact amount: 0.123456789012345678 WETH",
   });
+  await user.click(screen.getByRole("button", { name: "Advanced details" }));
   const oracleHelp = screen.getByRole("button", {
     name: "About WETH oracle (2h max age)",
   });

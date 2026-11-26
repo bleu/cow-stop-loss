@@ -13,6 +13,12 @@ import { formatUnits } from "viem";
 
 import { NetworkLogo } from "#/components/NetworkLogo";
 import { TokenLogo } from "#/components/TokenLogo";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "#/components/ui/accordion";
 import { PixelIcon } from "#/components/ui/pixel-icon";
 import type {
   ApprovalMode,
@@ -162,29 +168,38 @@ export function ReviewOrderPanel({
             address={order.receiver}
             chainId={chainId}
           />
-          {prepared && (
-            <AddressLine
-              label="Execution account"
-              address={prepared.owner}
-              chainId={chainId}
-            />
-          )}
         </section>
 
-        <section aria-label="Price oracles" className="rescue-review-oracles">
-          <AddressLine
-            label={`${order.tokenSell.symbol} oracle (${order.maxHoursSinceOracleUpdates}h max age)`}
-            tooltip={`${order.tokenSell.symbol} price feed used to check the trigger price. The order cannot execute if the price update is more than ${order.maxHoursSinceOracleUpdates}h old.`}
-            address={order.tokenSellOracle}
-            chainId={chainId}
-          />
-          <AddressLine
-            label={`${order.tokenBuy.symbol} oracle (${order.maxHoursSinceOracleUpdates}h max age)`}
-            tooltip={`${order.tokenBuy.symbol} price feed used to check the trigger price. The order cannot execute if the price update is more than ${order.maxHoursSinceOracleUpdates}h old.`}
-            address={order.tokenBuyOracle}
-            chainId={chainId}
-          />
-        </section>
+        <Accordion type="single" collapsible>
+          <AccordionItem value="advanced-details" className="border-b-0">
+            <AccordionTrigger className="min-h-11 py-0 text-left font-serif text-xs text-muted-foreground hover:text-primary hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring">
+              Advanced details
+            </AccordionTrigger>
+            <AccordionContent className="pb-0 text-[13px]">
+              {prepared && (
+                <AddressLine
+                  label="Execution account"
+                  address={prepared.owner}
+                  chainId={chainId}
+                />
+              )}
+              <section aria-label="Price oracles">
+                <AddressLine
+                  label={`${order.tokenSell.symbol} oracle (${order.maxHoursSinceOracleUpdates}h max age)`}
+                  tooltip={`${order.tokenSell.symbol} price feed used to check the trigger price. The order cannot execute if the price update is more than ${order.maxHoursSinceOracleUpdates}h old.`}
+                  address={order.tokenSellOracle}
+                  chainId={chainId}
+                />
+                <AddressLine
+                  label={`${order.tokenBuy.symbol} oracle (${order.maxHoursSinceOracleUpdates}h max age)`}
+                  tooltip={`${order.tokenBuy.symbol} price feed used to check the trigger price. The order cannot execute if the price update is more than ${order.maxHoursSinceOracleUpdates}h old.`}
+                  address={order.tokenBuyOracle}
+                  chainId={chainId}
+                />
+              </section>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       </div>
 
       <MarketHoursNotice
