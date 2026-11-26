@@ -85,6 +85,15 @@ export function getColumns(): ColumnDef<PlacementRow>[] {
         values.includes(String(row.getValue(id))),
     },
     {
+      id: "createdAt",
+      accessorFn: ({ createdAt }) =>
+        createdAt !== undefined && Number.isFinite(createdAt)
+          ? createdAt
+          : Number.NEGATIVE_INFINITY,
+      sortingFn: "basic",
+      header: "Created",
+    },
+    {
       id: "order",
       header: "Order",
       cell: ({ row: { original: order } }) => {

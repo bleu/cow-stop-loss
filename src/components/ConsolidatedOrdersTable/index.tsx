@@ -111,9 +111,9 @@ function ConnectedOrdersTable({ account }: { account: Address }) {
   const { table } = useDataTable({
     data: orders,
     columns,
-    initialColumnVisibility: { chainId: false },
+    initialColumnVisibility: { chainId: false, createdAt: false },
     filterFields,
-    defaultSort: "chainId.asc",
+    fixedSort: "createdAt.desc",
     defaultPerPage: 5,
     enableRowSelection: false,
   });

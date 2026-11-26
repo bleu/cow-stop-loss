@@ -118,6 +118,7 @@ function apiParent(
   chainId = 1,
   eventId = "indexed-order",
   hash = `0x${"ab".repeat(32)}`,
+  blockTimestamp: string | null = "1700000000",
 ) {
   return {
     eventId,
@@ -128,7 +129,10 @@ function apiParent(
     orderType: "StopLoss",
     handler: "0x412c36e5011cd2517016d243a2dfb37f73a242e7",
     hash,
-    transaction: { hash: `0x${"ef".repeat(32)}`, blockTimestamp: "1700000000" },
+    transaction:
+      blockTimestamp === null
+        ? null
+        : { hash: `0x${"ef".repeat(32)}`, blockTimestamp },
     decodedParams: {
       sellToken: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       buyToken: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
@@ -699,7 +703,7 @@ test("restores and combines chain and status filters from the URL without changi
     expect(params.has("chainId")).toBe(false);
     expect(params.has("status")).toBe(false);
     expect(params.get("view")).toBe("compact");
-    expect(params.get("sort")).toBe("chainId.asc");
+    expect(params.get("sort")).toBe("createdAt.desc");
   });
   expect(screen.getAllByRole("row", { name: /^View order/ })).toHaveLength(4);
   expect(
@@ -1064,6 +1068,39 @@ test("keeps chain and placement warnings in a toolbar tooltip with hover, focus 
   expect(screen.queryByText("No results.")).not.toBeInTheDocument();
 });
 
+test("shows the newest orders first across chains and pages even with an old sort URL", async () => {
+  serveOrders([
+    apiParent(1, "undated", `0x${"11".repeat(32)}`, null),
+    apiParent(1, "oldest", `0x${"22".repeat(32)}`, "1700000001"),
+    apiParent(100, "fifth", `0x${"33".repeat(32)}`, "1700000002"),
+    apiParent(1, "second", `0x${"44".repeat(32)}`, "1700000005"),
+    apiParent(100, "newest", `0x${"55".repeat(32)}`, "1700000006"),
+    apiParent(42161, "third", `0x${"66".repeat(32)}`, "1700000004"),
+    apiParent(1, "fourth", `0x${"77".repeat(32)}`, "1700000003"),
+  ]);
+  render(<TableView search="?sort=chainId.asc" />);
+  await connectWallet();
+
+  const orderLabels = () =>
+    screen
+      .getAllByRole("row", { name: /^View order/ })
+      .map((row) => row.getAttribute("aria-label"));
+  const next = await screen.findByRole("button", { name: "Go to next page" });
+  expect(orderLabels()).toEqual([
+    "View order newest on Gnosis",
+    "View order second on Ethereum",
+    "View order third on Arbitrum",
+    "View order fourth on Ethereum",
+    "View order fifth on Gnosis",
+  ]);
+
+  fireEvent.click(next);
+  expect(orderLabels()).toEqual([
+    "View order oldest on Ethereum",
+    "View order undated on Ethereum",
+  ]);
+});
+
 test("keeps pagination and availability warnings outside the stationary frame", async () => {
   serveOrders(
     Array.from({ length: 6 }, (_, index) =>
@@ -1283,6 +1320,29 @@ test("distinguishes tiny positive amounts from zero and preserves exact integer 
   expect(
     screen.queryByRole("button", { name: "Go to next page" }),
   ).not.toBeInTheDocument();
+});
+
+test("shows a newly submitted order first while setup is pending", async () => {
+  serveOrders(
+    Array.from({ length: 6 }, (_, index) =>
+      apiParent(1, `older-${index}`, `0x${String(index).repeat(64)}`),
+    ),
+  );
+  render(<TableView />);
+  await connectWallet();
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Go to next page" }),
+  );
+  await screen.findByText("Page 2 of 2");
+
+  await act(async () => {
+    await writer.submit(prepared(), "setup", {
+      send: async () => ({ id: "setup-reference" }),
+    });
+  });
+
+  await screen.findByText("Page 1 of 2");
+  expect(screen.getAllByRole("row")[1]).toHaveTextContent("Setup pending");
 });
 
 test("shows a pending setup stage and its RPC error on the unindexed row", async () => {
