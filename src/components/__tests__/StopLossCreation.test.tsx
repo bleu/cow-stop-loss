@@ -933,8 +933,7 @@ it.each(["approval", "approval-reset"] as const)(
   },
 );
 
-it("places only on request, closes after on-chain checks, and keeps the form values", async () => {
-  const user = userEvent.setup();
+function mockPlacementWallet(beforeVerifySetup?: () => Promise<void>) {
   let walletAllowance = BigInt(0);
   let schedule: unknown;
   const factory = "0x3333333333333333333333333333333333333333";
@@ -950,7 +949,11 @@ it("places only on request, closes after on-chain checks, and keeps the form val
             )
           : BigInt(0)
         : walletAllowance;
-    if (args.functionName === "singleOrders") return !!schedule;
+    if (args.functionName === "singleOrders") {
+      if (!schedule) return false;
+      await beforeVerifySetup?.();
+      return true;
+    }
     if (args.functionName === "schedules")
       return (
         schedule ?? [
@@ -986,11 +989,14 @@ it("places only on request, closes after on-chain checks, and keeps the form val
         registration.salt,
         registration.staticInput,
       ];
-    } else {
-      walletAllowance = BigInt("1000000000000000000");
+      return `0x${"cd".repeat(32)}`;
     }
+    walletAllowance = BigInt("1000000000000000000");
     return `0x${"ab".repeat(32)}`;
   });
+  jest
+    .spyOn(publicClientsFromIds[1], "getTransaction")
+    .mockRejectedValue(new Error("Transaction is not available"));
   jest
     .spyOn(publicClientsFromIds[1], "waitForTransactionReceipt")
     .mockImplementation(
@@ -1001,26 +1007,173 @@ it("places only on request, closes after on-chain checks, and keeps the form val
           blockNumber: BigInt(101),
         }) as never,
     );
+}
+
+async function approveForPlacement(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByRole("button", { name: "Approve WETH" }));
+  const place = await screen.findByRole("button", { name: "Place order" });
+  await waitFor(() => expect(place).toBeEnabled());
+  return place;
+}
+
+function mockPendingSetupVerification() {
+  let finish!: () => void;
+  const verification = new Promise<void>((resolve) => {
+    finish = resolve;
+  });
+  const verify = jest.fn(() => verification);
+  mockPlacementWallet(verify);
+  return { verify, finish };
+}
+
+it("shows the placed order terms only after setup is verified", async () => {
+  const user = userEvent.setup();
+  const { verify, finish } = mockPendingSetupVerification();
   showCreation();
   await reviewOneOrder(user);
-  await user.click(screen.getByRole("button", { name: "Approve WETH" }));
-  await waitFor(() =>
-    expect(screen.getByRole("button", { name: "Place order" })).toBeEnabled(),
-  );
+  const place = await approveForPlacement(user);
   expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
-  await user.click(screen.getByRole("button", { name: "Place order" }));
+  expect(screen.queryByRole("region", { name: "Order placed" })).toBeNull();
 
-  await waitFor(() => expect(sendTransactionAsync).toHaveBeenCalledTimes(2));
-  await waitFor(() =>
+  try {
+    await user.click(place);
+    await waitFor(() => expect(verify).toHaveBeenCalled());
+    expect(sendTransactionAsync).toHaveBeenCalledTimes(2);
     expect(
-      screen.queryByRole("region", { name: "Review stop-loss order" }),
-    ).not.toBeInTheDocument(),
+      publicClientsFromIds[1].waitForTransactionReceipt,
+    ).toHaveBeenCalledTimes(2);
+    expect(
+      screen.getByRole("region", { name: "Review stop-loss order" }),
+    ).toBeVisible();
+    expect(screen.queryByRole("region", { name: "Order placed" })).toBeNull();
+  } finally {
+    await act(async () => finish());
+  }
+
+  const confirmation = await screen.findByRole("region", {
+    name: "Order placed",
+  });
+  const placed = within(confirmation);
+  expect(placed.getByRole("heading", { name: "Order placed" })).toHaveFocus();
+  expect(placed.getByText("Ethereum")).toBeVisible();
+  expect(placed.getByText("1 WETH")).toBeVisible();
+  expect(placed.getByText("1,800 USDC", { exact: true })).toBeVisible();
+  expect(placed.getByText("2,000 USDC per WETH")).toBeVisible();
+  expect(placed.getByText("1,800 USDC per WETH")).toBeVisible();
+  expect(
+    placed.getByRole("link", { name: "View order" }).getAttribute("href"),
+  ).toMatch(
+    new RegExp(`^/1/${account}/0x${"44".repeat(20)}%3A0x[0-9a-f]{64}$`),
   );
-  expect(screen.getByRole("textbox", { name: "Sell amount" })).toHaveValue("1");
-  expect(screen.getByRole("textbox", { name: "Trigger price" })).toHaveValue(
-    "2000",
-  );
+  expect(
+    screen.queryByRole("region", { name: "Review stop-loss order" }),
+  ).toBeNull();
+  expect(screen.queryByRole("textbox", { name: "Sell amount" })).toBeNull();
+  expect(toast).not.toHaveBeenCalled();
+
+  await act(async () => {
+    const portfolio = getStopLossPlacement();
+    const scope = { account, chainId: 1 } as const;
+    const [order] = await portfolio.mergeRows(scope, []);
+    await portfolio.mergeRows(scope, [order]);
+  });
+  expect(confirmation).toBeVisible();
 });
+
+it("starts a fresh order with the chain defaults after placement", async () => {
+  const user = userEvent.setup();
+  mockPlacementWallet();
+  showCreation();
+  await user.click(screen.getByRole("button", { name: "Order settings" }));
+  screen.getByRole("combobox", { name: "Execution" }).focus();
+  await user.keyboard("[Space]");
+  await user.click(
+    await screen.findByRole("option", { name: "Allow partial fills" }),
+  );
+  screen.getByRole("combobox", { name: "Expires" }).focus();
+  await user.keyboard("[Space]");
+  await user.click(await screen.findByRole("option", { name: "1 day" }));
+  await user.click(screen.getByRole("button", { name: "Return to order" }));
+  await reviewOneOrder(user);
+  const review = within(
+    screen.getByRole("region", { name: "Review stop-loss order" }),
+  );
+  expect(review.getByText("Allowed", { exact: true })).toBeVisible();
+  await user.click(await approveForPlacement(user));
+
+  const placed = await screen.findByRole("region", { name: "Order placed" });
+  await user.click(
+    within(placed).getByRole("button", { name: "Create another order" }),
+  );
+
+  expect(placed).not.toBeInTheDocument();
+  expect(
+    screen.getByRole("heading", { name: /Define your order/ }),
+  ).toHaveFocus();
+  expect(screen.getByRole("button", { name: "Select token" })).toBeVisible();
+  for (const name of ["Sell amount", "Trigger price", "Limit price"]) {
+    expect(screen.getByRole("textbox", { name })).toHaveValue("");
+  }
+  expect(
+    screen.getByRole("status", { name: "Receive at least" }),
+  ).toHaveTextContent("0.0");
+  expect(screen.getByRole("img", { name: "USDC token" })).toBeVisible();
+  await user.click(screen.getByRole("button", { name: "Slippage" }));
+  expect(
+    screen.getByRole("textbox", { name: "Slippage tolerance (%)" }),
+  ).toHaveValue("10");
+  await user.click(screen.getByRole("button", { name: "Order settings" }));
+  expect(screen.getByRole("combobox", { name: "Execution" })).toHaveTextContent(
+    "Fill or kill",
+  );
+  expect(screen.getByRole("combobox", { name: "Expires" })).toHaveTextContent(
+    "1 year (max)",
+  );
+  expect(sendTransactionAsync).toHaveBeenCalledTimes(2);
+});
+
+it.each(["Edit order", "a wallet change"])(
+  "does not replace the form when setup is verified after %s",
+  async (action) => {
+    const user = userEvent.setup();
+    const { verify, finish } = mockPendingSetupVerification();
+    const view = showCreation();
+    await reviewOneOrder(user);
+    const place = await approveForPlacement(user);
+
+    try {
+      await user.click(place);
+      await waitFor(() => expect(verify).toHaveBeenCalled());
+      if (action === "Edit order") {
+        await user.click(screen.getByRole("button", { name: "Edit order" }));
+      } else {
+        connectedAccount = "0x2222222222222222222222222222222222222222";
+        view.refreshWallet();
+      }
+    } finally {
+      await act(async () => {
+        finish();
+        await resumeStopLossPlacement(account, 1);
+      });
+    }
+
+    expect(screen.queryByRole("region", { name: "Order placed" })).toBeNull();
+    expect(screen.getByRole("textbox", { name: "Sell amount" })).toHaveValue(
+      action === "Edit order" ? "1" : "",
+    );
+    expect(screen.getByRole("textbox", { name: "Trigger price" })).toHaveValue(
+      action === "Edit order" ? "2000" : "",
+    );
+    if (action === "a wallet change") {
+      connectedAccount = account;
+      view.refreshWallet();
+      expect(screen.queryByRole("region", { name: "Order placed" })).toBeNull();
+      expect(screen.getByRole("textbox", { name: "Sell amount" })).toHaveValue(
+        "",
+      );
+    }
+  },
+);
 
 it("includes orders confirmed during preparation in the next review funding total", async () => {
   const user = userEvent.setup();

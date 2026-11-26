@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Address, maxUint256 } from "viem";
 import { useAccount, useSendTransaction } from "wagmi";
 
@@ -26,10 +26,14 @@ import {
   refreshPlacementChecks,
 } from "#/lib/pollerStopLoss";
 import { type ChainId, isSupportedChainId } from "#/lib/publicClients";
-import { PlacementNotSubmittedError } from "#/lib/stopLossPlacement";
+import {
+  PlacementNotSubmittedError,
+  type PlacementRecord,
+} from "#/lib/stopLossPlacement";
 import { DraftOrder } from "#/lib/types";
 
-import { showOrderError, showOrderSuccess } from "./orderNotifications";
+import { showOrderError } from "./orderNotifications";
+import { OrderPlacedCard } from "./OrderPlacedCard";
 import { ReviewOrderPanel } from "./ReviewOrderPanel";
 import { SwapCard } from "./swap-card/SwapCard";
 
@@ -100,11 +104,21 @@ export function StopLossCreation({ onReview }: { onReview?: () => void }) {
       ? savedReview
       : undefined;
   const [open, setOpen] = useState(false);
+  const [placed, setPlaced] = useState<PreparedPlacement>();
+  // Refreshing the same review does not replace the setup attempt.
+  const setupAttempt =
+    useRef<Pick<PlacementRecord, "id" | "attempt">>(undefined);
   const scope = `${address?.toLowerCase()}:${walletChainId}`;
   const currentScope = useRef(scope);
   currentScope.current = scope;
   const request = useRef(0);
   const refreshedApproval = useRef<string | undefined>(undefined);
+  const focusNewOrder = useRef(false);
+  const orderHeadingRef = useCallback((heading: HTMLHeadingElement | null) => {
+    if (!heading || !focusNewOrder.current) return;
+    focusNewOrder.current = false;
+    heading.focus();
+  }, []);
 
   useEffect(() => {
     if (!address || chainId === undefined) return;
@@ -126,6 +140,8 @@ export function StopLossCreation({ onReview }: { onReview?: () => void }) {
     request.current += 1;
     setOpen(false);
     setReview(undefined);
+    setPlaced(undefined);
+    setupAttempt.current = undefined;
   }, [scope]);
 
   useEffect(() => {
@@ -135,12 +151,25 @@ export function StopLossCreation({ onReview }: { onReview?: () => void }) {
     const update = () => {
       if (currentScope.current !== scope) return;
       try {
+        const attempt = setupAttempt.current;
         const record = placement
           .getRecords(prepared)
-          .find((entry) => entry.prepared.paramsHash === prepared.paramsHash);
-        if (record?.status === "confirmed") {
-          showOrderSuccess("place", { ...prepared, hash: prepared.paramsHash });
+          .find(
+            (entry) =>
+              entry.prepared.paramsHash === prepared.paramsHash &&
+              (!attempt || entry.id === attempt.id),
+          );
+        if (
+          attempt &&
+          record?.status === "confirmed" &&
+          record.stage === "setup" &&
+          attempt.attempt === record.attempt
+        ) {
+          setupAttempt.current = undefined;
+          request.current += 1;
+          setPlaced(record.prepared);
           setOpen(false);
+          setReview(undefined);
         } else if (record?.error) {
           showPlacementError(
             prepared,
@@ -427,6 +456,7 @@ export function StopLossCreation({ onReview }: { onReview?: () => void }) {
             throw new PlacementNotSubmittedError(
               "Funding changed. Review the order again.",
             );
+          setupAttempt.current = { id: record.id, attempt: record.attempt };
           analytics.placementRequested(record);
           const hash = await sendTransactionAsync(transaction);
           return {
@@ -450,14 +480,6 @@ export function StopLossCreation({ onReview }: { onReview?: () => void }) {
         (record) => record.prepared.paramsHash === prepared.paramsHash,
       )?.error;
       if (failure) throw new Error(failure);
-      if (
-        saved.some(
-          (record) =>
-            record.status === "confirmed" &&
-            record.prepared.paramsHash === prepared.paramsHash,
-        )
-      )
-        setOpen(false);
       setReview((current) => current && { ...current, busy: false });
     } catch (error) {
       if (
@@ -514,6 +536,22 @@ export function StopLossCreation({ onReview }: { onReview?: () => void }) {
   );
   const pending =
     active?.status === "prompting" || active?.status === "pending";
+  if (
+    placed &&
+    placed.chainId === chainId &&
+    placed.account.toLowerCase() === address?.toLowerCase()
+  ) {
+    return (
+      <OrderPlacedCard
+        order={placed}
+        onNewOrder={() => {
+          focusNewOrder.current = true;
+          setPlaced(undefined);
+        }}
+      />
+    );
+  }
+
   return (
     <>
       {review && open ? (
@@ -522,7 +560,10 @@ export function StopLossCreation({ onReview }: { onReview?: () => void }) {
           order={review.order}
           open={open}
           setOpen={(nextOpen) => {
-            if (!nextOpen) request.current += 1;
+            if (!nextOpen) {
+              request.current += 1;
+              setupAttempt.current = undefined;
+            }
             setOpen(nextOpen);
           }}
           prepared={review.prepared}
@@ -543,7 +584,11 @@ export function StopLossCreation({ onReview }: { onReview?: () => void }) {
           review && open ? "hidden" : "rescue-order-form flex min-w-0 flex-col"
         }
       >
-        <SwapCard onReviewOrder={loadReview} reviewDisabled={open} />
+        <SwapCard
+          onReviewOrder={loadReview}
+          reviewDisabled={open}
+          headingRef={orderHeadingRef}
+        />
       </div>
     </>
   );

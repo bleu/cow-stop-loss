@@ -8,7 +8,7 @@ import { SwapForm, SwapFormProps } from "./SwapForm";
 
 export function SwapCard({
   onReviewOrder = () => {},
-  reviewDisabled,
+  ...props
 }: Partial<SwapFormProps>) {
   const { chainId } = useAccount();
   if (chainId !== undefined && !isSupportedChainId(chainId)) {
@@ -18,7 +18,5 @@ export function SwapCard({
       </p>
     );
   }
-  return (
-    <SwapForm onReviewOrder={onReviewOrder} reviewDisabled={reviewDisabled} />
-  );
+  return <SwapForm {...props} onReviewOrder={onReviewOrder} />;
 }

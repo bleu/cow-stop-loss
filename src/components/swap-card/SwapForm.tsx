@@ -34,6 +34,7 @@ import { ValidToInput } from "./ValidToInput";
 
 export interface SwapFormProps {
   reviewDisabled?: boolean;
+  headingRef?: React.Ref<HTMLHeadingElement>;
   onReviewOrder: (
     draft: DraftOrder,
     chainId: ChainId,
@@ -51,6 +52,7 @@ export function SwapForm(props: SwapFormProps) {
 function WalletSwapForm({
   onReviewOrder,
   reviewDisabled = false,
+  headingRef,
 }: SwapFormProps) {
   const { chainId: accountChainId, address: walletAddress } = useAccount();
   const chainId = (accountChainId ?? 1) as ChainId;
@@ -285,6 +287,8 @@ function WalletSwapForm({
               title={
                 <h2
                   id="place-order-title"
+                  ref={headingRef}
+                  tabIndex={-1}
                   className="rescue-card-title text-secondary"
                 >
                   New Parachute · Define your order
