@@ -886,22 +886,57 @@ test("five minutes without indexing shows the exact API error after reload and k
   expect(reloaded.getConfirmedPlacements(scope)).toEqual([prepared]);
 });
 
-test("the indexed API replacement removes the confirmed local record by canonical identity", async () => {
-  const options = environment();
+test("keeps the saved creation time until the selected indexed order has a timestamp", async () => {
+  let time = 1000;
+  const options = { ...environment(), now: () => time };
   const placement = createStopLossPlacement(options);
   await placement.submit(prepared, "setup", {
     send: async () => ({ id: "wallet-id-unrelated-to-api" }),
   });
+  time = 3000;
   await placement.resume(scope, {
     readTransaction: async () => ({ status: "success" }),
     checkState: async () => true,
   });
   const indexed = apiOrder({ hash: `0x${"BB".repeat(32)}` });
+  const duplicate = { ...indexed, id: "duplicate", createdAt: 2 };
+  expect(await placement.mergeRows(scope, [indexed, duplicate])).toEqual([
+    { ...indexed, createdAt: 1, source: "api", canLink: true },
+  ]);
+
+  const reloaded = createStopLossPlacement(options);
+  expect(await reloaded.mergeRows(scope, [indexed])).toEqual([
+    { ...indexed, createdAt: 1, source: "api", canLink: true },
+  ]);
+  const dated = { ...indexed, createdAt: 2 };
+  expect(await reloaded.mergeRows(scope, [dated])).toEqual([
+    { ...dated, source: "api", canLink: true },
+  ]);
+  expect(createStopLossPlacement(options).getRecords(scope)).toEqual([]);
+  expect(reloaded.getConfirmedPlacements(scope)).toEqual([]);
+});
+
+test("drops the saved creation time after five minutes if the indexer has no timestamp", async () => {
+  let time = 1000;
+  const options = { ...environment(), now: () => time };
+  const placement = createStopLossPlacement(options);
+  await placement.submit(prepared, "setup", {
+    send: async () => ({ id: "tx" }),
+  });
+  await placement.resume(scope, {
+    readTransaction: async () => ({ status: "success" }),
+    checkState: async () => true,
+  });
+  const indexed = apiOrder();
+  time = 300999;
+  expect(await placement.mergeRows(scope, [indexed])).toEqual([
+    { ...indexed, createdAt: 1, source: "api", canLink: true },
+  ]);
+  time = 301000;
   expect(await placement.mergeRows(scope, [indexed])).toEqual([
     { ...indexed, source: "api", canLink: true },
   ]);
   expect(createStopLossPlacement(options).getRecords(scope)).toEqual([]);
-  expect(placement.getConfirmedPlacements(scope)).toEqual([]);
 });
 
 test("subscribers can read placement updates without loops and receive other-tab storage changes", async () => {

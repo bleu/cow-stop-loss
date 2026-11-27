@@ -483,6 +483,10 @@ export async function loadStopLossOrders({
                     : partiallyFilled
                       ? OrderStatus.PARTIALLY_FILLED
                       : OrderStatus.OPEN;
+              const blockTimestamp = parent.transaction?.blockTimestamp;
+              const timestamp = /^\d+$/.test(blockTimestamp ?? "")
+                ? Number(blockTimestamp)
+                : undefined;
               return {
                 id: `${chainId}:${parent.eventId}`,
                 parentId: parent.eventId,
@@ -505,8 +509,8 @@ export async function loadStopLossOrders({
                 ),
                 partiallyFillable: params.isPartiallyFillable,
                 isSellOrder: params.isSellOrder,
-                createdAt: parent.transaction
-                  ? Number(parent.transaction.blockTimestamp)
+                createdAt: Number.isSafeInteger(timestamp)
+                  ? timestamp
                   : undefined,
                 transactionHash: parent.transaction?.hash,
                 hash: parent.hash,

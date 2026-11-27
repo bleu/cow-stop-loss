@@ -317,6 +317,30 @@ test("retains prices, token units and oracle settings before the order triggers"
   });
 });
 
+test.each([undefined, null, "", " ", "invalid", "Infinity"])(
+  "does not assign a creation time for indexer timestamp %p",
+  async (blockTimestamp) => {
+    jest.spyOn(global, "fetch").mockImplementation(async (_url, init) => {
+      const { query } = JSON.parse(String(init?.body));
+      const data = query.includes("ownerMappings")
+        ? { ownerMappings: page([]) }
+        : {
+            conditionalOrderGenerators: page([
+              {
+                ...parent,
+                transaction: { ...parent.transaction, blockTimestamp },
+              },
+            ]),
+          };
+      return new Response(JSON.stringify({ data }));
+    });
+
+    const result = await loadStopLossOrders({ account: wallet });
+    const [order] = result.chains.find((chain) => chain.chainId === 1)!.orders;
+    expect(order).toMatchObject({ createdAt: undefined });
+  },
+);
+
 test.each([
   {
     chainId: 1 as const,
