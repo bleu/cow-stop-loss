@@ -182,6 +182,30 @@ export function isDefiniteFailure(error: unknown): boolean {
 
 const storageName = "stop-loss-placement";
 
+export function placementIndexDeadline(record: PlacementRecord) {
+  return record.confirmedAt === undefined
+    ? undefined
+    : record.confirmedAt + 300000;
+}
+
+export function isWaitingForIndexedCreationTime(
+  record: PlacementRecord,
+  order: StopLossOrder,
+  now: number,
+) {
+  const deadline = placementIndexDeadline(record);
+  return (
+    !Number.isFinite(order.createdAt) &&
+    deadline !== undefined &&
+    now < deadline
+  );
+}
+
+function placementCreationTime(record: PlacementRecord) {
+  const time = record.setupSubmittedAt ?? record.confirmedAt;
+  return time === undefined ? undefined : time / 1000;
+}
+
 export function withStopLossSubmission<T>(
   scope: PlacementScope,
   flow: "placement" | "repair",
@@ -717,113 +741,108 @@ export function createStopLossPlacement({
     scope: PlacementScope,
     apiOrders: readonly StopLossOrder[],
   ): Promise<PlacementRow[]> {
-    const indexed = apiOrders.filter(
-      (order) => order.chainId === scope.chainId,
-    );
     const key = (chainId: number, owner: string, hash: string) =>
       `${chainId}:${owner.toLowerCase()}:${hash.toLowerCase()}`;
-    const indexedKeys = new Set(
-      indexed.map((order) => key(order.chainId, order.owner, order.hash)),
-    );
+    const placementKey = ({ prepared }: PlacementRecord) =>
+      key(prepared.chainId, prepared.owner, prepared.paramsHash);
+    const rows = new Map<string, PlacementRow>();
+    for (const order of apiOrders) {
+      if (order.chainId !== scope.chainId) continue;
+      const identity = key(order.chainId, order.owner, order.hash);
+      if (!rows.has(identity))
+        rows.set(identity, { ...order, source: "api", canLink: true });
+    }
+    const mergedAt = now();
     if (locks)
       await locked(() => {
         const records = read();
-        const remaining = records.filter(
-          (record) =>
-            !(
-              "prepared" in record &&
-              record.status === "confirmed" &&
-              record.prepared.chainId === scope.chainId &&
-              record.prepared.account.toLowerCase() ===
-                scope.account.toLowerCase() &&
-              indexedKeys.has(
-                key(
-                  record.prepared.chainId,
-                  record.prepared.owner,
-                  record.prepared.paramsHash,
-                ),
-              )
-            ),
-        );
+        const remaining = records.filter((record) => {
+          if (
+            !("prepared" in record) ||
+            record.status !== "confirmed" ||
+            record.prepared.chainId !== scope.chainId ||
+            record.prepared.account.toLowerCase() !==
+              scope.account.toLowerCase()
+          )
+            return true;
+          const order = rows.get(placementKey(record));
+          return (
+            !order || isWaitingForIndexedCreationTime(record, order, mergedAt)
+          );
+        });
         if (remaining.length !== records.length || needsCleanup)
           save(remaining);
       });
-    const local: PlacementRow[] = getRecords(scope)
-      .filter(
-        (record) =>
-          record.status !== "failed" &&
-          record.status !== "rejected" &&
-          (record.status === "confirmed" ||
-            Boolean(record.transactions.setup)) &&
-          !indexedKeys.has(
-            key(
-              record.prepared.chainId,
-              record.prepared.owner,
-              record.prepared.paramsHash,
-            ),
-          ),
+    for (const record of getRecords(scope)) {
+      const identity = placementKey(record);
+      const row = rows.get(identity);
+      if (row?.source === "api") {
+        if (
+          record.status === "confirmed" &&
+          isWaitingForIndexedCreationTime(record, row, mergedAt)
+        ) {
+          rows.set(identity, {
+            ...row,
+            createdAt: placementCreationTime(record),
+          });
+        }
+        continue;
+      }
+      if (
+        row ||
+        record.status === "failed" ||
+        record.status === "rejected" ||
+        (record.status !== "confirmed" && !record.transactions.setup)
       )
-      .map((record) => {
-        const order = decodeStopLossStaticInput(record.prepared.staticInput);
-        const { prepared } = record;
-        const createdAt = record.setupSubmittedAt ?? record.confirmedAt;
-        return {
-          id: record.id,
-          parentId: record.id,
-          chainId: prepared.chainId,
-          owner: prepared.owner,
-          funding: {
-            kind: "scheduled",
-            funder: prepared.account,
-            handler: STOP_LOSS_ADDRESS,
-            salt: prepared.draft.salt,
-            staticInput: prepared.staticInput,
-          },
-          hash: prepared.paramsHash,
-          status:
-            record.status === "confirmed"
-              ? OrderStatus.OPEN
-              : OrderStatus.CREATING,
-          receiver: order.receiver,
-          sellAmount: order.sellAmount,
-          buyAmount: order.buyAmount,
-          validTo: order.validTo,
-          sellToken: prepared.draft.tokenSell,
-          buyToken: prepared.draft.tokenBuy,
-          strike: order.strike,
-          limitPrice: prepared.draft.limitPrice,
-          partiallyFillable: order.isPartiallyFillable,
-          isSellOrder: order.isSellOrder,
-          sellTokenPriceOracle: order.sellTokenPriceOracle,
-          buyTokenPriceOracle: order.buyTokenPriceOracle,
-          maxTimeSinceLastOracleUpdate: order.maxTimeSinceLastOracleUpdate,
-          executedSellAmount: null,
-          executedBuyAmount: null,
-          executedFee: null,
-          createdAt: createdAt === undefined ? undefined : createdAt / 1000,
-          transactionHash: record.transactions.setup?.transactionHash,
-          source: "local",
-          canLink: false,
-          placement: record,
-          error:
-            record.status === "confirmed" &&
-            record.confirmedAt !== undefined &&
-            now() - record.confirmedAt >= 300000
-              ? "API error: confirmed order not found."
-              : record.error,
-        };
+        continue;
+      const order = decodeStopLossStaticInput(record.prepared.staticInput);
+      const { prepared } = record;
+      const deadline = placementIndexDeadline(record);
+      rows.set(identity, {
+        id: record.id,
+        parentId: record.id,
+        chainId: prepared.chainId,
+        owner: prepared.owner,
+        funding: {
+          kind: "scheduled",
+          funder: prepared.account,
+          handler: STOP_LOSS_ADDRESS,
+          salt: prepared.draft.salt,
+          staticInput: prepared.staticInput,
+        },
+        hash: prepared.paramsHash,
+        status:
+          record.status === "confirmed"
+            ? OrderStatus.OPEN
+            : OrderStatus.CREATING,
+        receiver: order.receiver,
+        sellAmount: order.sellAmount,
+        buyAmount: order.buyAmount,
+        validTo: order.validTo,
+        sellToken: prepared.draft.tokenSell,
+        buyToken: prepared.draft.tokenBuy,
+        strike: order.strike,
+        limitPrice: prepared.draft.limitPrice,
+        partiallyFillable: order.isPartiallyFillable,
+        isSellOrder: order.isSellOrder,
+        sellTokenPriceOracle: order.sellTokenPriceOracle,
+        buyTokenPriceOracle: order.buyTokenPriceOracle,
+        maxTimeSinceLastOracleUpdate: order.maxTimeSinceLastOracleUpdate,
+        executedSellAmount: null,
+        executedBuyAmount: null,
+        executedFee: null,
+        createdAt: placementCreationTime(record),
+        transactionHash: record.transactions.setup?.transactionHash,
+        source: "local",
+        canLink: false,
+        placement: record,
+        error:
+          record.status === "confirmed" &&
+          deadline !== undefined &&
+          mergedAt >= deadline
+            ? "API error: confirmed order not found."
+            : record.error,
       });
-    const rows = new Map<string, PlacementRow>();
-    for (const row of [
-      ...indexed.map((order): PlacementRow => ({
-        ...order,
-        source: "api",
-        canLink: true,
-      })),
-      ...local,
-    ]) {
-      const identity = key(row.chainId, row.owner, row.hash);
-      if (!rows.has(identity)) rows.set(identity, row);
     }
     return [...rows.values()];
   }

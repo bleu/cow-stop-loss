@@ -7,7 +7,11 @@ import { composableCowAbi } from "#/lib/abis/composableCow";
 import { COMPOSABLE_COW_ADDRESS } from "#/lib/contracts";
 import { publicClientsFromIds, supportedChainIds } from "#/lib/publicClients";
 import { loadStopLossOrders, type StopLossOrder } from "#/lib/stopLossOrders";
-import { PlacementRow } from "#/lib/stopLossPlacement";
+import {
+  isWaitingForIndexedCreationTime,
+  placementIndexDeadline,
+  type PlacementRow,
+} from "#/lib/stopLossPlacement";
 import { OrderStatus } from "#/lib/types";
 
 import {
@@ -184,22 +188,25 @@ export function useOrderList() {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
     refetchInterval: (current) =>
-      records.some(
-        (record) =>
-          record.prepared.account.toLowerCase() === account &&
-          record.status === "confirmed" &&
-          !current.state.data?.chains.some(
-            (chain) =>
-              chain.chainId === record.prepared.chainId &&
-              chain.orders.some(
-                (order) =>
-                  order.owner.toLowerCase() ===
-                    record.prepared.owner.toLowerCase() &&
-                  order.hash.toLowerCase() ===
-                    record.prepared.paramsHash.toLowerCase(),
-              ),
-          ),
-      )
+      records.some((record) => {
+        if (
+          record.status !== "confirmed" ||
+          record.prepared.account.toLowerCase() !== account
+        )
+          return false;
+        const { chainId, owner, paramsHash } = record.prepared;
+        const indexed = current.state.data?.chains
+          .find((chain) => chain.chainId === chainId)
+          ?.orders.find(
+            (order) =>
+              order.owner.toLowerCase() === owner.toLowerCase() &&
+              order.hash.toLowerCase() === paramsHash.toLowerCase(),
+          );
+        return (
+          !indexed ||
+          isWaitingForIndexedCreationTime(record, indexed, Date.now())
+        );
+      })
         ? 15000
         : false,
     retry: false,
@@ -207,15 +214,15 @@ export function useOrderList() {
 
   useEffect(() => {
     const now = Date.now();
-    const deadlines = records
-      .filter(
-        (record) =>
-          record.prepared.account.toLowerCase() === account &&
-          record.status === "confirmed" &&
-          record.confirmedAt !== undefined,
+    const deadlines = records.flatMap((record) => {
+      if (
+        record.status !== "confirmed" ||
+        record.prepared.account.toLowerCase() !== account
       )
-      .map((record) => record.confirmedAt! + 300000)
-      .filter((deadline) => deadline > now);
+        return [];
+      const deadline = placementIndexDeadline(record);
+      return deadline !== undefined && deadline > now ? [deadline] : [];
+    });
     if (!deadlines.length) return;
     const timer = setTimeout(
       () => setIndexDeadline((tick) => tick + 1),

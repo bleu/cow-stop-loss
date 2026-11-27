@@ -1427,6 +1427,53 @@ test("keeps approvals and the setup wallet prompt out of the table until setup i
   expect(within(row).queryByRole("link")).not.toBeInTheDocument();
 });
 
+test("keeps a newly placed order first while its indexed creation time is missing", async () => {
+  jest.useFakeTimers({ doNotFake: ["queueMicrotask"] });
+  const orders = Array.from({ length: 6 }, (_, index) =>
+    apiParent(1, `older-${index}`, `0x${String(index).repeat(64)}`),
+  );
+  serveOrders(orders);
+  render(<TableView />);
+  await connectWallet();
+  fireEvent.click(
+    await screen.findByRole("button", { name: "Go to next page" }),
+  );
+  await screen.findByText("Page 2 of 2");
+
+  await act(async () => {
+    await confirm();
+  });
+  await screen.findByText("Page 1 of 2");
+  expect(screen.getAllByRole("row")[1]).toHaveTextContent(
+    "1 WETH for 1,980 USDC",
+  );
+
+  const indexed = apiParent(100, "new-order", prepared().paramsHash, null);
+  orders.push(indexed);
+  await act(async () => {
+    await jest.advanceTimersByTimeAsync(15000);
+  });
+  await waitFor(() =>
+    expect(screen.getAllByRole("row")[1]).toHaveAccessibleName(
+      "View order new-order on Gnosis",
+    ),
+  );
+  expect(screen.queryByText("1 WETH for 1,980 USDC")).not.toBeInTheDocument();
+
+  orders[orders.length - 1] = {
+    ...indexed,
+    transaction: { hash: `0x${"ef".repeat(32)}`, blockTimestamp: "1700000006" },
+    status: "Cancelled",
+  };
+  await act(async () => {
+    await jest.advanceTimersByTimeAsync(15000);
+  });
+  await waitFor(() =>
+    expect(screen.getAllByRole("row")[1]).toHaveTextContent("Cancelled"),
+  );
+  expect(screen.getAllByRole("row", { name: /new-order/ })).toHaveLength(1);
+});
+
 test("refreshes every fifteen seconds until a canonical API replacement is shown, then returns to manual refresh", async () => {
   jest.useFakeTimers({ doNotFake: ["queueMicrotask"] });
   await confirm();
