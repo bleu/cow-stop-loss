@@ -94,6 +94,7 @@ jest.mock("wagmi", () => ({
 }));
 
 beforeEach(() => {
+  jest.spyOn(HTMLMediaElement.prototype, "play").mockResolvedValue(undefined);
   jest.mocked(analytics.reviewed).mockClear();
   jest.mocked(analytics.placementRequested).mockClear();
   jest.mocked(analytics.placementOutcome).mockClear();
@@ -1026,14 +1027,19 @@ function mockPendingSetupVerification() {
   return { verify, finish };
 }
 
-it("shows the placed order terms only after setup is verified", async () => {
+it("shows the placed order terms only after setup is verified, even if sound is blocked", async () => {
   const user = userEvent.setup();
+  const play = jest.mocked(HTMLMediaElement.prototype.play);
+  play.mockRejectedValue(
+    new DOMException("Playback blocked", "NotAllowedError"),
+  );
   const { verify, finish } = mockPendingSetupVerification();
   showCreation();
   await reviewOneOrder(user);
   const place = await approveForPlacement(user);
   expect(sendTransactionAsync).toHaveBeenCalledTimes(1);
   expect(screen.queryByRole("region", { name: "Order placed" })).toBeNull();
+  expect(play).not.toHaveBeenCalled();
 
   try {
     await user.click(place);
@@ -1046,6 +1052,7 @@ it("shows the placed order terms only after setup is verified", async () => {
       screen.getByRole("region", { name: "Review stop-loss order" }),
     ).toBeVisible();
     expect(screen.queryByRole("region", { name: "Order placed" })).toBeNull();
+    expect(play).not.toHaveBeenCalled();
   } finally {
     await act(async () => finish());
   }
@@ -1054,6 +1061,11 @@ it("shows the placed order terms only after setup is verified", async () => {
     name: "Order placed",
   });
   const placed = within(confirmation);
+  expect(play).toHaveBeenCalledTimes(1);
+  expect(play.mock.contexts[0]).toHaveAttribute(
+    "src",
+    "/audio/cow-swap-send.mp3",
+  );
   expect(placed.getByRole("heading", { name: "Order placed" })).toHaveFocus();
   expect(placed.getByText("Ethereum")).toBeVisible();
   expect(placed.getByText("1 WETH")).toBeVisible();
@@ -1078,6 +1090,7 @@ it("shows the placed order terms only after setup is verified", async () => {
     await portfolio.mergeRows(scope, [order]);
   });
   expect(confirmation).toBeVisible();
+  expect(play).toHaveBeenCalledTimes(1);
 });
 
 it("starts a fresh order with the chain defaults after placement", async () => {
@@ -1158,6 +1171,7 @@ it.each(["Edit order", "a wallet change"])(
     }
 
     expect(screen.queryByRole("region", { name: "Order placed" })).toBeNull();
+    expect(HTMLMediaElement.prototype.play).not.toHaveBeenCalled();
     expect(screen.getByRole("textbox", { name: "Sell amount" })).toHaveValue(
       action === "Edit order" ? "1" : "",
     );

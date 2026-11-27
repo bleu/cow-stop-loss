@@ -88,6 +88,14 @@ async function checkSizeBeforeSend(prepared: PreparedPlacement) {
   }
 }
 
+async function playPlacementSound() {
+  try {
+    await new Audio("/audio/cow-swap-send.mp3").play();
+  } catch {
+    // The browser can block playback after wallet confirmation.
+  }
+}
+
 export function StopLossCreation({ onReview }: { onReview?: () => void }) {
   const { address, chainId: walletChainId } = useAccount();
   const chainId = isSupportedChainId(walletChainId) ? walletChainId : undefined;
@@ -170,6 +178,7 @@ export function StopLossCreation({ onReview }: { onReview?: () => void }) {
           setPlaced(record.prepared);
           setOpen(false);
           setReview(undefined);
+          void playPlacementSound();
         } else if (record?.error) {
           showPlacementError(
             prepared,
